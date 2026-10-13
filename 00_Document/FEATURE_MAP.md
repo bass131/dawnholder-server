@@ -6,7 +6,7 @@
 
 | 기능 | 서버 진입·상태·판정 | 클라이언트 적용 |
 |---|---|---|
-| 연결·버전·캐릭터 | `Sessions/GameSession.cs`, `Handlers/Session/`, `Handlers/HandlerRegistry.cs` | `Network/NetworkService.cs`, `Network/Handlers/Session/`, `Bootstrap/ClassLoadout.cs` |
+| 연결·버전·계정·캐릭터 | `Handlers/Session/LoginHandler.cs` → `GameSession.SubmitLogin` → `Accounts/AccountRegistry.cs`(World 틱 등록·종료 해제), `AccountIdResolver.cs`(GUID); 로그인 뒤 `CharacterSelectHandler` | `UI/MainMenuController.cs`·`MainMenuNotice.cs`, `Bootstrap/AccountLoadout.cs`·`ClassLoadout.cs`, `Network/ClientConnectionLifetime.cs`·`NetworkService.cs`·`Handlers/Session/` |
 | 이동·점프 | `Handlers/Movement/MoveIntentHandler.cs` → `GameSession.SubmitMoveIntent` → `Maps/Systems/PlayerPhysicsSystem.cs`; 상태 `Entities/PlayerEntity.cs` | `Input/`, `Prediction/LocalPlayerMovement.cs`, `PlayerPredictor.cs`, `InputHistory.cs` |
 | 스냅샷·보간 | `Maps/MapPacketPublisher.cs`, `GameMap.Tick` | `Network/Handlers/Sync/`, `State/RemoteInterpolationState.cs`, `State/RemoteEntity.cs`, `Rendering/` |
 | 근접·원거리 공격 | `Handlers/Combat/AttackHandler.cs` → `GameSession.SubmitAttack` → `Maps/Systems/CombatSystem.cs`, `DeferredDamageSystem.cs` | `Network/Handlers/Combat/`, `Combat/Attack/`, `Combat/Effects/` |

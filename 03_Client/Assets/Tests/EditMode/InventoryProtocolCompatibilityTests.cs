@@ -12,7 +12,7 @@ namespace Dawnholder.Client.Tests
     // are the fixed wire table of the items/inventory/currency goal (01_Phases/goals/
     // 2026-10-05-items-inventory-currency/goal.md and its PR1 acceptance): LittleEndian, 4-byte header
     // (ushort size including the header, ushort id), IDs 35..38 after 34, then the dungeon goal's 39·40
-    // (01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md P1) and protocol version 18.
+    // (01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md P1). Login 41·42 advances the version to 19.
     // They are written as literals here, never computed from the generator or the server.
     // The client handler side of S_InventorySnapshot is covered in depth by InventoryClientContractTests.
     public sealed class InventoryProtocolCompatibilityTests
@@ -27,9 +27,9 @@ namespace Dawnholder.Client.Tests
         }
 
         [Test]
-        public void ProtocolVersion_IsEighteen()
+        public void ProtocolVersion_IsNineteen()
         {
-            Assert.AreEqual(18, ProtocolVersion.Current);
+            Assert.AreEqual(19, ProtocolVersion.Current);
         }
 
         // Looked up by name: the committed Shared.dll has no such PacketID members before the generator runs,

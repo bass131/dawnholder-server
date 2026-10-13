@@ -10,6 +10,12 @@
 - 새 입력에는 정상 경로와 잘못된 길이·범위·상태·권한의 거부 경로를 확인한다.
 - 맵 이동은 [MapMigration](../../02_Server/GameServer/Maps/Transitions/MapMigration.cs), 파티·퀘스트 갱신 순서는 [GameWorld](../../02_Server/GameServer/Loop/GameWorld.cs)에서 확인한다.
 
+## 계정 로그인과 종료
+
+handshake 뒤 [LoginHandler](../../02_Server/GameServer/Handlers/Session/LoginHandler.cs)가 연결당 한 번 이름과 프레임 길이를 검사하고, `GameSession.SubmitLogin`이 [AccountRegistry](../../02_Server/GameServer/Accounts/AccountRegistry.cs)에 작업을 넣는다. 접속 중 목록의 등록·중복 판정·해제는 World 틱만 수행한다. 첫 `DrainSessionCloses` → `Accounts.Tick` → 맵 틱 → 종료 정리 순이라 그 틱에서 닫힌 계정 이름을 새 연결이 사용할 수 있다. `Forget`은 목록 주인이 종료한 세션과 같을 때만 지운다.
+
+성공은 세션의 `Account`와 `IsLoggedIn`을 먼저 게시한 뒤 `Accepted`를 보낸다. 계정 GUID는 [AccountIdResolver](../../02_Server/GameServer/Accounts/AccountIdResolver.cs)의 고정 이름공간 UUID v5에서 결정하며, DB·파일·네트워크 완료를 틱에서 기다리지 않는다. 이름이 이미 접속 중이면 새 연결에 `AlreadyOnline`을 보내고 끊으며 기존 연결은 유지한다. `CharacterSelectHandler`의 첫 게이트가 로그인 전 직업 선택을 버리고 기존 직업 선택 게이트가 게임 입력을 막는다. 계정 등록은 로그인 직후부터 종료 정리까지이며, 직업 선택 전 종료도 이름을 해제한다. 저장·복원은 포함하지 않는다.
+
 ## 맵 이동과 복사본 수명
 
 [MapKindTable](../../02_Server/GameServer/Maps/MapKindTable.cs)은 마을·엔딩을 공용, 사냥터·보스방을 인스턴스로 구분한다. `GameWorld.GetMap`은 공용 맵만 반환한다. [InstanceMapRegistry](../../02_Server/GameServer/Maps/InstanceMapRegistry.cs)는 `(MapId, InstanceKey)`마다 복사본 하나와 입장 대기 수를 소유한다. 공용 맵에서 들어갈 때의 파티 번호 또는 혼자 플레이어 entity 번호를 종류와 함께 열쇠로 고정한다. 복사본 안에서 파티가 바뀌어도 열쇠는 그대로이며 사냥터↔보스방 이동에도 승계한다. `GameMap.InstanceKey`로 읽고 공용 맵은 null이다.

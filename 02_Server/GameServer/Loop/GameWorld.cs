@@ -1,4 +1,5 @@
 using Dawnholder.Server.GameServer.Combat;
+using Dawnholder.Server.GameServer.Accounts;
 using Dawnholder.Server.GameServer.Items;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Party;
@@ -51,6 +52,7 @@ public class GameWorld
 
     // Connection-lifetime economy; unlike PlayerEntity, it survives map migration.
     readonly InventoryRegistry _inventory;
+    readonly AccountRegistry _accounts = new();
 
     /// <summary>
     /// 맵별 terrain/content 쌍을 주입받는 생성자 — **필수 인자** (default 없음).
@@ -108,6 +110,7 @@ public class GameWorld
     public TickScheduler Scheduler => _scheduler;
 
     internal InventoryRegistry Inventory => _inventory;
+    internal AccountRegistry Accounts => _accounts;
 
     internal int LiveInstanceCount => _instances.Count;
 
@@ -245,6 +248,7 @@ public class GameWorld
             }
             if (entityId >= 0) PartyFlow.CleanupOnDisconnect(this, entityId);
             _inventory.Forget(session);
+            _accounts.Forget(session);
             session.CompleteWorldLeave();
             foreach (var entry in removed)
                 entry.Map.BroadcastToAll(new S_PlayerLeave { entityId = entry.EntityId }.Write(), except: session);
@@ -293,6 +297,8 @@ public class GameWorld
         try
         {
             DrainSessionCloses();
+            // Release closed accounts before processing this tick's new logins.
+            _accounts.Tick();
             _tickSnapshot.Clear();
             _tickSnapshot.AddRange(_publicMaps);
             _instances.FillTickSnapshot(_tickSnapshot);

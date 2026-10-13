@@ -184,15 +184,16 @@ public sealed class DungeonClearPacketContractTests : IDisposable
         }
     }
 
-    // Real handshake and class selection bytes, then one world tick to enter Town.
+    // Real handshake, an account login and class selection bytes, then one world tick to enter Town.
     ProbeSession JoinAndEnter()
     {
         ProbeSession session = new(_world);
         session.OnConnected(Endpoint);
         session.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+        LifecycleTestWorld.LogIn(_world, session);
         session.OnRecvPacket(new C_CharacterSelect { characterClass = (byte)CharacterClass.Knight }.Write());
         Tick();
-        Assert.True(session.EntityId >= 0, "fixture: the real handshake and class selection must enter the world");
+        Assert.True(session.EntityId >= 0, "fixture: the real handshake, login and class selection must enter the world");
         return session;
     }
 

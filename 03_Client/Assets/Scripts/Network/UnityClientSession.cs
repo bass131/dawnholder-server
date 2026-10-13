@@ -21,6 +21,7 @@ using Dawnholder.Client.Network.Handlers.Skill;
 using Dawnholder.Client.Network.Handlers.Sync;
 using Dawnholder.Client.Network.Handlers.Zone;
 using Shared.Protocol;
+using Shared.GameData;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -59,6 +60,7 @@ namespace Dawnholder.Client.Network
         public bool CanControlPlayer(LocalPlayerMovement player) => CanSendGameplay && _entryPlayer == player;
         public bool IsCurrentEntry(long epoch) => CanApply && Entry.IsCurrent(epoch);
         public event Action Closed;
+        public event Action<LoginResult> LoginResultReceived;
         public event Action HandshakeSucceeded
         {
             add => OnHandshakeOkEvent += value;
@@ -97,6 +99,7 @@ namespace Dawnholder.Client.Network
             new Dictionary<PacketID, IClientPacketHandler>
             {
                 { PacketID.S_HandshakeResult,   new HandshakeResultHandler() },
+                { PacketID.S_LoginResult,       new LoginResultHandler() },
                 { PacketID.S_Pong,              new PongHandler() },
                 { PacketID.S_EnterMap,          new EnterMapHandler() },
                 { PacketID.S_Snapshot,          new SnapshotHandler() },
@@ -159,6 +162,12 @@ namespace Dawnholder.Client.Network
             if (!IsClosed) Instance = this;
         }
 
+        public void SendLogin(string accountName)
+        {
+            if (!CanApply || !HandshakeOk) return;
+            Send(new C_Login { accountName = accountName }.Write());
+        }
+
         public void SendCharacterSelect(byte characterClass)
         {
             if (!CanApply || !HandshakeOk) return;
@@ -170,6 +179,13 @@ namespace Dawnholder.Client.Network
         {
             if (CanApply) action();
         });
+
+        internal void EnqueueLoginRejection(LoginResult result)
+        {
+            if (result != LoginResult.InvalidName && result != LoginResult.AlreadyOnline) return;
+            // Remote close follows rejection on the receive loop; let the owner check its generation before cleanup.
+            _post(() => { if (!_cleaned) RaiseLoginResult(result); });
+        }
 
         // The entry boundary is read on main, after preceding EnterMap/MapTransition callbacks.
         public void EnqueueWorldApply(Action action) => EnqueueApply(() =>
@@ -318,6 +334,7 @@ namespace Dawnholder.Client.Network
             _hud = null;
             RosterBuffer.Teardown();
             OnHandshakeOkEvent = null;
+            LoginResultReceived = null;
             Closed = null;
             if (ReferenceEquals(Instance, this)) Instance = null;
         }
@@ -418,6 +435,7 @@ namespace Dawnholder.Client.Network
 
         // C# event는 선언 클래스만 raise 가능(CS0070)이라 외부 핸들러는 이 메서드를 통해 호출.
         internal void RaiseHandshakeOk() => OnHandshakeOkEvent?.Invoke();
+        internal void RaiseLoginResult(LoginResult result) => LoginResultReceived?.Invoke(result);
 
         internal void SetLocalEntityId(int entityId) => LocalEntityId = entityId;
 

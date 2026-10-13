@@ -16,6 +16,7 @@ using Dawnholder.Client.Prediction;
 using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
 using NUnit.Framework;
+using Shared.GameData;
 using Shared.Protocol;
 using TMPro;
 using UnityEngine;
@@ -90,8 +91,22 @@ namespace Dawnholder.Client.Tests.PlayMode
                     var id = (PacketID)BitConverter.ToUInt16(frame, 2);
                     if (_scriptedServer && id == PacketID.C_Handshake)
                         Send(new S_HandshakeResult { ok = true, serverVersion = ProtocolVersion.Current, reason = "" }.Write());
+                    else if (_scriptedServer && id == PacketID.C_Login)
+                        Send(new S_LoginResult { result = (byte)LoginResult.Accepted }.Write());
                     else if (!_scriptedServer && id == PacketID.S_HandshakeResult)
-                        Send(new C_CharacterSelect { characterClass = 0 }.Write());
+                    {
+                        var handshake = new S_HandshakeResult();
+                        handshake.Read(new ArraySegment<byte>(frame));
+                        if (handshake.ok)
+                            Send(new C_Login { accountName = "peer_" + Guid.NewGuid().ToString("N").Substring(0, 11) }.Write());
+                    }
+                    else if (!_scriptedServer && id == PacketID.S_LoginResult)
+                    {
+                        var login = new S_LoginResult();
+                        login.Read(new ArraySegment<byte>(frame));
+                        if (login.result == (byte)LoginResult.Accepted)
+                            Send(new C_CharacterSelect { characterClass = 0 }.Write());
+                    }
                     else if (_scriptedServer && id == PacketID.C_Ping)
                     {
                         var ping = new C_Ping();
@@ -154,6 +169,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         int _oldPort;
         float _oldFade, _oldScale;
         CharacterClass? _oldClass;
+        string _oldAccountName;
         int _oldLatency;
         bool _globalsCaptured;
         bool _ownsConnection;
@@ -186,6 +202,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             _oldFade = Field<float>(Loader, "_fadeDuration");
             _oldScale = Time.timeScale;
             _oldClass = ClassLoadout.SessionSelectedClass;
+            _oldAccountName = AccountLoadout.SessionAccountName;
             _oldLatency = UnityClientSession.SimulatedLatencyMs;
             _originalInputSettings = InputSystem.settings;
             _oldRunInBackground = Application.runInBackground;
@@ -203,6 +220,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Time.timeScale = 1;
             UnityClientSession.SimulatedLatencyMs = 0;
             ClassLoadout.SessionSelectedClass = CharacterClass.Knight;
+            AccountLoadout.SessionAccountName = "play_" + Guid.NewGuid().ToString("N").Substring(0, 11);
             Set(Loader, "_fadeDuration", 0.03f);
             Keyboard = InputSystem.AddDevice<Keyboard>("EntryTestKeyboard");
             Mouse = InputSystem.AddDevice<Mouse>("EntryTestMouse");
@@ -364,6 +382,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 Restore(() => { if (Loader != null) Set(Loader, "_fadeDuration", _oldFade); });
                 Restore(() => Time.timeScale = _oldScale);
                 Restore(() => ClassLoadout.SessionSelectedClass = _oldClass);
+                Restore(() => AccountLoadout.SessionAccountName = _oldAccountName);
                 Restore(() => UnityClientSession.SimulatedLatencyMs = _oldLatency);
                 // Unity null check, not ??: a destroyed original reads as null, and its copy takes its place.
                 Restore(() =>

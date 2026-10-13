@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Net;
 using System.Numerics;
+using Dawnholder.Server.GameServer.Accounts;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Items;
@@ -45,6 +46,8 @@ public class GameSession : PacketSession
     // handshake 완료 플래그. OnRecvPacket 첫 진입에서 false면 → handshake 패킷만 허용,
     // 다른 패킷 = 즉시 Disconnect. first-packet 강제 = isolation 보장 (version 검증 전 다른 패킷 차단).
     bool _handshakeCompleted;
+    int _loginState;
+    AccountIdentity? _account;
 
     // C_CharacterSelect 수신 후 서버가 CharacterClass → PlayerStats 매핑 (헌법 #1).
     // null = 아직 선택 안 함 (handshake 통과 후, 선택 전 상태).
@@ -77,6 +80,8 @@ public class GameSession : PacketSession
     internal event Action<GameSession>? ConnectionClosed;
     internal Task DisconnectCompleted => _disconnectCompleted.Task;
     internal int EntityId => _entityId;
+    internal bool IsLoggedIn => Volatile.Read(ref _loginState) == 2;
+    internal AccountIdentity? Account => IsLoggedIn ? _account : null;
 
     // GameMap.BroadcastToAll에서 closing 중인 세션 skip 판별용 internal getter.
     // broadcast 발신은 tick thread에서만 호출되므로 Volatile.Read로 memory barrier 보장.
@@ -176,6 +181,17 @@ public class GameSession : PacketSession
         {
             Console.WriteLine($"[GameSession] Unknown PacketId {packetId} — dropped");
         }
+    }
+
+    internal bool TryBeginLogin()
+        => !IsClosing && _handshakeCompleted && Interlocked.CompareExchange(ref _loginState, 1, 0) == 0;
+
+    internal void SubmitLogin(string normalizedName) => _world?.Accounts.EnqueueLogin(this, normalizedName);
+
+    internal void RejectLogin(LoginResult result)
+    {
+        Send(new S_LoginResult { result = (byte)result }.Write());
+        Disconnect();
     }
 
     internal void CompleteWorldLeave()
@@ -474,6 +490,13 @@ public class GameSession : PacketSession
         });
     }
 #endif
+
+    protected internal void CompleteLogin(AccountIdentity account)
+    {
+        _account = account;
+        Volatile.Write(ref _loginState, 2);
+        Send(new S_LoginResult { result = (byte)LoginResult.Accepted }.Write());
+    }
 
     protected internal void SetCharacterClass(byte characterClass)
     {

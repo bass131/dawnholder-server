@@ -40,6 +40,12 @@ public sealed class ServerFixtureLifecycleTests
         handshake.Read(new(handshakeBytes));
         Assert.True(handshake.ok, handshake.reason);
         Assert.Equal(ProtocolVersion.Current, handshake.serverVersion);
+        await stream.WriteAsync(new C_Login { accountName = "fixture_account" }.Write()).AsTask().WaitAsync(Limit);
+        byte[] loginBytes = await ReadFrame(stream);
+        Assert.Equal(PacketID.S_LoginResult, (PacketID)BitConverter.ToUInt16(loginBytes, 2));
+        S_LoginResult login = new();
+        login.Read(new(loginBytes));
+        Assert.Equal((byte)LoginResult.Accepted, login.result);
         await stream.WriteAsync(new C_CharacterSelect { characterClass = 0 }.Write()).AsTask().WaitAsync(Limit);
         byte[] enterBytes = await ReadFrame(stream);
         Assert.Equal(PacketID.S_EnterMap, (PacketID)BitConverter.ToUInt16(enterBytes, 2));

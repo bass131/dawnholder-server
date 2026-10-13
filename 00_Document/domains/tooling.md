@@ -1,5 +1,7 @@
 # 도구와 검증
 
+게임 시나리오의 [ProbeBase](../../99_Tools/headless-bot/Scenarios/ProbeBase.cs)는 봇마다 `bot_<실행별 4자리 hex>_<일련번호>` 계정을 만들고 handshake → 로그인 → 직업 선택 순으로 입장한다. 수동 접속인 `M2BasicMovement`도 같은 이름 생성기와 로그인 단계를 사용한다. [MultiAccountLoginSmoke](../../99_Tools/headless-bot/Scenarios/Roster/MultiAccountLoginSmoke.cs)는 서로 다른 두 계정 입장, 이중 로그인 거부와 끊김, 기존 연결의 계속되는 스냅샷, 퇴장 통지 뒤 같은 이름 재입장, 규칙 위반 거부를 클라이언트 수신 패킷으로 확인한다. `Program.cs`와 `run_bot_regression.sh`에 등록되어 있다. 시나리오의 작성·빌드와 실제 실행 결과는 구분한다.
+
 [GameServer.Tests](../../02_Server/GameServer.Tests/)는 xUnit 단위·통합 검증을, [headless-bot](../../99_Tools/headless-bot/)은 ClientNet·Shared를 사용한 통신 시나리오를 제공한다. 실행 명령과 환경 전제는 [DEVELOPMENT](../operations/DEVELOPMENT.md)를 따른다.
 
 | 변경 | 검증 출발점 |
