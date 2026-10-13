@@ -123,16 +123,16 @@
 
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-13T04:38:16Z다. 무료 시범을 측정하고 사용자 결정을 메인에 올리기 직전이다.
+다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-13T04:52:02Z다. 무료 시범 결과를 메인에 올렸고, 사용자가 HTML 비교를 본 뒤 고르기를 기다린다. 화면 크기 확인과 색 맞춤 시험은 끝냈다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 무료 시범 결과의 사용 결정을 메인을 거쳐 받는다. 받으면 결정을 이 goal에 적고 시범 PR을 연다 |
+| 다음 첫 일 | 무료 시범 결과의 사용 결정(A 후처리 / B 재생성, 색 맞춤 포함 여부)을 메인을 거쳐 받는다. 받으면 결정을 이 goal에 적고 시범 PR을 연다. 그때까지 시범 PR은 열지 않고 UI 창 묶음을 준비한다 |
 | 열린 Task·Dispatch | 없다. 무료 시범 Task `task_e97b1225c67a` / Dispatch `ctx_1f1c9bb71423`은 정산했고 Sol pane을 닫았다 |
 | 작업 공간 / branch | `art-active` / `docs/demo-video-art-trial-20261013`(base `a570dbf3`) |
 | PR | 없다 |
 | 리드 세션 / Run | `term_63ecd821-d71c-4eab-8ab0-b5fc6da987d1` / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`) |
-| 로컬에만 둔 변경 | 없다 |
+| 로컬에만 둔 변경 | 이 branch의 커밋 전부(push 전, 원격 branch 없음). 작업 트리의 미커밋 변경은 없다 |
 | 작업자·실행 자원 | Art 작업자 pane 0. Unity는 아직 이 작업 사본에서 연 적이 없다 |
 | 남은 결정·준비 | 무료 시범 결과를 본 뒤 사용 여부와 다음 경로(사용자). 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정 |
 
@@ -164,7 +164,11 @@
   - Sol 대화 기록(rollout)의 이미지 생성 호출은 04:23:10Z 한 번이다. 맥락 메모 작성 호출(04:21:52Z)이 생성보다 먼저다.
   - `git status --porcelain` 출력이 비어 있다.
 - 정산: `worker-release`는 `retained`(손수 split한 pane이라 `external_terminal`)였다. 리드가 idle을 확인하고 04:37:02Z에 pane을 닫았다.
-- 측정·미리보기: 결과 표와 리드 눈 확인은 [비교 글의 무료 시범 결과](sheet-method-comparison.md#무료-시범-결과)에 있다. 분석 도구는 근거 폴더 `tools/`(`sheet-analyze.ps1`, `sheet-realign.ps1`, `frames-gif.ps1`, `gif-loop.cjs`)에 있고 출력은 `lead-analysis/`에 있다.
+- 측정·미리보기: 결과 표와 리드 눈 확인은 [비교 글의 무료 시범 결과](sheet-method-comparison.md#무료-시범-결과)에 있다. 분석 도구는 근거 폴더 `tools/`(`sheet-analyze.ps1`, `sheet-realign.ps1`, `frames-gif.ps1`, `gif-loop.cjs`, `color-match.ps1`)에 있고 출력은 `lead-analysis/`에 있다.
+- 결정 요청: 리드가 메인에 A(후처리해서 사용, 추천) / B(남은 두 번으로 재생성)를 올렸다(`msg_45354ad3dc03`, 04:39:35Z).
+- 사용자 응답(결정 아님): 메인 `msg_19f1ec8e9127`(04:47:30Z)이 전달했다. 원문은 「대시보드 결정 응답: 1) Art 대장장이 망치질 시트 - 무료 시범 결과를 후처리해서 쓸지 → C 코멘트 「한번 HTML로 보여줘」」다. A와 B 중 어느 것도 고르지 않았다. 메인이 비교 HTML(claude.ai 비공개 artifact)을 만들어 사용자에게 보였다.
+- 메인 지시(사용자 결정 아님): 같은 메시지에서 「그동안 시범 PR은 열지 말고, 10-18 UI 창 묶음 준비는 계속해도 된다」고 했다. 메인은 A 추천을 유지했다. 색 차이는 색 맞춤으로 줄일 수 있다고 덧붙였다(메인 추정).
+- 후속 측정(리드): 메인의 화면 크기 계산(1080p에서 대장장이 키 약 254px)을 장면·meta 파일로 확인했다. 메인이 제안한 색 맞춤도 시험했다. 값과 경로는 [비교 글의 무료 시범 결과](sheet-method-comparison.md#무료-시범-결과)에 있다.
 - 원시: 근거 폴더 `sheet-trial/`의 `launch-*`, `worker-start-receipt.json`, `draft-read-1.json`·`draft-read-2.json`, `draft-enter-*`, `lead-analysis/`의 `worker-release-receipt.json`·`sol-close-*`.
 
 ## 다음 계획 후보
