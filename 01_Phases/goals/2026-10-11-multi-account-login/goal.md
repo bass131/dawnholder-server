@@ -5,17 +5,17 @@
 World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 계정을 붙이고, 같은 계정이 동시에 둘 들어오지 못하게 한다. 사용자가 범위 초안 v1을 그대로 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active`.
-- branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
+- branch: `docs/multi-account-login-closeout-20261013`(base main `b9f78ff07514b54b80370cbfca1f0df33baa5ac4`, PR235 병합 뒤). 제품 branch는 `feat/multi-account-login-20261011`(당시 base main `6782cd674f03d33b989943b409d68883d0fb5b21`)이었다. Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `gpt-6-astra` xhigh(Codex 0.162.1, 화면 「GPT-6-Astra xhigh」, backend unknown), 태그 `[World 리드 Astra]`, handle `term_5e618782-8ec4-44d0-aa43-f793d8c3078a`. 메인 재개 지시 `msg_6aac19febb2c`로 같은 Run `run_a927bbaff1f5`를 인수했다(consumer generation 4, 회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 현재 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다. 이전 리드 정보는 아래 「Astra 리드 재개와 제품 PR」에 보존한다.
-- **현재 위치**(2026-10-13, 제품 PR 작성): [PR235 - 다중 계정 로그인과 중복 접속 거부](https://github.com/bass131/dawnholder-server/pull/235)를 만들었다. 실화면 S-1 수정과 SV-01 약 재검증은 통과했고, 기존 판정의 범위 안 미해결 결함은 없다. 최신 main `44bd4319`를 통합한 commit은 `ee87adb7`이다. 메인 진행 지시 `msg_45df5f765bc0`에 따라 PR 기록을 반영하고 메인 R-2·사용자 병합 승인을 기다린다.
+- **현재 위치**(2026-10-13, 종료 기록 시작): [PR235 - 다중 계정 로그인과 중복 접속 거부](https://github.com/bass131/dawnholder-server/pull/235)는 14:03:37Z에 병합됐다(main `b9f78ff07514b54b80370cbfca1f0df33baa5ac4`). 메인 병합 통지 `msg_bd9eeeefbb79`에 따라 최신 main에서 종료 기록 branch를 만들었다. 실화면 S-1 수정과 SV-01 약 재검증은 통과했고, 기존 판정의 범위 안 미해결 결함은 없다. 다음은 신규 외부 Opus Gardener 점검이다.
   - 07:52Z 마감 기록의 Task 17개는 모두 completed이고 마지막 두 Dispatch는 release `retained`였다. 이번 재개에서는 작업자·검증자를 새로 열지 않았고, 제품·시험·빌드·Unity·DB를 새로 실행하지 않았다. 13:34Z Run 인수 뒤 수신 묶음은 비어 있었다.
 - **다음 행동**:
-  1. PR235의 최신 head·CI·판정 원문을 메인에 보고한다. 메인이 R-2 대조와 사용자 승인을 거쳐 병합한다. 리드는 PR을 병합하지 않는다.
-  2. 제품 PR 병합 뒤 Gardener → 종료 기록 PR → 종료 점검 → R-8을 진행한다.
+  1. 로컬 결과 기록을 고정하고 신규 외부 Opus Gardener가 독립 결함·CI·우회·드리프트의 반복 근거와 정리 후보를 점검한다.
+  2. Gardener 결과와 남은 후보를 종료 기록 PR 하나에 반영하고 별도 독립 문서 실사 → 메인 R-2·사용자 병합 승인 → 종료 점검 → R-8을 진행한다. 리드는 PR을 병합하지 않는다.
   - Unity batch·WSL 실행이 다시 필요하면 Content·Core·Rules·Art에 먼저 알린다. 큰 실행 조건은 아래 「실행 자원과 조율」을 따르고, 서식 검사도 WSL dotnet을 쓴다고 적는다.
-- **다시 열 때 필요한 것**: 현재 Codex 대화 ID `01a13573-b356-7512-911e-981db4c2e797`(`CODEX_THREAD_ID` 환경 값), Run `run_a927bbaff1f5`. 실제 재개 시 R-8의 cwd·대화·모델 대조를 다시 한다. branch와 원격·미커밋 상태도 fresh로 확인한다. 사용자 병합 승인은 아직 받지 않았다.
-- **남은 순서**(2026-10-13 PR 작성 기준): PR235 사용자 병합 승인 → Gardener → 종료 기록 PR(S-2 BACKLOG 등록과 계산 근거, 다음 goal 길드 서버 메모) → 종료 점검 → R-8.
+- **다시 열 때 필요한 것**: 현재 Codex 대화 ID `01a13573-b356-7512-911e-981db4c2e797`(`CODEX_THREAD_ID` 환경 값), Run `run_a927bbaff1f5`. 실제 재개 시 R-8의 cwd·대화·모델 대조를 다시 한다. branch와 원격·미커밋 상태도 fresh로 확인한다. PR235는 메인에게 전달된 사용자 승인으로 병합 완료됐고, 종료 기록 PR에는 별도 승인이 필요하다.
+- **남은 순서**(2026-10-13 제품 병합 뒤): Gardener → 종료 기록 PR(S-2 BACKLOG 등록과 계산 근거, 다음 goal 길드 서버 메모 보존) → 종료 점검 → R-8.
 - **다음 goal 메모**: 사용자 승인 「10-28 시연 계획과 파트 배정 → A」(아래 「적용 중인 사용자 결정」, 메인 전달 `msg_5ed276291957`)로 다음 goal은 「서버 후속 묶음」 대신 **길드 서버**다. 범위 후보는 기본 길드·길드원, 길드 금고와 던전 클리어 적립, 거점 레벨 올리기, 대장간 무기 강화와 공격력 반영, 패킷과 프로토콜 판(41·42·19 다음 번호)이다. R-8 뒤 새 리드가 범위 초안을 쓰고 메인이 사용자 승인을 받는다. 지금 리드는 준비하지 않는다. 앞선 결정(`msg_6974802727a2`, 서버 후속 묶음)은 이 승인으로 바뀌었다.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -27,8 +27,8 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 구현
 - [x] 독립 검증(RF-01 재검증 통과)
 - [x] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 차단 S-1은 수정·독립 검증·SV-01 재검증 통과, 실화면 재실행 없음은 메인 판단 `msg_d52061c05d13`)
-- [>] PR235 병합
-- [ ] Gardener 점검
+- [x] PR235 병합
+- [>] Gardener 점검
 - [ ] 종료 기록 PR 병합
 
 ## 이 목표는
@@ -777,3 +777,10 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 공백 검사 범위: 전체 `git diff --check origin/main...HEAD`는 exit 2(생성 `GenPackets.cs` 4곳, Unity `MainMenu.unity` 7곳의 행 끝 공백). CODE_CONVENTION 「C# 공백 서식」의 제외 대상이며 두 파일은 강 재검증 commit `a0a13a3e` 이후 그대로다. 이 둘을 제외한 diff check는 exit 0이다. 생성물·직렬화를 임의 정리하지 않았고 전체 검사를 통과로 기록하지 않는다.
 - PR 준비용 집계의 첫 실행은 ClientNet DLL 파일명을 잘못 적어 exit 1이었다. 실제 경로 `03_Client/Assets/Plugins/ClientNet/Dawnholder.Client.Net.dll`을 확인해 근거 스크립트만 고친 뒤 exit 0으로 수집했다. 제품·시험 변경이나 검증 실패를 지운 것이 아니다.
 - 원격 CI와 병합 상태는 PR235에서 확인한다. PR 발행은 병합 승인이나 goal 완료를 뜻하지 않는다. 제품 병합 뒤 Gardener·종료 기록 PR·종료 점검을 이어간다.
+
+### 제품 병합과 종료 기록 진입 — 2026-10-13
+
+- 메인 통지 `msg_bd9eeeefbb79`(14:03:59Z): 메인 pane에 제출된 「병합 승인: PR235 head 1caaca40252bb60ae864f6ce212460b358e8ba61」과 head·원격 검사·CLEAN을 대조하고 메인이 병합했다. 리드는 승인 입력이나 병합을 실행하지 않았다. 메인 R-2는 최종 판정 원문 둘·제품/시험 변경 없음·서버 TRX·패킷 41/42의 Content 중복 없음이었다. 원문 E/`mail-20261013T140409Z.json`.
+- 원격 조회 E/`closeout/pr235-merged.json`: state MERGED, 14:03:37Z, merge commit `b9f78ff07514b54b80370cbfca1f0df33baa5ac4`. 조회 시 CheckRun 8개(architecture-tests·code-rules·dotnet-tests·module-boundaries 각 2개)가 모두 SUCCESS였다. 메인의 직전 여섯 검사 보고와 조회 시점을 구분한다. 실패나 취소된 실행을 통과로 바꾸지 않는다.
+- `git fetch origin` 뒤 origin/main이 같은 merge commit이고 작업 폴더가 깨끗함을 확인해 `docs/multi-account-login-closeout-20261013`을 만들었다. 사전 메모 E/`closeout/lead-context.md`. 종료 기록 범위는 goal·CURRENT World 줄·근거가 있는 BACKLOG 후보이며 제품·시험 변경은 없다.
+- 제품 PR 병합은 goal 종료가 아니다. 신규 외부 Opus Gardener의 보고 한 파일을 받은 뒤 종료 기록 PR과 별도 독립 문서 실사를 진행한다. 후보 채택·다음 goal 착수는 별도 판단이며 길드 서버 준비는 하지 않는다.
