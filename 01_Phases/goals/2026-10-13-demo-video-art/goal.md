@@ -1,10 +1,10 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **범위 승인(2026-10-13). 첫 PR(goal 문서·시트 방법 비교·무료 시범)을 진행 중이다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-13). 시범 PR233은 병합됐고 남색·금(A) 스타일이 확정됐다. UI 조각 본 제작을 진행한다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
-- 담당: Art 리드(`[Art 리드 Opus]`). Art는 [R-1](../../../00_Document/operations/ORCA.md#r1-management-placement)의 승인 밖 새 파트이고, 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 하나다. 이 goal이 끝나면 메인이 작업 공간을 닫는다.
+- 담당: Art 리드(`[Art 리드 Astra]`, 2026-10-13 중간 재개부터). 이전 리드는 `[Art 리드 Opus]`였다. Art는 [R-1](../../../00_Document/operations/ORCA.md#r1-management-placement)의 승인 밖 새 파트이고, 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 하나다. 이 goal이 끝나면 메인이 작업 공간을 닫는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
-- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active`. 첫 PR branch `docs/demo-video-art-trial-20261013`(base `a570dbf3`). 작업 공간의 원래 branch `bass131/art-active`는 원격에 올리지 않는다.
+- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active`. 현재 UI 창 branch `feat/demo-video-art-ui-20261013`(base `44bd4319`). 첫 PR branch `docs/demo-video-art-trial-20261013`은 로컬에 보존한다. 작업 공간의 원래 branch `bass131/art-active`는 원격에 올리지 않는다.
 - 착수 원천: 메인 `msg_24b7f8e9d446`(2026-10-13T04:10:05Z)이 전달한 사용자 승인. 원문은 [적용 중인 사용자 결정](#적용-중인-사용자-결정)에 있다. 범위 원문은 리드 초안 2판 `msg_5303f7d5fab5`다.
 - 로컬 원문·계약·판정은 `.backups/verification/2026-10-13-demo-video-art/`에 둔다(Git 밖).
 
@@ -55,6 +55,14 @@
 각 PR은 신규 독립 검증, 정확한 head의 CI와 원시 실행 근거를 메인에 보고한 뒤 **그 PR 병합 직전 사용자 명시 승인**을 받는다. 자동 병합하지 않는다. 중간 점검은 10-21 판단 때 지형 범위·거점 맵형·일정을 함께 본다. 종료 점검은 전체 PR 병합·결과 기록·Gardener 뒤다. 같은 산출물 수정이 3회를 넘으면 메인에 체크포인트를 알린다. 확정 실패 집계는 [ORCA 실패 정본](../../../00_Document/operations/ORCA.md#confirmed-failures)을 따른다.
 
 ## 설계
+
+### UI 조각 본 제작
+
+사용자가 고른 남색·금(A)을 기본으로 박스·원을 조합한다. 큰 판의 기본·보상 강조·대화 어두움, 안쪽 판의 기본·선택·비활성, 제목 띠, 버튼의 세 색×네 상태, 아이템 칸의 빈 칸·채움·선택, 아이콘 받침 두 크기, 둥근 버튼 네 상태, 숫자 배지, 초상화 틀, 가로 구분선, 모서리 장식, 제목 띠 양끝 장식의 **열두 종·변형 33장**이다. 이 목록은 승인된 범위 초안(`send-uikit-scope-draft-body.txt`)의 약 서른 장을 펼친 것이며, 고정 창 그림은 조합으로 표현하기 어려울 때만 따로 판단한다.
+
+시안과 같은 2배 밀도·PPU 200을 유지한다. 사각 판은 9-slice, 원·장식은 비율을 유지하는 독립 조각이다. 중앙은 글자를 방해하지 않는 낮은 대비의 재질과 완만한 명암으로 깊이를 주고, 장식과 본문·버튼·「[E] 다음」의 안전 여백을 분리한다. 대안인 창 전체 그림은 크기·내용 변경과 재사용에 불리해 기본으로 쓰지 않는다.
+
+본 제작 Sol은 Git 밖 `ui-kit-production/`에 조각·출처·명세·재현 스크립트와 네 창/HUD 조합 미리보기를 만든다(새 이미지 생성 최대 네 번). 기존 HUD는 생성 참고 그림으로 쓰지 않는다. 사용자 본 제작 확인 뒤 별도 작업에서 Unity 가져오기·프리팹·표시 helper·창 적용을 수행한다. 미리보기는 게임 화면이나 Unity 검증으로 보고하지 않는다.
 
 ### 성장 시각 효과
 
@@ -127,21 +135,23 @@
 - **메인 위임 결정 — UI 창 새 방향 범위 승인, HUD 다시 입힘**(메인 `msg_82ee7240714a`, 2026-10-13T05:51:20Z). 사용자가 메인 채팅에서 위임했다. 위임 원문 「세컨드 브레인을 참고해서 내 정보 기반으로 결정할 수 있는건 메인이 결정하고, 엄청 중요한 부분만 현황대기에 올려줘, 나 쉬고 올게」. 리드의 범위 초안 질문 둘에 메인이 「1) A 승인, 2) A HUD 다시 입힘」으로 정했다. 사용자가 직접 고른 것이 아니라 메인이 위임으로 정한 결정이며, 사용자가 뒤집으면 따른다. 효과: 무료 이미지 생성으로 스타일 시안 두 안을 만들어 사용자가 고르고, 고른 안으로 박스·원 조각 약 서른 장과 네 창 조합을 짓는다(생성 상한 합계 여섯 번, 시안 두 번·본 제작 네 번). 기존 HUD는 참고 그림으로 주지 않는다. HUD 그림 다섯 장을 같은 조각으로 다시 그리고 파일 ID를 유지하는 작은 PR을 UI 창 PR 뒤(10-19~10-20)에 둔다. 범위 표의 UI 창 줄·HUD 줄과 PR 표를 이 결정대로 고쳤다. 파일 소유는 Content 리드 동의 `msg_2f7a25007d10`(UI 창 PR이 조각·프리팹·표시 helper·네 창 적용, Content는 길드 패널·대장간 화면을 같은 조각으로 지음, 조각 이름은 UI 창 PR 병합 때 고정).
 - **메인 지시(사용자 결정 아님) — 진입 한계**(`msg_85595a37e70e`). 이 파트 승인으로 모델·쓰기·Git·병합 권한은 늘지 않는다. 큰 실행(Unity·WSL 서버·7777)은 직전 여유 물리·가상 메모리 4GB 이상을 원시로 남기고 다른 리드에 알린다. 권한 확인이나 auto mode 분류기에 막히면 상태를 그대로 두고 메인에 알린다. 병합은 메인이 사용자 승인 줄을 받은 뒤 직접 한다.
 
+- **UI 스타일 확정 — 남색·금(A) 조합 우선**(메인 `msg_95a32eefd146`, 2026-10-13T13:29:35Z, 사용자 메인 pane 18:3x KST 제출 전달). 원문 「대시보드 결정 응답: 1) Art UI 조각 스타일 - 남색·금(A)과 흑요석·은(B) 중 하나 고르기 → C 코멘트 「A 스타일대로 가고, 나중에 조합으로 표현하기 힘든 UI만 각각 만드는식으로 진행하자」」. 기본은 A의 박스·원 조합이며 조합으로 어려운 UI만 별도 제작한다. 메인 `msg_124204ed8a54`(13:36:56Z)가 goal 갱신→신규 Sol 본 제작(생성 상한 네 번)→실행을 지시했다. 스타일 선택은 끝났고 본 제작 그림 확인은 산출 뒤 메인에 올린다.
+
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-13T07:22:33Z다. 메인 세션 마감 지시(`msg_1a034ac5432d`, 사용자 원문 「만약에 나 없는동안 작업할게 끝나고 나한테 응답이 5분넘게 없으면 모든 리드급한테 재개지점 정리하고 세션 정리하고 우편함 대기 정리해줘」)로 이 리드 세션을 마감했다. PR233은 재검증 PASS 뒤 사용자 병합 승인을 기다린다. UI 창 스타일 시안 두 안이 나왔고 사용자 선택을 기다린다.
+다음 리드는 이 블록부터 읽는다. 이전 리드의 2026-10-13T07:22:33Z 마감 기록은 commit `013f37ef`에 보존한다. 메인 재개 계약 `msg_95a32eefd146`(13:29:35Z)과 진행 지시 `msg_124204ed8a54`(13:36:56Z)에 따라 같은 goal을 Astra 리드가 이어간다. READY `msg_aab0c6f2d6fe` 뒤 본 제작 진행을 지시받았다. 기록 시각·상태 원시는 `lead-resume-astra/context.md`·`git-final.json`·`run-use.json`에 있다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 1) 최신 main(마감 시각 `da717247`)을 받는다. 2) 사용자 결정 둘을 메인에 확인한다: PR233 병합(현황판 `pr233-merge`, head `eb4302a3`), UI 스타일 안 A/B(현황판 `art-ui-style`, 리드 추천 A). 3) PR233이 병합되면 최신 main에서 UI 창 PR branch를 만들고 이 기록 커밋을 옮긴다. 4) 고른 안으로 본 제작 신규 Sol 계약을 연다(남은 생성 상한 네 번, 조각 약 서른 장, 네 창 조합 미리보기를 사용자에게 보이는 두 번째 확인 지점). 시안에서 찾은 두 점(두 안 모두 「[E] 다음」이 모서리 장식과 겹침, 판 가운데가 단색이라 평평함)을 계약에 넣는다 |
-| 열린 Task·Dispatch | 없다. 재검증 Task `task_8e3d265f98d3`와 스타일 시안 Task `task_7a6b7d4a6ed1`은 정산했고 pane을 닫았다 |
-| 작업 공간 / branch | `art-active` / `docs/demo-video-art-trial-20261013`(base `a570dbf3`, 뒤에 origin/main `da717247`을 병합) |
-| PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범(base `da717247`, head `eb4302a3`, CI 넷 SUCCESS) |
-| 리드 세션 / Run | `term_63ecd821-d71c-4eab-8ab0-b5fc6da987d1`(Claude 세션 `50992acc-2aa5-4257-8b98-5748b023f3ba`) / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`) |
-| 로컬에만 둔 변경 | 이 재개 지점 기록 커밋 하나. PR233 head를 바꾸지 않으려고 원격에 올리지 않았다. PR233 결정 전에는 이 branch를 원격에 올리지 않는다. 병합되면 새 branch로 옮기고, 병합이 거절돼 PR233을 고치게 되면 수정 커밋과 함께 올린다 |
-| 작업자·실행 자원 | 열린 Art 작업자 pane이 없다. Unity는 아직 이 작업 사본에서 연 적이 없다. 같은 worktree의 「Terminal 1」 pane(`term_2d015af4-85cc-4da6-9557-dc51e8b558c8`)은 이 리드가 만든 기록이 없고 정체를 확인하지 않았다. 건드리지 않았다 |
+| 다음 첫 일 | 남색·금(A) 본 제작 Sol 결과를 받아 원본/복사본·생성 상한·33조각과 실제 조합 미리보기를 대조한다. 「[E] 다음」과 장식 겹침·판 중앙 개선을 확인한다. 독립 검토와 메인을 통한 사용자 본 제작 확인 뒤 Unity 적용 계약으로 잇는다 |
+| 열린 Task·Dispatch | 본 제작 Sol `task_0baaa5d2e39e` / `ctx_1a7191ecafab`, handle `term_6cb58aba-6f9c-4e7c-82f6-e56394361e37`. 계약 `contracts/ui-kit-production-sol-v1.md`, 고정 입력·기동 원시 `ui-kit-production-launch/`. 이전 재검증·시안 Task는 정산한 기록이며 재사용하지 않는다 |
+| 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
+| PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범. 2026-10-13T09:29:28Z 병합, merge `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`(`lead-resume-astra/pr233-merged.json`) |
+| 리드 세션 / Run | `term_55937e27-00b8-484e-a0d6-299b7e52cd25` / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`, consumer 2). 이전 handle·Claude 세션 ID는 실행 권한으로 쓰지 않는다 |
+| 기록 보존 | `013f37ef`을 새 branch의 `c9c34b41`로 옮겨 push했다. 옛 branch에 최신 main을 받은 merge head `857dae52`와 새 head의 tree가 같다(diff exit 0). 옛 branch는 삭제하지 않았다 |
+| 작업자·실행 자원 | 진입 때 Art pane은 현재 리드 하나(13:34Z terminal-list.json), 열린 작업자 없음. Unity는 아직 이 작업 사본에서 연 적이 없다. 작업자는 아래 실제 기동 기록으로 갱신한다 |
 | Unity·화면 조작 | 사용자 지시(메인 채팅 전달) 원문 「그리고 만약에 MCP 연결이나 컴퓨터 조작관련 행동이 필요하면 Codex CLI가 아닌 Codex Desktop을 통한 GPT Astra한테 명령하면 대신 조작 잘 해줄거야, 권한 최대한 자율로 줄게」. Art가 UI 창 PR에서 Unity를 열 때 쓸 수 있다. 큰 실행 전 메모리 4GB 원시와 다른 리드 알림은 그대로다 |
-| 남은 결정·준비 | PR233 병합 승인(사용자). UI 스타일 안 A/B(사용자, 시안 미리보기 근거 폴더 `ui-kit-v2/preview/`). 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함) |
+| 남은 결정·준비 | 본 제작 미리보기 사용자 확인(산출 뒤). 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함). 현재 Content 회신 주소 `run:run_b680cd89da9a`는 재사용 전 현재 상태와 대조한다 |
 
 **남은 순서**: 비교 글 → 무료 시범 → 시범 PR → UI 창 PR → 효과 PR → 10-21 판단 → 발판·지형 PR → 마지막 손질 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
@@ -149,8 +159,8 @@
 
 - [x] 범위 승인
 - [x] 비교 글·무료 시범
-- [>] PR233 병합(시범 PR)
-- [ ] UI 창 구현·검증
+- [x] PR233 병합(시범 PR)
+- [>] UI 창 구현·검증
 - [ ] UI 창 PR 병합
 - [ ] 성장 효과 구현·검증
 - [ ] 효과 PR 병합
@@ -222,6 +232,14 @@
 - 정산: `retained`, 리드가 06:40:34Z에 pane을 닫았다. 남은 생성 상한은 네 번이다.
 - 선택 요청: 메인 `msg_f51655d5e2fd`(06:40:54Z), 리드 추천 A. 현황판 `art-ui-style`에 올라갔다.
 - 첫 발생 교정 기록: ORCA [R-5](../../../00_Document/operations/ORCA.md#r5-worker-launch) 2항은 같은 worktree 작업자를 `orca terminal split --direction vertical`로 열라고 한다. 이번 goal의 첫 두 Sol(04:17Z, 04:57Z)은 vertical이었지만, 그 뒤 PR233 검증자 둘(05:17Z, 05:45Z)과 스타일 시안 Sol(05:55Z)은 `--direction horizontal`로 열었다(리드 대화 기록의 split 명령). 다음 기동부터 vertical로 연다. 반복 규칙은 두 번째 발생 때 판단한다.
+
+### 남색·금 UI 조각 본 제작 — 진행 중
+
+- 사용자 A 선택과 메인 진행 지시를 반영했다. 계약은 `contracts/ui-kit-production-sol-v1.md`, 작업 폴더는 `ui-kit-production/`다. 입력 22파일·새 출력 부모의 존재/hash/cwd를 확인했다(`ui-kit-production-launch/contract-inputs.json`). 저장소 제품 변경 없이 조각 12종·변형 33장과 네 창/HUD 미리보기를 만든다. 새 이미지 생성 상한은 네 번이다.
+- 신규 `gpt-6.1-sol` max를 리드 아래 `vertical split`으로 기동했다. 화면 `GPT-6.1-Sol max`, Codex 0.162.1, backend unknown. Task `task_0baaa5d2e39e`, Dispatch `ctx_1a7191ecafab`, 계약 접수 시각 2026-10-13T13:48:06Z다.
+- 최초 receipt는 `input_accepted`/`turn_start_unobserved`였다. JSON draft 20,851자는 계약 16,063자 + 관측 머리말 4,787자 대비 +1자로 R-5 조건을 충족했다. 새 pane·runtime·incarnation을 대조한 뒤 텍스트 없는 Enter 한 번으로 복구했다. 이후 draft 소멸·Working 화면과 worker-show의 `live`/`activity=working`을 확인했다. 저장된 lifecycle stage `start_unknown`은 수동 변경하지 않았다.
+- 제출 원문은 자동 AGENTS 주입과 구분한 실제 user response(13:49:56.028Z)로 대조했다. 전송 중 관련 규칙 절 경계에 빈 줄 여섯 개가 추가되어 raw 전문 비교는 불일치지만, 비어 있지 않은 모든 줄의 문자·공백·순서는 일치했다. `submitted-contract-comparison.json`, `contract-line-comparison.json`, `contract-transport-diff.txt`를 보존하고 메인에 이 차이를 보고한다. 제출 재전송·중복 작업자·임의 정산은 하지 않았다.
+- 자체 제작 결과·독립 판정·Unity 적용은 아직 없다. 다음은 Sol 보고 실사와 신규 독립 검토, 사용자 본 제작 그림 확인이다. Core·Content에 Art의 Unity/WSL/7777/Docker 점유 없음과 향후 실행 전 재조율을 알렸다(`core-resource-reply.json`, `content-resource-reply.json`).
 
 ## 다음 계획 후보
 

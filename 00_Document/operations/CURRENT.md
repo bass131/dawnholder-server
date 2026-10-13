@@ -10,7 +10,7 @@
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 
-- Art: [10-28 시연 아트 — UI 창·성장 효과·발판 교체](../../01_Phases/goals/2026-10-13-demo-video-art/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active` · `docs/demo-video-art-trial-20261013`
+- Art: [10-28 시연 아트 — UI 창·성장 효과·발판 교체](../../01_Phases/goals/2026-10-13-demo-video-art/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active` · `feat/demo-video-art-ui-20261013`
 
 - Rules: [리드 Astra 전환과 우편함 수신·Codex 병합 금지](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/astra-lead-mailbox-20261013`
 
