@@ -671,7 +671,9 @@
 - **판정자 모델: 신규 `gpt-6-astra` xhigh.** v2.2의 「신규 Opus」는 핫픽스 결정 3 전 문구다. 메인이 운영 판단으로 확인했다(`msg_e4a309fc765b`).
 - **정산:** 두 검증자 모두 release(retained) → tui-idle → 마지막 화면 → close로 마쳤다(각 폴더 `lead-close.json`).
 - **자원 상태:** 바뀌지 않았다. 컨테이너와 볼륨은 없고 이미지는 보존한다. 새 비밀 루트 `container-rerun`은 아직 없다. 이번 구간은 Docker·WSL·SQL을 쓰지 않았다.
+- **세션 마감(2026-10-13T07:20:12Z, `date -u`, 원시 N2/`time-goal-record-15.txt`):** 메인 마감 지시 `msg_c1d952c79fd7`이다. 사용자가 5분 넘게 응답이 없으면 리드 세션을 정리하라는 사용자 지시를 메인이 전했다(메인 전달이며 이 pane의 직접 입력으로 격상하지 않는다). **열린 Task·Dispatch는 없다.** core-active의 작업자 pane은 0이다(N2/`terminal-list-closeout.json`). 실행 계획 파일 채우기와 컨테이너 실행은 오늘 시작하지 않는다.
 - **다음 할 일:**
+  0. 최신 main(`da717247a1dea0d50242777113245c6055f0f4a8`)을 이 branch에 받는다. 메인 점검으로 바뀐 규칙 파일이 있고 모의 병합 충돌은 없다. 받은 뒤 바뀐 규칙 파일을 읽는다.
   1. 사용자 G2를 기다린다. 승인이 오면 실행 계획 파일(검토본과 ExecutionApproved·G2만 다름), `$planHash`, 입력 hash 목록(카드 파일과 `99_Tools/database` 추적 파일)을 채운다.
   2. 다른 리드(Content·World·Rules·Art)에 알리고 여유 메모리 4GB 이상을 원시로 남긴다. 그 뒤 신규 `gpt-6.1-sol` max 실행 작업자를 연다. World의 Unity batch 창은 09:00Z까지다(`msg_3e153f50ea8a`, 회신 `msg_3016769ea232`).
      - 실행 계약에 넣을 것: CODE_CONVENTION 원문 묶음, 시작 확인 Git 명령을 담은 허용 목록, 정지 영수증·ExitCode 보고, `failure-logs-*`는 이름만 보고, 지원 셸 dot-source 첫 줄.
