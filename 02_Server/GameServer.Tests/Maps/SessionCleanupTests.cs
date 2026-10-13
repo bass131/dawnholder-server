@@ -13,6 +13,14 @@ namespace Dawnholder.Server.GameServer.Tests.Maps;
 // Drives the real world tick without starting a scheduler. No cleanup implementation is mocked.
 internal static class LifecycleTestWorld
 {
+    // Prepare only the new account phase so the caller's map-tick timing remains under test.
+    internal static void LogIn(GameWorld world, GameSession session)
+    {
+        session.OnRecvPacket(new C_Login { accountName = $"test_{Guid.NewGuid():N}"[..16] }.Write());
+        world.Accounts.Tick();
+        Assert.True(session.IsLoggedIn, "fixture: account login must precede character selection");
+    }
+
     internal static void Tick(GameWorld world, long tick)
         => typeof(GameWorld).GetMethod("OnTick", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(world, new object[] { tick });
@@ -46,6 +54,7 @@ public sealed class SessionCleanupTests : IDisposable
         CapturedSession session = new(_world);
         session.OnConnected(Endpoint);
         session.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+        LifecycleTestWorld.LogIn(_world, session);
         session.OnRecvPacket(new C_CharacterSelect { characterClass = 0 }.Write());
         return session;
     }
@@ -244,10 +253,10 @@ public sealed class SessionCleanupTests : IDisposable
         Tick(1);
         CapturedSession session = Join();
         Tick(2);
-        Assert.Equal(new[] { PacketID.S_HandshakeResult, PacketID.S_EnterMap, PacketID.S_PlayerHp, PacketID.S_PlayerJoin },
-            session.Packets.Take(4).Select(Id));
+        Assert.Equal(new[] { PacketID.S_HandshakeResult, PacketID.S_LoginResult, PacketID.S_EnterMap, PacketID.S_PlayerHp, PacketID.S_PlayerJoin },
+            session.Packets.Take(5).Select(Id));
         S_PlayerJoin entryRoster = new();
-        entryRoster.Read(new ArraySegment<byte>(session.Packets[3]));
+        entryRoster.Read(new ArraySegment<byte>(session.Packets[4]));
         Assert.Equal(observer.EntityId, entryRoster.entityId);
         PlayerEntity original = Assert.Single(Players, p => ReferenceEquals(p.Owner, session));
         int originalId = original.EntityId;

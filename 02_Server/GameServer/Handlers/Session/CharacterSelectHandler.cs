@@ -18,6 +18,12 @@ internal sealed class CharacterSelectHandler : IPacketHandler
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
+        if (!session.IsLoggedIn)
+        {
+            Console.WriteLine("[Trust] CharacterSelect before login — dropped");
+            return;
+        }
+
         // 중복 선택 차단 (헌법 #3) — 기존 stats 교체 X, silent drop.
         if (session.HasSelectedClass)
         {

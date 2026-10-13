@@ -10,7 +10,7 @@ namespace Dawnholder.Server.GameServer.Tests.Items;
 // Independent protocol checks for the economy packets: existing IDs keep the order of PDL.xml at
 // origin/main 11aa4b8 (before this goal), IDs 35..38 follow with the fixed lengths and
 // LittleEndian fields of the PR1 acceptance table, the dungeon goal's 39·40 come next (its P1), and
-// version 18 is enforced by the existing equality handshake. Expected bytes are literals, never
+// login appends 41·42. Version 19 is enforced by the existing equality handshake. Expected bytes are literals, never
 // produced by the generator under test.
 [Collection("GameWorldRegistryTests")]
 public sealed class InventoryProtocolContractTests : IDisposable
@@ -38,7 +38,7 @@ public sealed class InventoryProtocolContractTests : IDisposable
         // Looked up by name: a direct PacketID member would not compile before the generator runs.
         string[] dungeon = { "S_DungeonClearResult", "C_DungeonClearConfirm" };
 
-        Assert.Equal(40, actual.Count);
+        Assert.Equal(42, actual.Count);
         for (int i = 0; i < BasePacketOrder.Length; i++)
         {
             Assert.Equal(i + 1, actual[BasePacketOrder[i]]);
@@ -93,21 +93,21 @@ public sealed class InventoryProtocolContractTests : IDisposable
     }
 
     [Fact]
-    public void ProtocolVersion_IsEighteen_AndTheHandshakeRejectsSeventeen()
+    public void ProtocolVersion_IsNineteen_AndTheHandshakeRejectsEighteen()
     {
         ProbeSession previous = new(_world);
         ProbeSession current = new(_world);
         previous.OnConnected(Endpoint);
         current.OnConnected(Endpoint);
 
-        previous.OnRecvPacket(new C_Handshake { clientVersion = 17 }.Write());
-        current.OnRecvPacket(new C_Handshake { clientVersion = 18 }.Write());
+        previous.OnRecvPacket(new C_Handshake { clientVersion = 18 }.Write());
+        current.OnRecvPacket(new C_Handshake { clientVersion = 19 }.Write());
         S_HandshakeResult rejected = ReadSingle<S_HandshakeResult>(previous);
         S_HandshakeResult accepted = ReadSingle<S_HandshakeResult>(current);
 
-        Assert.Equal(18, ProtocolVersion.Current);
+        Assert.Equal(19, ProtocolVersion.Current);
         Assert.False(rejected.ok);
-        Assert.Equal(18, rejected.serverVersion);
+        Assert.Equal(19, rejected.serverVersion);
         Assert.True(previous.IsClosing);
         Assert.True(accepted.ok);
         Assert.False(current.IsClosing);

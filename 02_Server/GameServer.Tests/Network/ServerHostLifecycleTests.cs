@@ -68,8 +68,15 @@ public sealed class ServerHostLifecycleTests
         if (enterWorld)
         {
             await stream.WriteAsync(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+            Assert.Equal(PacketID.S_HandshakeResult, (PacketID)BitConverter.ToUInt16(await ReadFrame(stream), 2));
+            await stream.WriteAsync(new C_Login { accountName = "host_account" }.Write());
+            byte[] loginBytes = await ReadFrame(stream);
+            Assert.Equal(PacketID.S_LoginResult, (PacketID)BitConverter.ToUInt16(loginBytes, 2));
+            S_LoginResult login = new();
+            login.Read(new(loginBytes));
+            Assert.Equal((byte)LoginResult.Accepted, login.result);
             await stream.WriteAsync(new C_CharacterSelect { characterClass = 0 }.Write());
-            PacketID[] expected = { PacketID.S_HandshakeResult, PacketID.S_EnterMap, PacketID.S_PlayerHp };
+            PacketID[] expected = { PacketID.S_EnterMap, PacketID.S_PlayerHp };
             foreach (PacketID id in expected)
                 Assert.Equal(id, (PacketID)BitConverter.ToUInt16(await ReadFrame(stream), 2));
         }
