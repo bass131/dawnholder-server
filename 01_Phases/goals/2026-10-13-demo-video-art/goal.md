@@ -79,7 +79,7 @@
 | 강화 성공 | 불꽃·번쩍임 | 없음 | 셰이더·입자로 해결 |
 
 - 기존 시트 규격(측정): 동작 하나에 투명 배경 PNG 한 장(대장장이 대기는 2048x1646), 4x4 격자 16프레임, 칸 512x411, 피벗은 칸 아래 가운데, bilinear 필터, 대장장이는 100단위당 180픽셀. 그림은 외곽선이 진한 픽셀 아트풍을 고해상도로 그린 것이다(리드가 얼굴을 4배 확대해 눈으로 확인, 블록 크기는 미측정). 범위 초안의 「픽셀 아트가 아니다」는 이 확인으로 고친다.
-- 제작 방법은 무료 시범 → (실패하면) Unity AI → Higgsfield 순서로 본다. 셋 다 쓰지 못하면 대화 시트로 대신한다. 비교 글은 시범 PR에서 이 goal 폴더에 따로 둔다.
+- 제작 방법은 무료 시범 → (실패하면) Unity AI → Higgsfield 순서로 본다. 셋 다 쓰지 못하면 대화 시트로 대신한다. 비교 글은 [애니메이션 시트 제작 방법 비교](sheet-method-comparison.md)다.
 - **무료 시범**: 구독에 포함된 GPT 이미지 생성(Codex 내장)으로 Sol 작업자가 「망치질」 4x4 시트를 만든다. 기존 대장장이 대기 시트와 원화를 참고 그림으로 준다. 생성은 세 번이 상한이며, 넘으면 멈추고 보고한다. 시도 횟수, 시도마다 걸린 시간(시계 출력), 프레임 사이 얼굴·옷·체형 변화(사람 판정과 프레임별 색 분포 비교), 격자 정렬 후처리 가능 여부를 잰다. 리드가 움직이는 미리보기(GIF)를 만들어 메인을 거쳐 사용자에게 보이고, 사용자가 쓸지와 다음 경로를 정한다.
 - 지난 발표 그림에서 잰 Codex 이미지 생성의 성질: 실제 이미지 모델 이름을 밝히지 않는다. 요청 크기를 지키지 않는다(256x256 → 1254x1254, 1600x500 → 2243x701). 투명 배경은 요청대로 나온다(외곽 alpha 0). 그래서 4x4 격자는 생성 뒤 자르고 정렬하는 후처리가 필요하다.
 
@@ -127,13 +127,13 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | goal·CURRENT 첫 커밋 뒤 시트 방법 비교 글을 쓰고, 무료 시범 Sol 계약을 연다 |
-| 열린 Task·Dispatch | 없다 |
+| 다음 첫 일 | 무료 시범 Sol의 `worker_done`을 받아 원본 경로·SHA256을 직접 대조하고, 격자 후처리·프레임별 색 분포·미리보기를 만든다 |
+| 열린 Task·Dispatch | 무료 시범 Task `task_e97b1225c67a` / Dispatch `ctx_1f1c9bb71423`(Sol pane `term_edb29807-2049-4a1e-b98d-94e39c7d068a`) |
 | 작업 공간 / branch | `art-active` / `docs/demo-video-art-trial-20261013`(base `a570dbf3`) |
 | PR | 없다 |
 | 리드 세션 / Run | `term_63ecd821-d71c-4eab-8ab0-b5fc6da987d1` / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`) |
 | 로컬에만 둔 변경 | 없다 |
-| 작업자·실행 자원 | Art 작업자 pane 0. Unity는 아직 이 작업 사본에서 연 적이 없다 |
+| 작업자·실행 자원 | Art 작업자 pane 1(무료 시범 Sol). Unity는 아직 이 작업 사본에서 연 적이 없다 |
 | 남은 결정·준비 | 무료 시범 결과를 본 뒤 사용 여부와 다음 경로(사용자). 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정 |
 
 **남은 순서**: 비교 글 → 무료 시범 → 시범 PR → UI 창 PR → 효과 PR → 10-21 판단 → 발판·지형 PR → 마지막 손질 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
@@ -153,7 +153,12 @@
 
 ## 실제 결과와 미실행
 
-아직 없다.
+### 무료 시범 — 진행 중, 2026-10-13
+
+- 계약: 근거 폴더 `contracts/sheet-trial-sol-v1.md`(1판, 04:16Z). 배정 `gpt-6.1-sol` max, 배정 신호 해당 없음(측정·조사).
+- 기동: 리드 pane vertical split, 최초 실행 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 화면 표시 「GPT-6.1-Sol max」, backend `unknown`. 첫 화면에 선택창 없음.
+- 연결: `worker-start`가 `turn_start_unobserved`를 돌려줬다. 입력창 draft가 「[Pasted Content 11719 chars]」로 계약 6,932자와 관측 머리말 약 4,787자의 합과 맞아, [draft 복구 정본](../../../00_Document/operations/ORCA.md#official-contract-draft)대로 Enter만 한 번 보냈다(04:18:50Z). 뒤이어 draft가 사라지고 Working 화면을 관측했다.
+- 원시: 근거 폴더 `sheet-trial/`의 `launch-*`, `worker-start-receipt.json`, `draft-read-1.json`·`draft-read-2.json`, `draft-enter-*`.
 
 ## 다음 계획 후보
 
