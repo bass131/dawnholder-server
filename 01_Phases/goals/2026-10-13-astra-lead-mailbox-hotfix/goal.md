@@ -7,7 +7,7 @@
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. 현재 PR2 branch `feat/codex-merge-guard-20261013`, 생성 당시 최신 main/base `44bd4319f78078f6fcc3f4941590f6371d58e2b7`. PR1 branch는 `docs/astra-lead-mailbox-20261013`, 당시 base는 `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`였다.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: PR234는 메인이 사용자 승인 뒤 병합했다(`msg_56377f9a74a8`, merge `44bd4319…`). A 후속 관측은 실제 압축 미관측으로 부분 종료했다. PR2 첫 수정 `83b6f3d4`의 신규 Opus 재검증도 **NOT PASS**다. #1~#9 수정은 확인됐지만 새 차단 결함 #10~#18이 확정됐고, 검증자는 정산·종료했다. 메인의 호스트 재불일치 조건에 따라 다음 제품 수정은 판단 전 보류한다. 실제 Codex 진입과 Linux CI는 미실행이다. Art 기본 파트 추가 결정은 즉시 적용하되 별도 문서 PR은 PR2 병합 뒤이며 재계획 초안/담당 문구 두 판을 메인에 보낸다. 기존 후속 기록·Archify/Unity 정합도 유지한다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
+- 현재 차례: PR234는 메인이 사용자 승인 뒤 병합했다(`msg_56377f9a74a8`, merge `44bd4319…`). A 후속 관측은 실제 압축 미관측으로 부분 종료했다. PR2 첫 재검증 **NOT PASS #10~#18** 뒤 사용자 결정7로 「지원 밖 보호 명령 거부」 설계 전환을 승인받았다. 새 Astra 구현→새 Opus 강 검증을 준비하며 실제 Codex 진입/CI는 미실행이다. Art 문서 PR 재계획 다섯 요소도 메인이 대조했고 담당 문구 판2가 사용자 확정됐다. PR2 병합 뒤 별도 문서 PR이며 기존 후속 기록·Archify/Unity 정합도 유지한다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
@@ -17,14 +17,14 @@
 - [x] 문서 재실사와 부분 관측 정리
 - [x] 문서 PR 병합
 - [>] 가드 신뢰 경계 — 소스 조사 완료, 실제 UI/신규 세션 유지 미실행
-- [>] 가드 구현과 검증 — 첫 재검증 NOT PASS 새9건, 후속 수정은 메인 판단 대기
+- [>] 가드 구현과 검증 — 사용자 승인 설계 전환, 새 구현 계약 준비
 - [ ] 가드 PR 병합
 - [ ] 종료 점검과 기록
 - [ ] 종료 확인과 교체
 
 ## 범위
 
-Art 기본 파트 문서 PR 추가 결정은 아래 사용자 결정6에 기록했다. 다섯 범위 요소의 재계획 초안은 `E/art-formal-part-replan-v1.md`이며 메인 대조·담당 문구 두 판의 사용자 판단 전이다. 현재 PR2 뒤 최신 main의 별도 문서 PR이고 아래 기존 PR2 기준은 유지한다.
+Art 기본 파트 문서 PR 추가 결정은 사용자 결정6, 담당 문구 판2와 PR2 설계 전환은 결정7이다. Art 재계획 v1의 다섯 범위 요소는 메인이 승인 초안과 대조했고 확정본은 `E/art-formal-part-replan-v2.md`다. Art 문서 PR은 현재 PR2 뒤 최신 main의 별도 PR이다.
 
 ### 만들 것
 
@@ -33,10 +33,12 @@ Art 기본 파트 문서 PR 추가 결정은 아래 사용자 결정6에 기록�
 3. Codex에 메일을 보낸 쪽은 화면을 한 번 확인하고, 자동 알림으로 턴이 시작되지 않은 빈 prompt에만 자기 태그와 Orca 메시지 확인 안내를 보낸다. busy·모달·작성 중 prompt와 accepted 뒤 침묵의 재전송 금지, 공식 계약 receipt/draft 절차는 유지한다.
 4. 기존 MergeGate·SessionGuard가 Claude Code 전용임을 구분한다. PR1에서는 Codex가 두 hook 밖이라는 사실을 유지하고, PR2 검증 뒤 새 가드의 지원 범위만 기술 보호로 바꾼다. Codex의 출력/쓰기 가드 이식은 BACKLOG 후보 한 행에만 둔다.
 5. 10-31 검증자 시범 평가와 BACKLOG에 전환 뒤 리드 토큰을 10-05 기준선과 rollout token_count로 비교하고 비용이 다시 커지면 사용자에게 올리는 안건을 넣는다. 조건이 다른 수치를 같은 추세로 단정하거나 절감률·새 측정 도구를 만들지 않는다.
-6. 프로젝트 `.codex/hooks.json`의 PreToolUse 등록과 Codex용 명령 판정·시험을 만든다. `gh pr merge`(auto 포함), gh api의 PR merge/auto-merge 변경 호출, 원격 main/기본 branch를 갱신하는 git push를 막는다. 옵션·경로·refspec·기본 push 목적지·all/mirror·삭제 등 같은 동작을 대조한다. 로컬 git merge·작업 branch push·gh pr create/view/checks·일반 조회는 보존하고, 문구에 단어가 있다는 이유의 오탐을 만들지 않는다. 해석 가능한 명시 명령·셸 compound/wrapper가 대상이며 동적 실행·별칭·외부 스크립트·재사용 셸 stdin·다른 클라이언트 우회까지 완전 차단하는 권한 시스템은 아니다. 최소 요구의 누락을 한계로 면제하지 않는다. 기존 Claude hook/settings/승인 저장소는 건드리지 않는다.
+6. 프로젝트 `.codex/hooks.json`의 PreToolUse 등록과 Codex용 명령 판정·시험을 만든다. `gh pr merge`(auto 포함), gh api의 PR merge/auto-merge 변경 호출, 원격 main/기본 branch를 갱신하는 git push의 보호 집합은 유지한다. 사용자 결정7에 따라 한 명령·&& 연결·리터럴 cd 뒤 push만 정밀 판정하고 지원 밖 형태에 보호 명령 낱말이 있으면 이유와 단순 재작성 예를 안내하며 거부한다. 보호 낱말이 없는 명령은 해석 실패여도 통과한다. 지원 형태 안에서는 로컬 merge·작업 branch push·조회·인용/본문 데이터를 보존하고 refspec·원격/default·pushurl·git -C의 판정을 유지한다. 정확한 지원 목록·보호 낱말 표는 새 구현 계약에 고정한다. 동적 실행·별칭·외부 스크립트·재사용 셸 stdin·다른 클라이언트까지 완전 차단하는 권한 시스템은 아니며 기존 Claude hook/settings/승인 저장소는 건드리지 않는다.
 7. 최신 메인 계획 `msg_58a7c1654b0c`에 따라 리드 신규 기동은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 재개는 같은 대화 `codex resume <session-id>`에 같은 모델·effort를 사용한다. 문맥 창·압축 기준 override는 명령에서 빼고 두 키는 사용자 결정으로 조정하는 수단으로만 설명한다. 조정 검토 근거는 압축 뒤 맥락 손실로 일을 다시 한 사례다. 10-11의 25만/50만 결정은 당시 Claude 세션으로 좁힌다. 최초 실사 세션의 1000000/250000 요청과 usable828400 관측은 역사 근거로만 남긴다.
 8. 설치 버전 공식 소스의 기본 압축 한도와 실제 발동 조건을 구분하고, 신규 Astra 관측자 한 명이 저장 harness로 작은 A/B 실험을 한다. A는 창만64000으로 줄이고 압축 기준은 기본값, B는 기본 창에 압축 기준40000이다. 실제 읽기 등으로 채운 뒤 자동 압축 직전·직후 token_count/이벤트를 기록한다. 두 실험의 합계 입력은 대략30만 이하로 제한하고 강제 압축·큰 창 채우기·전역 변경은 하지 않는다. 소스와 큰 차이가 나면 메인에 즉시 보고한다. PR1 수정 차례 안에 끝나면 정본/PR에 한 줄 결과, 늦으면 진행 중으로 적고 PR2/종료 기록에 반영한다.
    메인 후속 `msg_d681c449a2ce`에 따라 B의 다음 턴 실제 발동·한 턴 내 일시 기준 초과를 PR1 정본 한 줄에 반영한다. A 미관측은 보존하고 PR1 생성 뒤 병합 승인 대기 중 신규 Astra 한 명으로 더 작은 창24000/소스 기본 기준21600·입력8만 이하의 A만 재시도한다. 결과는 PR2 또는 종료 기록에 넣으며 PR1을 막지 않는다.
+
+9. Art 정식 파트 문서 PR: Core·Content·Rules·CodeMap·Management에 Art를 더한 기본 여섯, R-1의 art-active 경로와 `[Art 리드 Astra]`·`[Art Sol]`·`[Art 검증자]` 목록, 새 메인 진입과 R-8 재진입을 정합한다. 담당 문구는 「Art는 03_Client/Assets/Art/ 아래 그림·UI 조각·셰이더·효과와 그 변환 도구, 그리고 그림을 입히는 표시 전용 코드(창의 그림 적용 부분, 표시 전용 효과 컴포넌트)를 맡는다. 게임 상태·화면 흐름·효과를 부르는 위치는 Content가 맡는다.」로 확정한다. World는 목표 한정 추가 파트다.
 
 ### 건드릴 곳
 
@@ -57,6 +59,7 @@ Art 기본 파트 문서 PR 추가 결정은 아래 사용자 결정6에 기록�
 | `99_Tools/CodexGuard/codex-hook.mjs`, `command-policy.mjs` | PR2 구현 Astra | 신규 어댑터/판정. 추가 파일은 같은 책임 내 계약에 고정 |
 | `99_Tools/CodexGuard.Tests/*.test.mjs` | 선행 시험 Opus·독립 Opus 순차 | 요구 시험/검증. 실제 세션 원시는 E |
 | `99_Tools/README.md`, `.github/workflows/code-rules.yml` | PR2 구현 Astra | 신규 진입/지원 경계와 회귀 단계 하나. 기존 정책 불변 |
+| `AGENTS.md`, `ORCA.md` R-1, `RESUME.md` 진입, `CLAUDE.md` 메인 세션 진입 | Art PR 신규 외부 문서 작업자, CLAUDE는 메인만 순차 | 기본 여섯·Art 담당/경로/태그·진입만. 전체 경로는 위 운영 파일과 같다 |
 
 CodexGuard는 MergeGate·SessionGuard의 책임별 폴더 관례를 따른다. 기존 MergeGate는 승인 소비와 메인 허용 경로를 소유하므로 그대로 호출하거나 리팩토링하지 않는다. helper 재사용은 계약·오탐을 비교해 이유를 남기되 기존 공유 모듈 쓰기를 열지 않는다. commit/push는 Rules 리드 한 명만 한다.
 
@@ -66,6 +69,7 @@ CodexGuard는 MergeGate·SessionGuard의 책임별 폴더 관례를 따른다. �
 - 기존 `.claude/settings.json`·MergeGate·SessionGuard 코드/승인 상태 변경, Codex의 메모/출력/파일 쓰기 가드 구현.
 - 서버·Unity·DB·프로토콜·공유 DLL·대시보드·메인 개인 도구 쓰기, 다른 파트 goal과 과거 기록·Orca.Tests 역사 태그 변경.
 - heartbeat 간격 변경·우편함 필터·지속 운영 실행 helper·새 비용 측정기. 할당 근거 폴더의 저장 검증/관측 harness는 필요 범위에 포함한다. 기존 구현자/검증자·Gardener/Advisor/선행 시험 배정 변경. 판 올림·다음 goal 자동 착수.
+- Art 문서 PR에서 World 편입, Art 기존 goal·쓰기 범위·모델·Git 권한 변경, 다른 파트 태그 전환, 자산/제품 코드 구현은 하지 않는다. 기존 후속 기록·Archify/Unity 안건을 Art PR에 임의로 합치지 않는다.
 
 orca-work·implementer-routing은 AGENTS/R-1을 참조하므로 그대로 둔다. helper-session의 Claude 메인 수신 안내, R-5 작업자 명령/Claude TEMP, CODE_CONVENTION·task-context의 과거 역할 표현도 이번 리드 전환을 이유로 일괄 정리하지 않는다.
 
@@ -74,10 +78,11 @@ orca-work·implementer-routing은 AGENTS/R-1을 참조하므로 그대로 둔다
 1. 허용 diff 안에서 현재 리드 모델·태그·기동·같은 대화 재개·추가 파트 규칙이 맞고 역사 기록·기존 Claude 경계가 보존된다.
 2. 신규 문서 실사자가 진입·worker_done·heartbeat-only·무알림 시나리오에서 무대기 수신/전체 처리/ack/조건부 안내를 실제 문서로 찾아 대조한다. 문서가 미래 자동 준수를 보장한다고 쓰지 않는다.
 3. 메인의 CLAUDE 쓰기 종료·diff가 최종 실사에 포함되고, 리드 기본 문맥 명령·사용자 조정 경계와 최초 실사 관측의 한계가 남는다. 작은 압축 관측은 저장 harness/원시와 소스의 한도·실제 발동을 구분해 보고하며, 늦으면 PR1에 미완료 상태를 숨기지 않는다.
-4. 가드 최소 차단/허용 표본을 자동 회귀와 실제 신규 Codex 세션 모두에서 확인한다. 가짜 gh/git 또는 안전한 로컬 fixture로 deny 전 실행 표식 없음·허용 표식/출력을 남기고 실제 병합/push는 없다. stdin 직접 시험만으로 실제 진입 PASS를 내지 않는다. 신뢰·오류/timeout·잘못된 JSON·재사용 셸·동적 명령 한계를 공개하며 정상 명령 오탐은 통과하지 않는다.
+4. 가드 최소 차단/허용 표본을 자동 회귀와 실제 신규 Codex 세션 모두에서 확인한다. 가짜 gh/git 또는 안전한 로컬 fixture로 deny 전 실행 표식 없음·허용 표식/출력을 남기고 실제 병합/push는 없다. stdin 직접 시험만으로 실제 진입 PASS를 내지 않는다. 신뢰·오류/timeout·잘못된 JSON·재사용 셸·동적 명령 한계를 공개한다. **지원 형태 안의 정상 명령 오탐은 0이어야 한다. 지원 밖 보호 명령은 이유·재작성 안내가 있는 의도된 거부로 세고 오탐으로 세지 않는다. 보호 낱말 없는 명령은 해석 실패여도 허용한다.** 기대값 변경은 사용자 결정7과 표본별로 연결하며 일괄 완화·삭제하지 않는다.
 5. 신규 가드 CI 회귀와 실행 원시가 있고 기존 Claude 파일/승인 경로 보존을 diff·관련 회귀로 확인한다. 실제 메인 병합을 시험하지 않는다.
 6. 리드와 실사자가 후보 도착 검사(`node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md`)를 각각 실행한다. 최초 출처·7필드·안정 ID·미완료 후보를 보존한다.
 7. PR에 변경 정본 목록·정착 확인 명령·판정 원문·미실행/위험을 넣고 최종 head 재실사·메인 R-2·PR별 사용자 승인·전체 종료 Gardener/기록·R-8을 거친다.
+8. Art 문서 PR의 네 운영 파일에서 기본 여섯·경로/태그·판2 담당 문구·새 메인/목표 종료 진입이 일치한다. 신규 독립 문서 실사자가 R-1/R-8과 실제 최종 diff·메인 CLAUDE 쓰기 종료를 대조한다. World 추가 파트·기존 권한·역사/anchor는 보존하고 사용자 승인 뒤 메인만 병합한다.
 
 ## PR 경계와 검증
 
@@ -85,6 +90,7 @@ orca-work·implementer-routing은 AGENTS/R-1을 참조하므로 그대로 둔다
 |---|---|---|
 | 1 - 리드 모델·수신·문맥 정본 | 항목 1~5·7의 문서/관리 기록, 항목8은 같은 차례 완료 시 결과 한 줄. `docs/astra-lead-mailbox-20261013` | 문서 실사. 신규 Sol max 문서·저장 자체검사 수정과 신규 Astra xhigh 관측 병행 → 신규 Astra xhigh 재실사. 제품/지속 도구 코드는 없으며 TDD 비해당. 임시 근거 harness는 실행 파일로 보존 |
 | 2 - Codex 병합 금지 가드 | 항목 6 코드·등록·시험·CI/설명. PR1 병합 뒤 최신 main에서 `feat/codex-merge-guard-20261013` | 강(보안 입력/실행 도구). 신규 Opus 선행 요구 시험/실패 → 신규 Astra xhigh 구현(신호 1·3) → 신규 Opus 독립 시험/실제 진입 |
+| 추가 - Art 정식 파트 문서 | 항목9·완료조건8. PR2 병합 뒤 최신 main의 별도 branch | 신규 외부 문서 작성→쓰기 종료 뒤 메인 CLAUDE만→신규 독립 문서 실사. Rules commit/push/PR, 사용자 승인 후 메인 병합. 문서만이므로 TDD 비해당 |
 | 종료 기록 | 전체 결과·Gardener/후보·종료 점검 하나 | 신규 Opus Gardener와 바뀐 기록 독립 실사 |
 
 R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 실측·실사 뒤와 PR2 신뢰/설계 경계 확인 뒤다. PR1 승인 대기 중 PR2 선행 시험 계약을 준비할 수 있지만 PR2 branch는 PR1 병합 뒤 만든다. 작업자·검증자는 한 작업 후 정산/종료하고 수정·재검증은 새 세션이다.
@@ -107,9 +113,12 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
    - 결정: 「대시보드 결정 응답: 1) Art 정식 파트 편입 - 규칙 문서에 지금 반영할지, 다음 Rules 목표로 미룰지 → A 이번 Rules 목표에 문서 PR 추가」.
    Art는 지금부터 기본 여섯 번째 파트이며 목표 종료 뒤 R-8로 새 목표를 열고 새 메인 진입에도 포함한다. World는 목표 한정 추가 파트다. 현재 PR2 가드 완료·병합 뒤 최신 main에서 별도 문서 PR을 만든다. 담당 문구의 추가 후보는 아래 메인 보충과 재계획 초안에 두며 사용자 확정 전이다. Rules pane의 직접 사용자 입력으로 격상하지 않는다.
 
+7. 메인 `msg_5c404e04e508`(2026-10-13T18:11:07Z)가 자기 pane Enter 제출로 확인해 전달한 사용자 원문: 「대시보드 결정 응답: 1) Codex 병합 금지 가드(PR2) - 해석 못 하는 보호 명령은 거부로 바꿀지, 지금 방식으로 9건을 더 고칠지 → A 모르면 거부로 설계 전환 · 2) Art 정식 파트 문서 - Art가 맡는 일 문장을 판 1과 판 2 중 무엇으로 적을지 → B 판 2(표시 전용 코드 포함)」. 사용자에게 보인 효과는 「가드는 단순한 형태(한 명령, && 연결, 경로가 글자 그대로인 cd 뒤 push)만 정밀하게 판정한다. 그 밖의 형태에 병합·push 낱말이 있으면 「단순하게 다시 써라」 안내와 함께 거부한다. 병합·push 낱말이 없는 명령은 해석에 실패해도 통과다. 완료조건 4의 「정상 명령 오탐」은 지원 형태 안에서만 센다.」다. 보호 집합은 유지하고 #10~#18 기대값 변화는 표본별 결정 출처를 적는다. #12는 의도된 거부, 보호 낱말 없는 #18은 허용으로 바뀐다. 다른 완료조건은 유지한다. Art 판2는 범위9에 원문을 두었다. Rules 직접 사용자 입력으로 격상하지 않는다.
+
 ### 메인 적용 판단과 승인
 
 - Art 추가 문서 PR 재계획은 `msg_13ca12fccdc4` 승인 초안과 대조한다. 메인 보충 `msg_dec1c5141657`(17:52:10Z)은 Art 담당 문구를 승인 초안과 수정 후보 두 판으로 제시하도록 했다. 수정 후보는 표시 전용 코드까지 명시하는 차이가 있어 메인 대조 뒤 사용자가 판단한다. Art 기본 파트 결정은 적용하되 문구 선택을 승인된 것으로 소급하지 않는다.
+- 이후 `msg_5c404e04e508`에서 메인이 Art v1 다섯 범위 요소와 SHA256을 대조해 승인 초안과 일치한다고 보고했고 사용자가 판2를 선택했다. v1은 당시 미확정 기록으로 보존하고 v2/현재 범위는 확정 상태다. PR2는 새 구현→새 강 독립 검증(실제 Codex 진입 포함)→CI→PR별 사용자 병합 승인 순서다. 같은 새 설계에서 다시 불일치하면 계속하기 전에 멈추고 원인 한 줄을 메인에 알리는 체크포인트 조건을 유지한다.
 
 - 진입 메시지: 리드급은 기본 다섯·승인 추가 파트 모두이며 사용자 모델 전환 지시가 AGENTS 변경 승인을 겸한다고 해석했다. 25만 압축·재작업 1회 뒤 50만 복귀를 Codex 세션 옵션으로 맞추는 것은 메인 판단이다.
 - `msg_0a7edf480a02`(09:59:51Z): READY 뒤 종료는 진입 한 번만이었다. 남은 일이 있으면 계속하고 답을 기다릴 때만 턴을 끝낸다.
