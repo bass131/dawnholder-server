@@ -8,14 +8,13 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_940c23cb-4746-4ae6-bcc7-d88ed59ec926`(2026-10-13 재진입 `msg_c1b1e75ea27e` 뒤 `--resume`, 이전 `term_328d1a7f…`·`term_fddebc03…`), Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**(2026-10-13): 7줄·18줄 묶음 약 등급 재검증이 끝났다. WSL 전체 1060/1055/0/5, 봇 컴파일, 서식은 통과했고 판정은 **차단 RF-01**(낮음, 리드 계약 귀속)이다. `CharacterSelectHandlerTests.cs:86`의 「EnterGameWorld 람다 처리 완료 상태」가 실제 helper와 다르다(아래 「RO-01 묶음 재검증」). 열린 작업자·검증자는 없다.
-- **다음 행동**: RF-01 수정은 이 goal의 시험 설명 수정 4회째라 「3회를 넘으면 메인 체크포인트」에 걸린다. 메인에 알린 뒤 기본대로 이 goal 안에서 고친다.
-  - 신규 `gpt-6.1-sol` max가 86행 한 줄을 고정 문구로 바꾼다. 리드는 계약 전에 문장 전체를 실제 호출과 대조한다.
-  - 이어서 새 약 등급 재검증을 연다(신규 `gpt-6-astra` xhigh, WSL 전체·서식 한 번). 계약은 E/`ro01-reverify-contract.md`를 바탕으로 쓴다.
+- **현재 위치**(2026-10-13): RF-01 한 줄 수정이 commit됐다(아래 「RF-01 수정」, commit `59ecd28f`). 메인 판단 `msg_eb45c17c73e9`로 4회째 체크포인트를 넘겼다. 열린 작업자는 없다.
+- **다음 행동**: RF-01 수정의 약 등급 재검증을 연다(신규 `gpt-6-astra` xhigh). 범위는 RF-01 줄과 같은 파일의 설명 주장 대조이고, 실행은 WSL 전체·서식 한 번이다. 계약은 E/`ro01-reverify-contract.md`를 바탕으로 쓴다.
   - 큰 실행 조건은 아래 「실행 자원과 조율」을 따른다.
+  - 시험 설명 수정이 5회째로 넘어가면 멈추고 메인에 알린다(`msg_eb45c17c73e9`).
   - 통과하면 실화면을 메인에 다시 요청한다. 요청서 E/`screen-request.txt`, harness E/`screen-harness/hold_account.py`(아직 실행 안 함). 시작 직전에 Content·Core·Art에 7777·Unity 사용을 묻는다.
-- **다시 열 때 필요한 것**: 이 리드의 Claude 세션 ID `1531e871-7aaa-4331-a1db-d831038f8f4a`, Run `run_a927bbaff1f5`. branch는 이 기록 commit까지 원격에 올렸다. world-active에 사용자 미커밋 파일은 없다. RF-01 체크포인트는 이 기록 commit 뒤 메인에 알린다.
-- **남은 순서**(2026-10-13 기준): RF-01 한 줄 수정 → 약 등급 재검증 → 실화면 확인 → 제품 PR·사용자 병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **다시 열 때 필요한 것**: 이 리드의 Claude 세션 ID `1531e871-7aaa-4331-a1db-d831038f8f4a`, Run `run_a927bbaff1f5`. branch는 이 기록 commit까지 원격에 올렸다. world-active에 사용자 미커밋 파일은 없다. 사용자·메인 결정 대기 항목은 없다.
+- **남은 순서**(2026-10-13 기준): RF-01 약 등급 재검증 → 실화면 확인 → 제품 PR·사용자 병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - **다음 goal 메모**: 사용자 승인 「10-28 시연 계획과 파트 배정 → A」(아래 「적용 중인 사용자 결정」, 메인 전달 `msg_5ed276291957`)로 다음 goal은 「서버 후속 묶음」 대신 **길드 서버**다. 범위 후보는 기본 길드·길드원, 길드 금고와 던전 클리어 적립, 거점 레벨 올리기, 대장간 무기 강화와 공격력 반영, 패킷과 프로토콜 판(41·42·19 다음 번호)이다. R-8 뒤 새 리드가 범위 초안을 쓰고 메인이 사용자 승인을 받는다. 지금 리드는 준비하지 않는다. 앞선 결정(`msg_6974802727a2`, 서버 후속 묶음)은 이 승인으로 바뀌었다.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -25,7 +24,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 설계 절 작성
 - [x] 선행 시험 작성
 - [x] 구현
-- [>] 독립 검증(묶음 재검증 차단 RF-01, 한 줄 수정과 재검증 남음)
+- [>] 독립 검증(RF-01 한 줄 수정 commit, 약 등급 재검증 남음)
 - [ ] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 남음)
 - [ ] 제품 PR 병합
 - [ ] Gardener 점검
@@ -328,6 +327,8 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 옛 진입 설명 두 곳: `GameSession.cs:520`의 월드 진입 시점 축약과 `PingHandlerTests.cs:63~64`의 handshake만 하는 helper 설명(아래 「RO-01 묶음 재검증」의 RO-03, goal 전부터 있던 문구).
 - 봇 `ProbeBase.cs:12` 머리말이 「4종」인데 항목은 다섯이다(같은 판정 RO-04, `c5482d6b^`부터 있던 문구).
 - fixture가 돌려준 직후 상태(`HasSelectedClass=false`, `map.Players` 비어 있음, `S_EnterMap` 없음)를 관찰하는 시험(같은 판정 RF-01의 검사 전환 판단, 주석 문자열 검사만으로는 잘못된 계약도 통과한다).
+- 반복 규칙 후보: 설명 줄을 바꾸는 계약은 그 줄의 주장마다 실제 호출 위치 대조표를 붙인다(리드 설명 대조 누락의 두 번째 발생, 아래 「RO-01 묶음 재검증」). 규칙 정본은 Rules 몫이고, 다음 Rules goal이 10-28 뒤라 메인이 그때 Rules 진입 계약에 넘긴다(`msg_eb45c17c73e9`). 이 goal에서는 「RF-01 수정」 계약에 먼저 적용했다.
+- `CharacterSelectHandlerTests.cs:63~64`가 `HasSelectedClass`를 「internal getter」, 접근 이유를 「같은 어셈블리 내 서브클래스」라고 적는다. 실제 선언은 `protected internal`(`GameSession.cs:91`)이고 시험 어셈블리 접근은 `InternalsVisibleTo`(`GameServer.csproj:20~22`)다(아래 「RF-01 수정」 작업자 관찰, goal 전부터 있던 문구).
 
 ## 현재 결과
 
@@ -592,4 +593,25 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
   - 시험 설명 수정은 O-1·RO-01·RO-01 나머지에 이어 4회째라 「같은 산출물 수정이 3회를 넘으면」 메인 체크포인트를 알린다.
   - 강 승격: 시범 규칙은 「약에서 결함이 새면 해당 유형을 강으로 올리고 메인에게 알린다」이다. 검증자는 검토 대상이라고 알렸다(`msg_eb4d5bf6e7e4`). 리드 해석은 약 재검증이 결함을 잡았으니 샌 결함이 아니라는 것이다. 메인이 판단한다.
   - 반복: 리드가 바꿀 설명을 실제 호출과 끝까지 대조하지 않은 일의 두 번째 발생이다. 첫 발생은 「RO-01 수정」의 훑기 누락이고, 이번은 계약이 문장의 로그인 부분만 대조하고 월드 진입 완료 주장을 대조하지 않은 것이다. 교정 정본상 반복 규칙 후보이고 규칙 정본은 Rules 몫이라 메인에 반영 판단을 올린다.
+- 부수 효과: Unity를 쓰지 않아 되돌린 파일이 없다.
+
+### RF-01 수정 — 2026-10-13
+
+- 메인 판단(`msg_eb45c17c73e9`, 04:05:57Z, 메인 운영 판단이며 사용자 결정이 아니다): 리드 체크포인트 보고 `msg_abb382909792`에 「1 진행, 2 약 유지」로 답했다.
+  - RF-01은 이 goal 안에서 고친다. 시험 설명 수정 4회째 체크포인트는 이 메시지로 처리했다. 5회째가 생기면 다시 멈추고 알린다.
+  - 강 승격은 하지 않는다. 약 재검증이 잡은 결함이라 「약에서 샌 결함」이 아니라는 리드 해석에 동의했다. 재검증 범위는 RF-01 줄과 같은 파일의 설명 주장 대조로 좁힌다.
+  - 반복 규칙 후보는 「다음 계획 후보」에 두고, 이번 수정 계약에 RF-01 줄의 주장별 실제 호출 대조표를 먼저 적용한다.
+- 작업자: 신규 `gpt-6.1-sol` max(최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 첫 화면 「GPT-6.1-Sol max · Full Access · never」, 선택창 없음, backend unknown), 태그 `[World Sol]`. 리드 pane 아래 split `term_3dcfe56c-6f97-4628-9a28-ca0b7ab991df`, Task `task_7d2c067190e9`, Dispatch `ctx_e690ae9d4be9`. worker_done `msg_00ebf698742f`(04:19:15Z, succeeded). release `retained` 뒤 pane을 닫았다. 메인에는 기동을 `msg_4dad1b8fa6bd`로 알렸다.
+- 계약: E/`rf01-fix-contract.md` v1(SHA256 `954805b38bf52c0371092b43a05eba4c5f69e64ffc2ee87fef3b68762acde7eb`), 요약 E/`rf01-fix-spec.md`, 입력 E/`rf01-fix-inputs.txt`, 경로 확인 E/`rf01-fix-preflight.txt`, 리드 메모 E/`rf01-fix-prep-context.md`. 약 등급, 고정 HEAD `7e6e6436`. CODE_CONVENTION 세 절은 같은 조립 스크립트로 붙이고 원문과 비교했다.
+- 86행 주장별 대조(계약에 실음): 「handshake·로그인 우회」는 `BypassHandshake`(57~61행)가 부르는 `CompleteHandshakeAndEnter`·`CompleteLogin`과 맞고, 「tick 1회」는 92행 `_map.Tick(1)`과 맞다. 「EnterGameWorld 람다 처리 완료 상태」는 틀렸다. 입장 job은 `EnterGameWorld`에서만 넣고 `EnterGameWorldIfReady`는 class 선택이 있어야 부른다. 같은 파일에서 이 goal이 바꾼 23·55·101행도 대조했고 맞다.
+- 바꾼 것: `CharacterSelectHandlerTests.cs:86`을 `// handshake·로그인 우회 + tick 1회 → class 선택 전·월드 미진입 상태.`로 바꿨다. 「월드 미진입」은 같은 goal이 고친 `SessionStateMachineTests.cs:19`와 같은 말이다. commit `59ecd28f`.
+- 보고: E/`rf01-fix/report.md`, 사전 메모 E/`rf01-fix/context-before.md`, 원시 E/`rf01-fix/execution-results.json`. 리드 대조 메모 E/`rf01-fix-result-goal-context.md`.
+
+| 실행 | exit | 결과 |
+|---|---|---|
+| `git diff --check`·`--stat`·`--numstat`·`status --porcelain` | 0 | 1 file, 1+ 1- |
+| 빌드·시험·서식 | 미실행 | 계약대로 다음 재검증자가 한 번 맡는다 |
+
+- 리드 R-2 표본: 실제 `git diff -U0`가 86행 한 줄이고 문구가 계약 표와 같다. 파일 SHA256 `414d371825134b1f6f5191d4df665c2829e25838dee059cec342fe76c723a0d8`이 보고와 같다. 파일 수정 시각(04:15:24Z)이 사전 메모 첫 기록(04:14:59Z)보다 뒤다.
+- 작업자 관찰: `:63~64`의 접근 설명이 실제 선언과 다르다. 이 goal이 바꾸지 않은 줄이라 다음 계획 후보에 넣었다.
 - 부수 효과: Unity를 쓰지 않아 되돌린 파일이 없다.
