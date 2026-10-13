@@ -7,14 +7,14 @@
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. PR1 branch `docs/astra-lead-mailbox-20261013`, base `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: 첫 독립 실사는 고정 HEAD `96df2ea2c41428180c398465dda21960fb05a007`에서 NOT PASS(#1·#2)로 끝났고 검증자를 정산·종료했다. 최신 메인 `msg_58a7c1654b0c`에 따라 기본 문맥 명령으로 수정하고 작은 자동 압축 관측을 병행한다. 신규 Sol 문서/저장 harness 수정과 신규 Astra 관측 뒤 신규 Astra 한 명이 재실사한다. PR은 아직 만들지 않았다.
+- 현재 차례: 첫 독립 실사는 고정 HEAD `96df2ea2c41428180c398465dda21960fb05a007`에서 NOT PASS(#1·#2)로 끝났다. 신규 Sol의 기본 문맥 명령/저장 harness 수정은 자체점검을 마쳤고, 신규 Astra 압축 실험은 B 발동 관측·A 미관측으로 부분 종료했다. 두 세션을 정산·종료했으며 README 한 문장 정합과 함께 신규 Astra 한 명의 재실사 입력을 고정한다. PR은 아직 만들지 않았다.
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
 
 - [x] 범위와 기준 승인
 - [x] 리드 규칙 작성
-- [>] 문서 수정과 관측
+- [>] 문서 재실사와 부분 관측 정리
 - [ ] 문서 PR 병합
 - [ ] 가드 신뢰 경계
 - [ ] 가드 구현과 검증
@@ -46,6 +46,7 @@
 | `00_Document/operations/RESUME.md` | 문서 Sol | 로컬 리드 메모 순서·Claude 기술 가드 구분 |
 | `05_Management/RESUME.md` | 문서 Sol | Management 리드 태그 한 곳 |
 | `CLAUDE.md` | 메인 단독 | Architecture 리드 태그·Codex 수신자 조건부 안내. Sol 종료 뒤 쓰기 |
+| `README.md` | 리드, 메인 msg_2aff25585c91의 명시 허용 | 소개의 AI 협업 역할 한 문장. 새 재실사에 포함 |
 | `00_Document/operations/BACKLOG.md` | 리드 | 지정 다섯 행·평가 행과 후속 후보, 독립 지적 #1의 주장 정정 |
 | `E/doc-fix/`, `E/compact-experiment/` | 신규 Sol / 신규 Astra 각각 | 저장 검사 harness·재실행 / 소규모 자동 압축 관측. 이전 근거 불변 |
 | `00_Document/operations/CURRENT.md` Rules 줄·이 goal | 리드 | 기준·진척·결정·결과. 타 파트 보존 |
@@ -109,6 +110,7 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - `msg_ffae972fdb0b`(11:06:44Z)는 창872000/압축250000·실제 압축 발동 미관측을 허용하고 리드 ack 주장 오류 제거/새 실사를 승인했다. **문맥·압축 부분은 뒤의 msg_58a7c1654b0c가 대체한다.** 오류 제거 승인과 이전 판정 보존은 유지한다.
 - 최신 `msg_58a7c1654b0c`(E/check-after-context-decision.json)는 기본 문맥/압축 설정 사용, 두 키의 사용자 조정 경계, Claude 역사 결정 구분, 신규 Astra 한 명의 작은 A/B 실험·두 실험 합계 입력 대략30만 이하·저장 harness/원시·큰 차이 즉시 보고를 정했다. 기존 1000000/250000 실사자는 그대로 마치며 새 런타임 전환으로 보고하지 않는다. PR1을 오래 막지 않으며 지연 시 실험 결과만 PR2/종료 기록으로 넘긴다.
 - `msg_132ccdcee6f7`(11:06:16Z)의 「리드 Astra 안착 뒤 검증자 Opus 복귀」는 조건부 다음 후보다. 사용자 원문은 「만약에 아스트라 리드를 성공적으로 안착시키면 예전처럼 검증자를 Opus 5.5를 써도 됄 것 같은데」이며 현재 시범 변경 승인이 아니다. BACKLOG의 해당 후보에 메인 제안 기준을 둔다.
+- `msg_2aff25585c91`(11:42:07Z, E/check-notification-20261013-03.json)은 README 소개의 AI 협업 한 문장을 현재 메인 Claude/파트 리드 Codex 역할로 정합하도록 PR1에 추가했다. 메인 판단이며 세부 모델명·숫자·성과 추가와 그 밖의 README/CURRENT World 변경은 제외한다. 발행 계약에 새 범위를 넣지 않고 메인의 명시 허용에 따라 리드가 한 문장을 수정해 새 재실사 입력으로 넘긴다.
 
 ## 현재 결과
 
@@ -138,6 +140,19 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - 이번 첫 수정은 리드의 BACKLOG 주장/goal 원천 정정과 신규 Sol의 ORCA 기본 명령/저장 harness 재실행이다. 승인 근거와 완료 주장·계약을 바로잡는 층을 택하고 첫 실수로 기록한다. 새 반복 규칙/일괄 lint를 만들지 않는다. 이전 inline 실행을 저장 파일로 수행했다고 소급하지 않는다.
 - 최초 문맥 관측은 요청1000000/250000, usable828400이며 설정상 상한872000×95%와 일치한다(E/doc-review/session-observations.json). 실제 자동 압축/큰 입력 성공은 미관측이다. 공식 설치 버전 소스의 기본 압축 한도90%와 usable95%는 별개다(E/research/context-config-findings.md·source manifest). 실제 발동은 작은 실험에서 구분할 예정이며 아직 결과가 없다.
 - 기존 Sol 최종 생존 helper는 신호6개 구간에서 최대344초, 300초 초과326·344초 두 구간, exit1이었다(E/run-doc-impl-liveness.ps1·doc-impl-final-liveness.json·execution.json). 첫 신호 전·마지막 신호 후·ID 없는 status까지 측정했다고 확대하지 않는다.
+- 첫 수정 계약은 기준 commit `828d8d2ac81e9e5538c86a1ad5f15a9b24e485af`에서 발행했다. Sol Task `task_3d6b9611d483` / Dispatch `ctx_c6a734efa764`는 E/doc-fix-contract-v1.md에 따라 ORCA R-1/R-8과 E/doc-fix를 소유한다. 별도 관측 Astra Task `task_9d659be9b266` / Dispatch `ctx_24993f08a170`는 E/compact-experiment-contract-v1.md에 따라 E/compact-experiment만 소유한다. 입력15/17개와 각각 출력부모를 저장 E/check-fix-contract-paths.ps1로 확인했다. 독립 재실사는 아직 발행하지 않았다.
+- 두 최초 명령/화면은 각각 gpt-6.1-sol max·gpt-6-astra xhigh, backend unknown이다. 둘 다 turn_start_unobserved receipt 뒤 같은 R-5 조건(새 pane·동일 incarnation·공식 입력만·draft=계약+4788자)을 확인하고 bare Enter 한 번씩 보냈다. 실제 시작과 계약 대조 원시는 E/doc-fix-*·compact-experiment-*에 보존하며 작업 완료/통과로 해석하지 않는다.
+- README 역할 정합은 PR1에 포함한다. 리드가 메인 msg_2aff25585c91의 지정 한 문장만 바꿨고 다음 독립 실사에서 원천·소유·실제 diff를 대조한다. 메인 목표·결정·병합 승인 요청과 파트 리드의 구현/독립 검증 조정을 구분했으며 다른 소개 문장·모델 세부명·수치·성과는 추가하지 않았다.
+
+### PR1 수정 결과와 압축 부분 관측
+
+- 수정 Sol의 쓰기 종료 `msg_b447c52cff6e`, worker_done `msg_2a4a96b41e31`(11:44:43Z)은 succeeded다. E/doc-fix/report.md를 직접 읽고 ORCA SHA256 `53f2b0ee8bdb753729a741ca3a9024fe6a583c0a2a7e5aa7ba253b26340fa8b7`과 저장 inspect-documents.mjs hash를 대조했다. 실제 저장 파일 실행 exit0, 자체 참조51/보호절7/규칙9·예상 밖 경로0, ORCA 1파일 +7/-5줄은 E/doc-fix/document-observations-01.json·execution-01.json의 결과이며 독립 PASS가 아니다. 이전 inline 실행 원시는 그대로 보존했다.
+- 관측 Astra의 쓰기 종료 `msg_f0fbf3e2add0`, worker_done `msg_fb86c1f6c9b3`(11:44:05Z)은 **failed/partial**이다. E/compact-experiment/report.md(SHA256 `5428cb0827c72e67514c377d1a89d93029b7371510ff962b6cb84b5d2163cdc2`)와 result.json을 읽었다. 연구 요구 일부 미관측에 따른 부분 종료이며 제품 결함 확정 실패 횟수에 합치지 않는다.
+- B는 기본 창/명시 압축40000에서 직전 응답 last total40376, 다음 턴의 실제 compacted/ContextCompaction 이벤트를 관측했다. 압축 요청 input40396과 compaction_response_id가 원시에서 연결된다. 압축 직후39826은 재추정이며 실제 후속 요청 input39644와 구분한다. 기준 초과376(0.94%)는 이 한 사례이고 정확한 연속 임계점/보편적 오차나 성능을 뜻하지 않는다. 공식 설치 대응 소스의 pre-turn 검사 위치와 부합하는 관측이다.
+- A는 창64000/기본 압축의 소스 기준57600, usable60800에서 한 요청 뒤 last total55645였다. **발동은 미관측**이며 기본90% 발동 실증으로 보고하지 않는다. 추가 모델 실행은 중단했고 A 관측은 미완료로 남는다. PR1을 오래 막지 말라는 메인 판단에 따라 기본 설정 문서를 진행하고 남은 관측 처리 판단은 PR2/종료 기록에 남긴다.
+- 실제 A/B 합계 입력210292(B154661+A55631), cached114176은 입력의 부분집합, output459다. 압축 usage40396을 포함하며 일반 token_count 누적169896만으로 마감하지 않았다. 남은89708로 A의 추가 요청·압축·후속 비용을 제한할 수 없어 중단했다. B의 사전 예약78000 대비 실제80040은2040 초과했으나 전체30만은 넘지 않았다. 예약은 엄격한 런타임 상한이 아니며 관측자 자체 세션 비용·가격·서버 숨은 usage는 이 합계로 검증하지 않았다(E/compact-experiment/result.json·commands.json·원시/receipt).
+- 두 작업자 모두 현재 from/Task/Dispatch와 worker-show 완료 상태를 대조하고 release의 external retained 뒤 해당 pane만 close했다(각 E/doc-fix-*·compact-experiment-* done-show/release/close). reclaimable0이며 재사용하지 않는다. 고정 입력을 바꾼 뒤 기존 판정을 재활용하지 않고 새 재실사를 수행한다.
+- 정산 생존 검사 E/run-fix-wave-liveness.ps1·fix-wave-final-liveness.json·execution.json은 exit1이다. 첫 검증자 신호10개/최대268초, 관측 Astra9개/최대365초, 수정 Sol5개/최대382초(303·310·382초 초과 구간)다. 5분 전체 준수를 주장하지 않으며 첫 신호 전/마지막 신호 후·ID 없는 신호는 포함하지 않는다.
 
 ### PR2 신뢰 사전 조사
 

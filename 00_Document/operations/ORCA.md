@@ -40,11 +40,13 @@
 기본 다섯과 승인된 추가 파트의 신규 리드는 `gpt-6-astra` xhigh(Codex CLI)다. 아래 `<승인 경로>`·`<파트>`는 확인한 작업 경로·파트 이름으로 바꾼다. CodeMap의 발신 태그는 표의 Architecture를 유지하며, 리드 태그는 `[<파트> 구현 Astra]`와 구분한다. 경로·태그가 새 파트·권한을 만들지 않는다.
 
 ```text
-orca terminal create --worktree "path:<승인 경로>" --title "<파트> 리드" --command "codex --model gpt-6-astra -c model_reasoning_effort=xhigh -c model_context_window=1000000 -c model_auto_compact_token_limit=250000"
+orca terminal create --worktree "path:<승인 경로>" --title "<파트> 리드" --command "codex --model gpt-6-astra -c model_reasoning_effort=xhigh"
 ```
-`-c`는 해당 실행의 옵션이며 전역 설정을 바꾸지 않는다. `model_context_window`는 창 크기, `model_auto_compact_token_limit`는 자동 압축 기준이다. 최초 창 후보 1000000과 압축 기준 250000은 [이번 PR1 실사](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#적용-중인-사용자-결정)에서 새 세션의 화면·rollout으로 관측한다. 상한으로 절삭되면 리드가 실제 관측 최대값을 창으로 확정하고 이 명령과 R-8 재개 명령에 같은 값을 반영한다. 창이 272000에서 불변·압축 기준 미적용·실행 거부이면 메인에 보고한다. 문서/옵션 추가만으로 현재 리드 runtime의 변경이나 긴 입력·실제 압축의 성공을 주장하지 않는다.
+`-c`는 해당 실행의 옵션이며 전역 설정을 바꾸지 않는다. 리드의 문맥 창·자동 압축은 **Codex 기본 설정**을 사용한다. `model_context_window`는 창 크기, `model_auto_compact_token_limit`는 자동 압축 기준을 조정하는 수단이며 변경은 사용자 결정으로 한다. 리드는 압축 뒤 맥락 손실로 일을 다시 한 사례를 조정 판단 근거로 메인에 보고한다.
 
-재개에 필요한 것은 goal 재개 지점과 근거 폴더에 둔다. 압축 뒤 맥락 손실로 재작업이 한 번이라도 나오면 리드가 바로 메인에 보고하고 메인이 모든 리드의 **압축 기준**을 500000으로 되돌린다. 창 크기와 구분한다. 이전 리드 pane은 idle 확인 뒤 닫는다. 같은 탭에 다른 세션이 있으면 탭 전체를 닫는 `--tab`을 쓰지 않는다. 리드 첫 화면은 [R-6](#r6-first-screen)을 따른다. Claude auto mode 분류기·권한 확인은 Claude 세션에만 해당하며 push·우편함 읽기가 막히면 우회 없이 메인에 보고한다([권한 기준](../../AGENTS.md#공학-조건)).
+자동 압축 시점의 소규모 관측은 [현재 goal](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#현재-결과)에서 진행 중이다. 설치 버전 근거의 기본 창·usable 비율·압축 한도는 설정 근거이며 실제 발동 시점이나 모든 모델의 영구 사양으로 해석하지 않는다. 효율성·성능 설명은 사용자 전언이며 검증 사실로 쓰지 않는다. 최초 실사의 요청·usable 관측도 goal의 역사 근거로 보존하며 현재 명령으로 사용하지 않는다. 문서/옵션 추가만으로 현재 리드 runtime의 변경이나 긴 입력·실제 압축의 성공을 주장하지 않는다.
+
+재개에 필요한 것은 goal 재개 지점과 근거 폴더에 둔다. 2026-10-11의 압축 기준 250000·맥락 손실 재작업 1회 뒤 500000 자동복귀는 **당시 Claude 리드 세션에 한정한 과거 결정**이며 현재 Codex 설정에 적용하지 않는다. 이전 리드 pane은 idle 확인 뒤 닫는다. 같은 탭에 다른 세션이 있으면 탭 전체를 닫는 `--tab`을 쓰지 않는다. 리드 첫 화면은 [R-6](#r6-first-screen)을 따른다. Claude auto mode 분류기·권한 확인은 Claude 세션에만 해당하며 push·우편함 읽기가 막히면 우회 없이 메인에 보고한다([권한 기준](../../AGENTS.md#공학-조건)).
 
 같은 worktree 작업자·검증자는 리드 pane을 `vertical split`해서 열고, 다른 worktree 작업자는 `orca terminal create --worktree`로 바로 열어 빈 받침 pane을 만들지 않는다. split을 닫으면 부모 pane도 꺼질 수 있어(Orca 1.4.222 관측) 다음 split 전에 부모가 살아 있는지 본다. 준비된 신규 세션의 최초 작업을 `worker-start --terminal`로 연결한다. 작업자 명령·실제 경로·화면 모델·준비 확인은 [R-5](#r5-worker-launch)를 따른다.
 
@@ -215,10 +217,10 @@ accepted 뒤 침묵만으로 새 텍스트를 전송하거나 abandon하지 않�
 전체 goal은 **제품 PR 병합·로컬 결과 기록 → Gardener → 결과 포함 종료 기록 PR 하나 → 종료 점검 → R-8** 순서다. head 고정 PR은 [메인 결정](#pr2-source)으로 병합 전 Gardener를 허용한다. 첫 PR마다 새 Gardener를 추가하지 않는다. 메인/사용자가 결과·남은 위험·BACKLOG·다음 계획을 점검한 뒤 재개하며 다음 goal 자동 착수는 금지다. [목표 루프](../../.agents/skills/dawnholder-goal-loop/SKILL.md#통합과-보고)·[마일스톤 운영](../../.agents/skills/dawnholder-goal-loop/references/milestones.md)을 따른다.
 
 PR 리뷰 수정 중이나 목표 중간에는 문맥을 비우려 수동 교체하지 않는다. 자동 압축 뒤에는 현재 `goal.md`로 이어간다. 문서에 없는 운영 감각은 소유권 범위 안 RESUME 또는 goal에 남긴다. 작업자·검증자의 작업 하나 뒤 종료와 리드의 목표 단위 교체를 구분한다.
-메인이 판단한 목표 중간 교체·복구에서 Codex 리드의 같은 대화는 아래 명령으로 잇는다. 창·압축 기준은 [R-1](#r1-management-placement)에서 확정한 동일 옵션을 쓴다(아래 창 값은 최초 후보).
+메인이 판단한 목표 중간 교체·복구에서 Codex 리드의 같은 대화는 아래 명령으로 잇는다. 문맥 창·자동 압축은 Codex 기본 설정을 쓰며 모델·effort 옵션은 [R-1](#r1-management-placement)의 최초 기동과 맞춘다.
 
 ```text
-codex resume <session-id> --model gpt-6-astra -c model_reasoning_effort=xhigh -c model_context_window=1000000 -c model_auto_compact_token_limit=250000
+codex resume <session-id> --model gpt-6-astra -c model_reasoning_effort=xhigh
 ```
 
 대화 ID는 현재 Codex 세션 저장 위치의 rollout에서 **해당 cwd·session id·model**을 대조해 찾는다. 현재 goal의 재개 지점에 남긴 ID·시각으로 후보를 좁히고 해당 메타데이터만 읽으며 전체 기록을 훑거나 `--last`로 추정하지 않는다. paginated 형식이라 rollout 파일이 없으면 미확인으로 보고하고, 같은 cwd의 `codex resume` 선택기에서 해당 대화를 확인한다. ID·cwd·모델을 확인한 뒤 확정 옵션으로 재개하며 확인하지 않은 대화를 골라 실행하지 않는다.
