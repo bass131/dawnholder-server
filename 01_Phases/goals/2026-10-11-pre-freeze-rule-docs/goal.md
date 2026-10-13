@@ -6,16 +6,16 @@
 
 ## 재개 지점
 
-기능 동결(10-28) 전에 닫는 작은 Rules goal이다. 사용자가 범위를 승인했다(「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
+기능 동결(10-28) 전에 닫는 작은 Rules goal이었고 끝났다. 사용자가 범위를 승인했다(「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모은다. [CURRENT](../../../00_Document/operations/CURRENT.md)의 Rules 줄은 다음 Rules goal [라우팅 핫픽스 정본 반영](../2026-10-11-routing-hotfix-canon/goal.md)을 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch: `docs/pre-freeze-rule-docs-20261011`(base main `6782cd67`). 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
-- 근거 폴더 E: `.backups/verification/2026-10-11-pre-freeze-rule-docs/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-pre-freeze-rule-docs/scope-draft-v1.md)(SHA256 `b783ae27…`)와 메인 판단 넷(「요구사항 원천과 적용 결정」)이다. 리드 맥락 메모는 E/lead-context.md(진입·범위 초안)와 E/pr-lead-context.md(착수)다.
+- branch: `docs/pre-freeze-rule-docs-20261011`(base main `6782cd67`)은 PR229로 병합됐다(merge commit `704baa5e`). 종료 기록 branch는 `docs/pre-freeze-rule-docs-closeout-20261011`(base main `704baa5e`)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
+- 근거 폴더 E: `.backups/verification/2026-10-11-pre-freeze-rule-docs/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-pre-freeze-rule-docs/scope-draft-v1.md)(SHA256 `b783ae27…`)와 메인 판단 넷(「요구사항 원천과 적용 결정」)이다. 리드 맥락 메모는 E/lead-context.md(진입·범위 초안), E/pr-lead-context.md(착수), E/closeout-lead-context.md(종료 기록)다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_b1fddc67-1e99-4471-af0b-8fe6c295d371`, Run `run_d447bca7c344`(회신 주소 `run:run_d447bca7c344`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
 - 앞 goal의 끝: [세션 쓰기 가드와 생존 신호 간격 도구](../2026-10-10-operating-tool-guards/goal.md)는 PR224·PR228 병합으로 끝났다. PR228 좁힌 재실사 통과(근거 rules-active [E/closeout-rereview/verdict.md](../../../.backups/verification/2026-10-10-operating-tool-guards/closeout-rereview/verdict.md)).
-- **현재 위치**: 정본 문장 여섯과 BACKLOG 정리를 마쳤다. 문서 실사의 차단 넷(D1~D4)을 고쳤고, 좁힌 재실사가 낸 리드 기록 오류 R1도 고쳤다(「현재 결과 / 문서 실사」). 병합 전 고정 head에서 Gardener가 끝났다(「현재 결과 / 종료 점검(Gardener)」). 사용자가 Gardener 정리 후보 둘을 BACKLOG에 넣기로 해 결과 기록에 반영했다. 바뀐 부분 재실사를 연다.
-- **남은 순서**: 결과 기록 → 바뀐 부분 재실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
-- **사용자 차례**: 병합 승인 줄이다.
+- **현재 위치**: 종료. PR229와 종료 기록 PR231이 병합됐고 종료 점검과 R-8이 끝났다(「현재 결과 / PR231 병합과 종료 점검」).
+- **남은 순서**: 없다. PR231 병합 뒤의 기록은 다음 Rules goal의 첫 커밋으로 넣었다.
+- **사용자 차례**: 없다.
 
 ## 진척 단계
 
@@ -24,11 +24,12 @@
 - [x] 대기 목록 정리
 - [x] 문서 실사
 - [x] 종료 점검자 확인
-- [>] 결과 기록·재실사
-- [ ] PR229 병합
-- [ ] 종료 점검과 R-8
+- [x] 결과 기록·재실사
+- [x] PR229 병합
+- [x] PR231 병합
+- [x] 종료 점검과 R-8
 
-PR229(https://github.com/bass131/dawnholder-server/pull/229)를 2026-10-11에 만들었다.
+PR229(https://github.com/bass131/dawnholder-server/pull/229)를 2026-10-11에 만들었고 같은 날 병합했다. 종료 기록 PR231(https://github.com/bass131/dawnholder-server/pull/231)을 같은 날 만들었고 같은 날 병합했다.
 
 ## 범위
 
@@ -134,6 +135,7 @@ Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다
 - **실사 결함 처리 — 출처 복원과 bytes**(메인 전달 `msg_0c222663ca85`, 2026-10-11 17:0x KST): 「대시보드 결정 응답: 1) Core 엔진 검사 약점 - 실행 절차에 확인 단계를 넣을지, 도구 코드를 고칠지 → A 절차에 확인 단계 · 2) PR229 - 세션 이어받기 스킬 한 문장을 정본 참조로 바꿀지(Codex 영역) → C 코멘트 「세션 이어받기 스킬이 어떤거 말하는거지?」 · 3) PR229 - 끊긴 출처 링크를 되살려 규칙 문서가 조금(약 73 bytes) 느는 것을 허용할지 → C 코멘트 「대부분 A로가되, 너무 길어지면 하위 문서로 분화시킬 것, AI Readiness를 최대한 원활하게 해줘」」. Rules 해당은 2)·3)이다. 1)은 Core 안건이고, 2)는 아래 줄에서 다시 답했다. 메인 해석은 「요구사항 원천과 적용 결정」에 있다.
 - **실사 결함 처리 — 스킬 문장 교체**(메인 전달 `msg_3253008689b9`, 2026-10-11T08:05:22Z): 「대시보드 결정 응답: 1) PR229 - 세션 준비·인계 스킬의 작업자 배치 문장 하나를 정본 참조로 바꿀지 → A 바꿈 승인」. 앞 응답의 2)에서 사용자가 「세션 이어받기 스킬이 어떤거 말하는거지?」라고 물어 메인이 설명한 뒤 다시 받은 답이다.
 - **Gardener 정리 후보 반영**(메인 전달 `msg_404b9a6bdb15`, 2026-10-11T09:17:21Z): 「대시보드 결정 응답: 1) PR229 - 작업자 기동 도우미 스크립트 후보를 BACKLOG에 넣을지 → A 넣음 · 2) PR229 - 규칙 문서 크기 계측 스크립트 후보를 BACKLOG에 넣을지 → A 넣음」. 1)은 Gardener 후보 1(공식 계약 기동 helper), 2)는 후보 2(규칙 문서 크기·출처 연결 계측 helper)다. 메인이 사용자에게 보인 설명: 둘 다 착수 권한이 아니고 기능 동결(10-28) 뒤 착수 전제다. 2)의 줄 수 상한(250줄을 늘 지키는 상한으로 올릴지, 200줄 목표, 묶음 범위) 같은 정책은 이 답으로 정해지지 않았고 착수 때 다시 묻는다.
+- **라우팅 핫픽스**(메인 전달 `msg_ca6641b7a9e2`, 2026-10-11T11:03:17Z. 사용자 제출 시각 20:02 KST는 메인 진입 지시 `msg_300feadfab41`): 「대시보드 결정 응답: 1) 모델 라우팅 - 모든 리드를 문맥 25만에서 압축하도록 지금 적용할지 → A 전체 적용 · 2) 모델 라우팅 - 리드가 같은 메시지로 두 번 깨는 것을 지금 규칙으로 막을지 → A 지금 적용 · 3) 모델 라우팅 - 로컬 DB 설치·기동 도구의 검증을 지금부터 Astra로 옮길지 → A 지금부터 Astra · 4) 모델 라우팅 - 선행 시험 작성자를 Codex로 옮기는 시점 → A 10-31 평가 때」. 메인 지시는 각 리드가 자기 goal에 이 원문과 메시지 ID를 적는 것이다. 이 goal은 PR231 검토 중이라 넣지 못했고 PR231 병합 뒤 다음 Rules goal의 첫 커밋에서 넣었다. 정본 반영은 다음 Rules goal [라우팅 핫픽스 정본 반영](../2026-10-11-routing-hotfix-canon/goal.md)이 한다.
 
 ## 현재 결과
 
@@ -190,6 +192,54 @@ Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다
 - 리드 기록 대조: 표본 13 중 12 일치, 1 낡음(고정 head의 재개 지점·진척 단계). 이 결과 기록에서 고쳤다.
 - 정리 후보 둘(동결 뒤 착수 전제): 공식 계약 기동 helper, 규칙 문서 크기·출처 연결 계측 helper와 크기 규칙의 정본 자리. 리드가 메인에 물었고(`msg_f2292fcea8ae`) 사용자가 둘 다 BACKLOG에 넣기로 했다(「적용 중인 사용자 결정」). 후보 1은 `official-draft-check-helper`에 근거를 더하고 범위를 계약 파일 전달까지 넓혔고, 후보 2는 새 대기 행 `rule-document-measure-helper`다. 메모리 회수로 꺼진 대기의 관찰은 `lead-mailbox-receive-delay`에 근거로 더했다.
 - Gardener 생존 신호(E/lead-check/liveness-gardener.json): 신호 26, 최대 124초, 300초 초과 0. 정산: 대기 화면 확인, `worker-release` retained, `terminal close`(09:03:27Z).
+
+### PR229 병합 전 재실사와 병합
+
+병합 전 판정은 ORCA 병합 관문대로 근거 폴더와 승인 묶음으로만 전했고, PR229 병합 뒤 이 종료 기록에 옮긴다.
+
+- 결과 기록: 커밋 `d352d719`(Gardener 결과와 사용자가 채택한 후보의 BACKLOG 반영).
+- 바뀐 부분 재실사: 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown), Task `task_07e8fa5579f0`, Dispatch `ctx_c088dd0bf827`, 고정 head `d352d719`(범위 `200354d2..d352d719`), worker_done `msg_8e0638a664b8`(2026-10-11T09:34:23Z, succeeded). 판정 E/finalreview/verdict.md, 기동 기록 E/finalreview-start-note.md다. R1은 해소됐다. 리드 기록 결함 셋(P3)이 나왔다.
+  - F1: 「종료 점검(Gardener)」 드리프트 줄이 S1 check의 형태를 Gardener의 추론에서 확인된 사실로 올려 적었다.
+  - F2: 같은 줄이 ORCA 낡은 링크 구절의 절 이름을 잘못 적었다.
+  - F3: 리드 메모가 `rule-document-subdivision` 이유에 Gardener 관찰 셋을 더하겠다는 계획을 정산하지 않았다.
+- 정정: 리드가 커밋 `42294d10`에서 goal 한 줄(F1·F2)을 고치고 메모(F3)를 정산했다. 재실사가 goal 결함을 냈으므로 정정은 했고, 판정 문장은 goal에 넣지 않았다. goal 리드 기록 정정은 `200354d2`(D4)·`407ff8dc`(R1)·`42294d10`(F1·F2)의 3회이며 3회 초과 체크포인트에는 닿지 않았다.
+- 좁힌 재확인: 신규 `gpt-6-astra` xhigh, Task `task_f2d345cacd9f`, Dispatch `ctx_0a03dc3c3219`, 고정 head `42294d10`, worker_done `msg_29cea433ec34`(10:07:05Z, succeeded). 판정 E/finalcheck2/verdict.md, 기동 기록 E/finalcheck2-start-note.md다. F1·F2는 해소, F3은 일부 해소였다. 새 G1(P3, 리드 메모)은 정산 줄이 Gardener 관찰 1·4·5를 모두 보고서 6절 「뽑지 않은 것」으로 설명한 원천 귀속 오류다. 5는 보고서 4절이 기존 `rule-document-subdivision` 정리 대상으로 적은 것이다. 리드가 근거 폴더 메모만 고쳤고 추적 파일과 head는 그대로다(E/pr-lead-context.md 「수정 차례 4」).
+- G1 재확인: 신규 `gpt-6-astra` xhigh, Task `task_4c96719eaa65`, Dispatch `ctx_54430399b6a2`, 고정 head `42294d10`과 메모 SHA256 `af42bfa8…`, worker_done `msg_2ef259452ae1`(10:29:57Z, succeeded). 판정 E/finalcheck3/verdict.md, 기동 기록 E/finalcheck3-start-note.md다. 통과했다. G1·F3이 해소됐고 새 결함은 없다.
+- 확인 불가 하나: 같은 메모 파일 안에서 절 추가와 줄 정정의 실제 순서다. Git 제외 파일이라 커밋 시각이 없고 리드 세션 기록은 읽기 금지다. 재확인자는 이 사실을 통과 근거에서 뺐다. 리드는 계약 경계 질문 `msg_d556c5d63183`에 그 한 사실만 확인 한계로 남긴다고 답했다(`msg_2c6cddfd2c7f`).
+- 생존 신호(helper): 재실사 최대 241초, 재확인 최대 164초, G1 재확인 최대 188초이며 300초 초과는 0이다(E/lead-check/liveness-finalreview.json·liveness-finalcheck2.json·liveness-finalcheck3.json).
+- 승인 묶음: fresh 조회에서 origin/main은 base `6782cd67`(10:30:27Z), PR229는 OPEN·CLEAN·MERGEABLE(10:30:33Z), head `42294d10`의 CI 넷(code-rules·module-boundaries·architecture-tests·dotnet-tests)은 모두 성공이었다(E/session/fetch-before-merge-ready.txt, E/pr229-ci/pr-state-final.json·runs-final.json). 리드 status `msg_c723d607fb20`(10:32:01Z, 본문 E/session/approval-bundle-body.md)로 올렸다.
+- 병합(메인 전달 `msg_a01a200eb1e3`, 10:36:32Z): 사용자가 메인 pane에 「병합 승인: PR229 head 42294d10929c11f795c5ab884f9c061473c8c851」를 제출했다. 메인이 head와 CLEAN·MERGEABLE을 다시 대조하고 단독 병합 명령으로 병합했다. merge commit `704baa5e52666da97eabaf20249a994b33700db8`(2026-10-11T10:35:55Z)의 둘째 부모가 승인 head이고, 트리는 승인 head와 같다(E/lead-check/closeout-measure.txt).
+
+### 완료조건 대조
+
+병합 commit `704baa5e` 기준이다. 원시는 E/lead-check/closeout-measure.txt와 E/lead-check/candidate-check-closeout.json이다.
+
+1. 충족. S1~S6이 ORCA·RESUME에 들어갔다. 문서 실사(E/review/verdict.md)가 원천과 현실 시나리오 다섯을 보았고, 차단 D1~D4는 좁힌 재실사(E/rereview/verdict.md)에서 해소됐다.
+2. 충족. BACKLOG 새 행 다섯과 기존 행 갱신이 들어갔다. 종료 기록 때 리드가 다시 돌린 후보 도착 검사는 `allowed`, exit 0, BACKLOG ID 114, 중복 0, 후보 10, 인용 없는 후보 0, 모르는 ID 0이다. 실사자 재실행은 문서 실사와 바뀐 부분 재실사가 했다.
+3. 충족. 첫 기록 셋(재개 지점의 PR228 줄, 「첫 기록」, 「위험」 4)과 사용자 결정 원문(「적용 중인 사용자 결정」)이 있다.
+4. 충족. base `6782cd67`...`704baa5e`의 바뀐 파일은 「건드릴 곳」의 여섯뿐이다(+276 −34). 코드·다른 파트 파일 변경은 0이고, Codex 영역은 승인된 스킬 한 문장뿐이다.
+5. 충족. ORCA는 245줄이다. 여섯 파일 묶음은 103,306 bytes로 base 대비 +85이며 사용자가 허용했다.
+6. 충족. 실사 통과 → Gardener → 결과 기록과 재실사 → PR229 사용자 병합 승인 → 종료 기록 PR231 실사·승인·병합 → 종료 점검 → R-8까지 끝났다(「PR231 병합과 종료 점검」). 이 줄은 PR231 병합 뒤 다음 Rules goal의 첫 커밋에서 고쳤다.
+
+### PR231 병합과 종료 점검
+
+PR231 병합 뒤 다음 Rules goal의 첫 커밋으로 넣은 절이다. 원천은 이전 리드의 종료 인계 E/closeout-handoff.md와 종료 보고 `msg_302ba5bdcae3`(2026-10-11T11:32:27Z)다.
+
+- 종료 기록 PR231 문서 실사(E/closeout-review/verdict.md, Task `task_4ea10ad4efa9`, worker_done `msg_d3e3b64b873a` 10:55:56Z): goal·CURRENT 사실 대조, 직접 계측, 후보 검사 재실행, 진척 단계 형식은 지적이 없었다. C1(P3, 리드 메모 자기 쓰기 감사 누락)이 차단이었다.
+- C1 재확인(E/closeout-recheck/verdict.md, Task `task_f62b4dabc5d2`, `msg_2b65799834b0` 11:13:11Z): C1은 일부 해소였다. H1(Git 제외 수 66 → 64)과 H2(감사 JSON 생성 시각 설명 역순)가 차단이었다.
+- H1·H2 재확인(E/closeout-recheck2/verdict.md, Task `task_ed932ded6b2d`, `msg_8361a1a234fb` 11:26:36Z): 통과했다. C1·H1·H2가 해소됐고 새 결함은 없다. 같은 메모 안의 실제 쓰기 순서는 확인 불가라 통과 근거에서 뺐다.
+- 정정은 모두 Git 제외 리드 메모 E/closeout-lead-context.md에서만 했고 head는 실사 때와 같다. 승인 묶음은 status `msg_b158e02c9d22`였다(fresh 조회 CLEAN·MERGEABLE, CI 넷 성공, E/pr231-ci/).
+- 병합(메인 전달 `msg_6033d8d4a1eb`, 11:30:07Z): 사용자가 메인 pane에 「병합 승인: PR231 head 0d24340475fdbb2fbfce5c7d06adc8e3db107dda」를 제출했다. 메인이 head와 OPEN·MERGEABLE·CLEAN을 다시 대조하고 단독 병합 명령으로 병합했다. merge commit `a570dbf333ce98b1ca8318338e85295056041844`(mergedAt 2026-10-11T11:29:47Z)의 첫째 부모는 `999b1b98`(PR230 병합), 둘째 부모는 승인 head `0d243404`다. merge commit의 이 goal 파일은 승인 head와 같다. CURRENT는 Content 줄(PR230)만 다르고 Rules 줄은 보존됐다(E/lead-check/pr231-merge-check.txt).
+- 종료 점검(이전 리드, 종료 보고 `msg_302ba5bdcae3`):
+  - 완료조건: 1~5는 「완료조건 대조」대로 충족이다. 6은 그 절의 줄을 충족으로 고쳤다.
+  - 「위험」 대조: 1(bytes)은 사용자가 +85 bytes를 허용해 닫혔다. 2(S3와 AGENTS capacity 구절)는 문서 실사가 직접 모순 없음으로 판정했다. 「Opus 대체」 목적어 모호는 설계 관찰 O-1로 `rule-document-subdivision`에 묶였다(E/review/verdict.md:77·205). 3(새 진입 문장의 적용 시점)은 떠 있는 리드가 안전 지점에 main을 받을 때 적용된다. 4(한 파일 역할과 메모 순서)는 BACKLOG `single-output-role-memo-first`로 남았다.
+  - BACKLOG: 이 goal이 새 행 다섯을 넣고 기존 행을 갱신했다. 후보 도착 검사는 allowed, ID 114, 후보 10이다. 종료 점검에서 새 행은 없었다.
+  - CI: PR229 head `42294d10`와 PR231 head `0d243404` 모두 넷 성공이다. 시험·빌드·게임·DB는 문서만이라 해당 없다.
+  - 생존 신호(helper, Dispatch 열하나): 작성 Sol 한 Dispatch가 최대 411초로 300초 초과 셋이었다(메인 결정 `msg_9b35d66297d6`으로 비차단 운영 기록). 나머지 열은 초과 0이며 최대는 264·241·270·124·241·164·188·216·229·197초다(E/lead-check/liveness-*.json).
+  - 우편함 대기: 08:29Z 메모리 회수로 꺼진 뒤 다시 켜지 않았고 Orca 안내마다 check로 처리했다.
+- R-8(메인): 메인은 종료 보고를 받으면 이 goal의 리드 pane을 닫고 새 Rules 리드를 연다고 알렸다(`msg_6033d8d4a1eb`). 새 리드가 2026-10-11T11:45Z 무렵 저장한 terminal 목록(다음 goal 근거 폴더 `.backups/verification/2026-10-11-routing-hotfix-canon/session/terminal-list-1145.json`)에서 rules-active 터미널은 새 리드 handle `term_991652c5-…` 하나다. 이 goal의 리드 handle `term_b1fddc67-…`는 그 목록에 없다. 새 리드는 새 Run `run_bea2c841fa15`로 진입했다(메인 진입 지시 `msg_300feadfab41`).
+- 리드 기록 품질(메인 지시로 새 리드의 첫 계약 점검 항목): 이 goal의 리드 기록 결함은 열 개다(D3·D4·R1·F1·F2·F3·G1·C1·H1·H2, 모두 P3 이하, 리드 기록 귀속). 유형은 셋이다. 수치·시각·원천을 원시에서 옮기지 않고 요약하다 틀림(R1·F2·G1·H1·H2), 메모 필수 정산 누락(D3·F3·C1), 확인 수준 격상(F1·D4)이다. 판정 밖 발견으로 E/pr-lead-context.md의 「수정 차례 3」·「수정 차례 4」 절에도 자기 쓰기 감사 줄이 없다.
+- 메모 감사 누락은 D3에 이어 C1이 두 번째 발생이다. 이전 리드는 BACKLOG 등록 여부를 사용자 몫으로 남겼다. 메인이 목표 루프 「후보는 아이디어마다 승인을 묻지 않는다」에 따라 등록을 판단했다(`msg_ded7bd2d6839`, 사용자 결정 아님). 다음 Rules goal이 BACKLOG `lead-memo-audit-field-check`로 넣었다.
 
 ### 첫 기록
 
