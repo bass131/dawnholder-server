@@ -8,14 +8,14 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `docs/multi-account-login-closeout-20261013`(base main `b9f78ff07514b54b80370cbfca1f0df33baa5ac4`, PR235 병합 뒤). 제품 branch는 `feat/multi-account-login-20261011`(당시 base main `6782cd674f03d33b989943b409d68883d0fb5b21`)이었다. Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `gpt-6-astra` xhigh(Codex 0.162.1, 화면 「GPT-6-Astra xhigh」, backend unknown), 태그 `[World 리드 Astra]`, handle `term_5e618782-8ec4-44d0-aa43-f793d8c3078a`. 메인 재개 지시 `msg_6aac19febb2c`로 같은 Run `run_a927bbaff1f5`를 인수했다(consumer generation 4, 회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 현재 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다. 이전 리드 정보는 아래 「Astra 리드 재개와 제품 PR」에 보존한다.
-- **현재 위치**(2026-10-13, 종료 기록 시작): [PR235 - 다중 계정 로그인과 중복 접속 거부](https://github.com/bass131/dawnholder-server/pull/235)는 14:03:37Z에 병합됐다(main `b9f78ff07514b54b80370cbfca1f0df33baa5ac4`). 메인 병합 통지 `msg_bd9eeeefbb79`에 따라 최신 main에서 종료 기록 branch를 만들었다. 실화면 S-1 수정과 SV-01 약 재검증은 통과했고, 기존 판정의 범위 안 미해결 결함은 없다. 다음은 신규 외부 Opus Gardener 점검이다.
+- **현재 위치**(2026-10-13, Gardener 완료): [PR235 - 다중 계정 로그인과 중복 접속 거부](https://github.com/bass131/dawnholder-server/pull/235)는 14:03:37Z에 병합됐다(main `b9f78ff07514b54b80370cbfca1f0df33baa5ac4`). 최신 main에서 종료 기록 branch를 만들고 외부 Opus Gardener를 완료·정산·종료했다. 실화면 S-1 수정과 SV-01 약 재검증은 통과했고, 기존 판정의 범위 안 미해결 결함은 없다. Gardener 후보 둘의 채택 판단과 재생성된 임시 설정의 작성 주체는 메인에, O-8 후속 기록 경로는 Core에 확인 요청했다(아래 「종료 Gardener」).
   - 07:52Z 마감 기록의 Task 17개는 모두 completed이고 마지막 두 Dispatch는 release `retained`였다. 이번 재개에서는 작업자·검증자를 새로 열지 않았고, 제품·시험·빌드·Unity·DB를 새로 실행하지 않았다. 13:34Z Run 인수 뒤 수신 묶음은 비어 있었다.
 - **다음 행동**:
-  1. 로컬 결과 기록을 고정하고 신규 외부 Opus Gardener가 독립 결함·CI·우회·드리프트의 반복 근거와 정리 후보를 점검한다.
+  1. Gardener 후보 채택·임시 설정·O-8 처리 경로 회신을 반영하고 기존 후속 후보를 정리한다. S-2 수정 후 치수는 미측정이며 예전 문장 측정값을 현재 실측으로 쓰지 않는다.
   2. Gardener 결과와 남은 후보를 종료 기록 PR 하나에 반영하고 별도 독립 문서 실사 → 메인 R-2·사용자 병합 승인 → 종료 점검 → R-8을 진행한다. 리드는 PR을 병합하지 않는다.
   - Unity batch·WSL 실행이 다시 필요하면 Content·Core·Rules·Art에 먼저 알린다. 큰 실행 조건은 아래 「실행 자원과 조율」을 따르고, 서식 검사도 WSL dotnet을 쓴다고 적는다.
 - **다시 열 때 필요한 것**: 현재 Codex 대화 ID `01a13573-b356-7512-911e-981db4c2e797`(`CODEX_THREAD_ID` 환경 값), Run `run_a927bbaff1f5`. 실제 재개 시 R-8의 cwd·대화·모델 대조를 다시 한다. branch와 원격·미커밋 상태도 fresh로 확인한다. PR235는 메인에게 전달된 사용자 승인으로 병합 완료됐고, 종료 기록 PR에는 별도 승인이 필요하다.
-- **남은 순서**(2026-10-13 제품 병합 뒤): Gardener → 종료 기록 PR(S-2 BACKLOG 등록과 계산 근거, 다음 goal 길드 서버 메모 보존) → 종료 점검 → R-8.
+- **남은 순서**(2026-10-13 Gardener 뒤): 후보 판단·후속 기록 → 종료 기록 PR(S-2 BACKLOG 등록과 계산 근거, 다음 goal 길드 서버 메모 보존) → 종료 점검 → R-8.
 - **다음 goal 메모**: 사용자 승인 「10-28 시연 계획과 파트 배정 → A」(아래 「적용 중인 사용자 결정」, 메인 전달 `msg_5ed276291957`)로 다음 goal은 「서버 후속 묶음」 대신 **길드 서버**다. 범위 후보는 기본 길드·길드원, 길드 금고와 던전 클리어 적립, 거점 레벨 올리기, 대장간 무기 강화와 공격력 반영, 패킷과 프로토콜 판(41·42·19 다음 번호)이다. R-8 뒤 새 리드가 범위 초안을 쓰고 메인이 사용자 승인을 받는다. 지금 리드는 준비하지 않는다. 앞선 결정(`msg_6974802727a2`, 서버 후속 묶음)은 이 승인으로 바뀌었다.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -28,7 +28,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 독립 검증(RF-01 재검증 통과)
 - [x] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 차단 S-1은 수정·독립 검증·SV-01 재검증 통과, 실화면 재실행 없음은 메인 판단 `msg_d52061c05d13`)
 - [x] PR235 병합
-- [>] Gardener 점검
+- [x] Gardener 점검
 - [ ] 종료 기록 PR 병합
 
 ## 이 목표는
@@ -784,3 +784,14 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 원격 조회 E/`closeout/pr235-merged.json`: state MERGED, 14:03:37Z, merge commit `b9f78ff07514b54b80370cbfca1f0df33baa5ac4`. 조회 시 CheckRun 8개(architecture-tests·code-rules·dotnet-tests·module-boundaries 각 2개)가 모두 SUCCESS였다. 메인의 직전 여섯 검사 보고와 조회 시점을 구분한다. 실패나 취소된 실행을 통과로 바꾸지 않는다.
 - `git fetch origin` 뒤 origin/main이 같은 merge commit이고 작업 폴더가 깨끗함을 확인해 `docs/multi-account-login-closeout-20261013`을 만들었다. 사전 메모 E/`closeout/lead-context.md`. 종료 기록 범위는 goal·CURRENT World 줄·근거가 있는 BACKLOG 후보이며 제품·시험 변경은 없다.
 - 제품 PR 병합은 goal 종료가 아니다. 신규 외부 Opus Gardener의 보고 한 파일을 받은 뒤 종료 기록 PR과 별도 독립 문서 실사를 진행한다. 후보 채택·다음 goal 착수는 별도 판단이며 길드 서버 준비는 하지 않는다.
+
+### 종료 Gardener — 2026-10-13
+
+- 신규 `claude-opus-5-5` xhigh, 최초 명령 `claude --model claude-opus-5-5 --effort xhigh`, 화면 Opus 5.5 xhigh(Claude Code 2.1.296), backend unknown. 리드 아래 vertical split `term_9142e6b1-d16f-4aa3-af7e-80c7b540b1df`, Task `task_19596adf7888`, Dispatch `ctx_921d937406b6`. TEMP/TMP는 `.backups/tmp/lg1`, Git 조회는 `GIT_OPTIONAL_LOCKS=0`, Unity MCP는 붙이지 않았다. readiness satisfied 뒤 worker-start ready·input_accepted·turn_started를 확인했다.
+- 입력: 로컬 결과 기록 `b7cc5748a036c8b838a85de7062cf8ac9a9e00a4`, 계약 E/`closeout/gardener-contract.md`(SHA256 `ba4e32399d7759f388cf170f7f5e151ee09a93b82afe05ff975b2b318e4f0244`). 파일 31개의 실제 존재·hash·bytes와 새 출력 부모를 preflight로 확인했다. 적용 원문 6절의 원문/계약 비교는 E/`closeout/gardener-rule-comparison.json`에서 모두 일치다.
+- 산출물: E/`closeout/gardener-context-report.md`(SHA256 `704c900625455483829403fde19e0f2457ddc9a5700efb9b8f24defe92680f48`). 보고서 앞 사전 맥락을 포함한 한 파일만 직접 썼다. worker_done `msg_9dcad98ce26a`(14:30:37Z, succeeded) 뒤 리드가 전문을 읽고 Task·Dispatch·발신자를 대조했다. release `retained`(external_terminal), 완료 화면·동일성을 확인해 14:32Z에 해당 pane을 닫았다. Gardener 완료는 종료 문서 독립 실사 통과를 뜻하지 않는다.
+- 회고: 판정 여덟 개의 결함 표와 원시를 읽어 RF-01 두 사건을 Task별로 나눴다. S-2를 제외한 결함은 수정·정정으로 정리됐고 같은 계약·결함의 확정 실패 3회는 없었다. 원격 제품 branch CI와 로컬 실행 실패를 구분했으며 HUD 시간 초과, 도구 중단, 절차 이탈, 자기 발견 실패를 서로 합치지 않았다. 기존 서버 TRX·Unity XML·봇·서식 원시의 재집계는 기존 판정과 같았다. 새 제품·시험·빌드·Unity·DB 실행은 없다.
+- **정리 후보 1 — 기존 `contract-context-check` 근거 추가 제안:** 리드 계약의 규칙 절 누락과 서로 다른 검증 Task 둘의 `###` 하위 절 추출 실패를 근거로, 리드 조립과 검증자 대조가 같은 정본 helper를 쓰고 Markdown 제목/펜스 fixture를 두자는 제안이다. **정리 후보 2 — 기존 `powershell-all-evidence` 근거 추가 제안:** TRX 헤더 `notExecuted=0`과 건별 `NotExecuted=5`의 불일치·집계 코드 반복을 근거로 TRX/NUnit 읽기 helper와 불일치 fixture를 두자는 제안이다. 둘 다 아직 사용자 채택·BACKLOG 반영·구현 전이다. 메인 판단 요청 `msg_ee2f58e3faec`.
+- 리드의 표본 대조: E/`closeout/lead-gardener-audit.json`(14:34:57Z)에서 입력 31개 hash/bytes·HEAD·tracked status와 보고 hash를 확인했다. 원문 추출 첫 실패의 JSON 둘을 직접 읽었다. 후보 1 원문의 「구현 다섯」은 열거된 파일/작업 단위가 불명확해 그 수치를 종료 기록에 전재하지 않았고 보고 원문은 보존했다.
+- **확인 중:** (1) `99_Tools/format-check.sh`의 Plugins 가드 O-8은 빈 파일끼리 비교하는 기존 관찰이다. 이전 Core 참고 전달 `msg_0d2d16fe0bd5` 뒤 등록 경로가 미확인이라 Core에 `msg_141c17567317`로 물었다. (2) Git 제외 `.claude/settings.local.json`에 만료된 Unity 명령 허용이 같은 내용으로 다시 생겼다(89 bytes, 생성/수정 14:20:53Z, SHA256 `cceb092d846438ec1f97037fa65cfcceaf1076f18a451b816fcb5126c138c9d9`). 리드·Gardener의 작성이 아니며 주체는 미확인이다. 메인에 알리고 파일을 보존했다. (3) main 병합 commit `b9f78ff0`의 CI 실행은 E/`closeout/main-merge-ci.json` 재조회에서도 0건이다. 원인 미확정이며 실패나 성공으로 판정하지 않는다. PR head의 성공 검사와 구분한다.
+- 자기 공개: Gardener가 `lg1/check0.json` 직접 쓰기를 시도했으나 사전 메모 가드가 실행 전에 막아 파일은 생기지 않았다. heartbeat 출력 숨김과 첫 worker_done의 의심 낱말도 각각 가드 차단 뒤 정식 명령으로 성공했다. 실제 허용 밖 파일 쓰기와 차단된 시도를 구분했고 메인에 원문과 함께 보고했다. 설정 파일의 재생성 주체를 Gardener로 추정하지 않는다.
