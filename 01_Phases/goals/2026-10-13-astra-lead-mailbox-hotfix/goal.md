@@ -7,7 +7,11 @@
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. 현재 PR2 branch `feat/codex-merge-guard-20261013`, 생성 당시 최신 main/base `44bd4319f78078f6fcc3f4941590f6371d58e2b7`. PR1 branch는 `docs/astra-lead-mailbox-20261013`, 당시 base는 `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`였다.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: PR234는 메인이 사용자 승인 뒤 병합했다(`msg_56377f9a74a8`, merge `44bd4319…`). A 후속 관측은 실제 압축 미관측으로 부분 종료했다. PR2 첫 재검증 **NOT PASS #10~#18** 뒤 사용자 결정7로 「지원 밖 보호 명령 거부」 설계 전환을 승인받았다. 새 Astra 구현→새 Opus 강 검증을 준비하며 실제 Codex 진입/CI는 미실행이다. Art 문서 PR 재계획 다섯 요소도 메인이 대조했고 담당 문구 판2가 사용자 확정됐다. PR2 병합 뒤 별도 문서 PR이며 기존 후속 기록·Archify/Unity 정합도 유지한다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
+- 현재 차례: **사용자 결정8에 따라 2026-10-14 오늘 작업을 안전 중단했다. 목표 완료가 아니다.** PR234는 메인이 사용자 승인 뒤 병합했다(`msg_56377f9a74a8`, merge `44bd4319…`). A 후속 관측은 실제 압축 미관측으로 부분 종료했다. PR2 첫 재검증 **NOT PASS #10~#18** 뒤 결정7의 설계 전환 초안을 만들었으나 미완이다. 실제 Codex 진입/CI도 미실행이다. Art 담당 문구 판2는 확정됐고 PR2 병합 뒤 별도 문서 PR이다. 기존 후속 기록·Archify/Unity 정합도 유지한다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
+- 중단 Task `task_f0e3a8b1e758` / Dispatch `ctx_e8a225748509`는 사용자 시간 마감으로 **failed/settled** 정산·release·정확한 작업자 pane close까지 끝났다. 제품 PASS/새 독립 확정 실패가 아니며 재사용하지 않는다. Rules 실행 중 하네스0, reclaimable0이고 리드는 사용자가 닫을 때까지 idle한다. 새 작업자·검증자·큰 실행은 오늘 시작하지 않는다.
+- 보존 기준 HEAD는 `ad7ba33a34312b99759b9829f7c0aee2580abf55`다. 미커밋은 `99_Tools/CodexGuard/command-policy.mjs`, `shell-command.mjs`, 신규 `command-shape.mjs`, 신규 `protected-command.mjs` 네 파일이다. `E/guard-redesign-01/partial-report.md`와 `partial-products.patch`(신규 파일 포함), `product-snapshot/`, `partial-audit.json` 및 리드 `guard-redesign-01-lead-settlement.json`에 내용·hash를 보존했다. 기존 시험/fixture 18파일은 불변이다.
+- 메인 `msg_da593804ac29`에 따라 현재 PR2 branch에 **이 goal 기록 commit 하나만** 더하고 `git push -u origin feat/codex-merge-guard-20261013`으로 원격 백업한다. 별도 기록 branch·PR은 만들지 않는다. 기록 commit/실제 원격 HEAD·upstream·잔여 변경 재대조는 `E/close-day-git-result.json`과 메인 마감 보고에서 확인한다. 제품 4파일은 이 push에 포함되지 않으며 로컬 작업사본/근거를 함께 보존한다.
+- 다음 첫 행동: 새 진입에서 branch/HEAD·미완 4파일의 보존 hash·최신 지침과 이 결정을 확인한 뒤, **새 구현자**에게 초안 설계 타당성부터 검토시킨다. #16 콜론 결합 후보 누락과 heredoc fixture 오기를 각각 보존·교정하고 기대값 전수 귀속/문서/회귀를 완료한다. 저장소 시험은 구현자에게 읽기 전용으로 유지하고 새 선행 시험/독립 검증 역할에 기대 전환을 맡긴다. 그 뒤 새 강 독립 검증(실제 Codex 진입 포함)→CI→PR별 사용자 병합 승인이다. 현재 미응답 사용자 결정은 없으며 미래 PR 병합 승인은 별도다. Art 및 다음 문서 후보를 자동 착수하지 않는다.
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
@@ -17,7 +21,7 @@
 - [x] 문서 재실사와 부분 관측 정리
 - [x] 문서 PR 병합
 - [>] 가드 신뢰 경계 — 소스 조사 완료, 실제 UI/신규 세션 유지 미실행
-- [>] 가드 구현과 검증 — 사용자 승인 설계 전환, 새 구현 계약 준비
+- [>] 가드 구현과 검증 — 설계 전환 초안 미완, 사용자 시간 마감으로 정산·중단
 - [ ] 가드 PR 병합
 - [ ] 종료 점검과 기록
 - [ ] 종료 확인과 교체
@@ -115,7 +119,11 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 
 7. 메인 `msg_5c404e04e508`(2026-10-13T18:11:07Z)가 자기 pane Enter 제출로 확인해 전달한 사용자 원문: 「대시보드 결정 응답: 1) Codex 병합 금지 가드(PR2) - 해석 못 하는 보호 명령은 거부로 바꿀지, 지금 방식으로 9건을 더 고칠지 → A 모르면 거부로 설계 전환 · 2) Art 정식 파트 문서 - Art가 맡는 일 문장을 판 1과 판 2 중 무엇으로 적을지 → B 판 2(표시 전용 코드 포함)」. 사용자에게 보인 효과는 「가드는 단순한 형태(한 명령, && 연결, 경로가 글자 그대로인 cd 뒤 push)만 정밀하게 판정한다. 그 밖의 형태에 병합·push 낱말이 있으면 「단순하게 다시 써라」 안내와 함께 거부한다. 병합·push 낱말이 없는 명령은 해석에 실패해도 통과다. 완료조건 4의 「정상 명령 오탐」은 지원 형태 안에서만 센다.」다. 보호 집합은 유지하고 #10~#18 기대값 변화는 표본별 결정 출처를 적는다. #12는 의도된 거부, 보호 낱말 없는 #18은 허용으로 바뀐다. 다른 완료조건은 유지한다. Art 판2는 범위9에 원문을 두었다. Rules 직접 사용자 입력으로 격상하지 않는다.
 
+8. 메인 `msg_faeabeea37b6`(2026-10-13T18:33:01Z)가 전달한 사용자 원문: 「일단 오늘 작업 좀 오래해서 현황판 수정이랑 나머지 리드급 남은 작업만 마무리하고 쉴까 하는데 어때?」와 「대시보드 결정 응답: 1) 오늘 마무리 방식 - 40분 안에 끝낼 것만 끝내고 안전 지점에서 멈출지, 지금 바로 멈출지 → A 40분 마감」. 메인이 안내한 마감은 2026-10-14 04:15 KST(19:15Z), 최종 보고는 19:20Z까지다. 신규 작업자/검증자·Unity/DB/Docker/WSL 큰 실행을 시작하지 않고, 현재 작업을 안전 중단해 부분 보고·정산·재개 기록만 남긴다. 리드는 사용자가 직접 닫는다. Rules 직접 입력으로 격상하지 않는다.
+
 ### 메인 적용 판단과 승인
+
+- 오늘 마감의 기록 위치는 메인 `msg_da593804ac29`(18:37:08Z)를 따른다. Rules가 제안했던 별도 기록 branch는 만들지 않는다. 기존 PR2 branch의 goal 기록 commit 하나를 추가하고 이름을 명시해 push/upstream 설정한다. 기존 제품·시험 commit의 원격 백업은 허용하되 미완 제품4파일은 미커밋 유지, PR 생성 없음이다.
 
 - Art 추가 문서 PR 재계획은 `msg_13ca12fccdc4` 승인 초안과 대조한다. 메인 보충 `msg_dec1c5141657`(17:52:10Z)은 Art 담당 문구를 승인 초안과 수정 후보 두 판으로 제시하도록 했다. 수정 후보는 표시 전용 코드까지 명시하는 차이가 있어 메인 대조 뒤 사용자가 판단한다. Art 기본 파트 결정은 적용하되 문구 선택을 승인된 것으로 소급하지 않는다.
 - 이후 `msg_5c404e04e508`에서 메인이 Art v1 다섯 범위 요소와 SHA256을 대조해 승인 초안과 일치한다고 보고했고 사용자가 판2를 선택했다. v1은 당시 미확정 기록으로 보존하고 v2/현재 범위는 확정 상태다. PR2는 새 구현→새 강 독립 검증(실제 Codex 진입 포함)→CI→PR별 사용자 병합 승인 순서다. 같은 새 설계에서 다시 불일치하면 계속하기 전에 멈추고 원인 한 줄을 메인에 알리는 체크포인트 조건을 유지한다.
@@ -230,6 +238,16 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - 구현 수치/hash·사후 재구성 주장은 독립 재집계와 일치한다. 다만 지원 동작 주장은 설치 호스트 실측과 다르고 정상 exit 관용구 회귀가 있다. 호스트별 CLI 의미와 위치/종료 경로를 충분히 나누지 않은 파서 설계가 잠정 원인이다. 메인 `msg_59c9ef934fa2`의 조건에 따라 중간 `msg_0373f32408b6`로 즉시 알렸고 후속 제품 수정은 판단 전 시작하지 않는다. N1 일반 순차 cd 성공 가정·N4 catch 예외 경로, #16 파이프 범위와 N2/N3 후속 후보 해석도 최종 판정에 남아 있다.
 - `E/settle-guard-recheck-01.mjs`는 실행입력28·고정입력83·신규시험4·판정/메모 hash를 대조해 불일치0·허용 밖 Git 경로0을 확인했다. 이 정산 뒤에만 Art 결정/goal 기록을 썼다. worker-show failed/settled→release external retained→동일 idle pane close ptyKilled=true, reclaimable0이며 재사용하지 않는다. 제품 PASS와 다른 소유·입력 정산이다.
 - 생존 helper 원시는 최신100건에 현재 Dispatch 전체를 포함하며 신호16·최대306초·초과305/306초 두 구간·질문0, exit1이다(`E/guard-recheck-01-final-liveness.json`). 검증자가 공개한 두 번의 5분 초과와 일치한다. 최초 메모 전 heartbeat 시도2개는 hook에 막혀 전송되지 않았고 우회하지 않았다는 판정 기록을 유지한다. 절차 이탈을 제품 확정 실패에 더하지 않는다.
+
+### PR2 설계 전환 초안과 오늘 마감
+
+- 신규 Astra Task `task_f0e3a8b1e758` / Dispatch `ctx_e8a225748509`, 계약 `E/guard-redesign-01-contract-v1.md` SHA256 `60a879a0410115b8bea3ed45fb6ec9f867c2e6659a63f054699f99b3daa30797`, 입력67/출력부모3/누락0이었다. 최초 명령/화면 gpt-6-astra xhigh·backend unknown, Codex0.162.1이다. R-5의 같은 identity·draft25326=계약20538+4788·다른 입력 없음 확인 뒤 bare Enter1회, 실제 제출18:23:00.399Z와 전문 전송 대조 exit0/Working을 확인했다. 최초 start_unknown receipt는 보존했다.
+- 쓰기 종료 `msg_15f8e0f4ffbc`(18:40:03Z)·worker_done `msg_01a618dd0aa8`(18:40:15Z) failed를 현재 Task/Dispatch/handle과 대조했다. `E/guard-redesign-01/partial-report.md` SHA256 `7c01f35a6177fbd3bba9bf6440e6d36cb19bb1bdeecc050115e667c1618cc5d2`와 context 전체, 실제 변경4파일·원시를 읽었다. 사용자가 정한 오늘 마감에 따른 부분 종료이며 독립 검증 PASS도, 확정 실패 횟수 추가도 아니다.
+- 초안은 지원 문법 판별 `command-shape`와 지원 밖 보호 후보 탐지 `protected-command`를 나누고 기존 `command-policy`의 복합 제어흐름 추정을 줄였다. 수정 전 기존 회귀는 전체718/통과669/실패49·leaf603/564/39, 새 요구 하네스는 before126/57/69→after126/124/2다. 동일 새 하네스/표본/기대값임을 리드가 저장 원시로 대조했다. 남은 실패는 #16 `iex -Command:`에 붙은 gh 후보 누락과 하네스 heredoc 닫는 따옴표 오기다. 수정 후 기존 회귀·전수 새 귀속·문서·Claude 회귀·독립/실제 Codex/CI는 미실행 또는 미완이다. 새 하네스의 회차별 전체 제품 hash/환경 manifest는 없으므로 종료 사본을 당시 실측으로 소급하지 않는다.
+- 공식 ask `msg_92fcffcebb4b`에는 마감 지시 `msg_1bc886788084`와 공식 reply `msg_fb56506dccaf`로 수정/재실행 중단·부분 보존을 판단했다. 부분 보고/종료 status의 질문 pending 표기와 달리 **official reply receipt의 실제 question 상태는 18:35:35Z answered**다. 이 불일치도 메인 마감 보고에 전달하며 답 없이 재개한 것으로 해석하지 않는다. 신규 구현자는 콜론 경계뿐 아니라 초안의 후보/인용/옵션/예산 경계와 선행 `&` 지원 선택부터 계약에 대조한다.
+- 리드 저장 `E/settle-guard-redesign-01.mjs`는 제품4/사본4/보호입력65/시험·fixture18/근거22와 보고·patch hash를 대조해 불일치0·허용 밖 Git 경로0을 확인했다. 고정 목록의 실제 구성은 시험17+fixture1이다. 이 정산 뒤에만 goal을 썼다. 미완 코드와 하네스를 리드가 고치거나 재실행하지 않았다.
+- worker-show failed/settled→release external retained→동일 idle pane close ptyKilled=true, reclaimable0이다(`E/guard-redesign-01-done-show.json`, `E/guard-redesign-01-release.json`, `E/guard-redesign-01-preclose-screen.json`, `E/guard-redesign-01-close.json`, `E/close-day-reclaimable.json`). `E/close-day-lead-process-audit.json`의18:44:20Z 읽기 전용 조회에서 Rules 하네스0·Unity.exe0·GameServer.exe0이다. Rules는 Docker/DB/Unity를 기동하지 않았다. Core의 신규 SQL 자원·14334 부재18:36:34Z 및 창 반환은 `msg_c233eef8de2a`의 **Core 보고**이며 비밀 출력 감사는 Unresolved다. Rules의 전체 Docker 정리 PASS로 확대하지 않는다.
+- 최종 생존 helper는 최신100건 원시와 공식 reply를 입력해 이 Dispatch 신호5·최대325초·초과1구간·공식 질문대기104초를 계산했다(`E/guard-redesign-01-final-liveness.json`, `E/guard-redesign-01-liveness-execution.json`, exit1). 실제 heartbeat2개가 있어 projection의 lastHeartbeatAt=null을 신호 부재로 해석하지 않는다. 5분 초과 절차 이탈을 제품 결함에 더하지 않는다.
 
 ## 다음 계획 후보
 
