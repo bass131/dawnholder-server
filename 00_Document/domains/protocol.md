@@ -8,6 +8,19 @@ PDL 수정 → 생성기 실행 → 생성 diff와 [ProtocolVersion](../../98_Sh
 
 패킷 ID를 재사용하거나 정의 순서를 바꾸지 않는다. 필드 끝 추가도 기존 읽기 코드에 영향을 준다. 버전 일치로 연결을 제한하는 현재 핸드셰이크와 새 동작을 함께 검증한다. 전송의 프레임 길이 검사는 [서버](../../02_Server/Network/FrameValidator.cs)와 [클라이언트](../../04_ClientNet/FrameValidator.cs)에 각각 있다.
 
+## v18 던전 클리어 패킷
+
+현재 `ProtocolVersion.Current=18`이며 v17 연결은 기존 버전 일치 검사로 거부한다. 아래 v17 경제 계약의 패킷 구조와 기존 ID 1..38은 보존한다. PDL 끝에 추가한 두 패킷은 LittleEndian이고, 전체 길이는 4바이트 size/id 헤더를 포함한다.
+
+| ID | 패킷 | 헤더 뒤 필드 순서 | 전체 길이 |
+|---|---|---|---|
+| 39 | S_DungeonClearResult | byte result, int currency, int reward0ItemId, int reward0Count, int reward1ItemId, int reward1Count, int reward2ItemId, int reward2Count | 33 |
+| 40 | C_DungeonClearConfirm | byte reserved(0) | 5 |
+
+39번의 결과는 기존 `InventoryResult.Success`·`CurrencyCap`·`InventoryFull`만 사용한다. 클라이언트 [DungeonClearResultHandler](../../03_Client/Assets/Scripts/Network/Handlers/Dungeon/DungeonClearResultHandler.cs)는 정확한 길이·헤더·결과값, 골드 0~`InventoryLimits.MaxCurrency`, 각 칸의 카탈로그 아이템과 수량 1~`MaxStack` 또는 빈 칸 0/0을 검사한다. 잘못된 결과는 상태를 바꾸지 않고 버린다. 유효 결과는 현재 연결의 메인 스레드에서 보상 창에 전달하며 인벤토리나 보상량을 클라이언트에서 계산하지 않는다.
+
+[DungeonClearRewards](../../98_Shared/GameData/Dungeon/DungeonClearRewards.cs)는 임시 보상표(골드 50, Material 1, CoinPouch 1)와 패킷 칸 수 3을 공유한다. 현재 서버는 이 표를 소비하지 않고 39번을 만들거나 40번을 등록하지 않는다. 따라서 선택을 마친 세션의 40번은 기존 미등록 요청 경로에서 응답·상태 변경·연결 종료 없이 버려진다. 클라이언트 확인은 `CanSendGameplay`일 때 `reserved=0`을 `SendIntent`로 한 번 보내는 의도이며 서버의 보상 지급이나 맵 복귀 완료를 뜻하지 않는다.
+
 ## v17 경제 패킷
 
 `ProtocolVersion.Current=17`이며 v16 연결은 기존 버전 일치 검사로 거부한다. 기존 ID 1..34와 필드 순서는 보존하고 PDL 끝에 아래 4개를 추가했다. 필드는 LittleEndian이며 전체 길이는 ushort size + ushort id의 4바이트 헤더를 포함한다. 슬롯은 ItemId 오름차순으로 조밀하게 채운 고정 8개이고 빈 슬롯은 0/0이다.

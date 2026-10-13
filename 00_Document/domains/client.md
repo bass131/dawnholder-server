@@ -33,6 +33,14 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 사용은 현재 연결·게임플레이 Ready·snapshot 확인·소유량·ItemCatalog의 사용 가능 조건을 다시 읽고 현재 revision으로 요청한다. Material은 사용할 수 없고 소유 CoinPouch만 사용한다. 중복 클릭은 결과 대기 중 막으며 사용 요청을 자동 반복하지 않는다. 송신 반환은 사용 성공이 아니고, [ItemUseResultHandler](../../03_Client/Assets/Scripts/Network/Handlers/Inventory/ItemUseResultHandler.cs)의 검증된 서버 결과만 성공/거부 신호다. 성공·Stale 뒤의 snapshot이 누락되거나 결과가 오지 않으면 제한된 재조회로 회복한다. 로컬에서 수량·재화를 바꾸지 않으며 낮은 revision의 결과는 현재 표시를 덮지 않는다.
 
+## 던전 보상 창과 입구 글자
+
+39번 [DungeonClearResultHandler](../../03_Client/Assets/Scripts/Network/Handlers/Dungeon/DungeonClearResultHandler.cs)는 [v18 패킷 계약](protocol.md#v18-던전-클리어-패킷)을 검증한 뒤 `EnqueueApply`로 [DungeonClearRewardState](../../03_Client/Assets/Scripts/State/DungeonClearRewardState.cs)에 적용한다. 이 root는 결과를 받은 연결을 소유자로 기록하고 최신 결과 하나를 보관한다. 씬 전환 중 창이 없어도 결과를 보존하며 새 결과는 이전 표시를 대체한다. `NetworkService.ResetGlobalSessionMirrors`는 다른 미러와 함께 값을 비운 뒤 통지한다. 옛 연결의 늦은 callback은 세션 적용 gate가 거부하고, 창도 현재 연결의 identity와 종료 여부를 확인한다.
+
+[DungeonClearRewardWindow](../../03_Client/Assets/Scripts/UI/DungeonClearRewardWindow.cs)는 `CombatBootstrap`이 게임플레이 씬에 만드는 전용 Canvas다. 성공이면 서버가 보낸 정수 골드와 카탈로그 이름·개수를 표시하고, 용량 거부이면 받은 보상이 없다는 안내와 이유만 표시한다. 현재 연결의 `CanSendGameplay`가 참일 때만 「확인」이 pending 결과를 먼저 소비하고 40번(`reserved=0`)을 한 번 보낸다. 같은 프레임 중복 클릭과 자동 재시도는 송신을 추가하지 않으며, 송신 예외에서도 소비한 창은 닫힌다. 정상 반환은 서버 처리 완료의 확인이 아니다. 게임플레이 밖 씬·연결 종료·disable에서는 CanvasGroup의 표시와 입력을 모두 끄고, disable/destroy 때 실제로 구독한 상태에서 해제한다. 열린 창도 확인 버튼만 raycast를 받으며 닫힌 창은 클릭과 공격을 막지 않는다.
+
+[DungeonEntranceLabel](../../03_Client/Assets/Scripts/UI/DungeonEntranceLabel.cs)은 같은 bootstrap에서 Town 씬의 기존 단일 `PortalTrigger` 위에 「던전 입구」를 붙인다. 포탈 collider의 위쪽에 여백을 둔 world-space TMP 글자이며 raycast를 받지 않는다. 포탈의 자식으로 씬과 함께 사라지고, HuntingGround·BossRoom에는 생성하지 않는다. 맵·포탈 표와 scene·prefab은 이 표시에 관여하지 않는다.
+
 ## 원격 보간
 
 RemoteInterpolationState가 snapshot buffer·서버 시간축 렌더 시계·보간 계산을 단독 소유하며 명시적인 deltaTime으로 진행한다. RemoteEntity는 기존 공개 component API를 유지하고 Unity 프레임의 결과를 Transform에 적용한다. Initialize는 위치를 즉시 적용하고 시계를 초기화하며, SnapInterpolation은 현재 Transform을 유지한 채 buffer/clock을 초기화하고 ClearBuffer는 buffer만 지운다. 텔레포트 도착 callback은 새 snapshot 적재 직후 한 번 호출한다. registry·적 VisualFootOffset과 프레임당 catch-up의 수치 의미는 유지한다.
