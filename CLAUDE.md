@@ -24,7 +24,7 @@
 ## 메인 세션 진입
 
 - 사용자는 세션을 마칠 때 리드를 모두 닫는다. 새 메인 세션은 [RESUME](00_Document/operations/RESUME.md)의 진입 절차대로 리드를 다시 연다. 마감 구간의 리드는 Core·Content·Rules·CodeMap·Management 다섯이다. 메인은 `C:/Dev/DawnHolder_Project`에서, Core 리드는 `core-active`, 나머지는 승인된 각 worktree 탭에 연다([배치 정본](00_Document/operations/ORCA.md#r1-management-placement)). Core는 GameDev의 새 이름이며 태그 전환은 [전환 정본](AGENTS.md#core-tag-transition)을 따른다.
-- CodeMap은 Architecture 파트의 표시 이름이자 분석·검사 책임의 이름이다. 작업 경로와 태그(`[Architecture 리드 Opus]`·`[Architecture Sol]`·`[Architecture 검증자]`)의 Architecture 이름은 그대로 쓴다.
+- CodeMap은 Architecture 파트의 표시 이름이자 분석·검사 책임의 이름이다. 작업 경로와 태그(`[Architecture 리드 Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`)의 Architecture 이름은 그대로 쓴다.
 - 리드가 준비되면 메인 handle을 Orca 메시지로 알린다.
 - 메인이 직접 하는 운영 의무는 세 가지이며 세부는 각 링크를 따른다.
   - 목표가 끝나면 그 리드 pane을 닫고 새로 연다([R-8](00_Document/operations/ORCA.md#r8-astra-lifecycle)).
@@ -35,7 +35,7 @@
 
 - 명령 문법은 `orca skills get orchestration`의 버전 일치 가이드를 따른다. 터미널 handle은 매번 `orca terminal list --json`으로 확인하고 문서에 고정하지 않는다.
 - 메시지(회신 subject 포함, [R-3](00_Document/operations/ORCA.md#r3-reply-tag))와 터미널 입력은 `[메인 Claude]`로 시작한다. 지시는 `orca orchestration send --to <상대 주소>`로 우편함에 넣고, 터미널 입력에는 "Orca 메시지를 확인하라"는 안내만 담는다. Run에 묶인 리드의 주소는 `run:<run_id>`다([Run 회신 주소](00_Document/operations/ORCA.md#run-reply-address)). 태그는 AGENTS.md를 따른다.
-- 터미널 알림은 상대가 빈 프롬프트일 때만 `orca terminal send --enter`로 보낸다. 우편함에 지시를 넣은 뒤 상대 화면을 확인해 빈 프롬프트로 대기 중이면 안내를 보내고, 우편함만 채운 채 방치하지 않는다. 답장은 `$ORCA_TERMINAL_HANDLE`로 받는다. 세부는 `.agents/skills/dawnholder-session-handoff/SKILL.md`를 따른다.
+- 터미널 알림은 상대가 빈 프롬프트일 때만 `orca terminal send --enter`로 보낸다. 우편함에 지시를 넣은 뒤 상대 화면을 한 번 확인한다. Codex 수신자는 Orca 자동 알림으로 턴이 이미 시작됐으면 안내를 보내지 않고, 시작되지 않은 빈 프롬프트일 때만 보낸다. busy·선택창·작성 중 prompt에는 입력하지 않고, 우편함만 채운 채 방치하지 않는다. 답장은 `$ORCA_TERMINAL_HANDLE`로 받는다. 세부는 `.agents/skills/dawnholder-session-handoff/SKILL.md`의 「Codex 수신자 화면 확인」을 따른다.
 - 우편함 대기는 [대기 정본](00_Document/operations/ORCA.md#mailbox-wait)대로 `run_in_background`로 한 번에 하나만 연다. `&`나 `/dev/null`로 출력을 버리지 않는다. 끝난 출력을 직접 읽고 처리한 뒤 다음 대기를 연다.
 
 ## 메인의 기록과 알림

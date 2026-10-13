@@ -11,7 +11,7 @@
 
 **Dawnholder**는 RPG 전투와 길드 타이쿤 요소를 결합한 2D MMORPG 프로토타입입니다. 서버가 이동과 전투를 판정하고, 클라이언트는 예측·재조정으로 조작 지연을 줄입니다. 로컬 환경에서 멀티플레이 전 과정을 시연할 수 있도록 구성했습니다.
 
-게임 구현과 함께 **AI 협업 환경**도 설계했습니다. 기존 Claude Code 운영 자산은 보관하고, 현재는 Codex 메인 세션이 목표와 결정을 관리하며 작업자 구현과 독립 검증을 조정하는 프로젝트 지침을 운영합니다.
+게임 구현과 함께 **AI 협업 환경**도 설계했습니다. 현재는 메인 Claude 세션이 목표와 결정을 관리하고 병합 승인을 요청하며, 파트 리드 Codex 세션이 작업자 구현과 독립 검증을 조정하는 프로젝트 지침을 운영합니다.
 
 ### 핵심 구현
 
@@ -62,7 +62,7 @@ Claude Code 규칙·역할별 에이전트·슬래시 명령·검증 훅·지식
 04_ClientNet/       클라이언트용 소켓 라이브러리
 98_Shared/          공유 프로토콜·게임 데이터
 99_Tools/           PacketGenerator·헤드리스 봇·실행 도구
-.agents/skills/    프로젝트 전용 Codex 스킬
+.agents/skills/    프로젝트 전용 스킬
 .github/           CODEOWNERS와 저장소 설정
 ```
 
@@ -88,7 +88,7 @@ Claude Code 규칙·역할별 에이전트·슬래시 명령·검증 훅·지식
 
 ## 문제 해결
 
-환경·빌드는 [개발 안내](00_Document/operations/DEVELOPMENT.md), 진행 상태·남은 검증은 [현재 목표](00_Document/operations/CURRENT.md), 설계의 배경은 [ADR](00_Document/ADR/INDEX.md)에서 확인합니다. 과거 `/setup`이나 `/session:start`는 현행 Codex 명령이 아닙니다.
+환경·빌드는 [개발 안내](00_Document/operations/DEVELOPMENT.md), 진행 상태·남은 검증은 [현재 목표](00_Document/operations/CURRENT.md), 설계의 배경은 [ADR](00_Document/ADR/INDEX.md)에서 확인합니다. 과거 `/setup`이나 `/session:start`는 현행 운영 명령이 아닙니다.
 
 ---
 
