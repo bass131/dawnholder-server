@@ -134,6 +134,38 @@ goal 생략 시 후보 관련 세 값은 null이며 후보가 없으면 0이다.
 
 인용 ID가 하나라도 있으면 그 ID의 도착 여부를 판정하고 `missing-reference`는 내지 않는다. CLI는 파일 쓰기·네트워크 접근·Git 변경을 하지 않는다. [goal-loop](../.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)의 종료 기록 전 검사에 쓴다. 독립 회귀는 `node --test 99_Tools/Backlog.Tests/*.test.mjs`(PowerShell에서는 glob을 따옴표로 감싼다)다. [code-rules workflow](../.github/workflows/code-rules.yml)의 `Run independent Backlog candidate regressions` 단계는 시험 부재/load 실패/nonzero도 실패 처리하고 `$RULES_OUTPUT/backlog-independent-tests/`에 command/stdout/stderr/exit를 보존한다. 이 CI 단계는 회귀 시험을 실행하며 PR의 goal 후보 위반을 자동 차단하는 단계는 아니다.
 
+## Codex 병합 금지 가드
+
+[CodexGuard/codex-hook.mjs](CodexGuard/codex-hook.mjs)는 인자 없이 stdin의 Codex PreToolUse JSON을 읽는다. `hook_event_name: "PreToolUse"`, `tool_name: "Bash"`, 문자열 `tool_input.command`와 실행 위치 `cwd`가 공개 입력이다. 저장 입력의 직접 회귀 진입은 다음과 같다.
+
+```bash
+node 99_Tools/CodexGuard/codex-hook.mjs < hook-input.json
+node --test "99_Tools/CodexGuard.Tests/*.test.mjs"
+```
+
+[프로젝트 등록](../.codex/hooks.json)은 `^Bash$`에 동기 command 하나를 둔다. POSIX `command`와 Windows 기본 `cmd /C`용 `commandWindows`는 `git rev-parse --show-toplevel`의 로컬 결과로 정확한 진입 파일을 찾는다. 공백 root·하위 cwd의 인용을 유지하며 root 조회 실패·빈 결과·entry 부재는 이유를 stderr에 쓰고 exit2로 막는다. Node stdin·출력·exit는 그대로 전달한다. session cwd가 저장소 밖이거나 중첩 별도 저장소면 그 위치의 Git root를 사용하므로 프로젝트 선언 위치와 달라질 수 있다. 별도 hook 셸 설정의 Windows 실행은 별도 확인 대상이다.
+
+판정 책임은 [command-policy](CodexGuard/command-policy.mjs)의 순회, [shell-command](CodexGuard/shell-command.mjs)의 명시 셸 읽기, [gh-policy](CodexGuard/gh-policy.mjs)의 gh 인자/API, [git-push-policy](CodexGuard/git-push-policy.mjs)의 로컬 Git 읽기·목적지 정책으로 나뉜다. Node 표준 라이브러리만 쓰고 입력 명령을 실행하지 않는다. Git 읽기는 셸 없이 고정 read-only 하위 명령과 분리된 인자로 실행한다. 한 번의 Git 읽기는 최대3초·출력2MiB, 전체 판정은12초·명령2048개·중첩32단계, stdin은1MiB를 상한으로 한다. handler timeout20초는 내부 판정 오류를 deny로 돌려줄 여유를 둔다.
+
+| 구분 | 지원 동작 |
+|---|---|
+| gh 차단 | 모든 역할의 `gh pr merge`(auto·disable-auto 포함), REST PR merge endpoint의 비GET/필드 기본POST, inline GraphQL `mergePullRequest`·`enablePullRequestAutoMerge`·`enqueuePullRequest` mutation |
+| gh 보존 | PR create/view/checks, 일반 조회·명시 GET merge 조회·`disablePullRequestAutoMerge`, 다른 REST 쓰기와 데이터 인자 속 낱말 |
+| Git 차단 | 모든 원격의 main·그 원격의 로컬 근거로 확인한 기본 branch로 향하는 push. refspec·복수·force/delete·wildcard·all/mirror, 기본 push·remote.push·push.default·원격 선택 설정을 검사 |
+| Git 보존 | 로컬 merge·조회, 확인된 작업 branch 목적지, branch와 구분되는 명시 tag ref. 출발 branch 이름만으로 막지 않음 |
+| 셸 | 명시 compound·pipe·줄바꿈·기본 POSIX/PowerShell 제어 형태, `bash/sh -c`·`pwsh/powershell -Command`·`cmd /c`, `env`·`command`·`exec`, 명시 cd/Set-Location·git -C, 실행되는 명령치환·한 리터럴 문자열 eval/iex |
+| 데이터 | 인용된 메시지·PR제목·검색문구·주석·heredoc 본문 자체는 명령으로 취급하지 않음. 비인용 POSIX heredoc의 명령치환은 검사 |
+
+원격 기본 branch 근거는 `refs/remotes/<remote>/HEAD`의 유효한 로컬 symbolic ref다. 단일 추적 branch 이름으로 기본 branch를 추정하지 않는다. 근거가 없으면 대상 원격을 밝힌 **Error deny**와 사람이 검증한 기본 branch로 `git remote set-head <remote> <verified-default-branch>`를 수행하는 복구 안내를 낸다(그 추적 ref가 이미 있어야 함). 가드는 네트워크 조회나 refs/config 수리를 하지 않는다. 명시 main 갱신은 이 근거가 없어도 **Policy deny**다. 원격 URL은 일치하는 로컬 remote 설정으로 대응하며 대응되지 않으면 기본 branch 확인 오류다. matching/wildcard 판단에 사용하는 로컬 refs는 실제 원격과 다를 수 있다.
+
+정책 차단과 잘못된 JSON/대상 입력·잡힌 내부 예외·필요한 Git 읽기 실패 모두 exit0의 `hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason }` 한 객체를 반환하며 이유의 Policy/Error로 구별한다. 정상·비대상 사건/도구는 stdout 없이 exit0으로 기존 권한 판단에 넘긴다. 명시 allow/ask·명령 rewrite·Claude 승인 소비·메인 예외는 없다. stdout에는 진단 로그를 섞지 않는다.
+
+설치 Codex0.162.1의 공식 문서/대응 소스 기준 등록이다. 정상 TUI의 프로젝트 신뢰와 hook 신뢰는 필요하며 최초/변경 picker는 [R-6](../00_Document/operations/ORCA.md#r6-first-screen)에 따라 메인에게 넘긴다. 신뢰는 사용자 설정의 source 경로·event·group/handler 위치별 선언 해시 상태다. 같은 경로·정의의 새 세션에서 유지될 수 있다는 것은 소스상 추론이며 외부 스크립트 본문까지 해시로 보호한다고 주장하지 않는다. 에이전트가 전역 신뢰 설정을 쓰거나 우회하지 않는다. headless `codex exec`는 미신뢰 hook을 건너뛸 수 있다.
+
+이것은 명시 명령 검사이며 우회 불가능한 권한 시스템이 아니다. 변수/계산된 문자열·별칭/함수·외부 script 내부·EncodedCommand 본문, 재사용 셸 `write_stdin`(PreToolUse 재호출 없음), 다른 클라이언트/MCP는 보호 범위 밖이다. `gh api --input`·`field=@file` 본문은 읽지 않지만 명시 REST merge endpoint의 변경 호출은 막는다. hook/등록 자체 변경, 미기동·timeout·강제종료·출력 전달 실패는 잡힌 오류 deny와 다르며 Codex가 계속할 수 있다. 셸 조건·파이프의 실제 실행 여부와 외부 명령이 바꿀 미래 저장소 상태는 실행해 예측하지 않는다.
+
+독립 회귀 CI는 [code-rules](../.github/workflows/code-rules.yml)의 `Run independent CodexGuard regressions` 한 단계다. 시험 부재/load 실패/nonzero를 실패 처리하고 기존 artifact의 `$RULES_OUTPUT/codex-guard-independent-tests/`에 command/stdout/stderr/exit를 보존한다. stdin 회귀와 등록 wrapper의 로컬 자체검사는 실제 Codex 발동 검증이 아니다. 정상 최초 trust·새 세션 유지·exec_command/code-mode·headless 신뢰 전후·timeout, Linux 원격 CI는 각각 후속 독립 실행 근거로 확인한다.
+
 ## 병합 관문
 
 [MergeGate/claude-hook.mjs](MergeGate/claude-hook.mjs)는 인자 없이 stdin hook JSON을 읽는다. `.claude/settings.json`이 `node "$CLAUDE_PROJECT_DIR/99_Tools/MergeGate/claude-hook.mjs"`를 세 사건에 등록한다. PreToolUse matcher는 `Bash|Monitor|Write|Edit|MultiEdit|NotebookEdit|CronCreate|ScheduleWakeup|SendMessage|RemoteTrigger`, PermissionRequest matcher는 `Bash`다. 상태는 `$CLAUDE_PROJECT_DIR/.claude/state/merge-gate/`의 `main-checkout`과 `approvals/<session_id>.json`이며 Git 제외다. Node 표준 라이브러리만 사용하고 모든 결과의 exit는 0이다.

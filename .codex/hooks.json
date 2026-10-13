@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "root=$(git rev-parse --show-toplevel) && test -n \"$root\" && test -f \"$root/99_Tools/CodexGuard/codex-hook.mjs\" || { printf '%s\\n' 'Error deny: CodexGuard project root or entry is unavailable.' >&2; exit 2; }; node \"$root/99_Tools/CodexGuard/codex-hook.mjs\"",
+            "commandWindows": "(for /f \"delims=\" %I in ('git rev-parse --show-toplevel 2^>nul') do @if exist \"%I/99_Tools/CodexGuard/codex-hook.mjs\" (node \"%I/99_Tools/CodexGuard/codex-hook.mjs\" & exit /b)) & echo Error deny: CodexGuard project root or entry is unavailable. 1>&2 & exit /b 2",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

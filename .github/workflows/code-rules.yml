@@ -244,6 +244,31 @@ jobs:
           cat "$session_guard_results/stdout.txt" "$session_guard_results/stderr.txt"
           exit "$session_guard_exit"
 
+      - name: Run independent CodexGuard regressions
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          codex_guard_results="$RULES_OUTPUT/codex-guard-independent-tests"
+          mkdir -p "$codex_guard_results"
+          printf '%s\n' 'node --test 99_Tools/CodexGuard.Tests/*.test.mjs' > "$codex_guard_results/command.txt"
+          shopt -s nullglob
+          codex_guard_tests=(99_Tools/CodexGuard.Tests/*.test.mjs)
+          set +e
+          if test "${#codex_guard_tests[@]}" -gt 0; then
+            node --test "${codex_guard_tests[@]}" \
+              > "$codex_guard_results/stdout.txt" 2> "$codex_guard_results/stderr.txt"
+            codex_guard_exit=$?
+          else
+            : > "$codex_guard_results/stdout.txt"
+            printf '%s\n' 'Independent test suite is missing: 99_Tools/CodexGuard.Tests/*.test.mjs' \
+              > "$codex_guard_results/stderr.txt"
+            codex_guard_exit=1
+          fi
+          printf '%s\n' "$codex_guard_exit" > "$codex_guard_results/exit.txt"
+          cat "$codex_guard_results/stdout.txt" "$codex_guard_results/stderr.txt"
+          exit "$codex_guard_exit"
+
       - name: Run independent Backlog candidate regressions
         if: always()
         shell: bash

@@ -240,7 +240,11 @@ Gardener의 제안과 채택/실제 구현 완료를 구분한다.
 <a id="merge-gate"></a>
 ## 병합 관문
 
-현재 MergeGate와 SessionGuard는 저장소의 Claude Code hook이며 **Codex 세션에는 적용되지 않는다.** PR1의 Codex 리드는 병합 금지·메인 전용 권한·출력/쓰기 경계를 규칙으로 지킨다. [이번 goal의 PR2](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#pr-경계와-검증)는 Codex 지원 도구 진입에서 병합·원격 main push를 보호할 예정이며, 출력/쓰기 가드는 별도 후속 후보다. PR1 문서 작성을 가드 구현·신뢰·발동 성공으로 보고하지 않는다. PR별 사용자 승인과 아래 메인 전용 병합 경계는 그대로다.
+MergeGate와 SessionGuard는 저장소의 Claude Code hook이며 **Codex 세션에는 적용되지 않는다.** Codex에는 별도 [CodexGuard 진입·지원·한계](../../99_Tools/README.md#codex-병합-금지-가드)와 [프로젝트 PreToolUse 등록](../../.codex/hooks.json)을 둔다. 신뢰된 등록이 지원 Bash 진입에서 실행되면 모든 Codex 역할의 PR 병합/자동 병합·merge queue 변경과 원격 main/각 원격 기본 branch push를 막는다. Claude 메인 표식·승인 기록을 허용 예외로 읽거나 소비하지 않는다. 출력/쓰기 가드는 후속 후보이고 PR별 사용자 승인과 아래 메인 전용 병합 경계는 그대로다.
+
+Codex0.162.1의 정상 TUI 최초/변경 hook 신뢰 picker는 [R-6](#r6-first-screen)에 따라 메인에게 넘긴다. 신뢰는 사용자 설정에 source 절대 경로·event·handler 위치별 선언 해시로 저장되며, 같은 경로·정의의 신규 세션 유지 가능성은 공식 소스상 추론이다. 선언 해시가 호출 스크립트 본문까지 보호한다는 뜻은 아니다. 전역 신뢰 상태를 수동 주입하거나 우회하지 않는다. `codex exec`의 미신뢰 hook 건너뜀과 `write_stdin`의 PreToolUse 미호출은 한계로 남긴다. 등록·stdin 회귀/로컬 wrapper 자체검사는 최초 정상 trust·새 세션·실제 exec/code-mode 진입 성공을 대신하지 않으며, [PR2](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#pr-경계와-검증)의 신규 독립 검증에서 따로 확인한다.
+
+CodexGuard는 입력 명령을 실행하지 않고 로컬 Git refs/config를 읽어 목적지를 판정한다. 기본 branch의 로컬 remote HEAD 근거가 없으면 대상 원격과 사람이 확인한 branch로 복구하는 방법을 밝힌 오류 deny이며 자동 네트워크 조회·수리는 없다. 명시 main 갱신은 근거 부재와 무관하게 정책 deny다. 정상 조회·작업 branch push·로컬 merge·데이터 인자 속 금지 낱말은 보존한다. 동적 명령·별칭/외부 script·EncodedCommand·다른 클라이언트, 등록 자체 변경·미기동/timeout/강제종료/출력 실패까지 막는 권한 시스템은 아니다. 잡힌 입력/판정 오류 deny와 hook이 결정을 전달하지 못하는 경우를 구분한다.
 
 [R-1](#r1-management-placement)의 메인 checkout에서 메인 세션만(하위 에이전트 제외) 병합한다. 사용자 생성 `.claude/state/merge-gate/main-checkout` 파일 존재로 식별한다. 병합 뒤 최신 main을 fast-forward로 받는다.
 
@@ -252,7 +256,7 @@ hook은 방식 `--merge`·`--squash`·`--rebase` 중 하나를 받지만 운영 
 모든 Claude Code 세션의 Bash·Monitor에서 복합·heredoc·`bash -c`·치환 속 병합, `gh api` 병합·자동 병합, main push(`--all`·`--mirror`, main에서 refspec 없음·`HEAD`·`@`), 단독 병합 밖의 gh·merge나 push·main 낱말 동반 명령, 상태 폴더 쓰기·경로가 든 명령, 터미널·예약/전달 prompt로 승인 문장 주입을 막는다. [결과·상세 형태](../../99_Tools/README.md)와 [확인 창 승인 예외](../../AGENTS.md#공학-조건)를 따른다.
 리드·작업자 Claude 세션에도 마지막 그물이 실린다. 단독 병합 밖 명령에 gh·merge 또는 push·main 낱말이 함께 있으면 막히므로 PR 제목·본문·커밋 문구는 파일로 넘기고 push와 다른 명령은 나눠 실행한다.
 
-한계: 직접 입력·붙여넣기·터미널 주입 출처 미구분, Codex 미적용, 문자열 판정의 의도적 우회 가능(별칭·스크립트 파일·변수 속 명령), 등록 밖 도구·hook/settings 자체 수정과 하위 폴더·settings 부재·hook 미실행(node 부재 등)은 보호하지 않는다. GitHub ruleset 관리자 우회 유지. 같은 세션의 겹친 기록 쓰기(병합끼리·승인 제출과 병합)는 소비 기록 복원·두 번 통과가 가능하다(순차 호출 전제, 승인된 PR·head만). 병합 문자열 검색도 막혀 Grep·Read를 쓴다.
+Claude MergeGate의 한계: 직접 입력·붙여넣기·터미널 주입 출처 미구분, Codex 미적용, 문자열 판정의 의도적 우회 가능(별칭·스크립트 파일·변수 속 명령), 등록 밖 도구·hook/settings 자체 수정과 하위 폴더·settings 부재·hook 미실행(node 부재 등)은 보호하지 않는다. GitHub ruleset 관리자 우회 유지. 같은 세션의 겹친 기록 쓰기(병합끼리·승인 제출과 병합)는 소비 기록 복원·두 번 통과가 가능하다(순차 호출 전제, 승인된 PR·head만). 병합 문자열 검색도 막혀 Grep·Read를 쓴다.
 
 ## 공유 자원
 
