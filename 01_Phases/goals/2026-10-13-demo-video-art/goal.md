@@ -88,6 +88,7 @@
 
 - Art: 그림(PNG)과 `.meta`·스프라이트 설정, 머티리얼, 셰이더, 표시 전용 효과 컴포넌트, 기존 네 창에 그림을 입히는 코드(스프라이트 칸 추가).
 - Content: 새 길드·대장간 화면 코드, 게임 상태·패킷 처리, 효과를 부르는 위치. 지금 Content goal은 `03_Client`를 쓰지 않는다(Content 리드 `msg_587619160192`). 다음 Content goal(길드 화면)의 새 리드와 이 나눔을 확정한다.
+- 대장장이 기본 동작 교체: 다듬은 시트·`.meta`, 새 망치질 클립, `BlackSmith.controller`의 기본 상태 교체는 Art가 효과 PR에서 한다. Content 리드가 동의했다(`msg_136ca02071fc`). 지금 Content goal은 `Npc_BlackSmith.prefab`·이 컨트롤러·대장장이 동작 코드를 바꾸지 않는다. 다음 Content goal은 대장장이 상호작용 컴포넌트를 이 프리팹에 붙일 수 있다. 그때 새 Content 리드가 쓰기 전에 Art와 파일·시기를 나누도록 Content goal 인계에 적는다(Content 리드 약속).
 - Content 작업 사본의 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`와 `03_Client/ProjectSettings/ProjectSettings.asset`은 Art가 커밋하지 않는다.
 - 새 자산은 `.meta`·GUID를 함께 커밋한다. 기존 자산을 바꿀 때는 `.meta`·GUID·문자열 경로(Resources 경로 포함)를 유지한다. 셰이더·머티리얼·스프라이트 전용 규칙은 [CODE_CONVENTION](../../../00_Document/conventions/CODE_CONVENTION.md)에 없어서 「Unity와 이름」 절과 [client.md](../../../00_Document/domains/client.md) 「에셋을 다룰 때」를 임시 기준으로 쓴다.
 - Unity: art-active는 Library가 없는 새 작업 사본이라 처음 열 때 가져오기 시간과 메모리가 크다. Editor는 Content와 합쳐 한 번에 하나만 연다. 열기 직전 여유 물리·가상 메모리 4GB 이상을 원시로 남기고 다른 리드에 알린다. 첫 가져오기는 Content의 봇 검증과 실화면 확인이 없는 시간에 한 번 해 둔다. Unity 실행 권한(MCP 시트)이 필요한 작업은 묶어서 메인에 시각을 요청한다.
@@ -125,18 +126,18 @@
 
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-13T05:07:55Z다. 망치질 시트 사용 결정(A)을 받아 이 goal에 적었다. 다음은 시범 PR이다. UI 창 그림 한 벌을 Git 밖에서 만드는 Sol이 일한다.
+다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-13T05:13:10Z다. 망치질 시트 사용 결정(A)과 대장장이 기본 동작 교체의 소유(Art, 효과 PR)를 이 goal에 적었다. 시범 PR을 연다. UI 창 그림 한 벌을 Git 밖에서 만드는 Sol이 일한다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 시범 PR을 연다(push, PR 생성, 신규 Astra 문서 실사, 메인에 병합 승인 요청). UI 창 그림 Sol의 `worker_done`을 대조한다. 대장장이 기본 동작 교체의 소유를 Content 리드와 확정한다 |
+| 다음 첫 일 | 시범 PR의 신규 Astra 문서 실사를 받고 메인에 병합 승인을 요청한다. UI 창 그림 Sol의 `worker_done`을 대조한다 |
 | 열린 Task·Dispatch | UI 창 그림 Task `task_359839f8e3a9` / Dispatch `ctx_fe2d16be2567`(계약 근거 폴더 `contracts/ui-kit-sol-v1.md`, 출력 `ui-kit/`). 무료 시범 Task `task_e97b1225c67a`는 정산했다 |
-| 작업 공간 / branch | `art-active` / `docs/demo-video-art-trial-20261013`(base `a570dbf3`) |
-| PR | 없다 |
+| 작업 공간 / branch | `art-active` / `docs/demo-video-art-trial-20261013`(base `a570dbf3`, 뒤에 origin/main `da717247`을 병합) |
+| PR | 시범 PR을 이 branch로 연다. 번호는 GitHub에서 branch 이름으로 찾는다 |
 | 리드 세션 / Run | `term_63ecd821-d71c-4eab-8ab0-b5fc6da987d1` / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`) |
-| 로컬에만 둔 변경 | 이 branch의 커밋 전부(push 전, 원격 branch 없음). 작업 트리의 미커밋 변경은 없다 |
+| 로컬에만 둔 변경 | 없다. branch를 origin에 올렸다 |
 | 작업자·실행 자원 | Art Sol pane 1(`term_d2a92ec9-a9e5-48cc-a42d-c1ca55c0d63d`, 리드 pane split). Unity는 아직 이 작업 사본에서 연 적이 없다 |
-| 남은 결정·준비 | UI 창 그림 디자인 확인(사용자, 미리보기 뒤). 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정 |
+| 남은 결정·준비 | UI 창 그림 디자인 확인(사용자, 미리보기 뒤). 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함) |
 
 **남은 순서**: 비교 글 → 무료 시범 → 시범 PR → UI 창 PR → 효과 PR → 10-21 판단 → 발판·지형 PR → 마지막 손질 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
@@ -173,6 +174,14 @@
 - 후속 측정(리드): 메인의 화면 크기 계산(1080p에서 대장장이 키 약 254px)을 장면·meta 파일로 확인했다. 메인이 제안한 색 맞춤도 시험했다. 값과 경로는 [비교 글의 무료 시범 결과](sheet-method-comparison.md#무료-시범-결과)에 있다.
 - 사용 결정: 사용자가 A(대장간 앞에선 늘 망치질, 색 맞춤 포함)를 골랐다(메인 `msg_720a56af6bf1`). 원문과 경위는 [적용 중인 사용자 결정](#적용-중인-사용자-결정)에 있다.
 - 원시: 근거 폴더 `sheet-trial/`의 `launch-*`, `worker-start-receipt.json`, `draft-read-1.json`·`draft-read-2.json`, `draft-enter-*`, `lead-analysis/`의 `worker-release-receipt.json`·`sol-close-*`.
+
+### UI 창 그림 한 벌 — 진행 중, 2026-10-13
+
+- 근거: 메인 `msg_19f1ec8e9127`·`msg_721e797fb5c8`의 「UI 창 묶음 준비를 이어가라」. 그림은 Git 밖에서 만들고, 저장소 반영은 시범 PR 병합 뒤 UI 창 PR에서 한다.
+- 계약: 근거 폴더 `contracts/ui-kit-sol-v1.md`(1판). 배정 `gpt-6.1-sol` max. 이미지 생성 도구 대신 결정적 그리기 스크립트로 9-slice PNG 일곱 장과 미리보기를 만든다. 톤은 HUD(`Quest_Panel.png`·`Status_Frame.png`)의 색 표본을 따른다.
+- 기동: 리드 pane vertical split(04:57:17Z), 최초 실행 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 화면 표시 「GPT-6.1-Sol max」, backend `unknown`. 첫 화면에 선택창 없음. `turn_start_unobserved` 뒤 draft 「[Pasted Content 11466 chars]」를 확인하고 Enter만 한 번 보냈다(04:58:22Z).
+- 작업자 질문: 파티 초대 버튼이 코드상 창 밖에 놓인다는 관찰(`msg_3054b9ad5405`)에는 미리보기에서만 창 안에 그리고 현행 배치는 보고서에 적으라고 답했다(`msg_cdeddfa032db`). 옮길지는 UI 창 PR 계약에서 정한다.
+- 첫 발생 교정 기록: 계약 발행 뒤 리드가 재개 지점 기록 커밋을 해서 HEAD가 계약의 기준 SHA와 달라졌다. Sol이 멈추고 물었고(`msg_d18cc3fb7a00`), 리드가 차이는 기록 커밋뿐이니 계속하라고 답했다(`msg_fc8df4117a1a`). 다음 계약부터 「리드가 goal 기록 커밋을 할 수 있고, 그 커밋은 계약 대상 파일을 바꾸지 않는다」를 적는다. 반복 규칙은 두 번째 발생 때 판단한다.
 
 ## 다음 계획 후보
 
