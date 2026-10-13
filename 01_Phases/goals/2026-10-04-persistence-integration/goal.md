@@ -644,9 +644,41 @@
 
 ## 재개 지점
 
+### 정의 수정 구현·검증, 문서 정정과 동작 커밋 — 2026-10-13T05:46Z
+
+기록 시각은 2026-10-13T05:46:06Z(`date -u`, KST 14:46, 원시 N2/`time-goal-record-13.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. MDR은 E/`module-definition-fix-review`, MDD는 E/`module-definition-doc-fix`, MDV는 E/`module-definition-doc-fix-review`(모두 새 폴더)다.
+
+- **구현(만들 것 7):** 신규 `gpt-6-astra` xhigh 구현자다. handle `term_7174ae6c-ddee-44f5-a518-96653e6085ac`, Task `task_8b2bf4b04f25`, Dispatch `ctx_c2ab185be5bc`. 계약은 MDF/`contract.md` v1(SHA256 `07DA1E62…F278`), 기동 기록은 MDF/`launch-record.txt`, worker_done은 `msg_8072ffe01101`이다.
+  - 내용: 기대 정의를 엔진 저장 형태(머리말 「CREATE」 + 공백 셋)로 바꾸는 규칙을 `ModuleHash.Common.ps1` 한 곳에 뒀다. bundle 읽기·hash 소비자·시험 fixture가 그 규칙을 쓴다. manifest와 verify-schema의 기대값 18개, 004 선언 checksum을 고쳤다(004 제자리 수정은 「적용 중인 사용자 결정」 첫 항목).
+  - 결과: 오프라인 1,419 PASS / 0 FAIL / 9 OBSERVED(기준선 1,401/0/9), 구조 검사 116 대상·위반 0이다.
+- **첫 독립 판정: NOT PASS(제품 통과, 절차 둘·문서 하나).** 신규 `gpt-6-astra` xhigh 검증자다. handle `term_4ee3a3b3-084a-4a38-804c-ebc97386f8eb`, Task `task_03701fe06b01`, Dispatch `ctx_1544c6d1eec5`. 계약은 MDR/`contract.md` v1(SHA256 `00067BF9…8A0B`), worker_done은 `msg_02863d606528`(05:04:18Z), 판정은 MDR/`verdict.md`(SHA256 `304B8A96…9C12`)다.
+  - 제품: 오프라인 1,419/0/9 재실행, 독립 시험 69/0, 구조 116/0, 고정 입력 17,067개 시작·끝 일치다. 리드 R-2는 원시에서 다시 합산해 같았다(MDR/`lead-sample-verdict.txt`, `lead-sample-verdict-2.txt`).
+  - #1(구현자) heartbeat 302초, #4(검증자) 364초다. 리드가 정본 측정으로 다시 쟀다(MDR/`lead-liveness-picked.txt`).
+  - #3(문서): MSSQL.md 155행이 옛 004를 적용한 DB의 거부 문구를 `Current bundle differs from its migration declaration`로 적었다. 실제로는 `Module.Common.ps1:195`의 migration history 검사가 먼저 거부한다. 원천은 리드 구현 계약 M-8(MDF/`contract.md` 70행)의 오류다. 리드 계약 오류의 첫 발생이라 기록만 한다.
+  - #2(리드): 작업자 메시지 사본 2건 누락이다. 원문 보충으로 비차단이다.
+  - 처분: 메인 판단 1 A·2 A(`msg_79b7e95e7202`, 05:08:16Z, 요청 `msg_3fe068c72114`)다. 메인 운영 판단이고 사용자 결정이 아니다.
+    - 1 A: #1·#4는 비차단 운영 기록이다. heartbeat 5분 초과 처분의 이 goal 안 두 번째 발생이다(첫 처분은 아래 2026-10-11T14:09Z 블록). 반복 규칙 후보는 메인의 Rules 전달 목록(heartbeat 간격 근거)에 이미 있다.
+    - 2 A: #3은 루프 안에서 155행 한 문장만 고친다. #3 확정 실패 집계는 1회다.
+- **문서 정정:** 신규 `gpt-6-astra` xhigh 작업자다. handle `term_d2dd7932-5cf3-42d3-a2c4-4ab1609de801`, Task `task_d019b4dc6379`, Dispatch `ctx_7c5d18acbe56`. 계약은 MDD/`contract.md` v1(SHA256 `56119D38…B7EB`), worker_done은 `msg_88ea68f3dc43`이다. MSSQL.md 155행 한 문장만 실제 첫 거부 문구로 바꿨다. heartbeat는 최대 98초다(MDD/`lead-liveness-picked.txt`).
+- **문서 재실사: 통과 차단(문서 충족, 절차 둘) → 메인 수용.** 신규 `gpt-6-astra` xhigh 검증자다. handle `term_99165c9a-cced-4d6d-a873-47ca5b42c474`, Task `task_d4d46c526340`, Dispatch `ctx_0aef776f132e`. 계약은 MDV/`contract.md` v1(SHA256 `3E965309…ED5B`), 기동은 05:21:54Z, worker_done은 `msg_576ff2946afa`(05:41:12Z), 판정은 MDV/`verdict.md`(SHA256 `E048EA8B…BF19`)다.
+  - 충족: D-1~D-4, 155행만 변경, 고정 입력 35개 시작·끝 동일이다. 옛·새 004 정규화 checksum은 다르다(`8A9BA4ED…620A` ≠ `2B9480C3…07B0`). 리드 R-2는 MDV/`lead-r2-check.txt`다.
+  - #1(작업자): 허용 목록 밖 읽기 전용 Git 6회다(rev-parse, branch --show-current, --no-optional-locks 없는 status 1회). 변경은 없다. 리드 계약이 HEAD·branch·status 확인을 요구하면서 그 명령을 허용 목록에 적지 않았다(판정자 예방 관찰). 허용 밖 Git 읽기의 이 goal 안 두 번째 발생이다(첫 발생은 아래 2026-10-11T14:09Z 블록의 판정자 자기 이탈).
+  - #2(검증자 자기 보고): heartbeat만 세면 309초다. 정본 측정(check-liveness, escalation 포함)으로는 최대 241초라 5분 초과 새 발생으로 세지 않는다(MDV/`lead-liveness-picked.txt`). 계약의 4분 예방 기준 1초 초과는 기록만 한다.
+  - escalation 두 건은 `msg_6208244c313d`(허용 밖 Git)와 `msg_59f615767713`(자기 heartbeat)이다. 리드는 첫 건에 사실만 보충했다(`msg_83a5a2730e8f`).
+  - 처분: 메인 판단 1 A·2 A(`msg_ce743ba44ef4`, 05:44:56Z, 요청 `msg_82c8d7a94031`)다. 메인 운영 판단이고 사용자 결정이 아니다.
+    - 1 A: 두 건은 비차단 운영 기록이고 문서 정정은 통과로 받는다.
+    - 2 A: 다음 Core 계약부터 시작 확인용 읽기 전용 Git 명령(`git --no-optional-locks log -1 --format=%H`, `git --no-optional-locks status --porcelain --branch` 형태)을 허용 목록에 정확히 적는다. 반복 규칙 후보 「계약 시작 확인 명령과 허용 목록 일치」는 메인이 10-28 뒤 Rules에 넘길 목록에 더한다.
+- **정산:** 네 세션 모두 release(retained) → tui-idle → 마지막 화면 → close(ptyKilled true)로 마쳤다(각 폴더 `lead-close.json`).
+- **커밋:** 동작 커밋 `4a62b7b3f78c153052b6914f44a9897373840f38` 하나(10개 파일, +166/−82)다. 구조만 바뀐 부분은 없다. `Read-ModuleBundle`의 바이트 수 식 교체도 변환된 정의를 세는 같은 동작 변경이다. 커밋 직전 10개 파일 hash가 재실사 대상 값과 같았다(MDV/`lead-precommit-hashes.txt`). 이 기록은 그다음 commit이다.
+- **자원 상태:** 바뀌지 않았다. 컨테이너와 볼륨은 없고 이미지는 보존한다. 이번 구간은 Docker·WSL·SQL을 쓰지 않았다.
+- **다음 할 일:**
+  1. 새 실행 카드(실제 엔진 재설치)를 쓰고 메인을 거쳐 사용자 실행 승인을 받는다. 계약 허용 목록에는 위 2 A의 Git 명령을 적는다.
+  2. 관리 비밀 처분 결정을 메인에 올린다.
+  3. 10-24에 재접속 복원 가능성을 메인에 보고한다.
+
 ### 재진입, 004 범위 결정과 정의 수정 계약 준비 — 2026-10-13T03:57Z
 
-기록 시각은 2026-10-13T03:57:52Z(`date -u`, KST 12:57, 원시 N2/`time-goal-record-12.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. MDF는 E/`module-definition-fix`(새 폴더)다.
+기록 시각은 2026-10-13T03:57:52Z(`date -u`, KST 12:57, 원시 N2/`time-goal-record-12.txt`)다. 이 블록은 직전 재개 정본이다. 약어는 아래 블록과 같다. MDF는 E/`module-definition-fix`(새 폴더)다.
 
 - **재진입:** 메인 진입 메시지(`msg_060ac8019576`·`msg_cf142a457e98`·`msg_c662f77fdab0`)로 새 리드 pane에 들어왔다. 화면 handle `term_07aa0639-354d-4e5c-8bfe-3cab656c6c13`, 모델 `claude-opus-5-5` xhigh(재기동 명령 기준), backend는 unknown이다. Run `run_b36cc92a4cf4`를 run-use로 인수했다(consumer 세대 12, N2/`run-use-20261013.json`). READY는 `msg_7b81c69cb6fc`다.
   - 이전 pane의 Bash는 매 호출 「/usr/bin/bash: -c: line 72: unexpected EOF while looking for matching `''」로 실패했다. 원인은 커진 Codex SessionStart hook 파일로 보인다[추론]. 새 pane에서는 정상이다.
