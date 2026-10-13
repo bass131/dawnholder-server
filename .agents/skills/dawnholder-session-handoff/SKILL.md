@@ -24,10 +24,16 @@ description: Dawnholder의 Orca 세션 배치·준비 확인과 최소 맥락 �
 - 마감 구간 다섯 리드(Core·Content·Rules·CodeMap·Management)와 승인된 목표 한정 추가 파트의 배치·종료 권한은 R-1 정본에서 확인한다. Core의 기존 명칭과 태그 전환은 [AGENTS Core 전환 정본](../../../AGENTS.md#core-tag-transition)을 따른다. CodeMap의 기존 Architecture 경로·태그를 유지하며, 이 스킬이 추가 파트의 상시 배치나 생성 권한을 만들지 않는다.
 - 메인은 준비된 현재 리드들에 자기 handle을 Orca 메시지로 공유한다. Core 리드 탭과 작업자·검증자 pane 배치는 R-1 정본에서 확인한다. 작업자 생성·연결·정산은 [Orca 위임 지침](../dawnholder-goal-loop/references/orca-work.md)을 따른다.
 
+## Codex 수신자 화면 확인
+
+메인·리드가 Codex 세션에 메일을 보낸 뒤에는 현재 target·runtime·incarnation의 화면을 제한된 `terminal read`·`show`로 **한 번** 확인한다. 자동 알림으로 턴이 시작되지 않은 **빈 prompt**에만 자기 발신 태그와 “Orca 메시지를 확인해 주세요” 안내를 입력한다. 지시 본문은 orchestration에 두고 busy·선택창·작성 중 prompt에는 입력하지 않는다. 상태가 불명확하면 보고하며 accepted 뒤 침묵만으로 같은 텍스트를 다시 보내지 않는다.
+
+이 안내는 아래 신규 준비 no-op나 [공식 계약 receipt/draft 복구](../../../00_Document/operations/ORCA.md#official-contract-draft)를 대신하지 않는다. 각각의 사전 조건과 동일 request receipt 재확인 절차를 유지한다. 받는 Codex 리드의 대기 없는 전체 묶음 처리·ack는 [우편함 정본](../../../00_Document/operations/ORCA.md#mailbox-wait)을 따른다.
+
 ## 신규 prompt 준비 확인
 
 1. bounded readiness wait를 실행하고 `satisfied` 값을 확인한다. 출력이나 timeout만으로 준비됐다고 판단하지 않는다.
-2. wait가 만료됐고 읽기 결과가 **빈 신규 prompt**임을 확인한 경우에만, 준비 확인 no-op 요청을 Orca 메시지로 딱 한 번 보낸다. subject/body에 자기 태그를 붙이고 “작업은 시작하지 말고 준비되었으면 READY와 현재 작업 경로만 답해주세요”라고 요청한다. 터미널에는 자기 태그와 “Orca 메시지를 확인해 주세요” 안내만 입력한다.
+2. wait가 만료됐고 읽기 결과가 **빈 신규 prompt**임을 확인한 경우에만, 준비 확인 no-op 요청을 Orca 메시지로 딱 한 번 보낸다. subject/body에 자기 태그를 붙이고 “작업은 시작하지 말고 준비되었으면 READY와 현재 작업 경로만 답해주세요”라고 요청한다. Codex 수신자에게는 위 화면 확인 뒤 미시작 빈 prompt에만 안내한다. Claude 수신자의 기존 터미널 안내도 자기 태그와 “Orca 메시지를 확인해 주세요”만 담는다.
 3. busy·모달·작성 중 prompt이거나 상태가 불명확하면 보내지 않고 상태를 보고한다. 준비 확인 메시지의 실제 응답을 bounded read/wait로 확인한 뒤에만 handoff를 보낸다.
 4. READY 응답 뒤 실제 handoff 직전에 target·runtime·incarnation을 새로 조회해 준비 확인 때의 값과 대조한다. 값이 바뀌거나 동일성을 확인할 수 없으면 이전 READY·receipt를 재사용하지 않고 보류한다. 새 대상에 자동 전송하지 않는다.
 5. `input_accepted`는 입력 접수, `turn_started`는 턴 시작 증거, 실제 준비 응답은 준비 확인이다. 이 셋을 같은 성공으로 보고하지 않는다.

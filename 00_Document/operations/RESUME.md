@@ -19,7 +19,7 @@ Core 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-ac
 
 1. 새 리드의 배치는 [R-1의 현재 리드 배치](ORCA.md#r1-management-placement), 작업자 기동은 [R-5](ORCA.md#r5-worker-launch), 첫 화면 확인은 [R-6](ORCA.md#r6-first-screen)을 따른다. 이전 handle/Run/Task/Dispatch를 재사용하지 않는다.
    현재 리드와 승인된 목표 한정 추가 파트의 배치·종료 권한은 R-1 정본에서 확인한다. 현재 goal의 종료조건도 확인하며 이 문서에 상세 규칙을 복제하지 않는다.
-   Claude 세션은 첫 파일 쓰기 전 맥락 메모를 쓰고 읽기 → 메모 → Run·receipt·READY 순서로 진입한다. 메모는 `.backups/verification/<goal>/` 아래 `context`가 든 이름의 `.md`다. 범위 승인 전에는 예정 goal 폴더를 쓴다. 리드 세션 임시 파일은 `.backups/tmp/`에 둔다. checkout 밖 Claude Code scratchpad는 [세션 쓰기 가드](../../99_Tools/README.md#세션-쓰기-가드)가 막는다.
+   이 머신의 로컬 리드는 Codex를 포함해 첫 파일 쓰기 전 맥락 메모를 쓰고 **읽기 → 메모 → Run·receipt·READY** 순서로 진입한다. Claude 세션도 같은 메모 선행 기준을 따른다. 메모는 `.backups/verification/<goal>/` 아래 `context`가 든 이름의 `.md`다. 범위 승인 전에는 예정 goal 폴더를 쓴다. 리드 세션 임시 파일은 `.backups/tmp/`에 둔다. 현재 [SessionGuard](../../99_Tools/README.md#세션-쓰기-가드)가 checkout 밖 scratchpad를 막는 것은 Claude Code에만 해당하며, Codex의 메모·출력·쓰기 경계는 규칙으로 지킨다. 현재 MergeGate의 Claude 전용 적용과 PR2 가드/별도 출력·쓰기 후보는 [병합 관문](ORCA.md#merge-gate)에서 구분한다.
 2. 새 메인은 [R-1의 메인 전용 checkout](ORCA.md#r1-management-placement)에서 열고 리드를 연 뒤 작업 현황 탭을 다시 띄운다. 현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다.
 
    ```powershell
