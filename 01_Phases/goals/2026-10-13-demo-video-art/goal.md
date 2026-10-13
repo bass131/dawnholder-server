@@ -123,17 +123,17 @@
 
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-13T04:52:02Z다. 무료 시범 결과를 메인에 올렸고, 사용자가 HTML 비교를 본 뒤 고르기를 기다린다. 화면 크기 확인과 색 맞춤 시험은 끝냈다.
+다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-13T04:58:42Z다. 무료 시범 결과를 메인에 올렸고 사용자 결정을 기다린다. 메인이 선택지를 고쳐 올렸다(`msg_721e797fb5c8`: A 대장간 앞에선 늘 망치질 / B 첫·끝 프레임을 대기 자세에 맞춰 재생성). 그동안 UI 창 그림 한 벌을 Git 밖에서 만드는 Sol이 일한다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 무료 시범 결과의 사용 결정(A 후처리 / B 재생성, 색 맞춤 포함 여부)을 메인을 거쳐 받는다. 받으면 결정을 이 goal에 적고 시범 PR을 연다. 그때까지 시범 PR은 열지 않고 UI 창 묶음을 준비한다 |
-| 열린 Task·Dispatch | 없다. 무료 시범 Task `task_e97b1225c67a` / Dispatch `ctx_1f1c9bb71423`은 정산했고 Sol pane을 닫았다 |
+| 다음 첫 일 | UI 창 그림 Sol의 `worker_done`을 대조한다. 무료 시범 결과의 사용 결정을 메인을 거쳐 받는다. 받으면 결정을 이 goal에 적고 시범 PR을 연다. 그때까지 시범 PR은 열지 않고 UI 창 묶음을 준비한다 |
+| 열린 Task·Dispatch | UI 창 그림 Task `task_359839f8e3a9` / Dispatch `ctx_fe2d16be2567`(계약 근거 폴더 `contracts/ui-kit-sol-v1.md`, 출력 `ui-kit/`). 무료 시범 Task `task_e97b1225c67a`는 정산했다 |
 | 작업 공간 / branch | `art-active` / `docs/demo-video-art-trial-20261013`(base `a570dbf3`) |
 | PR | 없다 |
 | 리드 세션 / Run | `term_63ecd821-d71c-4eab-8ab0-b5fc6da987d1` / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`) |
 | 로컬에만 둔 변경 | 이 branch의 커밋 전부(push 전, 원격 branch 없음). 작업 트리의 미커밋 변경은 없다 |
-| 작업자·실행 자원 | Art 작업자 pane 0. Unity는 아직 이 작업 사본에서 연 적이 없다 |
+| 작업자·실행 자원 | Art Sol pane 1(`term_d2a92ec9-a9e5-48cc-a42d-c1ca55c0d63d`, 리드 pane split). Unity는 아직 이 작업 사본에서 연 적이 없다 |
 | 남은 결정·준비 | 무료 시범 결과를 본 뒤 사용 여부와 다음 경로(사용자). 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정 |
 
 **남은 순서**: 비교 글 → 무료 시범 → 시범 PR → UI 창 PR → 효과 PR → 10-21 판단 → 발판·지형 PR → 마지막 손질 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
