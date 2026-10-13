@@ -1,8 +1,8 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 던전 패킷·창 PR은 [PR230](https://github.com/bass131/dawnholder-server/pull/230)으로 사용자 승인을 받아 병합됐다(2026-10-11T10:57:10Z). 던전 클리어 PR은 메인이 범위를 확인했고, 선행 시험 RED 준비·서버 구현·독립 검증이 끝났다(시험 커밋 `2e2c5c92`, 구현 커밋 `654b2728`, 2026-10-11). 독립 검증은 10-11 판정 보류(봇 미실행) 뒤 2026-10-13 봇 검증이 그 보류를 닫아 통과다. 다음은 C9 실화면이며, 사용자 복귀 뒤 메인이 Unity 코드 실행 허용 줄을 넣으면 시작한다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **PR221·PR230은 병합됐다. 던전 클리어 서버·봇 검증은 통과했으나 2026-10-14 KST C9 실화면은 S-1(보상 창·패널 겹침)·S-2(STAGE CLEAR 배너 가림)로 차단됐다. 실제 범위1~4는 수행했고 검증자·Editor·서버를 정산했다. Art 파일 순서 확인 완료·최신 main 합류 뒤 최소 수정·재검증한다. 다음 goal은 자동 시작하지 않는다.**
 
-- 담당: Content 리드(`[Content 리드 Opus]`). 시작 기준 `origin/main` = `cc20d428f7988fdcb232a7c811cf2e729446abdc`.
+- 담당: Content 리드 [Content 리드 Astra], 지정/표시 gpt-6-astra xhigh, backend unknown. 시작 기준 origin/main = cc20d428f7988fdcb232a7c811cf2e729446abdc.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침, 병합 뒤 원격 삭제). 던전 클리어 PR branch `feat/dungeon-clear-server-20261011`(base `999b1b98`).
 - 착수 원천: 메인 `msg_9fe1d49e00bb`(2026-10-10T07:39:37Z)가 전달한 사용자 승인. 원문은 아래 [적용 중인 사용자 결정](#적용-중인-사용자-결정)에 있다. 범위 원문은 리드 초안 `msg_f1bba119c853`이다.
 - 로컬 원문·계약·판정은 `.backups/verification/2026-10-10-dungeon-clear-rewards/`에 둔다(Git 밖).
@@ -173,6 +173,10 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 정본에 반영하지 않은, 이 goal에만 적용하는 사용자 결정이다. 모두 메인이 전달했으며 리드 pane의 사용자 직접 입력으로 격상하지 않는다.
 
+- **C9 최소 수정·UI 계층 별도**(메인 `msg_b78153624c8b`, 2026-10-13T15:39:15Z, 10-14 KST). 사용자 원문 순서: ① 「UI쪽에 Stacking 처리가 제대로 안됐나보네 Z값 기준으로 정렬하는거랑 / 그리고 원래 UGUI 형식 보면은 부모 오브젝트로 하위 오브젝트로 묶어서 관리하기도 하니까, 그 부분 설계가 아예없나?」 ② 「그리고 Stacking할때 일단 분류상으로 전역 Variable로 0,1,2,3,4 식으로 카테고리로 먼저 Z Depth 분류하고 이후에 안에서 세부적으로 Stacking Value 셋업하는 방식으로 하는게 더 깔끔해보이긴 해」 ③ 「그리고 값으로만 관리하기 힘드니까 변수명으로 Enum 컨트롤 해도 좋고」 ④ 「대시보드 결정 응답: 1) UI 계층 설계 - C9는 두 결함만 고치고 계층 설계는 따로 할지, C9에 같이 넣을지 → A C9 최소 수정 + 계층 따로」. 효과: C9는 S-1·S-2만 수정한다. S-2는 보상 창 표시 때 배너를 숨기거나 닫는 방향을 우선 검토한다. 새 정렬 숫자를 흩어 넣지 않고 불가피한 숫자 변경 줄에는 후보 ID를 남긴다. 공용 계층은 [BACKLOG ui-layer-sort-design](../../../00_Document/operations/BACKLOG.md#ui-layer-sort-design의-원문검토-범위)으로 분리했고 Art UI 적용 직전 별도 범위를 정한다.
+
+- **Unity 실행 허용 줄 유지**(메인 `msg_ed1f78c433f4`, 2026-10-13T14:07Z). 사용자 원문 「그리고 아무래도 매번 넣기 불편하니까 필요한 워크트리에는 계속 세팅해주는게 좋겠어」. 사용자가 직접 추가한 `mcp__unity-mcp__Unity_RunCommand` 허용 줄을 C9 뒤에도 유지한다. 아래 과거 결정의 종료 후 삭제 조건을 대체하며, 새 작업·시트 사용 권한은 각 할당 범위를 따른다.
+
 - **다음 goal과 우선순위**(메인 `msg_6d3f7b2831e6`, 2026-10-10 16:24 KST 메인 pane 제출). 원문 「7) 19 - Content 다음 goal → A 던전 + 결함 둘」, 「5) 17 - 마일스톤 우선순위(기능 동결 10월 28일까지) → A 인스턴스 던전 먼저」. 효과: 10-08 승인 던전 초안 v3을 goal로 옮기고, 인스턴스 맵이 들어올 때까지 기술 계약·클라이언트 쪽을 먼저 한다. 그동안 결함 둘을 같은 goal 첫 PR로 고친다.
 - **범위 승인**(메인 `msg_9fe1d49e00bb`, 2026-10-10T07:39:37Z). 원문 「대시보드 결정 응답: 1) 계획 검토 - Content Content 던전 클리어·보상과 결함 둘 goal 범위(질문 셋, 추천 전부 A) → A 승인 (초안 msg_f1bba119c853)」. 효과: 범위 초안 v1 그대로이고 세 질문 모두 A다. 1 HUD 골드를 서버 재화에 연결한다. 2 「I」 키로 패널을 열고 닫는다. 3 보스 처치자 보상을 없애고 클리어 보상 하나로 합친다. PR 순서 결함 → 패킷·창 → 클리어도 승인 범위다.
 - **10-08 던전 초안 v3 「전부 A」**(근거 `.backups/verification/2026-10-08-content-replan/dungeon-goal-draft-v3.md`, SHA256 `7a41a0d4…f5bd`). 1 보상은 그 순간 던전 안의 파티원 전원, 2 기존 적·보스 재사용(수치는 임시값), 3 복사본이 된 지금의 사냥터 → 보스방 길을 던전으로 쓴다.
@@ -197,28 +201,24 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-13T07:20:29Z(`lead-goal-edit-1013c/clock.txt`)이다. 메인의 세션 마감 지시(`msg_ce09f200fdad`)로 C9를 시작하지 않고 세션을 닫는다. C9 실화면 계약은 준비돼 있다.
-
 | 항목 | 값 |
 |---|---|
-| 단계 | 진척 「검증·실제 플레이」 중이다. 이 PR의 독립 검증은 **통과**다. 10-11 판정의 보류를 10-13 봇 검증이 닫았다(아래 「클리어 봇 검증」 절). 남은 검증은 C9 실화면이며 아직 실행하지 않았다 |
-| 다음 첫 일 | 먼저 **최신 main(`da717247`) 받기**다. 메인 점검(`msg_ce09f200fdad`)으로는 main에 이 branch에 없는 규칙·운영 문서 6파일이 있고 모의 병합 충돌은 없다. CODE_CONVENTION은 바뀌지 않았다. main을 받아 HEAD가 바뀌면 C9 계약 머리(`c9-screen-contract.head.md` 10·75행)와 spec 틀 10행의 HEAD를 새 HEAD로 바꾸고, 10행의 「goal.md 기록만 바뀌었다」 문장에 main에서 들어온 문서를 더한다(`lead-goal-edit-1013b/retarget-contract.mjs` 방식). 그다음 **C9 실화면: 사용자 복귀 뒤 메인이 허용 줄을 넣으면 시작**(`msg_73e4d39722f3`). 결정 A(`msg_a7191a5cc619`)의 허용은 유효하다. 메인 알림이 오면 근거 폴더 `c9-screen-prep/`의 스크립트로 이 순서를 따른다. 1 `rule-check.sh`로 허용 줄과 SHA256을 대조한다. 2 여유 물리·커밋 메모리 원시를 남기고 아트·World·Core·Rules 리드에 Unity·7777 사용을 알린다. 3 `baseline.sh`로 `ProjectSettings.asset`(`4a8db0bd…`)과 `TimeManager.asset`(HEAD와 같음)을 확인하고, 다르면 메인 판단 `msg_c9fac8091065`대로 되돌린다. 4 `pre-editor-state.ps1` → Editor 기동(`editor-open.txt`) → `wait-editor-load.ps1`(`editor-loaded.json`) → `make-inputs-preflight.sh`. 5 `node c9-screen-build.mjs <시트 알림> <허용 알림> <SHA256>`로 계약과 spec을 만든다. 시트 알림은 World `msg_28246f9ce402`다. 6 `prelaunch.sh` → `split.sh` → `pane-check.sh` → `launch.sh` → `start.sh`로 검증자를 띄운다. 검증 대상은 main을 받은 뒤의 HEAD이고, 검증하는 구현 Task는 `task_2bfe92fb8745`다. 검증자의 MCP 연결 승인 요청이 오면 메인을 거쳐 사용자가 누른다. 사용자 지시(메인 `msg_ce09f200fdad` 전달, 메인 채팅 원문): 「그리고 만약에 MCP 연결이나 컴퓨터 조작관련 행동이 필요하면 Codex CLI가 아닌 Codex Desktop을 통한 GPT Astra한테 명령하면 대신 조작 잘 해줄거야, 권한 최대한 자율로 줄게」. Unity MCP 연결 승인을 이 경로로 맡길 수 있다. 10-13 16:1x KST에는 Codex Desktop이 실행 중이 아니었으므로(메인 확인), 다음 세션에서 실행 여부와 맡기는 방법을 메인과 먼저 확인한다 |
-| C9 끝난 뒤 | 판정 → 리드 R-2 → 정산 → 메인에 「허용 줄 지울 차례」 → Editor가 다시 쓴 `ProjectSettings.asset`·`TimeManager.asset`을 `msg_c9fac8091065`대로 되돌림 → C9 결과를 goal에 기록 |
-| 그다음 | PR 생성·CI → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8 |
-| 열린 Task·Dispatch | 없다. C9 검증 Task는 `start.sh`가 기동 때 만든다. 봇 검증 `task_2f58855b1557` / `ctx_c59f731adc3d`는 정산했다(`lead-settle-bot-verify/settlement.md`) |
-| 결정 대기 | 없다. C9 실행 허용은 결정 A로 승인됐고, 메인이 사용자 복귀 뒤 허용 줄을 넣는다 |
-| 작업 공간 / branch | `content-active` / `feat/dungeon-clear-server-20261011`(origin/main `999b1b98`에서 만듦). base 이후 리드 커밋은 `78431e8e`(goal 범위) → `2e2c5c92`(선행 시험) → `b13db4d1`(선행 시험 기록) → `654b2728`(서버 구현) → `2d168f19`(구현 기록) → `0d5bdbdb`(검증자 새 시험 두 파일·검증 기록) → `e353b927`(봇 검증·시연 결정 기록) → `efc80bb3`(C9 연기·아트 인계 기록) → 이 기록 커밋이다. 원격에 push한다. 10-13 07:20Z origin/main은 `da717247`이고, base 이후 들어온 것은 문서 PR231·232뿐이다 |
-| PR | 클리어 PR은 아직 없다. 던전 패킷·창은 [PR230](https://github.com/bass131/dawnholder-server/pull/230)으로 병합됐다(head `ac98fe69`, merge commit `999b1b98`). 결함 PR은 [PR221](https://github.com/bass131/dawnholder-server/pull/221)로 병합됐다(merge commit `e775bc77`) |
-| 리드 세션 / Run | Claude 세션 `eeb74a27-8d3b-43e3-b58a-b460e30db0cd`, pane `term_36206f08-343c-4c96-a029-0d2608311ff2`(10-13 03:42Z 같은 대화로 재기동) / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`). 새 세션은 RESUME 절차로 연다 |
-| 근거 폴더 | `.backups/verification/2026-10-10-dungeon-clear-rewards/`(Git 밖). 봇 판정 `opus-bot-verify/verdict.md`(`17a5420e…`), 리드 R-2 `lead-r2-bot-verify/r2.md`, 이전 판정 `opus-clear-verify/verdict.md`(`609fb7ed…`), 수신 기록 `lead-inbox-notes.md`. C9 준비는 맥락 메모 `c9-screen-prep/context-memo.md`, 계약 머리 `c9-screen-contract.head.md`, 조립 `c9-screen-build.mjs`, spec 틀 `c9-screen-spec.template.md`, harness 사본 `c9-screen/harness/`다 |
-| 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`(`7123af77…`), `03_Client/ProjectSettings/ProjectSettings.asset`(`4a8db0bd…`). 커밋·되돌리기·stash 금지. TimeManager는 HEAD와 같다(`1a83e54a…`). 07:20:29Z `lead-goal-edit-1013c/state-before.txt`에서 세 값을 다시 확인했다 |
-| 작업자·실행 자원 | Content 작업자 pane 0, Unity 프로세스 0(07:20:29Z `lead-goal-edit-1013c/state-before.txt`·`terminal-list.json`). 봇이 끝난 04:54:22Z에 7777 listener 0, WSL dotnet 0이다(`opus-bot-verify/runs/bot-1/port-after.txt`). content-active `.claude/settings.local.json`은 `skillOverrides`만 있고 허용 줄은 0이다(05:51:43Z `c9-screen-prep/rule-check-before-allow.txt`, 07:20:29Z에도 SHA256 `0ba3d176…`로 같음) |
-| 로컬 부수 변경 | `ProjectSettings.asset`은 사용자 원래 상태 `4a8db0bd…`다. C9의 Unity가 다시 쓰면 메인 판단 `msg_c9fac8091065`대로 되돌린다. WSL 작업 사본 아래에 경로 변환으로 생긴 빈 디렉터리 사슬이 있다. 서식 검사가 WSL 캐시와 `99_Tools/Formatting/obj`·`bin`(Git 제외)을 만들었다. 모두 저장소 밖이거나 Git 제외다 |
-| 다른 파트와 맞출 것 | World 로그인 PR(41·42·v19)이 `GameSession`·`HandlerRegistry`·`Dungeon/DungeonClearPacketContractTests.cs`·`domains/protocol.md`를 함께 바꾼다. 10-13 07:20Z에는 아직 origin/main에 없다. 늦게 병합되는 PR이 main을 받는다. 들어왔다면 handshake를 손으로 짜는 봇 시나리오에 로그인 단계가 필요하다(위 「던전 클리어 PR의 요구」의 World 확인). 아트 파트(`run:run_79ffbf5c8612`)와는 Unity 실행 시각을 시작 전에 알리고, 아래 두 인계를 지킨다 |
+| 단계 | 「검증·실제 플레이」 중. 서버·봇 검증 통과, C9 범위1~4 수행 완료·제품 판정 차단 S-1·S-2 |
+| 다음 첫 일 | Art 현재 충돌 없음 확인(msg_00a35103222d) → 최신 main/World PR235(v19·41/42 로그인) 합류·봇 호환 대조 → S-1·S-2 신규 작업자 수정·신규 독립 검증·새 실화면. 메인 msg_efe8f8c75321은 기존 겹침 수정 범위에서 진행을 확인했다 |
+| 실행 조건 | 큰 실행 전 네 파트 통지와 새 물리/커밋 여유4GiB gate. 신규 MCP 연결 승인 필요를 메인에 미리 알린다. 다음 실화면은 종료 준비 공식 ask의 리드 확인 응답 뒤에만 Editor를 닫는다 |
+| 열린 Task·Dispatch | 없음. C9 task_4ebd46df972b / ctx_bd2dc65abca4는 outcome succeeded(수행 완료)·제품 차단으로 완료. worker-release(retained) 뒤 정확한 pane 종료 |
+| 결정 대기 | 새 제품 범위 승인 요청 없음. Art 현재 쓰기 충돌 없음 확인. 새 MCP 연결 승인은 다음 실화면 gate에서 확인 |
+| 작업 공간 / branch | content-active / feat/dungeon-clear-server-20261011(base999b1b98). main44bd4319를 충돌 없이 합쳐 d8cc35fa27be4f770bb01c434e6a18074d225ba8로 push. C9는 이 HEAD·v18에서 수행 |
+| main 합류 | World PR235 main b9f78ff07514b54b80370cbfca1f0df33baa5ac4 병합 보고 msg_32c4766c93e9 수신. 새 코드 작업 전 최신 main의 GameSession·HandlerRegistry·DungeonClearPacketContractTests·봇 로그인 단계를 대조 |
+| PR | 클리어 PR은 아직 없음. 결함 PR221·패킷/창 PR230은 사용자 승인으로 병합됨 |
+| 리드 / Run | [Content 리드 Astra], pane term_357ea2c3-f573-4067-a8f5-a1d4c7669a21, incarnation85570fe7-8ae5-426a-b621-8fb218412149. run_b680cd89da9a, generation5. 회신 run:run_b680cd89da9a |
+| 근거 | .backups/verification/2026-10-10-dungeon-clear-rewards/(Git 밖). C9 원문 c9-screen/report.md(SHA256bee02275…), 리드 실사·정산 lead-astra-resume-1013/c9-audit-settlement.md, 사전 메모 c9-closeout-context.md. 이전 판정·원시는 보존 |
+| 사용자 파일 | MinimapRT7123af77…, ProjectSettings4a8db0bd…는 종료 후15:33:04Z fresh hash도 동일. TimeManager1a83e54a…도 동일. 복원·stage·stash 금지. Unity layout 자동 저장만 별도 관측 |
+| 작업자·실행 자원 | 15:35:29Z UTC C9 pane 목록 부재·전용 Claude32392/relay10468/Editor27516 모두0개. 서버 Stop15:14:24Z Windows/WSL7777 free=true. 새 Unity/서버 실행 없음 |
+| 설정 | 사용자 현행 결정 msg_ed1f78c433f4로 settings.local.json 허용 줄 유지(SHA256791ab2fd…). 과거 종료 후 삭제 조건은 대체됨 |
+| 다음 순서 | 수정·독립 검증·실화면 → PR·CI → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검·R-8. 다음 goal 자동 시작 없음 |
 | 아트 인계: 대장장이 | 이 goal은 `Npc_BlackSmith.prefab`·`BlackSmith.controller`·대장장이 동작 코드를 바꾸지 않는다. 컨트롤러 기본 상태 교체, 새 망치질 클립, 다듬은 시트와 `.meta`는 아트 효과 PR이 맡는다. 다음 Content goal이 상호작용 컴포넌트를 그 프리팹에 붙이게 되면 쓰기 전에 아트와 파일·시기를 나눈다(아트 `msg_55ea71c3ee0a`, 리드 회신 `msg_136ca02071fc`) |
 | 아트 인계: UI 창 조각 | 창 그림은 조각 조합형이다. 조각 PNG·`.meta`·9-slice, 조각 프리팹, 표시 전용 helper, 코드로 짓는 네 창(`InventoryPanelView`·`DungeonClearRewardWindow`·`PartyInvitePopup`·`NpcDialogPanel`)에 조각을 입히는 일은 아트 UI 창 PR이 맡는다. 조각 이름·변형은 그 PR 병합 때 고정하고, Content의 길드 패널·대장간 화면은 그 조각을 쓴다. 길드 패널·대장간을 코드로 지을지 프리팹·씬으로 지을지는 미정이다. C9가 보상 창 겹침 결함을 찾으면 이 PR에서 그 파일을 고칠 수 있고, 쓰기 전에 아트와 순서를 나눈다(아트 `msg_d87cbec99258`, 리드 회신 `msg_2f7a25007d10`) |
-
-**남은 순서**: 최신 main 받기 → C9 실화면(사용자 복귀 뒤 메인의 허용 줄 알림) → PR·CI → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
 ## 진척 단계
 
@@ -540,6 +540,17 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - **정산**: 대기 확인(tui-idle) → worker-release(retained/external_terminal) → close(ptyKilled true) → 05:01:45Z 목록에서 사라짐(`lead-settle-bot-verify/settlement.md`).
 - **미실행**: C9 실화면·Unity·MCP, 서버 전체 시험(10-11 판정 그대로), DB·CI·PacketGenerator·Windows `dotnet build`.
 
+### C9 실화면 — 차단, 2026-10-14
+
+- 신규 외부 Opus(task_4ebd46df972b / ctx_bd2dc65abca4, 지정/표시 claude-opus-5-5 xhigh·backend unknown)가 HEAD d8cc35fa·계약v3에서 범위1~4를 수행했다. outcome succeeded는 수행 완료이며 제품은 **차단 S-1·S-2**다. 원문 c9-screen/report.md, 리드 실사·정산 lead-astra-resume-1013/c9-audit-settlement.md.
+- S-1: 패널 열림 때 창∩패널은 709×399 14707.38, 802×451 18804.74, 1920×1080 107805.60px². S-2: 기존 StageClearUI 배너가 보상 줄을 덮음. 기존 클라이언트 귀속이나 C9를 막아 이 PR에서 수정한다(메인 msg_efe8f8c75321·Art 순서 문의 msg_9882e3a187cb). C9 같은 계약/각 번호 최초 NOT PASS 각1건·수정 시도0회.
+- 클리어→보상50·재료1·주머니1→확인40번1회→마을 복귀, 일반 처치 보상, 엔딩·재접속, 버튼/닫힌 자리 입력은 관측됐다. DB·사람 손 입력 미실행. 캡처709×399·1920×1080와 driver·서버 로그를 리드가 표본 대조했다. 메인의 R-2를 대신하지 않는다.
+- **검증자 보고 불일치**: 원문251·288~293행은 홈 자동 쓰기4건을 위반으로 적고295행은 규칙 위반 차단 사유를 해당 없음으로 적었다. 이 “없음”은 통과 근거가 아니다. 전체 경로·SHA·내용·비밀 확인 범위는 c9-outside-write-audit.json과 리드 실사에 기록했다. 초기 읽기 출력·Unity driver/콘솔 응답이며 알려진 자격증명 패턴0·표본에서 비밀 관측 없음(임의 형식 비밀 부재 보증 아님). 삭제하지 않았다.
+- **계약 위반: 사전 안내 없이 종료**. Editor 종료15:14:46Z보다 예고 첫 수신15:30:56Z가 늦고 메인도 사전 안내를 받지 못했다. 다음 계약은 종료 준비 공식 ask의 **리드 확인 응답 뒤에만** Editor를 닫는다(메인 msg_efe8f8c75321).
+- 생존 신호 helper: 원시25건·최대241초·300초 초과0(c9-liveness-result.json). 원문270행 자동 heartbeat16회·15:21:24Z까지는 실제18회·15:29:25Z까지와 달라 보정했다. driver 컴파일 실패2회는 제품 확정 실패에 추가하지 않는다.
+- 정산: worker-release retained→exact pane close ptyKilled=true→목록 부재·소유 프로세스0. mute False·크기709×399·GameViewSizes hash복원·서버/7777 해제. 종료 후15:33:04Z fresh hash는 MinimapRT7123af77…, ProjectSettings4a8db0bd…, TimeManager1a83e54a…로 기존과 같다. 사용자 파일 복원·stage·stash 없음.
+- 현행 허용 줄 결정: 메인 msg_ed1f78c433f4가 전한 사용자 원문 「그리고 아무래도 매번 넣기 불편하니까 필요한 워크트리에는 계속 세팅해주는게 좋겠어」에 따라 settings.local.json의 mcp__unity-mcp__Unity_RunCommand를 유지한다. 과거 임시 허용 뒤 삭제 조건은 대체됐다. C9 밖 임의 MCP 사용 권한으로 넓히지 않는다. 다음 신규 연결 승인 필요는 메인에 미리 알린다.
+
 ### 운영 기록(첫 발생)
 
 - Orca CLI 1.4.224의 `terminal split`에는 `--title`이 없어 첫 구현자 기동이 실패했다. 플래그 없이 다시 열었다(`astra-pr1-impl-launch-fail-title.json`).
@@ -581,6 +592,8 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - 봇 검증자도 홈 `~/.claude/projects/…/tool-results/`에 자동 사본 2건과 `.claude/state/session-guard/` 상태 파일 1건을 허용 밖 생성으로 스스로 보고했다. 판정 근거에는 쓰이지 않았다. tool-results는 이 goal의 네 번째 관측이라 위 항목대로 종료 기록 때 교정 층 판단에 함께 올린다.
 
 ## 다음 계획 후보
+
+- **UI 계층·창 정렬 기준 통합**: 사용자 결정 A(메인 `msg_b78153624c8b`)로 [BACKLOG `ui-layer-sort-design`](../../../00_Document/operations/BACKLOG.md#ui-layer-sort-design의-원문검토-범위)에 등록했다. 상세는 후보 한 곳에서 관리하며 C9에 계층 설계를 포함하지 않는다.
 
 이 goal에서 발견한 범위 밖 후보는 출처와 함께 한 줄로 적고 [BACKLOG](../../../00_Document/operations/BACKLOG.md)의 ID를 붙인다. 등록은 착수 권한이 아니다. 아래는 결함 PR 독립 검증의 비차단 관찰이며, BACKLOG 등록 여부는 종료 기록 때 정한다.
 
