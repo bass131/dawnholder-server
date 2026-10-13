@@ -31,22 +31,26 @@
 
 | 리드 | 이 머신의 작업 경로 | 발신 태그 |
 |---|---|---|
-| Core | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` | `[Core 리드 Opus]`·`[Core Sol]`·`[Core 검증자]` |
-| Content | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` | `[Content 리드 Opus]`·`[Content Sol]`·`[Content 검증자]` |
-| Rules | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` | `[Rules 리드 Opus]`·`[Rules Sol]`·`[Rules 검증자]` |
-| CodeMap | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` | `[Architecture 리드 Opus]`·`[Architecture Sol]`·`[Architecture 검증자]` |
-| Management | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` | `[Management 리드 Opus]`·`[Management Sol]`·`[Management 검증자]` |
+| Core | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` | `[Core 리드 Astra]`·`[Core Sol]`·`[Core 검증자]` |
+| Content | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` | `[Content 리드 Astra]`·`[Content Sol]`·`[Content 검증자]` |
+| Rules | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` | `[Rules 리드 Astra]`·`[Rules Sol]`·`[Rules 검증자]` |
+| CodeMap | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` | `[Architecture 리드 Astra]`·`[Architecture Sol]`·`[Architecture 검증자]` |
+| Management | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` | `[Management 리드 Astra]`·`[Management Sol]`·`[Management 검증자]` |
 
-아래 `<표의 작업 경로>`·`<리드>`는 위 표의 승인 경로·리드 이름으로 바꾼다. 경로·태그가 새 파트·권한을 만들지 않는다.
+기본 다섯과 승인된 추가 파트의 신규 리드는 `gpt-6-astra` xhigh(Codex CLI)다. 아래 `<승인 경로>`·`<파트>`는 확인한 작업 경로·파트 이름으로 바꾼다. CodeMap의 발신 태그는 표의 Architecture를 유지하며, 리드 태그는 `[<파트> 구현 Astra]`와 구분한다. 경로·태그가 새 파트·권한을 만들지 않는다.
 
 ```text
-orca terminal create --worktree "path:<표의 작업 경로>" --title "<리드> 리드 Opus" --command "claude --model claude-opus-5-5 --effort xhigh --autocompact 250000"
+orca terminal create --worktree "path:<승인 경로>" --title "<파트> 리드" --command "codex --model gpt-6-astra -c model_reasoning_effort=xhigh -c model_context_window=1000000 -c model_auto_compact_token_limit=250000"
 ```
-`--autocompact 250000`은 해당 실행만 문맥 25만에서 자동 압축하며 전역 설정은 바꾸지 않는다. 기준을 넘긴 대화를 이어 띄우면 첫 턴에 바로 압축된다(2026-10-11 Core 27만→8.6만 관측). 재개에 필요한 것은 goal 재개 지점과 근거 폴더에 둔다. 압축 뒤 맥락 손실로 재작업이 한 번이라도 나오면 리드가 바로 메인에 보고하고 메인이 모든 리드를 50만으로 되돌린다. 이전 리드 pane은 idle 확인 뒤 닫는다. 같은 탭에 다른 세션이 있으면 탭 전체를 닫는 `--tab`을 쓰지 않는다. 리드 첫 화면은 [R-6](#r6-first-screen), auto mode가 push·우편함 읽기를 막으면 우회 없이 메인에 보고한다([권한 기준](../../AGENTS.md#공학-조건)). 같은 worktree 작업자·검증자는 리드 pane을 `vertical split`해서 열고, 다른 worktree 작업자는 `orca terminal create --worktree`로 바로 열어 빈 받침 pane을 만들지 않는다. split을 닫으면 부모 pane도 꺼질 수 있어(Orca 1.4.222 관측) 다음 split 전에 부모가 살아 있는지 본다. 준비된 신규 세션의 최초 작업을 `worker-start --terminal`로 연결한다. 실제 경로·화면 모델·준비 확인은 [R-5](#r5-worker-launch)를 따른다.
+`-c`는 해당 실행의 옵션이며 전역 설정을 바꾸지 않는다. `model_context_window`는 창 크기, `model_auto_compact_token_limit`는 자동 압축 기준이다. 최초 창 후보 1000000과 압축 기준 250000은 [이번 PR1 실사](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#적용-중인-사용자-결정)에서 새 세션의 화면·rollout으로 관측한다. 상한으로 절삭되면 리드가 실제 관측 최대값을 창으로 확정하고 이 명령과 R-8 재개 명령에 같은 값을 반영한다. 창이 272000에서 불변·압축 기준 미적용·실행 거부이면 메인에 보고한다. 문서/옵션 추가만으로 현재 리드 runtime의 변경이나 긴 입력·실제 압축의 성공을 주장하지 않는다.
+
+재개에 필요한 것은 goal 재개 지점과 근거 폴더에 둔다. 압축 뒤 맥락 손실로 재작업이 한 번이라도 나오면 리드가 바로 메인에 보고하고 메인이 모든 리드의 **압축 기준**을 500000으로 되돌린다. 창 크기와 구분한다. 이전 리드 pane은 idle 확인 뒤 닫는다. 같은 탭에 다른 세션이 있으면 탭 전체를 닫는 `--tab`을 쓰지 않는다. 리드 첫 화면은 [R-6](#r6-first-screen)을 따른다. Claude auto mode 분류기·권한 확인은 Claude 세션에만 해당하며 push·우편함 읽기가 막히면 우회 없이 메인에 보고한다([권한 기준](../../AGENTS.md#공학-조건)).
+
+같은 worktree 작업자·검증자는 리드 pane을 `vertical split`해서 열고, 다른 worktree 작업자는 `orca terminal create --worktree`로 바로 열어 빈 받침 pane을 만들지 않는다. split을 닫으면 부모 pane도 꺼질 수 있어(Orca 1.4.222 관측) 다음 split 전에 부모가 살아 있는지 본다. 준비된 신규 세션의 최초 작업을 `worker-start --terminal`로 연결한다. 작업자 명령·실제 경로·화면 모델·준비 확인은 [R-5](#r5-worker-launch)를 따른다.
 
 pane의 소속 worktree와 shell의 실제 cwd는 별도로 확인한다. cwd만 옮겨 소속 불일치를 우회하지 않는다. 현재 조회한 worktree/handle/identity를 기준으로 승인된 배치를 대조한다.
 
-Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지한다. **승인 밖 새 파트는 사용자 승인 시 메인이 별도 worktree 탭에 열고 목표 종료 때 닫는다.** 작업자·검증자 배치는 위 기준과 R-5·R-6을 따르며, 태그는 [AGENTS](../../AGENTS.md#메시지와-보고)의 `[<파트> 리드 Opus]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 추가 파트 승인이나 태그가 기존 모델·쓰기·Git·병합 권한을 넓히지 않는다.
+Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지한다. **승인 밖 새 파트는 사용자 승인 시 메인이 별도 worktree 탭에 열고 목표 종료 때 닫는다.** 리드는 위 기동 기준, 작업자·검증자는 R-5·R-6을 따르며, 태그는 [AGENTS](../../AGENTS.md#메시지와-보고)의 `[<파트> 리드 Astra]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 추가 파트 승인이나 태그가 기존 모델·쓰기·Git·병합 권한을 넓히지 않는다.
 
 각 파트의 목표 종료 판정은 해당 goal의 완료조건과 [R-8](#r8-astra-lifecycle)을 따른다. 다섯 리드 결정은 새 goal의 자동 착수나 R-8 교체 생략을 허용하지 않는다.
 
@@ -79,18 +83,25 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 
 못 받았다는 보고에는 현재 CLI로 원 메시지·수신 주소·receipt를 확인한다. **동일 request ID/동일 payload의 공식 receipt replay**는 접수 결과 재확인이며 새 입력/메시지 재전송과 구분한다. runtime·target·incarnation을 다시 대조하고 해당 버전 가이드가 중복 입력 없는 replay를 보장할 때만 사용한다. 재전달이 필요하면 원문 ID와 재전달 관계를 기록하되 accepted 뒤 침묵만으로 텍스트를 다시 보내지 않는다. 확인 불가/미지원은 원문을 보존해 메인에 보고한다.
 
+메인·리드가 Codex 수신자에게 메일을 보낸 뒤에는 [수신자 화면 확인](../../.agents/skills/dawnholder-session-handoff/SKILL.md#codex-수신자-화면-확인)을 한 번 한다. 자동 알림으로 턴이 시작되지 않은 빈 prompt에만 자기 태그와 Orca 메시지 확인 안내를 보낸다. busy·선택창·작성 중 prompt에는 입력하지 않으며, 신규 준비 no-op·공식 계약 receipt/draft 복구는 해당 절의 별도 조건을 따른다.
+
 <a id="orca-tool-observations"></a><a id="mailbox-wait"></a>
 ### Orca 도구 관측과 우편함 대기
 
 - 닫은 pane 재출현(1.4.217, 2026-10-05): 보고·종료 직전에 `terminal list`를 다시 본다. 되살아난 pane에는 입력하지 않고 화면 확인 뒤 닫는다.
 - split 시간 초과(1.4.219, 2026-10-04): 바로 재시도하지 않는다. 수십 초 뒤 `terminal list`를 다시 보고 늦게 생긴 미사용 pane은 확인 뒤 닫는다.
 - 활성 Dispatch 없는 escalation(1.4.221, 2026-10-06)은 [R-4](#r4-report-type), 메모리 회수로 꺼진 대기(2026-10-06)는 아래 대기 정책을 따른다.
-- 크래시·업데이트 복구(1.4.220, 2026-10-05): 크래시 때 리드 탭은 새 handle로 되살아나고 split 작업자는 복구되지 않았으며 업데이트·재부팅 때는 아무 터미널도 복구되지 않았다. Codex 리드는 rollout의 cwd·model로 대화를 찾아 `codex resume`, Claude 리드는 `claude --resume --autocompact 250000`으로 다시 열고 [R-8 인수](#r8-astra-lifecycle)를 따른다. 다른 worktree는 `terminal list --worktree path:<경로>`, 옛 handle 우편함은 `orchestration inbox --terminal <옛 handle>`로 조회한다. 작업자는 [크래시 정본](#crash-recovery)대로 새 세션으로 대체한다.
+- 크래시·업데이트 복구(1.4.220, 2026-10-05): 크래시 때 리드 탭은 새 handle로 되살아나고 split 작업자는 복구되지 않았으며 업데이트·재부팅 때는 아무 터미널도 복구되지 않았다. 현재 Codex 리드의 대화 식별·재개 옵션과 Run 인수는 [R-8](#r8-astra-lifecycle)을 따른다. 다른 worktree는 `terminal list --worktree path:<경로>`, 옛 handle 우편함은 `orchestration inbox --terminal <옛 handle>`로 조회한다. 작업자는 [크래시 정본](#crash-recovery)대로 새 세션으로 대체한다.
 
-Claude 리드는 Bash `run_in_background`로 `orca orchestration check --wait --types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question" --timeout-ms 900000 --json`을 한 번에 하나만 연다. Run 바인딩 시 `--run <run_id>`, 처리한 delivery는 다음 대기의 `--ack`로 넘긴다. `&`·`/dev/null`로 출력을 버리지 않는다. 끝난 출력을 직접 읽고 처리한 뒤 다음 대기를 연다. 출력 버림은 [세션 쓰기 가드](../../99_Tools/README.md#세션-쓰기-가드)가 실행 전에 막고, 리드는 작업자 정산 때 [생존 신호 간격 helper](../../99_Tools/README.md#생존-신호-간격)로 저장한 우편함 원시를 재어 300초 초과 구간을 goal에 적는다.
-Orca 자동 알림(「You have N orchestration message」)으로 깼을 때 리드의 우편함 대기 background 작업이 아직 돌고 있으면(시작 뒤 그 작업의 종료·kill 알림을 받지 않음) 도구 호출 없이 한 줄로 턴을 끝내고 메시지는 대기가 끝나 깰 때 처리한다. 대기가 메모리 회수로 꺼졌거나 살아 있는지 확실하지 않으면 `--wait` 없는 check로 처리한다. 놓친 메시지는 메인 화면 감시가 5분 넘게 안 읽힌 완료·질문 메시지를 잡는다.
-메모리 회수로 대기가 꺼지면 스스로 다시 켜지 않는다. 「Orca 메시지를 확인하라」 안내가 오면 `--wait` 없는 check 한 번으로 처리한다(2026-10-06 관측). 리드는 작업자 기동·종료·지시 직전, 작업자는 컨테이너·볼륨 삭제·중지 같은 되돌리기 어려운 명령 직전에 `--wait` 없는 check를 한 번 하여 그 사이 도착한 지시를 읽고 움직인다.
-대기는 Claude 리드가 맡고 작업자·검증자는 한 작업 뒤 끝나 대기 비용이 없다. `--types`로 heartbeat를 빼도 Orca 알림이 heartbeat마다 Claude 리드를 깨웠다(2026-10-06 관측). heartbeat 5분을 유지한다. 위 버전·날짜 관측은 타 버전을 보장하지 않는다([원천·측정 한계](#pr2-source)).
+**Codex 리드:** 우편함용 `check --wait`·sleep·반복 조회·`terminal wait`를 열지 않는다. Orca 자동 알림이나 발신자의 조건부 안내로 깨면 현재 Run에서 대기 없는 `orca orchestration check --run <현재 run_id> --json`을 한 번 실행한다. 출력을 할당된 근거 폴더 원시 파일로 저장한 뒤 읽고 묶음 전체를 처리한다. 할 일이 남으면 계속하며, 필요한 답을 기다릴 때는 턴을 끝낸다. 메인이 현황판으로 작업자 상태와 5분 넘게 안 읽힌 완료·질문을 감시한다. 자동 알림·접수 receipt를 미래 턴 시작 보장으로 해석하지 않는다.
+
+일반 묶음은 전체 처리 뒤 delivery를 ack한다. 현재 CLI의 `check --ack <delivery_id> --run <현재 run_id> --json`도 대기 없이 실행하고 반환된 묶음은 전체 확인한다. worker_done은 현재 `from_handle`·Task·Dispatch·명시 outcome을 대조하고 [위임 정산·해제](../../.agents/skills/dawnholder-goal-loop/references/orca-work.md#수행정산종료)를 수행한다. **신원 대조를 통과한 내용 없는 heartbeat만**인 묶음이면 수신·확인 뒤 다른 도구 없이 한 줄로 턴을 끝내고, 그 delivery의 ack는 다음 자연스러운 check의 `--ack`에 합친다. 태그 예외와 불일치 처리는 [수신 정본](#dispatch-message-policy)을 따른다.
+
+**Claude 세션의 기존 대기에만 적용:** Bash `run_in_background`의 `orca orchestration check --wait --types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question" --timeout-ms 900000 --json`은 한 번에 하나만 연다. Run 바인딩 시 `--run <run_id>`, 처리한 delivery는 다음 대기의 `--ack`로 넘긴다. 끝난 원시 출력을 직접 읽고 처리한 뒤 다음 대기를 연다. 자동 알림으로 깼을 때 기존 background 대기가 아직 돌고 있으면(시작 뒤 종료·kill 알림을 받지 않음) 도구 없이 한 줄로 끝내고 대기가 끝나 깰 때 처리한다. 메모리 회수로 꺼졌거나 생존이 불확실하면 대기 없는 check로 처리하며 스스로 대기를 다시 켜지 않는다. 「Orca 메시지를 확인하라」 안내에도 대기 없는 check 한 번을 쓴다(2026-10-06 관측).
+
+모든 리드는 작업자 기동·종료·지시 직전에, 작업자는 컨테이너·볼륨 삭제·중지 같은 되돌리기 어려운 명령 직전에 대기 없는 check 한 번으로 도착한 지시를 확인한다. `&`·`/dev/null`·`| head`로 우편함 출력을 버리지 않는다. 현재 [SessionGuard](../../99_Tools/README.md#세션-쓰기-가드)는 Claude Code에만 적용되며 Codex의 출력 보존은 규칙 경계다. 리드는 정산 때 [생존 신호 간격 helper](../../99_Tools/README.md#생존-신호-간격)로 저장한 원시를 재어 300초 초과 구간을 goal에 적는다.
+
+작업자·검증자는 live preamble의 자연스러운 check·heartbeat를 수행하고 한 작업 뒤 정산·종료하며, 새 상시 대기를 만들지 않는다. `--types`로 heartbeat를 빼도 Orca 알림이 heartbeat마다 Claude 리드를 깨웠다(2026-10-06 관측). **heartbeat 5분은 유지**한다. 위 버전·날짜 관측은 타 버전을 보장하지 않는다([원천·측정 한계](#pr2-source)).
 
 <a id="dispatch-message-policy"></a>
 ### 활성 Dispatch 메시지 수신 보조
@@ -204,7 +215,15 @@ accepted 뒤 침묵만으로 새 텍스트를 전송하거나 abandon하지 않�
 전체 goal은 **제품 PR 병합·로컬 결과 기록 → Gardener → 결과 포함 종료 기록 PR 하나 → 종료 점검 → R-8** 순서다. head 고정 PR은 [메인 결정](#pr2-source)으로 병합 전 Gardener를 허용한다. 첫 PR마다 새 Gardener를 추가하지 않는다. 메인/사용자가 결과·남은 위험·BACKLOG·다음 계획을 점검한 뒤 재개하며 다음 goal 자동 착수는 금지다. [목표 루프](../../.agents/skills/dawnholder-goal-loop/SKILL.md#통합과-보고)·[마일스톤 운영](../../.agents/skills/dawnholder-goal-loop/references/milestones.md)을 따른다.
 
 PR 리뷰 수정 중이나 목표 중간에는 문맥을 비우려 수동 교체하지 않는다. 자동 압축 뒤에는 현재 `goal.md`로 이어간다. 문서에 없는 운영 감각은 소유권 범위 안 RESUME 또는 goal에 남긴다. 작업자·검증자의 작업 하나 뒤 종료와 리드의 목표 단위 교체를 구분한다.
-목표 중간 교체·복구는 이전 pane 종료 또는 같은 대화 `claude --resume --autocompact 250000`이다. 새 handle에서 `orca orchestration run-use --id <run_id> --json`으로 같은 Run을 인수하고 메인에 새 handle·`run:<id>`를 알린다. consumer 세대 상승으로 옛 delivery ack가 `consumer_fenced`면 새 세대로 다시 온 같은 메시지 delivery를 ack한다.
+메인이 판단한 목표 중간 교체·복구에서 Codex 리드의 같은 대화는 아래 명령으로 잇는다. 창·압축 기준은 [R-1](#r1-management-placement)에서 확정한 동일 옵션을 쓴다(아래 창 값은 최초 후보).
+
+```text
+codex resume <session-id> --model gpt-6-astra -c model_reasoning_effort=xhigh -c model_context_window=1000000 -c model_auto_compact_token_limit=250000
+```
+
+대화 ID는 현재 Codex 세션 저장 위치의 rollout에서 **해당 cwd·session id·model**을 대조해 찾는다. 현재 goal의 재개 지점에 남긴 ID·시각으로 후보를 좁히고 해당 메타데이터만 읽으며 전체 기록을 훑거나 `--last`로 추정하지 않는다. paginated 형식이라 rollout 파일이 없으면 미확인으로 보고하고, 같은 cwd의 `codex resume` 선택기에서 해당 대화를 확인한다. ID·cwd·모델을 확인한 뒤 확정 옵션으로 재개하며 확인하지 않은 대화를 골라 실행하지 않는다.
+
+새 handle에서 `orca orchestration run-use --id <run_id> --json`으로 같은 Run을 인수하고 메인에 새 handle·`run:<id>`를 알린다. consumer 세대 상승으로 옛 delivery ack가 `consumer_fenced`면 새 세대로 다시 온 같은 메시지 delivery를 ack한다. 문서 변경만으로 기존 runtime이 재개되거나 모델·문맥이 바뀐 것은 아니다.
 
 <a id="관찰-기록-2026-09-29"></a><a id="관찰-기록-2026-10-0405"></a>
 
@@ -218,6 +237,8 @@ Gardener의 제안과 채택/실제 구현 완료를 구분한다.
 
 <a id="merge-gate"></a>
 ## 병합 관문
+
+현재 MergeGate와 SessionGuard는 저장소의 Claude Code hook이며 **Codex 세션에는 적용되지 않는다.** PR1의 Codex 리드는 병합 금지·메인 전용 권한·출력/쓰기 경계를 규칙으로 지킨다. [이번 goal의 PR2](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#pr-경계와-검증)는 Codex 지원 도구 진입에서 병합·원격 main push를 보호할 예정이며, 출력/쓰기 가드는 별도 후속 후보다. PR1 문서 작성을 가드 구현·신뢰·발동 성공으로 보고하지 않는다. PR별 사용자 승인과 아래 메인 전용 병합 경계는 그대로다.
 
 [R-1](#r1-management-placement)의 메인 checkout에서 메인 세션만(하위 에이전트 제외) 병합한다. 사용자 생성 `.claude/state/merge-gate/main-checkout` 파일 존재로 식별한다. 병합 뒤 최신 main을 fast-forward로 받는다.
 

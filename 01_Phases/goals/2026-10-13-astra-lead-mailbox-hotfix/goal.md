@@ -7,14 +7,14 @@
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. PR1 branch `docs/astra-lead-mailbox-20261013`, base `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: goal 첫 commit 뒤 신규 Sol의 PR1 문서 작성. 문서 작성 종료 뒤 메인이 CLAUDE.md를 고치고, 신규 Astra가 문서 실사와 문맥 옵션 관측을 한다.
+- 현재 차례: Sol 문서6개와 메인 CLAUDE.md 두 문장 쓰기가 끝났다. 구현 작업자는 정산·종료했다. 입력을 고정하고 신규 Astra가 문서 실사와 문맥 옵션 관측을 한다.
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
 
 - [x] 범위와 기준 승인
-- [>] 리드 규칙 작성
-- [ ] 문맥 실측과 실사
+- [x] 리드 규칙 작성
+- [>] 문맥 실측과 실사
 - [ ] 문서 PR 병합
 - [ ] 가드 신뢰 경계
 - [ ] 가드 구현과 검증
@@ -91,6 +91,7 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 
 1. 메인 `msg_f8bd6a9085b0`(2026-10-13T09:54:10Z), 사용자 18:3x KST: 「나 그리고 돌아왔어 이어서 진행하자」, 이어 「잠깐, 그전에 리드급을 아스트라로 변경하고, 당시에 아스트라가 Orca 메일대기 때문에 낭비되던 토큰 사용방식을 개선하는 방향으로 룰 핫픽스 진행해줘」.
 2. 메인 `msg_3345bd69d295`(2026-10-13T09:58:30Z), 사용자 19:0x KST: 「그러면 병합 금지 훅을 한번 셋업해주고, 잦은 압축같은 경우에는 Codex 모델들도 컨텍스트 메모리 크기를 커스텀 할 수 있어」. 앞 지시의 「Codex 기술 가드는 BACKLOG만」을 가드 구현으로 바꾼다.
+3. 메인 `msg_fbf9b79c0a77`(2026-10-13T10:18:18Z): 「대시보드 결정 응답: 1) 리드 재개 시점 - 문서 PR 병합 뒤 바로 열지, 병합 금지 가드 PR까지 기다릴지 → A 문서 PR 뒤 바로」. 메인은 PR1 병합 뒤 Core·Content·Art·World 리드를 Astra로 연다. PR2 전까지 병합 금지는 규칙 경계이며 PR1 우선과 실제 관측으로 확정한 R-1 명령을 유지한다.
 
 ### 메인 적용 판단과 승인
 
@@ -113,7 +114,22 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - 공식 문서에서 프로젝트 PreToolUse·문맥 키를 확인했다. 설치 번들/캐시 Astra는 context_window 272000, max_context_window 872000이다. `--strict-config`와 debug 조합은 지원되지 않아 exit1이며 성공 근거가 아니다. 상세/원시는 E/research/findings.md와 source-manifest.json이다.
 - 승인 뒤 최신 origin/main에서 PR1 branch 생성(E/pr1-fetch.txt, pr1-branch.txt). 아직 가드·새 문맥 세션 적용·독립 실사·CI는 미실행이다.
 
+### PR1 문서 작성과 리드 기록
+
+- 첫 기록 commit `497d72420f3dcd64ac0e3f22614e5b5d2eee222a`는 goal과 CURRENT의 Rules 줄만 담았다. 문서 구현 Task `task_6875328cef32`, Dispatch `ctx_b3ad135d8bdd`, 계약 E/doc-impl-contract-v1.md(SHA256 `77e0a3d4c1538484695f670db9e4f0931691e88af4ead745d486cf3782ff10f9`)로 Sol에 여섯 문서를 맡겼다. 최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 화면 GPT-6.1-Sol max, backend unknown.
+- `worker-start`는 입력 접수 뒤 `turn_start_unobserved`였다. R-5의 현재 동일성·다른 입력 없음·draft 크기 조건을 대조해 텍스트 없는 Enter 한 번을 보냈다. draft 소멸과 Working, 실제 제출 user 기록을 확인했다. 계약의 CRLF 하나가 LF 둘로 변환되어 빈줄 한 개가 늘었으며, CR→LF 전송 변환 후 전문은 일치한다. 바이트 일치 실패 원시와 차이를 E/doc-impl-submitted-contract-check.json·transport-check.json에 보존하고 메인 `msg_2b8e88fd6808`로 알렸다. 실제 실행은 관측했지만 초기 receipt의 unknown 상태를 성공 receipt로 고쳐 쓰지 않았다.
+- BACKLOG의 여섯 지정 행은 최초 ID·출처·조건을 보존하면서 이번 부분 정합을 연결했고, 출력/쓰기 기술 가드 후보 `codex-session-write-guard`를 등록했다. Jev·helper·heartbeat 간격 변경은 여전히 대기다. 내용 실사와 새 문맥 기동 관측은 아직 독립 검증 전이다.
+- 리드의 기존 후보 검사는 첫 실행 exit1(두 번째 후보의 `BACKLOG <id>` 표기 누락), 해당 goal 문장 교정 뒤 동일 명령 exit0이었다(E/backlog-candidate-check.txt·after.txt). diff 공백 검사는 exit0이며 독립 실사를 대신하지 않는다. 10:34:02Z 작업자 관측은 Working 8m13s/lastHeartbeatAt=null이어서 기존 5분 신호 계약을 `msg_d7397f2bc3c1`로 안내했다. 작업자 `msg_7d72a5b5496c`의 반증을 실제 우편 원시와 대조하니 10:27:04Z·10:32:30Z·10:35:22Z에 같은 from/Task/Dispatch의 heartbeat가 있었다. projection null을 신호 부재로 해석하지 않는다. 관측 구간의 메시지 간격은 326초·172초이며 전자는 300초 초과다(E/doc-impl-heartbeat-source-audit.json·gaps.json). 이 부분 관측을 최종 전체 정산으로 대신하지 않는다.
+- Sol은 6문서 쓰기 종료 status `msg_e7967b5a835b`(10:45:38Z)를 보냈다. E/doc-impl/report.md·context.md와 실제 diff를 읽었고 summary-data.json의 종료6파일 hash를 현재 파일과 대조해 일치를 확인했다(E/doc-impl-end-hash-check.json). 6파일 추가50/삭제23줄·bytes +6410·참조 자체점검은 구현자 보고이며 독립 PASS가 아니다. 추가 원시 heartbeat-03→04는344초로300초를44초 초과했다. 메인 CLAUDE 인계는 `msg_418351426364`(10:46:50Z), 실사 계약은 E/doc-review-contract-draft.md로 준비했으며 아직 미발행이다.
+- 최종 Sol 보충 `msg_322f3056e4fe`와 worker_done `msg_5461dd979639`(10:47:31Z)의 from/Task/Dispatch·6개파일·보고를 대조했다. worker-show는 completed/succeeded였고 release는 external_terminal/retained여서 R-5의 같은 작업 pane 확인 뒤 해당 terminal만 닫았다(E/doc-impl-done-show.json·release.json·close.json). 부모 리드 생존도 확인했다. 수정에 이 세션을 재사용하지 않는다.
+- 메인 `msg_4ec72d6ae5e7`(10:47:42Z)은 CLAUDE.md의 태그·발신 안내 두 문장 쓰기 종료를 알렸다. 실제 SHA256 `db7eda36a24e7db8aee219d06bacbad3d1f6c171497e68721927044be0ba270b`, 8690bytes와 메인 보고가 일치하고 Claude background 대기 문장은 보존됐다(E/claude-write-end-check.json). 해당 입력은 독립 실사에 포함한다. PR push/생성·문맥 실측·독립 판정은 아직 미완료다.
+
+### PR2 신뢰 사전 조사
+
+- 메인 요청의 신뢰 저장·유지·checkout/세션 범위 조사는 E/research/hook-trust-findings.md와 공식 `rust-v0.162.1` 대응 소스 원시에 보존하고 `msg_fd2c6560a871`로 보고했다. 정상 TUI 신뢰는 사용자 설정의 hook 경로/위치 키별 해시 상태이며 세션 ID·만료 시간은 없다. 동일 설정·cwd·정의의 새 세션마다 확인하는 구조는 아니라는 소스상 추론이다. 다른 checkout·정의 변경의 재확인, R-6 메인 소유의 최초 picker 처리는 구분한다.
+- 실제 hook 등록/UI 승인·새 세션의 신뢰 유지·Windows headless 동작은 미실행이다. 사용자 설정에 정상 UI 신뢰 상태가 쓰이는 것과 에이전트의 전역 수동 편집을 구분하며 후자는 하지 않았다. PR2 가드 구현·실제 진입 통과 근거로 이 조사를 대신하지 않는다.
+
 ## 다음 계획 후보
 
 - Codex 출력/쓰기 경계 기술화: BACKLOG `codex-session-write-guard`. 이번 가드 PR은 PR 병합/원격 main 갱신만 다룬다.
-- 기존 `wake-token-filter`의 Jev/필터 구현, `heartbeat-interval-review`, `mailbox-wait-overlap-guard`, `lead-mailbox-receive-delay`, `lead-launch-command-source` 도구는 BACKLOG에 남는다. 이번 문서 정합·평가 안건 반영을 해당 도구의 구현 완료로 보고하지 않는다.
+- 기존 BACKLOG `wake-token-filter`의 Jev/필터 구현, BACKLOG `heartbeat-interval-review`, BACKLOG `mailbox-wait-overlap-guard`, BACKLOG `lead-mailbox-receive-delay`, BACKLOG `lead-launch-command-source` 도구는 대기다. 이번 문서 정합·평가 안건 반영을 해당 도구의 구현 완료로 보고하지 않는다.
