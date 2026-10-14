@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **범위 승인(2026-10-13), 2026-10-14 재부팅 뒤 같은 목표 재개. 시범 PR233은 병합됐고 사용자는 브라운 B1을 선택했다. renderer 회귀·보고 수량 수정은 독립 재검증 PASS다. 전체 키트 B1의 독립 판정은 NOT PASS — 원형 아이콘 남색 잔여 ART-UI-04(중간·차단) 1건이다. 검증자를 정산·종료했고 새 Astra가 금 ring 원본 재합성 방식의 좁은 수정을 수행 중이다. 메인 페이지 갱신과 Unity 적용은 수정·새 독립 검증 뒤 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-13), 2026-10-14 재부팅 뒤 같은 목표 재개. 시범 PR233은 병합됐고 사용자는 브라운 B1을 선택했다. renderer 회귀·보고 수량 수정은 독립 재검증 PASS다. 전체 키트 B1의 독립 판정은 NOT PASS — 원형 아이콘 남색 잔여 ART-UI-04(중간·차단) 1건이다. 새 Astra의 금 ring 원본 재합성 수정과 자체점검이 끝나 정산·종료했고, 새 Opus 강 독립 재검증을 수행 중이다. 메인 페이지 갱신과 Unity 적용은 수정·새 독립 검증 뒤 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Art 리드(`[Art 리드 Astra]`, 2026-10-13 중간 재개부터). 이전 리드는 `[Art 리드 Opus]`였다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며, 메인이 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 현재 pane을 닫고 새 목표에는 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -158,8 +158,8 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 현재 Astra의 ART-UI-04 두 IconBase 수정 결과/질문 알림을 처리한다. 쓰기 종료 뒤 새 Opus 강 독립 재검증을 거친다. 다른31조각·전체alpha·원본ring레이어를 보존하며 페이지/Unity는 판정 뒤 별도다 |
-| 현재 Task·Dispatch | 수정 구현 task_079ccb62b3dd / ctx_a21d2ab41644, handle term_12d86b77-4d03-43df-99cd-fc2f0d73f24d, incarnation a2635bb9-880d-44ea-b14a-ab37a72d4b6b. 신규 gpt-6-astra xhigh/Codex0.162.1, backend unknown.10:13:58Z 실제 제출 뒤 Working/live다. start_unknown 접수 원문과 실제 시작 증거를 구분한다. 계약 contracts/ui-kit-b1-ring-fix-astra-v1.md, 산출 root ui-kit-b1-ring-fix/, 기동 원시 ui-kit-b1-ring-fix-launch/. 직전 검증 task_337e130cb02e/ctx_0ceaac747f2c은NOTPASS/정산·정확pane종료, 원문 ui-kit-b1-review-2/verdict.md SHA256 8aaafa93b336a4f8ed9dbeecab8dd8701df7d7290694a494afabbb52c0634c43 보존 |
+| 다음 첫 일 | 현재 Opus 강 독립 재검증의 결과/질문 알림을 처리한다. 실제 두 IconBase의 잔상 제거·원본ring/전체alpha·다른31byte·실제생성/거부진입/46재현을 새검사로 판정한다. 페이지/Unity는 판정 뒤 별도다 |
+| 현재 Task·Dispatch | 강 독립검증 task_66e572cca63c/ctx_0a2ade33e4ae, handle term_85bf5d11-7d34-417f-93ec-5277a10e36e8/incarnation38b12cc8-de05-49a4-a54d-9e5754343e02. claude-opus-5-5/화면Opus5.5xhigh/ClaudeCode2.1.299/backendunknown.10:46:17Z input_accepted+turn_started·실제Working/live. 계약 contracts/ui-kit-b1-ring-review-opus-v1.md, WriteRoot ui-kit-b1-ring-review/, 기동 ui-kit-b1-ring-review-launch/. 대상구현task_079ccb62b3dd/ctx_a21d2ab41644는완료2140파일로불변·정산종료. 전체B1독립판정은재검증결과전까지이전NOTPASS를유지한다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
 | 마감 Git 기준 | 정리 전 HEAD `ae7f403dfbd1e5f0b7af7ec61730fba032d3b4bf`, origin 일치·미커밋 제품0. 마감 기록 commit은 이 goal만 포함하며 최종 HEAD/origin/미커밋 목록은 `ui-kit-b1-review-launch/stop-git-final.json`에서 확인한다. `.backups` 산출물은 로컬 보존이며 Git push 대상이 아니다 |
@@ -168,7 +168,7 @@
 | PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범. 2026-10-13T09:29:28Z 병합, merge `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`(`lead-resume-astra/pr233-merged.json`) |
 | 리드 세션 / Run | 현재 `term_bf688225-7a92-4070-af46-81d0858f6ab3` / `run_79ffbf5c8612`(회신 `run:run_79ffbf5c8612`, consumer3), runtime `42f2ec42-f071-4796-bb5f-9b569877cebd`. 현재 Main `term_e2961048-266e-4503-b52b-dfb986d8c9b5`. 화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. 이전 handle·Task/Dispatch는 기록이며 실행 권한이 아니다 |
 | 기록 보존 | `013f37ef`을 새 branch의 `c9c34b41`로 옮겨 push했다. 옛 branch에 최신 main을 받은 merge head `857dae52`와 새 head의 tree가 같다(diff exit 0). 옛 branch는 삭제하지 않았다 |
-| 작업자·실행 자원 | 검증 정산 뒤 Art terminal-list 리드1개·reclaimable0을 확인한 뒤 새 수정 Astra pane1개를 열었다. 현재도 Node/PowerShell 이미지·파일 작업만 허용한다. Unity·WSL·DB·Docker·서버·대형 빌드는 실행하지 않았다. Content의 World 반환 뒤 Unity14 계획과 Art 충돌 없음으로 회신했다(`msg_d2d02124135b`). 큰 실행이 필요해지면 직전 메모리 원시와 다른 리드 사전 조율을 별도로 수행한다 |
+| 작업자·실행 자원 | 수정구현정산뒤 Art리드1개·reclaimable0을확인하고새Opus검증pane1개를열었다. 현재검증도 Node/PowerShell 이미지·파일 작업만 허용한다. Unity·WSL·DB·Docker·서버·대형 빌드는 실행하지 않았다. Content의 World 반환 뒤 Unity14 계획과 Art 충돌 없음으로 회신했다(`msg_d2d02124135b`). 큰 실행이 필요해지면 직전 메모리 원시와 다른 리드 사전 조율을 별도로 수행한다 |
 | Unity·화면 조작 | 사용자 지시(메인 채팅 전달) 원문 「그리고 만약에 MCP 연결이나 컴퓨터 조작관련 행동이 필요하면 Codex CLI가 아닌 Codex Desktop을 통한 GPT Astra한테 명령하면 대신 조작 잘 해줄거야, 권한 최대한 자율로 줄게」. Art가 UI 창 PR에서 Unity를 열 때 쓸 수 있다. 큰 실행 전 메모리 4GB 원시와 다른 리드 알림은 그대로다 |
 | 남은 결정·준비 | 본 제작 미리보기 사용자 확인(산출 뒤). 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함). 현재 Content 회신 주소 `run:run_b680cd89da9a`는 재사용 전 현재 상태와 대조한다 |
 
@@ -343,6 +343,19 @@
 - 공식 접수10:12:46Z는input_accepted/turn_start_unobserved였다. 새pane의동일runtime/handle/incarnation/Dispatch와JSONdraft21478자 = 계약16690 + 관측머리말4787 +1을 대조해 R-5조건을 충족했고, 텍스트 없는Enter한번만 보냈다. 실제제출10:13:58.532Z의user계약103개비빈줄은대소문자까지전부일치하며원문길이차이는보존했다. 이후draft소멸/Working·agent_status live를확인했다. durable start_unknown을turn_started접수로고쳐쓰지않는다.
 - 공개 transcript가 잘려 현재cwd/시각의 session_meta를 좁혀 확인한 뒤 정확한제출계약만 대조했다. 후보날짜필터의local/UTC혼동과읽기공유위반은 현재메타확인·공유StreamReader로 해결했다. 상세리드도구오류는context.md에기록하며 제품실패로세지않는다.
 - 실제 Task task_079ccb62b3dd/Dispatch ctx_a21d2ab41644, 리드의 쓰기는goal·계약·설계·감사·기동근거에 한정했다. 구현/시험은 새 외부 작업자만 수행한다. 다음은 결과/질문 알림 처리이며 우편함 반복조회·장기대기는 열지 않는다.
+### ART-UI-04 수정 완료와 새 독립 검증 준비 — 2026-10-14
+
+- 구현 보고/context 전문과 실제3코드diff를읽었다. pieces는원본순수helper export/이유주석만추가, circular는양의disc coverage전체에B1underlay를적용해동일ring을재합성, b1은저장후underlay계측과현재actor기본경로를분리했다. 다른31PNG/전alpha·고정21입력/보호4969불변은자체검사결과이며새독립판정이필요하다.
+- 자체원시: Icon22·sprite70·재현46/46·실제정상4/거부11·최종감사9,글자205/장식17·최소11UI. 이전잔상은disc>0/ring<32남색동일829/1610→0,AA파랑380/580→0. 전체파랑은175/433이남아원본ring자체색과좌표대응한다고보고했다. opaque ring alpha255 분모0은공집합이며별도실증으로확대하지않는다. 최종합성mean차이는0이아니며underlay합0과구분한다. 리드는64/96비교그림에서점/띠제거와별남색중심보존을표본확인했다.
+- 완료정산은현재Task/Dispatch·succeeded/settled/done확인→release retained/external_terminal→exactpaneclose ptyKilledtrue→ACK0,Art리드1/reclaimable0이다. reportSHA79a8227a5e8dfe965d8570cd1b45dba19bacb66c8d46ed94e5eb5d14185f2085. manifest2137+명시후속3=실제2140파일이며전수size/hash/명단차이0. 새고정명단/리드감사는 ui-kit-b1-ring-review-launch/package-manifest.json·lead-package-audit.json에있다.
+- 운영결손:현재worker heartbeat2와done1의전구간을inbox100건(10:12:36~10:37:41Z)으로대조했다. 실제제출부터396.468초,heartbeat사이579초,마지막~done349초로5분초과3구간이다. 준수로꾸미거나제품확정실패로자동집계하지않는다. Main msg_fab4b70f2a95에즉시보고했고새검증에서운영판정과기술판정을구분해명시하도록한다. 리드UTC재파싱오류원시를보존하고typed변환으로정정한 liveness-result-corrected.json이근거다.
+- 현재수정은해당결함첫회,신규Opus강검증은2140+4969=7109파일을보호하고새WriteRoot에시험/판정만쓴다. 리드의준비는goal·계약·고정입력·기동이며제품·시험직접구현없음. Main페이지/Unity미착수·큰실행0. Content v3회귀14정확1회와CoreSQL준비에Art일정충돌없음을별도로회신했다.
+### ART-UI-04 Opus 강 독립 재검증 실제 시작 — 2026-10-14
+
+- 새계약1판16435자/SHA256 117338b6a03a7e9c5ea1cd82ae3a407a4967b7f5b4576f9ce6ea17eb6f11be6c,기준HEAD27a3b18bea629613fdf3b1a4707c07e7968171f8,고정30입력·10패키지7109파일전수명단/size/hash차이0을확인했다. 원시새launch root의fixed-inputs/path-check/lead-protected-audit. 신규WriteRoot부재/부모존재를확인하고프로세스TEMP/TMP .backups/tmp/art-ring-r1만준비했다.
+- split직전/worker-start직전check각0.현재부모살아있음/승인checkout/새handle·incarnation/runtime를대조했다. 최초명령은프로세스TEMP/TMP설정뒤 claude --model claude-opus-5-5,화면Opus5.5xhigh/ClaudeCode2.1.299,backendunknown,준비satisfied·모달없음이다. 기존auto mode표시는관측만했고권한/전역설정을변경하지않았다.
+- Task task_66e572cca63c/Dispatch ctx_0a2ade33e4ae,handle term_85bf5d11-7d34-417f-93ec-5277a10e36e8/incarnation38b12cc8-de05-49a4-a54d-9e5754343e02.10:46:17Z접수는input_accepted/turn_started,이후Working·agent_status live를확인했다. 추가Enter/draft복구없음. 대상구현의운영결손도숨기지않고독립판정에분리하도록계약에명시했다.
+- 리드는goal/계약/보호감사/기동만수행했다. 제품·시험·독립판정은각외부세션소유다. 현재검증결과는아직없으며결과/질문알림으로이어간다. 새goal·페이지·Unity·큰실행을자동시작하지않는다.
 ## 다음 계획 후보
 
 - 거점 맵형: 승인 계획의 첫 확장 후보다. 10-21 판단 때 이 goal 안으로 넣을지 메인에 올린다.
