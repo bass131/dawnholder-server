@@ -20,7 +20,7 @@ namespace GameServer.Tests.Network;
 /// **테스트 전략** (AttackHandlerTests / MoveIntentHandlerTests 패턴 정합):
 ///   - GameMap 직접 주입(GetMap override) → GameWorld.Instance singleton race 차단
 ///   - Send/Disconnect override로 I/O 차단 (socket 없이 동작)
-///   - `BypassHandshake()`로 handshake 우회 (lifecycle 테스트가 아니라 handler 로직 테스트)
+///   - `BypassHandshake()`로 handshake·로그인 우회 (lifecycle 테스트가 아니라 handler 로직 테스트)
 ///   - `HasSelectedClass` / `GetStatsForTest` internal getter로 상태 검증
 ///
 /// **헌법 #3 정합**: 테스트 3~4번이 invalid 입력 silent drop + cheat-flag 로그 검증.
@@ -52,9 +52,13 @@ public class CharacterSelectHandlerTests : IDisposable
         public override void Disconnect() { DisconnectCalls++; }
 
         // CompleteHandshakeAndEnter는 protected internal — handshake 우회용.
-        // class 선택 핸들러 검증 목적 — handshake만 우회, class 선택은 테스트 대상.
+        // class 선택 핸들러 검증 목적 — handshake·로그인 prerequisite만 준비, class 선택은 테스트 대상.
         // EnterGameWorldIfReady() 호출 안 함 (class 선택 후 월드 진입이 테스트 대상).
-        public void BypassHandshake() => CompleteHandshakeAndEnter();
+        public void BypassHandshake()
+        {
+            CompleteHandshakeAndEnter();
+            CompleteLogin(new("test_account", Guid.NewGuid()));
+        }
 
         // HasSelectedClass는 GameSession.HasSelectedClass (internal getter) 직접 접근.
         // 같은 어셈블리 내 서브클래스이므로 가능. GameSession._stats null 여부만 표면화.
@@ -79,7 +83,7 @@ public class CharacterSelectHandlerTests : IDisposable
         return pkt.Write();
     }
 
-    // handshake 우회 + tick 1회 → EnterGameWorld 람다 처리 완료 상태.
+    // handshake·로그인 우회 + tick 1회 → class 선택 전·월드 미진입 상태.
     TestGameSession SetupHandshakedSession()
     {
         TestGameSession s = new(_map);
@@ -94,7 +98,7 @@ public class CharacterSelectHandlerTests : IDisposable
     [Fact]
     public void Happy_Knight_StatsSet_KnightClass()
     {
-        // arrange: handshake 통과 상태.
+        // arrange: handshake·로그인 통과 상태.
         TestGameSession s = SetupHandshakedSession();
         Assert.False(s.StatsSet); // 선택 전 = null
 

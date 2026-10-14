@@ -9,15 +9,15 @@ namespace GameServer.Tests.Network;
 
 /// <summary>
 /// 세션 상태 머신 회귀 안전망:
-/// handshake → class 선택 → 월드 진입 순서 강제 + 선택 전 입력 silent drop 검증.
+/// handshake → 로그인 → class 선택 → 월드 진입 순서 강제 + 선택 전 입력 silent drop 검증.
 ///
-/// **불변식 1**: handshake 후 class 선택 없이 월드 진입 불가.
+/// **불변식 1**: handshake·로그인 후 class 선택 없이 월드 진입 불가.
 /// **불변식 2**: C_CharacterSelect 없이 C_MoveIntent/C_Attack 보내면 서버가 silent drop.
 ///
 /// **검증 invariant** (6건):
 ///   1. EnterGameWorld_WithoutHandshake_Rejected — handshake 안 박힘 + class 선택 시도 = silent reject
-///   2. EnterGameWorld_WithoutCharacterSelect_Rejected — handshake OK 후 월드 미진입 (핵심 회귀 방어)
-///   3. EnterGameWorld_AfterCharacterSelect_Success — handshake → CharacterSelect → 월드 진입 정상 transition
+///   2. EnterGameWorld_WithoutCharacterSelect_Rejected — handshake·로그인 OK 후 월드 미진입 (핵심 회귀 방어)
+///   3. EnterGameWorld_AfterCharacterSelect_Success — handshake → 로그인 → CharacterSelect → 월드 진입 정상 transition
 ///   4. MoveIntent_BeforeCharacterSelect_Dropped — class 선택 전 C_MoveIntent silent drop
 ///   5. Attack_BeforeCharacterSelect_Dropped — class 선택 전 C_Attack silent drop
 ///   6. CharacterSelect_DuplicateAfterEnter_Rejected — class 선택 후 두 번째 C_CharacterSelect 차단
@@ -141,15 +141,16 @@ public class SessionStateMachineTests : IDisposable
     }
 
     /// <summary>
-    /// 테스트 2: handshake OK 후 class 선택 없이 — 월드 진입 안 됨 (핵심 회귀 방어).
+    /// 테스트 2: handshake·로그인 OK 후 class 선택 없이 — 월드 진입 안 됨 (핵심 회귀 방어).
     /// handshake는 상태 전이만, EnterGameWorld는 CharacterSelect 후.
     /// </summary>
     [Fact]
     public void EnterGameWorld_WithoutCharacterSelect_Rejected()
     {
-        // arrange + act: handshake 정상 처리.
+        // arrange + act: handshake·로그인 정상 처리.
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
+        s.CompleteLogin(new("test_account", Guid.NewGuid()));
 
         // S_HandshakeResult(ok=true) 회신 확인.
         Assert.Contains(s.SentPackets, p => PacketIdOf(p) == PacketID.S_HandshakeResult);
@@ -164,15 +165,16 @@ public class SessionStateMachineTests : IDisposable
     }
 
     /// <summary>
-    /// 테스트 3: handshake → CharacterSelect → 월드 진입 정상 transition.
+    /// 테스트 3: handshake → 로그인 → CharacterSelect → 월드 진입 정상 transition.
     /// 두 조건 모두 충족 시 EnterGameWorldIfReady()가 EnterGameWorld()를 호출하는 경로 검증.
     /// </summary>
     [Fact]
     public void EnterGameWorld_AfterCharacterSelect_Success()
     {
-        // arrange + act: handshake → class 선택 (Knight).
+        // arrange + act: handshake → 로그인 → class 선택 (Knight).
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
+        s.CompleteLogin(new("test_account", Guid.NewGuid()));
 
         // 아직 class 선택 전 — 월드 미진입 확인.
         _map.Tick(1);
@@ -193,14 +195,15 @@ public class SessionStateMachineTests : IDisposable
 
     /// <summary>
     /// 테스트 4: class 선택 전 C_MoveIntent silent drop.
-    /// handshake 완료 후 class 선택 전 상태에서 C_MoveIntent 수신 시 [Trust] 로그 + drop.
+    /// handshake·로그인 완료 후 class 선택 전 상태에서 C_MoveIntent 수신 시 [Trust] 로그 + drop.
     /// </summary>
     [Fact]
     public void MoveIntent_BeforeCharacterSelect_Dropped()
     {
-        // arrange: handshake 완료 + class 선택 전.
+        // arrange: handshake·로그인 완료 + class 선택 전.
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
+        s.CompleteLogin(new("test_account", Guid.NewGuid()));
         _map.Tick(1);
         Assert.Empty(_map.Players); // class 선택 전 = 월드 미진입
 
@@ -220,14 +223,15 @@ public class SessionStateMachineTests : IDisposable
 
     /// <summary>
     /// 테스트 5: class 선택 전 C_Attack silent drop (MoveIntent 정합 패턴).
-    /// handshake 완료 후 class 선택 전 상태에서 C_Attack 수신 시 [Trust] 로그 + drop.
+    /// handshake·로그인 완료 후 class 선택 전 상태에서 C_Attack 수신 시 [Trust] 로그 + drop.
     /// </summary>
     [Fact]
     public void Attack_BeforeCharacterSelect_Dropped()
     {
-        // arrange: handshake 완료 + class 선택 전.
+        // arrange: handshake·로그인 완료 + class 선택 전.
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
+        s.CompleteLogin(new("test_account", Guid.NewGuid()));
         _map.Tick(1);
         Assert.Empty(_map.Players);
 
@@ -256,9 +260,10 @@ public class SessionStateMachineTests : IDisposable
     [Fact]
     public void CharacterSelect_DuplicateAfterEnter_Rejected()
     {
-        // arrange: 정상 handshake + Knight 선택 + 월드 진입.
+        // arrange: 정상 handshake + 로그인 + Knight 선택 + 월드 진입.
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
+        s.CompleteLogin(new("test_account", Guid.NewGuid()));
         s.OnRecvPacket(CharacterSelectPacket(0)); // Knight
         _map.Tick(1);
         Assert.Single(_map.Players);

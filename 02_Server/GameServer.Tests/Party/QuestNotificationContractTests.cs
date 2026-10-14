@@ -38,6 +38,7 @@ public sealed class QuestNotificationContractTests : IDisposable
         _sessions.Add(session);
         session.OnConnected(Endpoint);
         session.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+        LifecycleTestWorld.LogIn(_world, session);
         session.OnRecvPacket(new C_CharacterSelect { characterClass = 0 }.Write());
         Tick();
         Assert.True(session.EntityId >= 0);
