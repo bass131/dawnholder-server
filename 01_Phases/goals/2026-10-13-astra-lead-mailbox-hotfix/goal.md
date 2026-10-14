@@ -7,11 +7,11 @@
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. 현재 PR2 branch `feat/codex-merge-guard-20261013`, 생성 당시 최신 main/base `44bd4319f78078f6fcc3f4941590f6371d58e2b7`. PR1 branch는 `docs/astra-lead-mailbox-20261013`, 당시 base는 `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`였다.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: **강 독립 검증 Task `task_edb2ad2e08ea`가 NOT PASS #19~#22로 정산·pane 종료됐다.** 기존 실패46은 결정7의 요구 변경으로 독립 재도출해 기존17시험718/718, 신규 포함838/818/20·leaf715/699/16이다. 메인 `msg_8252279ea2c7`에 따라 새 Astra가 같은 범위에서 선형 후보 탐색·작업량 예산·실행 접두 경계를 수정한다. 실제 Codex 진입·Linux CI는 미실행이며 전체 PASS가 아니다. 결정8의 야간 마감과 과거 판정은 역사 근거로 보존한다. Art 담당 판2는 확정됐고 PR2 병합 뒤 별도 문서 PR이다. 기존 후속 기록·Archify/Unity 정합도 유지한다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
+- 현재 차례: **수정 구현 Task `task_a74ecc7e1c14`가 자체검사 완료로 succeeded/settled·pane 종료됐고 신규 Opus 강 독립 검증을 준비한다.** 자체검사838/838·leaf715/715와 종료 근거 해시를 정산했으나 독립 PASS는 아니다. 실행 범위별 후보/인자 대응의 완전한 differential과 실제 Codex 진입·Linux CI가 남았다. 이전 독립 NOT PASS #19~#22와 결정8의 야간 마감은 역사 근거로 보존한다. Art 담당 판2는 PR2 병합 뒤 별도 문서 PR이며 기존 후속 기록·Archify/Unity 정합도 유지한다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
 - 중단 Task `task_f0e3a8b1e758` / Dispatch `ctx_e8a225748509`는 시간 마감으로 **failed/settled** 정산·release·작업자 close까지 끝났고 재사용하지 않는다. 당시 하네스0/reclaimable0과 새 실행 금지는 야간 마감 상태다. 이번 재진입은 같은 Run consumer_generation2이며 현재 회신은 `run:run_54319375ed08`이다. 새 handle은 재진입 receipt에 기록하며 과거 handle을 실행 권한으로 쓰지 않는다.
 - 보존 기준 HEAD는 `ad7ba33a34312b99759b9829f7c0aee2580abf55`다. 미커밋은 `99_Tools/CodexGuard/command-policy.mjs`, `shell-command.mjs`, 신규 `command-shape.mjs`, 신규 `protected-command.mjs` 네 파일이다. `E/guard-redesign-01/partial-report.md`와 `partial-products.patch`(신규 파일 포함), `product-snapshot/`, `partial-audit.json` 및 리드 `guard-redesign-01-lead-settlement.json`에 내용·hash를 보존했다. 기존 시험/fixture 18파일은 불변이다.
 - 야간 마감 기록은 `463f1bde28547f499dd45694fe71fe05c7fb129f`로 push했다. 재부팅 뒤 미완4파일을 종료 snapshot과 다시 대조하고 origin/main `20ce59ddd72d0cb72b6e230e386a62587b9bfe1b`를 현재 branch에 충돌 없이 통합했다. 통합 HEAD `20ac0d6efbdc3f3139f865dea40afa62d712cdbb`와 원격이 일치하며 미완4파일 hash도 전부 같다(`E/reboot-20261014-git-result.json`). 제품4파일은 여전히 미커밋이다. 신규 구현의 기준은 재진입 기록 commit을 포함한 발행 계약/입력 manifest에 고정한다.
-- 다음 첫 행동: branch/HEAD·현재 제품/문서7+시험8경로와 `E/guard-redesign-review-01-lead-settlement.json`·최신 지침을 대조하고 **새 Astra 수정 계약**을 발행한다. 시험20파일(18개 .test.mjs+helper2)은 고정하고 제품만 수정한다. 다음 신규 Opus가 수정 결과와 실제 Codex 진입을 안전한 가짜 CLI 계획/R-6 신뢰 처리 뒤 검증한다. 실제 push를 실행한 옛 harness는 재사용하지 않는다. 독립 검증→CI→PR별 사용자 병합 승인 순서이며 현재 미응답 사용자 결정은 없다. Art 및 다음 문서 후보를 자동 착수하지 않는다.
+- 다음 첫 행동: branch/HEAD·현재16변경 경로와 `E/guard-redesign-03-lead-settlement.md`·최신 지침·아래 메인 기준 보충을 대조해 **신규 Opus 강 독립 검증 계약**을 발행한다. 제품8과 설명 문서는 고정하고 시험20파일은 검증자의 근거 있는 보완만 허용한다. 실제 Codex 진입은 새 안전 가짜 CLI 계획/공식 ask/R-6 신뢰 처리 뒤 검증한다. 실제 push를 실행한 옛 harness는 재사용하지 않는다. 독립 검증→CI→PR별 사용자 병합 승인 순서이며 현재 미응답 사용자 결정은 없다. Art 및 다음 문서 후보를 자동 착수하지 않는다.
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
@@ -20,8 +20,8 @@
 - [x] 리드 규칙 작성
 - [x] 문서 재실사와 부분 관측 정리
 - [x] PR234 병합
-- [>] 가드 구현·독립 결함 수정
-- [ ] 가드 강 검증
+- [x] 가드 구현·독립 결함 수정
+- [>] 가드 강 검증
 - [ ] 가드 PR 병합
 - [ ] 종료 점검과 기록
 - [ ] 종료 확인과 교체
@@ -283,7 +283,20 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - 리드 원시 재집계 `E/guard-redesign-review-01-lead-settlement.json`: 최종 실행 입력64/64·고정90 중 허용 시험6변경만·제품7불변·시험patch hash 일치·현재15경로/허용밖0. 수집기의 첫 Claude events 파일 ENOENT는 실제 claude-stdout 근거로 정정했고 제품 재시험은 없었다. 쓰기 종료 status 뒤 발송용 도구/본문2파일 추가 쓰기는 worker_done에서 정정됐고 제품/시험/verdict/context hash는 불변이다. 이 절차 이탈은 제품 확정 실패 횟수에 더하지 않는다.
 - failed/settled→release external retained→동일 incarnation idle→정확 pane close ptyKilled=true, reclaimable0. 저장 Delivery/최종 inbox의 현재 from/Task/Dispatch를 중복 제거한 신호18개는10:25:25Z~11:18:45Z, 최대423초·초과2(423/342), helper exit1이다(`E/guard-redesign-review-01-all-liveness.json`·provenance). 5분 준수로 주장하지 않는다. 메인 최종 보고 `msg_83e621216546`, R-2 후보는 실패귀속의 #12/requirement8/bash-c-echo 행과 budget-confirm/aliases 원시다.
 
+### 선형 후보·작업량 예산 수정 정산 — 2026-10-14
+
+- 신규 Astra 구현 Task `task_a74ecc7e1c14` / Dispatch `ctx_37ec4b04cceb`, 기준 HEAD `3b13a2c045e3a5cf66b7aebaf63ecb9239e32375`. 계약 `E/guard-redesign-03-contract-v1.md` SHA256 `2a390ae346fa5a142ee6b588dc1228675cb0030efea7562dec5798b4db423cf0`, 입력106/부모3/누락0. 요청·최초 명령·화면·turn_context gpt-6-astra xhigh, backend unknown. R-5 공식 draft 조건 대조 뒤 Enter 한 번으로 계약 제출을 확인했다.
+- 쓰기 종료 `msg_6302048d366f`·worker_done `msg_25a3bc1dfe25` succeeded/settled는 구현 자체검사 완료다. 보고 원문 `E/guard-redesign-03/report.md` SHA256 `2638d3cc12510eac6c81c90ebdc7cc1ab3422ef9d75e03bd2820d839fd7435e1`, 맥락 `context.md` SHA256 `1f386e3cc6081eeac71ebabc4cd90b52712bb98ba81988453469d03b7afb3e24`. 리드 정산 `E/guard-redesign-03-lead-settlement.md`·`.json`은 제품8/사본8·실행 manifest64·근거4184해시 일치, 시험20불변, 입력106 중 허용7변경/무단0, Git16경로 허용을 확인했다. 제품5기존+budget 신규·설명2수정이며 이전 검증자 시험8변경은 보존했다.
+- 메인 보충: `msg_b146ed087ad8`은 두 선형 뷰 각1회·전체 작업량 예산을 허용했고 `msg_b39b63c1815b`은 토큰당 정규화1회와 부분 문자열 총량 계측을 요구했다. `msg_51915dc73a26`은 brace/backtick/URL·비용의 일반화된 수리를, `msg_63b42baac0e9`는 빈/인용 인자의 원시 differential RED 선행을 지정했다. `msg_45aabc89b871`은 원인별4묶음 뒤 제품5번째 수정 전에 체크포인트를 요구했다. 원문은 `E/guard-redesign-03-lexer-boundary-resume-supplement-v1.md`, `checkpoint-01-resume-supplement-v1.md`, `checkpoint-01-cost-addendum-v1.md`, `checkpoint-02-resume-supplement-v1.md`, `four-bundle-checkpoint.md`(뒤 네 파일도 guard-redesign-03- 접두)다. 독립 확정 실패 횟수와 원인별 수정 묶음을 합산하지 않는다.
+- `msg_110fc6f703a5`는 옛 root 전체 인자 일치 요구를 ①치환 없는 인자/빈 인자 일치 ②root·각 치환의 보호 후보/인자 대응 ③heredoc 인용과 실행 치환 분리로 **기준 변경**했다. literal535성공/2실패의529불일치→0과 별개로 옛 execution9의 root4불일치는 보존한다. 새 scope 구조 대응은 구현자가 완전한 differential을 완료하지 못했으며 독립 검증에 남긴다. 원문 `E/guard-redesign-03-checkpoint-03-resume-supplement-v1.md`.
+- `msg_3d0d7d08fa19`는 unquoted heredoc의 보호 명령 데이터+읽기 치환 두 오탐만 보수적 지원 경계로 수용했다. 원28행/기대/hash를 보존한 새30행에서 같은 명령2개 kept→unsupported, 나머지26동일, no-sub 데이터 대조2개 추가다. README/ORCA 안내만 더하고 제품5번째 수정은 하지 않았다. 단독 낱말·정상 S1~S3 데이터/조회 및 임의 새 오탐으로 확대하지 않는 해석을 `msg_a914938c236f`로 메인에 보고했다. 원문 `E/guard-redesign-03-checkpoint-04-resume-supplement-v1.md`.
+- 최종 after-07 전체838/838·leaf715/715·부모123/123·skip/todo/cancel0·exit0, 고정157/157, 생성72/72+인용16/16, scope30/30, budget8/8·static9/9·고정 비용3/3. 계측92행의 lexer/summary 각1회·정규화 토큰당1회·exhausted0을 원시로 대조했다. 고정 비용 세 stdin hash는 이전 기록과 같고84/283/86ms다. 고정157의 명령/기대는 동일하지만 건별 manifest 계측 추가로 하네스 hash는 달라졌다. Claude293/293은 앞선 실행과 파일 불변 근거다. 실제 Codex 진입·trust·hook timeout·Linux CI는 미실행/미측정이며 전체 PASS가 아니다.
+- 운영 미준수(메인 결정 처리): 최종 `E/guard-redesign-03-all-liveness.json`은 신호23·최대416초·300초 초과7구간354/347/376/340/334/416/395, 질문 대기204/568/135초 별도다. `guard-redesign-03-tool-call-audit.json`·신호/회신·제품/시험/보호 hash·자원 경계와 명시 보류 구간을 대조해 간격만의 위반에 메인 `msg_8482dc7ac77a`의 오늘 한정 기준을 적용했다. 상세 조건/한계는 리드 정산 원문에 있다. 신호 주기를 바꾸거나 구조 미완·제품 결함을 면제하지 않는다. 독립 판정문에도 같은 운영 절을 둔다.
+- release external retained→동일 incarnation idle→정확 pane close ptyKilled=true·reclaimable0을 확인했다. 이번 구현을 재사용하지 않고 새 Opus의 verifies를 task_a74ecc7e1c14로 연결한다. 새 결함 번호#23부터, #19~22와 역사#1~18의 각 첫 확정 실패를 보존한다. 생존 정산 연결 후보는 쓰기 종료 뒤 아래 BACKLOG에만 등록했다.
+
 ## 다음 계획 후보
+
+- 구현자 생존 신호 정산과 판정문 운영 절 연결: BACKLOG `implementer-liveness-settlement-check`. 메인 `msg_86cc9e823856`과 오늘 한정 `msg_8482dc7ac77a`를 출처로 등록했다. 현재 신호 기준·PR2/Art 범위·새 goal 착수 권한은 바꾸지 않는다.
 
 - Codex 리드 자동 깨움 복구/미처리 메일 감시: BACKLOG `codex-lead-mailbox-wake-recovery`. 원천 msg_572d2dd4e7c1과 범위 안 문서 수리의 분리는 위 메인 적용 판단에 있다.
 
