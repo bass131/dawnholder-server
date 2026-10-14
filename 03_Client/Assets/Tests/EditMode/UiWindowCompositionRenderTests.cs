@@ -31,7 +31,9 @@ namespace Dawnholder.Client.Tests
     //    so a decoration that takes raycasts or covers a button is a lost click, not a geometry guess.
     // L  Hide, dispose, rebind and singleton boundaries are read through the same capture and raycast.
     // D  Controls run the same observers on fixture objects: plain colour, foreign sprite, halved border, tint,
-    //    a decoration over a button and an opaque piece over text must each be reported.
+    //    a decoration over a button and an opaque piece over text must each be reported. On the scene HUD canvas a
+    //    raycastTarget probe and an untouched scene graphic must be hit; an empty hit list counts only where the
+    //    observer is shown to see that point.
     // Switching a product canvas from Overlay to ScreenSpaceCamera is part of the fixture: these captures are not the
     // game screen and not a before/after pair. PNGs are written only when DAWNHOLDER_UI_KIT_EVIDENCE_DIR is set.
     public sealed class UiWindowCompositionRenderTests
@@ -520,112 +522,142 @@ namespace Dawnholder.Client.Tests
         // Party members (the real Scenes/99.UI/UI.unity Party_Info, opened and closed without saving)
         // ---------------------------------------------------------------------------------------------------------
 
+        // The checks of the Party_Info scenario. Each case runs the whole scenario and asserts one check, so a failed
+        // check never stops the checks after it (the Unity NUnit 3.5 build has no Assert.Multiple).
+        public enum PartyHudCheck
+        {
+            SerializedRefsKeepSceneFileIds,
+            ApprovedPiecesDrawnAtBothSizes,
+            SceneRaycastTargetKept,
+            SameCanvasProbeSeenByObserver,
+            ShownPanelTakesRaycastOverCentre,
+            MemberInsetsTakeNoRaycast,
+            OneInsetPerMemberRow,
+            RebindAddsNoSecondInsetSet,
+            InsetsDrawnBehindMemberTexts,
+            LeftPartyTakesNoRaycast,
+            LeftPartyDrawsNothing,
+            SceneFileNotWritten,
+        }
+
         // Scope PartyMemberHud 「기존 serialized root/슬롯의 runtime 표시 초기화」 and 「씬은 쓰지 않는다」: the serialized
         // references keep the scene file's fileIDs; the runtime init draws Panel_Default and an Inset_* per member;
-        // rebinding adds no second set; leaving the party draws nothing; the scene file bytes are unchanged.
+        // rebinding adds no second set; leaving the party draws nothing and takes no input; the scene file bytes are
+        // unchanged. An empty hit list counts only where the observer is shown to see that point (else inconclusive).
         [Test]
-        public void PartyMemberHud_OnTheRealUiScene_DrawsApprovedPiecesKeepsSerializedRefsAndRebindsWithoutDuplicates()
+        public void PartyMemberHud_OnTheRealUiScene_DrawsApprovedPiecesKeepsSerializedRefsAndRebindsWithoutDuplicates([Values] PartyHudCheck check)
+        {
+            PartyHudRun run = RunPartyHudScenario();
+            Log("party members per size", run.PerSize);
+            Log("party members raycast record", run.Raw);
+            Log("party members probe controls failed", run.ProbeFailures);
+            switch (check)
+            {
+                case PartyHudCheck.SerializedRefsKeepSceneFileIds:
+                    Assert.IsEmpty(run.MovedRefs, "L serialized _root/_member*Group/_member*Text keep the scene's fileIDs");
+                    break;
+                case PartyHudCheck.ApprovedPiecesDrawnAtBothSizes:
+                    Assert.IsEmpty(run.PerSize, "R Panel_Default and Inset_* rows drawn per spec with readable member texts at both sizes");
+                    break;
+                case PartyHudCheck.SceneRaycastTargetKept:
+                    Assert.IsTrue(run.RootRaycastBefore && run.RootRaycastAfter, "P Party_Info keeps the scene's raycastTarget 1");
+                    break;
+                case PartyHudCheck.SameCanvasProbeSeenByObserver:
+                    Assert.IsEmpty(run.ProbeFailures,
+                        "D on the HUD canvas a raycastTarget probe is hit over the panel, shown and after leaving; raycastTarget-off and never-shown probes are not");
+                    break;
+                case PartyHudCheck.ShownPanelTakesRaycastOverCentre:
+                    Assert.IsTrue(run.BodyTakesRaycast, "P the shown member panel takes the raycast over its centre");
+                    break;
+                case PartyHudCheck.MemberInsetsTakeNoRaycast:
+                    Assert.IsEmpty(run.InsetHits, "P member row insets take no raycast");
+                    // The insets are created at runtime under the HUD canvas, the same registration path as the probe.
+                    RequireObservable(run.ProbeSeenAtTexts.Length > 0 && run.ProbeSeenAtTexts.All(seen => seen),
+                        "P member row insets: the same-canvas probe is not hit at every member text centre");
+                    break;
+                case PartyHudCheck.OneInsetPerMemberRow:
+                    Assert.AreEqual(2, run.InsetsBefore, "R one inset per member row after the runtime init");
+                    break;
+                case PartyHudCheck.RebindAddsNoSecondInsetSet:
+                    Assert.AreEqual(run.InsetsBefore, run.InsetsAfterRebind, "L disable/enable rebinding adds no second set of insets");
+                    break;
+                case PartyHudCheck.InsetsDrawnBehindMemberTexts:
+                    Assert.IsTrue(run.InsetsBehindTexts, "R each member inset is drawn behind its member text");
+                    break;
+                case PartyHudCheck.LeftPartyTakesNoRaycast:
+                    Assert.IsEmpty(run.LeftHits, "L after leaving the party the panel takes no raycast");
+                    // Leaving blocks the panel's own graphics; that is visible only if they were seen while shown.
+                    RequireObservable(run.PanelSeenWhileShown && run.ProbeSeenAfterLeaving,
+                        "L after leaving: the shown panel was not seen at its centre, or the same-canvas probe is not hit there after leaving");
+                    break;
+                case PartyHudCheck.LeftPartyDrawsNothing:
+                    Assert.AreEqual(0, run.LeftDrawn, "L after leaving the party the panel draws nothing");
+                    break;
+                case PartyHudCheck.SceneFileNotWritten:
+                    Assert.AreEqual(run.SceneBefore, run.SceneAfter, "L the UI scene file is not written");
+                    break;
+                default:
+                    Assert.Fail($"fixture: no assertion for {check}");
+                    break;
+            }
+        }
+
+        // H1 attribution on the same scene HUD canvas: before any product code runs, after the product's own init, and
+        // after Party_Info's image registers again (enabled off and on), it records what GraphicRaycaster reads for
+        // Party_Info and for every raycast graphic of the canvas. Asserted are only the controls: a probe on this canvas
+        // and a scene graphic the product does not touch are hit; the raycastTarget-off and never-shown probes are not.
+        // The Party_Info rows are recorded for the failure classification, not turned into expectations.
+        [Test]
+        public void PartyMemberHud_SceneHudCanvas_ControlsAreHitAndPartyInfoRaycastStagesAreRecorded()
         {
             string sceneBefore = Sha256(UiScenePath);
             PartyHudScene scene = OpenUiScene();
             PartyMemberHud hud = scene.Hud;
             var root = (RectTransform)hud.transform;
-            // fileIDs as written in UI.unity (Party_Info's PartyMemberHud block), read as text, not from product code.
-            var serialized = new SerializedObject(hud);
-            var expectedIds = new Dictionary<string, ulong>
-            {
-                ["_root"] = 271747914UL,
-                ["_member0Group"] = 1303358837UL,
-                ["_member0Text"] = 2125634492UL,
-                ["_member1Group"] = 780923406UL,
-                ["_member1Text"] = 1757069867UL,
-            };
-            string[] movedRefs = expectedIds.Where(entry =>
-            {
-                UnityEngine.Object target = serialized.FindProperty(entry.Key)?.objectReferenceValue;
-                return target == null || GlobalObjectId.GetGlobalObjectIdSlow(target).targetObjectId != entry.Value;
-            }).Select(entry => entry.Key).ToArray();
-            bool rootRaycastBefore = root.GetComponent<Image>().raycastTarget;
-
-            GameObject stateObject = Own(new GameObject("Party HUD state (fixture)"));
-            stateObject.SetActive(false);
-            var state = stateObject.AddComponent<PartyState>();
-            PartyPopupFixture.SetState(state);
-            _cleanups.Add(() => PartyPopupFixture.SetState(null));
-            // Largest member texts the format can show: class 1 「마법사」 with the largest entity ids.
-            state.ApplyUpdate(31, int.MaxValue - 1, int.MaxValue - 1, int.MaxValue, 1, 1);
-            // Only Party_Info is compared; the other HUD children of the in-memory scene copy are switched off.
-            foreach (Transform sibling in root.parent)
-                if (sibling != root) sibling.gameObject.SetActive(false);
-            SessionTestTools.Call(hud, "Awake");
-            SessionTestTools.Call(hud, "OnEnable");
-            SessionTestTools.Call(hud, "Start");
-            _cleanups.Add(() => SessionTestTools.Call(hud, "OnDisable"));
+            var rootImage = root.GetComponent<Image>();
             Canvas hudCanvas = root.GetComponentInParent<Canvas>().rootCanvas;
-
-            var perSize = new List<string>();
-            foreach (Vector2Int size in new[] { FullHd, DefaultWindow })
+            var raw = new List<string>();
+            var failures = new List<string>();
+            try
             {
-                CaptureRig rig = Rig(size);
+                raw.AddRange(RegistryRows("0 loaded", hudCanvas, root));
+
+                CaptureRig rig = Rig(FullHd);
                 rig.Attach(hudCanvas);
-                Pixels shown = rig.Capture();
-                RequireScreenSize(rig, hudCanvas);
-                SaveScreen(rig, "party-members-ui-scene");
-                perSize.AddRange(RoleViolations(rig, root, root, "Panel_Default").Select(p => $"{size}: {p}"));
-                perSize.AddRange(DrawnPerSpec(rig, shown, Background(rig, root, root), PieceNamed("Panel_Default"),
-                    "party members background", requireCompared: true).Select(p => $"{size}: {p}"));
-                perSize.AddRange(scene.Texts.Where(text => PiecesUnder(rig, root, Centre(rig, text.rectTransform),
-                        "Inset_Default", "Inset_Selected", "Inset_Disabled").Length == 0)
-                    .Select(text => $"{size}: member 「{text.text}」 is not drawn on an approved Inset_*"));
-                perSize.AddRange(AllPiecesDrawnPerSpec(rig, shown, root).Select(p => $"{size}: {p}"));
-                TMP_Text[] texts = VisibleTexts(root);
-                perSize.AddRange(HiddenTexts(rig, shown, texts).Select(p => $"{size}: {p}"));
-                perSize.AddRange(MissingGlyphs(texts).Select(p => $"{size}: {p}"));
-                Log($"party members texts {size}", texts.Select(t => $"{t.name}: 「{t.text}」 truncated={t.isTextTruncated} overflowing={t.isTextOverflowing}"));
+                rig.Draw();
+                var raycaster = hudCanvas.GetComponent<GraphicRaycaster>();
+                Vector2 centre = Centre(rig, root);
+                raw.AddRange(RegistryRows("1 on the fixture camera, before product init", hudCanvas, root));
+                raw.AddRange(RaycastStages("1 Party_Info centre, before product init", rig, raycaster, rootImage, centre));
+                var sceneGraphics = Census("1 before product init", rig, raycaster, hudCanvas, raw);
+                if (!sceneGraphics.Any(row => row.OnScreen && row.Hit && !row.Graphic.transform.IsChildOf(root)))
+                    failures.Add("1 before product init: no scene raycast graphic outside Party_Info is hit at its centre");
+                SameCanvasProbes probes = AddSameCanvasProbes(hudCanvas);
+                ProbeControls("1 before product init", rig, raycaster, probes, centre, raw, failures);
+
+                InitPartyHud(hud, root);
+                raw.AddRange(RegistryRows("2 after product init", hudCanvas, root));
+                raw.AddRange(RaycastStages("2 Party_Info centre, after product init", rig, raycaster, rootImage, centre));
+                Census("2 after product init", rig, raycaster, hudCanvas, raw);
+                ProbeControls("2 after product init", rig, raycaster, probes, centre, raw, failures);
+
+                // Diagnostic only: Graphic.OnEnable caches the canvas and registers the graphic for it again.
+                rootImage.enabled = false;
+                rootImage.enabled = true;
+                raw.AddRange(RegistryRows("3 after Party_Info image enabled off and on", hudCanvas, root));
+                raw.AddRange(RaycastStages("3 Party_Info centre, after re-enable", rig, raycaster, rootImage, centre));
+
+                SessionTestTools.Call(hud, "OnDisable");
+                scene.Close();
+                if (Sha256(UiScenePath) != sceneBefore) failures.Add("the UI scene file was written");
             }
-            CaptureRig pointerRig = Rig(FullHd);
-            pointerRig.Attach(hudCanvas);
-            var raycaster = hudCanvas.GetComponent<GraphicRaycaster>();
-            bool bodyTakesRaycast = HitNames(pointerRig, raycaster, Centre(pointerRig, root)).Contains(root.name);
-            string[] insetHits = scene.Texts.SelectMany(text => Hits(pointerRig, raycaster, Centre(pointerRig, text.rectTransform)))
-                .Where(hit => ShownPieceOf(hit.gameObject)?.Name.StartsWith("Inset_", StringComparison.Ordinal) == true)
-                .Select(hit => hit.gameObject.name).ToArray();
-            int insetsBefore = InsetCount(root);
-
-            SessionTestTools.Call(hud, "OnDisable");
-            SessionTestTools.Call(hud, "OnEnable");
-            SessionTestTools.Call(hud, "Start");
-            int insetsAfterRebind = InsetCount(root);
-            bool insetsBehindTexts = scene.Texts.All(text => root.GetComponentsInChildren<Image>(true)
-                .Where(image => ShownPiece(image)?.Name.StartsWith("Inset_", StringComparison.Ordinal) == true &&
-                                image.transform.parent == text.transform.parent)
-                .Any(image => image.transform.GetSiblingIndex() < text.transform.GetSiblingIndex()));
-
-            state.Clear();
-            Pixels left = pointerRig.Capture();
-            string[] leftHits = HitNames(pointerRig, raycaster, Centre(pointerRig, root));
-            root.gameObject.SetActive(false);
-            Pixels absent = pointerRig.Capture();
-            root.gameObject.SetActive(true);
-            int leftDrawn = CountDifferent(left, absent, ToBlock(ScreenRect(pointerRig, root), left));
-            bool rootRaycastAfter = root.GetComponent<Image>().raycastTarget;
-
-            SessionTestTools.Call(hud, "OnDisable");
-            scene.Close();
-            string sceneAfter = Sha256(UiScenePath);
-
-            Log("party members per size", perSize);
-            Assert.IsEmpty(movedRefs, "L serialized _root/_member*Group/_member*Text keep the scene's fileIDs");
-            Assert.IsEmpty(perSize, "R Panel_Default and Inset_* rows drawn per spec with readable member texts at both sizes");
-            Assert.IsTrue(rootRaycastBefore && rootRaycastAfter, "P Party_Info keeps the scene's raycastTarget 1");
-            Assert.IsTrue(bodyTakesRaycast, "P the shown member panel takes the raycast over its centre");
-            Assert.IsEmpty(insetHits, "P member row insets take no raycast");
-            Assert.AreEqual(2, insetsBefore, "R one inset per member row after the runtime init");
-            Assert.AreEqual(insetsBefore, insetsAfterRebind, "L disable/enable rebinding adds no second set of insets");
-            Assert.IsTrue(insetsBehindTexts, "R each member inset is drawn behind its member text");
-            Assert.IsEmpty(leftHits, "L after leaving the party the panel takes no raycast");
-            Assert.AreEqual(0, leftDrawn, "L after leaving the party the panel draws nothing");
-            Assert.AreEqual(sceneBefore, sceneAfter, "L the UI scene file is not written");
+            finally
+            {
+                Log("party hud raycast stages", raw);
+                Log("party hud controls failed", failures);
+            }
+            Assert.IsEmpty(failures,
+                "D the HUD canvas probe and an untouched scene graphic are hit, raycastTarget-off and never-shown probes are not; L the scene file is not written");
         }
 
         // ---------------------------------------------------------------------------------------------------------
@@ -916,6 +948,167 @@ namespace Dawnholder.Client.Tests
                 .Select(field => serialized.FindProperty(field).objectReferenceValue as TMP_Text).ToArray();
             Assert.IsTrue(opened.Texts.All(text => text != null), "fixture: both member texts are wired in the scene");
             return opened;
+        }
+
+        // The product's own runtime init as the scene runs it, with the largest member texts the format can show
+        // (class 1 「마법사」 with the largest entity ids). Only Party_Info is observed; its HUD siblings are switched off.
+        PartyState InitPartyHud(PartyMemberHud hud, RectTransform root)
+        {
+            GameObject stateObject = Own(new GameObject("Party HUD state (fixture)"));
+            stateObject.SetActive(false);
+            var state = stateObject.AddComponent<PartyState>();
+            PartyPopupFixture.SetState(state);
+            _cleanups.Add(() => PartyPopupFixture.SetState(null));
+            state.ApplyUpdate(31, int.MaxValue - 1, int.MaxValue - 1, int.MaxValue, 1, 1);
+            foreach (Transform sibling in root.parent)
+                if (sibling != root) sibling.gameObject.SetActive(false);
+            SessionTestTools.Call(hud, "Awake");
+            SessionTestTools.Call(hud, "OnEnable");
+            SessionTestTools.Call(hud, "Start");
+            _cleanups.Add(() => SessionTestTools.Call(hud, "OnDisable"));
+            return state;
+        }
+
+        // What one run of the Party_Info scenario observed; Raw holds the recorded raycast stages and probe rows.
+        sealed class PartyHudRun
+        {
+            internal string SceneBefore;
+            internal string SceneAfter;
+            internal string[] MovedRefs;
+            internal readonly List<string> PerSize = new List<string>();
+            internal bool RootRaycastBefore;
+            internal bool RootRaycastAfter;
+            internal bool BodyTakesRaycast;
+            internal string[] InsetHits;
+            internal bool[] ProbeSeenAtTexts = Array.Empty<bool>();
+            internal int InsetsBefore;
+            internal int InsetsAfterRebind;
+            internal bool InsetsBehindTexts;
+            internal bool PanelSeenWhileShown;
+            internal string[] LeftHits;
+            internal bool ProbeSeenAfterLeaving;
+            internal int LeftDrawn;
+            internal readonly List<string> ProbeFailures = new List<string>();
+            internal readonly List<string> Raw = new List<string>();
+        }
+
+        // The scenario's own observations run in their original order. Raw records and probe raycasts come after the
+        // observation they explain and only read state; the probes are inactive except during their own raycasts.
+        PartyHudRun RunPartyHudScenario()
+        {
+            var run = new PartyHudRun { SceneBefore = Sha256(UiScenePath) };
+            PartyHudScene scene = OpenUiScene();
+            PartyMemberHud hud = scene.Hud;
+            var root = (RectTransform)hud.transform;
+            var rootImage = root.GetComponent<Image>();
+            // fileIDs as written in UI.unity (Party_Info's PartyMemberHud block), read as text, not from product code.
+            var serialized = new SerializedObject(hud);
+            var expectedIds = new Dictionary<string, ulong>
+            {
+                ["_root"] = 271747914UL,
+                ["_member0Group"] = 1303358837UL,
+                ["_member0Text"] = 2125634492UL,
+                ["_member1Group"] = 780923406UL,
+                ["_member1Text"] = 1757069867UL,
+            };
+            run.MovedRefs = expectedIds.Where(entry =>
+            {
+                UnityEngine.Object target = serialized.FindProperty(entry.Key)?.objectReferenceValue;
+                return target == null || GlobalObjectId.GetGlobalObjectIdSlow(target).targetObjectId != entry.Value;
+            }).Select(entry => entry.Key).ToArray();
+            run.RootRaycastBefore = rootImage.raycastTarget;
+            Record(run.Raw, "loaded", () => RegistryRows("loaded, before product init", root.GetComponentInParent<Canvas>().rootCanvas, root));
+
+            PartyState state = InitPartyHud(hud, root);
+            Canvas hudCanvas = root.GetComponentInParent<Canvas>().rootCanvas;
+            Record(run.Raw, "init", () => RegistryRows("after product init", hudCanvas, root));
+
+            foreach (Vector2Int size in new[] { FullHd, DefaultWindow })
+            {
+                CaptureRig rig = Rig(size);
+                rig.Attach(hudCanvas);
+                Pixels shown = rig.Capture();
+                RequireScreenSize(rig, hudCanvas);
+                SaveScreen(rig, "party-members-ui-scene");
+                run.PerSize.AddRange(RoleViolations(rig, root, root, "Panel_Default").Select(p => $"{size}: {p}"));
+                run.PerSize.AddRange(DrawnPerSpec(rig, shown, Background(rig, root, root), PieceNamed("Panel_Default"),
+                    "party members background", requireCompared: true).Select(p => $"{size}: {p}"));
+                run.PerSize.AddRange(scene.Texts.Where(text => PiecesUnder(rig, root, Centre(rig, text.rectTransform),
+                        "Inset_Default", "Inset_Selected", "Inset_Disabled").Length == 0)
+                    .Select(text => $"{size}: member 「{text.text}」 is not drawn on an approved Inset_*"));
+                run.PerSize.AddRange(AllPiecesDrawnPerSpec(rig, shown, root).Select(p => $"{size}: {p}"));
+                TMP_Text[] texts = VisibleTexts(root);
+                run.PerSize.AddRange(HiddenTexts(rig, shown, texts).Select(p => $"{size}: {p}"));
+                run.PerSize.AddRange(MissingGlyphs(texts).Select(p => $"{size}: {p}"));
+                Log($"party members texts {size}", texts.Select(t => $"{t.name}: 「{t.text}」 truncated={t.isTextTruncated} overflowing={t.isTextOverflowing}"));
+            }
+            CaptureRig pointerRig = Rig(FullHd);
+            pointerRig.Attach(hudCanvas);
+            var raycaster = hudCanvas.GetComponent<GraphicRaycaster>();
+            Vector2 centre = Centre(pointerRig, root);
+            run.BodyTakesRaycast = HitNames(pointerRig, raycaster, centre).Contains(root.name);
+            run.InsetHits = scene.Texts.SelectMany(text => Hits(pointerRig, raycaster, Centre(pointerRig, text.rectTransform)))
+                .Where(hit => ShownPieceOf(hit.gameObject)?.Name.StartsWith("Inset_", StringComparison.Ordinal) == true)
+                .Select(hit => hit.gameObject.name).ToArray();
+            run.InsetsBefore = InsetCount(root);
+            Record(run.Raw, "shown", () => RaycastStages("shown, Party_Info centre", pointerRig, raycaster, rootImage, centre));
+            Record(run.Raw, "shown census", () =>
+            {
+                var rows = new List<string>();
+                Census("shown", pointerRig, raycaster, hudCanvas, rows);
+                return rows;
+            });
+            SameCanvasProbes probes = null;
+            try
+            {
+                probes = AddSameCanvasProbes(hudCanvas);
+                RaycastResult[] shownHits = ProbeControls("shown", pointerRig, raycaster, probes, centre, run.Raw, run.ProbeFailures);
+                run.PanelSeenWhileShown = shownHits.Any(hit => hit.gameObject.transform.IsChildOf(root));
+                run.ProbeSeenAtTexts = scene.Texts.Select(text =>
+                {
+                    RaycastResult[] textHits = ProbeHits(pointerRig, raycaster, probes, Centre(pointerRig, text.rectTransform));
+                    run.Raw.Add($"shown, {PathOf(text.transform)} centre with probes: {HitList(textHits)}");
+                    return textHits.Any(hit => hit.gameObject == probes.On.gameObject);
+                }).ToArray();
+            }
+            catch (Exception error)
+            {
+                run.ProbeFailures.Add($"shown: probe record failed {error.GetType().Name}: {error.Message}");
+            }
+
+            SessionTestTools.Call(hud, "OnDisable");
+            SessionTestTools.Call(hud, "OnEnable");
+            SessionTestTools.Call(hud, "Start");
+            run.InsetsAfterRebind = InsetCount(root);
+            run.InsetsBehindTexts = scene.Texts.All(text => root.GetComponentsInChildren<Image>(true)
+                .Where(image => ShownPiece(image)?.Name.StartsWith("Inset_", StringComparison.Ordinal) == true &&
+                                image.transform.parent == text.transform.parent)
+                .Any(image => image.transform.GetSiblingIndex() < text.transform.GetSiblingIndex()));
+
+            state.Clear();
+            Pixels left = pointerRig.Capture();
+            run.LeftHits = HitNames(pointerRig, raycaster, Centre(pointerRig, root));
+            Record(run.Raw, "left", () => RaycastStages("after leaving, Party_Info centre", pointerRig, raycaster, rootImage, centre));
+            try
+            {
+                if (probes == null) throw new InvalidOperationException("no probes were created");
+                RaycastResult[] leftProbeHits = ProbeControls("after leaving", pointerRig, raycaster, probes, centre, run.Raw, run.ProbeFailures);
+                run.ProbeSeenAfterLeaving = leftProbeHits.Any(hit => hit.gameObject == probes.On.gameObject);
+            }
+            catch (Exception error)
+            {
+                run.ProbeFailures.Add($"after leaving: probe record failed {error.GetType().Name}: {error.Message}");
+            }
+            root.gameObject.SetActive(false);
+            Pixels absent = pointerRig.Capture();
+            root.gameObject.SetActive(true);
+            run.LeftDrawn = CountDifferent(left, absent, ToBlock(ScreenRect(pointerRig, root), left));
+            run.RootRaycastAfter = rootImage.raycastTarget;
+
+            SessionTestTools.Call(hud, "OnDisable");
+            scene.Close();
+            run.SceneAfter = Sha256(UiScenePath);
+            return run;
         }
 
         // ---------------------------------------------------------------------------------------------------------
@@ -1411,6 +1604,176 @@ namespace Dawnholder.Client.Tests
             PointerUp(press);
             PointerExit(press);
             return press.Pressed;
+        }
+
+        // ---------------------------------------------------------------------------------------------------------
+        // H1 records: what GraphicRaycaster (uGUI 2.x) reads on the scene HUD canvas, and probes on that same canvas
+        // ---------------------------------------------------------------------------------------------------------
+
+        static readonly System.Reflection.FieldInfo CachedCanvasField =
+            typeof(Graphic).GetField("m_Canvas", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+        // Raw records must not stop the scenario's own checks; a record that throws is logged as failed.
+        static void Record(List<string> raw, string label, Func<IEnumerable<string>> rows)
+        {
+            try { raw.AddRange(rows()); }
+            catch (Exception error) { raw.Add($"{label}: record failed {error.GetType().Name}: {error.Message}"); }
+        }
+
+        // Listed means enabled in the canvas's registry set; GraphicRaycaster iterates only those.
+        static bool Listed(IList<Graphic> set, Graphic graphic)
+        {
+            int index = set.IndexOf(graphic);
+            return index >= 0 && index < set.Count;
+        }
+
+        // The canvas a graphic registered under, read from the field so that reading it does not cache it.
+        static string CachedCanvas(Graphic graphic, Canvas expected)
+        {
+            if (CachedCanvasField == null) return "field not found";
+            var cached = CachedCanvasField.GetValue(graphic) as Canvas;
+            return cached == null ? "none" : cached == expected ? "this canvas" : cached.name;
+        }
+
+        static string HitList(IEnumerable<RaycastResult> hits) =>
+            string.Join(", ", hits.Select(hit => $"{PathOf(hit.gameObject.transform)}(depth {hit.depth})"));
+
+        // Registry state of the panel's graphics for the canvas.
+        static IEnumerable<string> RegistryRows(string label, Canvas canvas, Transform panel)
+        {
+            IList<Graphic> all = GraphicRegistry.GetGraphicsForCanvas(canvas);
+            IList<Graphic> raycastable = GraphicRegistry.GetRaycastableGraphicsForCanvas(canvas);
+            var rows = new List<string> { $"{label}: canvas {canvas.name} listed graphics {all.Count}, listed raycast graphics {raycastable.Count}" };
+            foreach (Graphic graphic in panel.GetComponentsInChildren<Graphic>(true))
+                rows.Add($"{label}:   {PathOf(graphic.transform)} {graphic.GetType().Name} active={graphic.gameObject.activeInHierarchy} " +
+                    $"enabled={graphic.enabled} raycastTarget={graphic.raycastTarget} listed={Listed(all, graphic)} " +
+                    $"raycastListed={Listed(raycastable, graphic)} cachedCanvas={CachedCanvas(graphic, canvas)}");
+            return rows;
+        }
+
+        // Each filter GraphicRaycaster.Raycast applies, for one graphic at one point after one frame (so depths are
+        // current): registry listing, raycastTarget, cull, depth (-1 = not drawn), the rect test, the graphic's own
+        // filter walk (its Image and any CanvasGroup above it), then every hit the raycaster reports there.
+        static IEnumerable<string> RaycastStages(string label, CaptureRig rig, GraphicRaycaster raycaster, Graphic graphic, Vector2 point)
+        {
+            RaycastResult[] hits = Hits(rig, raycaster, point);
+            Canvas canvas = raycaster.GetComponent<Canvas>();
+            Camera eventCamera = raycaster.eventCamera;
+            IList<Graphic> raycastable = GraphicRegistry.GetRaycastableGraphicsForCanvas(canvas);
+            string path = PathOf(graphic.transform);
+            Vector3 viewport = eventCamera != null ? eventCamera.ScreenToViewportPoint(point) : Vector3.zero;
+            float screenZ = eventCamera != null ? eventCamera.WorldToScreenPoint(graphic.rectTransform.position).z : 0f;
+            float farClip = eventCamera != null ? eventCamera.farClipPlane : 0f;
+            bool rectContains = RectTransformUtility.RectangleContainsScreenPoint(graphic.rectTransform, point, eventCamera, graphic.raycastPadding);
+            var rows = new List<string>
+            {
+                $"{label}: point {point} viewport {viewport} raycaster enabled={raycaster.enabled} " +
+                    $"eventCamera is fixture camera={eventCamera == rig.Camera} blocking={raycaster.blockingObjects} ignoreReversed={raycaster.ignoreReversedGraphics}",
+                $"{label}: canvas {canvas.name} renderMode={canvas.renderMode} worldCamera is fixture camera={canvas.worldCamera == rig.Camera} " +
+                    $"targetDisplay={canvas.targetDisplay} camera targetDisplay={rig.Camera.targetDisplay} sortingOrder={canvas.sortingOrder} " +
+                    $"listed raycast graphics={raycastable.Count}",
+                $"{label}: {path} raycastListed={Listed(raycastable, graphic)} cachedCanvas={CachedCanvas(graphic, canvas)} " +
+                    $"raycastTarget={graphic.raycastTarget} activeAndEnabled={graphic.isActiveAndEnabled} cull={graphic.canvasRenderer.cull} " +
+                    $"depth={graphic.depth} inheritedAlpha={graphic.canvasRenderer.GetInheritedAlpha():F3} padding={graphic.raycastPadding}",
+                $"{label}: {path} rectContainsPoint={rectContains} screenZ={screenZ:F2} farClip={farClip:F2} " +
+                    $"graphicRaycast={graphic.Raycast(point, eventCamera)} position={graphic.transform.position} forward={graphic.transform.forward} " +
+                    $"camera {rig.Camera.transform.position} forward {rig.Camera.transform.forward}",
+            };
+            foreach (CanvasGroup group in graphic.GetComponentsInParent<CanvasGroup>(true))
+                rows.Add($"{label}: CanvasGroup on {group.name} enabled={group.enabled} alpha={group.alpha:F2} " +
+                    $"blocksRaycasts={group.blocksRaycasts} interactable={group.interactable} ignoreParentGroups={group.ignoreParentGroups}");
+            rows.Add($"{label}: hits {hits.Length}: {HitList(hits)}");
+            return rows;
+        }
+
+        // Every active raycastTarget graphic of the canvas (TMP sub-meshes aside) and whether the raycaster reports it
+        // at its own centre, with its registry listing, cached canvas, depth and cull.
+        static List<(Graphic Graphic, bool OnScreen, bool Hit)> Census(string label, CaptureRig rig, GraphicRaycaster raycaster,
+            Canvas canvas, List<string> raw)
+        {
+            var rows = new List<(Graphic Graphic, bool OnScreen, bool Hit)>();
+            foreach (Graphic graphic in canvas.GetComponentsInChildren<Graphic>(false))
+            {
+                if (!graphic.raycastTarget || graphic is TMP_SubMeshUI) continue;
+                Rect screen = ScreenRect(rig, graphic.rectTransform);
+                Vector2 point = screen.center;
+                bool onScreen = screen.width > 0f && screen.height > 0f &&
+                                point.x > 0f && point.y > 0f && point.x < rig.Width && point.y < rig.Height;
+                bool hit = Hits(rig, raycaster, point).Any(result => result.gameObject == graphic.gameObject);
+                IList<Graphic> raycastable = GraphicRegistry.GetRaycastableGraphicsForCanvas(canvas);
+                rows.Add((graphic, onScreen, hit));
+                raw.Add($"{label}:   {PathOf(graphic.transform)} {graphic.GetType().Name} onScreen={onScreen} hitAtCentre={hit} " +
+                    $"raycastListed={Listed(raycastable, graphic)} cachedCanvas={CachedCanvas(graphic, canvas)} " +
+                    $"depth={graphic.depth} cull={graphic.canvasRenderer.cull}");
+            }
+            raw.Add($"{label}: raycast graphics {rows.Count}, hit at their centre {rows.Count(row => row.Hit)}");
+            return rows;
+        }
+
+        // Probes on the HUD canvas itself, stretched over the whole canvas and created inactive.
+        sealed class SameCanvasProbes
+        {
+            internal Image On;
+            internal Image Off;
+            internal Image Hidden;
+        }
+
+        SameCanvasProbes AddSameCanvasProbes(Canvas canvas)
+        {
+            Image Probe(string name, bool raycastTarget)
+            {
+                GameObject go = Own(new GameObject(name, typeof(RectTransform)));
+                go.SetActive(false);
+                go.transform.SetParent(canvas.transform, false);
+                var rect = (RectTransform)go.transform;
+                rect.anchorMin = Vector2.zero;
+                rect.anchorMax = Vector2.one;
+                rect.offsetMin = Vector2.zero;
+                rect.offsetMax = Vector2.zero;
+                var image = go.AddComponent<Image>();
+                image.color = new Color(1f, 0f, 1f, 0.25f);
+                image.raycastTarget = raycastTarget;
+                return image;
+            }
+            return new SameCanvasProbes
+            {
+                On = Probe("Same-canvas probe (fixture, raycastTarget on)", true),
+                Off = Probe("Same-canvas probe (fixture, raycastTarget off)", false),
+                Hidden = Probe("Same-canvas probe (fixture, never shown)", true),
+            };
+        }
+
+        // Raycasts with the on and off probes shown; the never-shown probe stays inactive. Both are hidden again after,
+        // so no capture draws them.
+        static RaycastResult[] ProbeHits(CaptureRig rig, GraphicRaycaster raycaster, SameCanvasProbes probes, Vector2 point)
+        {
+            probes.On.gameObject.SetActive(true);
+            probes.Off.gameObject.SetActive(true);
+            try { return Hits(rig, raycaster, point); }
+            finally
+            {
+                probes.On.gameObject.SetActive(false);
+                probes.Off.gameObject.SetActive(false);
+            }
+        }
+
+        // D on the same canvas: the raycastTarget probe is hit at the point, the off and never-shown probes are not.
+        static RaycastResult[] ProbeControls(string label, CaptureRig rig, GraphicRaycaster raycaster, SameCanvasProbes probes,
+            Vector2 point, List<string> raw, List<string> failures)
+        {
+            RaycastResult[] hits = ProbeHits(rig, raycaster, probes, point);
+            raw.Add($"{label}: hits with probes at {point}: {HitList(hits)}");
+            if (!hits.Any(hit => hit.gameObject == probes.On.gameObject)) failures.Add($"{label}: the raycastTarget probe is not hit");
+            if (hits.Any(hit => hit.gameObject == probes.Off.gameObject)) failures.Add($"{label}: the raycastTarget-off probe is hit");
+            if (hits.Any(hit => hit.gameObject == probes.Hidden.gameObject)) failures.Add($"{label}: the never-shown probe is hit");
+            return hits;
+        }
+
+        // An empty hit list is evidence only where the observer sees that point; otherwise the case is inconclusive,
+        // never passed.
+        static void RequireObservable(bool observable, string what)
+        {
+            if (!observable) Assert.Inconclusive("not observable: " + what);
         }
 
         // Centres of approved pieces that are not part of a button (panel, header, rows, frame, divider).
