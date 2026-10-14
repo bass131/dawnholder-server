@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **범위 승인(2026-10-13), 2026-10-14 재부팅 뒤 같은 목표 재개. 시범 PR233은 병합됐고 사용자는 브라운 B1을 선택했다. 전체 키트 B1은 새 Opus 강 독립 재검증에서 기술 PASS다. 원형 아이콘 남색 잔여 ART-UI-04를 해소했고 ART-UI-01/02/03을 보존했다. 구현자·검증자는 모두 정산·종료했다. 메인은 R-2 대조 뒤 PASS를 수령했고, OPS-1은 이번 구현 Task에 한해 제품 판정 차단에서 분리했다(메인 결정, 소급 면책 아님). Art는 메인의 페이지 갱신·사용자 미관 확인까지 대기한다. Unity 적용은 그 뒤 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-13), 2026-10-14 재부팅 뒤 같은 목표 재개. 시범 PR233은 병합됐다. 브라운 B1 전체 키트는 강 독립 재검증에서 기술 PASS이며, 사용자가 최종 미관을 A 이대로 승인했다. ART-UI-04 해소·01/02/03 보존, 구현자·검증자 정산·종료 완료다. 메인은 R-2 대조 뒤 PASS를 수령했고 OPS-1은 이번 구현 Task의 제품 판정 차단에서 분리했다(메인 결정, 소급 면책 아님). Unity 조각 반입 범위 초안1판을 작성해 메인 대조·승인을 기다린다. 승인 전 Unity 쓰기·새 작업자 발행·큰 실행·예약은 없다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Art 리드(`[Art 리드 Astra]`, 2026-10-13 중간 재개부터). 이전 리드는 `[Art 리드 Opus]`였다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며, 메인이 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 현재 pane을 닫고 새 목표에는 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -152,13 +152,16 @@
 - **오늘 마감 — 40분 안에 안전 지점 정리**(메인 `msg_79236e0f9bac`, 2026-10-13T18:33:01Z). 사용자 원문(메인 pane Enter 제출, 리드 직접 입력으로 격상하지 않음): 「일단 오늘 작업 좀 오래해서 현황판 수정이랑 나머지 리드급 남은 작업만 마무리하고 쉴까 하는데 어때?」 및 「대시보드 결정 응답: 1) 오늘 마무리 방식 - 40분 안에 끝낼 것만 끝내고 안전 지점에서 멈출지, 지금 바로 멈출지 → A 40분 마감」. 19:15Z(04:15 KST)까지 쓰기 중지·정산하고 새 작업자·검증자·큰 실행을 열지 않는다. goal 재개 기록만 commit/push하며 미완 제품 변경은 보존한다. 리드 pane은 사용자가 닫는다.
 - **메인 중지 지시 — B1 독립 검증은 다음 세션**(`msg_2149a5802b58`, 18:40:14Z). 18:38:11Z 신규 검증 기동은 위 마감 지시를 읽기 전이었다. 두 메시지를 첫 열람한 뒤 즉시 안전 중지를 전달했다. 검증자의 착수 관측만 보존하고 「사용자 마감으로 미실행 취소」로 정산한다. 독립 PASS/FAIL 판정·확정 실패 집계 대상이 아니다. B1 완료980파일은 고정 보존한다. 원문 `ui-kit-b1-review-launch/check-next-01.json`, 초기 메인 회신 `main-stop-initial-status.json`.
 
+- **B1 UI 키트 최종 미관 — A 이대로 승인**(메인 `msg_955f9b81cbbf`, 2026-10-14T11:34:35Z). 사용자 원문(메인 pane Enter 제출 전달): 「대시보드 결정 응답: 1) Art UI 키트 - 브라운 B1 최종본을 이대로 승인할지, 고칠 곳을 말할지 → A 이대로 승인」. 메인의 전달이며 Art pane의 사용자 직접 입력으로 격상하지 않는다. 대상은 `ui-kit-b1-ring-fix/package/kit`의 sprites33·preview12, 판정 SHA256 `203ab425ec60f8083344375b1196a4e1ccee031fbf401243a3bd6713c618c00c`다. 메인은 사용자가 [UI 키트 페이지](https://claude.ai/artifact/9vLuj33Na2PfWXtxdu8THs) version4(1920×1080 미리보기6장·조각33개·남색 비교)를 보고 답했다고 전달했다. 효과: 별 장식 가운데 남색 마름모 D5는 원본 장식 색 그대로 둔다.
+- **메인 지시 — Unity 적용 범위 초안**(같은 `msg_955f9b81cbbf`, 사용자 결정과 구분). 조각 넣기·9-slice 테두리 값 적용의 만들 것·건드릴 곳·하지 않을 것·관찰 가능한 완료조건·PR 경계·검증 등급을 초안으로 보내고, 메인이 승인 초안과 대조해 차이가 있으면 사용자에게 묻는다. 승인 전 Unity 쓰기·새 작업자 발행 금지. Content C9 검증 대기와 Editor 동시 사용을 피하는 순서를 초안에 적는다. 전달 원시는 `ui-kit-unity-import-plan/main-aesthetic-decision.json`이다.
+
 ## 재개 지점
 
 다음 리드는 이 블록부터 읽는다. 2026-10-13 마감은 commit `b09fd53e099341710f36b7555e1b56fee5734e9f`에 보존한다. 메인 재개 계약 `msg_0e8dad2ba450`(2026-10-14T09:16:34Z)에 따라 재부팅 뒤 같은 대화를 이어간다. 사용자 결정은 「대시보드 결정 응답: 1) 리드 재개 시점 - 지금 열지, 페이지 파일 재부팅 뒤에 열지 → B 재부팅 먼저」이며 메인 pane 제출 전달이다. 메인은 재부팅/페이지 파일 적용을 확인했다고 보고했고, Art의 직접 환경 검증으로 쓰지 않는다. 새 Run consumer3 인수 뒤 최신 main을 받고 READY `msg_06ca644d55de`를 보냈다. 원시·사전 메모는 `lead-resume-20261014/`에 있다. 10-13 이전 기록은 `lead-resume-astra/`와 과거 commit에 보존한다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 메인 msg_df1f8f922ffd의 R-2 대조·PASS 수령·OPS-1 Task 한정 분리 결정을 기록했다. 메인이 수정본 preview로 B1 페이지를 갱신하고 사용자 미관 확인(D5 포함)을 받을 때까지 Art는 대기한다. 큰 실행·예약을 새로 만들지 않는다. Unity 적용은 그 뒤 별도 단계다 |
+| 다음 첫 일 | 사용자 B1 최종 미관 A 승인(msg_955f9b81cbbf)을 반영한 [Unity 조각 반입 범위 초안1판](unity-import-scope.md)의 메인 대조·승인을 기다린다. 승인 전 Unity 쓰기·새 작업자 발행·큰 실행·예약 없음. 초안은 Content C9 Editor 실제 반환 뒤 Art 구현→신규 독립 검증을 순차 실행하는 계획이며 현재 창 예약은 아니다 |
 | 현재 Task·Dispatch | 활성 작업자 없음. 강 독립검증 task_66e572cca63c/ctx_0a2ade33e4ae는 11:21:33Z msg_24f65e7106ea로 succeeded·기술 PASS, release 뒤 정확 pane 종료·ptyKilled=true다. 검증 모델 claude-opus-5-5/화면Opus5.5xhigh/ClaudeCode2.1.299/backendunknown. 원문 ui-kit-b1-ring-review/verdict.md(SHA256 203ab425ec60f8083344375b1196a4e1ccee031fbf401243a3bd6713c618c00c), 완료 검증 폴더4550파일 보존. 대상구현task_079ccb62b3dd/ctx_a21d2ab41644의2140파일도 불변이다. 기동·정산·감사 원시는 ui-kit-b1-ring-review-launch/ |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
@@ -170,7 +173,7 @@
 | 기록 보존 | `013f37ef`을 새 branch의 `c9c34b41`로 옮겨 push했다. 옛 branch에 최신 main을 받은 merge head `857dae52`와 새 head의 tree가 같다(diff exit 0). 옛 branch는 삭제하지 않았다 |
 | 작업자·실행 자원 | 독립 검증 정산 뒤 Art리드1개·reclaimable0, 큰 실행/예약0. Unity·WSL·DB·Docker·서버·대형 빌드는 실행하지 않았다. Core는 Content6 반환 뒤 같은 SQL 창 재개를 회신했다고 보고했다(msg_d29a3f98fe18, StopNew12:07:22Z/Deadline12:32:22Z). Art의 직접 실행 관측이 아니며 기한 도래를 실제 반환 증거로 쓰지 않는다. Art에 큰 실행이 필요하면 실제 반환 상태·직전 메모리 원시·다른 리드 사전 조율을 확인한다 |
 | Unity·화면 조작 | 사용자 지시(메인 채팅 전달) 원문 「그리고 만약에 MCP 연결이나 컴퓨터 조작관련 행동이 필요하면 Codex CLI가 아닌 Codex Desktop을 통한 GPT Astra한테 명령하면 대신 조작 잘 해줄거야, 권한 최대한 자율로 줄게」. Art가 UI 창 PR에서 Unity를 열 때 쓸 수 있다. 큰 실행 전 메모리 4GB 원시와 다른 리드 알림은 그대로다 |
-| 남은 결정·준비 | 본 제작 미리보기 사용자 확인(산출 뒤). 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함). 현재 Content 회신 주소 `run:run_b680cd89da9a`는 재사용 전 현재 상태와 대조한다 |
+| 남은 결정·준비 | Unity 반입 초안 메인 대조·승인과 Content C9 Editor 순서 확정. 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함). 현재 Content 회신 주소 `run:run_b680cd89da9a`는 재사용 전 현재 상태와 대조한다 |
 
 **남은 순서**: 비교 글 → 무료 시범 → 시범 PR → UI 창 PR → 효과 PR → 10-21 판단 → 발판·지형 PR → 마지막 손질 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
@@ -372,6 +375,14 @@
 - 적용 결정: 구현 `task_079ccb62b3dd`의 heartbeat 5분 초과3구간만 제품 판정 통과 차단에서 뺀다. 근거는 진행 보고 절차의 이탈이며 제품 파일·시험·보호 hash에 영향을 준 증거가 없고, 지나간 간격을 수정해 없앨 수 없다는 것이다. 판정의 「기술 차단 아님·소급 면책 아님」과 운영 이탈 원문은 그대로 보존한다. 맥락 메모 부재·규칙 원문 누락·메모와 결과 불일치·제품 규칙 위반 등 다른 차단사유에는 적용하지 않는다.
 - 메인은 오늘 Content `task_5874e882fad9`에 이어 두 번째 발생이라고 보고했다. liveness 집계 helper의 정산 절차 편입은 메인이 규칙 정본 담당에 넘길 후속 후보로만 둔다. Art는 현재 절차를 바꾸지 않는다.
 - 메인이 `ui-kit-b1-ring-fix/package/kit/preview`로 UI 키트 페이지를 갱신하고 사용자 미관 확인(D5 포함)을 받는다. 그때까지 Art는 대기하며 새 큰 실행·예약을 만들지 않는다. Unity 적용은 이후 별도 단계다.
+
+### B1 최종 미관 승인·Unity 반입 초안 — 2026-10-14
+
+- 사용자 승인 전달 msg_955f9b81cbbf의 현재 메인 handle·incarnation을 대조하고 위 사용자 결정 절에 원문·대상·D5 보존 효과를 기록했다. 미관 승인으로 Unity 실행 권한을 자동 확대하지 않는다.
+- [범위 초안1판](unity-import-scope.md)은 승인 PNG33을 `Art/UI/Components/`에 그대로 넣고 PPU200·23개 Sliced 경계·10개 비율 유지 조각을 import하는 단계다. 새 명세/출처 README와 독립 EditMode 검사 경로를 좁혀 제안했다. 원천 spec hash `5986771c0a75c9cefaeeedc097a06462a92ddc036596914a055f3d5ac5f18d91`, PNG33 hash 차이0. 기존 Inventory의 PPU100과 새 키트를 구분한다.
+- 이번에는 네 창·HUD·프리팹·게임 코드·씬을 적용하지 않는다. 기존 UI 창 PR의 첫 단계로 두고 실제 창 적용은 후속 계약이며, 반입만으로 UI 창 PR 완료/병합을 요청하지 않는다. 강 독립 검증은 실제 Unity import·Sprite/설정·임시 uGUI 확대 화면과 보존 hash로 제안했다.
+- Content C9 선행/명시 양보 확인→실제 Editor 반환→fresh 물리/commit4GiB·Core 등 큰 실행 조율→Art 구현/Editor 정리→새 검증자의 순차 실행→실제 반환 순서다. art-active Library 부재로 최초 import 비용은 미측정이며 실행 창을 현재 예약하지 않았다.
+- 리드가 쓴 것은 goal·초안·사전 맥락/읽기 관측 원시뿐이다. 원시 `ui-kit-unity-import-plan/context.md`·`source-inspection.json`. 구현 계약은 아직 발행하지 않았고 Unity 쓰기·Editor 실행·worker 생성은0이다.
 
 ## 다음 계획 후보
 
