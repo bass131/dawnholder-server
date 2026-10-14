@@ -1,6 +1,6 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **재부팅 뒤 같은 목표를 재개했다. PR221·PR230은 병합됐으나 C9는 미완료다. 시험본 v1은 겹침6/6·기존 회귀12/14이고 확인 클릭2건의 원인은 미확정이다. R-1은 제품쓰기0·Unity실행0으로 failed 정산·종료했다. 보존된 미실행 v2와 원 사용자 ProjectSettings bytes를 다시 대조했고 main20ce59dd를 반영했다. 새 외부 Astra의 재개 계약을 준비하며 회귀 실행·독립 검증·세 크기 실화면이 남아 있다. 다음 goal 자동 시작은 없다.**
+상태: **C9 #1~#3 변경분 강 검증21/21 PASS·정산/복원/자원반환 완료. 메인 msg_a7fed9270e28에 따라 검증된변경을checkpoint·draft PR로정리한다. C9/goal은미완이며 실서버·세크기실화면·SFX는아침사용자MCP연결승인뒤잇는다. #4/#5는동결뒤정리로미해소다.**
 
 - 담당: Content 리드 [Content 리드 Astra], 지정/표시 gpt-6-astra xhigh, backend unknown. 시작 기준 origin/main = cc20d428f7988fdcb232a7c811cf2e729446abdc.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침, 병합 뒤 원격 삭제). 던전 클리어 PR branch `feat/dungeon-clear-server-20261011`(base `999b1b98`).
@@ -171,6 +171,100 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 ## 적용 중인 사용자 결정
 
+### 밤 checkpoint·draft PR와 아침 C9 재개 — 메인 판단
+
+메인 msg_a7fed9270e28(2026-10-14T15:55:55Z)은 사용자 밤샘 위임에 따른 판단이며 새 사용자 결정이 아니다. 검증된 C9 변경분을 checkpoint commit/push하고 draft PR로 둔다. 사용자 MinimapRT.renderTexture·ProjectSettings.asset은 커밋하지 않으며 goal·C9를 완료로 쓰지 않는다.
+
+세크기실화면·실서버클리어→확인→Town·SFX는 아침 사용자 MCP 연결 승인 뒤 이어간다. 그전 Editor·MCP호출·실화면검증자를열지 않는다. 구실화면계약의HEAD·프로토콜18 설명 갱신은같은goal의준비로허용된다. ProjectSettings define한줄의원사용자bytes복원·자동변경본보존은아침보고에공개하고 이파일에더쓰지않는다.
+
+checkpoint 원격SHA를Art에알리며 Art는그commit만Window기준으로쓴다. 통합순서는Content C9가먼저다. 이번밤의Git/PR receipt는 c9-fix-review-3-prep/에보존하고 현재goal은아침실화면을기다리는미완상태로유지한다.
+
+
+### 현재 goal 종료 뒤 정리하고 멈춤 — 현행
+
+메인 전달 사용자 지시 msg_8083e4e88be8, 작성2026-10-14T14:46:39Z. 메인 pane의 사용자 원문을 전달받았으며 Content pane의 직접 사용자 입력으로 격상하지 않는다. 전달 원문:
+
+> [메인 Claude] 사용자 지시 전달: 지금 goal을 끝내면 정리하고 멈춘다
+>
+> 사용자 원문(메인 pane Enter 제출, 2026-10-14T14:44:08Z(23:44 KST; 메인 정정 msg_0a388e8f3f55)): 「그리고 영속성 부분은 너가 더 전문가니까 Goal 초안 작성하고 진행까지 계속 진행해줘, Core쪽 진도를 좀 빠르게 뺴보자 / 나머지 세션은 Taste에 민감한 부분이니까 그 파트들은 목표 끝나면 마무리하고 정리하는 식으로하자」
+>
+> 너의 파트에 적용:
+> 1. 지금 진행 중인 goal은 시연 우선 모드 그대로 끝까지 간다. 범위를 넓히지 않는다.
+> 2. goal이 끝나면(PR head 보고·병합 대기 상태 포함) 종료 점검과 goal 기록 정리까지 하고 멈춘다. 다음 goal 초안을 쓰거나 새 작업자를 열지 않는다. 다음 일은 아침에 사용자가 직접 정한다. 이유는 화면·연출·문서 표현처럼 사용자 취향이 결정에 들어가는 영역이기 때문이다.
+> 3. 멈출 때 메인에 status 한 통: PR 번호와 정확한 head, 동결 뒤 정리 목록, 사용자가 아침에 정할 것 한두 줄.
+> 4. 이미 정한 Unity 순서(Art→World→Content)와 Core WSL 우선 조율은 그대로다.
+> 5. Rules: 모델 라우팅 핫픽스 goal을 끝내면 같은 방식으로 멈춘다. PR2 가드는 계속 보류다.
+>
+> goal 「적용 중인 사용자 결정」에 위 원문과 이 msg ID를 기록하라. 메인이 전달한 사용자 지시이며 각 pane의 직접 입력으로 격상하지 않는다.
+
+Content 적용: 이 goal의 승인 범위·시연 우선 모드만 계속한다. PR 번호·정확 head를 보고하고 병합 대기에 도달하면 종료 점검·goal 기록 정리 뒤 멈춘다. 동결 뒤 정리 목록과 아침에 사용자가 정할 사항을 메인에 함께 전달한다. 다음 goal 초안/새 작업자/시연 경로 밖 정리는 착수하지 않는다. 이전의 다음 Content goal 인계 계획은 사용자 아침 결정까지 보류한다.
+
+
+### 밤 동안 Core 우선과 WSL 병행 — 2026-10-14
+
+메인 알림 msg_b21b951d51c9(14:38:34Z). 사용자 원문(메인 pane 제출, 메인 전달이며 이 pane의 직접 입력으로 격상하지 않음): 「우편함 처리와 리드 감독을 나 자는사이에 계속 처리해줘, 목표는 마일스톤 작업을 향해 작업하는거야 / 특히 Core쪽 진전이 별로 안돼서 그 부분을 우선적으로 지시해줘」.
+
+메인 판단(새 사용자 결정 아님): Core WSL dotnet 빌드·시험은 그 실행 직전 여유 물리 메모리6GiB 이상일 때 Unity의 Art→World→Content 순서와 병행할 수 있다. WSL 무거운 실행끼리 겹치면 Core가 먼저이며 리드끼리 알린다. Unity 순서와 현재 파트 작업은 유지한다. Content는 Core WSL 반환을 Unity의 추가 선행조건으로 삼지 않고, 기존 Unity관문·사용자 파일 보호를 유지한다.
+
+
+### 리드 전원 Sol xhigh 전환 — 2026-10-14
+
+메인 전달 사용자 결정 msg_fb14daf225c6, 작성2026-10-14T14:21:18Z. 메인의 사용자 원문 전달과 적용 해석이며 Content pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> [메인 Claude] 사용자 결정 전달: 리드 전원 Sol, 리드·작업자 effort xhigh
+>
+> 사용자 원문(메인 pane Enter 제출, 메인 전달이며 네 pane의 사용자 직접 입력으로 격상하지 않는다):
+> - 23:2x KST 「음 그리고 리드급 아무래도 Sol Max로 전체적으로 확장해야 될 거 같아, Astra 토큰 사용량이 감당이 안되네」
+> - 이어서 「음 Sol 그리고 정정사항은 작업자랑 리드 전부 Xhigh로 변경, 핫픽스 적용 지시해줘」
+> - 앞선 「리드 하나만 Sol max 시범」(msg_928a88962458)은 이 결정으로 대체된다.
+>
+> 메인 해석(사용자가 다르게 정정하면 그것을 따른다):
+> - 리드: 기본 다섯과 승인된 추가 파트 모두 gpt-6.1-sol, effort xhigh. 발신 태그는 AGENTS 「리드 모델 계열이 바뀌면 태그의 모델명도 그 계열로 바뀐다」에 따라 [<파트> 리드 Sol]이다.
+> - 작업자: Sol 배정 작업자는 gpt-6.1-sol xhigh(지금까지 max). Astra 배정 작업자는 그대로 gpt-6-astra xhigh다.
+> - 독립 검증자 모델 시범 배정(Opus·Astra)과 R-7, 확정 실패 3회 뒤 Advisor는 바꾸지 않는다.
+> - 전환 기간에는 같은 파트의 [<파트> 리드 Astra]와 [<파트> 리드 Sol]을 모두 인정하고 from_handle·Task·Dispatch 대조는 그대로 한다.
+>
+> 지금부터 적용:
+> 1. 새로 여는 Sol 배정 작업자는 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`로 연다(max 아님). 이미 돌고 있는 작업자는 실행 중에 바꾸지 않는다.
+> 2. 너(리드)의 전환: 다음 안전 지점에서 메인에 「Sol 전환 준비됨」 status를 보내고 턴을 끝내라. 안전 지점은 작업자 기동·정산·공식 ask 답 전송이 단계 중간에 걸려 있지 않은 때다. 메인이 너의 같은 Codex 대화를 gpt-6.1-sol xhigh로 다시 열고(R-8 목표 중간 재개와 같은 방식), 새 handle에 진입 메시지를 보낸다. 같은 Run을 run-use로 인수하면 된다. 진행 중인 작업자·검증자는 그대로 둔다.
+> 3. 「Sol 전환 준비됨」에는 현재 Task·Dispatch·대기 중인 공식 ask와 다음 첫 행동을 짧게 적어라. 재개 뒤 그걸로 잇는다.
+> 4. 정본(AGENTS·ORCA) 반영은 Rules가 핫픽스로 한다. 그 전에도 이 사용자 결정이 적용 근거다. goal에 원문과 이 msg ID를 기록하라.
+
+Content 적용: 현재 검증자 Opus는 유지한다. 새 Sol 배정 작업자는 gpt-6.1-sol xhigh이며 Astra 작업자·독립 검증 모델 시범은 유지한다. 현 리드는 안전 지점 인계를 남긴 뒤 메인이 같은 대화를 gpt-6.1-sol xhigh로 재개할 때까지 [Content 리드 Astra]를 유지한다. 재개 뒤 새 handle과 실제 표시를 대조하고 [Content 리드 Sol]을 사용한다. 이 기록은 실제 런타임 전환 완료의 증거가 아니다.
+
+
+### 10-28 동결까지 시연 우선 모드 — 현행
+
+메인 전달 사용자 결정 msg_e6960028241c, 작성2026-10-14T14:11:26Z. 메인 pane에 제출된 사용자 선택을 전달받았으며 Content pane의 직접 사용자 입력으로 격상하지 않는다. 아래는 전달 원문이다.
+
+> [메인 Claude] 사용자 결정 전달: 10-28 기능 동결까지 「시연 우선 모드」
+>
+> 사용자 원문(메인 pane Enter 제출, 2026-10-14 23:10 KST 무렵): 「대시보드 결정 응답: 1) 10-28 시연 - 동결까지 시연 경로 우선 모드로 검증 절차를 줄일지, 지금 절차를 유지할지 → A 시연 우선 모드」
+> 기간: 지금부터 2026-10-28 기능 동결까지. 동결 뒤에는 원래 절차로 돌아간다.
+> 목표: 10-13 승인 시나리오의 영상 장면(특히 3·6·7·8 길드 순환과 5 보스 보상)을 10-28까지 실제로 돌게 한다.
+>
+> 줄이는 것
+> 1. 동작에 영향 없는 지적은 통과를 막지 않는다. 시험 코드 중복, 문서 표현, 주석 위치, 이름, 가독성·배치 지적이 여기에 든다. 판정문에 번호로 남기고 goal의 「동결 뒤 정리」 목록에 쌓는다. 단, 제품 계산을 복제해 항상 통과하는 시험과 측정값 위장은 동작 검증을 무너뜨리므로 지금처럼 막는다.
+> 2. 같은 산출물의 독립 재검증은 1회까지다. 그 재검증에서도 막히면 새 검증을 열지 말고 메인에 올린다. 메인이 진행, 좁은 수정, 장면 축소 중 하나를 정한다.
+> 3. 운영 미준수는 판정문 「운영 미준수」 절에 공개만 하고 제품 판정을 막지 않는다. 생존 신호 간격, 해시 전수 대조 누락, 보고 형식이 여기에 든다. 금지 구간 실행, 메모와 결과의 불일치, 결론과 본문의 모순은 지금처럼 메인에 올린다.
+> 4. 작업자 계약에 새 하네스나 시각 계산 같은 준비 장치를 더하지 않는다. 시작은 기존 도구와 리드의 공식 답으로 한다.
+> 5. 시연 장면과 관계없는 작업은 지금 지점에서 멈추고 동결 뒤 잇는다. Rules의 PR2 병합 가드 작업과 그 재검증(msg_24db67e316be)이 여기에 든다. 다른 파트도 시연 장면 밖 후보는 착수하지 않는다.
+>
+> 그대로 지키는 것
+> - 서버가 상태와 판정을 소유하고 경계에서 입력을 검증한다. 패킷 ID 재사용 금지, PDL·생성 코드·양쪽 직렬화 계약, 공유 DLL 양쪽 검증도 그대로다.
+> - 구현자와 검증자를 분리하고, 실제 실행(빌드·봇·실화면·DB)으로 동작을 확인하는 독립 검증 1회는 남는다. 수행하지 않은 실행을 성공으로 보고하지 않는다.
+> - Unity .meta·GUID 보존, 사용자 파일(Content MinimapRT.renderTexture·ProjectSettings.asset) 보호, Core 보존 DB와 옛 실패 자원 접근 금지, 무거운 실행의 리드 간 순서 조율도 그대로다.
+> - PR마다 정확한 head로 사용자 병합 승인을 받는다.
+>
+> 할 일
+> - 각 리드는 goal의 「적용 중인 사용자 결정」에 위 원문과 이 msg ID를 기록하고, 지금 진행 중인 계약에 이 기준을 적용한다. 이미 받은 판정 가운데 1번에 해당하는 차단은 「동결 뒤 정리」로 옮기고 다음 단계로 간다.
+> - 애매하면(동작 영향 여부 등) 리드가 메인에 한 줄로 묻는다.
+> - Rules는 동결 뒤 정본 반영 후보로 이 결정을 기록한다.
+> 메인이 전달한 사용자 결정이며 각 pane의 직접 입력으로 격상하지 않는다.
+
+Content 적용: 현재 실행 준비 중인 재검증3에 전달(msg_fec530f29f2f)했다. 동작 영향 없는 #4·#5와 문서/가독성 관찰은 아래 동결 뒤 정리로 옮긴다. 이전 msg_5bfad1184fd1·msg_a2bdc1ea1817의 다음 실화면 묶음·PR 전 필수추출 조건은 이 후속 사용자 결정으로 대체한다. 기존 판정 원문과 번호는 미해소로 보존한다. 현재 계약/spec/inputs 원본은 유지하고, 이전 goal SHAfa55e754…는 c9-fix-review-3-prep/goal-before-demo-priority.md에 보존해 새 결정 적용과 구분한다. 현재 검증은 정책 수신 전에 시작했으며, 이후 막히면 새 독립 검증을 열지 않고 메인에 올린다.
+
+
 - **오늘 마감·재부팅 전 안전 지점**(메인 전달 `msg_9c6867e907ba`, 2026-10-13T18:33:00Z). 사용자 원문 「일단 오늘 작업 좀 오래해서 현황판 수정이랑 나머지 리드급 남은 작업만 마무리하고 쉴까 하는데 어때?」, 「대시보드 결정 응답: 1) 오늘 마무리 방식 - 40분 안에 끝낼 것만 끝내고 안전 지점에서 멈출지, 지금 바로 멈출지 → A 40분 마감」. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 효과: 19:15Z(04:15 KST)까지 정산·작업자 pane 종료, 신규 작업자/검증자/Unity·DB·Docker·WSL 큰 실행 금지, 미완 제품은 미커밋 보존, goal 재개 기록만 commit/push. 리드 pane은 사용자가 닫는다. Content의 오늘 추가 batch는 없고 ProjectSettings의 자동변경 한 항목을 원래 사용자 hash로 지금 복원한다. R-1은 조사 결과의 확정/미확정을 남기고 정산한다.
 
 정본에 반영하지 않은, 이 goal에만 적용하는 사용자 결정이다. 모두 메인이 전달했으며 리드 pane의 사용자 직접 입력으로 격상하지 않는다.
@@ -203,25 +297,39 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - **C9 실화면 동안만 Unity 코드 실행 허용**(메인 `msg_a7191a5cc619`, 2026-10-13T05:15:10Z). 원문 「대시보드 결정 응답: 1) 실화면 두 건 - 확인하는 동안만 Unity 코드 실행을 허용할지(World 로그인, Content 던전 클리어) → A 확인 동안만 허용」. 효과: Unity MCP 시트는 World 로그인 실화면이 먼저 쓴다(`msg_5caf86048690`). World가 시트를 풀면 메인이 content-active `.claude/settings.local.json`(Git 무시)에 허용 한 줄을 넣고 SHA256을 알린다. 그 알림 전에는 Editor·검증자를 띄우지 않는다. MCP 사용이 끝나면 리드가 「허용 줄 지울 차례」를 알리고, 메인이 그 한 줄만 지운다. `skillOverrides`는 남긴다.
 - **메인 판단(사용자 결정 아님) — C9 실화면을 사용자 복귀 뒤로 미룸**(`msg_73e4d39722f3`, 2026-10-13T05:49:57Z). World는 05:47Z에 시트를 풀었다(`msg_28246f9ce402`). 그러나 사용자가 자리를 비웠다(메인이 전한 메인 채팅 원문 「일단 나 잠깐 자고올게」). C9는 사용자가 Unity 창의 MCP 연결 승인을 눌러야 한다. 지금 Editor를 띄우면 그 단계에서 멈춘 채 메모리만 잡으므로, 메인은 허용 줄을 넣지 않았다. 결정 A의 C9 허용은 유효하며, 사용자 복귀 뒤 메인이 줄을 넣고 알린다. 그 사이 리드는 C9 검증 계약을 준비해 둔다.
 
+메인 적용 판단 msg_a7eb36987003(14:12:30Z)은 사용자 결정의 적용이며 새 사용자 결정이 아니다. G1~G9·G5·Digits·OverlayRect 모두 동결 뒤 정리로 확인했다. 다음 묶음에서 해당 파일을 어차피 고치면 함께 추출할 수 있으나 필수나 PR 차단 조건은 아니다. G8/G9·Digits·OverlayRect는 판정문에 #5로 위치·귀속을 남기고, G9의 null 허용/fixture Assert/PropertyInfo 캐시 의미를 보존한다. 현 검증은 처분을 기다리지 않고21개 실제 실행 절차를 계속하며 Art→World 실제 반환 뒤 조율한다. 판정 차단 사유는 동작 결함·항상 통과하는 시험·측정값 위장·실행 미수행이다.
+## 동결 뒤 정리
+
+근거: 사용자 시연 우선 결정 msg_e6960028241c. 동작 영향 없는 항목으로 현재 통과를 막지 않으며 **미해소**로 남긴다. 2026-10-28 기능 동결 뒤 원래 절차로 돌아가 처리하고, 지금 시연 경로 밖 정리를 착수하지 않는다.
+
+| 번호 | 미해소 항목·원문 근거 | 이후 처리 |
+|---|---|---|
+| #4 - 공통 화면 판독·패널 찾기 중복 | 재검증2 report.md 「#4 상세」, G1 IsGraphic/G2 Contains·ScreenArea/G3 Area/G4교차/G7 Root.Find("Inventory") | ScreenUiProbe·InventoryPanelProbe로 책임별 추출 검토. 기존 메인의 PR 전 필수 조건은 후속 사용자 결정으로 대체 |
+| #5 - Button·EventSystem·숫자·사각형 판독 중복 | 재검증3 msg_df62e08cced1, reading-uses-survey.json. G8 Inventory43·76·303/ScreenUiProbe145, G9 ScreenUiProbe114·132/Presentation586, Digits4곳, OverlayRect Inventory779/ScreenUiProbe.ScreenRect. 기존 코드/이전 검증자 귀속 | 공통 조회를 추출하되 호출자의 null 허용·fixture Assert·PropertyInfo 캐시 의미 보존. 이번 구현자 결함으로 옮기지 않음 |
+| O-1~O-3 - 설명·표현 정리 | 재검증2 report.md 설계 관찰: helper 머리 주석, 경로 접두 표현, client.md 검증 상태 문장 | 동작 영향 없는 문서·가독성 정리 |
+| G5·Digits - 공통 변경 이유 판단 후보 | 두 프레임 정착 대기와 숫자 판독4곳. 검증자 판단 보류, 제품 동작 영향 없음 | 동결 뒤 같은 변경 이유면 추출, 다르면 보존 이유 기록. 지금 새 검사 도구 도입 없음 |
+
 ## 재개 지점
 
 | 항목 | 값 |
 |---|---|
-| 단계 | 메인 재개 계약 msg_bd52a4852787로 같은 대화·목표 재개. 현재 신원·미커밋 hash 대조와 main 합류 완료, C9 미완료·F-1/F-2(d 미확정)·v2 미실행 유지 |
-| 다음 첫 일 | 복원 후 ProjectSettings와 합류 HEAD를 고정한 신규 Astra 계약(R-2)으로 v2 타당성을 확인하고 동일4클래스14회귀부터 재개한다. 별도6시험·신규 Opus 독립 검증·세 크기 실화면이 남는다. 이전 작업자는 재사용하지 않으며 실행 전에 현재 입력·자원 조율을 확인한다 |
-| 실행 조건 | 전날 마감 중단 뒤 재개 계약을 받았다. 먼저 World RED 최대15분 창에 Content 관점에서 동의했다(msg_c7df99be7f75). 실제 반환 및 현재 Core/World/Rules/Art 조율·공식 ask/해당1회 release·직전 물리/커밋 각4GiB·Unity0/lock없음 전에는 조사/코드만 한다. 옛 release는 재사용하지 않는다. MCP 승인과 실화면 종료 ask는 별도 단계다 |
-| 열린 Task·Dispatch | 없음. R-1 task_7cc454b14f0d / ctx_79042651b1db는18:42:25Z worker_done failed(msg_6f7959f6e056), 요구검증 미실행/마감 정산이다. 원문 실사→worker-release retained/external_terminal→정확 pane close ptyKilled=true. 선행 구현/시험/C9도 정산·종료 완료 |
-| 결정 대기 | 새 제품 범위 사용자 결정 없음. 다음 실화면 MCP 연결 권한은 메인과 확인한다. 메인 재개 계약과 페이지 파일 적용 보고를 이 pane의 사용자 직접 입력/리드 직접 측정으로 격상하지 않는다 |
+| 단계 | #1~#3 변경분Strong PASS21/21, done15:29:43.857Z 뒤정산·정확pane종료. #4/#5는동결뒤정리. 세크기실화면/SFX·goal전체PASS는미실행 |
+| 다음 첫 일 | 메인 msg_a7fed9270e28대로검증된변경checkpoint/push·draft PR. 아침사용자MCP연결승인뒤C9실서버/세크기실화면/SFX재개. 그전Editor/MCP/실화면검증자0 |
+| 실행 조건 | Content 큰 실행/예약0. Unity는 Art→World 실제반환 뒤 네파트 최신조율·공식답·기존 물리/commit각4GiB·Unity0/lock/hash 관문. 메인 msg_b21b951d51c9에 따라 Core WSL은 그 실행 직전 물리6GiB 조건에서 Unity순서와 병행 가능, WSL끼리는Core우선 |
+| 열린 Task·Dispatch | 없음. task_576e184ed4bb/ctx_b6c38a02dabe는 succeeded/completed/settled·exactidentity 확인뒤release retained/external_terminal와정확terminal close ptyKilled=true. 이전구현·검증자도종료 |
+| 결정 대기 | C9/goal미완. 아침사용자MCP연결승인필요를메인이보고한다. 밤checkpoint·draft PR는메인판단승인완료,병합권한없음 |
 | 작업 공간 / branch | content-active / feat/dungeon-clear-server-20261011(base999b1b98). 마감 HEADa0f8fb0117722f3b78b0d3988cd25f61cfa545b3에서 origin/main20ce59ddd72d0cb72b6e230e386a62587b9bfe1b를 합쳐6f6fd690a5be6c8efb05f116135532bfdb6f800f push·원격 일치. 이어지는 이 재개 기록 커밋과 새 계약 기준은 resume-20261014-0916 및 c9-fix-r2 근거에 남긴다 |
-| 미커밋 파일 | 제품: 03_Client/Assets/Scripts/UI/DungeonClearRewardWindow.cs(25e10cb2…), UI/StageClearUI.cs(1a55a155…), 합계+52/-4·v2 미실행. 사용자: 03_Client/Assets/Resources/MinimapRT.renderTexture(7123af77…), 03_Client/ProjectSettings/ProjectSettings.asset(4a8db0bd…). 네 파일 모두 작업 사본에 보존하며 마감 커밋에서 제외 |
+| 미커밋 파일 | 제품 Window01c5c3bb…/StageClear1a55a155… 불변. client.md·시험3개·ScreenUiProbe 변경과 새 ScreenUiProbeTests cs/meta. 재검증2의 Presentation csb7d7d114…/기존meta f60c73ec…; 새 시험 cs3613c0eb…/meta087cb671…. 사용자 MinimapRT7123af77…/ProjectSettings4a8db0bd… 보존. goal은 리드 정산 기록, HEAD27a7109a 유지 |
 | main 합류 | 15:53:38Z 최신 origin/main b9f78ff07514b54b80370cbfca1f0df33baa5ac4를 충돌 없이 합쳤다(merge1c593f5bf60357acf7d3bf3687e65cafa1304f66). World v19·로그인 포함. DungeonClearSmoke는 변경된 ProbeBase의 handshake→login→CharacterSelect를 상속하고, 서버 시험 fixture도 LifecycleTestWorld.LogIn을 호출함을 정적으로 확인했다. 합친 HEAD의 C9 선행 PlayMode6개는 아래 결과대로 실행했으며 서버·봇 재검증은 아직 미실행 |
 | PR | 클리어 PR은 아직 없음. 결함 PR221·패킷/창 PR230은 사용자 승인으로 병합됨 |
-| 리드 / Run | 현재 [Content 리드 Astra], runtime42f2ec42-f071-4796-bb5f-9b569877cebd, pane term_6c9a33c8-1cf9-410e-8485-745bbff155c5, incarnation352a5df9-0987-4a19-8c08-feef1ed06570. run_b680cd89da9a generation6, 회신 run:run_b680cd89da9a. 화면 GPT-6-Astra xhigh·Codex0.162.1, backend unknown. 이전 handle은 역사 기록이다 |
-| 근거 | .backups/verification/2026-10-10-dungeon-clear-rewards/(Git 밖). 최신 c9-fix-r1/report.md(89da8b2d…), result.json(e6a3ebd6…), product-final.diff(c8b18c09…). 리드 c9-fix-r1-prep/day-wrap-*에 마감 지시·복원·보존 diff/hash·정산·종료·Git 원시. 선행 c9-fix-impl의 v1 실행과 v2 미실행 원문은 보존 |
-| 사용자 파일 | ProjectSettings.asset은18:35:37Z 원 사용자4a8db0bd0b2416d9a9536527cba7ba2ae8c9e0c4e38313f7d363c359667cd21a로 정확 복원했다. MinimapRT7123af77…/TimeManager1a83e54a…/settings allow791ab2fd… 동일. 사용자 MinimapRT·ProjectSettings의 원래 dirty는 보존하며 stage/commit/stash하지 않는다 |
-| 작업자·실행 자원 | R-1 worker pane0·현재 리드1을 종료 후 목록에서 확인했다. Content 실행/소유 Unity·서버·컨테이너0; 이번 R-1은 하나도 시작하지 않았다.18:36:41Z Windows Unity/서버/dotnet/WSL 관련 프로세스와7777/14334 리스너0·lock없음. Core는 msg_ab9430189ee8로 정확 신규 SQL 자원 부재·창 반환을 보고했으나 값 기반 비밀 감사미실행을 구분했다. 다른 파트 전체 자원을 Content가 직접 감사한 것으로 확대하지 않는다 |
+| 리드 / Run | 현재 [Content 리드 Sol], 요청 gpt-6.1-sol xhigh/화면 GPT-6.1-Sol xhigh, backend unknown. 메인 재개 msg_ec2d11809c87. 새handle term_4b9125e2-0342-463e-81cf-528ab329c265, runtime42f2ec42-f071-4796-bb5f-9b569877cebd, 같은 run_b680cd89da9a generation7 인수. 이전 Astra handle은 역사기록이며 검증자Task/Dispatch는 유지 |
+| 리드 전환 안전 지점 | Sol xhigh 같은대화 재개·새handle/화면/run-use 확인 완료. 현재 Opus검증 유지, 공식ask1 answered/보류, Unity허가0/예약0. 인계 c9-fix-review-3-prep/sol-transition-handoff.json, 재개근거 sol-resume-* |
+| 근거 | .backups/verification/2026-10-10-dungeon-clear-rewards/c9-fix-review-3/report.md·verdict.json·runs/review3-classes21-1/results.xml; prep/settlement.json·lead-xml-audit.json·settings-restore-receipt.json·worker-terminal-close.json. 이전원문/버전/23시험은보존 |
+| 사용자 파일 | 12:23:36.2729409Z 리드가 Unity자동변경5a03375a…의 Standalone define 한 줄만 원 사용자bytes4a8db0bd…로 복원했고 검증자12:25:39Z에 13hash를 재확인했다. Minimap/TimeManager/settings 보존, stage/commit/stash0 |
+| 작업자·실행 자원 | 작업자0/Unity실행0·예약0. PID28676 15:21:00.402→15:22:55.435Z,exit0/timeoutfalse,21/21,XML9e014b02…. mute0→1→0·Unity0/lock없음 리드대조. 네파트실제반환통지,Core WSL병행/SQL비동시유지 |
 | 설정 | 사용자 현행 결정 msg_ed1f78c433f4로 settings.local.json 허용 줄 유지(SHA256791ab2fd…). 과거 종료 후 삭제 조건은 대체됨 |
 | 다음 순서 | 수정·독립 검증·실화면 → PR·CI → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검·R-8. 다음 goal 자동 시작 없음 |
+| 목표 뒤 멈춤 | msg_8083e4e88be8 사용자 지시에 따라 현재goal의 PR번호/정확head 보고·병합대기와 종료점검/기록정리 뒤 멈춘다. 동결뒤정리·아침결정사항을 메인에 보고. 다음goal초안/작업자 기동 없음 |
 | 아트 인계: 대장장이 | 이 goal은 `Npc_BlackSmith.prefab`·`BlackSmith.controller`·대장장이 동작 코드를 바꾸지 않는다. 컨트롤러 기본 상태 교체, 새 망치질 클립, 다듬은 시트와 `.meta`는 아트 효과 PR이 맡는다. 다음 Content goal이 상호작용 컴포넌트를 그 프리팹에 붙이게 되면 쓰기 전에 아트와 파일·시기를 나눈다(아트 `msg_55ea71c3ee0a`, 리드 회신 `msg_136ca02071fc`) |
 | 아트 인계: UI 창 조각 | 창 그림은 조각 조합형이다. 조각 PNG·`.meta`·9-slice, 조각 프리팹, 표시 전용 helper, 코드로 짓는 네 창(`InventoryPanelView`·`DungeonClearRewardWindow`·`PartyInvitePopup`·`NpcDialogPanel`)에 조각을 입히는 일은 아트 UI 창 PR이 맡는다. 조각 이름·변형은 그 PR 병합 때 고정하고, Content의 길드 패널·대장간 화면은 그 조각을 쓴다. 길드 패널·대장간을 코드로 지을지 프리팹·씬으로 지을지는 미정이다. C9가 보상 창 겹침 결함을 찾으면 이 PR에서 그 파일을 고칠 수 있고, 쓰기 전에 아트와 순서를 나눈다(아트 `msg_d87cbec99258`, 리드 회신 `msg_2f7a25007d10`) |
 
@@ -314,7 +422,7 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 ### R10 골드 한 줄 맞춤 — 통과, 2026-10-10
 
-| 단계 | Task / 모델 | 결과 | 원시 |
+| 단계 | #1~#3 변경분Strong PASS21/21, done15:29:43.857Z 뒤정산·정확pane종료. #4/#5는동결뒤정리. 세크기실화면/SFX·goal전체PASS는미실행 |
 |---|---|---|---|
 | 선행 시험(RED) | `task_31bcf8848ee0`, 신규 `claude-opus-5-5` | PlayMode 2개 중 7~10자리 시험 실패(두 줄·테두리 밖), 6자리 이하 시험 통과. 커밋 `a9e74a1f` | `r10-tdd/report.md`, `runs/playmode-red-1/results.xml`(SHA256 `d56ea8a9…`) |
 | 구현 | `task_d0826fbf1ec3`, 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown) | `UI.unity` GoldText TMP 다섯 필드(자동 크기 12~18, 줄바꿈 끔, 상하 margin −10)와 client.md 한 문장. PlayMode 네 클래스 26/26, EditMode 417/417. 커밋 `74fce329` | `r10-impl/report.md`, `runs/playmode-green-2/`(`ec3d184c…`), `runs/editmode-regression-2/`(`2928993b…`) |
@@ -594,6 +702,73 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - main20ce59dd 합류 중 예상 BACKLOG 한 충돌만 났다. Content UI계층 후보·World 로그인 후보의 양쪽 전체 블록을 보존했고 최종 문서가 두 원문 조합과 동일함을 기계 대조했다. CURRENT는 World 행 자동변경을 확인했다. 합류 commit6f6fd690a5be6c8efb05f116135532bfdb6f800f를 자기 branch로 push·원격 확인했다. 제품/사용자 네 dirty와 TimeManager/settings allow hash는 모두 그대로이며 stash/사용자 restore/제품 commit은 없었다. 합류 자체를 시험 통과로 쓰지 않는다.
 - 새 입력에는 R-1 조사·정산 원문과 복원 후 설정을 넣고, 이전 미실행 v2를 새 실행 근거와 분리한다. 새 R-2는 동일 C9 범위의 후속 계약이며 R-1 마감/환경 미실행을 확정 제품 결함 횟수로 올리지 않는다. 큰 실행 전 현재 네 파트와 새로 조율한다. 첫 World RED를 먼저 보내고 Content는 반환과 자기 공식 실행 질문까지 조사/코드만 한다.
 - 원시와 사전 메모: `.backups/verification/2026-10-10-dungeon-clear-rewards/resume-20261014-0916/`. 현재 작업자 신원·모델/launch/화면·고정 계약·실행 상태는 발행 receipt와 `c9-fix-r2-active.json`에 기록한다. 현재까지 새 Unity/WSL/서버/DB/빌드 실행은0이다.
+
+### C9 R-2 v3 체크포인트 — 2026-10-14
+
+- 메인 `msg_4cbb8767c123`(10:29:29Z)은 사용자 「C9 두 결함만 최소 수정, 계층 설계는 별도」 안에서 v3 계속을 확인했다. **v3 같은14회귀에서 F-2가 같은 경로로 다시 실패하면 v4 쓰기 전에 멈추고 원인 한 줄을 메인에 알린다.** 공개 시점과 클릭 좌표 산출 시점의 수정 방향은 그때 재판단한다. 이는 메인 지침이며 사용자 직접 입력으로 격상하지 않는다.
+- v1→v2→임시진단→v3를 진단 포함4회로 보수적으로 세어 `msg_172f5d70a935`로 체크포인트를 알렸다. 영구 후보3개와 임시 진단을 구분하며 확정 실패3회 집계와 섞지 않는다. R-2는 개발 중 자체검증·미정산이고 R-1 환경/마감 미실행을 제품 실패로 추가하지 않는다.
+- v2 Window25e10cb2…의 `related-v2-1`:10:01:09.615→10:02:44.927Z, PID31388,95.312초,exit2,14/13/1/skip0/필터밖0. XML SHA187127b1f14570bb4616b4d9b0b2e74a8195abf70845ef9db0d39a621ec2667e. F-1 PASS, F-2 다음맵 확인40 기대1/실제0이다.
+- 진단 Window1b2872f5…의 `related-diag-1`:10:21:34.955→10:22:08.195Z, PID34748,33.239초,exit2,같은14/13/1/skip0/필터밖0. XML SHAa33c2a99846642a877aa963f5da4019857d6c27ef25483de6d40d59167667327. HuntingGround frame371 확인Y79.882~100.666 공개→375 HUD/입력모듈 등장과 Y52.004~72.788 이동→378down/380up point(320,90.274) insideFalse·Confirm미진입을 직접 관측했다. 이 경로 F-2는(c) 표시/입력 회귀이며 진단 타이밍 영향과 F3 반올림 한계를 남긴다. v1 F-1의 정확한 동적 원인은(d)미측정이다.
+- v3는 진단을 제거한 v2에 기존 `UpdateVisibility`의 active EventSystem/currentInputModule 준비 조건과 근접 주석만 +6/-1 추가했다(`msg_85b273ad9408`). Window SHA01c5c3bb1ce32ba34a64c462a391e178605ee5865abcd27e392b36f5aa367f80, StageClear1a55a155… 불변. 이 조건이 모든 HUD 배치 완료를 항상 보장한다고 단정하지 않는다. v3는 미실행이며 14→별도6·독립 판정·실화면이 남았다. tests/fixture/harness·소비/송신/scene/배치/sorting 불변, 새 helper 없음.
+- 이번 goal 변경은 메인의 기록 요구에 따른 리드 쓰기다. 고정57입력의 원 goal SHA05b66698a2e4520ffe1086c5a9311c95dd772c1d7397efdb60aab898e2d6db36을 `c9-fix-r2-prep/goal-before-v3-checkpoint.md`에 보존하고 새hash/명시적 예외를 작업자에게 전달한다. 계약·입력manifest·HEAD27a7109a… 원본은 유지한다. 사전메모/receipt는 `c9-fix-r2-prep/goal-v3-checkpoint-*`다.
+
+### C9 v3 자체 완료·R-2 정산 — 2026-10-14
+
+- 현재 Window01c5c3bb…/Stage1a55a155…의 `related-v3-1`은 raw14/pass14/fail0/skip0/필터밖0(XML23855c99…), `overlap-v3-1`은6/6/0/0/0(XML6a8f0d6d…)이다. 리드가 각 result/XML/mute 원시와 실제 PID/시작·종료/Unity0를 직접 대조했다. 코드 변경 전체+58/-5 중 R-2 영구 변경은 Window+6/-1이며 진단은 제거됐다. 메인의 v3 동일 F-2 재실패 시 v4 전 중단 조건은 이번에는 발생하지 않았다.
+- 구현 Task `task_5874e882fad9` / Dispatch `ctx_33ff882f81ea`, 보고 `c9-fix-r2/report.md` SHA85fd2d82ad8441f7d7406923e55b219f781907785dd4f3ab2dc74034904de064, result SHA7d19dfa5491fabdb3fa46a5e0678433eb30f25a342791141d7faf215ec5c445c. worker_done succeeded 뒤 원문·실제diff·보호입력을 대조해 구현 인계를 수용했으며 `worker-release retained/external_terminal` 후 해당pane만 close해 ptyKilled=true를 확인했다. 독립 PASS가 아니다.
+- 원 사용자 ProjectSettings 복원은 리드가 마지막 batch 뒤11:11:32.295Z에 완료했다(4a8db0bd…). TimeManager HEAD bytes 일치, Minimap/settings 보존, stage/commit0. 기존 고정57은55일치+승인Window/리드goal2예외, 예상밖0이었다. 실행 당시 설정5a03과 사후 복원4a8, 리드 쓰기와 구현자 쓰기를 구분한다.
+- 현재 Dispatch heartbeat40개를 리드가 수신 원시에서 재계수했다. 240초 초과636/554/254초3건(300초 초과2건), 시작→첫60초/마지막→done53초다. 3분 목표 초과191/203초는4분이내다. nudge wrapper exit 미회수와 함께 원문에 공개했으며 동기600초 차단 원인 주장은 철회 상태다. 운영위반을 제품확정실패 횟수로 세지 않는다. 메인 msg_fa24aab90162(11:21:25Z)는 이 Task의 heartbeat3건/nudge wrapper미회수만 제품독립판정 통과 차단에서 제외하고 「운영 미준수(메인 결정 처리)」 절로 원문 공개하도록 결정했다. 제품/시험/보호hash 영향 증거가 없다는 근거와 원시 밖 활동 미측정 한계를 남기고 신규검증자는 큰 실행 전 이전 작업자계열 잔여프로세스0을 확인한다. 메모/규칙원문 누락·결과불일치·제품규칙 위반은 그대로 차단이다. 메인 판단이며 사용자 결정이 아니다. 원문은 c9-fix-review-1-prep/operating-disposition-main.json이다.
+- 다음은 신규 Opus 강 코드검증(실사·독립시험 작성/실행·현재 실제 진입), 이어 세 크기 실제 C9/MCP·SFX다. 코드시험은 실제 서버/전체플레이/실화면을 대신하지 않는다. Content 서버 PR은 아직 생성0이며 World의 clear→guild 연결은 Content 서버 main 병합 뒤 경계를 유지한다. 현 Core SQL 재개 창 동안 Content 중량실행/예약0이며 신규 실행은 별도 조율한다.
+
+### C9 독립 batch23·판정 정정과 좁은 후속 — 2026-10-14
+
+- 독립 Opus task_8bdd89e3c3d0/ctx_73d243e4adb3의 신규3+기존20 시험을 합친 review-combined-1 정확1회는 raw23/pass23/fail0/skip0/필터밖0이었다. XML SHA1cde8bd10dbae5b77928237cb359aa4232d760054414b28ddf11004b027d372f, PID28264/81.5165742초/exit0. 실제 씬·임시TCP·가상입력·batch640×480이며 실제세크기/청각SFX/실서버 검증은 아니다.
+- report.md SHA c68aea3a31b8b950db325d02b34d65f9406ccea80b8d5bc2f2a973e025bb6563와 verdict.json SHA1834a5df45e6a4234a43f16c7d44b323246ec6482aa97cea80348b3eaa6f2348을 보존한다. done succeeded msg_ac9041c1ecdf는 수행종료이며 리드는 원문의 PASS를 최종 수용하지 않았다. #1 client.md 계약 누락은 리드계약 귀속, #2 파괴된 버튼을 로그 때 재판독하는 오류와 #3 세 번째 화면기하 helper 사본은 검증자 귀속이다. #3을 비차단으로 넘긴 결론은 task-context 통과차단 기준과 어긋난다. 실제 제품 실패를 찾았다는 뜻은 아니다.
+- 현재handle/ctx의 heartbeat49개 서버 created_at을 전수 대조하면12:14:08→12:18:26=258초1건이다. 원문은 ask/status를 포함한52receipt 간격 최대218초로 초과0을 잘못 보고했다. 중간에 허가된 batch시작/종료 status가 있었고 제품/시험/보호hash/자원 영향 증거는 없다. 근거 c9-fix-review-1-prep/settlement-heartbeat-audit.json 및 settlement-inbox-raw.json.
+- **메인 결정 msg_6f7c889d6fa9(12:30:20Z)**: 원문보존·PASS보류, 새 외부작업자로 #1~#3만 수정한다. #3은 ScreenUiProbe로 추출해 세 클래스가 쓰게 하며 기존 두 시험 수정도 새계약에 명시한다. 새 독립검증은 수정diff·변경시험클래스 재실행·교정판정문으로 좁히고 제품2파일 hash불변을 확인한다. 기존23/23·자원반환은 유효하며 같은 제품판정을 반복하지 않는다. Unity는 Art cold import 실제반환 뒤 조율한다. 메인 판단이며 사용자 결정이 아니다.
+- **생존 간격 기준 적용**: 같은 메인 결정이258초 자체에 오늘 기준msg_82d1fc4a4081을 적용했다(600초이하·허가batch구간·영향증거없음). 혼합계산은 이전 검증자의 보고정확성 결손으로 별도 공개하고 교정판정은 heartbeat 서버시각만 사용한다. R-2의636/554/254초와 nudge회수제한에는 기존 개별결정msg_fa24aab90162를 유지한다.
+- 사용자 설정 복원 뒤 검증자의 13hash 재확인과 completed/정확identity/idle을 대조했다. worker-release retained→해당terminal close ptyKilled=true로 정산했다. 메인 즉시보고msg_d84c543bf2b0 및 원시는 prep/에 보존한다. 절차·판정 실패를 같은제품결함 확정실패3회로 세지 않는다.
+- 다음 수정 배정은 신규 gpt-6-astra xhigh다. 라우팅신호2(파괴된 Unity 객체와 판독/로그 수명), 신호4(기존세클래스의 기하·PathOf 의미를 보존한 helper 추출 설계)를 적용한다. #1~#3 수정·제품불변·변경시험 독립재실행과 교정판정문이 완료조건이다. 무관한 UI계층/프로토콜/제품정리는 하지 않는다.
+- 후속 검증 등급은 보수적 강이다(다파일 시험 추출과 로그 수명, 제품+시험 변경50줄 이상 가능). 실제diff줄수는 구현보고에서 고정한다. 새 독립 Opus는 #1~#3 diff·근거 실사, 필요한 독립시험 보완과 변경클래스 실제실행, 교정판정문을 수행하며 제품전체를 다시 판정하지 않는다.
+
+### C9 문서·관측 시험 수정 완료와 변경분 재검증 준비 — 2026-10-14
+
+- Astra 구현 task_5d4123e92f44/ctx_09b9b9044cab은12:59:04Z done succeeded(msg_553662b5c426)로 쓰기를 종료했다. 문서의 배너/자리예약/입력준비 계약, 파괴된 Unity 객체 대신 캡처값을 쓰는 로그, 세 클래스 공통 화면 판독을 허용5파일에 수정했다. 원시 변경은 +65/-99(C# +61/-99, 문서+4/-0), 강 등급 유지다.
+- report SHA9d24276196cbb7d11edf4bbbca925fc81533b93c1d4515022633915b5a71ae55, result SHAa5d0ad1f3360a409e605e7a8a72caa8cf12b1000712ca5ed746ff23a6142c21e, changes.diff SHA998eecb75dd7ed0bf8b677d5e2d8f90425e934b43f67b978e539403359dd5183. 리드가 전문·실제diff·41입력 hash를 대조해 허용 외36개 불변을 확인했다. 정적35체크/소스18시험·211단정 보존은 자체점검이고 Unity/컴파일/실서버 실행0이다.
+- 구현자의 서버 heartbeat11개는 중간최대149초, dispatch→첫106초/실제제출→첫20.172초, 마지막→done74초다. `worker-show.lastHeartbeatAt=null`과 check 미표시를 누락으로 본 리드 추론은 서버 원시 대조 뒤 msg_ec16cce8acdb로 즉시 철회했다. 이번 작업자240초 위반은 없으며 이전 검증자의258초 처분과 섞지 않는다. 교정은 조회 결과와 메시지 원시를 구분하는 정산 단계에서 했고 새 정본 규칙은 만들지 않는다.
+- exact/settled/idle을 확인하고 worker-release retained 뒤 정확terminal close ptyKilled=true로 종료했다. 근거 c9-review-fixes-1-prep/settlement.json·worker-terminal-close.json. 이 완료는 독립 PASS나 goal 완료가 아니다.
+- 신규 Opus는 메인 msg_6f7c889d6fa9 범위대로 #1~#3 수정diff·문서/원시·독립시험 보완과 변경클래스 재실행·교정판정을 맡는다. 직접3클래스18시험 외 InventoryServerIntegrationTests 한 시험이 HudOverlapProbe를52/56/104행에서 간접 호출한다. 독립검증은 그 의미/커버리지를 실사하고 실제 서버 미실행을 명시하며 필수근거가 부족하면 공식ask/보류한다. 제품 전체·실서버 범위를 자동 확대하지 않는다.
+- Art import 실제반환을 받은 뒤 Core 첫 WSL RED1회 창과 충돌 없음으로 조율했다. 다음 Unity는 Core 실제반환과 새 조율 뒤에만 실행한다. 새 계약 c9-fix-review-2-contract.md와 경로/hash preflight, 신규 Task/Dispatch/모델·실제제출 근거를 별도 보존한다.
+
+### C9 변경분 재검증2 정산과 잔여 중복 결정 — 2026-10-14
+
+- 신규 Opus 검증 task_2665e05e9f28/ctx_314fc0b322ad은13:35:16.671Z `failed`로 종료했다(msg_841c26c00a2a). 원문은 `c9-fix-review-2/report.md` SHAe3b205750ec9472ad2e9c39a73da83f8ea97a88771404fdf2290cbc19a91b69f, `verdict.json` SHAa8dd597be2911365b99dadec1fa4e789c99852e3cd3e4153e788dacd7a656c33다. #1~#3 자체의 정적 실사는 지적 없음이고, #4 잔여 중복이 차단이다. 이번 구현자 귀속이 아닌 기존 시험·이전 검증자·리드 계약 경계로 구분했다.
+- 독립 검증자는 Presentation에 로그 진실성 단정5개(+17/-0), 신규 ScreenUiProbeTests3개와 meta(GUID9e546ea6191e235ede5277e4efb2f376)를 작성했다. 리드가 실제diff·신규파일·원문 전체와 고정72입력을 대조했다. 허용 Presentation 외71개는 불변이고 새 cs/meta 해시도 보고와 같다. 새 시험은 컴파일·실행하지 않았다. Unity 실제 진입0이며 21개 필터와 세 크기 실화면·실제 SFX 청취는 남는다.
+- 메인 msg_5bfad1184fd1(작성13:29:19Z)은 위 done과 같은 Delivery에서13:35:17Z 처음 도착했다. 그 전 리드의 조건부 종료 지시 msg_3d30fb819629에 따라 검증자가 이미 정산했으므로 「계속」 결정을 종료 전에 전달한 것으로 소급 기록하지 않는다. 원문 판정은 보존하며 완료 세션은 재사용하지 않는다.
+- **메인 결정 처리 — 다음 묶음에서 추출:** IsGraphic(Inventory327/Overlap605/Presentation569), Area(346/625/595), Contains(352/636/604)는 이번 통과 차단에서 제외한다. 다음 C9 세 크기 실화면 묶음 계약에 세 함수를 ScreenUiProbe로 추출하고 세 클래스가 사용하도록 명시하며, 그 묶음의 독립 검증과 PR 병합 전에 반드시 해소한다. 메인 판단이며 사용자 결정이 아니다. 이 세 함수와 이 PR 경계에만 적용한다.
+- 같은 검증의 전수표는 세 시험의 정적 helper91개 범위다. 추가 G2 ScreenArea(186/56/56), G4교차(Inventory343/Overlap622/Presentation599~600), G7패널조회(Inventory185·763/Overlap445·451/Presentation477)는 자동 유예하지 않았다. 메인에 원문·적용 한계·새 세션 필요성을 msg_235479fc1af0으로 보고하고 처분을 요청했다. G5 두 프레임 정착 대기는 리드 설계 검토가 남는다. 다음 계약은 이 목록과 시험 폴더 전체 추가 목록을 묶어 처리한다.
+- 최종 서버 원시의 정확 handle/Task/Dispatch heartbeat48개, 최초13:09:13Z·최종13:35:04Z, 최대105초, 240초 초과0, 마지막→done12초다. 보고의43개는13:32:42Z까지의 중간 집계로 명시되어 있으며 최종 집계와 혼동하지 않는다. 근거 `c9-fix-review-2-prep/settlement-heartbeat-audit.json`·`settlement-inbox-all.json`.
+- failed/settled·exactWorker·handle/incarnation과 완료 뒤 빈 prompt를 확인한 뒤 release retained/external_terminal, 정확 pane close ptyKilled=true로 종료했다. reclaimable0. 제품/사용자 보호 hash 불변, Content 중량실행/예약0, 새 작업자0이다. 상태 변경·시각·결정 원문은 prep/settlement.json·settlement-delivery.json·worker-release.json·worker-terminal-close.json에 보존한다. 이 정산은 독립 PASS·goal 완료가 아니다.
+
+### C9 잔여 중복의 묶음 처리와 재검증3 준비 — 2026-10-14
+
+- 메인 msg_a2bdc1ea1817(13:41:52Z)은 원문 report SHA·#4 표와 소스를 R-2 대조한 뒤 G2 ScreenArea·G4교차·G7패널조회도 같은 한정 유예에 넣었다. 같은 시험 책임이고 제품 동작 영향이 없으며 이번 구현자 귀속이 아니어서 다음 실화면 작업 때 한 번에 추출한다는 판단이다. 메인 판단이며 사용자 결정이 아니다.
+- 다음 C9 실화면 묶음 필수 대상: G1 IsGraphic, G2 Contains·ScreenArea, G3 Area, G4교차는 ScreenUiProbe; G7패널조회는 InventoryPanelProbe로 추출한다. O-1 머리 주석도 보강한다. G5 두 프레임 대기는 그 묶음에서 리드가 Update/LateUpdate의 변경 이유를 판정하고, 같은 이유면 추출/다르면 보존 이유를 goal에 남긴다. 묶음 전체의 독립 확인·PR 병합 전 해소가 필수다.
+- 신규 독립 세션은 현재 수정과 추가시험을 실사하고 21개 필터를 실제 실행한다. 판정에 두 메인 결정 ID·영향·한계와 **「#4: 메인 결정으로 유예한 차단 — 다음 묶음 전까지 미해소」**를 명시한다. 유예를 해소나 실행 PASS로 쓰지 않는다. 현재 제품2파일은 hash대조하며 같은 제품전체판정을 반복하지 않는다. 강 등급 유지, 새 계약/사전hash/실행원시는 c9-fix-review-3와 prep에 둔다.
+- 세 파일 이상 같은 메서드 몸체를 경고하는 기계 검사 후보는 지금 채택하지 않는다. #3·#4는 한 사건을 나눠 발견한 첫 발생으로만 기록한다. 다음 목표에서 같은 누락이 재발하면 Rules에 올린다. 결정 도착 시차에는 별도 조치를 만들지 않는다.
+- Unity는 Core·World·Rules·Art의 최신 창 조율과 신규 검증자 공식ask/fresh관문 뒤 한 번씩 허용한다. 현재 중량실행/예약0이며 새 검증자는 먼저 읽기·독립시험 실사/보완만 한다. 종료한 재검증2 원문과 입력은 보존한다.
+
+### C9 #1~#3 변경분 강 PASS·재검증3 정산 — 2026-10-15(KST)
+
+- 신규 Opus task_576e184ed4bb/ctx_b6c38a02dabe는 worker_done msg_5cefe32c9242(15:29:43.857Z)로 succeeded/쓰기종료했다. report SHAab3861cb4328a7cf4072c8eca0a13857c5861d688ae011836b7287ae33be3270, verdict SHA8ffc5cb6499e9af87b075ea8e44fd40ef33a05f3cac0f36496ff95a08862f64c. 리드가 원문전문·실제명령/실행원시·XML·보존/변경·독립설계판단을읽고 이변경분범위PASS를인수했다. 새시험쓰기0이며 이전독립단정5개와신규3시험을직접실사해판별력이충분하다고판정했다.
+- 공식답 msg_5a19686d8e18 아래 기존harness1회: Unity PID28676 15:21:00.4022806Z→15:22:55.4351077Z(115.0328초),exit0/timeoutfalse/harnessError null. 실제XML SHA9e014b02f7a7eab0f125f77ea4ca043cc9af9d81ce3f317d6dda2d93c781a09e의test-case를리드가직접계수해21/21/실패0/skip0/필터밖0을확인했다(Inventory9·Overlap6·Presentation3·ScreenUiProbeTests3). BossRoom→Town 뒤 live false·판독순간/이동뒤동일로그·Town not shown 원문도읽었다. 근거 prep/lead-xml-audit.json.
+- 고정88입력중87개는정산때도같다. goal한파일만명시정책버전 b522db21…로추적했다. 제품Window01c5c3bb…/StageClear1a55a155…불변. 원문표 「보호6파일 현재동일」은실행전실사값이며실행후설정한자동변경은뒤쪽표에공개됐다. 정산에서는전/후/복원을분리하고그표현을실행후6개불변근거로쓰지않는다.
+- Unity자동ProjectSettings.asset4a8db0bd…→5a03375a…는597행 Standalone define의 SENTIS_ANALYTICS_ENABLED 삭제1줄뿐이었다. 리드가freshUnity0/lock없음·전체SHA/줄차이를대조해현재bytes를보존한뒤원사용자bytes4a8db0bd0b2416d9a9536527cba7ba2ae8c9e0c4e38313f7d363c359667cd21a로복원했다. Gitrestore/stage하지않았고다른dirty/Minimap은보존했다. prep/settings-restore-receipt.json·ProjectSettings-before-lead-restore.asset.
+- 기본LocalLow TestResults.xml은실행직전250141bytes/SHA92fe2b0d…사본을보존했고,후370472bytes/SHA9e014b02…로이번XML과같이덮였다. 메인 msg_a920ed41f308에따라원본복원/삭제없이부수출력으로공개한다. Unity자동Library/Logs/Temp는미측정. mute는원값0으로finally복원됐고리드가현재0/Unity0/lock없음을재확인했다.
+- heartbeat92개/최대142초/240초초과0/120초목표7초과/마지막→done27초를서버created_at만재계산했다. shell&대기1회와120초목표초과는원문운영미준수절에공개됐으며시연우선기준으로제품판정을막지않는다. source수집/계산은prep/settlement-heartbeat-audit.json.
+- exact/settled/완료뒤빈prompt 확인→release retained/external_terminal→정확pane close ptyKilled=true로종료했다. 미제출draft는사용자지시나종료보류근거로쓰지않았다. 네파트에실제자원반환/현재실행·예약0을통지했다. #4G7하위경로41·52·74·244와#5/O-4 위치보충은원문전수표에남기고동결뒤정리로유지한다. 제품계산복제/측정위장/동작결함은지적0이다.
+- 이판정은변경분PASS이며실서버7777·709×399/802×451/1920×1080 실제화면·SFX청취·goal전체PASS가아니다. 남은C9는기존새MCP연결승인gate(구c9-screen-contract.head.md 92·104~106행)와현재사용자수면상태를메인에보고하고밤checkpoint/초안PR·아침재개처리를확인했다(msg_2d6177a4952d). 새Editor/새실화면검증자/다음goal은아직열지않았다. 기존C9승인범위는유지하고구HEAD/프로토콜18 계약의버전갱신이필요하다.
+- Art msg_20dca31acbaa의다섯파일질문에는Window만고정입력/미커밋+34/-5·전체SHA·보존동작·읽기전용사본을답했다(msg_f8dd9f97b4d7). 다른네파일은Contentdiff/manifest입력0. Art의구HEAD가확인클릭/입력준비수정을덮지않도록공통기준/PR합류를메인과조율하도록알렸고Content사본쓰기권한을넓히지않았다.
 
 ### 운영 기록(첫 발생)
 

@@ -442,19 +442,19 @@ namespace Dawnholder.Client.Tests.PlayMode
 
         static float MaxAlpha(Drawn[] graphics) => graphics.Length == 0 ? 0f : graphics.Max(graphic => graphic.Alpha);
 
-        static Rect PanelRect() => ScreenRect((RectTransform)InventoryPanelProbe.Root.Find("Inventory"));
+        static Rect PanelRect() => ScreenUiProbe.ScreenRect((RectTransform)InventoryPanelProbe.Root.Find("Inventory"));
 
         // Positive control in the same frame, as HudOverlapProbe does for the HUD: with the panel's top centre placed on
         // the window centre, the same reading must report an overlap. The panel's own placement is restored at once.
         static float PanelControlOverlap(Rect window, out bool restored)
         {
             var panel = (RectTransform)InventoryPanelProbe.Root.Find("Inventory");
-            Rect before = ScreenRect(panel);
+            Rect before = ScreenUiProbe.ScreenRect(panel);
             Vector2 placed = panel.anchoredPosition;
             panel.position = new Vector3(window.center.x, window.center.y, panel.position.z);
-            float overlap = OverlapArea(window, ScreenRect(panel));
+            float overlap = OverlapArea(window, ScreenUiProbe.ScreenRect(panel));
             panel.anchoredPosition = placed;
-            restored = Same(before, ScreenRect(panel));
+            restored = Same(before, ScreenUiProbe.ScreenRect(panel));
             return overlap;
         }
 
@@ -550,7 +550,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 var rect = (RectTransform)renderer.transform;
                 Rect ink = Ink(graphic, rect);
                 if (Area(ink) <= 0f) continue;
-                drawn.Add(new Drawn(renderer.gameObject, root.name + "/" + PathOf(rect, root), ScreenRect(rect), ink,
+                drawn.Add(new Drawn(renderer.gameObject, root.name + "/" + ScreenUiProbe.PathOf(rect, root), ScreenUiProbe.ScreenRect(rect), ink,
                     DrawnAlpha(graphic)));
             }
             return drawn.ToArray();
@@ -577,9 +577,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             if (graphic is TMP_Text label)
             {
                 bool laidOut = !string.IsNullOrEmpty(label.text) && label.textInfo != null && label.textInfo.characterCount > 0;
-                return laidOut ? Bounds(rect, label.textBounds) : Rect.zero;
+                return laidOut ? ScreenUiProbe.Bounds(rect, label.textBounds) : Rect.zero;
             }
-            return PreservedAspect(graphic, rect, ScreenRect(rect));
+            return PreservedAspect(graphic, rect, ScreenUiProbe.ScreenRect(rect));
         }
 
         // uGUI draws a Simple Image with preserveAspect as its sprite fitted inside the rectangle and aligned by the pivot
@@ -609,28 +609,6 @@ namespace Dawnholder.Client.Tests.PlayMode
                 if (type.FullName == "UnityEngine.UI.Graphic") return true;
             }
             return false;
-        }
-
-        static string PathOf(Transform transform, Transform root)
-        {
-            var names = new List<string>();
-            for (Transform current = transform; current != null && current != root; current = current.parent) names.Insert(0, current.name);
-            return string.Join("/", names);
-        }
-
-        // ScreenSpaceOverlay canvases place world corners in screen pixels.
-        static Rect ScreenRect(RectTransform rect)
-        {
-            var corners = new Vector3[4];
-            rect.GetWorldCorners(corners);
-            return Rect.MinMaxRect(corners[0].x, corners[0].y, corners[2].x, corners[2].y);
-        }
-
-        static Rect Bounds(Transform owner, Bounds local)
-        {
-            Vector3 min = owner.TransformPoint(local.min);
-            Vector3 max = owner.TransformPoint(local.max);
-            return Rect.MinMaxRect(Mathf.Min(min.x, max.x), Mathf.Min(min.y, max.y), Mathf.Max(min.x, max.x), Mathf.Max(min.y, max.y));
         }
 
         static Rect Union(IEnumerable<Rect> rects)
@@ -765,7 +743,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 ButtonCount = buttons.Length;
                 if (buttons.Length != 1) return;
                 Confirm = buttons[0];
-                ConfirmRect = ScreenRect((RectTransform)Confirm.transform);
+                ConfirmRect = ScreenUiProbe.ScreenRect((RectTransform)Confirm.transform);
                 ConfirmInteractable = InventoryPanelProbe.Interactable(Confirm);
                 Transform canvas = Confirm.GetComponentInParent<Canvas>().rootCanvas.transform;
                 HashSet<GameObject> group = ScreenUiProbe.GroupBelowCanvas(Confirm);
