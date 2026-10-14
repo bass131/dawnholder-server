@@ -155,13 +155,22 @@
 - **B1 UI 키트 최종 미관 — A 이대로 승인**(메인 `msg_955f9b81cbbf`, 2026-10-14T11:34:35Z). 사용자 원문(메인 pane Enter 제출 전달): 「대시보드 결정 응답: 1) Art UI 키트 - 브라운 B1 최종본을 이대로 승인할지, 고칠 곳을 말할지 → A 이대로 승인」. 메인의 전달이며 Art pane의 사용자 직접 입력으로 격상하지 않는다. 대상은 `ui-kit-b1-ring-fix/package/kit`의 sprites33·preview12, 판정 SHA256 `203ab425ec60f8083344375b1196a4e1ccee031fbf401243a3bd6713c618c00c`다. 메인은 사용자가 [UI 키트 페이지](https://claude.ai/artifact/9vLuj33Na2PfWXtxdu8THs) version4(1920×1080 미리보기6장·조각33개·남색 비교)를 보고 답했다고 전달했다. 효과: 별 장식 가운데 남색 마름모 D5는 원본 장식 색 그대로 둔다.
 - **메인 지시 — Unity 적용 범위 초안**(같은 `msg_955f9b81cbbf`, 사용자 결정과 구분). 조각 넣기·9-slice 테두리 값 적용의 만들 것·건드릴 곳·하지 않을 것·관찰 가능한 완료조건·PR 경계·검증 등급을 초안으로 보내고, 메인이 승인 초안과 대조해 차이가 있으면 사용자에게 묻는다. 승인 전 Unity 쓰기·새 작업자 발행 금지. Content C9 검증 대기와 Editor 동시 사용을 피하는 순서를 초안에 적는다. 전달 원시는 `ui-kit-unity-import-plan/main-aesthetic-decision.json`이다.
 
+- **10-28 기능 동결까지 시연 우선 모드**(메인 `msg_a5ac00457ba4`, 2026-10-14T14:11:27Z; 메인 pane Enter 제출 23:10 KST 무렵). 사용자 원문: 「대시보드 결정 응답: 1) 10-28 시연 - 동결까지 시연 경로 우선 모드로 검증 절차를 줄일지, 지금 절차를 유지할지 → A 시연 우선 모드」. 메인의 전달이며 Art pane의 사용자 직접 입력으로 격상하지 않는다. 지금부터 2026-10-28 기능 동결까지 적용하고 동결 뒤 원래 절차로 돌아간다. 10-13 승인 영상 장면, 특히 3·6·7·8 길드 순환과 5 보스 보상 경로를 우선한다.
+- **시연 우선 모드의 현재 계약 적용**: 동작에 영향 없는 시험 중복·문서 표현·주석 위치·이름·가독성·배치 지적은 번호와 함께 「동결 뒤 정리」에 남기고 PASS를 막지 않는다. 생존 간격·해시 전수 대조 누락·보고 형식은 판정 「운영 미준수」에 공개하며 제품 차단으로 삼지 않는다. 제품 계산을 복제해 항상 통과하는 시험과 측정값 위장은 계속 차단한다. 금지 구간 실행·메모/결과 불일치·결론/본문 모순은 메인에 올린다. 같은 산출물의 독립 재검증은 1회까지며 다시 막히면 새 검증자를 열지 않고 메인이 진행·좁은 수정·장면 축소를 판단한다. 새 하네스나 시각 계산 준비 장치를 추가하지 않고 기존 도구와 리드 공식 답으로 시작한다. 시연 장면 밖 후보는 동결 뒤로 미룬다.
+- **보존 경계**: 구현자/검증자 분리와 실제 실행 독립 검증 1회, 미실행 성공 보고 금지, 서버 권한·입력 경계·패킷/PDL/공유 DLL 계약, Unity .meta/GUID·사용자 파일·Core 보존 DB/옛 실패 자원 보호, 중량 실행 조율, PR별 정확 head 사용자 병합 승인은 유지한다. 현재 검증 task_556d1434ef53 / ctx_5d45be726951에는 원 계약을 보존한 추가 지침 `ui-kit-unity-import-review-launch/demo-priority-supplement-v2.md`로 적용한다. 사용자 결정 원시는 같은 폴더 `main-demo-priority-and-review-ready.json`이다.
+
+## 동결 뒤 정리
+
+- 현재 Unity 반입 독립 판정은 미수령이다. 새 판정의 동작 무관 지적은 번호·근거·기능 영향 없음의 이유를 이 목록에 옮긴다. 이미 해결한 과거 결함을 새 미해결 차단으로 되살리지 않는다. 운영 미준수는 해당 판정과 원시를 보존하며 기능 결함과 구분한다.
+- 시연 장면 밖 새 후보와 운영 절차 추가 정비는 2026-10-28 동결 뒤 판단한다.
+
 ## 재개 지점
 
 다음 리드는 이 블록부터 읽는다. 2026-10-13 마감은 commit `b09fd53e099341710f36b7555e1b56fee5734e9f`에 보존한다. 메인 재개 계약 `msg_0e8dad2ba450`(2026-10-14T09:16:34Z)에 따라 재부팅 뒤 같은 대화를 이어간다. 사용자 결정은 「대시보드 결정 응답: 1) 리드 재개 시점 - 지금 열지, 페이지 파일 재부팅 뒤에 열지 → B 재부팅 먼저」이며 메인 pane 제출 전달이다. 메인은 재부팅/페이지 파일 적용을 확인했다고 보고했고, Art의 직접 환경 검증으로 쓰지 않는다. 새 Run consumer3 인수 뒤 최신 main을 받고 READY `msg_06ca644d55de`를 보냈다. 원시·사전 메모는 `lead-resume-20261014/`에 있다. 10-13 이전 기록은 `lead-resume-astra/`와 과거 commit에 보존한다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 신규 Opus task_556d1434ef53 / ctx_5d45be726951가 Unity 밖 실사·시험 작성만 진행한다. 공식 ask의 실행 계획을 받은 뒤 World 실제 반환/양보·Core/Content/Rules 최신 충돌없음·직전 물리/commit 각4GiB를 확인해 같은 ask에만 정확 Unity 실행창을 reply한다. Sprite33·재import·uGUI화면/대조군은 아직 미실행이다. 운영 helper raw327/558/312/353/357초·공식ask대기·heartbeat만466초를 구분해 메인 임시3조건 적용 여부를 판정한다 |
+| 다음 첫 일 | 신규 Opus task_556d1434ef53 / ctx_5d45be726951의 최종 시험/runner/manifest 동결 보고 msg_4418c0ed4857을 받았다. 네 파트는 Art→World→Content 실제 반환 순서에 동의했다. 최종5파일과 직전 자원 상태를 확인하고 같은 공식 ask msg_238f97710a12에 Unity1회 실행창을 reply한다. 실제 Sprite33·재import·uGUI화면/대조군과 판정은 아직 미실행/미수령이다. 최신 시연 우선 모드를 현재 계약에 적용하며 생존 간격 등 운영 미준수는 공개하고 제품 통과를 막지 않는다 |
 | 현재 Task·Dispatch | 독립 검증 task_556d1434ef53 / ctx_5d45be726951, 새 term_608e0815-3810-4c6e-abd0-bf3b8b00c2c3 / incarnation cd6326a2-ca97-4f4e-95c0-3b88613e4403. 최초 claude --model claude-opus-5-5·화면 Opus5.5 xhigh/ClaudeCode2.1.299, backend unknown. 공식 input_accepted/turn_started observed, 단계A만 허용이다. 계약/고정입력/기동 ui-kit-unity-import-review-launch/, 검증자 쓰기 ui-kit-unity-import-review/. 구현 task_7c7829e6efb1 / ctx_8174e73332f5는 완료/정산/정확 pane 종료·근거109파일 고정, 제품 c19eaba78e928a3b98585f3fb4148640b651629c에 포함됐다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
