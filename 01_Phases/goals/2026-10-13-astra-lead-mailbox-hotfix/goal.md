@@ -7,11 +7,11 @@
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. 현재 PR2 branch `feat/codex-merge-guard-20261013`, 생성 당시 최신 main/base `44bd4319f78078f6fcc3f4941590f6371d58e2b7`. PR1 branch는 `docs/astra-lead-mailbox-20261013`, 당시 base는 `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`였다.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: **2026-10-14 18시 재부팅 뒤 메인 `msg_68c28f5d0561`로 같은 목표를 재개했다.** 결정8의 야간 마감은 종료 기록으로 보존한다. PR234는 메인이 사용자 승인 뒤 병합했고, PR2 첫 재검증 **NOT PASS #10~#18** 뒤 결정7의 설계 전환 초안은 미완이다. 신규 Astra가 초안 타당성부터 이어받고 새 Opus 강 검증/실제 Codex 진입/CI를 잇는다. Art 담당 판2는 확정됐고 PR2 병합 뒤 별도 문서 PR이다. 기존 후속 기록·Archify/Unity 정합도 유지한다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
+- 현재 차례: **재개 구현 Task `task_6e45d9444aa2`의 쓰기 종료·succeeded 정산·pane 종료를 마쳤다.** 고정 새 기준157/157·Claude293/293은 자체검사이고, 기존 시험은718/672/46이다. 잔여46의 요구 변경 귀속과 실제 Codex 진입을 신규 Opus가 독립 검증한다. PR2 전체 PASS/CI 완료는 아니다. 결정8의 야간 마감과 첫 재검증 **NOT PASS #10~#18**은 역사 근거로 보존한다. Art 담당 판2는 확정됐고 PR2 병합 뒤 별도 문서 PR이다. 기존 후속 기록·Archify/Unity 정합도 유지한다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
 - 중단 Task `task_f0e3a8b1e758` / Dispatch `ctx_e8a225748509`는 시간 마감으로 **failed/settled** 정산·release·작업자 close까지 끝났고 재사용하지 않는다. 당시 하네스0/reclaimable0과 새 실행 금지는 야간 마감 상태다. 이번 재진입은 같은 Run consumer_generation2이며 현재 회신은 `run:run_54319375ed08`이다. 새 handle은 재진입 receipt에 기록하며 과거 handle을 실행 권한으로 쓰지 않는다.
 - 보존 기준 HEAD는 `ad7ba33a34312b99759b9829f7c0aee2580abf55`다. 미커밋은 `99_Tools/CodexGuard/command-policy.mjs`, `shell-command.mjs`, 신규 `command-shape.mjs`, 신규 `protected-command.mjs` 네 파일이다. `E/guard-redesign-01/partial-report.md`와 `partial-products.patch`(신규 파일 포함), `product-snapshot/`, `partial-audit.json` 및 리드 `guard-redesign-01-lead-settlement.json`에 내용·hash를 보존했다. 기존 시험/fixture 18파일은 불변이다.
 - 야간 마감 기록은 `463f1bde28547f499dd45694fe71fe05c7fb129f`로 push했다. 재부팅 뒤 미완4파일을 종료 snapshot과 다시 대조하고 origin/main `20ce59ddd72d0cb72b6e230e386a62587b9bfe1b`를 현재 branch에 충돌 없이 통합했다. 통합 HEAD `20ac0d6efbdc3f3139f865dea40afa62d712cdbb`와 원격이 일치하며 미완4파일 hash도 전부 같다(`E/reboot-20261014-git-result.json`). 제품4파일은 여전히 미커밋이다. 신규 구현의 기준은 재진입 기록 commit을 포함한 발행 계약/입력 manifest에 고정한다.
-- 다음 첫 행동: 새 진입에서 branch/HEAD·미완 4파일의 보존 hash·최신 지침과 이 결정을 확인한 뒤, **새 구현자**에게 초안 설계 타당성부터 검토시킨다. #16 콜론 결합 후보 누락과 heredoc fixture 오기를 각각 보존·교정하고 기대값 전수 귀속/문서/회귀를 완료한다. 저장소 시험은 구현자에게 읽기 전용으로 유지하고 새 선행 시험/독립 검증 역할에 기대 전환을 맡긴다. 그 뒤 새 강 독립 검증(실제 Codex 진입 포함)→CI→PR별 사용자 병합 승인이다. 현재 미응답 사용자 결정은 없으며 미래 PR 병합 승인은 별도다. Art 및 다음 문서 후보를 자동 착수하지 않는다.
+- 다음 첫 행동: 새 진입에서 branch/HEAD·현재 제품/문서7경로와 `E/guard-redesign-02-lead-settlement.json`·최신 지침을 대조하고 **새 Opus 강 독립 검증**을 준비한다. 저장소 시험 기대 전환은 사용자 결정7에서 독립 재도출하고 실제 Codex 진입은 안전한 가짜 CLI 계획/R-6 신뢰 처리 뒤 실측한다. 실제 push를 실행한 옛 harness는 재사용하지 않는다. 독립 검증→CI→PR별 사용자 병합 승인 순서이며 현재 미응답 사용자 결정은 없다. Art 및 다음 문서 후보를 자동 착수하지 않는다.
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
@@ -20,8 +20,8 @@
 - [x] 리드 규칙 작성
 - [x] 문서 재실사와 부분 관측 정리
 - [x] PR234 병합
-- [>] 가드 구현
-- [ ] 가드 강 검증
+- [x] 가드 구현
+- [>] 가드 강 검증
 - [ ] 가드 PR 병합
 - [ ] 종료 점검과 기록
 - [ ] 종료 확인과 교체
@@ -126,6 +126,10 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 10. 같은 `msg_68c28f5d0561`의 별도 정본 반영 요청: 지난 메인 pane에서 Enter 제출한 사용자 원문 「CLI는 이제 HTML 버전에도 삽입되어있으니까 HTML 버전 현황판만 띄우면 돼, 스킬에 반영해줘」. **정본 반영 전 적용 중 결정**으로, 메인 진입은 `node C:/Dev/DawnHolder_Dashboard/web/open-in-orca.mjs`(서버만 필요하면 `--no-tab`)를 사용하고 터미널 현황판 `dashboard.mjs` 탭은 띄우지 않는다. 메인 스킬은 이미 반영했다고 전달받았다. RESUME 「세션 진입 배치」 2번 정합은 가드/Art 편입 완료조건과 별개라 목표 범위 정본에 따라 BACKLOG `web-dashboard-entry-canon`으로 분리한다. 현재 goal의 RESUME 구현 범위를 확대하지 않으며 Rules 직접 사용자 입력으로 격상하지 않는다.
 
 ### 메인 적용 판단과 승인
+
+- 메인 `msg_8365f4261987`(2026-10-14T09:47:34Z)은 후보 복구의 반복 탐색 비용을 완료조건을 막는 범위 안 결함으로 판단해 현재 Task 재개를 지시했다. 지원/보호 집합과 timeout 제한을 유지하고 고정90030바이트 전후, 1MiB envelope 근처1회, 기존157/718·leaf603/Claude 회귀·전수 귀속을 확인한다. 실제 Codex timeout은 이 차례에서 재지 않고 [미측정]이며 재불일치 중단 조건은 유지한다. `E/guard-redesign-02-checkpoint-01-resume-supplement-v1.md`와 원문/전달 `msg_bbc11c7abcad`에 고정했다. 사용자 새 결정이 아닌 메인 판단이다.
+- 메인 `msg_572d2dd4e7c1`(2026-10-14T09:59:22Z)은 Content·World·Core의 공식 질문/보고 뒤 자동 새 턴이 열리지 않은 관찰과 현황판 `board.mjs stale`의 메인 앞 질문 한정 범위를 전달했다. 원인은 미확정이며 메인의 우편함/화면 관찰을 Rules 독립 재현으로 보고하지 않는다. 리드 판정은 **ORCA의 현황판 감시 범위 설명 정합은 완료조건2의 범위 안 문서 결함**, 자동 깨움 복구/전 Run 감시 도구 구현은 후속 후보다. 가드는 중단하지 않으며 문서 수리는 후속 문서/종료 기록 차례의 외부 작성·독립 실사에 남긴다. 메인의 당일5분 간격 read-only 확인은 임시 운영이며 Codex 반복 polling 허용이나 영구 새 규칙으로 격상하지 않는다. 근거 `E/mailbox-wake-20261014-classification.md`, 원문 `mailbox-wake-20261014-main-observation.json`.
+- 위 두 기록은 진행 중 작업자의 고정 입력을 보존하기 위해 E에 먼저 두었고, 쓰기 종료와 입력 정산 뒤 이 goal에 반영했다. 첫 체크포인트의 escalation은 CLI가 `sender_not_assignee`를 반환했지만 메인은 도착했다고 보고했다. 리드의 「전달되지 않았다」 추정을 `E/guard-redesign-02-checkpoint-01-lead-context.md`와 `msg_ab26f49f3156`으로 정정했으며 이후 리드→메인은 status를 쓴다.
 
 - 오늘 마감의 기록 위치는 메인 `msg_da593804ac29`(18:37:08Z)를 따른다. Rules가 제안했던 별도 기록 branch는 만들지 않는다. 기존 PR2 branch의 goal 기록 commit 하나를 추가하고 이름을 명시해 push/upstream 설정한다. 기존 제품·시험 commit의 원격 백업은 허용하되 미완 제품4파일은 미커밋 유지, PR 생성 없음이다.
 
@@ -259,7 +263,18 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - 메인 지시에 따라 기계적 main 통합/feature branch push를 수행했다. 입력 main은 PR236까지의 `20ce59dd…`, 통합 결과78파일은 이미 병합된 로그인 변경이며 Rules 구현/실행 검증으로 보고하지 않는다. 미완4파일·미해결0·원격 HEAD 일치 근거는 위 재개 지점과 `E/reboot-20261014-git-result.json`에 있다. 선행 메모의 예상76파일은 실제 통합78파일로 정정했다. 리드가 제품 코드를 수정하거나 테스트를 재실행하지 않았다.
 - 신규 계약 전 진척의 두 진행 표식을 가드 구현 한 개로 정리하고 신뢰/실제 진입은 남은 가드 강 검증에 포함했다. 같은 목표의 완료조건·범위·PR 순서는 유지한다. 신규 구현은 이전 부분 보고/고정 시험을 읽고 자기 새 근거 폴더에 재개 전후 원시를 만든다. 옛 worker의 초안/하네스/실패 원시는 고정해 덮어쓰지 않는다.
 
+### 재개 구현과 예산 교정 정산 — 2026-10-14
+
+- 구현 Task `task_6e45d9444aa2` / Dispatch `ctx_e906173fe4bd`, 지정/기동 화면/rollout gpt-6-astra xhigh, backend unknown. 계약 SHA256 `2f83f164393fba0c2d160cebfd08b7107ff557b83320005b82cfda12d0470de8`, 입력82/부모3/누락0이었다. R-5 draft22775+4788·동일 identity 대조 뒤 bare Enter1회와 실제 제출 전문을 확인했다. 최초 start_unknown receipt는 보존했다. 작업자 최초 축약 path-check 읽기 오류는 실제 접두 경로를 찾아 정정했다고 context에 공개했다.
+- 쓰기 종료 `msg_4fb37b9418eb`, worker_done `msg_f0ca5f338ae6` succeeded는 할당 구현·자체검사 완료이며 제품 전체 PASS가 아니다. 보고 `E/guard-redesign-02/report.md` SHA256 `ad73600ee28a7d2bc20e997a788dc3b88c1fc1aaf6d2cb5bc64dcf99859a25f9` 전체·context·실제 diff·원시를 읽었다. 이번4변경은 protected-command/gh-policy/README/ORCA이고 인계된 command-policy/shell-command/command-shape는 유지했다. 현재 미커밋7경로에 인계 변경이 포함된다. 저장소 시험/fixture18은 불변이다.
+- 새 요구 고정v3는157/149/8→157/157/0, 동일 하네스·명령·기대다. 첫 후보 교정 뒤 예산 probe90030바이트가15014ms/ETIMEDOUT으로 실패해 공식 ask `msg_fa3473d6c3e9`에서 멈췄다. 보류 reply `msg_c1b6882970ca`의 question 상태는 answered이며 재개 승인과 다르다. 메인 판단/보충 뒤 같은 input SHA256·15000ms 제한으로74ms 안내 deny, 근접 serialized stdin1047552바이트(상한1048576 미만)는339ms 안내 deny였다. 머신 관측값이며 실제 Codex timeout은 [미측정]이다.
+- 고정 저장소 명령의 before 전체718/671/47·leaf603/572/31→after718/672/46·leaf603/573/30, 둘 다 exit1이다. 구현자는 남은46을 요구 변경d의30leaf+부모 자체 assertion1+실패전달 부모15로 전수 연결했다. 리드는 저장 raw 합계를 재집계했지만 그 귀속의 독립 타당성은 새 Opus에게 남긴다. Claude 회귀293/293, 실제 Codex 진입·Linux CI는 미실행이다. v1 하네스 사본은 사후 역복원/hash 일치이며 당시 사본으로 소급하지 않는다.
+- `E/settle-guard-redesign-02.mjs`는 변경4·고정78·제품7·사본7·근거108·보고 hash를 대조해 불일치0/허용 밖 Git경로0, 고정157의 동일 하네스/표본과 원시 수치를 확인했다. 제품 시험을 리드가 재실행하지 않은 소유·근거 정산이다(`guard-redesign-02-lead-settlement.json`). 정산 뒤에만 goal/BACKLOG를 갱신한다.
+- worker-show completed/succeeded→release external retained→동일 incarnation/idle·draft 없음 확인→정확 pane close ptyKilled=true, reclaimable0이다. 기록 `E/guard-redesign-02-{done-show,release,preclose-show,preclose-read,close,reclaimable}.json`. 완료 세션을 재사용하지 않는다. 생존 helper는 신호9/최대485초/초과2(485·455)/공식 질문 대기385초·exit1이다. 보류 답과 실제 재개 보충 사이의 대기도 구분하며 5분 준수로 주장하지 않는다. 조회는 최신200건(최초2026-10-13T18:37:39Z) 중 현재 Dispatch 필터이며 전체 Run 전 기간이 아니다.
+
 ## 다음 계획 후보
+
+- Codex 리드 자동 깨움 복구/미처리 메일 감시: BACKLOG `codex-lead-mailbox-wake-recovery`. 원천 msg_572d2dd4e7c1과 범위 안 문서 수리의 분리는 위 메인 적용 판단에 있다.
 
 - 웹 현황판 진입 정본: BACKLOG `web-dashboard-entry-canon`. 사용자 원문/적용 중 결정은 위 결정10, RESUME 정본 수정은 별도 후속이다.
 
