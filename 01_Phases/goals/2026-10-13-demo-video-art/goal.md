@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **같은 승인 목표 진행. 시범 PR233 병합·B1 기술 PASS/사용자 미관 A 승인 뒤 승인 PNG33의 Unity 반입 구현71파일을 완료했다. 실제 import1회(exit0)와 구현자 정산·정확 pane 종료를 확인했다. 신규 Opus task_556d1434ef53 / ctx_5d45be726951의 시험 준비가 끝났고 공식 ask msg_238f97710a12는 아직 pending이다. Art 검증 Unity 실행허가/실제실행/중량예약0. 네 파트는 Art→World→Content 실제 반환 순서에 동의했다. 사용자 시연 우선 기준을 기록했고 검증자에게 추가 지침 전달과 실제 실행 허가가 남았다. 메인 msg_d4146a180138의 Sol xhigh 전환 결정에 따라 이 안전 지점에서 리드 전환을 준비한다. 진행 중인 검증자는 그대로 유지한다. 이어갈 곳은 [재개 지점](#재개-지점)이며 다음 goal은 자동 시작하지 않는다.**
+상태: **같은 승인 목표 진행. 시범 PR233 병합·B1 기술 PASS/사용자 미관 A 승인 뒤 승인 PNG33의 Unity 반입 구현71파일을 완료·정산했다. Sol xhigh 리드가 같은 Run consumer4를 인수했고 신규 Opus task_556d1434ef53 / ctx_5d45be726951의 같은 ask에 공식 reply msg_08b1f6a32b89로 Unity1회를 허용했다. 실제 기동14:39:47.837Z/PID32424를 owner raw와 대조했다. 지금은 실제 종료·정확 반환·독립 판정 대기다. Art→World→Content Unity 순서를 유지하며 Core WSL은 메인의 별도6GiB 조건으로 병행 가능하다. 시연 우선 기준과 제품/독립검증 경계를 유지한다. 이어갈 곳은 [재개 지점](#재개-지점)이며 다음 goal은 자동 시작하지 않는다.**
 
 - 담당: Art 리드(`[Art 리드 Sol]`, 2026-10-14 Sol xhigh 같은 대화 재개부터). 이전 리드 계열은 Opus·Astra였다. 사용자 결정 `msg_d4146a180138`을 적용했고 현재 화면/turn_context는 gpt-6.1-sol xhigh, 실제 backend unknown이다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며 메인이 R-8로 새 목표의 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -162,6 +162,8 @@
 - **리드 전원 Sol·리드/Sol 작업자 effort xhigh 전환**(메인 `msg_d4146a180138`, 2026-10-14T14:21:19Z). 사용자 원문(메인 pane Enter 제출, 23:2x KST): 「음 그리고 리드급 아무래도 Sol Max로 전체적으로 확장해야 될 거 같아, Astra 토큰 사용량이 감당이 안되네」, 이어 「음 Sol 그리고 정정사항은 작업자랑 리드 전부 Xhigh로 변경, 핫픽스 적용 지시해줘」. 메인의 전달이며 이 pane 직접 입력으로 격상하지 않는다. 앞선 리드 하나 Sol max 시범(msg_928a88962458)은 이 결정으로 대체된다.
 - **위 결정의 적용**: 기본·승인 추가 파트 리드는 gpt-6.1-sol xhigh, 새 Sol 배정 작업자는 gpt-6.1-sol xhigh로 연다. Astra 배정 작업자는 gpt-6-astra xhigh, 독립 검증 모델 시범·R-7·확정 실패 뒤 Advisor는 그대로다. 실행 중 작업자의 모델은 바꾸지 않는다. 메인이 다음 안전 지점에서 같은 Codex 대화를 Sol xhigh로 재개하고 새 handle이 같은 Run을 인수한다. 실제 재개 전 현재 리드 태그는 [Art 리드 Astra], 재개 뒤 확인된 계열은 [Art 리드 Sol]을 쓴다. 전환기에는 두 태그를 인정하되 from_handle·Task·Dispatch를 계속 대조한다. 정본 핫픽스는 Rules 소유다. 이 기록을 실제 모델 전환 완료로 보고하지 않는다. 전달 원시는 ui-kit-unity-import-review-launch/main-sol-xhigh-transition.json이다.
 
+- **사용자 밤사이 감독·Core 우선 지시**(메인 `msg_687aa38999f1`, 2026-10-14T14:38:35Z). 사용자 원문(메인 pane Enter 제출 23:4x KST): 「우편함 처리와 리드 감독을 나 자는사이에 계속 처리해줘, 목표는 마일스톤 작업을 향해 작업하는거야 / 특히 Core쪽 진전이 별로 안돼서 그 부분을 우선적으로 지시해줘」. 메인 전달이며 Art pane 직접 입력으로 격상하지 않는다. 같은 메시지의 메인 운영 판단(새 사용자 결정 아님): Core WSL dotnet 빌드·시험은 자체 직전 물리여유6GiB 이상이면 Art→World→Content Unity 순서를 기다리지 않고 병행하며, WSL끼리 겹치면 Core가 먼저이고 리드끼리 한 줄로 알린다. Unity 순서와 Art 현재 범위는 그대로다. 원시 core-priority-and-unity-actual-start.json, 관련 리드/메인 실제시작 통지에 함께 알렸다.
+
 ## 동결 뒤 정리
 
 - 현재 Unity 반입 독립 판정은 미수령이다. 새 판정의 동작 무관 지적은 번호·근거·기능 영향 없음의 이유를 이 목록에 옮긴다. 이미 해결한 과거 결함을 새 미해결 차단으로 되살리지 않는다. 운영 미준수는 해당 판정과 원시를 보존하며 기능 결함과 구분한다.
@@ -174,9 +176,9 @@
 | 항목 | 값 |
 |---|---|
 | Sol 전환 완료 관측 | 메인 재개 msg_55e9fff98129 뒤 같은 대화 ID 01a13573-b029-7f30-b2cf-f2e8d014cc3d를 새 handle term_95ee6115-3eab-441a-8e7a-3020259818c1/incarnation13d22f59-debb-4db8-a8f6-757eda02fc8c에서 이어간다. 첫 consumer_fenced 뒤 run-use로 같은 Run consumer4 인수·check0건, 화면 GPT-6.1-Sol xhigh/문맥19%·최근 turn_context 모델/effort 일치·backendunknown을 확인했다. READY msg_beadcdacb7f2 송신. 기존 Opus 검증자/ask 유지, 원시는 sol-resume-context.md·sol-resume-screen.json·sol-ready-receipt.json |
-| 전환 뒤 먼저 전달할 것 | 시연 우선 추가 지침 ui-kit-unity-import-review-launch/demo-priority-supplement-v2.md는 작성/goal기록만 완료했고 검증자에게 아직 송신하지 않았다. 최종5파일 hash·새 자원 상태를 확인하고 같은 공식 ask msg_238f97710a12에 기존 runner 기준 최대1회/총45분/첫10분기동/runtime1800초의 정확 UTC를 답한다. 새 하네스·재준비 장치를 더하지 않는다. release/실제시작/실제반환을 구분해 네 파트와 메인에 알린다 |
-| 다음 첫 일 | 신규 Opus task_556d1434ef53 / ctx_5d45be726951의 최종 시험/runner/manifest 동결 보고 msg_4418c0ed4857을 받았다. 네 파트는 Art→World→Content 실제 반환 순서에 동의했다. 최종5파일과 직전 자원 상태를 확인하고 같은 공식 ask msg_238f97710a12에 Unity1회 실행창을 reply한다. 실제 Sprite33·재import·uGUI화면/대조군과 판정은 아직 미실행/미수령이다. 최신 시연 우선 모드를 현재 계약에 적용하며 생존 간격 등 운영 미준수는 공개하고 제품 통과를 막지 않는다 |
-| 현재 Task·Dispatch | 독립 검증 task_556d1434ef53 / ctx_5d45be726951, 새 term_608e0815-3810-4c6e-abd0-bf3b8b00c2c3 / incarnation cd6326a2-ca97-4f4e-95c0-3b88613e4403. 최초 claude --model claude-opus-5-5·화면 Opus5.5 xhigh/ClaudeCode2.1.299, backend unknown. 공식 input_accepted/turn_started observed, 단계A만 허용이다. 계약/고정입력/기동 ui-kit-unity-import-review-launch/, 검증자 쓰기 ui-kit-unity-import-review/. 구현 task_7c7829e6efb1 / ctx_8174e73332f5는 완료/정산/정확 pane 종료·근거109파일 고정, 제품 c19eaba78e928a3b98585f3fb4148640b651629c에 포함됐다 |
+| 전환 뒤 첫 행동 결과 | READY msg_beadcdacb7f2 뒤 최종5파일/새 자원 관문을 통과했고 공식 reply msg_08b1f6a32b89에 시연 우선 추가 지침과 기존 runner 실행창을 함께 전달했다. Start14:39:01.4577569Z/StopNew14:49:01.4577569Z/Deadline15:24:01.4577569Z, 최대1회/총45분/runtime1800초. 실제 시작14:39:47.837Z는 허용창 안이다. 새 하네스·재준비 장치 추가0, 리드 제품/시험/runner쓰기0 |
+| 다음 첫 일 | 현재 독립검증의 실제 종료·정확 자기자원 반환을 수령/대조해 네 리드에 알리고, worker_done·판정 원문/실제 결과를 검토한다. Unity 시험 결과는 아직 미수령이므로 PASS로 쓰지 않는다. 최신 시연 우선 모드로 동작 무관 지적과 운영 미준수를 공개 기록하며 실제 실행·보존 경계는 유지한다. 같은 산출물 재검증 최대1회 뒤 차단은 메인 결정이다 |
+| 현재 Task·Dispatch | 독립 검증 task_556d1434ef53 / ctx_5d45be726951, term_608e0815-3810-4c6e-abd0-bf3b8b00c2c3 / incarnation cd6326a2-ca97-4f4e-95c0-3b88613e4403. 최초 claude --model claude-opus-5-5·화면 Opus5.5 xhigh/ClaudeCode2.1.299, backendunknown. 단계B 실제Unity1회가 진행 중이고 같은 ask는answered다. 계약/고정입력/기동 ui-kit-unity-import-review-launch/, 검증자 쓰기 ui-kit-unity-import-review/. 구현 task_7c7829e6efb1 / ctx_8174e73332f5는 완료/정산/정확 pane 종료·근거109파일 고정, 제품 c19eaba78e928a3b98585f3fb4148640b651629c에 포함됐다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
 | 마감 Git 기준 | 정리 전 HEAD `ae7f403dfbd1e5f0b7af7ec61730fba032d3b4bf`, origin 일치·미커밋 제품0. 마감 기록 commit은 이 goal만 포함하며 최종 HEAD/origin/미커밋 목록은 `ui-kit-b1-review-launch/stop-git-final.json`에서 확인한다. `.backups` 산출물은 로컬 보존이며 Git push 대상이 아니다 |
@@ -185,7 +187,7 @@
 | PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범. 2026-10-13T09:29:28Z 병합, merge `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`(`lead-resume-astra/pr233-merged.json`) |
 | 리드 세션 / Run | 현재 `term_95ee6115-3eab-441a-8e7a-3020259818c1` / `run_79ffbf5c8612`(회신 `run:run_79ffbf5c8612`, consumer4), runtime `42f2ec42-f071-4796-bb5f-9b569877cebd`. 현재 Main `term_e2961048-266e-4503-b52b-dfb986d8c9b5`. 화면 GPT-6.1-Sol xhigh·문맥19%, backend unknown. 이전 Astra handle은 인계 기록이며 실행 권한이 아니다. 현재 진행 중 Opus Task/Dispatch는 같은 Run의 실제 live 시도와 대조해 유지한다 |
 | 기록 보존 | `013f37ef`을 새 branch의 `c9c34b41`로 옮겨 push했다. 옛 branch에 최신 main을 받은 merge head `857dae52`와 새 head의 tree가 같다(diff exit 0). 옛 branch는 삭제하지 않았다 |
-| 작업자·실행 자원 | 현재 Art리드1개와 새 독립 검증자1개다. 구현자는 정산·종료됐다. 최초 import1회12:51:26.5405497Z/exit0/170.008425초와 자기 자원 반환은 과거 완료 근거이며 검증 허가로 재사용하지 않는다. 현재 Art 검증 실행/허가/예약0, 공식 ask pending. Core/Content/Rules/World는 Art→World→Content 실제 반환 순서에 동의했고 World 새 ask도 보류 중이다. 최종 실행창은 인수한 리드가 새 자원 관측과 같은 질문의 공식 reply로 연다 |
+| 작업자·실행 자원 | 현재 Art리드1개와 독립 검증자1개, 구현자는 정산·종료됐다. Art 검증 실제1회 기동14:39:47.837Z/PID32424/출생14:39:47.8397590Z, runtime stopAt15:09:47.837Z/총반환Deadline15:24:01.4577569Z다. 종료·반환 미수령, Art창예약1. 기존 실행과 달리 이 새 raw/unity-run-1/unity-start.json을 근거로 한다. Art→World→Content 실제 반환 순서를 유지하고 Core WSL은 메인 지시의 자체fresh6GiB 조건으로 병행 가능하다 |
 | Unity·화면 조작 | 사용자 지시(메인 채팅 전달) 원문 「그리고 만약에 MCP 연결이나 컴퓨터 조작관련 행동이 필요하면 Codex CLI가 아닌 Codex Desktop을 통한 GPT Astra한테 명령하면 대신 조작 잘 해줄거야, 권한 최대한 자율로 줄게」. Art가 UI 창 PR에서 Unity를 열 때 쓸 수 있다. 큰 실행 전 메모리 4GB 원시와 다른 리드 알림은 그대로다 |
 | 남은 결정·준비 | 구현자 최종 보고·worker_done 정산과 새 Opus 독립 검증. import 실행창은 실제 반환했다. MCP/Desktop이 필요하면 쓰기 전 메인 시트·시각 지정. 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함). 현재 Content 회신 주소 `run:run_b680cd89da9a`는 재사용 전 현재 상태와 대조한다 |
 
@@ -487,3 +489,11 @@
 - 현재 Art 중량실행/예약/Unity허가0이다. 같은 ask를 pending으로 유지하며 status msg_8245728b9356는 공식reply/release가 아니다. 최신4파트회신과 직전fresh관문 뒤만 같은질문에정확UTC를reply한다. 필수실제검증/독립판정/운영3조건최종판정은 아직이다.
 
 - 네 파트 충돌없음 회신이 모인 뒤 리드 실행 전 관문(13:54:13Z)에서 기존165고정입력/제품차이0·tracked변경0·물리/commit4GiB/Unity0/lock없음은 확인했으나, 새 UiKitImportTests.cs의 현재hash가 검증자 실행manifest와 달라 **공식reply/실행허가를 보류**했다. 원시 ui-kit-unity-import-review-launch/pre-release-resource-gate.json(pass=false). 검증자에게 같은ask유지·변경이유/최종hash·쓰기종료/명단일치를 요청했고 제품/고정입력 회귀나 실제시험 실패로 단정하지 않는다. 준비입력 일치 뒤fresh관문을 다시 확인한다.
+
+### 05 - Sol 리드 재개·독립 검증 실제 실행 — 2026-10-14
+
+- 같은 대화 Sol xhigh 재개와 같은 Run consumer4 인수/READY 뒤, 최종5파일 size/hash 일치·fresh14:37:37Z 물리15663521792/commit32937422848bytes·Unity0/lock없음·정확버전/hash/revision·tracked0을 확인했다. ui-kit-unity-import-review-launch/pre-release-final-input-and-resource-gate-sol.json, 전체 보호 감사 재반복/새하네스0이다.
+- 공식 ask msg_238f97710a12에 reply msg_08b1f6a32b89로 최대1회/총45분/첫10분기동/runtime1800초를 허용했고 시연 우선 추가 기준도 함께 전달했다. Start14:39:01.4577569Z/StopNew14:49:01.4577569Z/Deadline15:24:01.4577569Z. 원시 unity-run-1-official-release-sol.json의 question.status=answered/duplicate=false/consumer4다.
+- 실제 시작 status msg_f6bd595fc921와 owner raw/unity-run-1/unity-start.json을 대조했다. 14:39:47.837Z/PID32424/출생14:39:47.8397590Z·정확 프로젝트/Unity·그래픽 활성batchmode·신규UiKitImportTests만이다. timeout stopAt15:09:47.837Z. 실제 종료·반환·XML시험 결과·독립 판정은 아직 미수령이다.
+- 네 파트/메인에 허용과 실제시작을 각각 알렸으며 Art→World→Content 실제 반환 순서를 유지한다. Core WSL병행/6GiB 조건을 메인 msg_687aa38999f1에 따라 전달했다. notification receipt와 원시 core-priority-and-unity-actual-start.json을 launch 폴더에 보존한다.
+- **운영 미준수 O-LEAD-01**: 직전 delivery_6e6069e08e83은 신원 일치 빈 heartbeat1개였다. ORCA의 heartbeat-only 즉시 턴 종료 규칙을 따르지 않고 같은 ask의 남은 공식 답/자원 알림을 이 턴에 완료했다. pre-release-inbox-sol.json·sol-resume-context.md에 공개했고 메인 msg_6950befea5fe로도 알렸다. 이를 제품 성공이나 독립 통과로 바꾸지 않으며 최신 시연 우선 기준에 따라 운영 공개 항목으로 유지한다.
