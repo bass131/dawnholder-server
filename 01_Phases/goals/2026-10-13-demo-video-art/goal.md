@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **범위 승인(2026-10-13), 2026-10-14 재부팅 뒤 같은 목표 재개. 시범 PR233은 병합됐고 사용자는 브라운 B1을 선택했다. 전체 키트 B1은 새 Opus 강 독립 재검증에서 기술 PASS다. 원형 아이콘 남색 잔여 ART-UI-04를 해소했고 ART-UI-01/02/03을 보존했다. 구현자·검증자는 모두 정산·종료했다. 구현자의 heartbeat 간격 초과 OPS-1은 운영 처리에 대한 메인 판단이 남고, 사용자 미관 확인·메인 페이지 갱신·Unity 적용은 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-13), 2026-10-14 재부팅 뒤 같은 목표 재개. 시범 PR233은 병합됐고 사용자는 브라운 B1을 선택했다. 전체 키트 B1은 새 Opus 강 독립 재검증에서 기술 PASS다. 원형 아이콘 남색 잔여 ART-UI-04를 해소했고 ART-UI-01/02/03을 보존했다. 구현자·검증자는 모두 정산·종료했다. 메인은 R-2 대조 뒤 PASS를 수령했고, OPS-1은 이번 구현 Task에 한해 제품 판정 차단에서 분리했다(메인 결정, 소급 면책 아님). Art는 메인의 페이지 갱신·사용자 미관 확인까지 대기한다. Unity 적용은 그 뒤 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Art 리드(`[Art 리드 Astra]`, 2026-10-13 중간 재개부터). 이전 리드는 `[Art 리드 Opus]`였다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며, 메인이 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 현재 pane을 닫고 새 목표에는 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -158,7 +158,7 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 메인이 판정 원문과 R-2 표본을 확인하고 B1 페이지·사용자 미관 확인으로 이어간다. OPS-1 운영 처리 판단을 함께 요청한다. Unity 적용은 그 뒤 별도 계약·공유 실행 조율로 진행하며 현재 큰 실행 예약은 없다 |
+| 다음 첫 일 | 메인 msg_df1f8f922ffd의 R-2 대조·PASS 수령·OPS-1 Task 한정 분리 결정을 기록했다. 메인이 수정본 preview로 B1 페이지를 갱신하고 사용자 미관 확인(D5 포함)을 받을 때까지 Art는 대기한다. 큰 실행·예약을 새로 만들지 않는다. Unity 적용은 그 뒤 별도 단계다 |
 | 현재 Task·Dispatch | 활성 작업자 없음. 강 독립검증 task_66e572cca63c/ctx_0a2ade33e4ae는 11:21:33Z msg_24f65e7106ea로 succeeded·기술 PASS, release 뒤 정확 pane 종료·ptyKilled=true다. 검증 모델 claude-opus-5-5/화면Opus5.5xhigh/ClaudeCode2.1.299/backendunknown. 원문 ui-kit-b1-ring-review/verdict.md(SHA256 203ab425ec60f8083344375b1196a4e1ccee031fbf401243a3bd6713c618c00c), 완료 검증 폴더4550파일 보존. 대상구현task_079ccb62b3dd/ctx_a21d2ab41644의2140파일도 불변이다. 기동·정산·감사 원시는 ui-kit-b1-ring-review-launch/ |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
@@ -363,10 +363,18 @@
 - 실제 사본 b1 기본·명시 진입2회(Node24.15.0→Windows PS5.1.26100.9444)가 exit0이며 두 run과 납품본46파일의 byte/hash가 모두 같다. 별도 진입18건(정상2·거부16)도 기대 결과이며, 보호10패키지7109파일·고정입력30의 시작끝 차이는0이다. 독립 decoder를 System.Drawing 10파일로 대조하고 정수 source-over oracle을 원본 navy PNG 전픽셀로 먼저 검증했다. 제품 계산을 기대값으로 복제하지 않았다.
 - 두 IconBase만 바뀌고 나머지31조각 byte·33개 alpha·원본 ring 레이어·disc 기하/AA·원판 밖 RGBA를 보존했다. ring alpha1~31 아래와 ring 없는 AA의 남색 잔존은0이며, 남은 파랑175/433은 원본 별 장식 자체 색이다. 실물 ring alpha255 분모는0이므로 공집합 조건이며, 별도 fixture의 불투명 보호와 구분한다. underlay B1−B0 차이의 합은 채널별0·clipping0, 최종 합성 평균 변화는 별도로 계측했다. 미리보기12장·글자205·최소 버튼 여백11 UI를 확인했다.
 - 같은 기존 B1 시험은 전104/0→후104/5다. 실패5개는 리드 설계 정정으로 폐기된 옛 최종 RGBA/mask/최종 합 단정(a)이며 원문·동일 명령·입력과 이유가 판정에 있다. 새 제품 회귀나 미분류 실패로 숨기지 않았다. R-2 표본은 `raw/iconbase-layers-delivered.json`, `raw/legacy-tests-2.json`, `raw/previews-delivered.json`과 `raw/commands/build-review-default.json`이다.
-- **OPS-1 운영 결손은 남는다.** 구현 세션 heartbeat 396.468/579/349초(5분 초과3구간)를 기술 판정과 분리했으며 메인 운영 판단이 필요하다. 소급 면책·제품 실패 횟수 추가로 바꾸지 않는다. D1~D4(분기 결합·줄 가독성·증거 탐색·기존 GDI 실패 수명)는 비차단 후속 후보, D5(별 중심 남색)는 사용자 미관 확인 대상이다. O1 중간 실패 주입·다른 PC 이식·Unity 실화면은 미실행이다.
+- **OPS-1 운영 결손은 남는다.** 구현 세션 heartbeat 396.468/579/349초(5분 초과3구간)를 기술 판정과 분리했고, 메인 판단 요청은 아래 결정으로 이어졌다. 소급 면책·제품 실패 횟수 추가로 바꾸지 않는다. D1~D4(분기 결합·줄 가독성·증거 탐색·기존 GDI 실패 수명)는 비차단 후속 후보, D5(별 중심 남색)는 사용자 미관 확인 대상이다. O1 중간 실패 주입·다른 PC 이식·Unity 실화면은 미실행이다.
 - 리드는96 비교·잔여 원인 이미지를 직접 열어 점/띠 제거와 원래 별 중심 색의 위치를 표본 확인했다. 종료 직전 mailbox는 같은 delivery 재전달이었다. completed/succeeded/settled 확인→release retained/external_terminal→정확 검증 pane close ptyKilled=true→Art 부모1·reclaimable0을 확인했다. 완료 검증 폴더4550파일(명단4547 hash+명단 자체1+선언된 늦은 파일2)은 리드의 전수 size/hash·명단 대조 차이0이다(`ui-kit-b1-ring-review-launch/lead-review-files-audit.json`). 제품·시험·판정 원문은 리드가 수정하지 않았다.
+
+### OPS-1 메인 결정·사용자 미관 확인 대기 — 2026-10-14
+
+- 메인 `msg_df1f8f922ffd`(11:30:03Z)의 발신 handle·incarnation을 현재 main 세션과 대조했다. **메인 판단이며 사용자 결정이 아니다.** 메인은 판정 SHA256 일치, 결론 줄·기계 판독 표·결론 절, `raw/iconbase-layers-delivered.json`의 실패0·검사51건을 직접 대조했다고 보고했고 B1 수정의 기술 PASS를 수령했다.
+- 적용 결정: 구현 `task_079ccb62b3dd`의 heartbeat 5분 초과3구간만 제품 판정 통과 차단에서 뺀다. 근거는 진행 보고 절차의 이탈이며 제품 파일·시험·보호 hash에 영향을 준 증거가 없고, 지나간 간격을 수정해 없앨 수 없다는 것이다. 판정의 「기술 차단 아님·소급 면책 아님」과 운영 이탈 원문은 그대로 보존한다. 맥락 메모 부재·규칙 원문 누락·메모와 결과 불일치·제품 규칙 위반 등 다른 차단사유에는 적용하지 않는다.
+- 메인은 오늘 Content `task_5874e882fad9`에 이어 두 번째 발생이라고 보고했다. liveness 집계 helper의 정산 절차 편입은 메인이 규칙 정본 담당에 넘길 후속 후보로만 둔다. Art는 현재 절차를 바꾸지 않는다.
+- 메인이 `ui-kit-b1-ring-fix/package/kit/preview`로 UI 키트 페이지를 갱신하고 사용자 미관 확인(D5 포함)을 받는다. 그때까지 Art는 대기하며 새 큰 실행·예약을 만들지 않는다. Unity 적용은 이후 별도 단계다.
 
 ## 다음 계획 후보
 
 - 거점 맵형: 승인 계획의 첫 확장 후보다. 10-21 판단 때 이 goal 안으로 넣을지 메인에 올린다.
 - 피해 숫자 색·크기 강조: 전투 표시 코드라 소유 파트와 맞춘 뒤 정한다. 기본은 하지 않는다.
+- B1 검증의 D1~D4 설계 관찰과 liveness 집계 helper의 정산 절차 편입: 비차단 후속 후보만 보존한다. helper는 메인 msg_df1f8f922ffd에 따라 규칙 정본 담당에게 전달할 후보이며 현재 절차·제품을 수정하거나 다음 작업을 자동 발행하지 않는다.
