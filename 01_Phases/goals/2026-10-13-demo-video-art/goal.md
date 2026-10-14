@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **같은 승인 목표 진행. 시범 PR233 병합·B1 기술 PASS/사용자 미관 A 승인 뒤 승인 PNG33의 Unity 반입 구현71파일을 완료·정산했다. Sol xhigh 리드가 같은 Run consumer4를 인수하고 신규 Opus task_556d1434ef53 / ctx_5d45be726951에 Unity1회를 허용했다. 실제14:39:47.837Z~14:41:26.974Z/PID32424/exit0/99.137초, worker와 리드의 자기 자원 반환을 확인했다. Art 실행0/창예약0으로 네 파트에 조기 반환 통지했고 최종 독립 판정은 대기다. Art→World→Content Unity 순서와 Core WSL의 메인 별도6GiB 병행 조건을 유지한다. 시연 우선 기준과 제품/독립검증 경계를 유지한다. 이어갈 곳은 [재개 지점](#재개-지점)이며 다음 goal은 자동 시작하지 않는다.**
+상태: **같은 승인 목표 진행. 05 - 승인 UI 조각 Unity 반입은 강 독립 PASS(실제203/203·제품결함0)다. 신규 Opus 검증자를 정산·정확 pane 종료했고 메인 허용으로 art-active 설정1파일을 기동 전 HEAD byte/hash로 복원했다. 실제14:39:47.837Z~14:41:26.974Z/exit0/99.137초와 자원 반환을 확인했다. Art 실행0/예약0. 네 창·조합용 프리팹·표시 helper 적용은 아직 미실행이며 후속 계약으로 남는다. 이 반입 단계만으로 UI 창 PR 완료/병합 요청을 하지 않는다. Sol xhigh 리드가 같은 Run consumer4를 유지한다. 시연 우선 기준·Art→World→Content Unity 순서·Core WSL 별도6GiB 조건을 유지한다. 현재 goal 종료점 뒤 정리하고 멈추며 다음 goal은 자동 시작하지 않는다.**
 
 - 담당: Art 리드(`[Art 리드 Sol]`, 2026-10-14 Sol xhigh 같은 대화 재개부터). 이전 리드 계열은 Opus·Astra였다. 사용자 결정 `msg_d4146a180138`을 적용했고 현재 화면/turn_context는 gpt-6.1-sol xhigh, 실제 backend unknown이다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며 메인이 R-8로 새 목표의 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -171,6 +171,10 @@
 - 현재 Unity 반입 독립 판정은 미수령이다. 새 판정의 동작 무관 지적은 번호·근거·기능 영향 없음의 이유를 이 목록에 옮긴다. 이미 해결한 과거 결함을 새 미해결 차단으로 되살리지 않는다. 운영 미준수는 해당 판정과 원시를 보존하며 기능 결함과 구분한다.
 - 시연 장면 밖 새 후보와 운영 절차 추가 정비는 2026-10-28 동결 뒤 판단한다.
 - **AD-01 - Unity inference 패키지의 analytics define 자동 정리 원인 확인**: 실제 EditorAnalytics값은 미측정이다. 동결 뒤 원인 확정과 프로젝트 범위 패키지 설정 정비 여부를 판단한다. 지금 패키지/설정을 바꾸지 않는다. 메인 msg_05a8ad796892는 art-active의 자동변경1줄만 검증자 종료 뒤 HEAD로 복원하도록 좁게 허용했고 Content 사용자 파일은 이 처리에서 제외했다.
+- **관찰 1 - border 값의 문서/spec/meta 3중 기록**: 현재는 승인값과 일치한다. README에서 원천과 대조 책임을 한 줄로 설명할 후보이며 기능 영향 없음·비차단이다.
+- **관찰 2 - README의 기계 절대경로**: 42·52·62·72·82행의 로컬 생성 경로를 hash/근거 상대경로로 표현할 후보다. 현재 파일/렌더 동작 영향 없음·비차단이다.
+- **관찰 3 - gitignore된 원천 경로 설명**: README30행의 로컬 kit 원천은 다른 clone에 없고 현재31행hash로 대조한다. 이 한계를 명시할 후보이며 기능 영향 없음·비차단이다.
+- **관찰 4 - border/meta 변경 주체·절차 설명**: Art가 원천 spec부터 importer까지 맞추고 시험으로 확인하는 절차 문장 후보다. 현재 importer값은 정상이며 기능 영향 없음·비차단이다. 관찰1~4의 원문/근거는 ui-kit-unity-import-review/verdict.md에 고정했다.
 
 ## 재개 지점
 
@@ -180,8 +184,8 @@
 |---|---|
 | Sol 전환 완료 관측 | 메인 재개 msg_55e9fff98129 뒤 같은 대화 ID 01a13573-b029-7f30-b2cf-f2e8d014cc3d를 새 handle term_95ee6115-3eab-441a-8e7a-3020259818c1/incarnation13d22f59-debb-4db8-a8f6-757eda02fc8c에서 이어간다. 첫 consumer_fenced 뒤 run-use로 같은 Run consumer4 인수·check0건, 화면 GPT-6.1-Sol xhigh/문맥19%·최근 turn_context 모델/effort 일치·backendunknown을 확인했다. READY msg_beadcdacb7f2 송신. 기존 Opus 검증자/ask 유지, 원시는 sol-resume-context.md·sol-resume-screen.json·sol-ready-receipt.json |
 | 전환 뒤 첫 행동 결과 | READY msg_beadcdacb7f2 뒤 최종5파일/새 자원 관문을 통과했고 공식 reply msg_08b1f6a32b89에 시연 우선 추가 지침과 기존 runner 실행창을 함께 전달했다. Start14:39:01.4577569Z/StopNew14:49:01.4577569Z/Deadline15:24:01.4577569Z, 최대1회/총45분/runtime1800초. 실제 시작14:39:47.837Z는 허용창 안이다. 새 하네스·재준비 장치 추가0, 리드 제품/시험/runner쓰기0 |
-| 다음 첫 일 | 실제 Unity 종료·자기 자원 반환은 확인/통지 완료다. 현재 Opus의 worker_done·판정 원문/실제 결과를 수령해 검토하고 정산·정확 pane 종료한다. Unity exit0만으로 시험 PASS를 쓰지 않는다. 최신 시연 우선 모드로 동작 무관 지적과 운영 미준수를 공개 기록하며 실제 실행·보존 경계는 유지한다. 같은 산출물 재검증 최대1회 뒤 차단은 메인 결정이다 |
-| 현재 Task·Dispatch | 독립 검증 task_556d1434ef53 / ctx_5d45be726951, term_608e0815-3810-4c6e-abd0-bf3b8b00c2c3 / incarnation cd6326a2-ca97-4f4e-95c0-3b88613e4403. 최초 claude --model claude-opus-5-5·화면 Opus5.5 xhigh/ClaudeCode2.1.299, backendunknown. 단계B 실제Unity1회 종료·반환, 최종 판정/worker_done 대기이며 같은 ask는answered다. 계약/고정입력/기동 ui-kit-unity-import-review-launch/, 검증자 쓰기 ui-kit-unity-import-review/. 구현 task_7c7829e6efb1 / ctx_8174e73332f5는 완료/정산/정확 pane 종료·근거109파일 고정, 제품 c19eaba78e928a3b98585f3fb4148640b651629c에 포함됐다 |
+| 다음 첫 일 | 05반입 강PASS 원문/실제XML/렌더 대조군을 검토했고 검증자 정산·종료와 설정HEAD복원이 끝났다. 같은 UI창PR의 후속 네 창·조합용 프리팹·표시helper 계약 범위 초안을 준비해 메인이 기존승인과 대조한다. 반입만으로 PR생성/병합요청하지 않는다. 새 제품작업자/Unity허가는 후속계약 경계 확인 뒤이며 현재 추가중량예약0이다 |
+| 현재 Task·Dispatch | 05검증 task_556d1434ef53 / ctx_5d45be726951은 worker_done msg_8383db61e140/succeeded·PASS로 정산됐다. worker-release retained/external 뒤 정확 term_608e0815-3810-4c6e-abd0-bf3b8b00c2c3 pane종료/ptyKilledtrue·reclaimable0. 판정SHA256a4f8aea6cc0d0f32b3c31d3c21323caa927914f25df6b7617f6ddda45113376e, 근거437파일 고정. 구현 task_7c7829e6efb1 / ctx_8174e73332f5도 이미완료·종료됐다. 활성하위Task없고 다음계약은 미발행이다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
 | 마감 Git 기준 | 정리 전 HEAD `ae7f403dfbd1e5f0b7af7ec61730fba032d3b4bf`, origin 일치·미커밋 제품0. 마감 기록 commit은 이 goal만 포함하며 최종 HEAD/origin/미커밋 목록은 `ui-kit-b1-review-launch/stop-git-final.json`에서 확인한다. `.backups` 산출물은 로컬 보존이며 Git push 대상이 아니다 |
@@ -519,3 +523,13 @@
 - 메인 msg_05a8ad796892는 승인 밤샘 위임 안의 운영 판단(새 사용자 결정 아님)으로 Art 리드가 art-active ProjectSettings.asset1개만 검증자 정산·종료 뒤 또는 더 읽지 않음 확인 뒤 HEAD로 복원하도록 지정했다. 복원 크기21030bytes/SHA256b04c1808f226ffc1e740e294328be8bdf0be13c6a61f2dcc70c42ac2cd92cf81·git status 해당파일없음을 확인하며 기존HEAD/현재본/diff원시는 보존한다. 검증자 설정쓰기 금지와 Content 사용자파일 보존은 유지한다.
 - 이 실행부작용은 시연 우선 기준의 「운영 미준수·부작용」에 공개하며 제품 판정을 막지 않는다는 메인 기준을 현재 검증자에게 msg_cd9746650e78로 전달했다.203/203XML과 최종독립판정을 받고 복원은 아직 수행하지 않았다. 원시 main-settings-restore-authorization-and-core-preparation.json·reviewer-settings-main-decision-notify.json.
 - Core 새 Sol Run generation15/currenthandle을 대조했고 준비 알림msg_a3b6f46b9dc9에 Art 실제반환/예약0·추가중량창0을 msg_5ad1cc064459로 회신했다. Core WSL fresh6GiB/commit4GiB 조건과 Unity순서를 구분한다.
+
+### 05 - 강 독립 PASS 정산·설정 정확 복원 — 2026-10-14
+
+- worker_done msg_8383db61e140의 현재from/Task/Dispatch/succeeded와 실제worker-show completed/settled를 대조했다. 판정 원문 verdict.md 전문(잘린 중간은 별도읽기)과 context의 최종준비/실행 절, XML203/203Passed, 실제uGUI mesh/GPU관찰·border0/halfborder/preserveAspect-off 대조군 코드를 읽었다. Panel_Default 승인/대조군 모서리 표본도 직접 확인했다. 강PASS·제품결함0, 최종Canvas/카메라합성·네창·Play·DB·실게임·CI는 이 판정에 포함하지 않는다.
+- 판정SHA256a4f8aea6cc0d0f32b3c31d3c21323caa927914f25df6b7617f6ddda45113376e, 원문은 메인에게 전달할 ui-kit-unity-import-review/verdict.md다.433자기명단entry size/hash불일치0, 뒤로 생긴3파일은 완료전check/worker_done receipt/송신시각이며 자기명단을 포함해 실제437파일을 종료뒤고정했다. reviewer-outputs-frozen-after-close.json·reviewer-self-manifest-after-close-audit.json.
+- worker-release receipt28f3f56e retained/external뒤 정확paneclose ace427da/ptyKilledtrue, reclaimable0이다. UI-only draft는 제출된 사용자지시가 아니어서 종료를 막지 않았다. 기존세션재사용0이다.
+- 메인msg_05a8ad796892의 정확1파일 보존권한으로 검증자 종료뒤14:55:24Z art-active ProjectSettings.asset을 gitHEAD로 복원했다.21030bytes/SHA256b04c1808f226ffc1e740e294328be8bdf0be13c6a61f2dcc70c42ac2cd92cf81·gitstatus해당파일없음·pass=true. projectsettings-exact-head-restored.json. 기존HEAD/현재본/diff삭제0, Contentcheckout쓰기0, Unity재실행0이다. 원래판정은 복원전상태로 고정하고 이 보충기록이 최신처리를 설명한다.
+- 운영간격 원문은 helper558초와 worker신호전수628초/heartbeat955초를 구분한다. 검증자는 리드status를 worker신호에서 뺐고 공식blocking제외357/466초를 별도기록했다. 현재 사용자시연우선 결정이 운영공개만으로 처리하므로 이 수치에 재승인/제품차단을 만들지 않는다. 금지구간실행0·측정위장/항상통과시험0은 독립판정근거다.
+- **부작용 S2**: UnityTestFramework가 저장소밖 C:/Users/bass1/AppData/LocalLow/DefaultCompany/03_Client/TestResults.xml(생성2026-06-06T10:03:09Z)을14:41:22.796Z에 자동 덮었다. 리드도현재길이250141bytes/mtime를대조했다. 이전내용은이번근거에보존되지않아현재산출물만으로복구할수없다. 저위험으로독립판정이공개했고메인에별도알린다. 임의복원/삭제/외부쓰기추가0이다.
+- 완료전check 원시는 옛hold2건이며14:51:13Z에보낸메인복원판정전달은원문판정에반영돼있지않다. 원래판정의S1결정요청·운영간격옛3조건은현재메인좁은복원결정/사용자시연우선기준과구분해보충했다. 원문판정을사후수정하거나완료세션을다시쓰기위해열지않는다.
