@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **범위 승인(2026-10-13), 2026-10-14 재부팅 뒤 같은 목표 재개. 시범 PR233은 병합됐다. 브라운 B1 키트는 강 독립 재검증 기술 PASS·사용자 미관 A 승인, ART-UI-04 해소·01/02/03 보존이며 해당 세션들은 정산·종료했다. 신규 Astra의 Unity 반입 준비가 끝났고, 선행 자원 반환·네 파트 조율·직전 자원 관문을 확인해12:44:48Z 단계 B를 release했다. 최초 import1회·새기동 마감12:54:48Z·정리 포함 반환 마감13:29:48Z이며 실제 Unity가12:48:36.5340750Z/PID9208로 시작됐다. 종료·정리·반환은 아직이다. 운영 간격은 오늘 한정 메인 기준의3조건을 원시로 판정한다. PR 생성·병합 승인은 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-13), 2026-10-14 재부팅 뒤 같은 목표 재개. 시범 PR233은 병합됐다. 브라운 B1 키트는 강 독립 재검증 기술 PASS·사용자 미관 A 승인, ART-UI-04 해소·01/02/03 보존이며 해당 세션들은 정산·종료했다. 신규 Astra의 Unity 반입 준비가 끝났고, 선행 자원 반환·네 파트 조율·직전 자원 관문을 확인해12:44:48Z 단계 B를 release했다. 최초 import1회·새기동 마감12:54:48Z·정리 포함 반환 마감13:29:48Z의 제한 안에서 실제1회가12:48:36.5340750Z~12:51:26.5405497Z/PID9208/exit0으로 끝났다. 프로세스·잠금 반환을 확인했고 현재 큰 실행/예약0, 구현자 최종 감사·보고를 기다린다. 운영 간격은 오늘 한정 메인 기준의3조건을 원시로 판정한다. PR 생성·병합 승인은 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Art 리드(`[Art 리드 Astra]`, 2026-10-13 중간 재개부터). 이전 리드는 `[Art 리드 Opus]`였다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며, 메인이 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 현재 pane을 닫고 새 목표에는 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -161,7 +161,7 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 단계 B를 같은 공식 ask msg_1839510397ca에 reply msg_2066155df0cb로 release했다. UTC Start12:44:48Z / StopNew12:54:48Z / Deadline13:29:48Z, 최초 import 정확1회·Unity timeout1800초 이내·정리 포함45분 창이다. 네 파트 충돌 없음과 직전 물리/commit 각4GiB·Unity0·정확lock없음을 확인했고 작업자도 시작 전 재측정한다. 실제 Unity가12:48:36.5340750Z/PID9208로 시작돼 리드가 정확 프로세스를 대조하고 메인·네 파트에 알렸다. 종료/PID·exit·정리·반환을 받으면 즉시 전달한다. heartbeat327초는 메인 msg_f86666b57824의3조건을 최종 감사에서 대조한다 |
+| 다음 첫 일 | 단계 B를 같은 공식 ask msg_1839510397ca에 reply msg_2066155df0cb로 release했다. UTC Start12:44:48Z / StopNew12:54:48Z / Deadline13:29:48Z, 최초 import 정확1회·Unity timeout1800초 이내·정리 포함45분 창이다. 네 파트 충돌 없음과 직전 물리/commit 각4GiB·Unity0·정확lock없음을 확인했고 작업자도 시작 전 재측정한다. 실제1회는12:51:26.5405497Z exit0으로 종료·반환됐고 메인·네 파트에 알렸다. 현재 큰 실행/예약0이며 구현자의 최종 감사·보고·worker_done을 받은 뒤 정산하고 새 독립 검증을 준비한다. heartbeat327초는 메인 msg_f86666b57824의3조건을 최종 감사에서 대조한다 |
 | 현재 Task·Dispatch | task_7c7829e6efb1 / ctx_8174e73332f5, 새 구현자 term_b68db577-b03d-4a53-9eb4-bf8252ef1392 / incarnation 7fe2888d-ed9e-46a0-9e14-721bcc7fa05d. 요청·최초명령·화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. 11:57:00Z 공식 접수는 turn_start_unobserved였고, 조건부 Enter 1회 뒤 11:58:04.476Z 제출 전문109개 비어 있지 않은 줄 일치·Working·agent_status live를 확인했다. 원시는 ui-kit-unity-import-launch/, 구현 근거는 ui-kit-unity-import/다. 현재 기존 계약1판의 단계 B만 release했다. 이전 B1 검증 task_66e572cca63c/ctx_0a2ade33e4ae와 구현 task_079ccb62b3dd/ctx_a21d2ab41644는 모두 정산·pane 종료했고 각각4550/2140파일을 보존하며 재사용하지 않는다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
@@ -171,9 +171,9 @@
 | PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범. 2026-10-13T09:29:28Z 병합, merge `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`(`lead-resume-astra/pr233-merged.json`) |
 | 리드 세션 / Run | 현재 `term_bf688225-7a92-4070-af46-81d0858f6ab3` / `run_79ffbf5c8612`(회신 `run:run_79ffbf5c8612`, consumer3), runtime `42f2ec42-f071-4796-bb5f-9b569877cebd`. 현재 Main `term_e2961048-266e-4503-b52b-dfb986d8c9b5`. 화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. 이전 handle·Task/Dispatch는 기록이며 실행 권한이 아니다 |
 | 기록 보존 | `013f37ef`을 새 branch의 `c9c34b41`로 옮겨 push했다. 옛 branch에 최신 main을 받은 merge head `857dae52`와 새 head의 tree가 같다(diff exit 0). 옛 branch는 삭제하지 않았다 |
-| 작업자·실행 자원 | Art리드1개와 새 구현자1개. 최초 import1회가12:48:36.5340750Z/PID9208로 실제 시작됐고 종료·반환은 아직이다. UTC12:44:48~13:29:48Z, 새기동 마감12:54:48Z. 리드 직전 원시 물리여유17,677,271,040/commit여유34,901,520,384bytes·Unity0·정확lock없음이며 작업자도 직전 재측정한다. Core SQL·Content batch 실제 반환과 네 파트 충돌 없음이 근거이며 기한 도래를 반환으로 보지 않는다. 후속 실행은 실제 반환 뒤 새로 조율한다 |
+| 작업자·실행 자원 | Art리드1개와 새 구현자1개. 최초 import1회가12:51:26.5405497Z/exit0/170.008425초로 끝났고12:53Z 리드도 Unity0·lock없음·기록 자식187개 정확생존0을 확인했다. 현재 큰 실행/예약0이며 추가실행허가0이다. UTC12:44:48~13:29:48Z, 새기동 마감12:54:48Z. 리드 직전 원시 물리여유17,677,271,040/commit여유34,901,520,384bytes·Unity0·정확lock없음이며 작업자도 직전 재측정한다. Core SQL·Content batch 실제 반환과 네 파트 충돌 없음이 근거이며 기한 도래를 반환으로 보지 않는다. 후속 실행은 실제 반환 뒤 새로 조율한다 |
 | Unity·화면 조작 | 사용자 지시(메인 채팅 전달) 원문 「그리고 만약에 MCP 연결이나 컴퓨터 조작관련 행동이 필요하면 Codex CLI가 아닌 Codex Desktop을 통한 GPT Astra한테 명령하면 대신 조작 잘 해줄거야, 권한 최대한 자율로 줄게」. Art가 UI 창 PR에서 Unity를 열 때 쓸 수 있다. 큰 실행 전 메모리 4GB 원시와 다른 리드 알림은 그대로다 |
-| 남은 결정·준비 | 현재 import 실제 시작·종료·자원 반환, 구현 보고와 새 Opus 독립 검증. MCP/Desktop이 필요하면 쓰기 전 메인 시트·시각 지정. 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함). 현재 Content 회신 주소 `run:run_b680cd89da9a`는 재사용 전 현재 상태와 대조한다 |
+| 남은 결정·준비 | 구현자 최종 보고·worker_done 정산과 새 Opus 독립 검증. import 실행창은 실제 반환했다. MCP/Desktop이 필요하면 쓰기 전 메인 시트·시각 지정. 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함). 현재 Content 회신 주소 `run:run_b680cd89da9a`는 재사용 전 현재 상태와 대조한다 |
 
 **남은 순서**: 비교 글 → 무료 시범 → 시범 PR → UI 창 PR → 효과 PR → 10-21 판단 → 발판·지형 PR → 마지막 손질 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
@@ -435,6 +435,12 @@
 - msg_7de9271c56e0의 현재 발신/Task/Dispatch를 대조하고 raw/unity-start.json·gate-before-unity.json·unity-command.json을 읽었다. 실제 시작12:48:36.5340750Z, PID9208/부모19968/출생12:48:36.542996Z, 정확Unity6000.6.4f1 -batchmode -nographics -quit와 art-active/03_Client다. 리드12:48:57.8698362Z 직접 프로세스 조회에서 같은 PID·출생·경로·명령의 살아 있는 Unity를 확인했다.
 - 작업자 기동직전12:48:36.4832336Z 물리여유16,917,090,304/commit여유34,665,283,584bytes, Editor0·lock없음·버전일치다. StopNew12:54:48Z 이전의 정확1회이며 timeout1800초·정리포함Deadline13:29:48Z를 유지한다. 이 실행은 최초import이며 독립Sprite/uGUI/실제창 검증은 아니다.
 - 메인·Core·Content·Rules·World에 실제 시작을 공유했다. 종료/exit·timeout·자기프로세스/잠금 정리·자원반환과 최종 보고를 기다린다. 원시는 ui-kit-unity-import-launch/ack-worker-preflight-time-error.json·lead-unity-start-observation.json과 구현자 raw 위3파일이다.
+### Unity 최초 반입 종료·실제 자원 반환 — 2026-10-14
+
+- 작업자 msg_ac109305ed95(12:52:28Z)의 현재 발신/Task/Dispatch를 대조했다. raw/unity-exit.json은 시작12:48:36.5340750Z→종료12:51:26.5405497Z, PID9208, exit0·timedOut=false·170.008425초다. source SHA256 51fcf28ab576e209be669b65f5a395508b3f8303929c257f17eb72bc1792a3d2. raw/process-return-before-cleanup.json은12:52:12.0739682Z 부모0·자기자식0·Unity계열0·정확lock없음이다. 강제종료나 lock삭제 없이 반환했다.
+- 리드12:53:03.8338243Z 실제 조회에서 Unity/PID9208없음·정확lock없음·기존03_Client tracked diff0을 확인했다. 물리여유16,258,015,232/commit여유33,633,816,576bytes는 당시 표본이다.12:53:38.6456733Z 기록 자식187개의 PID/출생시각을 전수 대조해 정확 생존0을 확인했다. 재사용PID5252와8680은 출생시각/프로세스명이 달라 건드리지 않았다. 원시는 ui-kit-unity-import-launch/lead-unity-return-gate.json·lead-unity-descendant-return-audit.json이다.
+- 메인·Core·Content·Rules·World에 실제 종료/자원반환·Art 중량실행/예약0·추가실행허가0을 알렸다. 다음 중량 실행은 해당 리드가 새로 조율한다. 구현자는 보존·제품 최종 감사와 보고만 마무리하며, 현재 상태를 worker_done/독립PASS/전체 UI 창 완료로 취급하지 않는다. 신규 Opus 검증은 아직 미기동·미예약이다.
+- 실제 import 소요시간은 측정됐으나 최고메모리 raw 값은 null로 미측정이다. 새 제품은 구현자 소유 untracked이며 리드는 goal만 기록한다. 완료 보고를 읽고 실제 diff와 보존·운영 간격 원시를 대조한 뒤 정산한다.
 ## 다음 계획 후보
 
 - 거점 맵형: 승인 계획의 첫 확장 후보다. 10-21 판단 때 이 goal 안으로 넣을지 메인에 올린다.
