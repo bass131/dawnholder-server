@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **범위 승인(2026-10-13), 2026-10-14 재부팅 뒤 같은 목표 재개. 시범 PR233은 병합됐다. 브라운 B1 키트는 강 독립 재검증 기술 PASS·사용자 미관 A 승인, ART-UI-04 해소·01/02/03 보존이며 해당 세션들은 정산·종료했다. 신규 Astra의 Unity 반입 준비가 끝났고, 선행 자원 반환·네 파트 조율·직전 자원 관문을 확인해12:44:48Z 단계 B를 release했다. 최초 import1회·새기동 마감12:54:48Z·정리 포함 반환 마감13:29:48Z의 제한 안에서 실제1회가12:48:36.5340750Z~12:51:26.5405497Z/PID9208/exit0으로 끝났다. 프로세스·잠금 반환을 확인했고 현재 큰 실행/예약0, 구현자 최종 감사·보고를 기다린다. 운영 간격은 오늘 한정 메인 기준의3조건을 원시로 판정한다. PR 생성·병합 승인은 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-13), 같은 목표 진행. 시범 PR233 병합·B1 기술 PASS/사용자 미관 A 승인 뒤, 승인 PNG33의 Unity 반입 구현71파일을 완료했다. 실제 import1회(12:48:36.5340750Z~12:51:26.5405497Z, exit0)와 자원 반환을 확인했고 구현 Task의 완료 보고/원문 SHA를 대조해 정산·정확 pane 종료했다. 실제 Sprite/uGUI·재import·대조군은 신규 Opus 강 독립 검증 단계다. 현재 Art 중량실행/예약0, Core WSL 실제 반환 뒤 다음 실행창을 새로 조율한다. 운영 간격은 메인 msg_f86666b57824의3조건과 공식 질문 대기 원시를 함께 판정한다. PR 생성·병합 승인은 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동 시작하지 않는다.**
 
 - 담당: Art 리드(`[Art 리드 Astra]`, 2026-10-13 중간 재개부터). 이전 리드는 `[Art 리드 Opus]`였다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며, 메인이 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 현재 pane을 닫고 새 목표에는 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -161,8 +161,8 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 단계 B를 같은 공식 ask msg_1839510397ca에 reply msg_2066155df0cb로 release했다. UTC Start12:44:48Z / StopNew12:54:48Z / Deadline13:29:48Z, 최초 import 정확1회·Unity timeout1800초 이내·정리 포함45분 창이다. 네 파트 충돌 없음과 직전 물리/commit 각4GiB·Unity0·정확lock없음을 확인했고 작업자도 시작 전 재측정한다. 실제1회는12:51:26.5405497Z exit0으로 종료·반환됐고 메인·네 파트에 알렸다. 현재 큰 실행/예약0이며 구현자의 최종 감사·보고·worker_done을 받은 뒤 정산하고 새 독립 검증을 준비한다. heartbeat327초는 메인 msg_f86666b57824의3조건을 최종 감사에서 대조한다 |
-| 현재 Task·Dispatch | task_7c7829e6efb1 / ctx_8174e73332f5, 새 구현자 term_b68db577-b03d-4a53-9eb4-bf8252ef1392 / incarnation 7fe2888d-ed9e-46a0-9e14-721bcc7fa05d. 요청·최초명령·화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. 11:57:00Z 공식 접수는 turn_start_unobserved였고, 조건부 Enter 1회 뒤 11:58:04.476Z 제출 전문109개 비어 있지 않은 줄 일치·Working·agent_status live를 확인했다. 원시는 ui-kit-unity-import-launch/, 구현 근거는 ui-kit-unity-import/다. 현재 기존 계약1판의 단계 B만 release했다. 이전 B1 검증 task_66e572cca63c/ctx_0a2ade33e4ae와 구현 task_079ccb62b3dd/ctx_a21d2ab41644는 모두 정산·pane 종료했고 각각4550/2140파일을 보존하며 재사용하지 않는다 |
+| 다음 첫 일 | 구현71파일·근거109파일의 쓰기 종료/고정과 기존 보호 hash를 확인했다. 새 Opus 강 검증 계약을 발행하고 UiKitImportTests 전체 실행·실제Sprite33·재import·uGUI화면/대조군을 확인한다. 준비는 Unity 밖에서 진행하며 Core WSL 실제 반환과 네 파트 새 조율·직전 물리/commit 각4GiB 관문 뒤만 공식 ask에 실행창을 reply한다. 현재 중량실행/예약0이다. 운영 helper raw327/558/312/353/357초·공식ask대기·heartbeat만466초를 구분해 메인 임시3조건 적용 여부를 독립 판정한다 |
+| 현재 Task·Dispatch | 구현 task_7c7829e6efb1 / ctx_8174e73332f5는 worker_done msg_d567b08576c2(13:05:56Z, succeeded) 수령·release·정확 pane 종료(ptyKilled=true), Art부모1·reclaimable0이다. 보고 SHA256 7e883019de23b59fc2f36c8233c941997de6ff65ed758a3a758b5ae2742eb9b4, 구현 근거 ui-kit-unity-import/109파일, 정산 ui-kit-unity-import-launch/, 새검증 발행 준비 ui-kit-unity-import-review-launch/다. 신규 검증 Task는 아직 미발행이며 이전 세션은 재사용하지 않는다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
 | 마감 Git 기준 | 정리 전 HEAD `ae7f403dfbd1e5f0b7af7ec61730fba032d3b4bf`, origin 일치·미커밋 제품0. 마감 기록 commit은 이 goal만 포함하며 최종 HEAD/origin/미커밋 목록은 `ui-kit-b1-review-launch/stop-git-final.json`에서 확인한다. `.backups` 산출물은 로컬 보존이며 Git push 대상이 아니다 |
@@ -446,3 +446,13 @@
 - 거점 맵형: 승인 계획의 첫 확장 후보다. 10-21 판단 때 이 goal 안으로 넣을지 메인에 올린다.
 - 피해 숫자 색·크기 강조: 전투 표시 코드라 소유 파트와 맞춘 뒤 정한다. 기본은 하지 않는다.
 - B1 검증의 D1~D4 설계 관찰과 liveness 집계 helper의 정산 절차 편입: 비차단 후속 후보만 보존한다. helper는 메인 msg_df1f8f922ffd에 따라 규칙 정본 담당에게 전달할 후보이며 현재 절차·제품을 수정하거나 다음 작업을 자동 발행하지 않는다.
+
+### 05 - Unity 조각 반입 구현 완료·독립 검증 준비 — 2026-10-14
+
+- worker_done msg_d567b08576c2의 현재 from/Task/Dispatch·outcome succeeded와 보고/맥락 전문·SHA256 7e883019de23b59fc2f36c8233c941997de6ff65ed758a3a758b5ae2742eb9b4를 대조했다. release retained/external 뒤 정확 구현 pane만 종료했고 ptyKilled=true, Art 리드1·정산대기0을 확인했다. 독립 PASS로 확대하지 않는다.
+- 제품71파일(승인 PNG33·meta36·명세/README2), 텍스트4740줄·새 이미지생성0이다. 정산 감사에서 구현 명단177·고정62·보호7109·이전 검증4547hash/전체4550·기존 tracked2066·anchor4의 차이0을 확인했다. 구현 근거109·제품71을 별도 고정했다. 원시 ui-kit-unity-import-review-launch/settlement-audit.json·implementation-frozen.json·product-frozen.json. 초기 리드 감사의 package-relative13개 경로 해석 오류는 원시를 보존한 뒤 올바른 package.root로 재검사했다.
+- 실제 Unity1회 exit0·TextureImporter 완료33·meta정규화0, 자체1296검사/실패0은 구현 원시다. Sprite API·재import·임시 uGUI 실제렌더/대조군은 아직 미실행이며 신규 Opus의 강 독립 판정이 필요하다. 허용 시험 경로는 새 UiKitImportTests.cs/meta뿐이고 제품 수정은 금지다.
+- 이전 peak=null은 종료 시 .NET 필드 관찰이다. 별도30표본의 Editor peakWorkingSet 최고3,747,340,288bytes, 최저여유 physical8,584,491,008/commit24,664,305,664bytes를 읽었다. 전체프로세스트리 정확 최고메모리는 여전히 미측정이다.
+- 자동 신규49118(Library49084/Logs22/IDE·UserSettings12)은 제품과 분리·gitignore 확인·삭제/커밋0이다. ProcessTemp15는 시작 명단 부재로 개별 작성자 미확정이다. compiler경고66회/고유33·errorCS0, 종료 abort_threads4/debugger-listen1 진단은 원인 미확정으로 공개돼 있다. 준비 명령 오류2건도 raw를 보존했고 제품 회귀/시험 성공으로 바꾸지 않는다.
+- 정본 생존 helper는 저장500행(10:58:14Z부터 완료까지)의 현재 worker19신호에서 **327/558/312/353/357초**를 표시했다. raw ui-kit-unity-import-launch/liveness-helper-final.json·liveness-messages-final.json·liveness-helper-execution.json(exit1)이다. helper는 hold status12:10:07Z를 thread 답으로 계산했으나 공식 ask msg_1839510397ca는 실제 reply12:44:48Z까지 pending이었다. 대기/resume·금지구간 원시와 함께 판정하며 helper 원문을 고치지 않는다. 명시 heartbeat만466초는 중간 status가 있는 구간으로 구분한다. 첫신호전88.524초는 제출 원시로 확인했다. 메인 msg_f86666b57824의3조건 최종 적용은 새 검증에 남긴다.
+- Core msg_a66d3b260ed8의 WSL 허용창13:03:32.3526991Z~13:23:32.3526991Z를 받았지만 실제 반환은 아직 미수령이다. Art 중량실행/예약0, 신규 검증자는 Unity 밖 준비만 먼저 진행하고 실행은 Core 실제 반환 뒤 새 조율한다. PR 생성/병합·전체 UI 창 완료는 아직 아니다.
