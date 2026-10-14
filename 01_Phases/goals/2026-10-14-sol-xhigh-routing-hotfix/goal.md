@@ -6,7 +6,7 @@
 - 작업 공간 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-sol-xhigh-hotfix`, branch `docs/sol-xhigh-routing-hotfix`, 최신 main/base `20ce59ddd72d0cb72b6e230e386a62587b9bfe1b`.
 - 리드 `[Rules 리드 Sol]`, 현재 handle `term_9763f046-8be8-4d0b-aaa8-5214fb800be3`, 회신 `run:run_54319375ed08`(consumer_generation3). worker는 별도 Task/Dispatch로 추적한다. Main은 `term_e2961048-266e-4503-b52b-dfb986d8c9b5`이며 사용할 때 현재 동일성을 확인한다.
 - 근거 E는 `.backups/verification/2026-10-14-sol-xhigh-routing-hotfix/`(Git 제외). 리드 사전 메모 `E/lead-context.md`, 원문과 승인·기계 검색 목록·위임 계약·기동·판정·Git 영수증을 여기에 둔다.
-- 현재 차례: 승인된 현행 모델·effort·태그 정합을 새 Sol xhigh 문서 작업자에게 위임한다. CLAUDE.md 27행 Architecture 리드 태그는 메인 단독 쓰기 요청 `msg_56e3aa3815bc`를 보냈다. 쓰기 종료 뒤 최종 독립 문서 실사에 포함한다.
+- 현재 차례: 승인된 현행 모델·effort·태그 정합을 새 Sol xhigh 문서 작업자에게 위임한다. 메인은 요청 `msg_56e3aa3815bc`대로 CLAUDE.md 27행 Architecture 리드 태그만 바꾸고 `msg_00be2b4eb42f`로 쓰기 종료를 알렸다. 실제1줄 diff와 SHA256를 대조했으며 최종 독립 문서 실사에 포함한다.
 - PR2 가드는 `rules-active`의 `feat/codex-merge-guard-20261013`에서 동결까지 보류한다. 이전 기록 head `a2703d079491859d0767c6effc768d42a3ea5f46`과 제품/시험 등16변경 경로는 보존했다. 구조 대응·실제 Codex 진입·Linux CI 미완을 이 goal의 문서 판정으로 덮지 않는다.
 - 다음 행동: 외부 Sol xhigh 작성·자체 점검→쓰기 종료·정산→메인 CLAUDE 쓰기 종료 대조→새 Astra xhigh 독립 문서 실사1회→PR/head 보고. 사용자 정확 head 승인과 메인 병합은 아침 소유다.
 
@@ -82,6 +82,7 @@
 
 - 같은 Run을 consumer_generation3으로 인수했고 화면 GPT-6.1-Sol xhigh·Codex0.162.1·문맥23%를 관측해 READY `msg_15c81b58ef02`로 보냈다. backend 실제 모델 unknown, 경고1 원문 미확인이다. bounded stream에 원문이 없었으며 모델 전환 원인으로 단정하지 않는다.
 - latest main 기계 검색과 기존 문서 줄 대조를 끝냈다. 새 checkout은 독립 최신 main 기반이며 repo setup을 skip했다. PR2 제품 쓰기·독립 재검증은 실행하지 않았다.
+- 메인 CLAUDE 쓰기 종료 `msg_00be2b4eb42f`(14:30:01Z): 실제1파일1줄에서 `[Architecture 리드 Astra]`를 `[Architecture 리드 Sol]`로 바꿨다. 수정 뒤 SHA256 `c93f968b45b87d58421da8db247109082d90566bb3b4e0a141d4f559c8060585` 일치, 나머지 줄 보존. 리드는 파일 쓰기를 대신하지 않고 branch 소유권에 따라 commit만 한다.
 
 ## 동결 뒤 정리
 
