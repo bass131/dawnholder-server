@@ -184,8 +184,8 @@
 |---|---|
 | Sol 전환 완료 관측 | 메인 재개 msg_55e9fff98129 뒤 같은 대화 ID 01a13573-b029-7f30-b2cf-f2e8d014cc3d를 새 handle term_95ee6115-3eab-441a-8e7a-3020259818c1/incarnation13d22f59-debb-4db8-a8f6-757eda02fc8c에서 이어간다. 첫 consumer_fenced 뒤 run-use로 같은 Run consumer4 인수·check0건, 화면 GPT-6.1-Sol xhigh/문맥19%·최근 turn_context 모델/effort 일치·backendunknown을 확인했다. READY msg_beadcdacb7f2 송신. 기존 Opus 검증자/ask 유지, 원시는 sol-resume-context.md·sol-resume-screen.json·sol-ready-receipt.json |
 | 전환 뒤 첫 행동 결과 | READY msg_beadcdacb7f2 뒤 최종5파일/새 자원 관문을 통과했고 공식 reply msg_08b1f6a32b89에 시연 우선 추가 지침과 기존 runner 실행창을 함께 전달했다. Start14:39:01.4577569Z/StopNew14:49:01.4577569Z/Deadline15:24:01.4577569Z, 최대1회/총45분/runtime1800초. 실제 시작14:39:47.837Z는 허용창 안이다. 새 하네스·재준비 장치 추가0, 리드 제품/시험/runner쓰기0 |
-| 다음 첫 일 | 05반입 강PASS 원문/실제XML/렌더 대조군을 검토했고 검증자 정산·종료와 설정HEAD복원이 끝났다. 같은 UI창PR의 후속 네 창·조합용 프리팹·표시helper 계약 범위 초안을 준비해 메인이 기존승인과 대조한다. 반입만으로 PR생성/병합요청하지 않는다. 새 제품작업자/Unity허가는 후속계약 경계 확인 뒤이며 현재 추가중량예약0이다 |
-| 현재 Task·Dispatch | 05검증 task_556d1434ef53 / ctx_5d45be726951은 worker_done msg_8383db61e140/succeeded·PASS로 정산됐다. worker-release retained/external 뒤 정확 term_608e0815-3810-4c6e-abd0-bf3b8b00c2c3 pane종료/ptyKilledtrue·reclaimable0. 판정SHA256a4f8aea6cc0d0f32b3c31d3c21323caa927914f25df6b7617f6ddda45113376e, 근거437파일 고정. 구현 task_7c7829e6efb1 / ctx_8174e73332f5도 이미완료·종료됐다. 활성하위Task없고 다음계약은 미발행이다 |
+| 다음 첫 일 | 06 후속은 메인 msg_785e1725976c의 기존 승인 안 진행 허용을 적용했다. 새 Opus 선행 시험 task_86beed0e877e / ctx_2158c2f52c8f가 새 UiWindowAppearanceContractTests.cs/meta만 작성한다. 준비 뒤 공식 ask를 받으면 Content21 실제 반환/현재 조율·기본 결과 파일 보존·직전 자원을 확인해 같은 질문에 실제 EditMode RED1회를 답한다. 제품 구현은 Content의 5파일 경계/기준SHA 응답 대조 뒤 새 세션으로 발행한다. 새 시각 선택은 아침 사용자 확인이다 |
+| 현재 Task·Dispatch | 06 선행 시험 task_86beed0e877e / ctx_2158c2f52c8f, 새 term_6a0591a2-6630-4a1b-9313-d04db101698b / incarnation0a66d300-885f-4eb4-bc02-0e0d9df8f6a8. 최초 claude --model claude-opus-5-5·화면Opus5.5 xhigh/Claude2.1.299·backendunknown, input_accepted/turn_started observed. PhaseA 시험작성만·Unity허가0. 05검증/구현은 이미 정산·정확pane종료됐고 판정/근거437파일을 고정했다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
 | 마감 Git 기준 | 정리 전 HEAD `ae7f403dfbd1e5f0b7af7ec61730fba032d3b4bf`, origin 일치·미커밋 제품0. 마감 기록 commit은 이 goal만 포함하며 최종 HEAD/origin/미커밋 목록은 `ui-kit-b1-review-launch/stop-git-final.json`에서 확인한다. `.backups` 산출물은 로컬 보존이며 Git push 대상이 아니다 |
@@ -541,3 +541,10 @@
 - Content에 msg_20dca31acbaa로 다섯 사용처의 현재 C9 쓰기/고정 검증 경계와 사용할 기준 SHA를 요청했다. 기존 Content21 Unity 선행 순서를 유지한다. 답을 기다리는 동안 제품 쓰기 없는 신규 외부 선행 시험 계약의 요구·읽기 범위를 준비한다.
 - 같은 메인 메시지의 S2 기준을 범위에 넣었다. 다음 Unity의 기존 -testResults 옵션을 확인하고 기본 결과 파일이 있으면 근거 폴더로 복사/크기/hash를 남긴다. 원본 삭제/복원은 금지이며 발생 부작용은 비차단 공개한다. 새 하네스·시각 계산 준비 장치를 추가하지 않는다.
 - World msg_f7469fc48f96의 H1/생성 실제 반환과 중량0/예약0, Core msg_570dd9e932ac의 WSL 허용/예약1·실제 시작 미관측을 구분해 수령했다. Art 추가 중량은 없다. 메인 msg_07473ca8308f의 사용자 제출 시각 정정도 적용했다(정리·중지 원문은14:44:08Z/23:44KST).
+
+### 06 - 신규 외부 선행 시험 작성자 발행 — 2026-10-14
+
+- 현재 Art 부모 생존/정확 checkout·runtime를 확인하고 vertical split으로 신규 Opus5.5 세션을 열었다. 전용 ProcessTEMP/TMP는 .backups/tmp/art-ui-tdd-v1, 첫화면 Opus5.5 xhigh/Claude2.1.299·모달없음·준비satisfied·backendunknown이다. ui-window-tdd-launch/launch-command.json·terminal-split-receipt.json·ready-wait.json·first-screen.json.
+- 첫 계약은 task_86beed0e877e / ctx_2158c2f52c8f로 연결됐고 input_accepted/turn_started observed다. 계약1판12247자/SHA256edc5277b3300f0e8b0ec67b5cb9f70778d55fe97fe67d4f685ceca819a38ee91, CODE선택6절 전문과 입력존재/신규시험출력부재·부모존재를 확인했다. scope/code/예시/기존실행도구 경로를 실제 Art 폴더에서 확인했다.
+- 역할은 선행 시험 작성이며 독립 제품 판정이 아니다. 새 UiWindowAppearanceContractTests.cs/meta와 ui-window-tdd/근거·전용TMP만 쓰고 제품/기존시험/scene/Git은 금지다. 기존 EditMode 도구를 재사용하고 새 하네스/시각장치를 만들지 않는다. Canvas/실게임/PlayMode 성공은 이 단계에서 주장하지 않는다.
+- 현재 PhaseA만 허용, Unity 실제RED/허가/예약0. 작성자가 공식ask로 최종시험/manifest/예상소요를 올린 뒤 Content21 실제반환·현재 조율·직전 관문을 적용한다. Content의5파일 경계 응답은 아직 대기이며 제품구현 계약은 그 응답/기준SHA 대조 뒤다. 준비명령/일반읽기를 큰실행으로 보고하지 않는다.
