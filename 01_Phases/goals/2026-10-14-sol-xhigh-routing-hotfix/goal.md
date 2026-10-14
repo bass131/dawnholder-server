@@ -6,15 +6,15 @@
 - 작업 공간 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-sol-xhigh-hotfix`, branch `docs/sol-xhigh-routing-hotfix`, 최신 main/base `20ce59ddd72d0cb72b6e230e386a62587b9bfe1b`.
 - 리드 `[Rules 리드 Sol]`, 현재 handle `term_9763f046-8be8-4d0b-aaa8-5214fb800be3`, 회신 `run:run_54319375ed08`(consumer_generation3). worker는 별도 Task/Dispatch로 추적한다. Main은 `term_e2961048-266e-4503-b52b-dfb986d8c9b5`이며 사용할 때 현재 동일성을 확인한다.
 - 근거 E는 `.backups/verification/2026-10-14-sol-xhigh-routing-hotfix/`(Git 제외). 리드 사전 메모 `E/lead-context.md`, 원문과 승인·기계 검색 목록·위임 계약·기동·판정·Git 영수증을 여기에 둔다.
-- 현재 차례: 승인된 현행 모델·effort·태그 정합을 새 Sol xhigh 문서 작업자에게 위임한다. 메인은 요청 `msg_56e3aa3815bc`대로 CLAUDE.md 27행 Architecture 리드 태그만 바꾸고 `msg_00be2b4eb42f`로 쓰기 종료를 알렸다. 실제1줄 diff와 SHA256를 대조했으며 최종 독립 문서 실사에 포함한다.
+- 현재 차례: 외부 Sol 문서 작성 Task `task_76455f9e1cac` / Dispatch `ctx_10e808987732`의 허용5파일 작성·succeeded/settled·release/정확 pane close를 정산했다. 새 Astra xhigh가 Main CLAUDE 변경과 리드 기록을 포함한 실제 최종 diff를 독립 문서 실사한다. 작성 자체 검사는 독립 PASS가 아니다.
 - PR2 가드는 `rules-active`의 `feat/codex-merge-guard-20261013`에서 동결까지 보류한다. 이전 기록 head `a2703d079491859d0767c6effc768d42a3ea5f46`과 제품/시험 등16변경 경로는 보존했다. 구조 대응·실제 Codex 진입·Linux CI 미완을 이 goal의 문서 판정으로 덮지 않는다.
 - 다음 행동: 외부 Sol xhigh 작성·자체 점검→쓰기 종료·정산→메인 CLAUDE 쓰기 종료 대조→새 Astra xhigh 독립 문서 실사1회→PR/head 보고. 사용자 정확 head 승인과 메인 병합은 아침 소유다.
 
 ## 진척 단계
 
 - [x] 범위 승인
-- [>] 문서 수정
-- [ ] 독립 문서 실사
+- [x] 문서 수정
+- [>] 독립 문서 실사
 - [ ] PR 생성
 - [ ] 사용자 병합 승인
 - [ ] 종료 기록
@@ -72,6 +72,7 @@
 1. `msg_440213ef0ff7`(2026-10-14T14:21:18Z), 메인 pane23:2x KST: 「음 그리고 리드급 아무래도 Sol Max로 전체적으로 확장해야 될 거 같아, Astra 토큰 사용량이 감당이 안되네」. 이어 「음 Sol 그리고 정정사항은 작업자랑 리드 전부 Xhigh로 변경, 핫픽스 적용 지시해줘」. 최종 xhigh 정정이 앞 Max를 대체한다. 이전 `msg_928a88962458`의 한 리드 Sol max 시범을 대체한다.
 2. 시연 우선 모드 `msg_1074f0ee17f7`(14:11:27Z)의 사용자 원문: 「대시보드 결정 응답: 1) 10-28 시연 - 동결까지 시연 경로 우선 모드로 검증 절차를 줄일지, 지금 절차를 유지할지 → A 시연 우선 모드」. 10-28 기능 동결까지 적용, 동결 뒤 원래 절차로 복귀한다. 이번 명시 사용자 요청 핫픽스만 시연 밖 작업 보류의 예외이며 PR2는 보류한다. 전달 전체 원문은 E/user-demo-priority-original.json에 보존한다.
 3. 메인 승인 `msg_7b06b4c0cae3`(14:26:41Z)에 담긴 밤 판단 위임 원문: 「대시보드 결정 응답: 1) 밤샘 진행 - 자는 동안 생기는 판단을 메인 추천대로 정하게 할지, 그 작업만 아침까지 멈출지 → A 메인 추천대로 진행」. 메인은 이 위임으로 범위 v1을 승인했으며 새 사용자 결정으로 격상하지 않는다.
+4. 정리·멈춤 지시 전달 `msg_cee73c25f37d`(14:46:39Z)의 사용자 원문: 「그리고 영속성 부분은 너가 더 전문가니까 Goal 초안 작성하고 진행까지 계속 진행해줘, Core쪽 진도를 좀 빠르게 뺴보자 / 나머지 세션은 Taste에 민감한 부분이니까 그 파트들은 목표 끝나면 마무리하고 정리하는 식으로하자」. 사용자 실제 제출 시각은 **2026-10-14T14:44:08Z(23:44 KST)**이며 메인 정정 `msg_faa0cc22666f`(14:53:00Z)를 따른다. 첫 전달의 「2026-10-15 00:0x KST 무렵」 표기는 오류다. 전달 내용은 그대로며 Core 권한을 Rules에 확대하지 않는다. Rules는 이 핫픽스의 PR번호/정확 head 보고·병합 대기·종료 점검/기록 정리 뒤 멈추고 다음 goal 초안/작업자를 열지 않는다. 다음 일은 아침 사용자가 직접 정하며 PR2는 보류한다. 원 전달·정정 전체는 E/user-close-current-goal-original.json 및 user-close-current-goal-time-correction.json에 별도로 보존했다. 작업자 고정 입력을 바꾸지 않기 위해 쓰기 종료 뒤 이 절에 기록했다.
 
 ## 메인 적용 판단과 승인
 
@@ -83,6 +84,9 @@
 - 같은 Run을 consumer_generation3으로 인수했고 화면 GPT-6.1-Sol xhigh·Codex0.162.1·문맥23%를 관측해 READY `msg_15c81b58ef02`로 보냈다. backend 실제 모델 unknown, 경고1 원문 미확인이다. bounded stream에 원문이 없었으며 모델 전환 원인으로 단정하지 않는다.
 - latest main 기계 검색과 기존 문서 줄 대조를 끝냈다. 새 checkout은 독립 최신 main 기반이며 repo setup을 skip했다. PR2 제품 쓰기·독립 재검증은 실행하지 않았다.
 - 메인 CLAUDE 쓰기 종료 `msg_00be2b4eb42f`(14:30:01Z): 실제1파일1줄에서 `[Architecture 리드 Astra]`를 `[Architecture 리드 Sol]`로 바꿨다. 수정 뒤 SHA256 `c93f968b45b87d58421da8db247109082d90566bb3b4e0a141d4f559c8060585` 일치, 나머지 줄 보존. 리드는 파일 쓰기를 대신하지 않고 branch 소유권에 따라 commit만 한다.
+- 문서 Sol Task `task_76455f9e1cac` / Dispatch `ctx_10e808987732`: 14:53:47Z 쓰기 종료 `msg_115c30e89fa2`, 14:53:57Z worker_done `msg_79882ccf606b`의 현재 from_handle/ID/명시 succeeded/허용5파일을 대조했다. report SHA256 `51c66cd2546b4ad50ef237cabaf0dfd4a6ebc497f4c0f0f16c00212bc35827a8`, context SHA256 `0b028db923d4f1a8ac20463479a69883ae530a7ca1c8df38f31fdd9cde775458` 전체와 실제 diff를 읽었다. E/doc-write-lead-audit.json에서 입력23의 허용5변경/허용 밖0·Git dirty5/신규0·근거60파일 hash를 확인했다. 작성 보고는 독립 PASS가 아니다.
+- 운영 미준수는 기존 helper의300초 기준에서 heartbeat 사이309초·328초 두 구간과 초기 읽기/메일 UTC·별도 원시 일부 미기록이다. 원문/기계 결과는 E/doc-write/report.md 및 doc-write-liveness.json에 공개했고 시연 우선의 운영 공개 처분을 따른다. 내용/권한 모순까지 면제하지 않는다.
+- release retained/external_terminal·processAction none 뒤 동일 pane의 완료 idle·draft 없음·현재 identity를 확인해 정확 close ptyKilled=true·reclaimable0으로 정산했다. 원문은 E/doc-write-lead-settlement.md와 각 영수증에 보존하며 세션을 재사용하지 않는다. 사용자 정리·멈춤 및 시각 정정은 고정 입력 해제 뒤 위 결정4로 반영했다.
 
 ## 동결 뒤 정리
 
