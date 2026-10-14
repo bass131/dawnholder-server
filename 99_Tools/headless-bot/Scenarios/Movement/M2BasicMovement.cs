@@ -86,6 +86,7 @@ public class M2BasicMovement
 
         ManualResetEventSlim connectedEv = new();
         ManualResetEventSlim handshakeResultEv = new();
+        ManualResetEventSlim loginResultEv = new();
         ManualResetEventSlim enterMapEv = new();
         ManualResetEventSlim disconnectedEv = new();
 
@@ -96,6 +97,7 @@ public class M2BasicMovement
         int snapshotCount = 0;
         bool handshakeOk = false;
         string handshakeReason = "";
+        LoginResult? loginResult = null;
         BotSession? session = null;
 
         Connector connector = new();
@@ -120,6 +122,12 @@ public class M2BasicMovement
                                 handshakeOk = hr.ok;
                                 handshakeReason = hr.reason;
                                 handshakeResultEv.Set();
+                                break;
+                            case (ushort)PacketID.S_LoginResult:
+                                S_LoginResult login = new();
+                                login.Read(buffer);
+                                loginResult = (LoginResult)login.result;
+                                loginResultEv.Set();
                                 break;
                             case (ushort)PacketID.S_EnterMap:
                                 S_EnterMap em = new();
@@ -184,7 +192,15 @@ public class M2BasicMovement
             return result;
         }
 
-        // handshake 후 C_CharacterSelect 의무 송신.
+        session?.Send(new C_Login { accountName = ProbeBase.CreateAccountName() }.Write());
+        if (!loginResultEv.Wait(TimeSpan.FromSeconds(5)) || loginResult != LoginResult.Accepted)
+        {
+            result.Reason = $"login failed: {loginResult?.ToString() ?? "timeout"}";
+            session?.Disconnect();
+            return result;
+        }
+
+        // Accepted 로그인 후 C_CharacterSelect 의무 송신.
         // 서버가 class 선택 없이 월드 진입을 차단하므로 S_EnterMap은 이 패킷 후에야 옴.
         // stats는 CharacterSelect와 동일 출처 — 봇 시뮬 스탯이 선택 직업과 일치해야 desync 검증 유효.
         PlayerStats stats = PlayerStats.Knight();

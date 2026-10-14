@@ -41,6 +41,13 @@ for (int i = 0; i < args.Length - 1; i++)
 Console.WriteLine($"=== HeadlessBot ===");
 Console.WriteLine($"target: {host}:{port}  scenario: {scenarioName}");
 
+if (string.Equals(scenarioName, "MultiAccountLoginSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    MultiAccountLoginSmoke.Result r = await MultiAccountLoginSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] MultiAccountLoginSmoke: success={r.Success} reason={r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
 if (string.Equals(scenarioName, "InstanceMapIsolationSmoke", StringComparison.OrdinalIgnoreCase))
 {
     InstanceMapIsolationSmoke.Result r = await InstanceMapIsolationSmoke.Run(host, port);

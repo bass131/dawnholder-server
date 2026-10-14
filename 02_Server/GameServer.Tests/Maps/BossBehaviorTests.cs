@@ -472,7 +472,7 @@ public class BossBehaviorTests : IDisposable
     // ─── 항목 7: ProtocolVersion + 직렬화 왕복 ────────────────────────────────────
 
     [Fact]
-    public void ProtocolVersion_Is18()
+    public void ProtocolVersion_Is19()
     {
         // M4.13 P5: C_SkillUse.facing append (대쉬 방향 권위) → v12→v13.
         // M4.15 P06: C_SkillUse.verticalDir append (텔레포트 4방향) → v13→v14.
@@ -480,7 +480,8 @@ public class BossBehaviorTests : IDisposable
         // M5+: 시연용 디버그 치트 C_CheatCommand 신설 (ID 34) → v15→v16.
         // 아이템·인벤토리·재화 PR1: 경제 패킷 4종 신설 (ID 35~38) → v16→v17.
         // 던전 패킷·창 PR: 클리어 결과·확인 요청 신설 (ID 39·40) → v17→v18.
-        Assert.Equal(18, ProtocolVersion.Current);
+        // 계정 로그인: C_Login/S_LoginResult (ID 41..42) → v18→v19.
+        Assert.Equal(19, ProtocolVersion.Current);
     }
 
     [Fact]
