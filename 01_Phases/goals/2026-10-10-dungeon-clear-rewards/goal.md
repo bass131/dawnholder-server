@@ -1,6 +1,6 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **C9 #1~#3 변경분 강 검증21/21 PASS·정산/복원/자원반환 완료. 메인 msg_a7fed9270e28에 따라 검증된변경을checkpoint·draft PR로정리한다. C9/goal은미완이며 실서버·세크기실화면·SFX는아침사용자MCP연결승인뒤잇는다. #4/#5는동결뒤정리로미해소다.**
+상태: **검증된 C9 변경분 checkpoint를 올리고 draft PR239를 만들었다. C9/goal은미완이며 실서버·세크기실화면·SFX는아침사용자MCP연결승인뒤잇는다. 밤에는Editor/MCP/실화면검증자를열지않는다. #1~#3 변경분21/21 PASS, #4/#5는동결뒤정리로미해소다.**
 
 - 담당: Content 리드 [Content 리드 Astra], 지정/표시 gpt-6-astra xhigh, backend unknown. 시작 기준 origin/main = cc20d428f7988fdcb232a7c811cf2e729446abdc.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침, 병합 뒤 원격 삭제). 던전 클리어 PR branch `feat/dungeon-clear-server-20261011`(base `999b1b98`).
@@ -31,7 +31,7 @@
 
 ### PR 경계와 점검
 
-| PR | 내용 | 시작 조건 | 끝나는 조건 |
+| PR | [239 - 던전 클리어 보상 원자 지급과 마을 복귀](https://github.com/bass131/dawnholder-server/pull/239) draft·C9미완. 검증된코드checkpoint a9c46dada1d54a48455031cb0f1402f0c2d2dfd9, 실제최종head/CI는 c9-fix-review-3-prep/final-pr-state.json. 병합하지않음 |
 |---|---|---|---|
 | 결함 PR | 완료조건 1~3. 클라이언트만 바꾼다. 이 goal.md와 CURRENT의 Content 줄도 넣는다. | 범위 승인 | 독립 검증·실화면 확인 뒤 사용자 병합 승인 |
 | 던전 패킷·창 PR | 39번 클리어 결과와 40번 확인 요청 패킷, 프로토콜 버전 17 → 18, 던전 보상표, 클라이언트 보상 창·핸들러·입구 표시. 서버는 이 PR에서 새 패킷을 보내지도 처리하지도 않는다. 등록되지 않은 요청은 지금처럼 버린다(`Sessions/GameSession.cs:177`). | 결함 PR의 Unity 작업 뒤(같은 checkout) | 새 버전의 서버·봇 접속과 기존 봇 회귀, Unity 컴파일·EditMode 시험. 실화면은 다음 PR에서 한다 |
@@ -314,14 +314,14 @@ Content 적용: 현재 실행 준비 중인 재검증3에 전달(msg_fec530f29f2
 | 항목 | 값 |
 |---|---|
 | 단계 | #1~#3 변경분Strong PASS21/21, done15:29:43.857Z 뒤정산·정확pane종료. #4/#5는동결뒤정리. 세크기실화면/SFX·goal전체PASS는미실행 |
-| 다음 첫 일 | 메인 msg_a7fed9270e28대로검증된변경checkpoint/push·draft PR. 아침사용자MCP연결승인뒤C9실서버/세크기실화면/SFX재개. 그전Editor/MCP/실화면검증자0 |
+| 다음 첫 일 | 아침사용자MCP연결승인뒤현재goal의C9실서버/세크기실화면/SFX재개. 구계약을현HEAD·로그인v19·시연우선기준으로갱신하고그전Editor/MCP/실화면검증자0. 밤checkpoint/draft PR239·보고완료뒤현재지점유지 |
 | 실행 조건 | Content 큰 실행/예약0. Unity는 Art→World 실제반환 뒤 네파트 최신조율·공식답·기존 물리/commit각4GiB·Unity0/lock/hash 관문. 메인 msg_b21b951d51c9에 따라 Core WSL은 그 실행 직전 물리6GiB 조건에서 Unity순서와 병행 가능, WSL끼리는Core우선 |
 | 열린 Task·Dispatch | 없음. task_576e184ed4bb/ctx_b6c38a02dabe는 succeeded/completed/settled·exactidentity 확인뒤release retained/external_terminal와정확terminal close ptyKilled=true. 이전구현·검증자도종료 |
 | 결정 대기 | C9/goal미완. 아침사용자MCP연결승인필요를메인이보고한다. 밤checkpoint·draft PR는메인판단승인완료,병합권한없음 |
 | 작업 공간 / branch | content-active / feat/dungeon-clear-server-20261011(base999b1b98). 마감 HEADa0f8fb0117722f3b78b0d3988cd25f61cfa545b3에서 origin/main20ce59ddd72d0cb72b6e230e386a62587b9bfe1b를 합쳐6f6fd690a5be6c8efb05f116135532bfdb6f800f push·원격 일치. 이어지는 이 재개 기록 커밋과 새 계약 기준은 resume-20261014-0916 및 c9-fix-r2 근거에 남긴다 |
 | 미커밋 파일 | 제품 Window01c5c3bb…/StageClear1a55a155… 불변. client.md·시험3개·ScreenUiProbe 변경과 새 ScreenUiProbeTests cs/meta. 재검증2의 Presentation csb7d7d114…/기존meta f60c73ec…; 새 시험 cs3613c0eb…/meta087cb671…. 사용자 MinimapRT7123af77…/ProjectSettings4a8db0bd… 보존. goal은 리드 정산 기록, HEAD27a7109a 유지 |
 | main 합류 | 15:53:38Z 최신 origin/main b9f78ff07514b54b80370cbfca1f0df33baa5ac4를 충돌 없이 합쳤다(merge1c593f5bf60357acf7d3bf3687e65cafa1304f66). World v19·로그인 포함. DungeonClearSmoke는 변경된 ProbeBase의 handshake→login→CharacterSelect를 상속하고, 서버 시험 fixture도 LifecycleTestWorld.LogIn을 호출함을 정적으로 확인했다. 합친 HEAD의 C9 선행 PlayMode6개는 아래 결과대로 실행했으며 서버·봇 재검증은 아직 미실행 |
-| PR | 클리어 PR은 아직 없음. 결함 PR221·패킷/창 PR230은 사용자 승인으로 병합됨 |
+| PR | [239 - 던전 클리어 보상 원자 지급과 마을 복귀](https://github.com/bass131/dawnholder-server/pull/239) draft·C9미완. 검증된코드checkpoint a9c46dada1d54a48455031cb0f1402f0c2d2dfd9, 실제최종head/CI는 c9-fix-review-3-prep/final-pr-state.json. 병합하지않음 |
 | 리드 / Run | 현재 [Content 리드 Sol], 요청 gpt-6.1-sol xhigh/화면 GPT-6.1-Sol xhigh, backend unknown. 메인 재개 msg_ec2d11809c87. 새handle term_4b9125e2-0342-463e-81cf-528ab329c265, runtime42f2ec42-f071-4796-bb5f-9b569877cebd, 같은 run_b680cd89da9a generation7 인수. 이전 Astra handle은 역사기록이며 검증자Task/Dispatch는 유지 |
 | 리드 전환 안전 지점 | Sol xhigh 같은대화 재개·새handle/화면/run-use 확인 완료. 현재 Opus검증 유지, 공식ask1 answered/보류, Unity허가0/예약0. 인계 c9-fix-review-3-prep/sol-transition-handoff.json, 재개근거 sol-resume-* |
 | 근거 | .backups/verification/2026-10-10-dungeon-clear-rewards/c9-fix-review-3/report.md·verdict.json·runs/review3-classes21-1/results.xml; prep/settlement.json·lead-xml-audit.json·settings-restore-receipt.json·worker-terminal-close.json. 이전원문/버전/23시험은보존 |
@@ -407,7 +407,7 @@ Content 적용: 현재 실행 준비 중인 재검증3에 전달(msg_fec530f29f2
 
 | 항목 | 값 |
 |---|---|
-| PR | PR221. 생성 때 head `318717df`, CI 4/4 성공(`pr221-checks-1.txt`). 그 사이 origin/main `bd4dbb5f`(CURRENT)와 `6d09ac1f`(PR223 인스턴스 맵·PR224 세션 가드, FEATURE_MAP·CURRENT)를 합쳤다. 두 번 모두 main 판을 그대로 두고 이 PR 줄만 다시 넣었다 |
+| PR | [239 - 던전 클리어 보상 원자 지급과 마을 복귀](https://github.com/bass131/dawnholder-server/pull/239) draft·C9미완. 검증된코드checkpoint a9c46dada1d54a48455031cb0f1402f0c2d2dfd9, 실제최종head/CI는 c9-fix-review-3-prep/final-pr-state.json. 병합하지않음 |
 | Task / 모델 | `task_d989fb72484d`, 신규 `claude-opus-5-5`(최초 실행 `claude --model claude-opus-5-5 --mcp-config …`, 화면 「Opus 5.5 with xhigh effort」, backend unknown) |
 | 계약 | `r9-screen-contract.md` v1 SHA256 `5db1e9f5…`. Editor는 리드가 열었다(PID 20212, 6000.6.4f1) |
 | 판정 | `r9-screen/report.md` SHA256 `2fc721fe…`, worker_done `msg_d0fee2244122`(13:04:15Z). 통과, 결함 S-1 하나 |
@@ -769,6 +769,13 @@ Content 적용: 현재 실행 준비 중인 재검증3에 전달(msg_fec530f29f2
 - exact/settled/완료뒤빈prompt 확인→release retained/external_terminal→정확pane close ptyKilled=true로종료했다. 미제출draft는사용자지시나종료보류근거로쓰지않았다. 네파트에실제자원반환/현재실행·예약0을통지했다. #4G7하위경로41·52·74·244와#5/O-4 위치보충은원문전수표에남기고동결뒤정리로유지한다. 제품계산복제/측정위장/동작결함은지적0이다.
 - 이판정은변경분PASS이며실서버7777·709×399/802×451/1920×1080 실제화면·SFX청취·goal전체PASS가아니다. 남은C9는기존새MCP연결승인gate(구c9-screen-contract.head.md 92·104~106행)와현재사용자수면상태를메인에보고하고밤checkpoint/초안PR·아침재개처리를확인했다(msg_2d6177a4952d). 새Editor/새실화면검증자/다음goal은아직열지않았다. 기존C9승인범위는유지하고구HEAD/프로토콜18 계약의버전갱신이필요하다.
 - Art msg_20dca31acbaa의다섯파일질문에는Window만고정입력/미커밋+34/-5·전체SHA·보존동작·읽기전용사본을답했다(msg_f8dd9f97b4d7). 다른네파일은Contentdiff/manifest입력0. Art의구HEAD가확인클릭/입력준비수정을덮지않도록공통기준/PR합류를메인과조율하도록알렸고Content사본쓰기권한을넓히지않았다.
+
+### 239 - 던전 클리어 보상 원자 지급과 마을 복귀 draft PR
+
+- 메인 msg_a7fed9270e28에 따라 검증된11경로만checkpoint commit a9c46dada1d54a48455031cb0f1402f0c2d2dfd9으로정리하고원격같은branch에push·SHA일치를확인했다. 사용자Minimap/ProjectSettings·TimeManager/settings·근거원시는stage하지않았다. sourceHEAD27a에서검증한제품/시험bytes를변경하지않았으며goal/보고기록만추가했다.
+- draft PR [239](https://github.com/bass131/dawnholder-server/pull/239)를main기준으로생성했다. C9·goal은완료가아니다. 코드checkpointSHA를Art에한줄로알렸고Art는이commit만Window기준으로쓴다. Content C9가먼저합류하는메인순서는유지한다.
+- 아침메인보고항목: Content 실화면 검증 — MCP 연결 승인 필요. 실서버클리어→확인→Town/709×399·802×451·1920×1080/SFX가남았다. 해당승인전Editor/MCP호출/실화면검증자0,추가goal초안/작업자0이다. Unity가바꾼ProjectSettings define1줄의보존/원사용자bytes복원은공개하고그파일에더쓰지않는다.
+- 미해소동결뒤정리목록은#4/#5·G5·Digits·O-1~O-4다. 밤에이를고치거나추가검증하지않는다. 실제PR최종head/CI·사용자보호hash·완료보고는prep/final-pr-state.json과night-checkpoint-closeout.json에보존한다. PR은draft이며별도사용자승인없이병합/auto-merge하지않았다.
 
 ### 운영 기록(첫 발생)
 
