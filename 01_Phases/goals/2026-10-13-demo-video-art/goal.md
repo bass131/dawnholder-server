@@ -164,6 +164,8 @@
 
 - **사용자 밤사이 감독·Core 우선 지시**(메인 `msg_687aa38999f1`, 2026-10-14T14:38:35Z). 사용자 원문(메인 pane Enter 제출 23:4x KST): 「우편함 처리와 리드 감독을 나 자는사이에 계속 처리해줘, 목표는 마일스톤 작업을 향해 작업하는거야 / 특히 Core쪽 진전이 별로 안돼서 그 부분을 우선적으로 지시해줘」. 메인 전달이며 Art pane 직접 입력으로 격상하지 않는다. 같은 메시지의 메인 운영 판단(새 사용자 결정 아님): Core WSL dotnet 빌드·시험은 자체 직전 물리여유6GiB 이상이면 Art→World→Content Unity 순서를 기다리지 않고 병행하며, WSL끼리 겹치면 Core가 먼저이고 리드끼리 한 줄로 알린다. Unity 순서와 Art 현재 범위는 그대로다. 원시 core-priority-and-unity-actual-start.json, 관련 리드/메인 실제시작 통지에 함께 알렸다.
 
+- **현재 goal 종료 뒤 정리하고 중지**(메인 `msg_be31d296f750`, 2026-10-14T14:46:39Z). 사용자 원문(메인 pane Enter 제출, 메인 전달): 「그리고 영속성 부분은 너가 더 전문가니까 Goal 초안 작성하고 진행까지 계속 진행해줘, Core쪽 진도를 좀 빠르게 뺴보자 / 나머지 세션은 Taste에 민감한 부분이니까 그 파트들은 목표 끝나면 마무리하고 정리하는 식으로하자」. Art pane 직접 입력으로 격상하지 않는다. 현재 Art goal은 시연 우선 기준과 승인 범위 안에서 끝까지 진행한다. 종료점(PR head 보고·병합 대기 포함)에 종료 점검/goal 기록 정리 뒤 멈추고 다음 goal 초안·새 작업자를 열지 않는다. 다음 일은 아침에 사용자가 정한다. 중지 보고는 PR 번호/정확head·동결 뒤 정리 목록·아침 판단 한두 줄이며 Unity 순서/Core WSL 우선은 유지한다. 원시 settings-side-effect-and-stop-after-goal.json.
+
 ## 동결 뒤 정리
 
 - 현재 Unity 반입 독립 판정은 미수령이다. 새 판정의 동작 무관 지적은 번호·근거·기능 영향 없음의 이유를 이 목록에 옮긴다. 이미 해결한 과거 결함을 새 미해결 차단으로 되살리지 않는다. 운영 미준수는 해당 판정과 원시를 보존하며 기능 결함과 구분한다.
@@ -187,7 +189,7 @@
 | PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범. 2026-10-13T09:29:28Z 병합, merge `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`(`lead-resume-astra/pr233-merged.json`) |
 | 리드 세션 / Run | 현재 `term_95ee6115-3eab-441a-8e7a-3020259818c1` / `run_79ffbf5c8612`(회신 `run:run_79ffbf5c8612`, consumer4), runtime `42f2ec42-f071-4796-bb5f-9b569877cebd`. 현재 Main `term_e2961048-266e-4503-b52b-dfb986d8c9b5`. 화면 GPT-6.1-Sol xhigh·문맥19%, backend unknown. 이전 Astra handle은 인계 기록이며 실행 권한이 아니다. 현재 진행 중 Opus Task/Dispatch는 같은 Run의 실제 live 시도와 대조해 유지한다 |
 | 기록 보존 | `013f37ef`을 새 branch의 `c9c34b41`로 옮겨 push했다. 옛 branch에 최신 main을 받은 merge head `857dae52`와 새 head의 tree가 같다(diff exit 0). 옛 branch는 삭제하지 않았다 |
-| 작업자·실행 자원 | 현재 Art리드1개와 독립 검증자1개, 구현자는 정산·종료됐다. Art 검증1회14:39:47.837Z~14:41:26.974Z/PID32424/exit0/timeoutfalse、worker14:41:27.405Z自己생존0·Unity0·lock없음. 리드14:43:54Z/14:44:42Z도 확인하고 관측 자식170개의 PID/출생 exact생존0·재사용PID2개무조작을 기록했다. Art실행0/창예약0, World 다음순서에 msg_9694ffca0c24로 조기 실제반환을 알렸다. Core WSL은 자체fresh6GiB 조건으로 병행 가능하다. 판정 대기와 자원 반환을 구분한다 |
+| 작업자·실행 자원 | 현재 Art리드1개와 독립 검증자1개, 구현자는 정산·종료됐다. Art 검증1회14:39:47.837Z~14:41:26.974Z/PID32424/exit0/timeoutfalse·worker14:41:27.405Z자기생존0·Unity0·lock없음. 리드14:43:54Z/14:44:42Z도 확인하고 관측 자식170개의 PID/출생 exact생존0·재사용PID2개무조작을 기록했다. Art실행0/창예약0, World 다음순서에 msg_9694ffca0c24로 조기 실제반환을 알렸다. Core WSL은 자체fresh6GiB 조건으로 병행 가능하다. 판정 대기와 자원 반환을 구분한다 |
 | Unity·화면 조작 | 사용자 지시(메인 채팅 전달) 원문 「그리고 만약에 MCP 연결이나 컴퓨터 조작관련 행동이 필요하면 Codex CLI가 아닌 Codex Desktop을 통한 GPT Astra한테 명령하면 대신 조작 잘 해줄거야, 권한 최대한 자율로 줄게」. Art가 UI 창 PR에서 Unity를 열 때 쓸 수 있다. 큰 실행 전 메모리 4GB 원시와 다른 리드 알림은 그대로다 |
 | 남은 결정·준비 | 구현자 최종 보고·worker_done 정산과 새 Opus 독립 검증. import 실행창은 실제 반환했다. MCP/Desktop이 필요하면 쓰기 전 메인 시트·시각 지정. 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함). 현재 Content 회신 주소 `run:run_b680cd89da9a`는 재사용 전 현재 상태와 대조한다 |
 
@@ -500,7 +502,13 @@
 
 ### 05 - 독립 검증 Unity 종료·정확 반환 — 2026-10-14
 
-- 현재 검증자 status msg_78b67a103461와 owner unity-exit.json을 대조했다. 14:41:26.974Z/exit0/timeoutfalse/99.137초,14:41:27.405Z自己생존0·Unity계열0·lock없음이다. raw SHA256 a133b2b58496af490894e7da6cbdb14fb9b2b1f3f22cc4161799e74b8d1e283f. 이는 실제 실행 종료이며 최종 시험 PASS/FAIL은 아직 미수령이다.
+- 현재 검증자 status msg_78b67a103461와 owner unity-exit.json을 대조했다. 14:41:26.974Z/exit0/timeoutfalse/99.137초,14:41:27.405Z자기생존0·Unity계열0·lock없음이다. raw SHA256 a133b2b58496af490894e7da6cbdb14fb9b2b1f3f22cc4161799e74b8d1e283f. 이는 실제 실행 종료이며 최종 시험 PASS/FAIL은 아직 미수령이다.
 - 리드14:43:54Z PID32424부재/Unity0/lock없음,14:44:42Z 관측 자기트리170PID·출생 exact생존0/재사용PID2개(14068,31936)무조작을 확인했다. unity-run-1-lead-return-observation.json·unity-run-1-lead-return-audit.json이며 리드 kill0이다. 처음 raw 전체 출력은77KB로 tool에서 잘렸으므로 뒤 감사는 JSON필드/명단을 내부에서 읽고 집계만 출력했다. 잘린 전체 원문을 읽었다고 주장하지 않는다.
 - 표본16개 최소물리7952408576/commit22708404224bytes, 표본트리최고7642624000bytes다. 연속적인 실제 전체트리정확peak는 미측정이다. 자원 원시의 정의/빈도를 벗어나 성능을 단정하지 않는다.
 - Art 실행0/창예약0 조기반환을 Core msg_0b47c838ec38/World msg_9694ffca0c24/Content msg_a7e7bc1dece4/Rules msg_dd976d89b347/Main msg_00b9f71246c5에 알렸다. 원래Deadline15:24:01Z까지 기다리지 않는다. Content 새 Sol handle/run generation7도 현재identity를 대조했고 기존순서를 재확인했다. World 다음 허가는 World 공식ask/직전관문 소유다.
+
+### 05 - 실행 부작용·설정 복원 주체 결정 대기 — 2026-10-14
+
+- 리드 git status에서 보호 설정03_Client/ProjectSettings/ProjectSettings.asset의1줄 변경을 발견했고 worker msg_57500ed728d6도 같은 자동변경·미복원을 보고했다. Standalone defines의 SENTIS_ANALYTICS_ENABLED;가 제거됐다. mtime14:41:23.9215552Z는 Unity 실행 안이며 직전tracked0이다. 현재21005bytes/SHA256333733a31e62db484381ab3b60c8734412e0e8907da87a0c1e00ba4bcc92348b, 기동 전 HEAD21030bytes/SHA256b04c1808f226ffc1e740e294328be8bdf0be13c6a61f2dcc70c42ac2cd92cf81. raw/auto-changes의 HEAD/현재본/diff를 보존했고 리드도 byte/hash/diff를 대조했다.
+- 설치된 AnalyticsDefineManager의 조건false 시 해당define을 제거하는 코드를 읽었다. 실제 EditorAnalytics값은 미측정이라 원인을 확정하지 않는다. 리드/검증자는 설정을 복원/삭제하지 않았다. 메인 msg_c7733abee7f5에 Art파일1개만 정확기동전HEAD byte/hash로 되돌릴 기계 보존 작업 주체/범위 결정을 요청했고 Content msg_5b50e1a8fe15에도 알렸다. Content checkout파일쓰기0, Unity재실행예약0이다.
+- XML 원문을 파싱해203case 전부Passed·failed/skipped/inconclusive0을 확인했다. XML SHA25692fe2b0d6788cd885aa36570ad997e43a8b2a3bb7874bc34a1a51e3da4ea6b19. 당초약167은 계획값이고 실제203과 구분한다. 최종독립판정/worker_done은 아직 미수령이며 실행부작용을 숨겨 PASS로 바꾸지 않는다.
