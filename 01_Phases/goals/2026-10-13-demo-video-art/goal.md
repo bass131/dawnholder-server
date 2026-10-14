@@ -161,7 +161,7 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 신규 Astra의 단계 A 준비가 끝나 공식 ask msg_1839510397ca가 열린 상태다. Core SQL 실제 반환 보고는 받았고 World PacketGenerator 정확1회 → Content review-combined-1 정확1회 실제 반환 뒤 Art와 후속 C9 실화면 순서를 조율한다. 직전 물리/commit 여유 각4GiB·현재 충돌 없음까지 확인한 뒤 같은 ask에 현재 Task의 단계 B 실행창을 reply한다. 아직 제품 반입·Unity 실행 허가와 큰 실행 예약은 없다. 이 Task의 heartbeat 327초 구간1개는 별도 운영 관찰로 메인에 보고한다 |
+| 다음 첫 일 | 신규 Astra의 단계 A 준비가 끝나 공식 ask msg_1839510397ca가 열린 상태다. Core SQL 실제 반환 보고는 받았고 World PacketGenerator 정확1회 → Content review-combined-1 정확1회 실제 반환 뒤 Art와 후속 C9 실화면 순서를 조율한다. 직전 물리/commit 여유 각4GiB·현재 충돌 없음까지 확인한 뒤 같은 ask에 현재 Task의 단계 B 실행창을 reply한다. 아직 제품 반입·Unity 실행 허가와 큰 실행 예약은 없다. heartbeat 327초 구간1개는 msg_f86666b57824의 오늘 한정 기준3조건을 최종 원시 감사에서 대조한 뒤 처리한다 |
 | 현재 Task·Dispatch | task_7c7829e6efb1 / ctx_8174e73332f5, 새 구현자 term_b68db577-b03d-4a53-9eb4-bf8252ef1392 / incarnation 7fe2888d-ed9e-46a0-9e14-721bcc7fa05d. 요청·최초명령·화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. 11:57:00Z 공식 접수는 turn_start_unobserved였고, 조건부 Enter 1회 뒤 11:58:04.476Z 제출 전문109개 비어 있지 않은 줄 일치·Working·agent_status live를 확인했다. 원시는 ui-kit-unity-import-launch/, 쓰기는 ui-kit-unity-import/만 허용된 단계 A다. 이전 B1 검증 task_66e572cca63c/ctx_0a2ade33e4ae와 구현 task_079ccb62b3dd/ctx_a21d2ab41644는 정산·pane 종료 완료이며 각각4550/2140파일을 보존한다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
@@ -407,6 +407,13 @@
 - 질문은 자원 반환을 기다리는 미해결 상태로 유지한다. 작업자에게 msg_636acd04ce5a로 같은 ask 재개·제품/Unity 쓰기 금지·5분 heartbeat를 안내했다. 이 status는 공식 blocking reply나 실행창 release가 아니다. 자원 조건이 갖춰진 뒤 같은 ask에만 구체적인 실행창을 reply한다.
 - 진행 중 운영 관찰: 정확한 현재 발신/Task/Dispatch의 inbox100건(가장 이른 원문11:44:45Z)을 대조했다. 실제 제출11:58:04.476Z→heartbeat11:59:33Z→12:03:30Z→질문12:08:57Z 간격은 88.524/237/327초다. **5분 초과1구간(27초 초과)**을 보존한다. worker-show의 lastHeartbeatAt=null과 달리 실제 heartbeat2건이 있으므로 무보고10분으로 오판하지 않았다. 이전 OPS-1 메인 결정은 옛 task_079ccb62b3dd 한정이므로 이 Task에 자동 적용하지 않는다. 제품 차이0 보고와 운영 간격을 구분하며 메인에 전달한다. 현재 checkpoint이며 완료까지의 준수 판정은 아니다.
 - 원시는 ui-kit-unity-import-launch/phase-a-question.json, resource-updates-1202.json, ack-core-order-1203.json, liveness-inbox-phase-a.json 및 liveness-result-phase-a.json에 있다. 새 독립 판정 원문은 아직 없다.
+
+### 생존 신호 간격 처리의 메인 임시 기준 — 2026-10-14
+
+- 메인 msg_f86666b57824(12:13:31Z)의 현재 handle/incarnation/main checkout을 대조했다. **메인 판단이며 사용자 결정이 아니다. 오늘 세션 goal에만 적용하는 임시 기준**이다. 원문은 ui-kit-unity-import-launch/main-liveness-policy-20261014.json에 보존한다. 규칙 정본을 변경하거나 다른 날·다른 결함으로 확대하지 않는다.
+- 세 조건을 모두 원시로 확인한 경우만 생존 신호 간격 초과를 제품 판정 통과 차단에서 뺀다: ① 간격 초과만의 문제이고 각 간격600초 이하 ② 제품 파일·시험 결과·보호 hash·자원에 영향을 준 증거 없음 ③ 그 간격 중 조용한 감사 창·다른 파트 실행 창 등 금지 구간의 쓰기·실행 없음. 리드 또는 검증자의 확인 근거를 남긴다. 판정문은 「운영 미준수(메인 결정 처리)」 절에 간격 원시와 이 msg ID를 기재하며 소급 면책으로 표현하지 않는다.
+- 600초 초과, 금지 구간 실행, 맥락 메모 부재/불일치·규칙 원문 누락, 판정 결론과 본문 불일치는 그대로 메인 판단 대상이다. 5분 heartbeat 의무는 유지한다. 적용할 때만 메인 보고에 「생존 간격 기준 적용」 한 줄을 쓴다.
+- 현재 구현 Task의 확인된327초 구간은 조건① 범위에 든다. 단계 A 원시는 제품쓰기0/Unity0을 보고하고 리드도 제품 폴더 부재·tracked 변경0을 확인했으나, 이 중간 확인을 최종 보존·자원·금지 구간 감사의 완료로 대체하지 않는다. 나머지 조건과 이후 간격은 최종 원시/독립 검증에서 함께 대조한 뒤 적용 여부를 판정한다. 이전 계약1판·고정 입력은 수정하지 않고 이 메인 결정 원문·시각·적용 단계를 후속 판정 입력에 추가한다. 단계 B 실행 권한은 아직 없다.
 
 ## 다음 계획 후보
 
