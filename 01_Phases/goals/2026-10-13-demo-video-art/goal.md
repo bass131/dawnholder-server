@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **범위 승인(2026-10-13), 2026-10-14 재부팅 뒤 같은 목표 재개. 시범 PR233은 병합됐다. 브라운 B1 전체 키트는 강 독립 재검증 기술 PASS·사용자 미관 A 승인이다. ART-UI-04 해소·01/02/03 보존, 이전 구현자·검증자 정산·종료 완료다. 메인은 OPS-1을 이번 구현 Task의 제품 판정 차단에서 분리했다(소급 면책 아님). Unity 조각 반입1판은 메인 대조·승인을 받아 신규 Astra 계약과 Unity 밖 준비부터 진행한다. Content C9 실제 반환/양보와 Core SQL 반환을 확인해 실행창을 release하기 전에는 Unity 쓰기·Editor 실행이 없다. PR 생성·병합 승인은 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-13), 2026-10-14 재부팅 뒤 같은 목표 재개. 시범 PR233은 병합됐다. 브라운 B1 키트는 강 독립 재검증 기술 PASS·사용자 미관 A 승인, ART-UI-04 해소·01/02/03 보존이며 해당 세션들은 정산·종료했다. 신규 Astra의 Unity 반입 준비가 끝났고, 선행 자원 반환·네 파트 조율·직전 자원 관문을 확인해12:44:48Z 단계 B를 release했다. 최초 import1회·새기동 마감12:54:48Z·정리 포함 반환 마감13:29:48Z이며 실제 시작은 별도 보고를 기다린다. 운영 간격은 오늘 한정 메인 기준의3조건을 원시로 판정한다. PR 생성·병합 승인은 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Art 리드(`[Art 리드 Astra]`, 2026-10-13 중간 재개부터). 이전 리드는 `[Art 리드 Opus]`였다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며, 메인이 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 현재 pane을 닫고 새 목표에는 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -161,8 +161,8 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 신규 Astra의 단계 A가 끝나 공식 ask msg_1839510397ca가 열린 상태다. Core SQL·World 생성기 뒤 Content batch23의 실제 반환 msg_d55dac4cd0c2를 받았다. 현재 Core·Content·Rules·World에 Art 최초 import1회 창의 최신 충돌/예약을 조율 중이다. 4파트 회신과 직전 물리/commit 여유 각4GiB·Unity0·lock없음을 확인한 뒤 같은 ask에 UTC Start/StopNew/Deadline을 명시해 단계 B를 reply한다. 제안은 총45분 상한·첫10분만 기동·Unity timeout30분 이내이며 아직 실행 허가/예약은 없다. heartbeat327초는 메인 msg_f86666b57824의3조건을 최종 감사에서 대조한다 |
-| 현재 Task·Dispatch | task_7c7829e6efb1 / ctx_8174e73332f5, 새 구현자 term_b68db577-b03d-4a53-9eb4-bf8252ef1392 / incarnation 7fe2888d-ed9e-46a0-9e14-721bcc7fa05d. 요청·최초명령·화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. 11:57:00Z 공식 접수는 turn_start_unobserved였고, 조건부 Enter 1회 뒤 11:58:04.476Z 제출 전문109개 비어 있지 않은 줄 일치·Working·agent_status live를 확인했다. 원시는 ui-kit-unity-import-launch/, 쓰기는 ui-kit-unity-import/만 허용된 단계 A다. 이전 B1 검증 task_66e572cca63c/ctx_0a2ade33e4ae와 구현 task_079ccb62b3dd/ctx_a21d2ab41644는 정산·pane 종료 완료이며 각각4550/2140파일을 보존한다 |
+| 다음 첫 일 | 단계 B를 같은 공식 ask msg_1839510397ca에 reply msg_2066155df0cb로 release했다. UTC Start12:44:48Z / StopNew12:54:48Z / Deadline13:29:48Z, 최초 import 정확1회·Unity timeout1800초 이내·정리 포함45분 창이다. 네 파트 충돌 없음과 직전 물리/commit 각4GiB·Unity0·정확lock없음을 확인했고 작업자도 시작 전 재측정한다. 아직 실제 Unity 시작은 미확인이며 시작/종료/PID·exit·반환 status를 받으면 조율한 리드들에게 전달한다. heartbeat327초는 메인 msg_f86666b57824의3조건을 최종 감사에서 대조한다 |
+| 현재 Task·Dispatch | task_7c7829e6efb1 / ctx_8174e73332f5, 새 구현자 term_b68db577-b03d-4a53-9eb4-bf8252ef1392 / incarnation 7fe2888d-ed9e-46a0-9e14-721bcc7fa05d. 요청·최초명령·화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. 11:57:00Z 공식 접수는 turn_start_unobserved였고, 조건부 Enter 1회 뒤 11:58:04.476Z 제출 전문109개 비어 있지 않은 줄 일치·Working·agent_status live를 확인했다. 원시는 ui-kit-unity-import-launch/, 구현 근거는 ui-kit-unity-import/다. 현재 기존 계약1판의 단계 B만 release했다. 이전 B1 검증 task_66e572cca63c/ctx_0a2ade33e4ae와 구현 task_079ccb62b3dd/ctx_a21d2ab41644는 모두 정산·pane 종료했고 각각4550/2140파일을 보존하며 재사용하지 않는다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
 | 마감 Git 기준 | 정리 전 HEAD `ae7f403dfbd1e5f0b7af7ec61730fba032d3b4bf`, origin 일치·미커밋 제품0. 마감 기록 commit은 이 goal만 포함하며 최종 HEAD/origin/미커밋 목록은 `ui-kit-b1-review-launch/stop-git-final.json`에서 확인한다. `.backups` 산출물은 로컬 보존이며 Git push 대상이 아니다 |
@@ -171,9 +171,9 @@
 | PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범. 2026-10-13T09:29:28Z 병합, merge `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`(`lead-resume-astra/pr233-merged.json`) |
 | 리드 세션 / Run | 현재 `term_bf688225-7a92-4070-af46-81d0858f6ab3` / `run_79ffbf5c8612`(회신 `run:run_79ffbf5c8612`, consumer3), runtime `42f2ec42-f071-4796-bb5f-9b569877cebd`. 현재 Main `term_e2961048-266e-4503-b52b-dfb986d8c9b5`. 화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. 이전 handle·Task/Dispatch는 기록이며 실행 권한이 아니다 |
 | 기록 보존 | `013f37ef`을 새 branch의 `c9c34b41`로 옮겨 push했다. 옛 branch에 최신 main을 받은 merge head `857dae52`와 새 head의 tree가 같다(diff exit 0). 옛 branch는 삭제하지 않았다 |
-| 작업자·실행 자원 | Art리드1개와 새 구현자1개, 큰 실행/예약0. Art Unity·WSL·DB·Docker·서버·대형 빌드는 실행하지 않았다. Core는 Content6 반환 뒤 같은 SQL 창 재개를 회신했다고 보고했다(msg_d29a3f98fe18, StopNew12:07:22Z/Deadline12:32:22Z). 새 Content C9가 시작했다는 메인 보고가 있으므로 이전 Content6 반환을 현재 반환으로 쓰지 않는다. 기한 도래도 실제 반환 증거가 아니다. Art 실행 직전 현재 반환·메모리 원시·다른 리드 조율을 확인한다 |
+| 작업자·실행 자원 | Art리드1개와 새 구현자1개. 현재 최초 import1회 창을 release했고 실제 시작은 미확인이다. UTC12:44:48~13:29:48Z, 새기동 마감12:54:48Z. 리드 직전 원시 물리여유17,677,271,040/commit여유34,901,520,384bytes·Unity0·정확lock없음이며 작업자도 직전 재측정한다. Core SQL·Content batch 실제 반환과 네 파트 충돌 없음이 근거이며 기한 도래를 반환으로 보지 않는다. 후속 실행은 실제 반환 뒤 새로 조율한다 |
 | Unity·화면 조작 | 사용자 지시(메인 채팅 전달) 원문 「그리고 만약에 MCP 연결이나 컴퓨터 조작관련 행동이 필요하면 Codex CLI가 아닌 Codex Desktop을 통한 GPT Astra한테 명령하면 대신 조작 잘 해줄거야, 권한 최대한 자율로 줄게」. Art가 UI 창 PR에서 Unity를 열 때 쓸 수 있다. 큰 실행 전 메모리 4GB 원시와 다른 리드 알림은 그대로다 |
-| 남은 결정·준비 | Content C9/Core SQL의 실제 반환과 Art 실행창 release. MCP/Desktop이 필요하면 쓰기 전 메인 시트·시각 지정. 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함). 현재 Content 회신 주소 `run:run_b680cd89da9a`는 재사용 전 현재 상태와 대조한다 |
+| 남은 결정·준비 | 현재 import 실제 시작·종료·자원 반환, 구현 보고와 새 Opus 독립 검증. MCP/Desktop이 필요하면 쓰기 전 메인 시트·시각 지정. 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함). 현재 Content 회신 주소 `run:run_b680cd89da9a`는 재사용 전 현재 상태와 대조한다 |
 
 **남은 순서**: 비교 글 → 무료 시범 → 시범 PR → UI 창 PR → 효과 PR → 10-21 판단 → 발판·지형 PR → 마지막 손질 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
@@ -420,6 +420,14 @@
 - Content msg_d55dac4cd0c2(12:24:37Z)의 현재 Run/handle/incarnation을 대조했다. Content 보고는 batch1 실제12:14:26.9920901~12:15:48.5086643Z, PID28264/exit0, 리드의12:22:46.7427746Z Unity0·lock없음 확인,12:23:36Z 자동 설정 변경 복원이다. Content 중량실행/예약0이며 후속 실화면/MCP는 미기동·미예약이다. Art 독립 실행/판정으로 바꾸지 않는다. 원문 ui-kit-unity-import-launch/content-actual-return.json.
 - 현재 네 리드 Run을 대조해12:26:23~24Z Core msg_f4deca324758, Content msg_18319df413ea, Rules msg_cbb2146006bb, World msg_bda1fc342702로 Art 단일 cold import를 조율했다. 구현 Task·제품 범위는 그대로다. Library가 없어 비용은 미측정이며 release부터 총45분 상한·첫10분만 기동·실행 timeout30분 이내·조기 종료 즉시 반환을 제안했다. 회신 전 실행창을 선점하거나 제품 반입/Unity를 시작하지 않는다.
 - 최신 충돌 없음과 직전 자원 관문을 확인하면 같은 공식 ask에 명시 reply한다. MCP/Desktop·실서버/DB/WSL·생성기·DLL복사·풀시험·무단 재시작은 이 창에 포함하지 않는다. 실제 시작/종료/PID·exit·자기 정리·Unity0/lock 반환을 조율한 리드들에게 알린다.
+
+### Unity 최초 반입 단계 B 실행창 release — 2026-10-14
+
+- Rules msg_0062491f4f0f, World msg_e6f8076ac0bf, Content msg_56cb2858ed1d, Core msg_99a8b6355662의 현재 발신/Run을 대조했다. 모두 중량 실행/예약0·Art 단일 import 창 충돌 없음이다. Core WSL RED, World 후속 emit, Content 후속 실화면/시험은 Art 실제 반환 뒤 새 조율한다. World의 이전 반환은 준비 실패 정산이며 생성기 실행 성공으로 쓰지 않는다.
+- 리드12:43:49.5275928~12:43:51.0435683Z 실측 물리 여유17,677,271,040bytes, commit 여유34,901,520,384bytes로 각각4GiB를 넘었다. Unity·ShaderCompiler·CrashHandler 조회0, 정확03_Client/Temp/UnityLockfile없음, Library/Components없음, ProductVersion6000.6.4f1_12bfff696524 일치다. 원시는 ui-kit-unity-import-launch/pre-release-resource-gate.json이며 작업자의 기동 직전 관측을 대신하지 않는다.
+- 지시 직전 check/ack는 새 메시지0이었다. 같은 공식 질문에 reply msg_2066155df0cb(12:44:48Z)로 현재 Task/Dispatch의 기존 계약1판 단계 B만 release했고 질문 answered를 확인했다. Start12:44:48Z, StopNew12:54:48Z, Deadline13:29:48Z(UTC), Unity 실행1회·timeout최대1800초·정리/반환 포함45분이다. 새 기동은 첫10분만 허용하고 무단 재시작하지 않는다. 제품쓰기 직전 자원·경로/버전·보존·충돌을 작업자가 다시 확인한다.
+- 실제 Unity 시작/성공을 이 receipt로 주장하지 않는다. 자동 ProjectSettings/Packages 등 범위 밖 변화는 원시 보존·즉시 보고이며 임의 복원 권한을 주지 않았다. 자기 PID·출생시각·명령으로 수명을 관리하고 타 세션 프로세스/lock은 건드리지 않는다. MCP/Desktop·새 설치/업데이트·권한 우회·DB/WSL/서버/생성기/DLL복사/풀시험은 포함하지 않는다.
+- 실행창·정리 조건은 phase-b-window.json, 원문 phase-b-release-body.txt, 공식 receipt phase-b-release-reply.json에 보존했다. 네 리드에 release와 실제시작 미확인을 구분해 알렸다. 제품/시험 파일은 구현자 소유이며 리드 쓰기는 이 goal과 기동·조율 근거에 한정한다. 새 독립 검증 실행창은 포함하지 않는다.
 
 ## 다음 계획 후보
 
