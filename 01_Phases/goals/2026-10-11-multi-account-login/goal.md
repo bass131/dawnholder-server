@@ -5,17 +5,17 @@
 World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 계정을 붙이고, 같은 계정이 동시에 둘 들어오지 못하게 한다. 사용자가 범위 초안 v1을 그대로 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active`.
-- branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
+- branch: `docs/multi-account-login-closeout-20261013`(base main `b9f78ff07514b54b80370cbfca1f0df33baa5ac4`, PR235 병합 뒤). 제품 branch는 `feat/multi-account-login-20261011`(당시 base main `6782cd674f03d33b989943b409d68883d0fb5b21`)이었다. Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `gpt-6-astra` xhigh(Codex 0.162.1, 화면 「GPT-6-Astra xhigh」, backend unknown), 태그 `[World 리드 Astra]`, handle `term_5e618782-8ec4-44d0-aa43-f793d8c3078a`. 메인 재개 지시 `msg_6aac19febb2c`로 같은 Run `run_a927bbaff1f5`를 인수했다(consumer generation 4, 회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 현재 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다. 이전 리드 정보는 아래 「Astra 리드 재개와 제품 PR」에 보존한다.
-- **현재 위치**(2026-10-13, 제품 PR 작성): [PR235 - 다중 계정 로그인과 중복 접속 거부](https://github.com/bass131/dawnholder-server/pull/235)를 만들었다. 실화면 S-1 수정과 SV-01 약 재검증은 통과했고, 기존 판정의 범위 안 미해결 결함은 없다. 최신 main `44bd4319`를 통합한 commit은 `ee87adb7`이다. 메인 진행 지시 `msg_45df5f765bc0`에 따라 PR 기록을 반영하고 메인 R-2·사용자 병합 승인을 기다린다.
-  - 07:52Z 마감 기록의 Task 17개는 모두 completed이고 마지막 두 Dispatch는 release `retained`였다. 이번 재개에서는 작업자·검증자를 새로 열지 않았고, 제품·시험·빌드·Unity·DB를 새로 실행하지 않았다. 13:34Z Run 인수 뒤 수신 묶음은 비어 있었다.
+- **현재 위치**(2026-10-14 KST, 종료 문서 수정): [PR235 - 다중 계정 로그인과 중복 접속 거부](https://github.com/bass131/dawnholder-server/pull/235)는 2026-10-13T14:03:37Z에 병합됐다(main `b9f78ff07514b54b80370cbfca1f0df33baa5ac4`). 외부 Opus Gardener를 완료·정산·종료했고 메인·Core 회신에 따라 후보 도착과 사용자 상시 Unity 허용 설정의 출처를 기록했다. 첫 독립 문서 실사에서 DR-01 수치 대상 혼동·DR-02 원시 경로 오류가 차단돼 두 문서를 수정했다. 다음은 신규 독립 재실사다. S-2는 수정 뒤 미측정 상태를 보존해 후속 승격 조건으로 넘겼다. 실화면 S-1·SV-01은 이미 통과했고 범위 안 미해결 제품 결함은 없다.
+  - 07:52Z 마감 기록의 Task 17개는 모두 completed이고 마지막 두 Dispatch는 release `retained`였다. 13:29Z 재개부터 제품 PR 발행까지는 새 작업자를 열지 않았으며 제품 병합 뒤 Gardener 한 명을 새로 열어 완료했다. 제품·시험·빌드·Unity·DB를 새로 실행하지 않았다. 13:34Z Run 인수 뒤 수신 묶음은 비어 있었다.
 - **다음 행동**:
-  1. PR235의 최신 head·CI·판정 원문을 메인에 보고한다. 메인이 R-2 대조와 사용자 승인을 거쳐 병합한다. 리드는 PR을 병합하지 않는다.
-  2. 제품 PR 병합 뒤 Gardener → 종료 기록 PR → 종료 점검 → R-8을 진행한다.
+  1. 수정된 종료 기록을 신규 독립 검증자가 재실사한다. DR-01·DR-02 수정과 전체 종료 기록의 내용·참조·권한·후보 도착·수치 출처를 판정한다. 이전 검증자는 정산·종료했으며 S-2 수정 후 치수는 미측정이다.
+  2. Gardener 결과와 남은 후보를 종료 기록 PR 하나에 반영하고 별도 독립 문서 실사 → 메인 R-2·사용자 병합 승인 → 종료 점검 → R-8을 진행한다. 리드는 PR을 병합하지 않는다.
   - Unity batch·WSL 실행이 다시 필요하면 Content·Core·Rules·Art에 먼저 알린다. 큰 실행 조건은 아래 「실행 자원과 조율」을 따르고, 서식 검사도 WSL dotnet을 쓴다고 적는다.
-- **다시 열 때 필요한 것**: 현재 Codex 대화 ID `01a13573-b356-7512-911e-981db4c2e797`(`CODEX_THREAD_ID` 환경 값), Run `run_a927bbaff1f5`. 실제 재개 시 R-8의 cwd·대화·모델 대조를 다시 한다. branch와 원격·미커밋 상태도 fresh로 확인한다. 사용자 병합 승인은 아직 받지 않았다.
-- **남은 순서**(2026-10-13 PR 작성 기준): PR235 사용자 병합 승인 → Gardener → 종료 기록 PR(S-2 BACKLOG 등록과 계산 근거, 다음 goal 길드 서버 메모) → 종료 점검 → R-8.
+- **다시 열 때 필요한 것**: 현재 Codex 대화 ID `01a13573-b356-7512-911e-981db4c2e797`(`CODEX_THREAD_ID` 환경 값), Run `run_a927bbaff1f5`. 실제 재개 시 R-8의 cwd·대화·모델 대조를 다시 한다. branch와 원격·미커밋 상태도 fresh로 확인한다. PR235는 메인에게 전달된 사용자 승인으로 병합 완료됐고, 종료 기록 PR에는 별도 승인이 필요하다.
+- **남은 순서**(2026-10-14 KST 종료 문서 수정 뒤): 신규 독립 문서 재실사 → 종료 기록 PR → 사용자 병합 승인·병합 → 종료 점검 → R-8.
 - **다음 goal 메모**: 사용자 승인 「10-28 시연 계획과 파트 배정 → A」(아래 「적용 중인 사용자 결정」, 메인 전달 `msg_5ed276291957`)로 다음 goal은 「서버 후속 묶음」 대신 **길드 서버**다. 범위 후보는 기본 길드·길드원, 길드 금고와 던전 클리어 적립, 거점 레벨 올리기, 대장간 무기 강화와 공격력 반영, 패킷과 프로토콜 판(41·42·19 다음 번호)이다. R-8 뒤 새 리드가 범위 초안을 쓰고 메인이 사용자 승인을 받는다. 지금 리드는 준비하지 않는다. 앞선 결정(`msg_6974802727a2`, 서버 후속 묶음)은 이 승인으로 바뀌었다.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -27,8 +27,8 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 구현
 - [x] 독립 검증(RF-01 재검증 통과)
 - [x] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 차단 S-1은 수정·독립 검증·SV-01 재검증 통과, 실화면 재실행 없음은 메인 판단 `msg_d52061c05d13`)
-- [>] PR235 병합
-- [ ] Gardener 점검
+- [x] PR235 병합
+- [x] Gardener 점검
 - [ ] 종료 기록 PR 병합
 
 ## 이 목표는
@@ -285,6 +285,8 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 
 - **실화면 동안만 Unity 코드 실행 허용**(메인 전달 `msg_43acdbdacea8`, 2026-10-13 14:1x KST 사용자 제출): 「대시보드 결정 응답: 1) 실화면 두 건 - 확인하는 동안만 Unity 코드 실행을 허용할지(World 로그인, Content 던전 클리어) → A 확인 동안만 허용」. 리드 질문 `msg_d9d08ec6f2a3`(world-active에 허용 줄 없음)에서 시작했다. 효과: 메인이 world-active `.claude/settings.local.json`(Git 제외, 새 파일)에 permissions.allow `mcp__unity-mcp__Unity_RunCommand` 한 줄만 넣었다(05:15:02Z, SHA256 `cceb092d…c9d9`). 리드가 실화면 뒤 「허용 줄 지울 차례」를 알렸고(`msg_b5642dc8ad68`), 메인이 05:49:21Z에 파일째 지웠다(지우기 직전 SHA256이 넣을 때와 같음, `msg_d52061c05d13`). 이 결정의 허용 기간은 끝났다.
 
+- **필요 worktree의 Unity 코드 실행 상시 허용**(메인 전달 `msg_73ee54bc1e4b`, 2026-10-13T14:32:32Z): 사용자 원문 「그리고 아무래도 매번 넣기 불편하니까 필요한 워크트리에는 계속 세팅해주는게 좋겠어」. 대상은 content-active·world-active·art-active이며 허용은 `mcp__unity-mcp__Unity_RunCommand` 하나다. 메인 쓰기가 auto mode 분류기에서 Self-Modification으로 막힌 뒤 사용자가 메인 pane에서 직접 실행했다는 전달이다. world-active 파일은 14:20:53Z에 89 bytes로 재생성됐고 SHA256 `cceb092d846438ec1f97037fa65cfcceaf1076f18a451b816fcb5126c138c9d9`다. 리드가 내용·시각·hash·Git 제외 상태를 대조했다. **임시 허용 만료 → 사용자 결정으로 상시 허용 재적용**이며 그대로 보존한다. Rules가 다음 문서 PR에서 AGENTS의 셋째 예외로 정본화할 예정이고 이 종료 기록이 정본 변경 완료를 뜻하지 않는다. Unity MCP 시트·실행 창 승인은 별도다.
+
 - **10-28 시연 계획 승인**(메인 전달 `msg_5ed276291957`, 2026-10-13T03:46:56Z, 사용자 제출 12:4x KST): 「대시보드 결정 응답: 1) 계획 검토 - Main 10-28 시연 영상 시나리오와 파트 배정 → A」, 코멘트 「A로 가되 길드거점은 맵형태로 나중에 시간나면 꼭 만들었으면 좋겠어, 시각적인 성장 이펙트나 이런게 도드라지면 좋겠네, Shader로 해결할 수 있는건 해결하고, …」(전체 원문은 메인 메시지와 계획 원문 `C:/Dev/DawnHolder_Dashboard/plans/demo-video-1028-scenario.md`의 「승인 기록」). 효과: 이 goal은 재검증 → 실화면 → 제품 PR → 병합 승인 → 종료 순서로 끝낸다. 다음 goal은 길드 서버이고 R-8 뒤 새 리드가 범위 초안을 쓴다. 서버 PR이 패킷 계약을 먼저 정하고 Content 길드 화면 PR이 따른다. 지금 리드는 다음 goal을 준비하지 않고 종료 기록 「다음 계획」에 이 결정을 적는다.
 
 - **10-28 시연 영상에 길드 거점**(메인 전달 `msg_850c8aef1678`, 2026-10-13T03:34:07Z, 사용자 제출 12:3x KST): 「대시보드 결정 응답: 1) 10-28 시연 영상 - 길드 거점 최소 순환을 새로 넣을지 → A 길드 거점 넣음」. 효과: 시나리오 승인 전에는 어느 리드도 새 goal을 열거나 준비하지 않고, 진행 중인 goal은 끝까지 간다.
@@ -316,24 +318,30 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 
 이 goal의 완료조건 밖이라 다음 계획에서 판단한다. 종료 기록 PR 때 BACKLOG와 대조한다.
 
-- 클라이언트 문서 `client.md` 로그인 문단에 잘못된 길이의 결과도 같은 gate에서 끊는다는 한 구절(재검증 O-3).
-- `FEATURE_MAP.md` 「공통 계약」 패킷 줄에 v19 계정 로그인 절 링크(재검증 O-2, World 브랜치부터 없던 링크).
-- HUD PlayMode 시험의 실시간 3초 대기 간헐 시간 초과(재검증 O-4). Content 소유로 보여 Content에 알렸다(`msg_75c883fc0f0b`).
-- 첫 독립 검증의 설계 관찰 O-1·O-2·O-3·O-5(아래 「독립 검증」 절).
-- Unity 시험 harness가 알려진 Unity 부수 효과 두 파일을 「리드 복원 대상」으로 표시(메인이 Rules에 BACKLOG 후보로 넘김, `msg_834e29b98d68`).
-- 위임 계약을 낼 때 고른 규칙 절의 원문 전체와 계약 발췌를 기계로 비교(RV-01 재검증 RF-01의 검사 전환 판단).
-- 버전을 올릴 때 숫자가 든 시험 이름과 리터럴 버전의 불일치를 찾는 좁은 검사(같은 판정의 RV-01 검사 전환 판단, `Nineteen` 같은 표기 정책이 먼저 필요).
-- 이제 로그인까지 하는 시험 helper 이름 정리(`CharacterSelectHandlerTests`의 `BypassHandshake`·`SetupHandshakedSession`). Combat 시험 네 파일이 같은 이름 `BypassHandshake`를 로그인 없이 쓰는 관례라 함께 판단한다(아래 「RO-01 수정」).
-- 진입 단계를 바꾸는 goal의 계약을 낼 때 그 단계를 부르는 모든 경로(helper·직접 호출·봇·통합 시험)를 기계로 모아 옆 설명과 대조(아래 「RO-01 수정」의 리드 훑기 누락).
-- 옛 진입 설명 두 곳: `GameSession.cs:520`의 월드 진입 시점 축약과 `PingHandlerTests.cs:63~64`의 handshake만 하는 helper 설명(아래 「RO-01 묶음 재검증」의 RO-03, goal 전부터 있던 문구).
-- 봇 `ProbeBase.cs:12` 머리말이 「4종」인데 항목은 다섯이다(같은 판정 RO-04, `c5482d6b^`부터 있던 문구).
-- fixture가 돌려준 직후 상태(`HasSelectedClass=false`, `map.Players` 비어 있음, `S_EnterMap` 없음)를 관찰하는 시험(같은 판정 RF-01의 검사 전환 판단, 주석 문자열 검사만으로는 잘못된 계약도 통과한다).
-- 반복 규칙 후보: 설명 줄을 바꾸는 계약은 그 줄의 주장마다 실제 호출 위치 대조표를 붙인다(리드 설명 대조 누락의 두 번째 발생, 아래 「RO-01 묶음 재검증」). 규칙 정본은 Rules 몫이고, 다음 Rules goal이 10-28 뒤라 메인이 그때 Rules 진입 계약에 넘긴다(`msg_eb45c17c73e9`). 이 goal에서는 「RF-01 수정」 계약에 먼저 적용했다.
-- `CharacterSelectHandlerTests.cs:63~64`가 `HasSelectedClass`를 「internal getter」, 접근 이유를 「같은 어셈블리 내 서브클래스」라고 적는다. 실제 선언은 `protected internal`(`GameSession.cs:91`)이고 시험 어셈블리 접근은 `InternalsVisibleTo`(`GameServer.csproj:20~22`)다(아래 「RF-01 수정」 작업자 관찰, goal 전부터 있던 문구).
-- 같은 파일의 옛 설명 두 줄: `:24`는 없는 `GetStatsForTest` getter로 검증한다고 적고(실제는 `StatsSet`·로그·`DisconnectCalls`), `:56`은 class 선택 뒤 월드 진입이 시험 대상이라고 적지만 다섯 시험은 월드 진입을 단정하지 않는다(아래 「RF-01 재검증」 O-2·O-3, goal 전부터 있던 문구).
-- **BACKLOG 등록 대상** 메인 메뉴 최소 화면 크기와 오류 안내 넘침(실화면 S-2, 메인 판단 `msg_d52061c05d13`): Editor Game view 709x399에서 이름 규칙 안내(22pt 고정, 필요 폭 508.1px)가 오류 글자칸(폭 449.5px)을 넘쳐 두 줄이 된다. 끝 4자가 화면 밖으로 나가고 첫 줄이 서버 주소 칸과 2405.4px² 겹친다(검증자 측정). 계산 근거(리드가 `MainMenu.unity`를 읽음, 측정 아님): 오류 글자칸 폭은 0.32365·화면폭 + 219.99, 높이는 0.12424·화면높이 − 32.21이다. 10-28 영상 크기 1920x1080이면 약 841×102px라 한 줄(줄 높이 42px)에 들어간다. 한 줄 조건은 화면폭 약 891 이상, 높이 조건은 화면높이 약 598 이상이다. 먼저 최소 화면 크기를 정해야 고칠 방식(문장 줄이기, 자동 크기, 칸 넓히기)을 고를 수 있다. S-1 수정 뒤 문장 폭은 조금 달라지므로 등록 때 다시 잰 값을 쓴다. 종료 기록 PR에서 BACKLOG에 올린다.
-- 메뉴 오류 글자칸 폰트에 fallback이나 동적 atlas를 더하면 S-1 글자 시험(`MainMenuAccountSceneTests`의 `HasCharacter` 기준)이 실제 그려지는 범위와 달라진다. 그때 시험 기준을 다시 정한다(아래 「S-1 독립 검증」 VO-01).
-- 실화면 설계 관찰(아래 「실화면 확인」): O-1 이미 접속 중 거부 때 Town을 잠깐 지난 뒤 메뉴로 돌아온다(설계대로, 화면에 비쳤는지는 미측정). O-2 클라이언트 로그에 거부 사실 줄이 없다(`NetworkService.cs:98-104`). O-4 Town의 `LiberationSans SDF` 폰트 없음 경고가 여럿이다(기존 자산, 해당 파트 판단).
+- 클라이언트 문서 `client.md` 로그인 문단에 잘못된 길이의 결과도 같은 gate에서 끊는다는 한 구절(재검증 O-3). BACKLOG `login-readability-followup`.
+- `FEATURE_MAP.md` 「공통 계약」 패킷 줄에 v19 계정 로그인 절 링크(재검증 O-2, World 브랜치부터 없던 링크). BACKLOG `login-readability-followup`.
+- HUD PlayMode 시험의 실시간 3초 대기 간헐 시간 초과(재검증 O-4). Content 소유로 보여 Content에 알렸다(`msg_75c883fc0f0b`). BACKLOG `hud-playmode-timeout-investigation`.
+- 첫 독립 검증의 설계 관찰 O-1·O-2·O-3·O-5(아래 「독립 검증」 절). O-1 문구 상수 통합은 S-1 수정에서 해소됐다. 남은 O-2·O-3·O-5는 BACKLOG `login-readability-followup`.
+- Unity 시험 harness가 알려진 Unity 부수 효과 두 파일을 「리드 복원 대상」으로 표시(메인이 Rules에 BACKLOG 후보로 넘김, `msg_834e29b98d68`). BACKLOG `unity-harness-user-file-restore-mark`.
+- 위임 계약을 낼 때 고른 규칙 절의 원문 전체와 계약 발췌를 기계로 비교(RV-01 재검증 RF-01의 검사 전환 판단). BACKLOG `contract-context-check`(종료 Gardener 후보 1 근거 추가도 같은 행).
+- 버전을 올릴 때 숫자가 든 시험 이름과 리터럴 버전의 불일치를 찾는 좁은 검사(같은 판정의 RV-01 검사 전환 판단, `Nineteen` 같은 표기 정책이 먼저 필요). BACKLOG `protocol-test-version-name-check`.
+- 이제 로그인까지 하는 시험 helper 이름 정리(`CharacterSelectHandlerTests`의 `BypassHandshake`·`SetupHandshakedSession`). Combat 시험 네 파일이 같은 이름 `BypassHandshake`를 로그인 없이 쓰는 관례라 함께 판단한다(아래 「RO-01 수정」). BACKLOG `login-readability-followup`.
+- 진입 단계를 바꾸는 goal의 계약을 낼 때 그 단계를 부르는 모든 경로(helper·직접 호출·봇·통합 시험)를 기계로 모아 옆 설명과 대조(아래 「RO-01 수정」의 리드 훑기 누락). BACKLOG `session-entry-claim-check`.
+- 옛 진입 설명 두 곳: `GameSession.cs:520`의 월드 진입 시점 축약과 `PingHandlerTests.cs:63~64`의 handshake만 하는 helper 설명(아래 「RO-01 묶음 재검증」의 RO-03, goal 전부터 있던 문구). BACKLOG `login-readability-followup`.
+- 봇 `ProbeBase.cs:12` 머리말이 「4종」인데 항목은 다섯이다(같은 판정 RO-04, `c5482d6b^`부터 있던 문구). BACKLOG `login-readability-followup`.
+- fixture가 돌려준 직후 상태(`HasSelectedClass=false`, `map.Players` 비어 있음, `S_EnterMap` 없음)를 관찰하는 시험(같은 판정 RF-01의 검사 전환 판단, 주석 문자열 검사만으로는 잘못된 계약도 통과한다). BACKLOG `login-fixture-state-check`.
+- 반복 규칙 후보: 설명 줄을 바꾸는 계약은 그 줄의 주장마다 실제 호출 위치 대조표를 붙인다(리드 설명 대조 누락의 두 번째 발생, 아래 「RO-01 묶음 재검증」). 규칙 정본은 Rules 몫이고, 다음 Rules goal이 10-28 뒤라 메인이 그때 Rules 진입 계약에 넘긴다(`msg_eb45c17c73e9`). 이 goal에서는 「RF-01 수정」 계약에 먼저 적용했다. BACKLOG `session-entry-claim-check`.
+- `CharacterSelectHandlerTests.cs:63~64`가 `HasSelectedClass`를 「internal getter」, 접근 이유를 「같은 어셈블리 내 서브클래스」라고 적는다. 실제 선언은 `protected internal`(`GameSession.cs:91`)이고 시험 어셈블리 접근은 `InternalsVisibleTo`(`GameServer.csproj:20~22`)다(아래 「RF-01 수정」 작업자 관찰, goal 전부터 있던 문구). BACKLOG `login-readability-followup`.
+- 같은 파일의 옛 설명 두 줄: `:24`는 없는 `GetStatsForTest` getter로 검증한다고 적고(실제는 `StatsSet`·로그·`DisconnectCalls`), `:56`은 class 선택 뒤 월드 진입이 시험 대상이라고 적지만 다섯 시험은 월드 진입을 단정하지 않는다(아래 「RF-01 재검증」 O-2·O-3, goal 전부터 있던 문구). BACKLOG `login-readability-followup`.
+- **BACKLOG 등록 대상** 메인 메뉴 최소 화면 크기와 오류 안내 넘침(실화면 S-2, 메인 판단 `msg_d52061c05d13`): S-1 수정 전 Editor Game view 709×399의 안내(22pt 고정)는 필요 폭 508.1px, 실제 글자칸 449.7×18.1px, 두 줄이며 서버 주소 칸과 글자 겹침 면적은 2405.4px²였다. 원시는 E/`screen/runs/mcp/007-screen2-display.txt:8~11`이며 S-1 수정 뒤 미측정이다.
+  - **역사 계산과 DR-01 정정:** 이전 리드 메모 E/`screen-result-goal-context.md:13`의 식 `폭 = 0.32365·화면폭 + 219.99`, `높이 = 0.12424·화면높이 − 32.21`은 `MainMenu.unity`의 부모 **ErrorMessage** 칸을 근사한 계산이다. 709×399에서 부모 폭 약 449.5px, 1920×1080에서 부모 크기 약 841×102px가 나온다. 자식 **ErrorMessageText**는 sizeDelta x +0.25/y +0.76110077이 있어 부모와 다르다. 정확한 직렬화 값으로 계산한 자식 449.70585136×18.118005463px는 원시 관측 449.7×18.1px와 맞는다. 과거 449.5를 글자칸 관측으로 적은 오류를 정정하며, 원래 전달값 자체는 이 이력에 보존한다.
+  - 약 **891×598**은 필요 폭 508.1px와 줄 높이 **42px 가정**을 부모 식에 넣은 역사 리드 계산이다. 당시 별도 계산 실행 원시와 42px의 직접 측정 원시는 없다(현재 보존 자료에서 찾지 못함). 이번 E/`closeout/doc-fix-audit.mjs`의 정적 재계산은 원시 preferredHeight 84.0/lineCount 2를 42px로 가정하면 같은 정수 경계가 나오는지 확인한다. 이 가정은 실제 한 줄 높이를 계측한 근거가 아니며 현재 문장이나 화면의 한 줄 표시를 보장하지 않는다.
+  - 먼저 최소 화면 크기를 정해야 고칠 방식(문장 줄이기, 자동 크기, 칸 넓히기)을 고를 수 있다. S-1 수정 뒤 문장 폭은 조금 달라지므로 등록 때 다시 잰 값을 쓴다. 종료 기록 PR에서 BACKLOG에 올린다. **처분 변경(메인 운영 판단 `msg_f6467556215e`, 2026-10-13T14:37:39Z):** 앞의 「등록 때 다시 잰 값」 요구는 등록 시점 재측정 대신 후속 승격 조건으로 넘긴다. BACKLOG `main-menu-error-layout`에 수정 전 관측/부모 계산과 수정 뒤 미측정을 보존하고 「최소 화면 크기 결정 + 현재 문장 재측정」을 승격 조건으로 둔다. 이번 종료에서는 Unity를 다시 실행하지 않는다. 메인 회신의 수치는 리드 요청 `msg_5cf8ef16807d`를 전달받은 값이며 원시 출처가 아니다. 메인 후속 `msg_1d9e5cc31449`는 449.7 정정·449.5 전달 이력 보존과 나머지 세 수치의 원시 대조를 확인했다.
+- 메뉴 오류 글자칸 폰트에 fallback이나 동적 atlas를 더하면 S-1 글자 시험(`MainMenuAccountSceneTests`의 `HasCharacter` 기준)이 실제 그려지는 범위와 달라진다. 그때 시험 기준을 다시 정한다(아래 「S-1 독립 검증」 VO-01). BACKLOG `account-notice-font-fallback-test`.
+- 실화면 설계 관찰(아래 「실화면 확인」): O-1 이미 접속 중 거부 때 Town을 잠깐 지난 뒤 메뉴로 돌아온다(설계대로, 화면에 비쳤는지는 미측정). O-2 클라이언트 로그에 거부 사실 줄이 없다(`NetworkService.cs:98-104`). O-4 Town의 `LiberationSans SDF` 폰트 없음 경고가 여럿이다(기존 자산, 해당 파트 판단). O-1·O-2는 BACKLOG `login-rejection-flow-diagnostics`, O-4는 BACKLOG `town-font-missing-warning`.
+
+- 서식 검사 Plugins DLL 가드의 빈 비교(O-8)는 [Core 영속 통합 goal](../2026-10-04-persistence-integration/goal.md)에 도착했다. Core 회신 `msg_0807635fc2b3`(2026-10-13T14:35:06Z): 현재 core-active goal:311에 기록돼 있으며 Core 종료 Gardener에서 BACKLOG 등록을 판단하고 그때까지 DLL 보호 결과로 쓰지 않는다. 후보 ID는 아직 없다. 로컬 원문 표본은 E/`closeout/core-o8-source.json`이며 이 checkout에 해당 행이 이미 병합됐다는 뜻은 아니다.
+- 종료 Gardener 후보 2의 TRX/NUnit 결과 읽기·헤더 불일치 fixture 근거는 BACKLOG `powershell-all-evidence`에 추가했다(메인 채택 회신 `msg_73ee54bc1e4b`). 기존 조건을 유지하고 새 구현은 시작하지 않는다.
 
 ## 현재 결과
 
@@ -777,3 +785,37 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 공백 검사 범위: 전체 `git diff --check origin/main...HEAD`는 exit 2(생성 `GenPackets.cs` 4곳, Unity `MainMenu.unity` 7곳의 행 끝 공백). CODE_CONVENTION 「C# 공백 서식」의 제외 대상이며 두 파일은 강 재검증 commit `a0a13a3e` 이후 그대로다. 이 둘을 제외한 diff check는 exit 0이다. 생성물·직렬화를 임의 정리하지 않았고 전체 검사를 통과로 기록하지 않는다.
 - PR 준비용 집계의 첫 실행은 ClientNet DLL 파일명을 잘못 적어 exit 1이었다. 실제 경로 `03_Client/Assets/Plugins/ClientNet/Dawnholder.Client.Net.dll`을 확인해 근거 스크립트만 고친 뒤 exit 0으로 수집했다. 제품·시험 변경이나 검증 실패를 지운 것이 아니다.
 - 원격 CI와 병합 상태는 PR235에서 확인한다. PR 발행은 병합 승인이나 goal 완료를 뜻하지 않는다. 제품 병합 뒤 Gardener·종료 기록 PR·종료 점검을 이어간다.
+
+### 제품 병합과 종료 기록 진입 — 2026-10-13
+
+- 메인 통지 `msg_bd9eeeefbb79`(14:03:59Z): 메인 pane에 제출된 「병합 승인: PR235 head 1caaca40252bb60ae864f6ce212460b358e8ba61」과 head·원격 검사·CLEAN을 대조하고 메인이 병합했다. 리드는 승인 입력이나 병합을 실행하지 않았다. 메인 R-2는 최종 판정 원문 둘·제품/시험 변경 없음·서버 TRX·패킷 41/42의 Content 중복 없음이었다. 원문 E/`mail-20261013T140409Z.json`.
+- 원격 조회 E/`closeout/pr235-merged.json`: state MERGED, 14:03:37Z, merge commit `b9f78ff07514b54b80370cbfca1f0df33baa5ac4`. 조회 시 CheckRun 8개(architecture-tests·code-rules·dotnet-tests·module-boundaries 각 2개)가 모두 SUCCESS였다. 메인의 직전 여섯 검사 보고와 조회 시점을 구분한다. 실패나 취소된 실행을 통과로 바꾸지 않는다.
+- `git fetch origin` 뒤 origin/main이 같은 merge commit이고 작업 폴더가 깨끗함을 확인해 `docs/multi-account-login-closeout-20261013`을 만들었다. 사전 메모 E/`closeout/lead-context.md`. 종료 기록 범위는 goal·CURRENT World 줄·근거가 있는 BACKLOG 후보이며 제품·시험 변경은 없다.
+- 제품 PR 병합은 goal 종료가 아니다. 신규 외부 Opus Gardener의 보고 한 파일을 받은 뒤 종료 기록 PR과 별도 독립 문서 실사를 진행한다. 후보 채택·다음 goal 착수는 별도 판단이며 길드 서버 준비는 하지 않는다.
+
+### 종료 Gardener — 2026-10-13
+
+- 신규 `claude-opus-5-5` xhigh, 최초 명령 `claude --model claude-opus-5-5 --effort xhigh`, 화면 Opus 5.5 xhigh(Claude Code 2.1.296), backend unknown. 리드 아래 vertical split `term_9142e6b1-d16f-4aa3-af7e-80c7b540b1df`, Task `task_19596adf7888`, Dispatch `ctx_921d937406b6`. TEMP/TMP는 `.backups/tmp/lg1`, Git 조회는 `GIT_OPTIONAL_LOCKS=0`, Unity MCP는 붙이지 않았다. readiness satisfied 뒤 worker-start ready·input_accepted·turn_started를 확인했다.
+- 입력: 로컬 결과 기록 `b7cc5748a036c8b838a85de7062cf8ac9a9e00a4`, 계약 E/`closeout/gardener-contract.md`(SHA256 `ba4e32399d7759f388cf170f7f5e151ee09a93b82afe05ff975b2b318e4f0244`). 파일 31개의 실제 존재·hash·bytes와 새 출력 부모를 preflight로 확인했다. 적용 원문 6절의 원문/계약 비교는 E/`closeout/gardener-rule-comparison.json`에서 모두 일치다.
+- 산출물: E/`closeout/gardener-context-report.md`(SHA256 `704c900625455483829403fde19e0f2457ddc9a5700efb9b8f24defe92680f48`). 보고서 앞 사전 맥락을 포함한 한 파일만 직접 썼다. worker_done `msg_9dcad98ce26a`(14:30:37Z, succeeded) 뒤 리드가 전문을 읽고 Task·Dispatch·발신자를 대조했다. release `retained`(external_terminal), 완료 화면·동일성을 확인해 14:32Z에 해당 pane을 닫았다. Gardener 완료는 종료 문서 독립 실사 통과를 뜻하지 않는다.
+- 회고: 판정 여덟 개의 결함 표와 원시를 읽어 RF-01 두 사건을 Task별로 나눴다. S-2를 제외한 결함은 수정·정정으로 정리됐고 같은 계약·결함의 확정 실패 3회는 없었다. 원격 제품 branch CI와 로컬 실행 실패를 구분했으며 HUD 시간 초과, 도구 중단, 절차 이탈, 자기 발견 실패를 서로 합치지 않았다. 기존 서버 TRX·Unity XML·봇·서식 원시의 재집계는 기존 판정과 같았다. 새 제품·시험·빌드·Unity·DB 실행은 없다.
+- **정리 후보 1 — 기존 `contract-context-check` 근거 추가 제안:** 리드 계약의 규칙 절 누락과 서로 다른 검증 Task 둘의 `###` 하위 절 추출 실패를 근거로, 리드 조립과 검증자 대조가 같은 정본 helper를 쓰고 Markdown 제목/펜스 fixture를 두자는 제안이다. **정리 후보 2 — 기존 `powershell-all-evidence` 근거 추가 제안:** TRX 헤더 `notExecuted=0`과 건별 `NotExecuted=5`의 불일치·집계 코드 반복을 근거로 TRX/NUnit 읽기 helper와 불일치 fixture를 두자는 제안이다. 둘 다 아직 사용자 채택·BACKLOG 반영·구현 전이다. 메인 판단 요청 `msg_ee2f58e3faec`.
+- 리드의 표본 대조: E/`closeout/lead-gardener-audit.json`(14:34:57Z)에서 입력 31개 hash/bytes·HEAD·tracked status와 보고 hash를 확인했다. 원문 추출 첫 실패의 JSON 둘을 직접 읽었다. 후보 1 원문의 「구현 다섯」은 열거된 파일/작업 단위가 불명확해 그 수치를 종료 기록에 전재하지 않았고 보고 원문은 보존했다.
+- **확인 중:** (1) `99_Tools/format-check.sh`의 Plugins 가드 O-8은 빈 파일끼리 비교하는 기존 관찰이다. 이전 Core 참고 전달 `msg_0d2d16fe0bd5` 뒤 등록 경로가 미확인이라 Core에 `msg_141c17567317`로 물었다. (2) Git 제외 `.claude/settings.local.json`에 만료된 Unity 명령 허용이 같은 내용으로 다시 생겼다(89 bytes, 생성/수정 14:20:53Z, SHA256 `cceb092d846438ec1f97037fa65cfcceaf1076f18a451b816fcb5126c138c9d9`). 리드·Gardener의 작성이 아니며 주체는 미확인이다. 메인에 알리고 파일을 보존했다. (3) main 병합 commit `b9f78ff0`의 CI 실행은 E/`closeout/main-merge-ci.json` 재조회에서도 0건이다. 원인 미확정이며 실패나 성공으로 판정하지 않는다. PR head의 성공 검사와 구분한다.
+- 자기 공개: Gardener가 `lg1/check0.json` 직접 쓰기를 시도했으나 사전 메모 가드가 실행 전에 막아 파일은 생기지 않았다. heartbeat 출력 숨김과 첫 worker_done의 의심 낱말도 각각 가드 차단 뒤 정식 명령으로 성공했다. 실제 허용 밖 파일 쓰기와 차단된 시도를 구분했고 메인에 원문과 함께 보고했다. 설정 파일의 재생성 주체를 Gardener로 추정하지 않는다.
+
+### 종료 결정과 후보 도착 — 2026-10-13
+
+- 원문 E/`closeout/mail-20261013T143755Z.json`: 메인 `msg_73ee54bc1e4b`가 설정은 사용자 상시 허용으로 보존, 후보 둘은 기존 BACKLOG 행에 근거만 더한다고 회신했다. 실제 허용 밖 쓰기가 없었던 Gardener 차단 시도는 추가 조치 없음으로 정리했다. 이 회신을 이 pane의 사용자 직접 입력이나 새 구현 승인으로 격상하지 않는다.
+- Core `msg_0807635fc2b3`의 O-8 기록을 실제 core-active goal:311에서 읽었다(E/`closeout/core-o8-source.json`, 14:39:53Z, 원문 파일 SHA256 `189dc8a4ff9eb3644f52af59885c4426db224608bee5b565c21364fbc06197db`). Core 종료 Gardener가 등록을 검토하며 그때까지 서식 검사의 DLL 보호 결과를 근거로 쓰지 않는다는 경계를 보존했다. World의 DLL 검증 근거는 별도로 읽은 Windows 원본 hash이며 빈 Plugins 비교를 통과 근거로 쓰지 않는다.
+- S-2 처분은 메인 운영 판단 `msg_f6467556215e`다. 등록 전 재측정 대신 수정 전 관측·계산과 수정 뒤 미측정을 보존하고 최소 화면 크기 결정·현재 문장 재측정을 후보 승격 조건으로 남긴다. 이전 「등록 때 다시 잰 값」 문장도 후보 절에 그대로 남기고 바로 뒤에 변경 처분을 붙였다. 현재 Content C9의 Unity 시트·실행 창을 추가로 점유하지 않는다.
+- 후속 후보: BACKLOG 기존 두 행에는 Gardener 근거를 추가하고 `multi-account-login`은 이 goal로 승격 상태를 연결했다. 기존 관찰은 책임별 후보 아홉 행으로 정리했으며 Unity 부수 효과와 규칙 원문 대조는 기존 행, O-8은 기존 Core goal에 연결했다. 이미 S-1 수정에서 해소된 문구 상수 분리는 해결 상태를 밝혔다. 첫 작성 스크립트는 `python` 앱 별칭 부재로 실행되지 않았고 수정 전 후보 검사에는 18개 도착 누락이 나왔다. 설치/설정 변경 없이 확인한 `py`(Python 3.14.4)로 같은 기록 스크립트를 실행한 뒤 후보 검사 E/`closeout/candidate-check.json`은 131 ID·중복 0·후보 20·도착 누락 0·알 수 없는 ID 0, allowed/exit 0이었다. 이는 후보 도착 정적 검사이며 제품 시험이 아니다.
+- 사전 메모 E/`closeout/decision-write-context.md`. 이번 변경은 goal·BACKLOG이며 CURRENT의 World branch 줄은 직전 기록으로 유지한다. 다음 길드 서버 goal은 승인된 순서 메모만 보존했고 준비·착수하지 않았다. 문서 실사와 종료 PR 병합 전에는 전체 goal 완료로 처리하지 않는다.
+
+### 종료 문서 실사와 수정 — 2026-10-14 KST
+
+- 신규 외부 `gpt-6-astra` xhigh 검증자(Task `task_6b84d064675c`, Dispatch `ctx_a82b2cc1ed5a`)가 HEAD `ee985f6d7b0b38f76d83ed9076da1b479869c44e`의 종료 문서 세 파일을 실사했다. 최초 명령·화면은 GPT-6-Astra xhigh/Codex 0.162.1, backend unknown이다. 판정 E/`closeout/doc-review/verdict.md`(SHA256 `b35c5b4796efb555735e1620dcbfb389c20e8d3988a8742daa3a717daff5e6ee`)는 **DR-01·DR-02 차단**, 둘 다 낮음·리드 문서 귀속이다. worker_done `msg_bfcb3fa3493c`(2026-10-13T15:10:50Z, failed). 리드는 원문 153줄 전체를 읽고 settled failed → release retained/external_terminal → 동일 incarnation·빈 완료 화면 확인 → exact pane close(ptyKilled=true)를 완료했다.
+- **DR-01 수정:** 과거 부모 ErrorMessage 계산을 자식 글자칸 관측으로 옮긴 오류다. 후보 절과 BACKLOG에서 글자칸 관측을 449.7px로 정정하고 부모 계산 449.5px의 전달 이력을 남겼다. 메인 `msg_f6467556215e`의 값은 리드 요청 `msg_5cf8ef16807d`를 옮긴 것이며 원시가 아니다. 메인 후속 `msg_1d9e5cc31449`에 따라 필요 폭 508.1px·겹침 2405.4px²를 원시에서 읽고, 891×598은 부모 식/42px 가정의 역사 계산·당시 별도 원시 없음·이번 정적 재계산을 구분했다. S-1 뒤 미측정과 미래 승격 조건은 유지했다.
+- **DR-02 수정:** BACKLOG의 E 기준 경로에 빠진 폴더를 보완했다. HUD 전체와 재실행 둘은 `reverify/runs/` 아래 각 `results.xml`, 화면 거부 로그는 `screen/runs/play-log.txt`로 축약 없이 적었다. 실제 파일 네 개가 모두 존재한다. 현재 제품 결함이나 새 제품 시험 실패가 아니다.
+- 사전 메모 E/`closeout/doc-fix-context.md`, 실행 스크립트 `doc-fix-audit.mjs`와 원시 `doc-fix-audit.json`. 새 산술은 scene 부모/자식 직렬화 값과 화면 원시를 읽어 계산 대상·가정·소스 hash를 남긴다. 후보 CLI는 131 ID·중복 0·후보 20·도착 누락 0·unknown 0, exit 0이며 diff check도 exit 0이다. 이 정적 검사는 독립 재실사 판정을 대신하지 않는다.
+- 이번 두 결함 수정은 첫 회, 같은 문서 계약의 각 결함 확정 실패도 1회다. 교정은 수치와 경로를 작성·전달하는 리드 문서 및 새 검증 계약에서 수행한다. 제품 동작을 바꿀 이유가 없어 제품/시험/설정은 보존하고 새 반복 규칙이나 상시 도구는 만들지 않았다. 과거 메모·판정 원문은 그대로 두었다. 새 외부 검증자의 독립 재실사와 종료 PR·메인 R-2·사용자 병합 승인이 남아 있다.
