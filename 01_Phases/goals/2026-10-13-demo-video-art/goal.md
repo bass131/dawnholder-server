@@ -161,7 +161,7 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 신규 Astra의 단계 A 준비가 끝나 공식 ask msg_1839510397ca가 열린 상태다. Core SQL 실제 반환 보고는 받았고 World PacketGenerator 정확1회 → Content review-combined-1 정확1회 실제 반환 뒤 Art와 후속 C9 실화면 순서를 조율한다. 직전 물리/commit 여유 각4GiB·현재 충돌 없음까지 확인한 뒤 같은 ask에 현재 Task의 단계 B 실행창을 reply한다. 아직 제품 반입·Unity 실행 허가와 큰 실행 예약은 없다. heartbeat 327초 구간1개는 msg_f86666b57824의 오늘 한정 기준3조건을 최종 원시 감사에서 대조한 뒤 처리한다 |
+| 다음 첫 일 | 신규 Astra의 단계 A가 끝나 공식 ask msg_1839510397ca가 열린 상태다. Core SQL·World 생성기 뒤 Content batch23의 실제 반환 msg_d55dac4cd0c2를 받았다. 현재 Core·Content·Rules·World에 Art 최초 import1회 창의 최신 충돌/예약을 조율 중이다. 4파트 회신과 직전 물리/commit 여유 각4GiB·Unity0·lock없음을 확인한 뒤 같은 ask에 UTC Start/StopNew/Deadline을 명시해 단계 B를 reply한다. 제안은 총45분 상한·첫10분만 기동·Unity timeout30분 이내이며 아직 실행 허가/예약은 없다. heartbeat327초는 메인 msg_f86666b57824의3조건을 최종 감사에서 대조한다 |
 | 현재 Task·Dispatch | task_7c7829e6efb1 / ctx_8174e73332f5, 새 구현자 term_b68db577-b03d-4a53-9eb4-bf8252ef1392 / incarnation 7fe2888d-ed9e-46a0-9e14-721bcc7fa05d. 요청·최초명령·화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. 11:57:00Z 공식 접수는 turn_start_unobserved였고, 조건부 Enter 1회 뒤 11:58:04.476Z 제출 전문109개 비어 있지 않은 줄 일치·Working·agent_status live를 확인했다. 원시는 ui-kit-unity-import-launch/, 쓰기는 ui-kit-unity-import/만 허용된 단계 A다. 이전 B1 검증 task_66e572cca63c/ctx_0a2ade33e4ae와 구현 task_079ccb62b3dd/ctx_a21d2ab41644는 정산·pane 종료 완료이며 각각4550/2140파일을 보존한다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
@@ -414,6 +414,12 @@
 - 세 조건을 모두 원시로 확인한 경우만 생존 신호 간격 초과를 제품 판정 통과 차단에서 뺀다: ① 간격 초과만의 문제이고 각 간격600초 이하 ② 제품 파일·시험 결과·보호 hash·자원에 영향을 준 증거 없음 ③ 그 간격 중 조용한 감사 창·다른 파트 실행 창 등 금지 구간의 쓰기·실행 없음. 리드 또는 검증자의 확인 근거를 남긴다. 판정문은 「운영 미준수(메인 결정 처리)」 절에 간격 원시와 이 msg ID를 기재하며 소급 면책으로 표현하지 않는다.
 - 600초 초과, 금지 구간 실행, 맥락 메모 부재/불일치·규칙 원문 누락, 판정 결론과 본문 불일치는 그대로 메인 판단 대상이다. 5분 heartbeat 의무는 유지한다. 적용할 때만 메인 보고에 「생존 간격 기준 적용」 한 줄을 쓴다.
 - 현재 구현 Task의 확인된327초 구간은 조건① 범위에 든다. 단계 A 원시는 제품쓰기0/Unity0을 보고하고 리드도 제품 폴더 부재·tracked 변경0을 확인했으나, 이 중간 확인을 최종 보존·자원·금지 구간 감사의 완료로 대체하지 않는다. 나머지 조건과 이후 간격은 최종 원시/독립 검증에서 함께 대조한 뒤 적용 여부를 판정한다. 이전 계약1판·고정 입력은 수정하지 않고 이 메인 결정 원문·시각·적용 단계를 후속 판정 입력에 추가한다. 단계 B 실행 권한은 아직 없다.
+
+### Content 실행창 반환·Art 최초 import 창 조율 — 2026-10-14
+
+- Content msg_d55dac4cd0c2(12:24:37Z)의 현재 Run/handle/incarnation을 대조했다. Content 보고는 batch1 실제12:14:26.9920901~12:15:48.5086643Z, PID28264/exit0, 리드의12:22:46.7427746Z Unity0·lock없음 확인,12:23:36Z 자동 설정 변경 복원이다. Content 중량실행/예약0이며 후속 실화면/MCP는 미기동·미예약이다. Art 독립 실행/판정으로 바꾸지 않는다. 원문 ui-kit-unity-import-launch/content-actual-return.json.
+- 현재 네 리드 Run을 대조해12:26:23~24Z Core msg_f4deca324758, Content msg_18319df413ea, Rules msg_cbb2146006bb, World msg_bda1fc342702로 Art 단일 cold import를 조율했다. 구현 Task·제품 범위는 그대로다. Library가 없어 비용은 미측정이며 release부터 총45분 상한·첫10분만 기동·실행 timeout30분 이내·조기 종료 즉시 반환을 제안했다. 회신 전 실행창을 선점하거나 제품 반입/Unity를 시작하지 않는다.
+- 최신 충돌 없음과 직전 자원 관문을 확인하면 같은 공식 ask에 명시 reply한다. MCP/Desktop·실서버/DB/WSL·생성기·DLL복사·풀시험·무단 재시작은 이 창에 포함하지 않는다. 실제 시작/종료/PID·exit·자기 정리·Unity0/lock 반환을 조율한 리드들에게 알린다.
 
 ## 다음 계획 후보
 
