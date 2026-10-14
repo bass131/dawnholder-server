@@ -462,4 +462,10 @@
     <packet name="C_DungeonClearConfirm">
         <byte name="reserved"/>
     </packet>
+    <packet name="C_Login">
+        <string name="accountName"/>
+    </packet>
+    <packet name="S_LoginResult">
+        <byte name="result"/>
+    </packet>
 </PDL>

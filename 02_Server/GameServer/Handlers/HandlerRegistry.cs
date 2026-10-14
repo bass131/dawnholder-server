@@ -26,6 +26,7 @@ internal static class HandlerRegistry
         new Dictionary<PacketID, IPacketHandler>
         {
             { PacketID.C_Handshake, new HandshakeHandler() },
+            { PacketID.C_Login, new LoginHandler() },
             { PacketID.C_Ping, new PingHandler() },
             { PacketID.C_MoveIntent, new MoveIntentHandler() },
             { PacketID.C_Attack, new AttackHandler() },

@@ -1,5 +1,7 @@
 using Dawnholder.Client.Audio;
+using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Network;
+using Shared.GameData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -32,6 +34,7 @@ namespace Dawnholder.Client.UI
         [Header("서버 연결 게이트 (M3.8 Phase 05 5-B)")]
         [FormerlySerializedAs("serverHostInputField")]
         [SerializeField] TMP_InputField _serverHostInputField;
+        [SerializeField] TMP_InputField _accountNameInputField;
         [FormerlySerializedAs("errorMessageText")]
         [SerializeField] TMP_Text _errorMessageText;
         [FormerlySerializedAs("startButton")]
@@ -45,6 +48,7 @@ namespace Dawnholder.Client.UI
 
         const string ServerHostPrefsKey = "ServerHost";
         bool _probing;
+        string _pendingAccountName;
 
         void Awake()
         {
@@ -67,8 +71,10 @@ namespace Dawnholder.Client.UI
                 _serverHostInputField.text = saved;
             }
 
-            if (_errorMessageText != null)
-                _errorMessageText.text = "";
+            if (_accountNameInputField != null)
+                _accountNameInputField.text = AccountLoadout.GetMenuName();
+
+            ShowError(MainMenuNotice.TryTake(out string notice) ? notice : "");
         }
 
         public void OnStartClicked()
@@ -80,6 +86,13 @@ namespace Dawnholder.Client.UI
             if (string.IsNullOrWhiteSpace(host))
             {
                 ShowError("서버 주소를 입력해주세요");
+                return;
+            }
+
+            if (!AccountNameRule.TryNormalize(_accountNameInputField != null ? _accountNameInputField.text : null,
+                out _pendingAccountName))
+            {
+                ShowError(MainMenuNotice.InvalidAccountName);
                 return;
             }
 
@@ -102,6 +115,7 @@ namespace Dawnholder.Client.UI
                 // 성공한 host를 PlayerPrefs에 박음 → NetworkService.Connect()가 Town 씬 진입 시 읽어 사용.
                 string host = ResolveHost();
                 PlayerPrefs.SetString(ServerHostPrefsKey, host);
+                AccountLoadout.Select(_pendingAccountName);
                 PlayerPrefs.Save();
 
                 Debug.Log($"[MainMenu] Server probe 성공 ({host}) → CharacterSelect Scene 로드");

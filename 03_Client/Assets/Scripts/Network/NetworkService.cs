@@ -9,6 +9,7 @@ using Dawnholder.Client.Scenes;
 using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
 using Shared.Protocol;
+using Shared.GameData;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -51,6 +52,7 @@ namespace Dawnholder.Client.Network
             var connector = new Connector();
             _lifetime = new ClientConnectionLifetime(connector.BeginConnect,
                 MainThreadDispatcher.Enqueue, current => new UnityClientSession(current), ResetSessionMirrors);
+            _lifetime.LoginRejected += HandleLoginRejected;
         }
 
         /// <summary>현재 시도가 없을 때 endpoint/class를 고정하고 연결을 시작한다.</summary>
@@ -77,14 +79,29 @@ namespace Dawnholder.Client.Network
                 return;
             }
 
+            if (!AccountNameRule.TryNormalize(AccountLoadout.SessionAccountName, out string accountName))
+            {
+                MainMenuNotice.Set(MainMenuNotice.InvalidAccountName);
+                ReturnToMainMenu();
+                return;
+            }
+
             var endPoint = new IPEndPoint(ip, _serverPort);
             _reportedError = null;
             _accumSec = 0f;
-            if (_lifetime.Connect(endPoint, (byte)classValue))
+            if (_lifetime.Connect(endPoint, (byte)classValue, accountName))
                 Debug.Log($"[NetworkService] Connect 시도 → {endPoint} (class={classValue})");
         }
 
         public void Disconnect() => _lifetime?.Disconnect();
+
+        void HandleLoginRejected(LoginResult result)
+        {
+            MainMenuNotice.Set(result == LoginResult.AlreadyOnline
+                ? MainMenuNotice.AlreadyOnlineAccount
+                : MainMenuNotice.InvalidAccountName);
+            ReturnToMainMenu();
+        }
 
         void ResetSessionMirrors()
         {
@@ -152,6 +169,7 @@ namespace Dawnholder.Client.Network
 
         void OnDestroy()
         {
+            if (_lifetime != null) _lifetime.LoginRejected -= HandleLoginRejected;
             _lifetime?.Dispose();
             if (Instance == this) Instance = null;
         }
