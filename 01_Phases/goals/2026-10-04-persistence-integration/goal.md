@@ -1,8 +1,41 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **2026-10-09 재시도 3회차로 DB 생성 1단계(A2·B2·A3·B3, 정지·꺼내기)를 완료했다(메인 판정 `msg_b2365c472ed4`). 시험 DB는 Baseline001 상태로 보존돼 있고 2단계(Complete·U-01·Test-Database)와 G4 정리는 미실행이다.** 남은 범위는 2026-10-10 사용자 승인으로 WSL2 리눅스 컨테이너 기준으로 개정했다(다섯 질문 모두 A, 「현재 범위·PR 경계」). 이 goal은 영속화 줄만 맡는다(결정 18 A). 2026-10-10 R-7 설계 검토를 반영해 범위를 보완했다(「현재 범위·PR 경계」의 「R-7 설계 검토 결과와 채택」). 재개 정본은 「재개 지점」의 첫 블록이고, 1단계 세부는 「DB 생성 1단계 재시도 계획」 블록이다. 아래는 그 전 경과다. 2026-10-05 DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다. 2026-10-08 사용자가 SQL 시작 거부 조사 v3를 관리자·일반 창에서 1회씩 실행했다(SQL 시작 0회). 리드 판독에서 DATA 백업 검증은 성공했고, 「여는 방식」 가설은 약해졌고, SQL 서비스 실행 맥락에서만 거부된다는 쪽이 유력하다. 원인은 미확정이다. 사용자가 다음 진단으로 A 콘솔 시작 분리 시험을 골랐다. v1 문서 실사는 규칙 위반 2건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 실사에서 통과(전달 가능)했다. 메인 결정으로 카드 ⑩ 조건을 고쳤고, 카드 v3 실사의 빈틈(SCS-10)을 고친 카드 v4가 카드 한정 실사를 통과해 전달본이 됐다. 사용자가 12:44Z에 1회 실행했고 master가 열렸다(OPENED, 데이터 변경은 master 두 파일). 리드 판독은 서비스 실행 맥락 쪽 거부(1a)와 「그사이 원인이 사라짐」을 아직 가르지 못한다. 사용자가 A 서비스 시작 재확인을 골랐다. 리드가 실행 파일·카드 v1(D: 부착은 diskpart)을 쓰고 작성자 점검을 통과시켰다. v1 실사는 120자 규칙 1건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 재실사에서 PASS(전달 가능, 비차단 1건)했다. 사용자 결정으로 카드 v2 대기 대신 Fable 작업자가 진단·처치를 맡았다(아래 「재개 지점」). 10-09 처치에서 서비스가 두 회차 연속 정상 시작·질의·정지했다. 설정 변경은 없고 원인은 미확정이다. 독립 검증 차단 2건(스크립트 작성 규칙·준수 주장)은 사용자 A로 기록·수용했다. DB 생성은 여전히 미실행이며 재시도는 따로 사용자 승인을 받는다.
+상태(2026-10-15 KST): PR237 draft/head81a7c22d7271498b78c051e677c7e728f99565f7. 정식 G2 실제 한 수명은 NOT PASS다. C0~C8 binding은 실제 통과했으나 C8 runtime 로그인 생성에서 기존 코드 결함 #1(높음, 차단)로 실패했다. 정확 자원 정지·보존과 별도 실제값 감사(202개/CompleteNoHits)는 완료됐으며 runtime/Test-Database·별도 binding SELECT·C9·settlement는 미실행이다. 제품 #1 좁은 오프라인 수정은 메인 msg_500bacaf3e04 승인으로 신규 Opus 선행시험부터 진행 중이다. 새 DB 수명·보존 자원 처리는 아침 사용자 결정 대기다. 보호자원 읽기쓰기/재시작/삭제0, 중량 실행·예약0. A/B는 독립통과/PR240이다. 세부 원문·후속은 재개34다.
+
+이전 상태 기록: **2026-10-09 재시도 3회차로 DB 생성 1단계(A2·B2·A3·B3, 정지·꺼내기)를 완료했다(메인 판정 `msg_b2365c472ed4`). 시험 DB는 Baseline001 상태로 보존돼 있고 2단계(Complete·U-01·Test-Database)와 G4 정리는 미실행이다.** 남은 범위는 2026-10-10 사용자 승인으로 WSL2 리눅스 컨테이너 기준으로 개정했다(다섯 질문 모두 A, 「현재 범위·PR 경계」). 이 goal은 영속화 줄만 맡는다(결정 18 A). 2026-10-10 R-7 설계 검토를 반영해 범위를 보완했다(「현재 범위·PR 경계」의 「R-7 설계 검토 결과와 채택」). 재개 정본은 「재개 지점」의 첫 블록이고, 1단계 세부는 「DB 생성 1단계 재시도 계획」 블록이다. 아래는 그 전 경과다. 2026-10-05 DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다. 2026-10-08 사용자가 SQL 시작 거부 조사 v3를 관리자·일반 창에서 1회씩 실행했다(SQL 시작 0회). 리드 판독에서 DATA 백업 검증은 성공했고, 「여는 방식」 가설은 약해졌고, SQL 서비스 실행 맥락에서만 거부된다는 쪽이 유력하다. 원인은 미확정이다. 사용자가 다음 진단으로 A 콘솔 시작 분리 시험을 골랐다. v1 문서 실사는 규칙 위반 2건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 실사에서 통과(전달 가능)했다. 메인 결정으로 카드 ⑩ 조건을 고쳤고, 카드 v3 실사의 빈틈(SCS-10)을 고친 카드 v4가 카드 한정 실사를 통과해 전달본이 됐다. 사용자가 12:44Z에 1회 실행했고 master가 열렸다(OPENED, 데이터 변경은 master 두 파일). 리드 판독은 서비스 실행 맥락 쪽 거부(1a)와 「그사이 원인이 사라짐」을 아직 가르지 못한다. 사용자가 A 서비스 시작 재확인을 골랐다. 리드가 실행 파일·카드 v1(D: 부착은 diskpart)을 쓰고 작성자 점검을 통과시켰다. v1 실사는 120자 규칙 1건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 재실사에서 PASS(전달 가능, 비차단 1건)했다. 사용자 결정으로 카드 v2 대기 대신 Fable 작업자가 진단·처치를 맡았다(아래 「재개 지점」). 10-09 처치에서 서비스가 두 회차 연속 정상 시작·질의·정지했다. 설정 변경은 없고 원인은 미확정이다. 독립 검증 차단 2건(스크립트 작성 규칙·준수 주장)은 사용자 A로 기록·수용했다. DB 생성은 여전히 미실행이며 재시도는 따로 사용자 승인을 받는다.
 
 ## 적용 중인 사용자 결정
+
+### 2026-10-14 - 리드 전원 Sol xhigh, Sol 작업자 xhigh 전환
+메인 msg_18c90b33c9a1(2026-10-14T14:21:18Z, from term_e2961048-266e-4503-b52b-dfb986d8c9b5)이 전달한 사용자 원문:
+- 23:2x KST 「음 그리고 리드급 아무래도 Sol Max로 전체적으로 확장해야 될 거 같아, Astra 토큰 사용량이 감당이 안되네」
+- 이어서 「음 Sol 그리고 정정사항은 작업자랑 리드 전부 Xhigh로 변경, 핫픽스 적용 지시해줘」
+
+앞선 리드 하나 Sol max 시범(msg_928a88962458)은 대체된다. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 원문 전체는 formal-g2-card-review-20261014/lead-sol-transition-source.json에 보존한다.
+
+메인 해석에 따라 기본 다섯과 승인된 추가 리드는 gpt-6.1-sol xhigh, 태그 [Core 리드 Sol]로 전환한다. 새 Sol 배정 작업자는 codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh로 연다. Astra 배정 작업자는 gpt-6-astra xhigh 유지, 독립 검증자 모델 시범·R7·Advisor 배정도 유지한다. 실행 중 작업자 모델은 바꾸지 않는다. 전환 중 같은 파트 Astra/Sol 리드 태그는 모두 인정하되 from_handle·Task·Dispatch를 대조한다.
+
+리드는 안전 지점에서 메인에게 「Sol 전환 준비됨」을 보내고 턴을 끝낸다. 메인이 같은 Codex 대화를 Sol xhigh로 다시 열고 새 handle에 진입 메시지를 주면 같은 Run을 run-use로 인수한다. 진행 중 검증자는 유지한다. 현재 이 기록은 전환 준비이며 실제 런타임 모델 변경 완료가 아니다. Rules 정본 핫픽스 전에도 이 사용자 결정이 적용 근거다.
+
+
+### 2026-10-14 - 10-28 기능 동결까지 시연 우선 모드
+메인 msg_beda86f6bc2f(2026-10-14T14:11:26Z, from term_e2961048-266e-4503-b52b-dfb986d8c9b5)가 전달한 사용자 원문(메인 pane Enter 제출, 2026-10-14 23:10 KST 무렵): 「대시보드 결정 응답: 1) 10-28 시연 - 동결까지 시연 경로 우선 모드로 검증 절차를 줄일지, 지금 절차를 유지할지 → A 시연 우선 모드」. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+지금부터 2026-10-28 기능 동결까지 적용하며 동결 뒤 원래 절차로 돌아간다. 10-13 승인 시나리오의 영상 장면, 특히 3·6·7·8 길드 순환과 5 보스 보상의 실제 동작이 목표다. 이 절은 아래 과거 절차·기록보다 현재 적용에서 우선하며 과거 원시는 고치지 않는다.
+
+- 동작 영향 없는 시험 중복·문서 표현·주석 위치·이름·가독성·배치 지적은 통과 차단에서 빼고 번호와 근거를 「동결 뒤 정리」에 남긴다. 제품 계산을 복제해 항상 통과하는 시험과 측정값 위장은 계속 차단한다.
+- 같은 산출물의 독립 재검증은 1회까지다. 그 재검증에서도 차단되면 새 검증자를 열지 않고 메인에 올려 진행·좁은 수정·장면 축소 판단을 받는다.
+- 생존 간격·hash 전수 누락·보고 형식 같은 운영 미준수는 판정문에 공개하고 제품 판정을 막지 않는다. 금지 구간 실행·메모와 결과의 불일치·결론과 본문의 모순은 메인에 올린다.
+- 작업자 계약에 새 하네스·시각 계산 같은 준비 장치를 더하지 않는다. 기존 도구와 리드 공식 답으로 시작하며 실제 필요한 실행과 중량 순서 조율은 유지한다.
+- 시연 장면과 관계없는 작업은 현재 지점에서 멈추고 동결 뒤 잇는다. 시연 밖 새 후보는 착수하지 않는다.
+- 서버 상태/판정 소유·입력 검증·패킷 ID·PDL/생성코드/양쪽 직렬화·공유DLL 양쪽 검증, 구현/검증 분리와 실제 실행 독립 검증1회, 미실행 정직한 보고, Unity GUID/사용자파일 보호, Core 보존DB·옛실패자원 접근금지, 중량순서 조율과 PR별 정확head 병합승인을 유지한다.
+
+원문 전체는 core-active의 .backups/verification/2026-10-04-persistence-integration/formal-g2-card-review-20261014/lead-demo-priority-source.json에 보존했다. 적용 작업 메시지는 msg_8599e13e4e83이다.
+
+
+- **2026-10-14 정식 실행의 자원 이름 두 곳 정정(A).** 메인 `msg_4ee0044c99ff`(13:16:45Z)가 전한 사용자 원문: 「대시보드 결정 응답: 1) Core 정식 설치·검사 - 승인한 자원 이름 두 개만 바꿔서 그대로 진행할지, 보류할지 → A 두 이름만 바꿔 진행」. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. E/`formal-g2-decision-20261014/name-amendment-proposal.md`의 두 값만 적용해 ContainerName=`dawnholder-sqlserver-judgment`, VolumeName=`dawnholder-sqlserver-judgment-data`로 바꾼다. 원본 결정 카드 SHA549F094D…8BAC는 보존하고 정정안 SHA·이번 결정 ID를 실행 카드/계획에 함께 연결한다. 비밀 root·hostname·14334·DB/identity·고정 image·상한·한 수명·옛자원2B·독립실사·PR승인은 아래 msg_2dadf78a7e93의1A 그대로다. 제품guard는 완화하지 않으며 새 이름이 이미 있거나 소유 불일치면 채택하지 않는다.
+
+- **2026-10-14 정식 설치·검사 지금 실행(1A), 옛 실패 자원은 목표 끝까지 보존(2B).** 메인 `msg_2dadf78a7e93`(12:59:45Z)가 전한 사용자 원문: 「대시보드 결정 응답: 1) Core SQL 1단계 - 정식 설치·검사를 새 시험 DB로 한 번 지금 실행할지, 보류할지 → A 지금 실행 · 2) Core SQL 1단계 - 예전에 실패한 시험 컨테이너·볼륨·비밀을 지금 지울지, 목표 끝까지 둘지 → B 목표 끝까지 보존」. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 승인 경계는 E/`formal-g2-decision-20261014/card.md` SHA256 `549F094DF31DE1DAA89C135D822ECE210328B259111BDDE1C5D45CD6DD778BAC`의 「1A가 승인할 구체 경계」 그대로다. 새 `g2-20261014` 컨테이너·볼륨·비밀 root와14334만 쓰고 기존 보호 자원은 읽지도 않는다. Art·Core RED 등의 실제 반납 뒤, 카드/승인계획 SHA의 독립 실사와 이 결정 출처를 묶어 시작 전 메인에 통지하며 추가 실행 승인을 반복 요청하지 않는다. 범위·자원·상한 변경은 별도 결정이고 PR 병합·Windows SQL 처분은 포함하지 않는다. 옛 컨테이너·볼륨·세 비밀 root는 목표 종료 때 다시 묻는다.
 
 - **2026-10-14 영속화 2·3단계 대역 개발 병행(A).** 메인 `msg_863bfe8bbf4d`(11:26:10Z)가 전달한 사용자 원문: 「A로 가자, 알림사운드가 안들려서 온지도 몰랐네」. 대상 결정은 현황판 `core-parallel-steps-1014`의 「Core 영속화 - 2·3단계를 지금 나란히 시작할지, 1단계(SQL 판정)를 끝낸 뒤 순서대로 할지」다. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 효과는 별도 후속 goal의 저장소·복구 인터페이스와 저장 작업 핵심을 메인이 연 worktree 하나에서 신규 Astra 구현자 최대2명으로 실제 DB 없이 대역 개발하는 것이다. 리드는 Core 리드이며 먼저 범위 초안을 메인이 결정과 대조하고 경로를 전달한 뒤 작업자를 연다. 실제 DB 실증은1단계 판정 뒤 별도 범위·권한으로 수행한다. 현재 SQL 검증 창·이 goal의 C# 제외·보호자원 금지·다계정 저장/길드 금고 확대 금지를 유지한다. 아래 「병행 후속 범위 준비」가 현재 준비 상태다.
 - **2026-10-14 Core 속도 우선·빠른 진행안 요청.** 메인 `msg_93ea846433ed`(11:10:48Z)가 전한 사용자 원문(메인 pane Enter 제출, 20:1x KST): 「그리고 코어쪽 작업은 최대한 빠르게 해결할 수 있는 작업방식으로 진행해줘, 너무 더뎌」, 「검증하는거도 좋긴한데, 지금 아직도 0/5 진전이야」. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 0/5는 영속화의 SQL 설치·판정, 저장소·복구, 저장 작업, 로딩 게이트, 재접속 복원이다. 현재 일회용 검증은 계속하고 중복 절차를 줄이며, 정식 G2·보존 자원 처분·후속 병행 범위의 필요한 결정을 묶어 메인에 제안한다. 아래 「빠른 진행안」은 승인 전 제안이며 후속 코드 쓰기 권한이 아니다.
@@ -250,7 +283,34 @@
 - 원시 사본은 근거 root의 `g2-stage1-observations/service-start-failure/`다.10:35:31Z 보존 transcript5477bytes의 SHA는 `83E413B2128A364787D25F3A09ACFA646C444ADF131D792C1F21EA7077BECEA4`다. Prepare/ServiceStart preflight와 audit를 함께 보존했고, 이후 종료 확인은 별도 기록으로 보완한다. 원본 transcript와 고정 v4 계획은 수정하지 않았다.
 - 읽기 전용 원인 조사는 현재 목표의 막힘 해소 범위다. 재마운트·ACL/서비스 설정 변경·재시작 등 외부 변경과 재실행은 구체적 수정안·명령·실행자·시간 창 및 필요한 사용자 승인을 거친다. 기존 승인 잔여 시간이나 종료 기록을 재실행 권한으로 쓰지 않는다. 새 목표와 범위 밖 자동화는 착수하지 않는다.
 
-### 적용 중인 사용자 결정 — Astra·Fable 5.1 합동조사
+### 적용 중인 사용자 결정
+
+### 2026-10-14 - 리드 전원 Sol xhigh, Sol 작업자 xhigh 전환
+메인 msg_18c90b33c9a1(2026-10-14T14:21:18Z, from term_e2961048-266e-4503-b52b-dfb986d8c9b5)이 전달한 사용자 원문:
+- 23:2x KST 「음 그리고 리드급 아무래도 Sol Max로 전체적으로 확장해야 될 거 같아, Astra 토큰 사용량이 감당이 안되네」
+- 이어서 「음 Sol 그리고 정정사항은 작업자랑 리드 전부 Xhigh로 변경, 핫픽스 적용 지시해줘」
+
+앞선 리드 하나 Sol max 시범(msg_928a88962458)은 대체된다. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 원문 전체는 formal-g2-card-review-20261014/lead-sol-transition-source.json에 보존한다.
+
+메인 해석에 따라 기본 다섯과 승인된 추가 리드는 gpt-6.1-sol xhigh, 태그 [Core 리드 Sol]로 전환한다. 새 Sol 배정 작업자는 codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh로 연다. Astra 배정 작업자는 gpt-6-astra xhigh 유지, 독립 검증자 모델 시범·R7·Advisor 배정도 유지한다. 실행 중 작업자 모델은 바꾸지 않는다. 전환 중 같은 파트 Astra/Sol 리드 태그는 모두 인정하되 from_handle·Task·Dispatch를 대조한다.
+
+리드는 안전 지점에서 메인에게 「Sol 전환 준비됨」을 보내고 턴을 끝낸다. 메인이 같은 Codex 대화를 Sol xhigh로 다시 열고 새 handle에 진입 메시지를 주면 같은 Run을 run-use로 인수한다. 진행 중 검증자는 유지한다. 현재 이 기록은 전환 준비이며 실제 런타임 모델 변경 완료가 아니다. Rules 정본 핫픽스 전에도 이 사용자 결정이 적용 근거다.
+
+
+### 2026-10-14 - 10-28 기능 동결까지 시연 우선 모드
+메인 msg_beda86f6bc2f(2026-10-14T14:11:26Z, from term_e2961048-266e-4503-b52b-dfb986d8c9b5)가 전달한 사용자 원문(메인 pane Enter 제출, 2026-10-14 23:10 KST 무렵): 「대시보드 결정 응답: 1) 10-28 시연 - 동결까지 시연 경로 우선 모드로 검증 절차를 줄일지, 지금 절차를 유지할지 → A 시연 우선 모드」. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+지금부터 2026-10-28 기능 동결까지 적용하며 동결 뒤 원래 절차로 돌아간다. 10-13 승인 시나리오의 영상 장면, 특히 3·6·7·8 길드 순환과 5 보스 보상의 실제 동작이 목표다. 이 절은 아래 과거 절차·기록보다 현재 적용에서 우선하며 과거 원시는 고치지 않는다.
+
+- 동작 영향 없는 시험 중복·문서 표현·주석 위치·이름·가독성·배치 지적은 통과 차단에서 빼고 번호와 근거를 「동결 뒤 정리」에 남긴다. 제품 계산을 복제해 항상 통과하는 시험과 측정값 위장은 계속 차단한다.
+- 같은 산출물의 독립 재검증은 1회까지다. 그 재검증에서도 차단되면 새 검증자를 열지 않고 메인에 올려 진행·좁은 수정·장면 축소 판단을 받는다.
+- 생존 간격·hash 전수 누락·보고 형식 같은 운영 미준수는 판정문에 공개하고 제품 판정을 막지 않는다. 금지 구간 실행·메모와 결과의 불일치·결론과 본문의 모순은 메인에 올린다.
+- 작업자 계약에 새 하네스·시각 계산 같은 준비 장치를 더하지 않는다. 기존 도구와 리드 공식 답으로 시작하며 실제 필요한 실행과 중량 순서 조율은 유지한다.
+- 시연 장면과 관계없는 작업은 현재 지점에서 멈추고 동결 뒤 잇는다. 시연 밖 새 후보는 착수하지 않는다.
+- 서버 상태/판정 소유·입력 검증·패킷 ID·PDL/생성코드/양쪽 직렬화·공유DLL 양쪽 검증, 구현/검증 분리와 실제 실행 독립 검증1회, 미실행 정직한 보고, Unity GUID/사용자파일 보호, Core 보존DB·옛실패자원 접근금지, 중량순서 조율과 PR별 정확head 병합승인을 유지한다.
+
+원문 전체는 core-active의 .backups/verification/2026-10-04-persistence-integration/formal-g2-card-review-20261014/lead-demo-priority-source.json에 보존했다. 적용 작업 메시지는 msg_8599e13e4e83이다.
+ — Astra·Fable 5.1 합동조사
 
 메인 `msg_fdd03a37dd07`(2026-10-05T10:42:43Z)이 전달한 사용자 원문:
 
@@ -700,6 +760,10 @@
 - **21 - 신규 Opus 정정 실사 발행:** task_62933ca17503/ctx_bd6c420bfafb, handle term_d1ea9ee1-bdde-45e5-a5f7-a300ec6bf9b2, incarnation47e4ea56-007a-44c4-821d-2dbfefe7c484로 최초 작업을 연결했다. R5 자기 pane 아래 vertical split, TEMP/TMP .backups/tmp/catfix1 지정 뒤 claude --model claude-opus-5-5; 화면 Claude Code2.1.299/Opus5.5 xhigh, backend unknown, 준비satisfied·선택창없음·cwd/branch·input_accepted/turn_started를 확인했다. C=E/catalog-verification-correction-1, 계약SHA3678FDCC3A23C8A628980D85CBBB180AB6359A1FF776A88B2243EAF0A2C081BE, 고정입력35·경로누락0이다. 새 정정판과 자기 근거만 쓰며 이전 판정/제품 불변·새DB/무거운실행0이다. 결과는 아직 없고 선행시험 작성과 동시에 진행한다. 발행용 첫 도구 JS 문법 오류는 실행 전에 실패했으며 실제 worker-start는1회다.
 - **22 - 정정 뒤 제품 범위 한정 통과·검증자 정산:** worker_done msg_0d2658953692(12:39:20Z), C/verdict-corrected.md SHA25632D84969ACA33B5DC9268E6D8BBA1B46101277E8FA030FE68A79E51BF372FE56와 자기 context 전체를 읽고 snapshot/progress/입력35재해시 원시 표본을 대조했다. 기존 verdict의 F1~F6을 정정한 제품 범위 통과를 수용한다. F7은 관련 원문이6절이 아닌7절이라는 비차단 표기다. 감사대상12787 중12784가 현재까지 같고 변경3개는 창종료 뒤, progress 접두hash 동일·추가25줄을 대조해 두 금지창 도구가 원래 감사 결과에 영향을 주지 않았다는 관측범위 판정을 수용했다. 운영 결손 자체는 보존한다. 삭제출력1개·snapshot뒤56개·내용변경3개는 실제값 미감사로 공개한다. CAT03는 유효8/무효1이고 열 직접반례는 미검토다. Q1은 요구의 선별 문언·미변경 열비교·테이블 소유 반례 근거로 새 필수차단으로 확대하지 않으며, Q2의 값 감사 공백은 PR에도 명시한다. 과거389/542초·태그/P감사공백은 이 정정판으로 면제하지 않는다. 메인 msg_f81792f61068에 보고했다.
 - **23 - 정정 실사 수명·PR 준비:** 현재 exact Task/Dispatch/from/outcome을 대조하고 release(external_terminal/retained) 뒤 정확 pane을 닫아 ptyKilled=true·부모리드 정상·reclaimable0을 확인했다. 공개 inbox의 해당Dispatch9신호를 helper로 대조한 최대간격196초/초과0/exit0, 원시는 C/lead-liveness-inbox-extract.json·lead-liveness-result.json이다. check 묶음에 없는 신호를 생존위반으로 단정하지 않았다. 새DB/시험 실행0이고 고정입력35/35 불변은 원시 보고와 대조했다. 원격main20ce59dd 및 기존PR0을 확인해 검증된 SQL변경과 기록을 커밋하고 엔진판정 draft PR을 준비한다. 정식G2·보호자원 처분·전체goal/Gardener 종료는 아직 미완료이며 정확head 병합 승인은 별도다.
+- **24 - 엔진 판정 draft PR237 생성:** 검증된 SQL4위치와 재개·정산 기록을 commit81a7c22d7271498b78c051e677c7e728f99565f7로 push하고 [PR237](https://github.com/bass131/dawnholder-server/pull/237)을 draft로 열었다. 생성 직후 CI 목록은 아직 비어 있었고 성공으로 보고하지 않는다. 제품SHA E6A806F6…A854 불변·git diff --check 통과다. PR에는 실제 엔진 관측·무효사례·값 감사 미측정·정식G2/보호자원/전체goal 미완료를 명시했다. 이 PR번호 연결 기록은 생성 뒤 live goal 갱신으로 다음 checkpoint에 포함하며 원격PR 현재head는 위 SHA다. 병합 승인 요청이나 자동병합은 하지 않았다.
+- **25 - 정식 수명 결정·CI4 통과:** 메인 msg_47b2a3d85cd9 요청에 E/formal-g2-decision-20261014/card.md(SHA549F094D…8BAC)를 작성해 msg_7c2c5a94d901로 전달했다. 메인 msg_2dadf78a7e93의 사용자1A/2B를 위 적용결정에 원문 기록했다. PR237 head81a7c22d7271498b78c051e677c7e728f99565f7 CI4개 모두SUCCESS(마지막dotnet-tests13:03:17Z)를 확인했으나 정식G2 원시/독립판정이 남아 draft를 유지한다. 병합만으로1단계 종료 불가이며 msg_aba0559bc4c5로 보고했다. 원본판정/원래결정카드/옛자원은 보존한다.
+- **26 - 정식 실행 준비 발행·자원명 계약 결함:** E/formal-g2-card-20261014(F)에 신규 Astra task_cd797ade8e0a/ctx_fa80556ef97a를 발행했다. 최초모델 gpt-6-astra xhigh/화면일치/backendunknown, 입력35존재·규칙7절 원문, 준비만 허용하며 제품/DB/WSL/Docker 실행0이다. input_accepted 뒤 turn_start_unobserved였고 신규pane JSON draft20674자=계약15886+관측머리말4788(R5허용범위)을 대조해 텍스트없는Enter1회로 복구했다. 제출된작업/실제읽기·질문은 공개transcript에서 확인했으나 전문은 API클리핑으로 미대조이며 이를 메인에 알린다. 구현자가 msg_8690841071b5에서 제품 Environment.Common.ps1:131~134의 날짜토큰 거부와 승인자원명의 충돌을 발견했다. 리드가 기존제품규칙을 놓친 첫 계약결함으로 기록하고 제품guard를 유지한 두이름(ContainerName=dawnholder-sqlserver-judgment, VolumeName=dawnholder-sqlserver-judgment-data) 정정안을 메인 msg_df448d6998ce로 올렸다. 원본승인카드SHA불변·새자원/보호접근0이며 미승인정정을 적용하지 않는다. 공식reply msg_e5f2398e001f로 실행불가 표시한 나머지 정적초안을 계속 허용했다. 새 반복규칙은 만들지 않는다.
+- **27 - 자원명 정정A 적용·병행 구현 실제 시작:** 메인 msg_4ee0044c99ff의 사용자정정으로 ContainerName=dawnholder-sqlserver-judgment/VolumeName=dawnholder-sqlserver-judgment-data 두 값만 확정했다. 정정안 실제SHA3921824DD3DD7802DB5C5EC16644E1E9EB25C7AC753E0CC869874B10CCF6C9F9, F/lead-name-amendment.md SHA42E0CAE196B9D26D59106E78BF0ED900334200857C37381FC3559EE1832BA281, 적용통지msg_a3cccb8ba77e다. 기존카드/계약/inputs불변·별도보충이며 새실행0/옛자원2B읽기금지를유지한다. 선행시험은정산종료했고 별도core-parallel에서 신규Astra A task_1ec9da6a571b/ctx_9ae06c0e8223와 B task_de733c6afaf3/ctx_05da3ac97420를기동해 두turn_started를확인했다. 그범위는후속goal정본이며현재SQLgoal의C#쓰기제외를바꾸지않는다. World13:23:19~13:38:19 중량창은실제반환미확인이고 Core는카드/제품작성만진행한다.
 ### 병행 후속 범위 준비 — 2026-10-14
 
 사용자 병행 A의 구체 범위 초안은 K2/`lead-parallel-goal-draft.md`(SHA256 `9BEF2054524E0E0F5CC07495E66A13D9CF2E0FC655A97C42397837790EE4132F`)다. 요청 worktree `core-parallel`, 최신 main 기준 branch `feat/persistence-runtime-core-20261014`, 새 goal 예정 `01_Phases/goals/2026-10-14-persistence-runtime-core/goal.md`. 메인 범위 대조·실제 경로/기준 SHA 전달 전에는 새 제품 쓰기·작업자 발행을 하지 않는다.
@@ -2073,3 +2137,91 @@ Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한�
 - PR #190 head `7ff1ca3c`의 원격 CI는 4개 workflow 모두 통과다: code-rules `37349041978`, module-boundaries `37349041974`, architecture-tests `37349041869`, dotnet-tests `37349041836`. 원시는 E/`pr190-ci/runs-after-ci2.json`과 `pr190-checks-watch-2.txt`에 있다. 메인에 `msg_37af1db0c7c8`로 한 줄 보고했다. 이 PR에서 밤사이 할 일은 끝났다. 남은 것은 사용자 결정(Procmon 실행 승인, 병합 경계, 정확한 head 병합 승인)과 범위 초안 승인이다.
 - 18:15Z께 Claude Code가 시스템 메모리 부족을 이유로 Astra의 우편함 대기(`check --wait`)를 중단했다. 받은 Delivery는 없었다(출력 `[killed]`뿐). 안내에 따라 스스로 다시 열지 않는다. 새 메시지는 터미널 알림을 받으면 처리한다. ACK하지 않은 Delivery는 다음 check에서 다시 전달된다.
 - 세션 마무리: 메인 `msg_7589d8bf6bcc`(22:33:57Z)에 따라 「재개 지점 → 세션 마무리 — 2026-10-05T22:34Z 기준」을 현재 재개 정본으로 썼다. 새 Sol·검증자·Gardener는 띄우지 않았다. 살아 있는 작업자 pane은 0이다(worker-list 원시 E/`opus-lead-entry/worker-list-closeout.json`). 보고 뒤 우편함 대기를 열지 않는다.
+
+## 재개 28 - 정식 실행 카드 준비 인수와 독립 실사 대기 (2026-10-14)
+- 준비 Task task_cd797ade8e0a/ctx_fa80556ef97a의 report/context와 worker_done msg_556a3132bd83을 인수했다. F=formal-g2-card-20261014, card SHA377B9E6BA5FF3B4B1DCD8D0DA6CB031AA8940F4600EE80CD97D68F35BE41569F, plan SHACADF461F716AB0498DB901CADFFDBBFB485FA8EFED56D2F55302364D15CECFAA. 리드가 고정35/실행92 입력을 재hash해 불일치0이며 원시는 F/lead-current-hash-check-corrected.json이다. 최초 집계식의 리드 오류 원시도 보존했다.
+- 실제 준비는 AST6/JSON schema42 및 hash·diff뿐이다. BoundedJob +37행 metadata의 compile/실사용, 카드 실제 DB 실행은 미실행이다. 다음 신규 Opus는 실행 전 독립 실사와 좁은 guard 검증 준비를 맡는다. 한 Core 검증자 기준을 유지한다.
+- 정확 준비 pane은 쓰기 종료/동일성/idle 확인 뒤 release→close ptyKilled=true, 재사용0이다. 같은 시각 별도 core-parallel의 A44/B12파일 구현도 인수·종료했지만 compile/test0이며 그 goal의 별도 통합 강 판정을 기다린다.
+- 운영 미준수(메인 결정 처리): 360초 간격1건은 오늘 한정 msg_af606189f271을 적용한다. F/lead-settlement-liveness.json, report 해당구간 로컬 허용작성/실행0, 127hash 보존, World 실제중량0·TG-01 창 반환을 대조했다. 제품·결과·보호자원 영향/금지 실행 증거가 없으며 전체 과거 OS 감사를 주장하지 않는다. 원문 F/lead-cadence-decision-source.json, 메인 통지 msg_4c94daf40a1d. 실제300초주기는 유지한다.
+- 자원은 Core 중량0/예약0, Art 실제 반환→World→Content 순서 동의. 새 SQL실행1A/두이름정정A/옛보호2B는 유지하며 실행 카드 검토 뒤 별도 Task·start gate·메인 통지로 이어간다. PR237은 draft, 최종 실행/독립 판정 미완료다.
+- 신규 독립 실사 발행: task_40db0ebc0906/ctx_3fb0407c46e8, term_b23c82c5-c8b8-4354-bfc0-cf4365a6fe39, 지정/화면 Opus5.5 xhigh/backend unknown. R=formal-g2-card-review-20261014, 계약 SHAB49DD4AFDEF90C742A1F20D9E951D3EE82D6456FB2E6632738FC53ED15725C00, 82입력/부모 확인·ready/input_accepted/turn_started. 현재 정적 실사/검증준비만 허용하며 실제 guard 실행도 자원창 공식 회신 뒤다. 실제 G2 실행과 최종 SQL강판정은 후속이다.
+
+## 동결 뒤 정리
+- 현재 이 결정으로 이관 확정한 지적은 없다. 이후 독립 판정의 동작 영향 없는 지적만 원래 번호·근거·후속 내용을 남긴다. 동작 결함과 위장 시험/측정은 여기에 숨기지 않는다.
+현재 계약 적용: task_40db0ebc0906/ctx_3fb0407c46e8의 고정 입력은 유지하고 msg_8599e13e4e83으로 v1 요구3~5 중 새 준비 하네스/시각 장치 추가 의무를 축소했다. 이미 작성한 검증 파일과 원시는 보존하고 더 확장하지 않는다. 기존 도구의 좁은 실제 확인은 리드 공식 답·자원 조율 뒤이며 아직 실제 G2실행0이다. 현재 새 정식 카드의 최초 독립 실사, 이 카드 재검증 횟수0이다.
+
+## 재개 29 - Core Sol 인수와 카드 실사 실패 정산 (2026-10-14)
+- 메인 진입 msg_6c03eaaa35ab, 새 실제 handle term_0470d42b-8d2f-44b4-b511-63f337269813/incarnation0ea1367f-3875-45c6-97dc-85c2606ab6e6. 화면 GPT-6.1-Sol xhigh·문맥35%/backend unknown, 같은 Run generation15 인수. READY msg_59b103ecf45a를 보냈다. 과거 Astra handle은 기록으로만 둔다.
+- Opus task_40db0ebc0906/ctx_3fb0407c46e8의 failed done msg_5c588eb55d3d와 verdict/context 원문을 인수했다. verdict SHA4FA73DE594B2989F82489D014CFCA2C0B1D1CED9312257C414DF900597E96FD4, context SHA44B21A8D10372EC61E77136F4E92098464A58F9017A771BE95116C4FAF9C8444. 판정은 준비 수용불가/보류이며 정적승인·계획·경로·순서는 일치하나 실제 compile/child/G2실행0이다.
+- #1(중, 차단): Invoke-SecretAudit.ps1:176~178의 PID 단독 생존 판정이 재사용된 다른 프로세스를 이전writer로 오인해 1회 감사가 AuditError로 끝날 수 있다. 코드경로/재시도불가는 정적확정, 빈도미측정이다. 새 외부 작업자의 이 결함 좁은수정 뒤 카드 독립재검증1회를 사용한다. 재검증도 막히면 새 검증을 열지 않고 메인에 올린다.
+- 정확 idle/Task/Dispatch/incarnation 확인→release→close ptyKilled=true, 재사용0. R/lead-sol-settlement.md·lead-sol-worker-release.json·lead-sol-terminal-close.json. 공식ask는 HOLD회신완료, 생존helper over555초는 공식ask 대기 원시와 함께 운영절에 공개한다.
+- 실제DB/새자원생성/보호접근/중량예약0, PR237 draft. 시연우선의 동작확인·보호경계와 두goal 범위는 유지한다.
+
+동결 뒤 정리 추가:
+- #2 - 실행 TEMP의 g2prep 소유/설명 정리. card-session.ps1:15와 card.md:112; 동작영향없음. 실제 실행 계약에서 현재 g2prep 경로를 허용해 멈춤을 막고 폴더/문구 정리는 동결뒤로 둔다.
+- #3 - OpenProcessToken TOKEN_QUERY(0x0008)의 이름 있는 상수 정리. BoundedJob.cs:1308; 동작영향없음. 동결뒤처리.
+- #1 좁은 수정 발행: 신규 Astra task_fc4fad138cf7/ctx_617b45dac912, term_5f9f4953-f224-4ad0-8030-63df8b277894/incarnation114d10ad-db0f-44a6-85fe-a2b11075661a. 신호2/3·요청/화면 Astra xhigh/backend unknown, ready/input_accepted/turn_started. X=formal-g2-card-fix-1, 계약 SHA7C330658E6435E34C884DCA8B8D701ED8540F19894A044A3434D3028876D8FB8·23입력/부재0, 수정 전4파일 raw/before 보존. 새준비하네스/실제실행0, 쓰기종료 뒤 카드 독립재검증1회다.
+
+## 다음 goal 초안 작성 주체 변경
+메인 msg_922cbf57815f(2026-10-14T14:49:04Z)이 전달한 사용자 원문(메인 pane Enter 제출, 2026-10-14T14:44:08Z/23:44 KST): 「그리고 영속성 부분은 너가 더 전문가니까 Goal 초안 작성하고 진행까지 계속 진행해줘, Core쪽 진도를 좀 빠르게 뺴보자」. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+다음 실제 DB 연결→로딩 게이트→재접속 직업 복원의 goal 초안은 메인이 작성한다. 앞선 msg_eb86e55c3e55의 리드초안 항목을 대체한다. 리드가 이미 작성한 lead-next-goal-draft.md는 원문 그대로 보존하며 더 쓰지 않는다. 메인 초안 수신 뒤 goal.md에 옮기고 코드·스키마·명세와 어긋나는 곳만 회신한다. 현재 A/B 통합검증과 SQL#1 좁은수정은 계속한다. 메인은 dh.CharacterAuthority의 slot1 PK/CHECK와 계정이름별 UUIDv5 로그인 차이를 초안에서 다룬다고 통지했다.
+
+메인 시각정정 msg_d8a5ccb79390: 초안작성주체 msg_922cbf57815f와다음goal승인 msg_fcb2a973fede의 사용자원문시각은2026-10-14T14:44:08Z/23:44 KST다. 내용은그대로이며메인초안 최신SHA055A04FF697EC14A0DF17B4D1656777D8F54717BC04ACE5135CAC03A18DFBCDE를적용한다.
+## 재개 30 - 카드 #1 수정 구현 인수 (2026-10-14)
+- task_fc4fad138cf7/ctx_617b45dac912의 done msg_4351692f4ef7·report/context·실제diff·hash를 대조했다. 수정4파일/readonly19/before4 불일치0, 원시는 X/lead-hash-audit.json. card SHA1B7D081A5ADDC91F1548D309961F30E33FF616BDEBAFA7888623CD7A73622FA4, plan CADF461F716AB0498DB901CADFFDBBFB485FA8EFED56D2F55302364D15CECFAA 불변, inputs E13DB2A74B46A7A11A2602BABC83BC1679B34F06E3624E80E17A54EDAED8AB5D.
+- 수정은 기존receipt PID/생성UTC 쌍을 request로전달하고보유handle로같은instance 생존만판정한다. 원본snapshot/실제값/사후drift·상한·보호경계는보존한다. 실제compile/child/DB0이며 독립재실사는 아직0/예정1이다.
+- 생존helper max352초/초과1은운영절공개·시연우선제품비차단. 정확idle/identity→release→close ptyKilled=true/재사용0, X/lead-settlement.md·lead-worker-release.json·lead-terminal-close.json.
+- A/B Opus검증자1명이먼저진행하며그종료뒤SQL 재실사1회. Core실제중량/예약0, A/B공식ask는World선행WSL 반환대기다. 새준비하네스/보호접근0·PR237 draft 유지.
+
+## 재개 31 - SQL 카드 재실사1회와 A/B 수정 병행
+- 메인 msg_b2124c0c72b9가SQL재실사먼저·A/B수정병행·그뒤A/B재검증1회를승인했다. 신규Opus task_6d73e82a96fd/ctx_bfe75abd1aad,term_3bd5a5d5-1737-4dc3-b8f8-174fa331381b/incarnation9d5338f6-fcd7-4ec6-8219-b9b98844af9a,요청/화면Opus5.5 xhigh/backend unknown. ready/input_accepted/turn_started.
+- formal-g2-card-recheck-1 계약 SHA360F036B612CB727E3012AEE8BD7E4DFCB4508274F13D18B9054EC3FB022C8FD·40입력/누락0. 정확인스턴스/배열전달·기존metadata검증파일의좁은실사용을재실사하며실제compile/child는공식ask 뒤다. 새하네스/시각gate0,실제G2/DB는이Task범위밖/미실행이다.
+- 같은카드재검증1회상한을사용한다. 다시차단이면새검증0/메인판단. A/B제품수정자는별도core-parallel에서쓰기만하므로Core검증자1명이다. G2와A/B재검증WSL은겹치지않게후속순서를조율한다. 메인시작통지는Q/send-main-recheck-and-correction-started.json이다.
+## 재개 32 - SQL 카드 재실사1회 수용 정산
+- 신규 Opus task_6d73e82a96fd/ctx_bfe75abd1aad, worker_done msg_440e1a005a85. verdict SHA256 ECD554DDF44E3117B68B4B322D15C34091DDEF3962248BD74B329FA3AF7628BA, context SHA256 2A595B0EEBC9125BD96C3E19CAC5EE7F55D10C2B15EAC5B6870585DF0C439C2C. 리드가 원문 전체·실제 source/raw를 읽었다. 입력40 리드 불일치0·F92행/고정card-plan-inputs 동일, 차단#1 해소/새차단0·실행 전 준비 수용 가능이다.
+- 실제 좁은 시험 A16:14:30~46Z exit0/3사례PID·생성UTC·SID·종료반증 전부true, B16:14:46~49Z exit1이다. B false4는 검증driver의 t4/t3 writer 경로 오류이며 같은 원시 t3 writer4개의 PID/생성UTC가 실제 t4 receipt와4/4일치한다. 원시exit1·false4 보존/재실행0이며 lead-run-raw-review.json·lead-run-settlement-raw.json에 리드 대조를 뒀다. 실제 G2/card진입/DB/실제감사는 미실행이고 최종SQL 강PASS가 아니다.
+- Q/lead-settlement.md·lead-final-input-audit.json·lead-liveness-check.json에 원문hash/실사/실측한계·신호11/max276초/300초초과0·공식ask156초·예방240초초과 공개를 기록했다. release→정확idle/incarnation→pane close ptyKilled=true→reclaimable0, 작업자 재사용0이다. 같은카드 재검증1회 상한은 사용 완료다.
+- 비차단 O1(접근불가 PID재사용의 fail-closed, 정적/미실측), O2(PID0/null신원 receipt거부), O3(사전거부진단), O4(중복), O5(빈배열binding/진단)을 후속에 남긴다. 기존 누락/조회실패 거부 경계를 완화하지 않으며 실패하면 승인된 보존절차로 정산한다. #2 g2prep는 정식 실행 계약에 현재 경로 쓰기를 명시하고 폴더/문구 정리는 동결 뒤다. #3 상수명도 동결 뒤다.
+- 메인 msg_b2124c0c72b9 승인대로 신규Opus A/B 재검증1회를 먼저 진행하고 WSL반환 뒤 이미 승인된 정식G2를 별도Task로 실행한다. G2와 A/B WSL을 겹치지 않는다. 현재 Core/World WSL실행·예약0, Core SQL/DB0이다.
+## 재개 33 - 정식G2 실제 실행·독립 최종 판정 Task 발행
+- A/B 독립재검증1회 통과/PR240 head f4d80d256a3041acd15624d804300157be05548b 및WSL전체반환 뒤 이미승인된 별도G2 실행자를 열었다. 신규Opus task_e7c30171be80/ctx_197a24a7de6a, term_b9bcf7a5-aa8e-4017-a0d6-94a4bf644589/incarnation567a9518-e3b7-4714-b8d2-06d6ffcc5480, 최초명령 claude --model claude-opus-5-5·화면Opus5.5 xhigh/ClaudeCode2.1.299·backendunknown이다.
+- formal-g2-execution-20261014 계약 SHA256 74B0109577545D4C25BDBCF10D122AD40A2670430AE708F4D3F00393FD75E9DD, 입력100/누락0·고정F92현재hash불일치0/출력부모확인·firstscreen무권한modal·ready/input_accepted/turn_started를 관측했다. F/run·start-gate 부재이며 현재정적준비만이다.
+- 실제compile/child/Docker/DB/비밀/F.run은 공식ask→fresh4GiB/4GiB/disk10GiB·Unity/다른중량WSL/SQL비동시·메인통지·기존start-gate1회고정SHA와리드지금1회시작 뒤만이다. 새하네스/시간관문/제품수정0, 기존card Run→정지보존→정확writer종료확인→Audit1회이며 실패단계retry/새수명/삭제/재시작0이다. g2prep실행scratch는 이번계약의현재경로로허용했다.
+- 준비판정 Q/verdict ECD554DDF44E3117B68B4B322D15C34091DDEF3962248BD74B329FA3AF7628BA는 최종SQL강PASS가 아니며 이번별도실제DB수명의원시·독립verdict로 판정한다. PR237은draft/head81a7c22d7271498b78c051e677c7e728f99565f7을 유지하고 병합후G4는별도다.
+- World msg_930ddda71efe/Art msg_82358b1a81f3은현재큰실행·예약0이다. Content/Rules를포함한시작직전현재창은후속공식질문에서다시조율하며이번발행이실제실행/성공승인을뜻하지않는다.
+
+## 재개 34 - 정식 G2 실제 실패·정지 보존·실제값 감사 인수
+- 신규 Opus task_e7c30171be80/ctx_197a24a7de6a, worker_done msg_b3e28d2c974c outcome failed. verdict SHA256 2B62ADD29033D3E35EC354AE8F85F3E317186CA5C4FEE52D3CE8C0FFB593E7CC, context SHA256 6D7A8BE2444EFA1E15223B8339116C339EEF7E0F4C8AC737C7BB0CCFDF2EC63D. 리드가 전체 원문·실제 source/manifest·실행/종료·감사 원시를 읽었다. 입력100 hash불일치0·worker raw26개·제품/HEAD불변, G/lead-final-input-audit.json·lead-settlement.md에 보존했다.
+- gate SHA256 16DE13E261130F12E48B6D723D8062800E5C934441272C80491D5A691AB8A55C, 실제 실행 Task/Dispatch·자원 반환 msg_92bb0d1eb54d·사전메인통지 msg_2dbe46536212·Q수용에 연결해 CreateNew1회 고정했다. Start18:07:55.713Z/StopNew19:12:55.713Z/Deadline19:37:55.713Z, 공식답 msg_4b249d3e2dce 이후 Run18:08:57.567~18:10:21.481Z exit1, 같은 gate Audit18:11:19.295~18:11:21.648Z exit0만 수행했다.
+- 실제 C0~C8 binding PASS(Complete의 verify-schema catalog/Installed·필수 C6 confirm·비어있지않은 목록/보존검사 포함), c8-principals CreateRuntimeLogin에서 #1 실패다. safe SqlNumber0/InvalidOperationException, 기존 Environment.Common.ps1:879~883의 subexpression이 VarBinary byte[]를 Object[]로 바꾸는 원인은 PS5.1 언어 의미 원시+source 기반 추론이다. 실제 provider 오류문구/서버도달/로그인부재는 미관측·추론으로 유지한다. 코드 귀속은 기존11cfe4a8/4d6b07be이며 이번 카드준비/카드수정/verify-schema수정의 결함으로 오귀속하지 않는다.
+- finally 정확자기컨테이너 정지보존·exited137/32.2초, Run17상위receipt/전체38·Audit포함39 모두ActiveZerotrue, Run/Audit supervisor 부재·18:17:29Z 잔존0/raw/residual-check.txt. volume/DB/새private2파일/F.run은 PR검토 동안 보존하며 삭제·재시작·Run재시도0이다. Audit CompleteNoHits/2secrets/202targets중202scan/hit·locked·readfail·changed·new·reparse·writers0, 감사SHA D6FE86A4FFFC76FB40C53DAE4DAA1F261545EE7277E0717AE7991DEE80A0ED9E. 이는 실패수명의 감사이지 최종SQL강PASS가 아니다.
+- c8-runtime/Test-Database/별도bindingSELECT/c9/c10settlement·게임producer 미실행. bootstrapcompile·run/audit/session.lock/run.temp.audit/g2prep·새private2파일 자체감사·provider원문 미측정을 공개했다. 새값/기대값 자동채택·새harness/fixture/script0, 언어의미 확인은 제품/DB/파일쓰기 없는 한 줄이었다. 최초 Cquery quoting실패/exit0은 성공으로바꾸지않고 시작전별도재조회실적으로 구분했다.
+- G/lead-fix-scope.md는 helper의 null/비null CLR형식 보존·실제SqlCommand VarBinary 오프라인 회귀시험을 제안한 문서이며 새실행승인이 아니다. 보존자원 새수명/이름/처리는 소비된1A/2B 아래 메인 판단으로 올린다. 기존 F/card/inputs/gate/run/판정 원문을 덮어쓰지 않고 추가검증자/새DB수명0으로 둔다.
+- 동결 뒤 관찰은 G/verdict O-1 진단정보, O-2 Audit StopConfirmed표현, O-3 기존stop137, O-4 PID재사용실측1건/접근불가case미발생이며 비차단이다. 메모 실제준수 연결/원문/위장측정/제품계산복제는 문제0, 제품 차단은 #1뿐이다.
+- 실행자 정산 종료: worker-release retained/external_terminal/processnone 뒤 정확 failed Task/Dispatch/incarnation·idle화면/미제출draft를대조하고 literal term_b9bcf7a5-aa8e-4017-a0d6-94a4bf644589 close ptyKilled=true, Run reclaimable0. G/lead-worker-release.json·lead-worker-before-close.json·lead-terminal-before-close.json·lead-terminal-close.json·lead-reclaimable-after-close.json. 작업자재사용0이며남은78retained역사행은임의정리하지않는다. 메인 최종보고 msg_6f5b2888d2f7/후속판단대기, 현재Core검증자·중량예약0이다.
+
+## 재개 35 - G2 #1 오프라인 좁은 수정 승인·새 수명 아침 결정
+- 메인 msg_500bacaf3e04(2026-10-14T18:23:50Z)이 G/lead-fix-scope.md의 만들것·건드릴곳·관찰조건·제외그대로 좁은 오프라인 수정만 승인했다. 밤샘 위임의 메인 판단이며 새 사용자 결정으로 격상하지 않는다. 신규Opus 기존suite 실제helper VarBinary RED→신규Sol xhigh helper 한대입경계→신규독립검증1회, 연결을열지않고 같은명령RED/GREEN과기존suite회귀를확인한다. 새harness/fixture저작0·시연우선/비동작후속·재검증1회상한이다.
+- DB연결/새container·volume·login·secret생성/보존자원restart·delete·DROP/실패단계retry는승인밖이다. 소비된G2새수명은아침사용자판단이며 Main이밤에선택하지않는다. 리드는 (A)실패자원모두보존+새접미이름수명1회 (B)승인범위정리+같은이름수명1회의정확이름·추가disk/memory·손실근거·card/gate변경파일·시간·추천을문서로준비해Main에보낸다. 오프라인통과/사용자선택뒤쓸실행계약초안준비만허용하며actual0이다.
+- 선행시험 T=formal-g2-parameter-type-red-20261014, 제품은readonly·기존TestEnvironmentLifecycle.Tests.ps1 신규단정만쓴다. T/lead-context.md가새단계첫파일이며메인원천T/main-source.json과수정전시험T/raw/before에보존했다. 현재오프라인시험실행0/DB수명0·PR237draft/head81a7유지다.
+- 신규Opus선행시험 task_18d46c8063fd/ctx_cc6482327b93, term_ec4e65f4-0635-4407-bbc7-67a9ea618a92/incarnation aa3bef39-7b44-4322-90d0-003407871387, 요청/화면Opus5.5 xhigh·Claude2.1.300/backendunknown. tui-idle satisfied/선택창0·ready/input_accepted/turn_started observed, 계약SHA41F9AEA709166E006C90089621A0BDE791FC049F9F86DD7E554BEE810A21E63B·고정66입력/누락0. RED는공식ask뒤이고actualDB/newlife0.
+- 아침선택자료 D=formal-g2-followup-decision-20261014/choices.md SHAB14B4971CF6C36E45EF4726BF7CE22A5FC89DABCED66F0D99DAB840E8577CA50와 execution-contract-draft.md SHADF6BD7C57028276BE0059DAAA723432CC681F30888740CA5331EDBC0F72FD089를리드초안으로작성했다. 추천A/실패자원보존+judgment-r2 새이름, B/정리후동일이름에는누락settlement/SIDnull 관문·추가한정기동/삭제승인을명시했다. 디스크실제증분/회수량미측정/10GiB시작바닥·memorycap6.5GiB합/실제peak아님·시간계획추정을구분했다. 새card/plan/gate/자원/삭제/재시작은작성·실행0이다.
+- 메인 msg_e8a4338d9bd7(18:41:29Z)이choices 전문/hash를직접읽고 현황판 core-g2-next-lifecycle-1015(waiting, 메인추천A)에올렸다고회신했다. draft는실행불가v0·사용자선택과오프라인수정독립통과가둘다온뒤빈칸고정이며새수명/restart/delete0을유지한다. 현재오프라인선행시험→Sol→독립검증1회는같은승인범위로계속하고최종판정원문/SHA를메인에보고한다.
+- Opus 선행시험 task_18d46c8063fd/ctx_cc6482327b93 done msg_b36ea568fcf3 succeeded(시험작성/기대한RED완료). 시험+282/-0·새16단정, 실제RED18:47:42.042~18:48:40.465Z exit1/142PASS·3예상FAIL·1OBSERVED(기존129PASS/1OBSERVED·추가13PASS/3FAIL). 실제SqlParameter에서16byte Object[]/1byte Byte/빈배열null을관측했고값순서/Size/DBNull/scalar/거부계약은유지. 시험SHA B26DF233C41A58185E0E66391A4107AEFDB5E30A4153B21AC9870CD36BE8BC7D, report BEAA630DC651ACD4A5087D37600E490E8746C62B6B420EE3B9FF684E63B40EA2, context64D85C76E7E00496417E7B567675E223EBC12A1B602291DDC7EEE2B3ED90EB7B, resultsD37BBF2F3969A5E0D6E6CB870E2B93FE169C37668E0FA235574A0193A738AD89. 리드원문전체/actualdiff/results·입력66중허용test1만변경·정확root/child0와T경로검색self/조회bash를대조, release→정확idle/identity→close ptyKilled=true·reclaimable0·재사용0. DB/SQL·실제provider변환/실패Dispose·peak메모리미실행/미관측, 제품확정실패집계0. 신규Sol 한helper대입수정→신규Opus 독립1회로넘긴다.
+- 신규Sol gpt-6.1-sol xhigh task_a8ce6468c11a/ctx_fd8503861bb6, term_029656fc-c308-4951-a21e-7be43f721799/incarnationf191a18a-ced4-4d91-896e-2f81b5149152를발행했다. 최초명령/화면GPT-6.1-Sol xhigh/Codex0.162.1/backendunknown, ready/input_accepted/turn_started observed. H=formal-g2-parameter-type-fix-20261014 계약SHA E26D5DB8154243CAB01D0B65772B58C82728F76C22FABB9F6CA81E37ABE61037·72입력/누락0. 제품helper 한대입경계만, testreadonly B26DF233C41A58185E0E66391A4107AEFDB5E30A4153B21AC9870CD36BE8BC7D. GREEN1회는현재fresh공식ask뒤이고 DB/새수명/보존자원0이다. Art msg_2f6bbb66cc8c의19:03Z Unity/큰예약반환을수령했다.
+- Main msg_546f6a84facb(19:29:53Z)이 G2최우선/다음goal문서보다Sol escalation먼저처리를지시했다. 첫GREEN19:20:40.780~19:21:00.435 exit1/PSModulePathInheritedtrue·부분43(39PASS/4FAIL全CommandNotFound)/새16미도달·results없음은PS7autoload→PS5.1잘못된모듈경로상속환경편차와대조하며제품판정/확정실패집계에서제외한다. Main은원시연결확인시자원조회후launch직전마지막env제거·실제child환경관측/제품시험추가수정0 조건의교정GREEN1회를허용했다. 원시연결미확인/제품helper실패혼재면재실행0/메인보고다. H/lead-first-green-environment-classification.json·공식settlementask회신은교정계획요청/현재Task유지로처리했고첫원시보존·새runner/guard0이다.
+- 직전「4FAIL全CommandNotFound」서술을원시대로교정한다: 직접CommandNotFound3건+그실패로단계미도달1건이다. H/lead-first-green-environment-classification.json의AllFourCommandNotFound=false/Direct3/Downstream1이actual이며새helper16단정미도달은동일하다. 제품실패0이라는것은이번부분원시에helper실패증거없음의뜻이고제품통과를뜻하지않는다. 원문/잘못된서술/교정을보존하고Main에즉시보고한다.
+
+- 2026-10-14T19:58:11.6891436Z 교정 공식 계획 msg_ac491cfb37a8/raw corrected-launch-plan을 직접 읽고 Main msg_546f6a84facb에 따른 reply msg_50365c28e657로 같은 Sol Task GREEN-CORRECTED1회를 허가했다. native -Command inline 환경 관측 후 동일 suite를 호출하며 제품/시험 추가변경0·새 runner0이다. raw exit는19:55:25.2607303~19:56:23.7448919Z/58.484초/exit0, PS5.1 실제 모듈 경로의 PS7 미상속을 관측했다. 전체 결과·보고·프로세스 반환 수용 및 신규 독립Opus1회는 아직 대기이며 실제 DB/새수명/보호접근0이다.
+
+- 2026-10-14T20:22:22.1443660Z H Sol task_a8ce6468c11a의 report SHA0BEA62D57E15FD1F450F65CDF70B7E2B91619AD8BF40C77488E8B4CA12A1924D/context SHADEA70246AD673659D5DED6746D1300AA6D4E47498AC534B5DF665F49353B615D를 전체읽고 실제입력72/제품1변경·diff·env/results·정확반환을 대조했다. 구현자 release→동일 completed/succeeded/idle/incarnation→literal close ptyKilled=true/reclaimable0, 재사용0이다. 교정 GREEN145PASS/0FAIL/1OBSERVED는자체관측이며새Opus 독립1회를 V=formal-g2-parameter-type-verification-20261014에서발행한다. W-2 heartbeat지연은 Main msg_58cf4e22f9e3(20:10:53Z) 조건부비차단: 누락구간범위밖쓰기·실행0을새검증자가mtime/process/hash원시로확인해야하며발견/미확정은Main에올린다. 정상소급0·보고수정3회초과는알림수령/제품실패집계와별개다. 같은유형은이goal의기존542행(wrapper heartbeat초과3구간)/1266행(검증 heartbeat3구간중1누락)에이미기록돼있어첫발생으로가장하지않고아침규칙후보로보고한다. 새반복규칙/guard는만들지않는다. 실제G2 재실행은독립통과뒤에도아침사용자선택까지0이다.
+
+- 2026-10-14T20:25:00.7679769Z 신규 독립Opus task_2a45d19d7a36/ctx_b6d3215ab55a, term_7604b04f-508e-4edf-864d-e4839ee924a7/incarnation069683ce-6b8f-4707-a063-7de4aaf6cbb0. 최초claude --model claude-opus-5-5/화면Opus5.5 xhigh·Claude2.1.300/backendunknown, tui-idle satisfied·선택창0·ready/input_accepted/turn_started를 관측했다. V계약SHA66931A4FC2C90D7B4ADF64B7725A71C1D5910686E8013DB40C3A00AC8C236F3C·입력99/누락0·신규출력부재3. 현재static실사/기존suite 새독립단정만, 제품쓰기0·actual native는공식ask/fresh/현조율뒤다. Main W-2 조건부판단을실사하고원시부족/범위밖발견은Main에올린다. 다음P2 Task RED공식질문msg_dd2cc0d0dcbc는G2독립반환까지pending이며중량WSL0이다.
+
+- 2026-10-14T20:31:06.8109918Z Main msg_dda32697d783에따라P2 RED는G2정적동안허용하되G2 native와실제창비중복·G2우선이다. V/contract-supplement-1.md로원계약의전체Task후대기해석만보완했다. fixed99/제품/기존판정원문수정0·자동kill/retry0이며현재native실행공식ask는없다.
+
+- 2026-10-14T20:51:28.8433745Z V독립native질문msg_81fb145f2a3b/planSHA85576D09178A086DB5E4540DBE0AF83E1115D47F974BF93EECF2DE1EEC700972·launcherSHA5CEAE1D8A4A96F4290409D4A1D4C971C429AF93138DA1DD01C4153DB782FB73F전문과+112독립test를읽었다. 제품A902/시험7D59·GREEN부재와fresh4/4/10초과/Unity0·P2dotnet0을대조해reply msg_5dc714344b6c로지금1회시작허가했다. 실제155는예측/결과원시대기, 새runner0·DB0이다. 검증자첫신호347초편차 msg_ae27ea5e2edb는공식ask대기0활성초과로공개/Main별도판단요청했으며H W-2결정을자동확대0이다.
+
+- 2026-10-14T21:16:45.0044428Z Main msg_ce63d772e954(20:51:58Z)을V/main-night-heartbeat-source.json에보존했다. 검증자첫347초는그구간범위밖쓰기·실행0을리드가원시확인하면조건부비차단, 오늘밤아침보고까지모든heartbeat지연도같은리드정산확인으로처리하며원시부족/막힌ask/범위밖발견만Main에올린다. 새rule/guard0·정상소급0이고메인집계세번째/아침Rules후보로받았다. 리드는현재V세션JSONL의구간32도구요청·기록된mtime·99입력hash를직접대조했다. scratchpad시도1은memo-first가실행전거부/파일0, 실제성공한범위밖쓰기나제품/시험실행관측0이다. CLI자동출력cache37171bytes의mtime20:33:23은첫지연구간밖이며별도V-2판정경계로Main에올린다. lead-first-signal-assessment.json·audit.json을근거로하고전역감시/전체역사프로세스실측으로확대0이다. 최초리드시간선택은ConvertFrom-Json DateTime을문자열Parse해UTC Kind를잃은진단오류로v1-invalid에보존/무효표시후DateTimeOffset직접cast로32건교정했다. 0건PASS로보고0이다.
+
+- 2026-10-14T21:37:52.7877575Z Main msg_fdde397f4a37(21:03:13Z)이G2 #1제품오프라인대입수정독립통과를수용했다. 판정worker_done msg_e0121c5b5300·V/verdict SHADE6693EE777EFAC9AA46F7C64DC54964BC782808B8BA08B8DAA3F1EAE047FAEC/contextSHAE907F49AA1ADB25898225D4EB4E2009B0A573753BA06D9E8B6016CC47A3CAE80·154PASS/0FAIL/1OBSERVED/기존146차이0를리드가원문과raw로대조했다. 실제SQL/provider변환/CREATE LOGIN은밖이며G2재실행/새수명/삭제/재기동0·아침사용자선택대기다. P-1의319초구간4호출은Hraw·context/report쓰기/범위읽기·본인PID조회·Orca만으로원계약안임을lead-p1-assessment.json에확인해오늘밤비차단처리/보고누락을공개한다. P-2는Main비차단수용·W2회신시작19:54:25Z→20:05:22Z=657초로정정한다. V-1리드조건확인·V-2CLI자동출력저장은Main공개만수용이다. O-1대입옆subexpression회피이유주석은동결뒤첫정리, O-2시험2427행주석사실불일치는그다음정리로남기며지금제품/시험정리0이다. 같은산출물독립1회상한사용완료. 독립검증자와P2선행Opus모두release/정확completed-succeeded·incarnation/idle→literalclose ptyKilled=true·reclaimable0/재사용0으로끝났다. Verifier filesModified receipt의MSYS변환경로오류는원문보존·actual3canonical경로로lead정산교정/Main보고이며실제CProgramFiles쓰기증거로오귀속0이다. Main승인대로PR237branch에제품1·시험1·이goal3파일만commit/push/draft유지후P2writer둘로진행한다.
