@@ -464,3 +464,10 @@
 - task_556d1434ef53 / ctx_5d45be726951로 신규 세션의 최초 계약을 연결했고 input_accepted·turn_started observed를 받았다. 계약1판19590자 SHA256 2cc02d44bc01cd5053a79bf2c043a72d3848f6687ed1c82538ba3afe847b8d5e, CODE 관련8절 전문·165 고정입력·신규 출력 부모를 기계 확인했다. 예시 타입이 들어 있는 실제 파일은 ClientLoginTestSupport.cs로 발행 전에 바로잡았다. terminal read의 잘못된 --lines 옵션은 실패 원시를 남기고 공식 --limit로 다시 읽었으며 입력/설정 변경은 없었다.
 - 검증자는 Unity 밖 사전 메모/실사·새 UiKitImportTests 작성만 한다. 실제 Sprite/uGUI·재import·대조군은 별도 공식 ask/reply 뒤 허용된 실행창에서만 진행한다. 리드는 시험/제품/독립 판정을 대신 작성하지 않았다.
 - Core msg_4df00dd39760은 첫 WSL 시험13:03:51Z~13:04:07Z exit1·실행시험0/compile차단, harness13:04:09Z 종료·자기 자원 반환·중량0/예약0 보고다. 이를 Core 시험 통과로 바꾸지 않는다. World msg_3cc5780041fd의 H1/생성1회15분 제안에 Art 실행0/예약0으로 충돌없음을 msg_4096edaac827로 회신했다. World 실제 반환/양보와 각 파트 새 조율 뒤만 Art Unity 창을 연다. 원시는 ui-kit-unity-import-review-launch/prelaunch-resource-messages.json과 회신이다.
+
+### 05 - 독립 검증 단계 A 준비 완료·실행창 조율 — 2026-10-14
+
+- 신규 검증자 공식 ask msg_238f97710a12(13:46:28Z)의 실제 Task/Dispatch/현재 worker identity를 확인하고 context 전문·쓰기 경계를 읽었다. 새 UiKitImportTests.cs/meta만 untracked, Unity 실행0회다. 단일 csc 형식검사는0오류 보고이며 실제Unity/시험 통과가 아니다.
+- 요청은 그래픽 활성 batchmode로 새 UiKitImportTests 전체만 최대1회(약167case 계획), runtime1800초·자기PID/출생/자식/lock 정리·실제 Sprite/uGUI/재import/대조군이다. 원시/명령/manifest·context는 ui-kit-unity-import-review/, 계획 수신 원시는 ui-kit-unity-import-review-launch/review-phase-b-request-world-proposal.json이다.
+- World 앞 TG-01 창은 미시작0으로 명시반환됐다(msg_167f006a1be7). World 새15분제안 msg_213da81d2e8e와 Content 새C9 21시험 후보 msg_27a88f883b7c는 당시 모두 미허가/미예약이다. 준비된 Art1회(총45분·첫10분기동·조기반환)를 다음창으로 네 파트에 제안했다. 기존허용작업은중단하지않고 실제반환뒤순서를정한다.
+- 현재 Art 중량실행/예약/Unity허가0이다. 같은 ask를 pending으로 유지하며 status msg_8245728b9356는 공식reply/release가 아니다. 최신4파트회신과 직전fresh관문 뒤만 같은질문에정확UTC를reply한다. 필수실제검증/독립판정/운영3조건최종판정은 아직이다.
