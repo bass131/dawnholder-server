@@ -217,19 +217,20 @@ DECLARE @persistenceChecks TABLE
     ColumnName sysname NULL,
     Definition nvarchar(4000)
 );
+-- Fixed Owner/Outcome expectations use reduced parentheses; remaining grouping and AND-before-OR keep the CHECK logic.
 INSERT @persistenceChecks VALUES
     ('CK_CharacterAuthority_Slot', 'CharacterAuthority', 'SlotId', N'([SlotId]=(1))'),
     ('CK_CharacterAuthority_Account', 'CharacterAuthority', 'AccountId', N'([AccountId]<>''00000000-0000-0000-0000-000000000000'')'),
     ('CK_CharacterAuthority_Character', 'CharacterAuthority', 'CharacterId', N'([CharacterId]<>''00000000-0000-0000-0000-000000000000'')'),
     ('CK_CharacterAuthority_Fence', 'CharacterAuthority', 'Fence', N'([Fence]>=(0))'),
     ('CK_CharacterAuthority_Sequence', 'CharacterAuthority', 'LastSequence', N'([LastSequence]>=(0))'),
-    ('CK_CharacterAuthority_Owner', 'CharacterAuthority', NULL, N'(([OwnerKind]=(0)AND[OwnerId]ISNULLAND[LastSequence]=(0))OR(([OwnerKind]=(1)OR[OwnerKind]=(2))AND[OwnerId]ISNOTNULLAND[OwnerId]<>''00000000-0000-0000-0000-000000000000''AND[Fence]>(0)))'),
+    ('CK_CharacterAuthority_Owner', 'CharacterAuthority', NULL, N'([OWNERKIND]=(0)AND[OWNERID]ISNULLAND[LASTSEQUENCE]=(0)OR([OWNERKIND]=(1)OR[OWNERKIND]=(2))AND[OWNERID]ISNOTNULLAND[OWNERID]<>''00000000-0000-0000-0000-000000000000''AND[FENCE]>(0))'),
     ('CK_CharacterOperation_Id', 'CharacterOperation', 'OperationId', N'([OperationId]<>''00000000-0000-0000-0000-000000000000'')'),
     ('CK_CharacterOperation_Slot', 'CharacterOperation', 'SlotId', N'([SlotId]=(1))'),
     ('CK_CharacterOperation_Kind', 'CharacterOperation', 'Kind', N'([Kind]=(1)OR[Kind]=(2)OR[Kind]=(3)OR[Kind]=(4)OR[Kind]=(5))'),
     ('CK_CharacterOperation_PayloadVersion', 'CharacterOperation', 'PayloadVersion', N'([PayloadVersion]=(1))'),
     ('CK_CharacterOperation_Payload', 'CharacterOperation', 'Payload', N'(datalength([Payload])>=(1)ANDdatalength([Payload])<=(512))'),
-    ('CK_CharacterOperation_Outcome', 'CharacterOperation', NULL, N'(([Outcome]=(1)AND[ResultSnapshot]ISNOTNULLAND(([Kind]=(1)AND[ResultCode]=(100))OR([Kind]=(2)AND([ResultCode]=(101)OR[ResultCode]=(102)))OR(([Kind]=(3)OR[Kind]=(5))AND[ResultCode]=(103))OR([Kind]=(4)AND([ResultCode]=(104)OR[ResultCode]=(105)))))OR([Outcome]=(2)AND[ResultSnapshot]ISNULLAND([ResultCode]=(200)OR[ResultCode]=(201)OR[ResultCode]=(203)OR[ResultCode]=(205)OR[ResultCode]=(206)OR[ResultCode]=(207)OR(([Kind]=(1)OR[Kind]=(2))AND[ResultCode]=(204))OR([Kind]=(2)AND[ResultCode]=(202)))))'),
+    ('CK_CharacterOperation_Outcome', 'CharacterOperation', NULL, N'([OUTCOME]=(1)AND[RESULTSNAPSHOT]ISNOTNULLAND([KIND]=(1)AND[RESULTCODE]=(100)OR[KIND]=(2)AND([RESULTCODE]=(101)OR[RESULTCODE]=(102))OR([KIND]=(3)OR[KIND]=(5))AND[RESULTCODE]=(103)OR[KIND]=(4)AND([RESULTCODE]=(104)OR[RESULTCODE]=(105)))OR[OUTCOME]=(2)AND[RESULTSNAPSHOT]ISNULLAND([RESULTCODE]=(200)OR[RESULTCODE]=(201)OR[RESULTCODE]=(203)OR[RESULTCODE]=(205)OR[RESULTCODE]=(206)OR[RESULTCODE]=(207)OR([KIND]=(1)OR[KIND]=(2))AND[RESULTCODE]=(204)OR[KIND]=(2)AND[RESULTCODE]=(202)))'),
     ('CK_CharacterOperation_Json', 'CharacterOperation', 'ResultSnapshot', N'([ResultSnapshot]ISNULLORisjson([ResultSnapshot])=(1))');
 IF EXISTS (
     SELECT Name,
@@ -294,14 +295,15 @@ INSERT @modules VALUES
         '06CC80FB31A554C3F9DE4B08C8EFD39AB136F420DB0BC4E2E9C9AF6EEBC01A66'),
     ('ResolveRecoveryOperation', 'P', 19426, 0xD451A0CEABB880E5CF358A847E3E2EFF163C54DE3DD1F8C5ADDA5FF583B98C9B,
         '1F97F00BF04157CFEBA9E46467883586DE27CBFE4526E11077BDDA416E02DFFF');
+-- Binary equality keeps object type codes exact when the catalog and database type collations differ.
 IF EXISTS (
     SELECT Name,
-        Type,
+        Type COLLATE Latin1_General_100_BIN2,
         DefinitionBytes,
         DefinitionHash FROM @modules
     EXCEPT
     SELECT o.name,
-        o.type,
+        o.type COLLATE Latin1_General_100_BIN2,
         DATALENGTH(REPLACE(sm.definition, NCHAR(13), N'')),
         HASHBYTES('SHA2_256', REPLACE(sm.definition, NCHAR(13), N''))
     FROM sys.objects o JOIN sys.sql_modules sm ON sm.object_id = o.object_id
