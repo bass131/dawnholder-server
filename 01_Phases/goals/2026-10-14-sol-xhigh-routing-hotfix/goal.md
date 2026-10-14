@@ -6,18 +6,18 @@
 - 작업 공간 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-sol-xhigh-hotfix`, branch `docs/sol-xhigh-routing-hotfix`, 최신 main/base `20ce59ddd72d0cb72b6e230e386a62587b9bfe1b`.
 - 리드 `[Rules 리드 Sol]`, 현재 handle `term_9763f046-8be8-4d0b-aaa8-5214fb800be3`, 회신 `run:run_54319375ed08`(consumer_generation3). worker는 별도 Task/Dispatch로 추적한다. Main은 `term_e2961048-266e-4503-b52b-dfb986d8c9b5`이며 사용할 때 현재 동일성을 확인한다.
 - 근거 E는 `.backups/verification/2026-10-14-sol-xhigh-routing-hotfix/`(Git 제외). 리드 사전 메모 `E/lead-context.md`, 원문과 승인·기계 검색 목록·위임 계약·기동·판정·Git 영수증을 여기에 둔다.
-- 현재 차례: 외부 Sol 문서 작성 Task `task_76455f9e1cac` / Dispatch `ctx_10e808987732`의 허용5파일 작성·succeeded/settled·release/정확 pane close를 정산했다. 새 Astra xhigh가 Main CLAUDE 변경과 리드 기록을 포함한 실제 최종 diff를 독립 문서 실사한다. 작성 자체 검사는 독립 PASS가 아니다.
+- 현재 차례: **[PR238 - 리드 Sol·작업자 xhigh 모델 라우팅 정합](https://github.com/bass131/dawnholder-server/pull/238)을 생성했고 아침 사용자 승인·메인 병합을 기다린다.** 신규 Astra xhigh의 독립 문서 실사 PASS와 worker_done을 정산했으며 두 외부 세션을 닫았다. 이번 밤의 PR/head 보고·종료 점검/기록 정리를 마치고 다음 goal 초안/작업자 없이 멈춘다. PR2 가드는 보류한다.
 - PR2 가드는 `rules-active`의 `feat/codex-merge-guard-20261013`에서 동결까지 보류한다. 이전 기록 head `a2703d079491859d0767c6effc768d42a3ea5f46`과 제품/시험 등16변경 경로는 보존했다. 구조 대응·실제 Codex 진입·Linux CI 미완을 이 goal의 문서 판정으로 덮지 않는다.
-- 다음 행동: 외부 Sol xhigh 작성·자체 점검→쓰기 종료·정산→메인 CLAUDE 쓰기 종료 대조→새 Astra xhigh 독립 문서 실사1회→PR/head 보고. 사용자 정확 head 승인과 메인 병합은 아침 소유다.
+- 다음 행동: 아침 사용자가 PR238의 당시 정확40자 head로 병합 승인하고 메인이 병합 관문을 통과시켜야 한다. 최종 head는 PR 메타데이터와 E/final-handoff.json에 기록해 자기참조 commit을 만들지 않는다. 다음 Rules 목표와 PR2/Art 재개 여부는 아침 사용자가 정하며 자동 착수하지 않는다.
 
 ## 진척 단계
 
 - [x] 범위 승인
 - [x] 문서 수정
-- [>] 독립 문서 실사
-- [ ] PR 생성
-- [ ] 사용자 병합 승인
-- [ ] 종료 기록
+- [x] 독립 문서 실사
+- [x] PR 생성
+- [ ] PR238 병합
+- [x] 종료 기록
 
 ## 범위
 
@@ -87,10 +87,21 @@
 - 문서 Sol Task `task_76455f9e1cac` / Dispatch `ctx_10e808987732`: 14:53:47Z 쓰기 종료 `msg_115c30e89fa2`, 14:53:57Z worker_done `msg_79882ccf606b`의 현재 from_handle/ID/명시 succeeded/허용5파일을 대조했다. report SHA256 `51c66cd2546b4ad50ef237cabaf0dfd4a6ebc497f4c0f0f16c00212bc35827a8`, context SHA256 `0b028db923d4f1a8ac20463479a69883ae530a7ca1c8df38f31fdd9cde775458` 전체와 실제 diff를 읽었다. E/doc-write-lead-audit.json에서 입력23의 허용5변경/허용 밖0·Git dirty5/신규0·근거60파일 hash를 확인했다. 작성 보고는 독립 PASS가 아니다.
 - 운영 미준수는 기존 helper의300초 기준에서 heartbeat 사이309초·328초 두 구간과 초기 읽기/메일 UTC·별도 원시 일부 미기록이다. 원문/기계 결과는 E/doc-write/report.md 및 doc-write-liveness.json에 공개했고 시연 우선의 운영 공개 처분을 따른다. 내용/권한 모순까지 면제하지 않는다.
 - release retained/external_terminal·processAction none 뒤 동일 pane의 완료 idle·draft 없음·현재 identity를 확인해 정확 close ptyKilled=true·reclaimable0으로 정산했다. 원문은 E/doc-write-lead-settlement.md와 각 영수증에 보존하며 세션을 재사용하지 않는다. 사용자 정리·멈춤 및 시각 정정은 고정 입력 해제 뒤 위 결정4로 반영했다.
+- 신규 Astra 독립 실사 Task `task_cb261897559f` / Dispatch `ctx_bac385c2d32e`는 verifies `task_76455f9e1cac`를 실제 연결했고 검증 HEAD `bcebf24aadb2e5dbd5ed95a3ef8851935d79a45f`의 최종9파일을 문서 PASS로 판정했다. 판정 원문 E/doc-review/verdict.md SHA256 `4ff8541de9b6093e108b562610c0524a40b321cc47127f937811e208f0fb8886`, context SHA256 `7231b13ed31fbb09715e665f48ed4c70db135a8c6e244259b36e3acee5cc1445` 전체를 리드가 읽었다. 고정91입력/HEAD 불변·Git clean·근거51파일 hash를 대조했다. Sol5파일 완료 raw/실제 커밋 diff163행 동일·독립 검색314행/65파일·후보 대상0 경계를 판정과 연결했다.
+- 쓰기 종료 `msg_94b6fea3091c`(15:18:54Z)와 worker_done `msg_d227ea72780d`(15:19:02Z)의 현재 from_handle/두 ID/명시 succeeded를 대조해 정산했다. release retained/external_terminal 뒤 정확 identity의 완료 idle·draft 없음·새 일 없음으로 close ptyKilled=true·reclaimable0을 확인했다. 독립 실사는1회이며 검증자를 재사용하거나 새 재검증/다음 goal을 열지 않았다.
+- D1은 리드 계약의 path-check 접두 생략 오기였다. 공식 질문 `msg_a90abb930de3`와 답 `msg_9b99b53114e6`가 실제 경로/hash를 확정해 해소했으며 작성 Sol 결함으로 귀속하지 않는다. 첫 발생을 여기 기록하고 새 검사/반복 규칙을 만들지 않았다. 검증자 초기 원시 일부 미기록은 판정 운영 절에 공개했다. 기존 helper의 검증자 신호7은300초 기준 최대277초·초과0이다. 공식 질문/답 원문 시각은15:05:35Z→15:07:34Z이며 중간 heartbeat로 helper의 questionWaits가 비어 있는 것을 실제 질문 대기 없음으로 해석하지 않는다.
+- PR238 생성 당시 head는 독립 검증 HEAD와 같았다. 이후 이 goal의 결과/PR번호/중단 상태 기록만 리드가 통합하며 나머지8변경 문서의 hash는 독립 검증 입력과 대조해 보존한다. 판정의 입력을 최종 기록 head로 소급하지 않는다. 현재 제품·실제 런타임 전환·빌드·Unity·DB·WSL/CI 실행 판정은 없고 Git 병합도 하지 않았다.
+- Content 자원 조율은 중량 실행/예약/예정 창0으로 회신했다. 처음 `--run Rules`와 상대 Run 수신을 함께 쓴 요청은 run_not_found였고 request-show absent·상대 inbox의 일치 회신 부재를 확인한 뒤 현재 handle에 한 번 답해 실제 Content Run으로 정상 접수됐다. 도구 인자/수신 경로 정정이며 새 운영 규칙·후속 후보를 만들지 않았다. Content가 Unity1회 허가/예약1·시작 미관측을 보고한 원문은 E에 보존했고 Rules 실행 허가로 확대하지 않는다.
+
+## 이번 밤 종료 점검
+
+- 문서 작성·독립 문서 실사·PR 생성과 판정/원시 보존을 마쳤다. 작성/검증 세션은 모두 정산·정확 close, reclaimable0이다. Rules 중량 실행/예약0, 제품/시험 쓰기0이며 PR2 보류16변경과 기존 원시는 별도 checkout에 보존한다.
+- 아침 사용자 승인이 남았으므로 전체 goal의 병합 완료/완전 종료로 표시하지 않는다. 현재 밤의 작업은 PR/head 보고·병합 대기·정리 지점에서 멈춘다. 전체 병합 뒤 Gardener/완전 종료/R-8의 필요 순서는 메인이 당시 사용자 결정과 대조하며 지금 추가 세션을 만들지 않는다.
+- 메인 최종 status는 PR238·정확40자 head·판정 원문/R-2 표본·동결 뒤 정리·아침 결정 항목을 포함한다. 최종 head와 원격 CI 상태는 실제 GitHub 관측을 E/final-handoff.json에 남긴다. 다음 goal 초안/작업자 기동은 하지 않는다.
 
 ## 동결 뒤 정리
 
-- 현재 이 goal의 확정 비동작 지적 없음. 새 판정에서 번호·경로·이유가 나오면 이곳에 기록한다.
+- 현재 새 미해결 문서 결함 없음. D1은 공식 답으로 해소됐다. O1 고정 anchor와 O2 당시 비용/조건부 후보는 유지 관찰이며 새 작업으로 채택하지 않았다. 작성/검증의 운영 공개는 원 판정·이 goal에 보존한다. 기존 PR2/Art/시연 우선 정본 후보는 해당 원천의 처분을 유지한다.
 
 ## 다음 계획 후보
 
