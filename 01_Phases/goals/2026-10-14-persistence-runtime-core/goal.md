@@ -1,6 +1,6 @@
 # 저장소·복구 인터페이스와 저장 작업 핵심
 
-상태: A/B 독립 강 검증과 유일한 재검증1회 뒤 통과했다(#1·#2 해소, 새동작결함0). 실제 Persistence237/237·전체1297중1292pass/0fail/기존skip5·좁은서식exit0. 검증자를 정산·종료했고 현재 범위의 PR을 준비한다. 실제DB/게임 연결은 후속 승인goal 범위다. 아래 진행 기록은 해당 시점의 원시를 보존한다.
+상태: A/B 독립 강 검증과 유일한 재검증1회 뒤 통과했다(#1·#2 해소, 새동작결함0). 실제 Persistence237/237·전체1297중1292pass/0fail/기존skip5·좁은서식exit0. 검증자를 정산·종료하고 PR240(https://github.com/bass131/dawnholder-server/pull/240)을 열었다. 현재 head/CI와 병합 관문은 PR의 실제 상태 및 메인의 정확 head 승인에서 확인한다. 실제DB/게임 연결은 후속 승인goal 범위다. 아래 진행 기록은 해당 시점의 원시를 보존한다.
 
 ## 적용 중인 사용자 결정
 
@@ -202,3 +202,7 @@ A/B 신규Opus 통합 강검증을 지금 열고 SQL#1 수정과 병행한다. �
 - R1 - recovery 결과 Code의 계약 해석 확인. 메인 msg_b2124c0c72b9에서 이번 runtime 수정 범위 제외. 기존 후속에 연결하고 지금 제품 변경0이다.
 - R2 - runtime 결과 Code(거부)와 Receipt.Code(이력)의 공개 property 설명. 결과4파일 Code property에 짧은 설명 후보, 동작무관/비차단.
 - R3 - v2 API표면에서 ConflictCode 유지가 메인 결정으로만 명시된 부분. 다음 API표면판에 결정반영 후보, 동작무관/비차단.
+## PR240 - 저장소 계약과 저장 작업 owner
+- 제품56·시험14·현재goal/API3문서, 총73파일/5639추가행으로 최초 commit8a81825ef8154a1f285e5f9c0df13d56b8837710을 push하고 PR240을 열었다: https://github.com/bass131/dawnholder-server/pull/240 .
+- 테스트된70 C#파일의 staged blob과 작업파일 raw blob을 lead-staged-source-audit.json에서 대조해 불일치0을 확인했다. 이 절과 현재상태의 PR연결 기록은 리드의 문서 정산이며 제품/시험 변경0이다. 최신 정확head와 CI는 PR실제상태/로컬lead-pr-view 기록으로 확인하고 이 goal에 순환 head값을 덮어쓰지 않는다.
+- 승인된 다음goal 폴더는 untracked로 보존했고 PR에서 제외했다. 병합은 메인 전용checkout과 사용자 PR별 정확40자head승인만으로 한다. Codex 병합/자동병합 예약0이다.
