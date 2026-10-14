@@ -161,7 +161,7 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | msg_bb22fa31096d로 승인된 [Unity 조각 반입1판](unity-import-scope.md)의 신규 Astra가 단계 A(원천 hash·spec·README의 Unity 밖 준비)를 진행 중이다. 준비 뒤 공식 ask를 받으면 Content C9 task_8bdd89e3c3d0의 실제 반환/명시 양보, Core SQL 실제 반환·충돌 없음, 직전 물리/commit 여유 각4GiB를 확인해 같은 Task의 단계 B 실행창을 release한다. 아직 제품 반입·Unity 실행 허가와 큰 실행 예약은 없다 |
+| 다음 첫 일 | 신규 Astra의 단계 A 준비가 끝나 공식 ask msg_1839510397ca가 열린 상태다. Core SQL 실제 반환 보고는 받았고 World PacketGenerator 정확1회 → Content review-combined-1 정확1회 실제 반환 뒤 Art와 후속 C9 실화면 순서를 조율한다. 직전 물리/commit 여유 각4GiB·현재 충돌 없음까지 확인한 뒤 같은 ask에 현재 Task의 단계 B 실행창을 reply한다. 아직 제품 반입·Unity 실행 허가와 큰 실행 예약은 없다. 이 Task의 heartbeat 327초 구간1개는 별도 운영 관찰로 메인에 보고한다 |
 | 현재 Task·Dispatch | task_7c7829e6efb1 / ctx_8174e73332f5, 새 구현자 term_b68db577-b03d-4a53-9eb4-bf8252ef1392 / incarnation 7fe2888d-ed9e-46a0-9e14-721bcc7fa05d. 요청·최초명령·화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. 11:57:00Z 공식 접수는 turn_start_unobserved였고, 조건부 Enter 1회 뒤 11:58:04.476Z 제출 전문109개 비어 있지 않은 줄 일치·Working·agent_status live를 확인했다. 원시는 ui-kit-unity-import-launch/, 쓰기는 ui-kit-unity-import/만 허용된 단계 A다. 이전 B1 검증 task_66e572cca63c/ctx_0a2ade33e4ae와 구현 task_079ccb62b3dd/ctx_a21d2ab41644는 정산·pane 종료 완료이며 각각4550/2140파일을 보존한다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
@@ -398,6 +398,15 @@
 - Task task_7c7829e6efb1 / Dispatch ctx_8174e73332f5의 접수는 input_accepted/turn_start_unobserved다. 새 pane의 JSON draft 20760자는 계약15972+관측 머리말4787의 ±2 범위였고 다른 입력0·동일성을 확인해 텍스트 없는 Enter를 한 번만 보냈다. 이후 draft 소멸·Working·agent_status live와 정확한 현재 세션의 제출 계약을 대조했다. 제출시각11:58:04.476Z, 비어 있지 않은109줄 전부 일치다. 최초 unobserved receipt를 turn_started 접수로 고쳐 쓰지 않는다.
 - 실제 세션 ID 01a13a45-4cfc-7f32-a4a9-77139385df37의 cwd/시각/model/effort를 좁혀 확인했다. 공개 transcript가 잘려 해당 세션의 정확한 제출 입력만 읽었다. 근거는 ui-kit-unity-import-launch의 draft-recovery-condition.json, submitted-contract-audit.json, worker-transcript-after-enter.json이다.
 - 지금은 단계 A만 진행한다. 준비 완료 뒤 같은 공식 ask에 명시 reply하기 전에는 03_Client 쓰기·제품 폴더 생성·PNG/meta 반입·Unity/UnityHub 실행·MCP/Desktop 조작을 허용하지 않는다. 리드는 계약·기동·goal 기록만 썼으며 구현·시험·판정을 대신하지 않았다. 새 Opus 독립 검증은 구현 종료 뒤 별도다.
+
+### Unity 반입 단계 A 준비 완료·실행 대기 — 2026-10-14
+
+- 공식 ask msg_1839510397ca(12:08:57Z)의 dispatch 주소·Task·Dispatch를 현재 worker-show와 대조했다. 현재 CLI ask/reply에 subject 옵션이 없으므로 고정 subject Question 예외이며 body 태그는 일치한다. 구현자 context·계획을 읽고 초안 두 파일 hash를 직접 대조했다: import-spec 3a00faf0f4c318288923a5e2de0b8f589b93f993f4a9acad34872dabb2926b29, README b54e2580fa44c804f70b2274b7de167e7b1a7406ee558ac8a706741be19717d3.
+- 구현자 원시는 PNG33/원출처5의 원천 차이0, 고정62·보호7109·이전 완료검증4550 차이0과 기존03_Client 추적2066 snapshot을 보고한다. 리드는 원시 결과 필드·메모·계획·README 사용 안내를 읽었고 전체 독립 판정으로 쓰지 않는다. 설치 ProductVersion 6000.6.4f1_12bfff696524는 읽기 관측이며 Unity는 미기동이다. 리드도 Components 폴더 부재·tracked 변경0을 확인했다.
+- Core msg_b71412ae3488/msg_f011b960073d의 12:01:34Z SQL 실제 반환 보고를 수령했다. 이후 World 생성기1회 → Content batch1 순서다. Content msg_c4fae7266a25는 batch 실제 정산·Unity0·lock없음을 Art에 통지하고, 미기동·미예약인 후속 C9 세 크기 실화면과 Art 창은 batch 반환 뒤 새로 조율한다고 명시했다. 현재는 Art 큰 실행/예약0이다.
+- 질문은 자원 반환을 기다리는 미해결 상태로 유지한다. 작업자에게 msg_636acd04ce5a로 같은 ask 재개·제품/Unity 쓰기 금지·5분 heartbeat를 안내했다. 이 status는 공식 blocking reply나 실행창 release가 아니다. 자원 조건이 갖춰진 뒤 같은 ask에만 구체적인 실행창을 reply한다.
+- 진행 중 운영 관찰: 정확한 현재 발신/Task/Dispatch의 inbox100건(가장 이른 원문11:44:45Z)을 대조했다. 실제 제출11:58:04.476Z→heartbeat11:59:33Z→12:03:30Z→질문12:08:57Z 간격은 88.524/237/327초다. **5분 초과1구간(27초 초과)**을 보존한다. worker-show의 lastHeartbeatAt=null과 달리 실제 heartbeat2건이 있으므로 무보고10분으로 오판하지 않았다. 이전 OPS-1 메인 결정은 옛 task_079ccb62b3dd 한정이므로 이 Task에 자동 적용하지 않는다. 제품 차이0 보고와 운영 간격을 구분하며 메인에 전달한다. 현재 checkpoint이며 완료까지의 준수 판정은 아니다.
+- 원시는 ui-kit-unity-import-launch/phase-a-question.json, resource-updates-1202.json, ack-core-order-1203.json, liveness-inbox-phase-a.json 및 liveness-result-phase-a.json에 있다. 새 독립 판정 원문은 아직 없다.
 
 ## 다음 계획 후보
 
