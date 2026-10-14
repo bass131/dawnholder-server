@@ -1,0 +1,17 @@
+namespace Dawnholder.Server.GameServer.Persistence;
+
+public sealed class ReleaseRecoveryRequest : IEquatable<ReleaseRecoveryRequest>
+{
+    public ReleaseRecoveryRequest(PersistenceAuthority currentAuthority, long sequence, Guid operationId)
+    {
+        Operation = new OperationIdentity(currentAuthority, sequence, operationId, recovery: true);
+        Authority = currentAuthority;
+    }
+
+    public OperationIdentity Operation { get; }
+    public PersistenceAuthority Authority { get; }
+
+    public bool Equals(ReleaseRecoveryRequest? other) => other is not null && Operation.Equals(other.Operation);
+    public override bool Equals(object? obj) => obj is ReleaseRecoveryRequest other && Equals(other);
+    public override int GetHashCode() => Operation.GetHashCode();
+}
