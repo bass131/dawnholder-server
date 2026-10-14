@@ -471,3 +471,5 @@
 - 요청은 그래픽 활성 batchmode로 새 UiKitImportTests 전체만 최대1회(약167case 계획), runtime1800초·자기PID/출생/자식/lock 정리·실제 Sprite/uGUI/재import/대조군이다. 원시/명령/manifest·context는 ui-kit-unity-import-review/, 계획 수신 원시는 ui-kit-unity-import-review-launch/review-phase-b-request-world-proposal.json이다.
 - World 앞 TG-01 창은 미시작0으로 명시반환됐다(msg_167f006a1be7). World 새15분제안 msg_213da81d2e8e와 Content 새C9 21시험 후보 msg_27a88f883b7c는 당시 모두 미허가/미예약이다. 준비된 Art1회(총45분·첫10분기동·조기반환)를 다음창으로 네 파트에 제안했다. 기존허용작업은중단하지않고 실제반환뒤순서를정한다.
 - 현재 Art 중량실행/예약/Unity허가0이다. 같은 ask를 pending으로 유지하며 status msg_8245728b9356는 공식reply/release가 아니다. 최신4파트회신과 직전fresh관문 뒤만 같은질문에정확UTC를reply한다. 필수실제검증/독립판정/운영3조건최종판정은 아직이다.
+
+- 네 파트 충돌없음 회신이 모인 뒤 리드 실행 전 관문(13:54:13Z)에서 기존165고정입력/제품차이0·tracked변경0·물리/commit4GiB/Unity0/lock없음은 확인했으나, 새 UiKitImportTests.cs의 현재hash가 검증자 실행manifest와 달라 **공식reply/실행허가를 보류**했다. 원시 ui-kit-unity-import-review-launch/pre-release-resource-gate.json(pass=false). 검증자에게 같은ask유지·변경이유/최종hash·쓰기종료/명단일치를 요청했고 제품/고정입력 회귀나 실제시험 실패로 단정하지 않는다. 준비입력 일치 뒤fresh관문을 다시 확인한다.
