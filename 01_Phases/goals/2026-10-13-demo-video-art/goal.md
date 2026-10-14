@@ -170,6 +170,7 @@
 
 - 현재 Unity 반입 독립 판정은 미수령이다. 새 판정의 동작 무관 지적은 번호·근거·기능 영향 없음의 이유를 이 목록에 옮긴다. 이미 해결한 과거 결함을 새 미해결 차단으로 되살리지 않는다. 운영 미준수는 해당 판정과 원시를 보존하며 기능 결함과 구분한다.
 - 시연 장면 밖 새 후보와 운영 절차 추가 정비는 2026-10-28 동결 뒤 판단한다.
+- **AD-01 - Unity inference 패키지의 analytics define 자동 정리 원인 확인**: 실제 EditorAnalytics값은 미측정이다. 동결 뒤 원인 확정과 프로젝트 범위 패키지 설정 정비 여부를 판단한다. 지금 패키지/설정을 바꾸지 않는다. 메인 msg_05a8ad796892는 art-active의 자동변경1줄만 검증자 종료 뒤 HEAD로 복원하도록 좁게 허용했고 Content 사용자 파일은 이 처리에서 제외했다.
 
 ## 재개 지점
 
@@ -512,3 +513,9 @@
 - 리드 git status에서 보호 설정03_Client/ProjectSettings/ProjectSettings.asset의1줄 변경을 발견했고 worker msg_57500ed728d6도 같은 자동변경·미복원을 보고했다. Standalone defines의 SENTIS_ANALYTICS_ENABLED;가 제거됐다. mtime14:41:23.9215552Z는 Unity 실행 안이며 직전tracked0이다. 현재21005bytes/SHA256333733a31e62db484381ab3b60c8734412e0e8907da87a0c1e00ba4bcc92348b, 기동 전 HEAD21030bytes/SHA256b04c1808f226ffc1e740e294328be8bdf0be13c6a61f2dcc70c42ac2cd92cf81. raw/auto-changes의 HEAD/현재본/diff를 보존했고 리드도 byte/hash/diff를 대조했다.
 - 설치된 AnalyticsDefineManager의 조건false 시 해당define을 제거하는 코드를 읽었다. 실제 EditorAnalytics값은 미측정이라 원인을 확정하지 않는다. 리드/검증자는 설정을 복원/삭제하지 않았다. 메인 msg_c7733abee7f5에 Art파일1개만 정확기동전HEAD byte/hash로 되돌릴 기계 보존 작업 주체/범위 결정을 요청했고 Content msg_5b50e1a8fe15에도 알렸다. Content checkout파일쓰기0, Unity재실행예약0이다.
 - XML 원문을 파싱해203case 전부Passed·failed/skipped/inconclusive0을 확인했다. XML SHA25692fe2b0d6788cd885aa36570ad997e43a8b2a3bb7874bc34a1a51e3da4ea6b19. 당초약167은 계획값이고 실제203과 구분한다. 최종독립판정/worker_done은 아직 미수령이며 실행부작용을 숨겨 PASS로 바꾸지 않는다.
+
+### 05 - 메인 설정 보존 처리 결정·독립 판정 기준 전달 — 2026-10-14
+
+- 메인 msg_05a8ad796892는 승인 밤샘 위임 안의 운영 판단(새 사용자 결정 아님)으로 Art 리드가 art-active ProjectSettings.asset1개만 검증자 정산·종료 뒤 또는 더 읽지 않음 확인 뒤 HEAD로 복원하도록 지정했다. 복원 크기21030bytes/SHA256b04c1808f226ffc1e740e294328be8bdf0be13c6a61f2dcc70c42ac2cd92cf81·git status 해당파일없음을 확인하며 기존HEAD/현재본/diff원시는 보존한다. 검증자 설정쓰기 금지와 Content 사용자파일 보존은 유지한다.
+- 이 실행부작용은 시연 우선 기준의 「운영 미준수·부작용」에 공개하며 제품 판정을 막지 않는다는 메인 기준을 현재 검증자에게 msg_cd9746650e78로 전달했다.203/203XML과 최종독립판정을 받고 복원은 아직 수행하지 않았다. 원시 main-settings-restore-authorization-and-core-preparation.json·reviewer-settings-main-decision-notify.json.
+- Core 새 Sol Run generation15/currenthandle을 대조했고 준비 알림msg_a3b6f46b9dc9에 Art 실제반환/예약0·추가중량창0을 msg_5ad1cc064459로 회신했다. Core WSL fresh6GiB/commit4GiB 조건과 Unity순서를 구분한다.
