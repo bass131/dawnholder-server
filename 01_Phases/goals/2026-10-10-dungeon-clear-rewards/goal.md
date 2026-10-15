@@ -313,23 +313,21 @@ Content 적용: 현재 실행 준비 중인 재검증3에 전달(msg_fec530f29f2
 
 | 항목 | 값 |
 |---|---|
-| 단계 | #1~#3 변경분Strong PASS21/21, done15:29:43.857Z 뒤정산·정확pane종료. #4/#5는동결뒤정리. 세크기실화면/SFX·goal전체PASS는미실행 |
-| 다음 첫 일 | PR239 최종 head·CI·원문을 메인에 보고하고 정확 head의 사용자 병합 승인을 기다린다. 병합 뒤 로컬 결과 기록·Gardener·종료 기록 PR·종료 점검을 이어가며 다음 goal은 시작하지 않는다 |
-| 실행 조건 | Content 실제 실행·예약·작업자 0, Editor·7777·MCP 시트 반환 완료. 새 실행은 없고 추가 실행이 필요하면 새 계약·현재 자원 조율을 따른다 |
-| 열린 Task·Dispatch | 없음. task_576e184ed4bb/ctx_b6c38a02dabe는 succeeded/completed/settled·exactidentity 확인뒤release retained/external_terminal와정확terminal close ptyKilled=true. 이전구현·검증자도종료 |
-| 결정 대기 | D-10 해석 A는 메인 판단으로 확정. 사용자에게 PR239 병합 요청 때 공개한다. C9 추가 실행 없음; 정확 head의 병합 승인은 아직이며 Codex 병합 권한은 없다 |
-| 작업 공간 / branch | content-active / feat/dungeon-clear-server-20261011(base999b1b98). 마감 HEADa0f8fb0117722f3b78b0d3988cd25f61cfa545b3에서 origin/main20ce59ddd72d0cb72b6e230e386a62587b9bfe1b를 합쳐6f6fd690a5be6c8efb05f116135532bfdb6f800f push·원격 일치. 이어지는 이 재개 기록 커밋과 새 계약 기준은 resume-20261014-0916 및 c9-fix-r2 근거에 남긴다 |
-| 미커밋 파일 | 제품 Window01c5c3bb…/StageClear1a55a155… 불변. client.md·시험3개·ScreenUiProbe 변경과 새 ScreenUiProbeTests cs/meta. 재검증2의 Presentation csb7d7d114…/기존meta f60c73ec…; 새 시험 cs3613c0eb…/meta087cb671…. 사용자 MinimapRT7123af77…/ProjectSettings4a8db0bd… 보존. goal은 리드 정산 기록, HEAD27a7109a 유지 |
-| main 합류 | 15:53:38Z 최신 origin/main b9f78ff07514b54b80370cbfca1f0df33baa5ac4를 충돌 없이 합쳤다(merge1c593f5bf60357acf7d3bf3687e65cafa1304f66). World v19·로그인 포함. DungeonClearSmoke는 변경된 ProbeBase의 handshake→login→CharacterSelect를 상속하고, 서버 시험 fixture도 LifecycleTestWorld.LogIn을 호출함을 정적으로 확인했다. 합친 HEAD의 C9 선행 PlayMode6개는 아래 결과대로 실행했으며 서버·봇 재검증은 아직 미실행 |
-| PR | [239 - 던전 클리어 보상 원자 지급과 마을 복귀](https://github.com/bass131/dawnholder-server/pull/239), C9 통과·ready 전환. 최종 head/CI는 c9-screen-resume-20261015-prep/final-pr-state.json. 미병합 |
-| 리드 / Run | 현재 [Content 리드 Sol], 요청 gpt-6.1-sol xhigh/화면 GPT-6.1-Sol xhigh, backend unknown. 메인 재개 msg_ec2d11809c87. 새handle term_4b9125e2-0342-463e-81cf-528ab329c265, runtime42f2ec42-f071-4796-bb5f-9b569877cebd, 같은 run_b680cd89da9a generation7 인수. 이전 Astra handle은 역사기록이며 검증자Task/Dispatch는 유지 |
-| 리드 전환 안전 지점 | Sol xhigh 같은대화 재개·새handle/화면/run-use 확인 완료. 현재 Opus검증 유지, 공식ask1 answered/보류, Unity허가0/예약0. 인계 c9-fix-review-3-prep/sol-transition-handoff.json, 재개근거 sol-resume-* |
-| 근거 | .backups/verification/2026-10-10-dungeon-clear-rewards/c9-fix-review-3/report.md·verdict.json·runs/review3-classes21-1/results.xml; prep/settlement.json·lead-xml-audit.json·settings-restore-receipt.json·worker-terminal-close.json. 이전원문/버전/23시험은보존 |
-| 사용자 파일 | 12:23:36.2729409Z 리드가 Unity자동변경5a03375a…의 Standalone define 한 줄만 원 사용자bytes4a8db0bd…로 복원했고 검증자12:25:39Z에 13hash를 재확인했다. Minimap/TimeManager/settings 보존, stage/commit/stash0 |
-| 작업자·실행 자원 | 작업자0/Unity실행0·예약0. PID28676 15:21:00.402→15:22:55.435Z,exit0/timeoutfalse,21/21,XML9e014b02…. mute0→1→0·Unity0/lock없음 리드대조. 네파트실제반환통지,Core WSL병행/SQL비동시유지 |
-| 설정 | 사용자 현행 결정 msg_ed1f78c433f4로 settings.local.json 허용 줄 유지(SHA256791ab2fd…). 과거 종료 후 삭제 조건은 대체됨 |
-| 다음 순서 | 수정·독립 검증·실화면 → PR·CI → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검·R-8. 다음 goal 자동 시작 없음 |
-| 목표 뒤 멈춤 | msg_8083e4e88be8 사용자 지시에 따라 현재goal의 PR번호/정확head 보고·병합대기와 종료점검/기록정리 뒤 멈춘다. 동결뒤정리·아침결정사항을 메인에 보고. 다음goal초안/작업자 기동 없음 |
+| 다음 첫 일 | PR239 최종 head·CI·판정 원문을 메인에 보고하고 정확 head의 사용자 병합 승인을 기다린다. 병합 뒤 결과 기록·Gardener·종료 기록 PR·종료 점검을 이어간다. 다음 goal·작업자는 시작하지 않는다 |
+| 현재 단계 | C9 범위 1~4 독립 PASS, 제품 결함 0. PR239 ready·미병합이며 goal 전체는 아직 완료하지 않았다. #4/#5 정리는 동결 뒤로 보존한다 |
+| 작업 공간 / branch | content-active / feat/dungeon-clear-server-20261011. 최신 main 합류와 검증 코드 기준은 `c9-screen-resume-20261015-prep/main-merge-receipt.json`, 최종 head·원격 일치·CI는 같은 폴더의 `final-pr-state.json`·`final-closeout.json` |
+| PR / 결정 대기 | [239 - 던전 클리어 보상 원자 지급과 마을 복귀](https://github.com/bass131/dawnholder-server/pull/239). D-10 해석 A는 메인 판단(`msg_9ad3fa95a015`)이며 사용자 결정이 아니다. 병합 승인 요청 때 공개한다. 추가 실행은 없고 Codex는 병합하지 않는다 |
+| 작업자 / 자원 | 열린 작업자·실행·예약 0. 이번 검증자는 succeeded·settled 뒤 release와 정확 pane 종료를 마쳤다. Content의 Editor·7777·MCP 시트는 반환했다. 다른 파트의 현재 자원은 각자 fresh gate로 확인한다 |
+| 검증 근거 | `.backups/verification/2026-10-10-dungeon-clear-rewards/c9-screen-resume-20261015/report.md`·`verdict.json`. 원시 수치·실행·정산·생존 신호 집계는 같은 상위 폴더의 `c9-screen-resume-20261015-prep/final-closeout.json`과 연결 근거 |
+| 보호 / 미커밋 | 제품·시험 미커밋 변경 없음. 기존 사용자 MinimapRT·ProjectSettings 변경은 보존했다. 고정 입력 42개와 보호 파일 4개 불변을 대조했으며 stage·복원·stash하지 않는다 |
+| 리드 / 설정 | 현재 [Content 리드 Sol], 화면 GPT-6.1-Sol xhigh, backend unknown. 현재 Run·세션 식별자는 prep/active.json. 사용자 결정에 따른 settings.local.json 허용 줄은 유지한다 |
+
+### 기존 아트 경계
+
+C9의 실제 main 병합 뒤 Art가 rebase한 다음 창 작업을 진행한다. Content checkpoint의 직접 cherry-pick·merge·파일 복사는 하지 않는다(`msg_d5e7bee01931`).
+
+| 항목 | 경계 |
+|---|---|
 | 아트 인계: 대장장이 | 이 goal은 `Npc_BlackSmith.prefab`·`BlackSmith.controller`·대장장이 동작 코드를 바꾸지 않는다. 컨트롤러 기본 상태 교체, 새 망치질 클립, 다듬은 시트와 `.meta`는 아트 효과 PR이 맡는다. 다음 Content goal이 상호작용 컴포넌트를 그 프리팹에 붙이게 되면 쓰기 전에 아트와 파일·시기를 나눈다(아트 `msg_55ea71c3ee0a`, 리드 회신 `msg_136ca02071fc`) |
 | 아트 인계: UI 창 조각 | 창 그림은 조각 조합형이다. 조각 PNG·`.meta`·9-slice, 조각 프리팹, 표시 전용 helper, 코드로 짓는 네 창(`InventoryPanelView`·`DungeonClearRewardWindow`·`PartyInvitePopup`·`NpcDialogPanel`)에 조각을 입히는 일은 아트 UI 창 PR이 맡는다. 조각 이름·변형은 그 PR 병합 때 고정하고, Content의 길드 패널·대장간 화면은 그 조각을 쓴다. 길드 패널·대장간을 코드로 지을지 프리팹·씬으로 지을지는 미정이다. C9가 보상 창 겹침 결함을 찾으면 이 PR에서 그 파일을 고칠 수 있고, 쓰기 전에 아트와 순서를 나눈다(아트 `msg_d87cbec99258`, 리드 회신 `msg_2f7a25007d10`) |
 
