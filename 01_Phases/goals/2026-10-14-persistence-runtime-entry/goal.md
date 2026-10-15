@@ -67,12 +67,22 @@
 - 재검토2가 차단이면 세 번째 정적 루프 없이 메인 판단을 받는다. 좁은 수정은 실행 계약에 포함하고 실제 검증 계약의 독립 확인 대상으로 적는다.
 - Core 전용 Unity·WSL·SQL 창에서 타 파트 통지·대기·양보를 생략한다. fresh 물리6GiB/commitfree4GiB/C10GiB·단일Editor·사용자 프로세스 비접촉은 유지한다. heartbeat 초과는 구간·이유 한 줄과 기존 집계만 기록한다.
 - Trust=true 관리자 bootstrap 대비안은 채택하지 않았다. 실행 전제가 막히면 임의 수정 루프 대신 메인에 보고한다. 승인 자원·비밀·보호 경계·독립 역할·정확 head 사용자 병합 승인 규칙은 유지한다.
+### Docker 마지막 시도와 중단 조건(2026-10-15)
+
+메인 `msg_7f807adc4a54`(2026-10-15T14:30:35Z)가 전달한 사용자 원문(메인 pane Enter 제출)이다. 이 pane 직접 입력으로 격상하지 않는다.
+
+> 만약에 Docker로 나누는걸 실패하면 그냥 Docker로 컨테이너세팅하지 말고 진행하는거로 바꾸자, 시간 너무 많이 잡아먹는다
+
+- 메인 적용 판단: v2의 `logging driver invalid size -1`은 create 인자 문제로 보이므로 신규 Astra xhigh v3 계약에서 Docker 마지막 1회만 수행한다. 현재 작업자는 실패 원시를 보존하고 정산·종료한다.
+- v3는 로그 옵션 최소 수정 → 실패한 정확 새 container 제거 → Create/Start → Bootstrap → Runtime 일괄 승인이다. volume·privateRoot는 계약이 허용하면 재사용하고 아니면 같은 승인 이름으로 다시 만든다. 기존 보호 자원·Windows SQL 접근0이다.
+- Docker CLI stderr는 sa 값을 치환한 사본과 치환 사실을 근거에 남긴다. 비밀 원문을 출력하지 않으며 길이/hash만으로 원인 기록을 대신하지 않는다.
+- v3에서 create·start·logging·mount·entrypoint·sa bootstrap 등 Docker 전제가 다시 실패하면 추가 수정 없이 보존·정산하고 **Docker 방식 중단**으로 메인에 보고한다. Docker 없는 방식은 메인이 사용자와 정해 새 계약으로 전달한다. 그 전 대안 설계·Windows SQL 조회는 하지 않는다.
 ## 재개 지점
 
 - 작업 위치 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-parallel`, branch `feat/persistence-runtime-entry-20261015`, PR242 draft. Run `run_b36cc92a4cf4`, 리드 `[Core 리드 Astra]` medium 시범/backend unknown. Codex 병합 금지다.
 - PR237 메인 병합 `03e25baa93dda9f78d941e00ae89d54778405cb4`를 normal merge/push했고 현재 기록 전 HEAD는 `312dab748a304a9e300d7ff57cd6c14ab283331f`다. 제품 도구12파일은 미커밋 상태로 보존하며 이 기록 커밋에 섞지 않는다.
 - 수정 `task_adf725380e59`의 결함1~3은 신규 Opus `task_1e5868e18e64` 정적 재검토에서 해소 판정이다. 전체 강검증은 실제 진입0으로 보류다. 원문 `B/runtime-entry-linux-sql-static-review-2/verdict.md` SHA256 `ABDD5A345959D73A9FB8DB17DFDAFCCD6F28E3A5447FD4B1E837F748AE6D4DC8`. 비차단4~8/D1~D9는 후속이며 과거 판정은 바꾸지 않는다.
-- 다음 일은 아래 착수 순서의 새 실행 계약 발행이다. 현재 카드/plan/index는 `B/runtime-entry-linux-sql-fix-1/`이며 새 메인 채택을 적용한 다음 계약에서 입력·변경·실행 단계를 고정한다. plan ExpiresUtc offset을 명시하고 실제 Linux 오류번호는 추정 확대하지 않는다.
+- 현재 v2는 restore/publish·Prepare 성공 뒤 container start의 logging driver `invalid size -1`로 실패했고 Bootstrap/Runtime은 미실행이다. 생성된 새 container/volume/privateRoot를 보존하고 v2를 정산한 뒤 위 마지막 시도 제한의 신규 v3 실행 계약을 발행한다. 현재 카드/plan/index는 `B/runtime-entry-linux-sql-fix-1/`이며 새 메인 채택을 적용한 다음 계약에서 입력·변경·실행 단계를 고정한다. plan ExpiresUtc offset을 명시하고 실제 Linux 오류번호는 추정 확대하지 않는다.
 - 실제 DB/DPAPI·정상 서버·봇·Unity Play 장면9·최신 CI·사용자 병합 승인은 미완료다. 과거 서버1497 PASS/기존제외5·Unity484 PASS를 현재 DB 성공으로 확대하지 않는다. catalog004는 main 통합 뒤 이전 literal로 CI 실패했다는 메인 보고이며 독립 검증에서 교정/시험한다.
 - `B=P2/.backups/verification/2026-10-14-persistence-runtime-entry`, `P2=core-parallel`, `U=B/runtime-entry-unity-fixture-reverification-1`. 과거 중첩 재개 블록은 `B/plan-efficiency-1/goal-before.md`와 이전 Git 버전에 보존한다. 현재 결정 원시는 같은 폴더 `main-decision.json`이다.
 - 보호 자원은 옛 dawnholder-sqlserver 및 judgment-r1/r2 계열 container·volume·DB·privateRoot·로그와 Windows SQL이다. 읽기·쿼리·쓰기·재시작·삭제0, 전체 inventory나 Env 조회로 우회0. 승인된 새 runtime-entry-r1만 생성·시험 후 삭제한다. 자원 이름·sa 한정 예외·TLS Mandatory/false는 위 결정과 고정 카드에 따른다.
