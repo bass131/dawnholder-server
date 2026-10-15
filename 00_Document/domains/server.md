@@ -40,7 +40,7 @@ handshake 뒤 [LoginHandler](../../02_Server/GameServer/Handlers/Session/LoginHa
 
 조회·사용·클리어 결과와 클리어 성공 snapshot은 캡처한 session에 직접 답하고, 처치 snapshot은 기존 `GameWorld.SendToEntity`로 보낸다. 이 공용 경로는 맵 소속이 없거나 다음 맵 job 전에 소유자가 사라지면 push를 생략할 수 있다. commit된 경제 상태는 유지되어 이후 조회로 받을 수 있으며 송신 실패 뒤 rollback·재지급·재시도 큐는 없다. wire와 결과 순서는 [v17 경제 패킷](protocol.md#v17-경제-패킷)과 [v18 던전 클리어 패킷](protocol.md#v18-던전-클리어-패킷)에 있다. PR1은 메모리 상태와 패킷까지이며 DB 저장·로드, 클라이언트 상태 미러·인벤토리 UI(PR2)는 구현하지 않았다.
 
-보스 사망의 `IsStageCleared` false → true 분기에서 [DungeonClearState](../../02_Server/GameServer/Dungeon/DungeonClearState.cs)가 보스방 복사본의 그 순간 `Players` 중 종료 중이 아닌 owner를 `(entityId, session)`으로 잡는다. 파티를 다시 보지 않으며 이동 중·다른 맵·늦은 입장자는 제외한다. 같은 World 틱의 Inventory 단계는 수혜자마다 등록 확인 → `Grant` → 결과·snapshot 준비 → 등록 재확인 → 성공 한 번 commit → 39 → 성공 snapshot 순서다. `RevisionExhausted`는 기록만 하고 wire 결과를 보내지 않는다. [확인 job](../../02_Server/GameServer/Dungeon/DungeonClearConfirmation.cs)은 현재 맵 소유와 같은 연결의 미확인 수혜자 여부를 확인하고 기본 좌표의 마을 이동이 `Accepted`일 때만 표시를 지운다. 거부면 표시를 남긴다. 집합은 맵 틱만 바꾸고 복사본 정리와 함께 사라지며, 빈 방 보스 재출현 뒤 같은 복사본에서 다시 클리어하면 새 수혜자 집합으로 교체한다. 지급과 확인은 메모리 작업이며 I/O 완료를 기다리지 않는다.
+보스 사망의 `IsStageCleared` false → true 분기에서 [DungeonClearState](../../02_Server/GameServer/Dungeon/DungeonClearState.cs)가 보스방 복사본의 그 순간 `Players` 중 종료 중이 아닌 owner를 `(entityId, session)`으로 잡는다. 파티를 다시 보지 않으며 이동 중·다른 맵·늦은 입장자는 제외한다. 같은 World 틱의 Inventory 단계는 수혜자마다 현재 개인·길드 owner 확인 → `Grant` → 개인 결과·snapshot과 `GuildRegistry.PreparedDungeonClearCredit` 준비 → 마지막 owner 확인 → 개인·공동 준비값 연속 게시 → 39→36→자기44 순서다. 개인 지급 성공마다 공동 금고에 별도10을 적립하며 공동 포화로 증가0이어도 개인 지급은 허용한다. 준비 실패·필요한 공동 revision 고갈은 양쪽을 게시하지 않으며 송신 실패 뒤에는 rollback·재지급하지 않는다. `RevisionExhausted`는 기록만 하고 wire 결과를 보내지 않는다. [확인 job](../../02_Server/GameServer/Dungeon/DungeonClearConfirmation.cs)은 현재 맵 소유와 같은 연결의 미확인 수혜자 여부를 확인하고 기본 좌표의 마을 이동이 `Accepted`일 때만 표시를 지운다. 거부면 표시를 남긴다. 집합은 맵 틱만 바꾸고 복사본 정리와 함께 사라지며, 빈 방 보스 재출현 뒤 같은 복사본에서 다시 클리어하면 새 수혜자 집합으로 교체한다. 지급과 확인은 메모리 작업이며 I/O 완료를 기다리지 않는다.
 
 ## 길드와 강화
 
@@ -52,7 +52,7 @@ handshake 뒤 [LoginHandler](../../02_Server/GameServer/Handlers/Session/LoginHa
 
 World가 만든 맵의 `GameMap.ComputePlayerDamage` → [PlayerDamage](../../02_Server/GameServer/Combat/PlayerDamage.cs) → `InventoryRegistry.ReadAttackBonus`가 평타 전사/마법사·Dash·Thunderbolt의 단일 권위 조회 경계다. 기본 PlayerStats와 기존 Formulas 최소피해·적→플레이어 피해는 보존한다. 맵 이동/리스폰은 Inventory 수명을 바꾸지 않고, 이미 생성한 projectile/deferred Damage는 생성 당시 값을 유지한다. 해당 틱의 맵 공격은 Guild drain보다 먼저이므로 그 틱 강화 전 값을 쓰고 다음 공격부터 확정값을 읽는다.
 
-현재 기본 가입/조회/구매/강화 경계까지이며 Content 실제 clear→공동 적립, DB 저장, 클라이언트 길드 소비자와 두 봇 순환은 후속이다. 임시 boss-kill 길드 보너스나 대체 clear hook은 없다. 기존 일반 처치 개인 보상은 그대로다. 패킷 순서·상관·소비자 의무는 [v20 계약](protocol.md#v20-길드거점개인-강화)에서 확인한다.
+기본 가입/조회/구매/강화와 실제 Content clear→공동 적립이 연결되어 있다. [GuildGrowthSmoke](../../99_Tools/headless-bot/Scenarios/Guild/GuildGrowthSmoke.cs)는 두 계정의 공개 접속·파티·실제 보스 처치·개인/공동 보상·거점 경합·한 명 강화·피해 차이·재접속을 관찰한다. 이 진입점 구현을 실제 실행 성공이나 독립 PASS로 해석하지 않는다. DB 저장, Unity 길드 화면/소비자와 최종 독립 검증은 후속이다. 임시 boss-kill 길드 보너스나 대체 clear hook은 없다. 기존 일반 처치 개인 보상은 그대로다. 패킷 순서·상관·소비자 의무는 [v20 계약](protocol.md#v20-길드거점개인-강화)에서 확인한다.
 
 ## 즉시 적 피해
 

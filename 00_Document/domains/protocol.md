@@ -22,13 +22,13 @@ PDL 수정 → 생성기 실행 → 생성 diff와 [ProtocolVersion](../../98_Sh
 
 서버 핸들러는 Read 전 정확한 길이·머리·reserved를 검사한다. 송신 이름은 1..16 UTF-16 code unit이며 기본 `새벽 길드`로 44는 76바이트다. 소비자는 Read 전에 최소66바이트·머리와 offset64의 UInt16 이름 바이트 길이(2..32, 짝수), 전체 size=66+이름 바이트 수를 검사해야 한다. 계정 GUID는 전송하지 않는다.
 
-[GuildAction](../../98_Shared/GameData/Enums/GuildAction.cs)은 StrongholdUpgrade=1, WeaponEnhance=2다. [GuildChangeKind](../../98_Shared/GameData/Enums/GuildChangeKind.cs)는 Query=0, Membership=1, TreasuryCredit=2, StrongholdUpgrade=3, WeaponEnhance=4, Presence=5다. TreasuryCredit의 실제 Content clear 연결은 후속이다. [GuildResult](../../98_Shared/GameData/Enums/GuildResult.cs)는 Success=0, Stale=1, NotMember=2, NotInTown=3, Dead=4, FacilityLocked=5, MaxLevel=6, InsufficientCurrency=7, InsufficientMaterial=8, RevisionExhausted=9, Unavailable=10이며 가능 여부에도 같은 코드를 쓴다. Snapshot의 Success는 현재 이용 가능 표시이며 성공 이벤트가 아니다.
+[GuildAction](../../98_Shared/GameData/Enums/GuildAction.cs)은 StrongholdUpgrade=1, WeaponEnhance=2다. [GuildChangeKind](../../98_Shared/GameData/Enums/GuildChangeKind.cs)는 Query=0, Membership=1, TreasuryCredit=2, StrongholdUpgrade=3, WeaponEnhance=4, Presence=5다. TreasuryCredit은 실제 Content clear의 개인 지급과 공동 적립을 함께 확정한 뒤 발행한다. 수혜자 송신 순서는 39→36→자기44이며 다른 온라인 회원도 자기 개인값을 담은44를 받는다. [GuildResult](../../98_Shared/GameData/Enums/GuildResult.cs)는 Success=0, Stale=1, NotMember=2, NotInTown=3, Dead=4, FacilityLocked=5, MaxLevel=6, InsufficientCurrency=7, InsufficientMaterial=8, RevisionExhausted=9, Unavailable=10이며 가능 여부에도 같은 코드를 쓴다. Snapshot의 Success는 현재 이용 가능 표시이며 성공 이벤트가 아니다.
 
 44의 범위는 금고0..10억, 거점1..2/max2, 해금0/1과 level2의 동치, 회원수≥온라인수≥0, 무기0..1/max1, bonus0/5와 무기 단계의 동치다. 최고 단계의 다음 비용과 재료 수는0이며 재료ID는1이다. 단계0의 시설 잠김 상태에도 강화 가격20·재료1개를 표시한다. 가능 여부는 [서버의 거부 순서](server.md#길드와-강화)를 따르되 expectedRevision 비교만 제외한다.
 
 접속별 sequence는1부터 증가하고 long.MaxValue 뒤 발행을 종료하며 wrap하지 않는다. 회원/온라인 변화는 sequence로 정렬하고 공동 경제 revision과 분리한다. 정상 조회는44 하나, 거점 성공은47→구매자44와 다른 회원44, 거점 거부(stale 포함)는47→현재44다. 강화 성공은47→36→44, 강화 stale은47→현재36→44, 강화의 다른 거부는47→현재44다. 47은 입력의 action·요청 판을 그대로 돌려주고 해당44의 sequence를 가리킨다. 내부 오류는 정상 거부로 바꾸지 않으며 송신 실패가 확정값을 되돌리거나 재지급하지 않는다.
 
-소비자는 연결 세대와 더 큰44 sequence를 검사하고, 개인 판은 유효36/44의 최댓값으로 합쳐야 한다. 낮은 개인 판의44는 공동 표시만 갱신하며 개인 강화/가격/가능 여부를 덮지 않는다. 구매 pending은 연결 소유1개이며 일치하는47과 지목된44 모두를 처리할 때 끝낸다. 창 재개·시간 경과·다른 이유의 방송으로 해제/재전송하지 않는다. 조회 pending은 더 큰 Query44로 끝낸다. 첫 동기화/재조회/옛 sequence는 성장 효과를 재생하지 않는다. 이 소비자 구현·Unity DLL·봇 검증은 별도 후속 범위다.
+소비자는 연결 세대와 더 큰44 sequence를 검사하고, 개인 판은 유효36/44의 최댓값으로 합쳐야 한다. 낮은 개인 판의44는 공동 표시만 갱신하며 개인 강화/가격/가능 여부를 덮지 않는다. 구매 pending은 연결 소유1개이며 일치하는47과 지목된44 모두를 처리할 때 끝낸다. 창 재개·시간 경과·다른 이유의 방송으로 해제/재전송하지 않는다. 조회 pending은 더 큰 Query44로 끝낸다. 첫 동기화/재조회/옛 sequence는 성장 효과를 재생하지 않는다. [GuildGrowthProbe](../../99_Tools/headless-bot/Scenarios/Guild/GuildGrowthProbe.cs)는 이 연결별 길이·sequence·pending 상관을 검사하는 봇 소비자다. 낮은 개인 판의44는 봇 상태 view를 덮지 않고 원시 상관 기록에만 남긴다. Unity 길드 소비자·컴파일과 최종 독립 판정은 별도로 확인한다.
 
 ## v19 계정 로그인
 

@@ -23,6 +23,7 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario PartyQuest
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario InventorySmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario DungeonClearSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario GuildGrowthSmoke
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -41,6 +42,13 @@ for (int i = 0; i < args.Length - 1; i++)
 
 Console.WriteLine($"=== HeadlessBot ===");
 Console.WriteLine($"target: {host}:{port}  scenario: {scenarioName}");
+
+if (string.Equals(scenarioName, "GuildGrowthSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    GuildGrowthSmoke.Result r = await GuildGrowthSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] GuildGrowthSmoke: success={r.Success} reason={r.Reason}");
+    return r.Success ? 0 : 1;
+}
 
 if (string.Equals(scenarioName, "MultiAccountLoginSmoke", StringComparison.OrdinalIgnoreCase))
 {
