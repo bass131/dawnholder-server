@@ -178,20 +178,35 @@ namespace Dawnholder.Client.UI
             panelRt.sizeDelta = new Vector2(400f, 180f);
 
             RectTransform headerRt = UiWindowAppearance.CreateHeader("Header", panel.transform).rectTransform;
-            headerRt.anchorMin = new Vector2(0f, 0.5f);
+            headerRt.anchorMin = new Vector2(0f, 1f);
             headerRt.anchorMax = new Vector2(1f, 1f);
-            headerRt.offsetMin = new Vector2(10f, 0f);
+            headerRt.offsetMin = new Vector2(10f, -50f);
             headerRt.offsetMax = new Vector2(-10f, -10f);
+
+            GameObject titleGo = new GameObject("Title");
+            titleGo.transform.SetParent(headerRt, worldPositionStays: false);
+            RectTransform titleRt = titleGo.AddComponent<RectTransform>();
+            titleRt.anchorMin = Vector2.zero;
+            titleRt.anchorMax = Vector2.one;
+            titleRt.offsetMin = Vector2.zero;
+            titleRt.offsetMax = Vector2.zero;
+
+            TMP_Text titleTmp = titleGo.AddComponent<TextMeshProUGUI>();
+            titleTmp.text      = "파티 초대";
+            titleTmp.fontSize  = 28f;
+            titleTmp.alignment = TextAlignmentOptions.Center;
+            titleTmp.color     = Color.white;
+            titleTmp.fontStyle = FontStyles.Bold;
 
             // ── 초대 텍스트 ──────────────────────────────────────────
             GameObject textGo = new GameObject("InviteText");
             textGo.transform.SetParent(panel.transform, worldPositionStays: false);
             RectTransform textRt = textGo.AddComponent<RectTransform>();
-            textRt.anchorMin = new Vector2(0f, 0.5f);
-            textRt.anchorMax = new Vector2(1f, 1f);
+            textRt.anchorMin = Vector2.zero;
+            textRt.anchorMax = Vector2.one;
             textRt.pivot     = new Vector2(0.5f, 0.5f);
-            textRt.offsetMin = new Vector2(10f, 0f);
-            textRt.offsetMax = new Vector2(-10f, -10f);
+            textRt.offsetMin = new Vector2(20f, 64f);
+            textRt.offsetMax = new Vector2(-20f, -64f);
 
             TMP_Text tmp = textGo.AddComponent<TextMeshProUGUI>();
             tmp.text      = "파티 초대";
@@ -209,15 +224,19 @@ namespace Dawnholder.Client.UI
                     "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
             }
 #endif
-            if (font != null) tmp.font = font;
+            if (font != null)
+            {
+                titleTmp.font = font;
+                tmp.font = font;
+            }
 
             // ── Accept 버튼 ──────────────────────────────────────────
             GameObject acceptGo = BuildButton(panel.transform, "AcceptButton", "수락",
-                new Vector2(-70f, -50f), UiWindowAppearance.ButtonStyle.Accept, font);
+                new Vector2(-70f, 36f), UiWindowAppearance.ButtonStyle.Accept, font);
 
             // ── Reject 버튼 ──────────────────────────────────────────
             GameObject rejectGo = BuildButton(panel.transform, "RejectButton", "거절",
-                new Vector2(70f, -50f), UiWindowAppearance.ButtonStyle.Decline, font);
+                new Vector2(70f, 36f), UiWindowAppearance.ButtonStyle.Decline, font);
 
             // ── PartyInvitePopup 컴포넌트 ──────────────────────────
             PartyInvitePopup popup = root.AddComponent<PartyInvitePopup>();
