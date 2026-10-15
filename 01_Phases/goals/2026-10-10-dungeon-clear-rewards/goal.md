@@ -1,6 +1,6 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **제품 PR239가 사용자 승인 뒤 병합됐다. C9는 독립 PASS이며 D-10 A는 메인 공개 뒤 사용자 승인됐다. 현재 Gardener를 마치고 종료 기록 문서 실사·PR을 진행하며 goal 전체 종료와 R-8은 아직이다. #4/#5는 미해소 동결 뒤 정리다.**
+상태: **제품 PR239가 사용자 승인 뒤 병합됐다. C9는 독립 PASS이며 D-10 A는 메인 공개 뒤 사용자 승인됐다. Gardener·종료 문서 실사를 마쳤고 종료 기록 PR244의 사용자 병합 승인·메인 종료 점검/R-8을 기다린다. goal 전체 종료 전이다. #4/#5는 미해소 동결 뒤 정리다.**
 
 - 담당(착수 시점): Content 리드 [Content 리드 Astra], 지정/표시 gpt-6-astra xhigh, backend unknown. 시작 기준 origin/main = cc20d428f7988fdcb232a7c811cf2e729446abdc.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침, 병합 뒤 원격 삭제). 던전 클리어 PR branch `feat/dungeon-clear-server-20261011`(base `999b1b98`; PR239 병합 완료).
@@ -313,11 +313,11 @@ Content 적용: 현재 실행 준비 중인 재검증3에 전달(msg_fec530f29f2
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 신규 Astra가 종료 문서를 실사한 뒤 Gardener 결과를 포함한 종료 기록 PR 하나와 정확 head를 메인에 보고한다. 그 PR의 사용자 병합 승인·메인 병합·종료 점검·R-8을 기다리며 다음 goal은 시작하지 않는다 |
-| 현재 단계 | 제품 PR239 병합 완료·C9 범위 1~4 독립 PASS. Gardener는 끝났고 종료 문서 실사·PR이 남아 goal 전체 종료 전이다. #4/#5는 동결 뒤 정리로 미해소다 |
+| 다음 첫 일 | 종료 기록 PR244의 정확 head 사용자 병합 승인·메인 병합·종료 점검·R-8을 기다린다. 최종 head·CI·판정 원문은 closeout-20261015/final-closeout.json에 두며 다음 goal은 시작하지 않는다 |
+| 현재 단계 | 제품 PR239 병합 완료·C9 범위 1~4 독립 PASS. Gardener·종료 문서 독립 실사 PASS, 종료 기록 PR244 병합 대기이며 goal 전체 종료 전이다. #4/#5는 동결 뒤 정리로 미해소다 |
 | 작업 공간 / branch | content-active / docs/content-dungeon-clear-closeout-20261015. 최신 main에서 만든 기준·보호 대조는 closeout-20261015/branch-base.json |
 | 제품 병합 / 결정 | PR239 head 9f3f58198baea8e5bde12472f06032f113de35c3·CI4 성공 → 2026-10-15T02:55:03Z main merge 6b94d30a2284338e5ceafebacf5b7c54e3fd79f0. 승인 원문·D-10 사용자 A는 메인 msg_9baceeac9dc0 전달 |
-| 작업자 / 자원 | C9 검증자 정산·정확 pane 종료 완료. Content 중량 실행·예약 0이며 종료 문서/Gardener만 진행한다. 새 Unity·서버·DB 실행은 계획하지 않는다 |
+| 작업자 / 자원 | C9·Gardener·종료 문서 검증자 정산·정확 pane 종료 완료. 열린 작업자·Content 중량 실행·예약 0이다. 새 Unity·서버·DB 실행은 계획하지 않는다 |
 | 검증 / 원시 근거 | C9 판정은 .backups/verification/2026-10-10-dungeon-clear-rewards/c9-screen-resume-20261015/report.md·verdict.json. 종료 근거는 같은 상위 폴더 closeout-20261015/에 둔다 |
 | 보호 / 리드 | 사용자 MinimapRT·ProjectSettings 변경과 TimeManager·settings.local.json은 보존한다. 현재 [Content 리드 Sol], 화면 GPT-6.1-Sol xhigh/backend unknown. 세션 식별자는 앞 단계 prep/active.json과 종료 worker receipt로 추적한다 |
 
@@ -346,7 +346,7 @@ C9의 실제 main 병합 뒤 Art가 rebase한 다음 창 작업을 진행한다.
 - [x] 검증·실제 플레이
 - [x] PR239 병합
 - [x] 결과 기록·Gardener
-- [>] 종료 기록 병합
+- [>] PR244 병합
 
 ## 실제 결과와 미실행
 
@@ -895,3 +895,11 @@ C9 통과 뒤 PR239 ready·정확head/CI/판정 원문으로 메인에 병합 �
 기록1~3은 종료 이월 판단·C9 후속 관찰·Unity 허용 결정의 도착 ID를 보완했다. 기록4~6은 hash 대상(작업본 bytes/커밋 blob), 조회 명령·UTC·exit, 서로 다른 후보 검사 기준을 종료 근거에서 구분했다. 기록7은 C9 네 생존 지연 구간과 당시 대기·실행 상황을 한 줄씩 연결했고 단일 원인 미확정은 유지한다. 기록8은 착수 리드/병합된 branch 표기를 분리했다. 기록9의 질문 ID와 답 ID는 원문을 고치지 않고 구별했다. 실제 대응·원시 경로는 closeout-20261015/gardener-disposition.md다.
 
 병합·CI 조회의 실행 근거는 closeout-20261015/product-pr-observation-with-execution.json, 메인의 승인 전달 원문은 main-closeout-instruction.json이다. 신규 Gardener 생존 신호는 기존 helper로 15신호·최대136초·300초 초과0을 확인했다(gardener-liveness.json). 기존 C9 원문/원시·#4/#5 미해소·미실행 범위는 보존했다. 현재 제품/시험 추가 변경과 중량 실행0이며 종료 문서 독립 실사·PR·해당 head의 사용자 병합 승인·메인 종료 점검/R-8을 남긴다.
+
+### 244 - 종료 문서 독립 실사 통과와 병합 대기
+
+신규 외부 Astra의 종료 문서 독립 실사는 통과·차단 결함0이다. 원문 고정 링크에서 한 번 더 찾아야 하는 비차단 탐색 관찰 O-D1은 남기며 새 수정으로 넓히지 않는다. 판정은 검증 기준 head의 문서4파일에만 적용하고 제품 재검증·후보 채택·goal 전체 종료를 뜻하지 않는다. 원문은 closeout-20261015/doc-review/report.md·verdict.json, 리드 실사·작업자 종료는 doc-review-settlement.json이다.
+
+검증자 정산 뒤 안전 지점에서 PR243의 최신 main을 통합했다. Content 후보25행과 CURRENT 자기 행, 다른 main 후보/파트 행, 당시 goal·Gardener bytes의 보존을 대조했다(final-main-preservation.json). 이후 변경은 이 단계 결과와 현재 재개 상태 기록뿐이며 최종 diff를 메인의 R-2 대조에 함께 전달한다. 이전 검증의 고정 입력·판정 원문은 보존한다.
+
+[244 - 던전 클리어 목표 종료 기록과 후속 후보 정산](https://github.com/bass131/dawnholder-server/pull/244)을 만들었다. 정확 head·CI·판정 hash는 closeout-20261015/final-closeout.json으로 보고한다. 해당 PR의 사용자 명시 승인·메인 병합·종료 점검·R-8이 남았으며 Content는 병합·자동 병합·다음 goal을 실행하지 않는다.
