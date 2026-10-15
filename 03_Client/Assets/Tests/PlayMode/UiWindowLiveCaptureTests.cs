@@ -219,13 +219,18 @@ namespace Dawnholder.Client.Tests.PlayMode
             var frame = new CaptureResult();
             yield return Capture(frame);
             Note("minimum capture", "not run: this Party contract captures only current 1920x1080");
-            WriteRecord();
+            string captureRecord = WriteRecord();
+            byte[] captureRecordBytes = File.ReadAllBytes(captureRecord);
+            Note("capture record", $"{captureRecord} | {captureRecordBytes.Length} bytes sha256 {Sha256(captureRecordBytes)}");
             Assert.IsTrue(frame.Written && frame.SameSizeAsScreen && frame.SampledColours > 1,
                 "the actual Game view frame was saved at its own size and is not flat");
             Assert.AreEqual(PrimaryWidth, frame.Width);
             Assert.AreEqual(PrimaryHeight, frame.Height);
             yield return ObservePartyResponses(popup, group, layout, failures);
-            WriteRecord(phase: "responses");
+            string responsesRecord = WriteRecord(phase: "responses");
+            // Read back after both writes, so these checks and the next line reach Editor.log rather than either record.
+            NoteChecks(RecordChecks(captureRecord, captureRecordBytes, responsesRecord), failures);
+            Note("final requirement assertion", $"reached with {failures.Count} failure(s)");
             // After the PNG and both records exist, so a failing requirement still leaves the frame and every measured value.
             Assert.IsEmpty(failures, "party invite layout requirements:\n" + string.Join("\n", failures));
         }
@@ -270,6 +275,50 @@ namespace Dawnholder.Client.Tests.PlayMode
                 NoteChecks(new[] { new PartyInviteLayout.Check("response.hidden-click-sends-none-" + answer,
                     afterHiddenClick == after, $"before hidden click {after}, after {afterHiddenClick}") }, failures);
             }
+        }
+
+        // The capture-time record stays as written and the responses record is a separate new file. WriteRecord's own guard
+        // is shown refusing an existing output on a control file this test made, so neither real record is its target.
+        List<PartyInviteLayout.Check> RecordChecks(string capturePath, byte[] captureBytes, string responsesPath)
+        {
+            string controlPath = RecordPath("existing-output-control");
+            bool controlWasNew = !File.Exists(controlPath);
+            if (controlWasNew) File.WriteAllText(controlPath, "control: exists before WriteRecord targets this path\n");
+            byte[] controlBefore = File.ReadAllBytes(controlPath);
+            string refusal = RefusalOf(() => WriteRecord("existing-output-control"));
+            byte[] controlAfter = File.ReadAllBytes(controlPath);
+            byte[] captureAfter = File.ReadAllBytes(capturePath);
+            string[] captureLines = File.ReadAllLines(capturePath);
+            string[] responseLines = File.ReadAllLines(responsesPath);
+            bool captureLeads = responseLines.Length > captureLines.Length && responseLines.Take(captureLines.Length).SequenceEqual(captureLines);
+            int responseChecksInCapture = captureLines.Count(line => line.StartsWith("check response."));
+            bool accepted = responseLines.Any(line => line.StartsWith("check response.one-correct-intent-1: "));
+            bool declined = responseLines.Any(line => line.StartsWith("check response.one-correct-intent-0: "));
+            return new List<PartyInviteLayout.Check>
+            {
+                new("record.separate-new-files", capturePath != responsesPath && File.Exists(capturePath) && File.Exists(responsesPath),
+                    $"{capturePath} | {responsesPath}"),
+                new("record.capture-unchanged", captureAfter.SequenceEqual(captureBytes),
+                    $"{captureBytes.Length} bytes sha256 {Sha256(captureBytes)} -> {captureAfter.Length} bytes sha256 {Sha256(captureAfter)}"),
+                new("record.capture-is-the-earlier-snapshot", captureLeads && responseChecksInCapture == 0,
+                    $"capture {captureLines.Length} lines lead the responses record's {responseLines.Length}: {captureLeads}; response checks in capture {responseChecksInCapture}"),
+                new("record.responses-carry-both-answers", accepted && declined,
+                    $"accept intent line {accepted}, decline intent line {declined}, response checks {responseLines.Count(line => line.StartsWith("check response."))}"),
+                new("record.existing-output-refused-unchanged", controlWasNew && refusal != null && controlAfter.SequenceEqual(controlBefore),
+                    $"control new {controlWasNew}, refusal {refusal ?? "none"}, control {controlBefore.Length} -> {controlAfter.Length} bytes same {controlAfter.SequenceEqual(controlBefore)}"),
+            };
+        }
+
+        // com.unity.ext.nunit is NUnit 3.5 based: a failed assertion is thrown, not recorded, so catching it here leaves the
+        // test's outcome to the final requirement assertion.
+        static string RefusalOf(Action write)
+        {
+            try
+            {
+                write();
+                return null;
+            }
+            catch (AssertionException refusal) { return refusal.Message.Replace("\r", "").Trim().Replace("\n", " / "); }
         }
 
         // Kept apart from the layout observer: the live window's canvas, shown state and B1 artwork compared with the shared
@@ -536,12 +585,20 @@ namespace Dawnholder.Client.Tests.PlayMode
             Debug.Log($"[Art 검증자 capture] {_window} {key}: {value}");
         }
 
-        void WriteRecord(string phase = null)
+        string RecordPath(string phase) => Path.Combine(_output, (phase == null ? _window : _window + "-" + phase) + "-record.txt");
+
+        string WriteRecord(string phase = null)
         {
-            string name = phase == null ? _window : _window + "-" + phase;
-            string path = Path.Combine(_output, name + "-record.txt");
+            string path = RecordPath(phase);
             Assert.IsFalse(File.Exists(path), "record output must be new: " + path);
             File.WriteAllLines(path, _record);
+            return path;
+        }
+
+        static string Sha256(byte[] bytes)
+        {
+            using var sha = SHA256.Create();
+            return string.Concat(sha.ComputeHash(bytes).Select(b => b.ToString("x2")));
         }
 
         // The same wire snapshot InventorySceneLifecycleTests builds; its builder is private to that class.
