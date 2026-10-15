@@ -39,7 +39,25 @@
 - **실행은 다음 작업 재개 때다.** 오늘 작업자·검증자·DB·컨테이너·WSL 실행을 열지 않는다. 다음 재개는 새 작업자 실행 카드 고정 → 새 독립 정적 검증 → 실제 실행 순서다. 기존 보호 자원은 건드리지 않으며 삭제는 별도 승인이다. 자원 승인으로 미작성 실행 카드나 실제 성공을 승인·확인한 것으로 표현하지 않는다.
 - 메인 R-2는 마감 head `369482ccc92a9ca312610163b73993b41c3d9af4`, 두 checkout clean, rollout 존재, 재개 블록을 대조했다. 이번 변경은 이 결정을 기록하는 문서 작업뿐이다.
 
+### sa bootstrap 한정 예외와 TLS 연결 호스트(2026-10-15)
+
+메인 `msg_f4eac9748454`(2026-10-15T11:37:15Z)가 전달한 메인 pane 제출 사용자 원문이다. 이 pane 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) Core DB 시험 컨테이너 - 관리자 비밀번호 전달 방식 예외 → A 컨테이너 안 한정 예외 허용
+
+- 예외는 새 `dawnholder-sqlserver-runtime-entry-r1`의 sa 비밀번호 한 개다. 파일로 마운트하고 entrypoint 시작 스크립트가 읽어 컨테이너 안 sqlservr 프로세스 환경에만 넘긴다. 호스트 argv·env·로그·docker inspect 출력과 시작 스크립트 argv의 비밀값은 0이다. bootstrap 뒤 sa를 비활성화하고 시험 뒤 승인된 새 container·volume·secret 파일만 삭제한다. 기존 보호 자원과 G4 삭제 승인으로 확대하지 않는다.
+- 고정 image·pull never·loopback14335·메모리·restart no는 유지한다. runtime 로그인 비밀은 CurrentUser DPAPI/env0, TLS는 Mandatory/TrustServerCertificate=false·전역 신뢰 변경0이다. 방식의 고정 image 실제 동작은 미확인이며 새 카드·독립 정적 검증·B04 해소 뒤 실제 실행한다.
+- 메인 판단 `msg_459a8dbf0825`(11:39:35Z): TLS SQL 연결을 Windows System.Data.SqlClient 밖의 Linux 자식 CA 신뢰 호스트로 옮기는 설계를 이번 범위에 허용한다. chain/name 검증을 pin으로 대체하지 않는다. 도구·카드는 리드 판단, 새 의존성이나 게임 서버 제품 코드 변경은 구현 전 메인 판단이 필요하다. 사용자 결정과 구분한다.
+- 결정 원시는 B/tls-readonly-research-1/inbox-ack.json 및 B/runtime-entry-secure-bootstrap-1/inbox-check-5.json이다.
+
 ## 재개 지점
+
+### 컨테이너 내부 sa 예외·Linux TLS 호스트로 재개
+
+- 다음 첫 일: 도구·카드 설계 고정 → 신규 Astra 구현 → 신규 독립 정적 검증 → 승인된 실제 실행. 이 블록이 아래 이전 재개 블록보다 우선한다. 설계/계약은 B/runtime-entry-linux-sql-1/이며 새 의존성·게임 서버 코드 변경은 사전 메인 판단이다.
+- PR237 병합03e25baa 뒤 최신main을 normal merge·push했다. CURRENT는 PR242 링크를 보존했고 제품 수동수정0. SQL9 blob과 migration4/verify-schema 일치; 독립 catalog 시험의004 이전literal1건은 후속 검증자 소유다. 새빌드/DB실행은 아직0. 근거 B/main-integration-1/.
+- 이전 정적 준비와 env0 구현시도는 기술전제 미확정으로 failed 정산·종료했으며 제품 확정실패에 넣지 않는다. B/runtime-entry-secure-bootstrap-1/report.md·release.json·close.json. 새 사용자예외와 TLS호스트판단은 위 적용결정을 따른다. 앞선 카드준비 heartbeat 최대440초 초과1(공식질문45초 제외)은 기존 helper 교정결과에 보존했다(B/runtime-entry-db-card-preparation-1/lead-liveness-result-corrected.json).
+- 현재 기록 시각: 2026-10-15T11:43:19.6064118Z. 이전 블록 10:30:24Z는 최초기록이며 이후사건이 추가된 사실과 정산근거 지칭 정정은 PR237 승인자료에 공개했다. 실제정산 원시는 각 release/close 및 worker_done 수신파일이다.
 
 ### Core 단독 재개
 
