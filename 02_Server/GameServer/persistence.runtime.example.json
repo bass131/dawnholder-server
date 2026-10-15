@@ -1,0 +1,8 @@
+{
+  "persistedAccountName": "replace_me",
+  "database": "ApprovedDatabase",
+  "serverEndpoint": "tcp:approved-host,1433",
+  "slotId": 1,
+  "accountId": "00000000-0000-0000-0000-000000000000",
+  "characterId": "00000000-0000-0000-0000-000000000000"
+}

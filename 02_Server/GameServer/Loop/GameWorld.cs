@@ -6,6 +6,8 @@ using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Quest;
 using Dawnholder.Server.GameServer.Entities;
 using Dawnholder.Server.GameServer.Sessions;
+using Dawnholder.Server.GameServer.Persistence;
+using Dawnholder.Server.GameServer.Persistence.Admission;
 using System.Collections.Concurrent;
 using Shared.GameData;
 using Shared.Protocol;
@@ -23,6 +25,11 @@ public class GameWorld
     static GameWorld? _instance;
     readonly ConcurrentQueue<GameSession> _pendingCloses = new();
     readonly ConcurrentQueue<TaskCompletionSource> _cleanupBarriers = new();
+    readonly ConcurrentQueue<Action> _admissionResults = new();
+    readonly ConcurrentDictionary<CharacterAdmissionServices, byte> _closureOwners = new();
+    readonly object _startupGate = new();
+    CharacterAdmissionServices? _persistence;
+    bool _started;
     readonly Dictionary<MapId, GameMap> _maps;
     readonly List<GameMap> _publicMaps = new();
     readonly List<GameMap> _tickSnapshot = new();
@@ -129,7 +136,41 @@ public class GameWorld
     /// </summary>
     public int NextEntityId() => Interlocked.Increment(ref _nextEntityId);
 
-    public void Start() => _scheduler.Start();
+    internal CharacterAdmissionServices? Persistence => _persistence;
+
+    public void AttachPersistence(CharacterAdmissionServices services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        lock (_startupGate)
+        {
+            if (_started || _persistence is not null)
+                throw new InvalidOperationException("Persistence must be attached once before Start.");
+            _persistence = services;
+        }
+    }
+
+    public void Start()
+    {
+        lock (_startupGate)
+        {
+            _started = true;
+            _scheduler.Start();
+        }
+    }
+
+    internal void EnqueueAdmissionResult(Action apply) => _admissionResults.Enqueue(apply);
+
+    internal void RetainPersistenceCloseOwner(CharacterAdmissionServices services)
+        => _closureOwners.TryAdd(services, 0);
+
+    /// <summary>Called after tick cleanup captured closes; the caller's one deadline bounds the wait.</summary>
+    public Task FlushPersistenceClosuresAsync(PersistenceDeadline deadline)
+    {
+        ArgumentNullException.ThrowIfNull(deadline);
+        if (_scheduler.IsTickThread)
+            throw new InvalidOperationException("Cannot wait for persistence on the tick.");
+        return Task.WhenAll(_closureOwners.Keys.Select(services => services.FlushClosuresAsync(deadline)));
+    }
 
     public void Stop(TimeSpan? timeout = null)
     {
@@ -234,6 +275,7 @@ public class GameWorld
     {
         while (_pendingCloses.TryDequeue(out GameSession? session))
         {
+            session.CapturePersistenceClose();
             int entityId = session.EntityId;
             List<(GameMap Map, int EntityId)> removed = new();
             // 모든 맵은 같은 월드 틱에서 실행된다. 소켓의 라우팅 힌트를 신뢰하지 않는다.
@@ -299,6 +341,8 @@ public class GameWorld
             DrainSessionCloses();
             // Release closed accounts before processing this tick's new logins.
             _accounts.Tick();
+            // Async admission completions apply only in this world's tick, after closed lifetimes are captured.
+            while (_admissionResults.TryDequeue(out Action? apply)) apply();
             _tickSnapshot.Clear();
             _tickSnapshot.AddRange(_publicMaps);
             _instances.FillTickSnapshot(_tickSnapshot);

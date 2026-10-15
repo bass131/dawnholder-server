@@ -9,6 +9,17 @@ namespace Dawnholder.Client.Bootstrap
     // 직업 ClassConfig 해석 — PlayerPrefs 선택값 → Resources 조회.
     public static class ClassLoadout
     {
+        public static CharacterClass? ServerClass { get; private set; }
+        public static event System.Action AuthorityChanged;
+
+        internal static void ApplyServerClass(CharacterClass characterClass)
+        {
+            if (ServerClass.HasValue) return;
+            ServerClass = characterClass;
+            AuthorityChanged?.Invoke();
+        }
+
+        internal static void ResetServerClass() => ServerClass = null;
         // 프로세스 로컬 선택 클래스 캐시. PlayerPrefs는 같은 PC의 모든 인스턴스가
         // 한 레지스트리 키를 공유 — 클라 2개 동시 실행 시 늦게 선택한 쪽이 덮어써
         // 맵 전환(씬 로드마다 재해석) 시 클래스가 플립. static은 프로세스별 격리.
@@ -18,6 +29,13 @@ namespace Dawnholder.Client.Bootstrap
         // 선택 클래스 조회 단일 진입점 — 캐시 우선, 없으면 PlayerPrefs.
         // 모든 SelectedCharacterClass 읽기는 이 메서드를 경유 (직접 PlayerPrefs.GetInt 금지).
         public static int GetSelectedClassValue(int fallback)
+        {
+            if (ServerClass.HasValue) return (int)ServerClass.Value;
+            return GetMenuSelectedClassValue(fallback);
+        }
+
+        // The menu intent survives disconnect and must not become the preceding connection's stored class.
+        public static int GetMenuSelectedClassValue(int fallback)
         {
             if (SessionSelectedClass.HasValue) return (int)SessionSelectedClass.Value;
             return PlayerPrefs.GetInt(CharacterSelectController.SelectedClassPrefsKey, fallback);

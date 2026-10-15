@@ -1,5 +1,7 @@
 using System.Net;
+using System.Buffers.Binary;
 using Dawnholder.Client.Net;
+using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot;
 
@@ -10,6 +12,12 @@ public class BotSession : PacketSession
     public Action<EndPoint>? OnConnectedCallback;
     public Action<EndPoint>? OnDisconnectedCallback;
     public Action<ArraySegment<byte>>? OnPacketCallback;
+    readonly object _loadGate = new();
+    (CharacterLoadStatus Status, CharacterClass? LoadedClass)? _characterLoad;
+    public (CharacterLoadStatus Status, CharacterClass? LoadedClass)? CharacterLoad
+    {
+        get { lock (_loadGate) return _characterLoad; }
+    }
 
     public override void OnConnected(EndPoint endPoint)
     {
@@ -23,6 +31,19 @@ public class BotSession : PacketSession
 
     public override void OnRecvPacket(ArraySegment<byte> buffer)
     {
+        if (buffer.Array is not null && buffer.Count == 6)
+        {
+            ReadOnlySpan<byte> bytes = buffer.AsSpan();
+            if (BinaryPrimitives.ReadUInt16LittleEndian(bytes) == 6 &&
+                BinaryPrimitives.ReadUInt16LittleEndian(bytes.Slice(2)) == (ushort)PacketID.S_CharacterLoadResult &&
+                bytes[4] <= (byte)CharacterLoadStatus.Unavailable &&
+                (bytes[4] == (byte)CharacterLoadStatus.Success ? bytes[5] <= (byte)CharacterClass.Mage : bytes[5] == 255))
+            {
+                lock (_loadGate)
+                    _characterLoad ??= ((CharacterLoadStatus)bytes[4],
+                        bytes[4] == (byte)CharacterLoadStatus.Success ? (CharacterClass?)bytes[5] : null);
+            }
+        }
         OnPacketCallback?.Invoke(buffer);
     }
 

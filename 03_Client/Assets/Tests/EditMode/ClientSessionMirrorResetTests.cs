@@ -11,6 +11,7 @@ using NUnit.Framework;
 using Shared.GameData;
 using Shared.Protocol;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Dawnholder.Client.Tests
 {
@@ -177,17 +178,48 @@ namespace Dawnholder.Client.Tests
             predictor.SetInitialPosition(Vector2.zero);
             typeof(LocalPlayerMovement).GetField("_predictor", PrivateInstance).SetValue(movement, predictor);
             int arrivals = 0;
+            movement.SetMoveX(1);
+            movement.RequestJump();
+            EntryBindingFixture.SetField(movement, "_sendAccumulator", 2f);
+            EntryBindingFixture.SetField(movement, "_impulsePending", true);
             movement.NotifyTeleport(new Vector3(3, 4, 0));
             movement.ArmTeleportSnap(() => arrivals++);
-            if (reset) NetworkService.ResetGlobalSessionMirrors();
+            if (reset)
+            {
+                // EditMode reports the real Destroy request instead of performing PlayMode's deferred destroy.
+                LogAssert.Expect(LogType.Error, "LocalPlayerMovement reset fixture: Destroy may not be called from edit mode! " +
+                    "Use DestroyImmediate instead.\nDestroying an object in edit mode destroys it permanently");
+                NetworkService.ResetGlobalSessionMirrors();
+            }
             Assert.AreEqual(reset ? (Vector3?)null : new Vector3(3, 4, 0), movement.ConsumeTeleportDepartPos());
             movement.OnServerSnapshot(0.01f, 0, 0, 0, 1, 0, (byte)AnimState.Idle);
             Assert.AreEqual(reset ? 0 : 1, arrivals);
             Assert.AreEqual(reset ? 0f : 0.01f, predictor.Position.x, 0.0001f);
             if (reset)
             {
-                movement.ArmTeleportSnap(() => arrivals++);
-                movement.OnServerSnapshot(0, 0, 0, 0, 2, 0, (byte)AnimState.Idle);
+                Assert.AreEqual(0, EntryBindingFixture.Field<sbyte>(movement, "_currentMoveX"));
+                Assert.IsFalse(EntryBindingFixture.Field<bool>(movement, "_jumpEdgeThisTick"));
+                Assert.IsFalse(EntryBindingFixture.Field<bool>(movement, "_impulsePending"));
+                Assert.AreEqual(0f, EntryBindingFixture.Field<float>(movement, "_sendAccumulator"));
+                // Complete only this fixture object's requested destruction. PlayMode end-of-frame ordering is
+                // outside this test; the next connection must get a distinct movement/predictor instance.
+                SessionTestTools.Call(movement, "OnDestroy");
+                UnityEngine.Object.DestroyImmediate(movement.gameObject);
+                var nextMovement = Component<LocalPlayerMovement>();
+                var nextPredictor = new PlayerPredictor(new MoveParams(5, 8));
+                nextPredictor.SetInitialPosition(Vector2.zero);
+                typeof(LocalPlayerMovement).GetField("_predictor", PrivateInstance).SetValue(nextMovement, nextPredictor);
+                Assert.AreNotSame(movement, nextMovement);
+                Assert.AreNotSame(predictor, nextPredictor);
+                Assert.AreEqual(0, EntryBindingFixture.Field<sbyte>(nextMovement, "_currentMoveX"));
+                Assert.IsFalse(EntryBindingFixture.Field<bool>(nextMovement, "_jumpEdgeThisTick"));
+                Assert.IsFalse(EntryBindingFixture.Field<bool>(nextMovement, "_impulsePending"));
+                Assert.AreEqual(0f, EntryBindingFixture.Field<float>(nextMovement, "_sendAccumulator"));
+                Assert.IsNull(nextMovement.ConsumeTeleportDepartPos());
+                nextMovement.OnServerSnapshot(0, 0, 0, 0, 2, 0, (byte)AnimState.Idle);
+                Assert.AreEqual(0, arrivals, "the previous connection's callback does not reach the new player");
+                nextMovement.ArmTeleportSnap(() => arrivals++);
+                nextMovement.OnServerSnapshot(0, 0, 0, 0, 3, 0, (byte)AnimState.Idle);
                 Assert.AreEqual(1, arrivals);
             }
         }
