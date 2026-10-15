@@ -1,10 +1,20 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **범위 1판 사용자 승인·PR1 창 구조/표시 선행 시험 준비·발행 단계.** 신규 Opus 선행 시험 → 신규 Astra 구현 → 신규 Opus 독립 검증 순서다. 서버 연결과 실제 게임 진입은 PR2이며 효과 공개 API와 최종 병합일은 미정이다.
+상태: **사용자 세션 마감으로 PR1 구현 중간 보존·재개 대기.** 제품 초안과 선행 시험은 보존했으나 구현자의 첫 EditMode는 하네스 결함으로 중단됐고 PlayMode·독립 검증은 미실행이다. 제품 PASS·독립 NOT PASS 판정은 없다. 서버 연결과 실제 게임 진입은 PR2다.
 
 ## 재개 지점
 
-메인 `msg_e4e7918a0571`이 전달한 사용자 범위 승인에 따라 PR1 선행 시험 계약을 발행한다. 서버 패킷 연결은 World 제품 PR의 실제 main 반영 뒤, 아트 사용은 해당 Art PR의 실제 main 반영 뒤에 한다. 미병합 checkpoint를 cherry-pick·merge·파일 복사하지 않는다.
+기록 시각: **2026-10-15T07:20:33Z**(`date -u` 실제 출력, E/`pr1-impl/wrapup-date-u.txt`). **열린 Task·Dispatch 없음, 작업자 pane 0**이며 리드 pane만 메인의 마감을 기다린다.
+
+**다음 첫 일:** 최신 지침·현재 branch와 중간 산출물을 확인하고 신규 Astra 세션에 H03 미실행 초안의 검토·보완과 남은 자체 검증을 새 계약으로 맡긴다. E/`pr1-impl/report.md`의 「활성 하네스와 미실행 초안」부터 읽는다. `proposed-H03/`는 활성 하네스에 반영하지 않은 초안으로, 근거 출력 경로·이미 없는 lock의 no-op·삭제 직전 배타 open 재확인·Prepare label 범위가 v4와 아직 맞지 않는다. 완성된 복구 도구로 사용하지 않는다.
+
+자기 snapshot `E/pr1-impl/unity-project/Temp/UnityLockfile`의 빈 lock은 삭제하지 않고 보존했다. 새 계약의 fresh 소유·PID/birth·입력·경로·배타 open 관문으로 이 단일 lock의 복구 여부를 판단한 뒤, 수정된 하네스와 새 manifest를 고정해 남은 EditMode/PlayMode를 수행한다. 구현자 실제 EditMode 1회가 이미 사용됐으며 모드당 최대 3회 경계를 유지한다. 메모리 기준을 완화하거나 사용자 프로세스를 건드리지 않는다. 자체 결과 뒤 신규 Opus 강 검증이 필요하다.
+
+구현 Task `task_f2883739f239` / Dispatch `ctx_301df030ce2e`는 쓰기 종료·`worker_done failed` 뒤 `cancelled`로 정산하고 정확 pane을 닫았다. 사용자 마감으로 미완료 중간 보존한 것이며 제품 확정 실패·독립 NOT PASS로 집계하지 않는다. 메인의 마감 정정은 이미 정산에 들어갔으면 되돌리지 않는 조건이었고, 실제 정산 착수 화면을 확인해 마감을 유지했다. 원문과 판정 근거는 E/`pr1-impl/main-wrapup-instruction.json`·`main-wrapup-correction.json`·`wrapup-correction-disposition.json`·`lead-settlement.md`에 있다. 닫힌 작업자는 재사용하지 않는다. 독립 Opus·PR1은 이번 마감에서 새로 열지 않았다.
+
+구현 수행 원문은 E/`pr1-impl/report.md`(SHA256 `E269EA8CC933BBB000761204D8B2C0DAEBF2FDCD6DB2E4765966C33013480528`)다. 제품·독립 PASS 판정 원문은 없다. 코드·시험·goal은 검증 전 checkpoint로 보존하며 정확 head·push와 남은 사용자 파일은 E/`pr1-impl/session-wrapup.json`에 둔다. E의 계약·실행·보고 원시는 로컬 Git 제외 근거다.
+
+서버 패킷 연결은 World 제품 PR의 실제 main 반영 뒤, 아트 사용은 해당 Art PR의 실제 main 반영 뒤에 한다. 미병합 checkpoint를 cherry-pick·merge·파일 복사하지 않는다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`
 - 계획 브랜치: `plan/content-guild-ui-20261015`(최신 origin/main에서 생성).
@@ -80,7 +90,7 @@ Art가 쓰는 기존 네 창·`NpcDialogPanel`·공유 표시 helper는 읽기�
 | 2 - 서버 연결과 시연 화면 | World 제품 PR main 반영·최종 wire/hash 재고정 뒤44/47 검증·43/45/46 요청·36 연계·cleanup을 연결한다. Art UI 창 PR과 필요한 효과 PR main 반영 뒤 정본 조각/효과 API를 사용한다. 이후 게임플레이 진입과 실제 두 계정 장면3·6·7·8을 검증한다. 최종 화면은 Art 조각을 쓰며 대체 표시만으로 전체 goal을 닫지 않는다. |
 | 3 - 종료 기록 | 제품 PR별 정확head/CI·사용자 승인·메인 병합, 로컬 결과 기록 뒤 Gardener·종료 기록 PR 하나·사용자 별도 병합 승인·메인 종료 점검/R-8. 다음 goal 자동 착수 없음. |
 
-**World 현재 관측:** 제품 PR 번호/병합일은 미정이다. 기초 subset 재검증 통과 뒤 실제 main 통합에서 시험 준비 결함 MI-F01이 나와, 실제 BossRoom 자금 fixture 보완·개인/공동 원자성 RED가 다음 단계다. 공동 적립 구현·최종 양 소비자/두 봇 검증은 후속이다. 기초 PASS를 최종 서버 완료로 해석하지 않는다.
+**World 현재 관측:** 자체 구현 확인 뒤 신규 Opus 최종 검증 단계라는 회신을 받았으며 제품 PR 번호/병합일은 아직 미정이다(`msg_070591189b17`·`msg_24c4b996d4b1`, E/`pr1-impl/mail-progress-06-acked.json`·`mail-progress-12-acked.json`). 자체 통과나 검증 준비를 최종 서버 완료로 해석하지 않는다. 소비자는 실제 제품 PR의 main 반영과 최종 wire/DLL을 다시 고정한 뒤 연결한다.
 
 **기술 계약:** World goal의 「기술 계약 v1」을 소비한다. 현재 World 기준43 조회,44 snapshot,45 거점,46 강화,47 결과/v20;44의 sequence와 공동/개인 revision은 목적이 다르다. 36은 개인 잔고/슬롯의 주인이고44는 그 값을 덮지 않는다. World 회신은 Core48 후속과 프로토콜 병합 순서 때문에 최종 소비자 판/DLL을 제품 PR의 실제 main merge SHA에서 다시 고정하도록 했다. 서버 최종 계약이 달라지면 이 절·고정 입력/시험을 갱신한 뒤 연결하며 조용히 옛 계약을 사용하지 않는다.
 
@@ -98,6 +108,12 @@ Art가 쓰는 기존 네 창·`NpcDialogPanel`·공유 표시 helper는 읽기�
 
 ## 진척 단계
 
+이번 부분 결과는 다음과 같다.
+
+- 선행 Opus는 실제 EditMode 새41·PlayMode 새5의 제품 타입 부재 RED와 기존 control8 PASS를 남겼다. 사용자 설정의 알려진 자동 변경은 당시 좁은 승인 아래 원래 bytes로 복구했다. E/`pr1-tdd/report.md`·`lead-settlement.md`에 원시와 인수 한계를 뒀다.
+- Astra xhigh 구현 1회차는 새 제품 8cs/8meta를 썼고 선행 5cs/5meta는 수정하지 않았다. 실제 첫 EditMode는 자기 AssetImportWorker를 별도 Unity로 센 H03 때문에 root만 중단돼 XML이 없다. PlayMode·실제 화면·독립 검증·CI·서버/DB/두 계정은 미실행이다. H01 경로 변수 충돌·H02 birth 관측 보완·H03 import 분류를 제품 확정 실패와 구분하며, 추가 하네스 수리는 메인 체크포인트 여부를 다시 대조한다.
+- 리드의 공식 답변 뒤 깨우기 누락으로 대기가 길어진 사건은 메인 지적 후 빈 prompt를 직접 확인해 태그 안내 1회/turn_started로 복구했다. 기존 절차를 적용한 교정이며 새 반복 규칙은 만들지 않았다(E/`pr1-impl/H02-wakeup-gap.json`).
+
 - [x] 새 리드 진입
 - [x] 범위 승인
 - [x] 계약 고정
@@ -108,7 +124,7 @@ Art가 쓰는 기존 네 창·`NpcDialogPanel`·공유 표시 helper는 읽기�
 - [ ] 연결 화면 병합
 - [ ] 목표 종료 점검
 
-PR 번호가 정해지면 해당 병합 단계를 `PR번호 병합`으로 바꾼다. PR1 선행 시험 계약은 E/`pr1-tdd/contract-v1.md`이며 실행·기동·정산 원시는 같은 폴더에 둔다. 선행 실패는 제품 확정 실패와 구분한다.
+PR 번호가 정해지면 해당 병합 단계를 `PR번호 병합`으로 바꾼다. 선행 시험 원시는 E/`pr1-tdd/`, 구현 계약 v1/보충 v2~v5·고정입력·실행·취소 정산은 E/`pr1-impl/`에 둔다. 구현 배정은 Astra xhigh 1회차(신호2·4, 독립 결함0, 절차 관측은 별도)다. 자체 Unity는 전체 동일byte snapshot에서만 실행했고 source 사용자 설정은 쓰지 않았다. 다음도 현재 입력을 새로 고정하며 실제 게임 진입은 PR2에서 따로 검증한다.
 
 ## 승인한 내용과 남은 우려
 
