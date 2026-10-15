@@ -1,6 +1,6 @@
 # 실제 DB 연결·로딩 게이트·재접속 직업 복원
 
-상태: Linux SQL 도구 차단1~3 수정의 독립 정적 재검토는 통과했고 전체 강검증은 실제 진입0으로 보류다. 메인 계획 효율 채택을 반영하여 새 작업자의 Runtime까지 실행과 신규 Opus의 실제 검증·Play·정리를 순차 진행한다. PR242는 draft이며 실제 DB/DPAPI·서버/봇·Play·최신 CI·사용자 병합 승인이 남는다.
+상태: 시연 경로의 독립 검증을 마쳤고 메인 msg_6794d5227945가 #3 NUL 입력 변경과 운영 편차를 비차단으로 수용했다. 동결 뒤 항목은 미실행 상태로 남는다. 들여쓰기 한정 교정 뒤 Changed 로컬 검사 위반0과 기존 시험 동일을 확인했다. PR242 갱신·새 head CI 진행 단계다. 사용자 정확 head 승인과 메인 병합은 미완료다.
 
 ## 진척 단계
 
@@ -8,11 +8,19 @@
 - [x] 공통 계약 확정
 - [x] 선행 시험 실행
 - [x] 저장·입장 구현
-- [>] 독립 검증
-- [ ] 실제 경로 관측
+- [x] 독립 검증(메인 수용·동결 뒤 범위 별도)
+- [x] 시연 실제 경로 관측(미실행 항목은 동결 뒤 목록)
 - [x] PR 생성(draft)
 - [ ] 통합·병합
 ## 적용 중인 사용자 결정
+### PR242 뒤 노트북 SQL Express 설치 도구 — 기록만
+
+메인 `msg_9fa3df979283`가 전달한 사용자 원문(메인 pane Enter 제출):
+
+> 대시보드 결정 응답: 1) 노트북 이전 - 시연용 DB를 SQL Express 직접 설치로 할지 → A Express 도구 만든다
+
+메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다. 현재 작업 순서를 유지하며 새 goal 범위가 전달되기 전 착수·계약 발행은 하지 않는다.
+
 메인 msg_fcb2a973fede가 전달한 사용자 원문(메인 pane Enter 제출, 2026-10-14T14:44:08Z/23:44 KST): 「그리고 영속성 부분은 너가 더 전문가니까 Goal 초안 작성하고 진행까지 계속 진행해줘, Core쪽 진도를 좀 빠르게 뺴보자」. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다. 시각은 정정 msg_d8a5ccb79390을 적용했다.
 메인 초안 C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-14/core-next-goal-draft.md SHA055A04FF697EC14A0DF17B4D1656777D8F54717BC04ACE5135CAC03A18DFBCDE와 리드 초안 lead-next-goal-draft.md SHAF9A38BBEC62A4273F9FF5E9F3812C813396F77BAE92A6FF36B36EAAC2B586D1F를 통합했다. 원문은 .backups/verification/2026-10-14-persistence-runtime-core/lead-next-goal-approval-source.json에 보존한다.
 10-28 기능 동결까지 시연 우선 msg_beda86f6bc2f, 리드/새 Sol배정 작업자는 Sol xhigh인 msg_18c90b33c9a1을 적용한다. 비동작지적은 동결뒤 정리, 운영미준수는 공개·제품비차단, 독립재검증1회뒤차단이면메인판단이다. 동작결함/위장시험·측정/보호경계·구현검증분리/실제실행·정확head 사용자병합승인은 유지한다.
@@ -89,13 +97,11 @@
 - `C:\myVHDX.vhdx`의 D: 마운트는 사용자가 한다. v3 실패 보존·정산과 Docker 방식 중단 보고 뒤 메인이 마운트를 요청하며, 확인을 받은 후에만 새 실행 계약을 발행한다. 지금은 v3 우선, SQL Express 조회/서비스 조작0이며 대안의 정적 계약 초안만 허용된다. v3 성공 시 이 허용은 사용하지 않는다.
 ## 재개 지점
 
-- 작업 위치 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-parallel`, branch `feat/persistence-runtime-entry-20261015`, PR242 draft. Run `run_b36cc92a4cf4`, 리드 `[Core 리드 Astra]` medium 시범/backend unknown. Codex 병합 금지다.
-- PR237 메인 병합 `03e25baa93dda9f78d941e00ae89d54778405cb4`를 normal merge/push했고 현재 기록 전 HEAD는 `312dab748a304a9e300d7ff57cd6c14ab283331f`다. 제품 도구12파일은 미커밋 상태로 보존하며 이 기록 커밋에 섞지 않는다.
-- 수정 `task_adf725380e59`의 결함1~3은 신규 Opus `task_1e5868e18e64` 정적 재검토에서 해소 판정이다. 전체 강검증은 실제 진입0으로 보류다. 원문 `B/runtime-entry-linux-sql-static-review-2/verdict.md` SHA256 `ABDD5A345959D73A9FB8DB17DFDAFCCD6F28E3A5447FD4B1E837F748AE6D4DC8`. 비차단4~8/D1~D9는 후속이며 과거 판정은 바꾸지 않는다.
-- 현재 v2는 restore/publish·Prepare 성공 뒤 container start의 logging driver `invalid size -1`로 실패했고 Bootstrap/Runtime은 미실행이다. 생성된 새 container/volume/privateRoot를 보존하고 v2를 정산한 뒤 위 마지막 시도 제한의 신규 v3 실행 계약을 발행한다. 현재 카드/plan/index는 `B/runtime-entry-linux-sql-fix-1/`이며 새 메인 채택을 적용한 다음 계약에서 입력·변경·실행 단계를 고정한다. plan ExpiresUtc offset을 명시하고 실제 Linux 오류번호는 추정 확대하지 않는다.
-- 실제 DB/DPAPI·정상 서버·봇·Unity Play 장면9·최신 CI·사용자 병합 승인은 미완료다. 과거 서버1497 PASS/기존제외5·Unity484 PASS를 현재 DB 성공으로 확대하지 않는다. catalog004는 main 통합 뒤 이전 literal로 CI 실패했다는 메인 보고이며 독립 검증에서 교정/시험한다.
-- `B=P2/.backups/verification/2026-10-14-persistence-runtime-entry`, `P2=core-parallel`, `U=B/runtime-entry-unity-fixture-reverification-1`. 과거 중첩 재개 블록은 `B/plan-efficiency-1/goal-before.md`와 이전 Git 버전에 보존한다. 현재 결정 원시는 같은 폴더 `main-decision.json`이다.
-- 보호 자원은 옛 dawnholder-sqlserver 및 judgment-r1/r2 계열 container·volume·DB·privateRoot·로그와 Windows SQL이다. 읽기·쿼리·쓰기·재시작·삭제0, 전체 inventory나 Env 조회로 우회0. 승인된 새 runtime-entry-r1만 생성·시험 후 삭제한다. 자원 이름·sa 한정 예외·TLS Mandatory/false는 위 결정과 고정 카드에 따른다.
+- 작업 위치 `core-parallel`, branch `feat/persistence-runtime-entry-20261015`, PR242. 기준 HEAD `5f1e4017d0f35656d1a03341430bc43565d95506`. 승인 범위 변경의 커밋·normal push·PR 갱신·새 head CI 확인을 진행한다. Codex 병합 금지다.
+- 최신 메인 결정 `msg_6794d5227945`는 아래 「최종 독립 판정 수용」에 반영했다. 최종 검증자 `task_8c779ad6257e`/`ctx_07c1b9579f55`는 정산·release·동일 incarnation/idle 확인 뒤 종료했다. 서식 후속 작업자도 정산·종료했으며 현재 작업자·검증자 없음.
+- 시연 필수 경로 완료, 동결 뒤 미실행은 별도 유지. 로컬 Changed 최초38건/7파일 실패는 메인에 원인 보고(`msg_9772389312d8`) 후 신규 Astra가 줄앞 공백만 교정했고 같은 검사 위반0과 기존3시험을 확인했다. 최초 실패 원시는 보존한다. 새 head CI 결과 확인 후 메인에 정확 head와 근거를 전달한다.
+- `B=P2/.backups/verification/2026-10-14-persistence-runtime-entry`, `R=B/runtime-entry-launcher-final-verification-1`, `V=B/runtime-entry-linux-sql-live-verification-1`. 이전 재개 블록은 `R/goal-before-finalization.md`에 보존한다.
+- 승인된 신규 SQL container/volume/private 자원은 정리됐고 서버·Unity·7777 잔존0이다. 옛 보호 자원 3쌍은 유지했다. 추가 DB 실행·삭제·다음 노트북 SQL Express goal은 착수하지 않는다.
 ## 메인 결정(사용자 위임)
 1. 저장 대상은 서버 설정의 정규화된 계정 이름 하나다. 그 UUIDv5가 PersistenceOptions.AccountId와 같아야 서버가 시작한다. 해당 계정만 DB 경로, 다른 계정은 기존 메뉴직업/비저장 플레이다. 저장 대상 DB 실패는 입장 거부이며 메모리fallback은 없다. 판정은 Persistence 안에 두며 Accounts/AccountRegistry를 수정하지 않는다. World 새기술계약은 필요 없고 계정별저장은 동결뒤 BACKLOG 후보다.
 2. PDL·Unity writer는 Core다. 새 S_CharacterLoadResult는 ID48부터 사용하며 World43~47/v20과 기존ID를 보존한다. 프로토콜판은 늦게병합되는쪽이rebase때정한다. 같은파일단일writer·양쪽소비자 검증을 유지한다. Unity scene/prefab재저장필요는 먼저메인에올린다.
@@ -350,3 +356,52 @@ Main msg_a8dd25f254a5가 전한 사용자 원문: 「대시보드 결정 응답:
 - 환경 E-1은 snapshot PackageCache의264~274자 UXML4 가져오기실패다. 원본·snapshot해당파일존재/기존원본경로247~257자를메타데이터로확인했다. 긴경로관련원인추론이며추가인과재실행0,코드컴파일/484실행과별개로공개한다. 다음snapshot선정은생성경로길이까지검토해야하며판정서의짧은경로예시만으로해소를보장하지않는다.
 - 이번검증자 운영O1~O5(초기Git환경변수사용자기보고,미ack재독,첫AST오류원시삭제1/원본bytes미회복·tool기록2보존,거짓후손교정,신호간격)는메인판단대기다. 기동명령은GIT_OPTIONAL_LOCKS=0을명시했으므로첫Bash의실제상속값은당시실측없음으로구분한다. 정본helper는322/335/314초 over3(정적실사·시험작성/snapshot·harness준비/질문직전),공식질문316초를제외했고추가전사감사0이다. 종료된dispatch후속send거부receipt도보존하고재사용하지않았다. 과거원문/판정을소급수정하지않는다.
 - 판정전문 SHA5601CA4C3BC44801F1AD5E700D6FBB77C29D38DE6EAF0BE8BED4BE928E27017C·맥락SHA815270AEC8182BDE46D12A1035C51F9A1727723256AD4A9632E1333C6B636DC5 및실행/검증/정산은 `.backups/verification/2026-10-14-persistence-runtime-entry/runtime-entry-unity-fixture-reverification-1/{verdict.md,context.md,lead-final-input-source-check.json,lead-c-lineage-reclassification.json,lead-liveness-result.json,lead-final-settlement.json,lead-terminal-close.json}`이다. Content에실제반환/다음창우선을전달했고Core추가중량실행·예약0,전체goal완료가아니다.
+
+### Docker 성공과 sa 비활성 확인 분류 정정 — v4(2026-10-16)
+
+- 메인 `msg_a570d5d1632d`는 v3의 SQL18470을 비활성 로그인 거부의 예상 결과로 판정하고, 앞선 「sa bootstrap 실패도 Docker 방식 중단」이라는 과도한 적용을 철회했다. 실제 ready·DB bootstrap은 성공했으며 Windows SQL Express 조건부 전환은 발동하지 않는다. 이 정정은 위 v3 중단 조건에 우선한다.
+- v3 `task_2c0abf8f0254`/`ctx_870df428434b`는 failed 정산했다. 정정 수신 전 계약상 Stop 1회를 완료해 exact container `cd0ecec488960a9e388a034c7098641ba92f4c9462fb2b5070e272ac6ee6c364`를 exited로 보존했다. 보고 원문은 `runtime-entry-linux-sql-execution-3/report.md`이며 release·동일 incarnation/idle 확인·종료 완료다. Step Runtime은 미실행이다.
+- 신규 Astra xhigh v4는 `SqlLifecycle.cs` 한 곳에서 sa-disabled의 18456/18470만 인정하고 실제 번호를 반환하도록 최소 수정한다. 순수 재현·새 DLL 빌드 뒤 동일 container 재시작 1회, sa-disabled 확인 1회→Runtime을 수행한다. Bootstrap/Prepare/Create 재실행은 없다.
+- 메인 `msg_8984257dce85`는 기존 plan·소유·자원 사슬을 보존·검증하면서 변경 소스/DLL을 별도 v4 plan과 근거용 harness로 잇는 방식을 동의했다. 기존 owner/prepared/증거 덮어쓰기0, 보호 구자원과 Windows SQL 접근0, 입력/TLS/비밀/자원 관문은 유지한다. 계약·경로 검사·입력 hash는 `runtime-entry-linux-sql-execution-4/`에 둔다. 실제 Runtime·독립 강검증·게임 실행은 아직 미완료다.
+
+### 독립 실검증 판정과 후속 완료 기준(2026-10-16)
+
+메인 판단 `msg_9c601e45e190`(2026-10-15T17:12:33Z), 원문 `.backups/verification/2026-10-14-persistence-runtime-entry/runtime-entry-launcher-sdk-fix-1/main-expanded-decision.json`. 사용자 직접 입력으로 격상하지 않는다.
+
+- 독립 판정은 BLOCK #1이며 원문 `runtime-entry-linux-sql-live-verification-1/verdict.md` SHA `3D436BBD2B36479F2F97013564D7AD9CBB9A7A4A37BB71AF74BE31BD82786C8E`다. 원제품 런처의 이름 dotnet 호출이 실패했다. 사본의 서버·봇·Play 관측은 원제품 PASS가 아니다. 메인 R-2는 catalog004 변경1건 및 실제 DB checksum/SQL literal 대조에 일치 판정을 전달했다. 검증자 정산·종료 완료.
+- 런처 후속 최소 수정은 #1 `sdk.sh`/`DAWNHOLDER_DOTNET` 규칙의 절대 SDK 경로·버전 확인과 #2 자식 종료 감지 뒤 0이 아닌 종료를 포함한다. 순수 시험은 자식 argv와 즉시 종료 가짜 자식을 관측한다. 그 밖 런처 동작·제품 코드 변경은 없다.
+- 신규 독립 Opus는 수정 쓰기 종료 뒤 한 명만 연다. 원제품 런처→서버/7777/SQL→같은 process 재접속 봇→정상 종료를 판정한다. 사본에서 실제 관측한 재시작 봇·release 경쟁·장면9는 메인 판단으로 반복하지 않는다.
+- 추가 필수: origin/main 대비 PDL 기존 ID·필드 불변 및 새 ID 재사용0을 정적으로 확인한다. Unity 기존 EditMode 전체 및 PlayMode 로그인·직업선택·입장·파티·퀘스트 관련 시험을 batch1회 수행하고 필요 서버는 원제품 런처를 쓴다. Plugins Shared.dll/ClientNet DLL과 현재 소스 빌드 hash를 대조한다. 생성기 CRLF 부작용을 확인하며 미승인 제품 쓰기는 하지 않는다.
+- DB 실패 입장 거부는 원제품 서버가 실행 중일 때 승인 exact SQL container를 Stop하고 저장 대상 계정 로그인1회→거부/메모리 대체0을 확인한다. 그 뒤 서버 정상 종료→Audit→Remove다. 기존 Stop 정리 순서를 앞당기며 재시작을 추가하지 않는다. 이미 멈춘 동일 컨테이너의 후속 시작1회는 기존 메인 승인 범위다.
+- plan 만료 2026-10-16 10:47KST와 서버 인증서11:47KST 전 완료 순서로 진행한다. 맞추지 못하면 재준비하지 않고 상태를 보고한다. 위 수정·필수 검증 통과 시 「시연 경로 완료, 아래 항목은 동결 뒤」로 PR242 병합 승인 요청까지 진행한다. Codex 병합 금지/사용자 exact head 승인 관문은 유지한다.
+
+### 동결 뒤 정리 — 메인 msg_9c601e45e190
+
+다음은 메인 시연 우선 판단으로 10-28 동결 뒤로 미루며 이번 PASS로 바꾸지 않는다: DB 지연 주입 중 틱 비차단의 실제 서버 관측, Loading 중 입력 거부의 실제 서버 관측, release 전 재접속 거부의 Unity 화면 안내(O5), 5 RPC 전수 직접 관측(Checkpoint·Resolve 이번 호출0), hostname·만료 인증서 음성, 독립 판정 O1~O8. 원문 근거는 위 `main-expanded-decision.json` 4번이다.
+
+Loading 입력 거부·DB 지연 비차단의 기존 서버 시험 이름/통과 근거는 후속 판정에서 좁게 찾아 연결한다. 현재 이 두 항목의 기존 시험 대응은 미확인이다. 존재하지 않거나 근거가 없으면 「미검증」으로 유지하며 새 harness는 만들지 않는다. 이번 실검증의 원시상 실제 DB 실패 주입·Loading 거부·화면 안내는 미실행이었고, 그중 DB 실패 입장 거부만 위 후속 필수에 포함한다.
+
+### 최종 독립 판정 수용과 PR242 마감(2026-10-16)
+
+메인 판단 `msg_6794d5227945`(2026-10-15T18:50:37Z), 원문 `R/main-final-decision.json`. 사용자 직접 지시로 격상하지 않는다. 아래 R/V는 재개 지점의 근거 경로다.
+
+- 최종 독립 원문 `R/verdict.md` SHA256 `5186D37DFE32AA3EF2F0D3BE419A18738FFBCF603FBEB32310280BCD13F0250E`, 맥락 `R/context.md`. 판정 원문은 조건부 통과로 보존하고 메인이 남은 #3과 운영 편차를 비차단으로 수용했다. 메인 R-2는 17/17 XML·fixture diff·메모리 봇·SQL 자원 제거·커밋된 Plugins DLL을 대조했다.
+- #1 SDK 경로와 #2 자식 종료 감지는 원제품 런처 실제 진입과 독립 입력 시험으로 해소. 원제품→DPAPI/stdin→자식 CA→서버/SQL→같은 process 재접속 봇→정상 종료 exit0. 저장 대상 DB 실패는 Unavailable·EnterMap 없음으로 관측했다. PDL 기존42개 이름/필드/순서 불변·새43~48, Shared/ClientNet 실제 빌드와 Plugins hash 일치다.
+- #3은 메인 수용이다. NUL 문자 장치 입력은 지원하지 않는 입력이며 이전 즉시 정상 종료 exit0 대신 예외 exit1·자식 EOF가 적절하다고 판단했다. 「다른 런처 동작 변경0」의 명시 예외다. 콘솔·파일·pipe 보존은 확인됐다. NUL의 OBSERVED→Assert 변경은 동결 뒤로 남긴다.
+- #4는 `msg_a18f8123ed9d` 조건에 따라 현재 검증자가 기존 `MapEntryPlayFixture.cs`만 +13줄 보완했다. 실제 서버의 유효 클래스/성공 응답을 따른 입력 보완이며 assertion·timeout 변경0. 리드·메인 diff 대조 완료. 같은 PlayMode17건이 7통과/10실패→17통과/0실패, EditMode 전체484/484 통과다. 메모리 모드 실제 서버+기존 봇 seed1회가 Success/Mage 뒤 EnterMap을 관측했고 정상 종료했다. 저장·재시작 검증으로 확대하지 않는다.
+- 이전 V의 서버 전체1502건은1497통과/0실패/기존제외5. catalog checksum literal 한 줄만 수정한 전후 원시는 `V/raw/G/trx-compare.json`이다. 사본 런처로 한 과거 장면9·재시작 봇·release 관측은 메인 결정으로 재사용하며 원제품 런처 성공은 이번 R의 D 원시만 근거로 한다. 화면 HUD 직접 픽셀 관측 한계는 과거 판정 그대로다.
+- 관찰 O1~O5는 R 원문 「설계 관찰」에 남긴다: 콘솔 echo, 시험 이름, runner 미등록, DB 실패 원인 로그, 메모리 seed 성공 문구. 이전 V O1~O8은 catalog 주석 위치, sa 오류18456 일반성, 옛 clone DLL 기동, snapshot 긴 경로, 거부 화면 안내 미관측, Free 상태 null 관측 경계, sa 비활성 후 ready, runner 미등록이다. 동결 뒤 후보이며 지금 고치지 않는다.
+- Loading/tick 기존 시험은 `CharacterAdmissionLoadingGateTests.InputDuringLoading_ChangesNoAuthorityOrGameState` 및 `CharacterAdmissionTickTests.PendingReadAdmission_LeavesTheTickFreeForOtherWork`, `PendingAcquire_LeavesTheTickFree_AndTheResultEntersOnlyInsideATick` 등 16건이다. V의 실제 trx Passed 및 현재 소스 동일 hash 연결은 `R/raw/H/existing-tests.json`. 이 시험 근거는 아래 실제 서버 지연주입·Loading 관측을 대신하지 않는다.
+- 메인 `msg_9c601e45e190` 4번의 동결 뒤 목록은 그대로 유지한다: DB 지연 주입 중 틱 비차단 실제 서버 관측, Loading 중 입력 거부 실제 서버 관측, release 전 재접속 거부 Unity 화면 안내(O5), 5 RPC 전수 직접 관측(Checkpoint·Resolve 이번 호출0), hostname·만료 인증서 음성, 이전 독립 판정 O1~O8. 위 「동결 뒤 정리」와 함께 미실행 상태다.
+- 운영 편차8건과 허용 밖 임시쓰기 `R/tmp/dbfail-state`, `.backups/tmp/lfv/unity`는 R 판정 「운영 편차」「결론」에 공개돼 있다. 메인은 Git 밖 근거·임시 폴더라 시연 제품 판정을 막지 않는다고 판단했다. 삭제하거나 위반 없었던 것으로 소급하지 않는다. 새 SQL 자원은 Audit/Remove 완료, 서버·Unity·7777 잔존0 원시는 `R/raw/G/after-remove.txt`, `R/raw/M/after-shutdown.txt`다.
+- 노트북 SQL Express 설치 도구 사용자 결정 `msg_9fa3df979283`은 위 적용 결정대로 기록만 유지한다. 이번 PR 뒤 새 goal 범위가 전달되기 전 자동 착수하지 않는다.
+- 로컬 Changed `--base origin/main`은 `.backups/code-rules/run-2026-10-15T18-51-57.016Z-37568/results.json`에서 PS 대상9개 중7파일 서식38건으로 exit1. 첫 실행은 예시 모듈 경로 부재로 미실행이고 별도 원시를 보존했다. 규칙 검사·새 head CI와 시연 동작 판정을 구분하며 `merge_ready`는 아직 아니다.
+
+### 들여쓰기 한정 교정과 기계 증명(2026-10-16)
+
+메인 `msg_a9a84b992869`는 Changed 실패를 수용하지 않고 신규 Astra xhigh 한 명에게 7파일의 줄앞 공백만 교정하도록 했다. 새 독립 검증자는 열지 않으며, 시연 우선 재검증 상한 뒤 좁은 수정 판단으로 토큰 동일·같은 Changed·기존3시험을 기계 증명으로 삼았다. 원문은 `B/runtime-entry-indentation-fix-1/main-decision.json`이다.
+
+- 작업 `task_04cb3aa58fa7`/`ctx_55eebead5c86`의 보고·맥락 전문과 `raw/proof-summary.json`, 전후 proof JSON, 현재7파일 SHA·선행공백 제외원문, 실제 시험 JSON을 리드가 대조했다. 38행만 교정, 토큰12233개·문자열AST2530개·줄순서/개행/BOM 차이0. 런처의 새 SHA는 `1C16C6D1786635967D4532462A1AA8A8F43A34C0839625C77FE0C9DB2EE3328C`이며 원제품 실제 진입 당시 SHA와의 차이는 공백뿐이다.
+- 같은 Changed `--base origin/main`은 `.backups/code-rules/run-2026-10-15T19-00-27.489Z-9448/results.json`에서 대상9/위반0/실패0/exit0. 오프라인 Boundary47통과, Input6통과+NUL1관측, Sdk5통과로 이전 개수와 같다. 제품 동작/시험 기대 변경0, SQL·Unity·게임 재실행0이다.
+- 근거 `B/runtime-entry-indentation-fix-1/{report.md,context.md,lead-source-check.json,raw/completion-summary.json}`. 보조 감사의 Changed/Boundary 과거 자식 이력 일부 누락은 UTC 비교 오류로 공개했으며 Input/Sdk와 마지막 잔존0·Boundary journal4개로 보완했다. 생애전수 반환 증명으로 확대하지 않는다. 작업자는 쓰기 종료·release·동일 incarnation/idle 확인 후 종료했다. heartbeat350초1회는 검토/보고 구간으로 기록한다.
+- 「검증자의 서식 지적 없음은 규칙 검사 통과를 뜻하지 않았다」는 관찰을 남긴다. 다음 검증 계약에 Changed 실행을 명시하는 것은 동결 뒤 후보이며 이번에 운영 정본을 임의 수정하지 않는다. 서식 기계 증명은 자체점검과 리드 원시 대조이며 신규 독립 판정으로 부르지 않는다.
