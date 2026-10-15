@@ -1,6 +1,6 @@
 # 실제 DB 연결·로딩 게이트·재접속 직업 복원
 
-상태: 기존 11시험 수정과 S1~S4 메모 대조의 독립 강 재검증 범위가 통과했다. 무필터 전체 시험은 1,469통과·실패0·건너뜀5다. 다음 첫 일은 검증된 변경의 draft PR 생성과 Windows DLL 반영·Unity 양쪽 소비자 검증 준비다. 실제 DB/DPAPI·정상 서버·봇/CI 및 최종 사용자 병합 승인은 남아 있으며 전체 goal 완료는 아니다.
+상태: 기존 11시험 수정과 S1~S4 메모 대조의 독립 강 재검증 범위가 통과했다. 무필터 전체 시험은 1,469통과·실패0·건너뜀5다. 다음 첫 일은 Windows DLL 반영·Unity 양쪽 소비자 검증과 실제 경로 관측이다. 실제 DB/DPAPI·정상 서버·봇/CI 및 최종 사용자 병합 승인은 남아 있으며 전체 goal 완료는 아니다.
 
 ## 진척 단계
 
@@ -10,7 +10,7 @@
 - [x] 저장·입장 구현
 - [>] 독립 검증
 - [ ] 실제 경로 관측
-- [ ] PR 생성
+- [x] PR 생성(draft)
 - [ ] 통합·병합
 ## 적용 중인 사용자 결정
 메인 msg_fcb2a973fede가 전달한 사용자 원문(메인 pane Enter 제출, 2026-10-14T14:44:08Z/23:44 KST): 「그리고 영속성 부분은 너가 더 전문가니까 Goal 초안 작성하고 진행까지 계속 진행해줘, Core쪽 진도를 좀 빠르게 뺴보자」. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다. 시각은 정정 msg_d8a5ccb79390을 적용했다.
@@ -237,3 +237,5 @@ Main msg_a8dd25f254a5가 전한 사용자 원문: 「대시보드 결정 응답:
 
 - 신규 독립 재검증의 이번 범위 통과를 원문·메모 전문과 실제 TRX/현재 입력에 대조하고 정산·정확 세션 종료했다. 기존 11건은 전수 a11로 재분류했고 두 fixture의 옛 순서 단정도 같은 원천으로 설명했다. source/시험 쓰기0·기존 입력 보존, 새 차단 결함0이다. V1 #3/#4는 Unity 미실행 보류, #5는 Windows DLL 반영과 양쪽 소비자 검증 전 병합 차단으로 유지한다. O1~O6 및 D1/T1/G1~G3은 공개 후속이다. 원문·실제 구간·수치·정산: runtime-entry-reverification-1/{verdict.md,context.md,lead-final-count-and-input-check.json,lead-final-settlement.json}.
 - 운영 편차는 초기 읽기 전용 Git 두 호출과 C9/메인 관문 대기·최종 판정 작성 중 신호 지연 두 구간이다. 메인에 공개했고 helper 원시는 같은 근거 폴더의 lead-liveness.json에 둔다. 판정서의 서버 전체시험은 테스트 진입으로만 집계하며 새 제품 launcher/정상 서버/DB/Unity 실행으로 넓히지 않는다.
+
+- PR242 - 영속성 서버 진입·로딩 게이트·직업 복원 초안을 생성했다: https://github.com/bass131/dawnholder-server/pull/242. 독립 통과한 코드/시험과 관련 문서를 commit/push했고 코드·시험 bytes를 보존했다. 새 의존성 SqlClient6.1.7/Pkcs9.0.21과 알려진 O1~O6, DLL/Unity·실제 DB/봇·CI 미완료를 PR 본문에 명시했다. 병합 승인 요청이나 전체 goal 완료가 아니며 #5 DLL 병합 관문을 유지한다. 원시 Git/PR 근거는 runtime-entry-reverification-1/lead-*.json 및 lead-pr-body.md에 둔다.
