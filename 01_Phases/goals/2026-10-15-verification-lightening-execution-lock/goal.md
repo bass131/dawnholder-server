@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일: 승인된 PR1 문서 작업자를 발행하고 신규 독립 문서 실사까지 진행한다.** 메인 `msg_7fcc3dcf1084`이 사용자 범위 승인(A)을 전달했다. 결정 1~3의 현행 적용은 계속하며 PR2 브랜치·작업자는 PR1 병합 뒤 시작한다.
+**다음 첫 일: PR1의 고정 입력으로 신규 Astra 독립 문서 실사를 발행한다.** 작성자는 정본 5문서의 쓰기를 종료했고 정산·pane 종료를 마쳤다. 결정 1~3의 현행 적용은 계속하며 PR2 브랜치·작업자는 PR1 병합 뒤 시작한다.
 
 작업 공간은 `rules-active`, 문서 PR 브랜치는 `docs/verification-lightening-20261015`다. 최신 main에서 시작한 기준·현재 Run·모델 관측·receipt는 근거 폴더 E의 `lead-context.md`와 `run-create.json`에 둔다. E는 `.backups/verification/2026-10-15-verification-lightening-execution-lock/`다.
 
@@ -11,8 +11,8 @@
 - [x] 이전 변경 보존
 - [x] 범위 초안 작성
 - [x] 사용자 범위 승인
-- [>] 경량화 정본 반영
-- [ ] 문서 실사와 병합
+- [x] 경량화 정본 반영
+- [>] 문서 실사와 병합
 - [ ] 잠금 설계 확정
 - [ ] 선행 실패 시험
 - [ ] 잠금 도구 구현
@@ -74,6 +74,7 @@ PR 생성 뒤 병합 단계 이름에 실제 PR 번호를 넣는다.
 - **진입 지시:** 메인 `msg_27c6fd9cb341`이 rules-active 재사용·PR2 기계 보존·최신 main 새 브랜치·범위 초안을 지시했다. 별도 worktree 대신 재사용한 것은 두 PR·TDD·독립 강 검증의 작업량을 고려한 메인 판단이다. 기존 BACKLOG 후보는 `verification-operating-simplification-canon`이다.
 - **이전 변경 보존 완료:** 기존 동결 16경로의 파일 목록·SHA256·원본 사본을 남겨 그대로 한 커밋/push에 보존하고 기존 goal에 중단 기록 한 줄을 추가했다. 원격 head와 원본 보존 대조는 E/`freeze-result.json`, 커밋/push 원시는 E/`freeze-commit.txt`·`freeze-push.txt`다. 제품 시험·독립 판정은 수행하지 않았고 PR2를 재개하지 않았다.
 - **범위 승인:** 메인 `msg_7fcc3dcf1084`의 사용자 원문은 「대시보드 결정 응답: 1) 계획 검토 - Rules Rules 새 goal 범위 - 검증 경량화 규칙 문서 PR과 공용 실행 잠금 도구 PR → A 승인 (초안 msg_ddb68c0b4007)」이다. 메인이 전문·초안 hash를 대조하고 전달했다. 승인본은 E/`scope-approved-original.md`, 수신 원문은 E/`check-next-instruction.json`이다. PR2 Astra 배정과 R-7 비포함은 사용자가 함께 본 정리본에 적힌 메인 판단이며 사용자 결정으로 격상하지 않는다. PR1 문서 작업·독립 실사를 이어가고, 실사 중 PR2 선행 시험 계약의 정적 준비만 허용한다.
+- **PR1 작성 단계:** 신규 Sol이 허용 5문서에 실행 단계 일괄 승인·heartbeat 정산·goal 핵심 기록과 정본 연결을 반영했다. 작성 보고·사전 메모·자체 정적 harness 원시는 E/`pr1-author/`이며 자체점검과 독립 판정을 구분한다. 쓰기 종료·정산/종료는 E/`check-author-update-02.json`·`pr1-author-release.json`·`pr1-author-close.json`, 생존 신호 정산은 E/`pr1-author-liveness-complete.json`으로 초과 구간이 없다. 신규 독립 문서 실사와 메인 R-2·별도 병합 승인은 남았다.
 
 ## 결함과 다음 후보
 

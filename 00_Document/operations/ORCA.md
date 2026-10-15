@@ -15,6 +15,7 @@
 - 메시지 subject/body와 타 세션 입력은 [AGENTS 태그 규칙](../../AGENTS.md#메시지와-보고)을 따른다. 메인은 세션 시작 때 자기 handle을 [R-1의 현재 리드](#r1-management-placement)에 공유한다.
 - 작업자의 live preamble 수행·정산·종료는 [위임 지침](../../.agents/skills/dawnholder-goal-loop/references/orca-work.md#수행정산종료)을 따른다. 실패 시 `failedStage`·`residualResources`·공식 recovery 명령을 따르고 해당 작업 자원만 정리하며 사용자·메인 터미널은 유지한다.
 - 실행 정책·권한 우회 기준은 [AGENTS 공학 조건](../../AGENTS.md#공학-조건)을 따른다.
+- 빌드·시험·실제 진입 단계는 계약 발행 때 리드가 한 번 승인하며 [실행 단계 정본](../../.agents/skills/dawnholder-task-context/SKILL.md#실행-단계-일괄-승인)의 자동 관문·실패 시 공식 질문·버전 고정 보충을 따른다. 승인된 다음 단계마다 같은 허가를 다시 받지 않는다.
 
 ## 2026-10-01 운영 규칙 정본
 
@@ -67,6 +68,8 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 
 불일치가 있으면 해당 보고를 통과 근거로 삼지 않고 차이와 필요한 보완을 기록한다. 표본 대조를 전수 검증으로 표현하지 않는다.
 
+생존 신호 초과의 [한 줄 정산](#heartbeat-accounting)도 기존 helper 집계와 이 표본 대조를 생략하지 않는다. 초과만을 이유로 모든 구간의 대화·도구 호출 원시를 추가 추출하지 않는다.
+
 독립 검증자의 “전부 / 없음” 주장과 **대상 0건으로 얻은 PASS**도 대조 대상이다. 대상 수·언어·OS·실제 명령/원시 출력으로 무엇을 검사했는지와, 같은 범위를 독립 열거했는지(구현자 목록 재사용 없음)를 확인한다. [검증 강도 시범](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증-강도-4주-시범)의 goal·계약 등급/이유와 실제 요구 범위도 대조한다. 기존 테스트를 고쳤다면 [실패 전수 분류 표](../../.agents/skills/dawnholder-task-context/references/templates.md#검증-판정)에서 표본을 골라 요구사항 원문과 대조한다. 메인 표본은 검증자의 전수 분류/대조를 대신하지 않는다. 보고/수행 불일치·미실행의 통과 기록은 의도와 무관하게 즉시 메인에 보고한다.
 
 <a id="r3-reply-tag"></a>
@@ -101,9 +104,18 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 
 **Claude 세션의 기존 대기에만 적용:** Bash `run_in_background`의 `orca orchestration check --wait --types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question" --timeout-ms 900000 --json`은 한 번에 하나만 연다. Run 바인딩 시 `--run <run_id>`, 처리한 delivery는 다음 대기의 `--ack`로 넘긴다. 끝난 원시 출력을 직접 읽고 처리한 뒤 다음 대기를 연다. 자동 알림으로 깼을 때 기존 background 대기가 아직 돌고 있으면(시작 뒤 종료·kill 알림을 받지 않음) 도구 없이 한 줄로 끝내고 대기가 끝나 깰 때 처리한다. 메모리 회수로 꺼졌거나 생존이 불확실하면 대기 없는 check로 처리하며 스스로 대기를 다시 켜지 않는다. 「Orca 메시지를 확인하라」 안내에도 대기 없는 check 한 번을 쓴다(2026-10-06 관측).
 
-모든 리드는 작업자 기동·종료·지시 직전에, 작업자는 컨테이너·볼륨 삭제·중지 같은 되돌리기 어려운 명령 직전에 대기 없는 check 한 번으로 도착한 지시를 확인한다. `&`·`/dev/null`·`| head`로 우편함 출력을 버리지 않는다. 현재 [SessionGuard](../../99_Tools/README.md#세션-쓰기-가드)는 Claude Code에만 적용되며 Codex의 출력 보존은 규칙 경계다. 리드는 정산 때 [생존 신호 간격 helper](../../99_Tools/README.md#생존-신호-간격)로 저장한 원시를 재어 300초 초과 구간을 goal에 적는다.
+모든 리드는 작업자 기동·종료·지시 직전에, 작업자는 컨테이너·볼륨 삭제·중지 같은 되돌리기 어려운 명령 직전에 대기 없는 check 한 번으로 도착한 지시를 확인한다. `&`·`/dev/null`·`| head`로 우편함 출력을 버리지 않는다. 현재 [SessionGuard](../../99_Tools/README.md#세션-쓰기-가드)는 Claude Code에만 적용되며 Codex의 출력 보존은 규칙 경계다. 리드의 생존 신호 집계와 초과 기록은 [정산 정본](#heartbeat-accounting)을 따른다.
 
-작업자·검증자는 live preamble의 자연스러운 check·heartbeat를 수행하고 한 작업 뒤 정산·종료하며, 새 상시 대기를 만들지 않는다. `--types`로 heartbeat를 빼도 Orca 알림이 heartbeat마다 Claude 리드를 깨웠다(2026-10-06 관측). **heartbeat 5분은 유지**한다. 위 버전·날짜 관측은 타 버전을 보장하지 않는다([원천·측정 한계](#pr2-source)).
+작업자·검증자는 live preamble의 자연스러운 check·heartbeat를 수행하고 한 작업 뒤 정산·종료하며, 새 상시 대기를 만들지 않는다. `--types`로 heartbeat를 빼도 Orca 알림이 heartbeat마다 Claude 리드를 깨웠다(2026-10-06 관측). 위 버전·날짜 관측은 타 버전을 보장하지 않는다([원천·측정 한계](#pr2-source)).
+
+<a id="heartbeat-accounting"></a>
+### 생존 신호와 초과 정산
+
+첫 heartbeat는 **기동 직후** 보내며 **이후 5분 간격은 유지**한다. 작업자·검증자는 live preamble의 자연스러운 check와 공식 ask 중의 생존 신호 예외를 따른다. 이 결정은 간격 변경이나 독립 세션·역할 분리의 완화가 아니다.
+
+리드는 정산 때 기존 [생존 신호 간격 helper](../../99_Tools/README.md#생존-신호-간격)로 저장한 원시를 집계하고 **300초 초과는 구간·이유 한 줄**로 기록한다. 상세 수치·handle·원시는 근거 폴더에 두고 goal에는 단계 결과와 근거 경로를 남긴다([goal 기록 정본](../../.agents/skills/dawnholder-goal-loop/SKILL.md#goal-기록과-재개)). 기존 helper 집계와 메인 [R-2 표본 대조](#r2-source-check)는 유지한다.
+
+구간별 대화·도구 호출 추출 같은 추가 원시 감사는 **범위 밖 쓰기·실행을 의심할 다른 근거가 있을 때만** 해당 구간에 수행한다. 초과 구간이 있다는 사실만으로 매번 원시 감사를 추가하지 않는다. 보고와 실제 수행의 불일치·미실행의 통과 보고는 기존대로 즉시 메인에 알린다. 출처는 [검증 경량화 승인 goal](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#결정과-단계-결과)의 결정 2다.
 
 <a id="dispatch-message-policy"></a>
 ### 활성 Dispatch 메시지 수신 보조
@@ -255,6 +267,8 @@ hook은 방식 `--merge`·`--squash`·`--rebase` 중 하나를 받지만 운영 
 한계: 직접 입력·붙여넣기·터미널 주입 출처 미구분, Codex 미적용, 문자열 판정의 의도적 우회 가능(별칭·스크립트 파일·변수 속 명령), 등록 밖 도구·hook/settings 자체 수정과 하위 폴더·settings 부재·hook 미실행(node 부재 등)은 보호하지 않는다. GitHub ruleset 관리자 우회 유지. 같은 세션의 겹친 기록 쓰기(병합끼리·승인 제출과 병합)는 소비 기록 복원·두 번 통과가 가능하다(순차 호출 전제, 승인된 PR·head만). 병합 문자열 검색도 막혀 Grep·Read를 쓴다.
 
 ## 공유 자원
+
+공용 실행 잠금 도구가 main에 들어가기 전에는 기존 수동 조율을 유지한다. **Unity는 한 번에 하나이며 Content 우선, WSL끼리는 Core 우선**이다. **Core WSL과 Unity 병행은 실행 직전 물리 여유 6GiB와 commit 여유 4GiB를 모두 충족**할 때만 한다. 상대에게 짧게 알리고 회신을 기다리느라 멈추지 않되, 관측 불가·소유 불명확·실행 충돌을 허가로 바꾸거나 남의 프로세스를 선점·종료하지 않는다. 이 기준의 연결은 도구 구현·완료 주장이 아니며 원문과 PR 경계는 [승인 goal](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md)에 둔다.
 
 | 자원 | 확인할 경계 |
 |---|---|

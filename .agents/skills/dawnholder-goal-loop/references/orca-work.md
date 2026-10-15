@@ -15,6 +15,7 @@
 - [작업 맥락 스킬](../../dawnholder-task-context/SKILL.md)의 역할별 읽기 묶음·기존 예시 1~2개와 쓰기 전 메모 경로, 관련 CODE_CONVENTION 절 원문 전체·출처 경로·기준 commit 또는 미커밋 hash. 링크·요약만으로 원문을 대체하지 않는다.
 - 작업자가 수정할 파일 범위와 건드리지 않을 영역.
 - 검증 기준과 실제 진입 실행 범위 및 DB·7777·Unity·WSL 작업 공간의 실행 소유권.
+- 계약 발행 때 한 번 승인하는 빌드·시험·실제 진입 단계 목록·순서·입력·자동 관문과 원시 근거 경로. [실행 단계 일괄 승인](../../dawnholder-task-context/SKILL.md#실행-단계-일괄-승인)에 따라 이미 발행한 계약의 남은 단계도 버전 고정 보충으로 묶을 수 있으며, 관문 실패·계획 밖 실행만 공식 ask로 올린다.
 - 작업 결과를 기록할 위치와 막히면 메인에 올릴 판단 사항.
 
 작업 spec에는 다음 계약도 포함한다: 역할과 자기 발신 태그, 지정 모델과 관찰 모델 구분, **할당된 작업 하나만 수행하고 추가 위임·commit/push 금지**, 제품/테스트 쓰기 소유와 종료 시점, 실사·미실행 구분, 원문 경로, live preamble의 완료 절차. 수정·재검증도 새 세션으로 발행하며 완료 세션은 재사용하지 않는다.
@@ -42,7 +43,7 @@
 
 ## 수행·정산·종료
 
-- worker는 live preamble의 check·heartbeat·완료 절차를 따르며 메시지 subject/body에도 자기 태그를 붙인다. 회신 subject는 [R-3](../../../../00_Document/operations/ORCA.md#r3-reply-tag)을 따른다. Claude 권한 확인에 막히면 명령·화면 상태를 보고한다. 실행 정책·권한 우회 기준은 [AGENTS 공학 조건](../../../../AGENTS.md#공학-조건)을 따른다.
+- worker는 live preamble의 check·heartbeat·완료 절차를 따르며 메시지 subject/body에도 자기 태그를 붙인다. 기동 직후 첫 신호와 5분 간격·300초 초과 한 줄 기록·기존 helper 집계 및 R-2는 [생존 신호 정산](../../../../00_Document/operations/ORCA.md#heartbeat-accounting)을 따른다. 회신 subject는 [R-3](../../../../00_Document/operations/ORCA.md#r3-reply-tag)을 따른다. Claude 권한 확인에 막히면 명령·화면 상태를 보고한다. 실행 정책·권한 우회 기준은 [AGENTS 공학 조건](../../../../AGENTS.md#공학-조건)을 따른다.
 - 내용 없는 heartbeat와 공식 blocking ask의 subject 한정 예외·세 identity 대조·상태 변이 없는 수신 helper는 [수신 정본](../../../../00_Document/operations/ORCA.md#dispatch-message-policy)을 따른다. 태그/정책 판정을 worker_done 정산이나 자동 ack로 해석하지 않는다.
 - 정상 완료는 정확한 `worker_done`과 원문을 리드가 대조한 뒤 `worker-release`, 해당 작업 pane의 정산·동일성을 확인한 뒤 `terminal close`로 닫는다. 이미 닫혔으면 다시 닫지 않는다. release가 `retained`여도 승인된 작업 하나가 끝난 정확한 pane인지 확인한 뒤 프로젝트의 종료 규칙을 적용한다. 메인·리드·다른 사용자 세션은 종료하지 않는다.
 - 실패·막힘·무응답은 관측 사실·명령·미완료 결과·원문을 진단 기록으로 보존한 뒤 상태에 맞는 공식 정산/중단 절차와 종료를 수행한다. timeout만으로 성공·프로세스 종료를 주장하거나 중복 작업자를 만들지 않는다. 원격/대상 동일성을 확인하지 못하면 임의 다른 대상을 닫지 않고 메인에 보고한다.
