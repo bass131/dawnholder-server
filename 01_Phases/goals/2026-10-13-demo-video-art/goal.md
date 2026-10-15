@@ -2,7 +2,7 @@
 
 상태: **인벤토리·NPC 대화와 고친 파티 창의 현재 1920 보기는 사용자 통과다. T-2 수리는 신규 Opus의 강 독립 검증에서 기술 PASS이며 실제 GUI Party 1건도 통과했다. 두 기록의 분리·첫 기록 불변·실제 응답·마지막 단언을 확인했고 검증자 정산·정확 종료·근거 동결과 알려진 자동 설정 한 줄 복원을 끝냈다. UI 창 PR을 준비한다. 기존 failed 원시·C9 main 통합·05 강 PASS·06 조건부 통과(H1/626 동결 뒤 정리)는 유지하며 실제 전후·최소 화면/Party HUD·Window는 남아 있다.**
 
-**다음 첫 일:** UI 창 PR을 준비하고 정확 head·CI·독립 판정 원문과 남은 화면 한계를 메인에 보고한다. 실제 전후·최소 화면/Party HUD·Window 미확인을 전체 완료로 바꾸지 않으며 병합은 메인의 사용자 명시 승인 관문을 따른다. 새 판정은 `.backups/verification/2026-10-13-demo-video-art/ui-party-layout-fix/record-recheck/verdict.md`, 실행·정산·설정 복원 근거는 `ui-party-record-recheck-launch/`에 있다.
+**다음 첫 일:** C9 main 기준의 보상 창 유보 시험 6건을 신규 Opus가 검토·실제 RED로 확인하고, 새 구현·독립 검증으로 Window/RewardWindow를 잇는다. 이어 Party HUD VIS-05·실제 전후·최소 화면을 확인한 같은 UI 창 PR의 마지막 head·CI·판정 원문을 메인에 보고한다. 지금 불완전 draft PR은 열지 않는다. T-2 판정은 `.backups/verification/2026-10-13-demo-video-art/ui-party-layout-fix/record-recheck/verdict.md`, 다음 선행 시험 근거는 `ui-reward-window-tdd/`와 `ui-reward-window-tdd-launch/`에 둔다.
 
 - 담당: Art 리드(`[Art 리드 Sol]`, 2026-10-14 Sol xhigh 같은 대화 재개부터). 이전 리드 계열은 Opus·Astra였다. 사용자 결정 `msg_d4146a180138`을 적용했고 현재 화면/turn_context는 gpt-6.1-sol xhigh, 실제 backend unknown이다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며 메인이 R-8로 새 목표의 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -794,3 +794,9 @@
 - 첫 화면 기록과 후행 응답 기록은 별개 새 파일이며 첫 기록 bytes가 불변이었다. 실제 수락·거절, 기존 출력 보호의 거절, 마지막 실패 단언 0건을 확인했다. 관측 34/34와 대조군 10/10은 NUnit 1건과 구분한다. 리드는 판정 전체와 실제 XML·두 기록·마지막 단언 표본을 대조했다.
 - 검증자는 정산·정확 종료했고 근거 전체를 동결했다. 알려진 자동 설정 한 줄은 원본을 보존한 뒤 메인의 기존 상시 권한으로 HEAD bytes에 복원했다. 자동 heartbeat 형식 거절 뒤 교정, 생존 신호 300초 초과와 실행 중 메모리 표본은 운영 한계로 공개했으며 제품 결함으로 집계하지 않았다.
 - 사용자 현재 모양 A를 보존한다. 실서버·DB·실제 before·최소 화면과 남은 Party HUD/보상 창, CI를 이번 PASS로 확대하지 않는다. 판정은 `ui-party-layout-fix/record-recheck/verdict.md`, 원시·표본·생존 신호·근거 동결·설정 복원은 `ui-party-record-recheck-launch/`에 있다. 다음은 UI 창 PR의 정확 head·CI와 남은 한계 보고이며 전체 goal 종료나 병합 승인이 아니다.
+
+### 06 - 기존 PR 경계 유지·보상 창 선행 시험 재개
+
+- 메인 `msg_7aeb5a2959d1`은 「PR 준비」가 기존 경계 변경을 뜻하지 않았다고 판정했다. 05·06은 같은 UI 창 PR이며 지금 불완전 draft를 열지 않는다. 본문·준비 head는 보존하고 남은 Window/RewardWindow·Party HUD VIS-05·실제 전후·최소 화면 뒤 마지막 head에서 다시 고정한다. 이 판단은 사용자 새 결정이나 완료조건 면제가 아니다.
+- C9 PR239의 main 반영은 현재 branch의 조상이며 보상 창은 현재 main과 같은 bytes임을 확인했다. 과거 유보했던 `RewardWindow_` 6건을 새 Opus가 현재 C9 계약과 대조하고 실제 선택 RED로 확인하는 단계부터 잇는다. 이번 선행 단계의 제품·시험 source 쓰기는 없고 구현과 독립 검증은 각각 새 세션으로 맡긴다.
+- 메인과 Content에 같은 예상 순서를 알렸다. 10-15 오후 선행 RED·표시 구현 → 10-16 독립 검증·Party HUD와 전후/최소 캡처 → 10-17 마지막 head·CI·PR 준비, 목표 10-18을 유지하며 공유 Unity 창·검증 반환에 따라 조정한다. 현재 PR·CI·새 Unity 실제 실행은 없으며 신규 근거는 `ui-reward-window-tdd/`와 `ui-reward-window-tdd-launch/`에 둔다.
