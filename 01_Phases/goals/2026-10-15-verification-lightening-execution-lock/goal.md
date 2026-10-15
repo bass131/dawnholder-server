@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일: 쓰기 종료된 구현과 원시를 고정해 신규 Opus 강 독립 검증자를 발행한다.** PR243은 사용자 승인 뒤 메인이 병합했다. Astra 구현자는 자체 시험과 Windows 실제 진입 결과를 보고하고 쓰기를 종료했으며 정산·pane 종료를 마쳤다. 독립 검증과 CI는 아직 남았다.
+**다음 첫 일: 첫 독립 NOT PASS의 결함 4건과 고정 실패 시험으로 신규 Astra 수정자를 발행한다.** 첫 검증자는 쓰기를 종료했고 정산·pane 종료를 마쳤다. 범위 안 수정 뒤 다시 신규 Opus 강 독립 판정과 CI를 수행한다. PR243은 병합됐으며 도구 PR은 아직 준비 전이다.
 
 작업 공간은 `rules-active`, 현재 도구 PR 브랜치는 `feat/shared-execution-lock-20261015`다. 문서 PR 브랜치는 `docs/verification-lightening-20261015`였다. 최신 main에서 시작한 기준·현재 Run·모델 관측·receipt는 근거 폴더 E의 `lead-context.md`와 해당 진입 원시에 둔다. E는 `.backups/verification/2026-10-15-verification-lightening-execution-lock/`다.
 
@@ -15,8 +15,8 @@
 - [x] PR243 병합
 - [x] 잠금 설계 확정
 - [x] 선행 실패 시험
-- [x] 잠금 도구 구현
-- [>] 독립 강 검증
+- [>] 잠금 도구 구현
+- [ ] 독립 강 검증
 - [ ] 도구 병합
 - [ ] 종료 점검과 기록
 
@@ -81,9 +81,18 @@ PR 생성 뒤 병합 단계 이름에 실제 PR 번호를 넣는다.
 - **선행 시험 단계:** 신규 Opus가 실행 계약 v1과 공식 질문/답을 연결한 v1.1 보충으로 요구 시험·fixture를 작성했다. 기준 RED는 제품 미존재로 제품 단언이 실행되지 않은 상태이며 fixture 자가점검과 구분했다. 원시는 E/`pr2-tdd/run-20261015T042311Z/`, 보고/충실도 한계는 E/`pr2-tdd/report.md`, 고정 시험은 E/`pr2-tdd-frozen-inputs.json`이다. 정산/종료와 heartbeat 초과 구간·이유 미확정 기록은 E/`pr2-tdd-release.json`·`pr2-tdd-close.json`·`pr2-tdd-liveness-accounting.md`에 둔다. 제품 보조 프로세스·spawn 직후 관측의 대역 한계는 구현자에게 알리고, 그 한계가 원인인 실패와 실제 제품 결함을 분리한다. 선행 RED는 제품 독립 PASS가 아니다.
 
 - **구현 단계:** 신규 Astra가 공용 실행 잠금과 관련 문서·CI를 구현하고 쓰기를 종료했다. 자체 고정 시험과 무해한 Node의 실제 Windows 정상·실패·timeout 진입은 확인했으나 독립 PASS·CI는 아니다. 원문은 E/`pr2-implement/report.md`, 동결 입력은 E/`pr2-implementation-frozen-inputs.json`, 정산/종료는 E/`pr2-implement-release.json`·`pr2-implement-close.json`이다. timeout 뒤 보존 lease와 과거 원인 미확정 오류·사전 실행 근거 저장 누락은 원시 그대로 신규 독립 검증에 넘긴다. 범위 안 개발 수정 체크포인트와 메인의 회차·시간 상한은 E/`pr2-implement-operating-limit-v1.md`에 보존한다.
+- **첫 독립 검증 단계:** 신규 Opus가 보고·diff·실행 원문, 기존·독립 시험과 실제 Windows 진입을 검증해 NOT PASS로 판정했다. 원문 E/`pr2-verify/verdict.md`, 실패 시험 동결 E/`pr2-verify-frozen-inputs.json`, 정산/종료 E/`pr2-verify-release.json`·`pr2-verify-close.json`을 보존한다. 메인 `msg_8bf391ee01ee`가 범위 안 신규 Astra 수정 → 신규 Opus 재판정에 동의했고 회차·시간 상한을 유지했다. 기존 자체 GREEN을 독립 통과로 취급하지 않는다.
+- **사전 실행 근거 누락 P1:** 중간 실행의 하네스 해시·허용 부모 근거가 실행 뒤 저장된 실제 위반을 보존한다. 메인 `msg_8bf391ee01ee`는 사용자 결정과 구분한 메인 판단으로, 최종 수정본의 사전 관문 원시가 실행보다 먼저 저장되고 저장 실패 시 실행이 차단되는지를 새 독립 검증자가 확인해야 최종 차단 여부를 판단하도록 했다. 확인이 없으면 계속 차단이며 과거 위반의 삭제·면제는 아니다.
 
 ## 결함과 다음 후보
 
-현재 산출물의 독립 판정·결함 번호는 없다. 현재 범위 밖 후보는 기존 BACKLOG 정본에 두며, 이 goal에 상세 후보 장부를 복제하지 않는다.
+첫 독립 판정의 차단 결함은 다음 4건이며 각 결함의 첫 확정 실패다. 개발 중 자체 수정 회차와 구분한다. 상세 재현·심각도·귀속·원시는 E/`pr2-verify/verdict.md`를 정본으로 삼는다.
+
+- **1 - timeout·취소 종료 정산:** 끝낸 자기 root의 종료를 상태에 반영하지 않아 lease가 남는다.
+- **2 - 시작된 명령의 결과와 감시:** 이미 실행 중인 명령을 시작하지 않은 `blocked`로 보고한다.
+- **3 - 부모 PID 재사용의 실행 묶음 경계:** 외부 Unity를 자기 묶음으로 잘못 제외해 중복 허가한다.
+- **4 - 정상 쓰기 중 조회 일관성:** 유효 committed 조회 약속과 실제 일시 오류가 다르다. 리드는 같은 범위의 구현 수정을 선택했다.
+
+비차단 설계 관찰과 과거 원인 미확정 오류는 판정 원문에 보존하며 임의의 추가 구현으로 확대하지 않는다. 현재 범위 밖 후보는 기존 BACKLOG 정본에 두며 이 goal에 상세 후보 장부를 복제하지 않는다.
 
 - **후속 후보:** 메인 전달 `msg_c0ce69d388b3`의 사용자 원문 「자체 오케스트레이션 검토는 동결 뒤 백로그로 넘겨줘」에 따라 10-28 기능 동결 뒤 검토 후보를 종료 기록 PR 또는 다음 정상 문서 PR에서 BACKLOG에 반영한다. 현재 착수·Orca 교체 결정·PR2 범위 확대는 아니며, 반영 뒤 ID를 메인에 회신한다.
