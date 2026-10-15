@@ -3,9 +3,9 @@ param(
     [Parameter(Mandatory)][string]$WorkRoot
 )
 # Independent offline tests of the shared migration/module runner at its ADO.NET boundary.
-# The fake engine below records commands; it assumes rather than proves SQL Server behavior:
-# a module's stored definition equals the submitted batch text, and an empty set is returned as the
-# selected representation (`[]` or DBNull). Results based on those assumptions are labelled OBSERVED.
+# The fake engine records commands and models the header observed on SQL Server 17.0.5005.3 only.
+# This is not a real engine install. Empty sets use the selected representation (`[]` or DBNull);
+# results based on that unverified representation are labelled OBSERVED.
 . (Join-Path $PSScriptRoot 'TestSupport.ps1')
 $null = Initialize-TestSuite -WorkRoot $WorkRoot -Suite 'module-deployment'
 . (Join-Path $script:ToolRoot 'test-environment/Environment.Common.ps1')
@@ -43,7 +43,7 @@ function New-EngineState {
         FailOn = $null
         # 0: the failure is a plain PowerShell error. Otherwise an in-memory SqlException with this number.
         FailNumber = 0
-        StoreText = { param($sql) $sql }
+        StoreText = { param($sql) $sql -creplace '^CREATE OR ALTER ', 'CREATE   ' }
     }
     foreach ($source in @($script:Sources | Select-Object -First $AppliedMigrations)) {
         $state.History.Add([pscustomobject]@{ Version = $source.Version; Name = $source.Name; Checksum = $source.Checksum })
@@ -238,10 +238,13 @@ $ddlOrder = @($moduleNames | ForEach-Object { 'DDL:' + $_ })
 $metaOrder = @($moduleNames | ForEach-Object { 'META:' + $_ })
 
 # ---- First Complete install after the Baseline001 lifecycle step, with `[]` for empty sets.
-$run = Invoke-Complete -Engine (New-EngineState -AppliedMigrations 1)
+$engine = New-EngineState -AppliedMigrations 1
+$run = Invoke-Complete -Engine $engine
 $expected = @('LOCK', 'HISTORY', 'MIGRATION:002', 'SV:2', 'MIGRATION:003', 'SV:3', 'MIGRATION:004', 'SV:4', 'HISTORY',
     'RELEASES', 'RECORDED', 'ACTUAL', 'SESSION') + $ddlOrder + @('GRANTS', 'RECORDED', 'ACTUAL') + $metaOrder + @('CATALOG')
 Assert-True -Name 'first Complete install (empty sets as []) -> succeeds' -Condition ($null -eq $run.Error) -Detail ([string]$run.Error)
+Assert-Equal -Name 'observed three-space engine header -> 18 metadata rows recorded' -Expected 18 `
+    -Actual $engine.Recorded.Count
 Assert-Equal -Name 'first install order: lock, history, 002-004, recheck, declaration, state, 18 DDL in manifest order, grants, recheck, metadata, catalog' `
     -Expected ($expected -join ',') -Actual ($run.Events -join ',')
 Assert-Equal -Name 'first install -> single owned transaction committed' -Expected 'Begin,Commit,Dispose' -Actual ($run.Transactions -join ',')
@@ -408,15 +411,29 @@ Assert-True -Name 'strict catalog SqlException -> its number propagates without 
     -Detail ('sqlNumber=' + $run.ErrorSqlNumber + '; inner=' + $run.ErrorHasInner + '; tx=' +
     ($run.Transactions -join ',') + '; error=' + $run.Error)
 
-# Engine definition text different from the reviewed source stays fail-closed before metadata is written.
+# An engine using the old verbatim assumption is refused before metadata, even though DDL succeeds.
+$engine = New-EngineState -AppliedMigrations 1
+$engine.StoreText = { param($sql) $sql }
+$run = Invoke-Complete -Engine $engine
+$kinds = Get-EventKinds -Run $run
+Assert-True -Name 'verbatim submitted definition -> rejected before metadata' -Condition (
+    $run.Error -cmatch '^Registered/actual module drift' -and
+    @($kinds | Where-Object { $_ -in @('META', 'CATALOG') }).Count -eq 0 -and
+    $engine.Recorded.Count -eq 0 -and
+    ($run.Transactions -join ',') -ceq 'Begin,Rollback,Dispose') -Detail ('error=' + $run.Error)
+
+# A one-space CREATE header also differs from the reviewed engine expectation.
 $engine = New-EngineState -AppliedMigrations 1
 $engine.StoreText = { param($sql) $sql.Replace('CREATE OR ALTER ', 'CREATE ') }
 $run = Invoke-Complete -Engine $engine
 $kinds = Get-EventKinds -Run $run
-Assert-True -Name 'stored definition differs from source expectation -> rejected before metadata' -Condition (
-    $run.Error -cmatch '^Registered/actual module drift' -and @($kinds | Where-Object { $_ -in @('META', 'CATALOG') }).Count -eq 0 -and
+Assert-True -Name 'one-space CREATE definition -> rejected before metadata' -Condition (
+    $run.Error -cmatch '^Registered/actual module drift' -and
+    @($kinds | Where-Object { $_ -in @('META', 'CATALOG') }).Count -eq 0 -and
+    $engine.Recorded.Count -eq 0 -and
     ($run.Transactions -join ',') -ceq 'Begin,Rollback,Dispose') -Detail ('error=' + $run.Error)
-Add-TestResult -Name 'engine canonical text for CREATE OR ALTER is unobserved; fake assumes the submitted batch is stored' -Outcome OBSERVED
+Add-TestResult -Name 'three-space CREATE header observed on SQL Server 17.0.5005.3 only; other engines unverified' `
+    -Outcome OBSERVED
 
 # ---- Declaration and release history.
 # A source change whose manifest entry alone was updated is refused before any database command:
