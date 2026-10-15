@@ -1,8 +1,8 @@
 # 구현자 난이도 라우팅 시범
 
-구현자는 `gpt-6.1-sol` max 또는 `gpt-6-astra` xhigh다. 리드가 위임 계약을 쓸 때 고른다. 아래 신호가 하나라도 해당하면 Astra로 배정한다. 애매하면 Astra로 배정한다. 신호가 없으면 Sol max로 배정한다.
+구현자는 `gpt-6.1-sol` xhigh 또는 `gpt-6-astra` xhigh다. 리드가 위임 계약을 쓸 때 고른다. 아래 신호가 하나라도 해당하면 Astra로 배정한다. 애매하면 Astra로 배정한다. 신호가 없으면 Sol xhigh로 배정한다.
 
-사용자 원문과 메인 적용 판단은 [goal의 적용 결정](../../../../01_Phases/goals/2026-10-09-plan-boundary-and-junction/goal.md#요구사항-원천과-적용-결정)에 있다. 정본 PR 병합 뒤 발행하는 계약부터 적용한다.
+난이도 배정의 사용자 원문과 메인 적용 판단은 [당시 goal의 적용 결정](../../../../01_Phases/goals/2026-10-09-plan-boundary-and-junction/goal.md#요구사항-원천과-적용-결정)에 있으며, 해당 정본 PR 병합 뒤 발행하는 계약부터 적용한 기준이다. 현재 Sol 배정의 effort는 [Sol xhigh 전환의 사용자 결정](../../../../01_Phases/goals/2026-10-14-sol-xhigh-routing-hotfix/goal.md#적용-중인-사용자-결정)을 따른다. 그 결정에 따른 런타임 전환은 정본 병합을 기다리지 않으며 아래 Astra 배정 신호와 Astra xhigh는 유지한다.
 
 ## 난이도 신호와 근거
 
@@ -18,7 +18,7 @@
 
 신호 5의 집계에서 heartbeat·check 이탈 같은 절차 실패를 뺀다. 계약·명세 귀속 결함도 뺀다. [확정 실패 집계](../../../../00_Document/operations/ORCA.md#confirmed-failures)는 그 정본을 따른다.
 
-신호가 없을 때 Sol max로 둘 일은 명세가 고정된 1~2파일 수정, 기계적 변경·lint 정리, 문서, 측정·조사, 선행 시험이 요구를 다 고정한 좁은 구현이다.
+신호가 없을 때 Sol xhigh로 둘 일은 명세가 고정된 1~2파일 수정, 기계적 변경·lint 정리, 문서, 측정·조사, 선행 시험이 요구를 다 고정한 좁은 구현이다.
 
 ## 계약과 시범 기록
 

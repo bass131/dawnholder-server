@@ -6,7 +6,7 @@ namespace Dawnholder.Server.GameServer.Items;
 
 // World-tick owner of connection registrations and lazy economy state. Register runs after an
 // actual map admission; Forget runs during World close cleanup. Map migration changes neither.
-// Requests enqueue off-tick; kill callbacks capture the registered owner on-tick. GameWorld
+// Requests enqueue off-tick; kill/clear callbacks capture their recipients on-tick. GameWorld
 // drains jobs after Quest, and each job rechecks that connection's ownership and closing state.
 internal sealed class InventoryRegistry
 {
@@ -82,6 +82,12 @@ internal sealed class InventoryRegistry
         _pendingJobs.Enqueue(() => ApplyKill(session, killerId, kind, enemyId));
     }
 
+    internal void EnqueueDungeonClear(IReadOnlyList<(int EntityId, GameSession Session)> beneficiaries)
+    {
+        foreach (var recipient in beneficiaries)
+            _pendingJobs.Enqueue(() => ApplyDungeonClear(recipient.Session, recipient.EntityId));
+    }
+
     internal void Forget(GameSession session)
     {
         if (_registeredSessions.TryGetValue(session.EntityId, out GameSession? owner) &&
@@ -139,6 +145,33 @@ internal sealed class InventoryRegistry
 
         entry.State = next;
         _sendToEntity(recipientId, snapshot);
+    }
+
+    void ApplyDungeonClear(GameSession session, int entityId)
+    {
+        if (!IsActive(session, entityId)) return;
+
+        Entry entry = GetOrCreate(session, entityId);
+        InventoryReward reward = new(DungeonClearRewards.Currency, DungeonClearRewards.Items.ToArray());
+        InventoryResult result = InventoryTransitions.Grant(entry.State, reward, out InventoryState next);
+        if (result == InventoryResult.RevisionExhausted)
+        {
+            // This internal outcome has no v18 wire value. Keep the map's pending confirmation
+            // so the player can still leave; never turn an uncommitted grant into Success.
+            Console.WriteLine($"[InventoryRegistry] dungeon clear revision exhausted: entity={entityId}");
+            return;
+        }
+
+        ArraySegment<byte> reply = Dungeon.DungeonClearPackets.Result(result);
+        ArraySegment<byte> snapshot = default;
+        if (result == InventoryResult.Success) snapshot = InventoryPackets.Snapshot(next);
+        if (!IsActive(session, entityId)) return;
+
+        // Prepare both packets before the single commit. Direct sends preserve the result even
+        // during migration, when SendToEntity would skip a player without a current map.
+        if (result == InventoryResult.Success) entry.State = next;
+        session.Send(reply);
+        if (result == InventoryResult.Success && IsActive(session, entityId)) session.Send(snapshot);
     }
 
     bool IsActive(GameSession session, int entityId)
