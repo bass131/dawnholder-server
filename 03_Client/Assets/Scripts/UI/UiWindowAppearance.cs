@@ -32,6 +32,13 @@ namespace Dawnholder.Client.UI
             return image;
         }
 
+        internal static Image CreateEmphasisPanel(string name, Transform parent)
+        {
+            Image image = CreatePanel(name, parent);
+            image.sprite = Skin.EmphasisPanel;
+            return image;
+        }
+
         // Scene-owned roots keep their component, RectTransform and raycast ownership.
         internal static void ApplyPanel(Image image)
         {

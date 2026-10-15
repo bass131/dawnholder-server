@@ -13,6 +13,7 @@ namespace Dawnholder.Client.UI
         [SerializeField] Image _insetPrefab = null!;
         [SerializeField] Image _portraitPrefab = null!;
         [SerializeField] Sprite _dialogPanel = null!;
+        [SerializeField] Sprite _emphasisPanel = null!;
         [SerializeField] Sprite _divider = null!;
         [SerializeField] Sprite _acceptNormal = null!;
         [SerializeField] SpriteState _acceptStates;
@@ -25,6 +26,7 @@ namespace Dawnholder.Client.UI
         internal Image InsetPrefab => _insetPrefab;
         internal Image PortraitPrefab => _portraitPrefab;
         internal Sprite DialogPanel => _dialogPanel;
+        internal Sprite EmphasisPanel => _emphasisPanel;
         internal Sprite Divider => _divider;
         internal Sprite AcceptNormal => _acceptNormal;
         internal SpriteState AcceptStates => _acceptStates;
