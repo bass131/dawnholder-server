@@ -41,6 +41,14 @@
 
 ## 재개 지점
 
+### Core 단독 재개
+
+- 다음 첫 일: PR237 사용자 병합 승인·메인 병합 뒤 최신 main을 core-parallel에 normal merge하고 catalog/입력을 대조한다. 그 뒤 새 계약으로 env0/bootstrap·TLS 연결 구현 → 독립 검토 → 실제 실행을 잇는다. 직접 PR237 branch 통합은 하지 않는다(메인 판단 msg_2e3e764a9aa1). 종료된 Task/Dispatch와 입력·계약 원시는 B/runtime-entry-db-card-preparation-1/worker-start.json 및 contract.md다. 정적 준비는 SQL 도구 차이·기존 env/Trust=true 연결 때문에 BLOCKED/failed로 종료했다. 제품 구현 결함 횟수로 새로 세지 않는다. 신규 Astra 쓰기 종료·release·정확 pane 종료를 확인했다. report.md와 lead-settlement-check.json에 근거가 있다. 실제 DB·비밀·WSL·Unity 실행은 아직 없다.
+- 메인 msg_9cd8bc12fa82가 전달한 사용자 원문: 「일단 세션 맥락 확인해주고, Core쪽 진전 빠르게하기 위해서, Core쪽만 단독으로 작업 진행하자, 나머지 파트는 일단 영속성 해결 완전히 될 때 or 내가 추가 지시하기전까지 보류」. 메인 전달이며 이 pane 직접 입력으로 격상하지 않는다. 타 파트 창 통지는 생략하되 단일Editor·fresh 자원 관문과 사용자 프로세스 비접촉을 유지한다.
+- 메인 판단 msg_ce21bd7715dc로 PR237의 core-active 최신 main 통합·CI/PR 준비 병행을 허용받았다. 두 checkout Git은 리드만 수행, 카드의 PR237 소스는 고정308c02a3 bytes로 읽는다. Core 내부 중량은 하나만, PR242 DB 우선이다.
+- 기록 시각: Thu Oct 15 10:30:24 UTC 2026. 이전 마감의 「오늘 실행0」은 마감 시점의 기록이며, 이번 재개는 승인된 단계 순서를 진행한다. 상세 근거 B/lead-core-only-ready.json·lead-core-only-inbox.json·runtime-entry-db-card-preparation-1/pre-dispatch-inbox.json. 현재 계약의 goal 입력 원본은 같은 준비 폴더 goal-at-dispatch.md에 보존했다.
+
+
 ### 2026-10-15 세션 마감 — Astra medium
 
 기록 시각: `Thu Oct 15 07:03:53 UTC 2026` (`C:/Program Files/Git/usr/bin/date.exe -u` 출력). 메인 마감 계약 `msg_14c12329873c` 적용. 이 절이 아래 이전 인계 상태보다 우선한다.
