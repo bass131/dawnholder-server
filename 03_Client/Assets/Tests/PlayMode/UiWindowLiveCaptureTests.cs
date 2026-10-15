@@ -193,7 +193,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             NotePointers("pointers before invite");
             yield return MoveFixtureMouseOffScreen();
             bool shownBeforeInvite = ScreenUiProbe.ShownTexts("파티 초대").Length > 0;
-            // Test authority stand-in: the inviter is not a spawned remote player and nobody answers the invite.
+            // Test authority stand-in: the inviter is not a spawned remote player. Answers are exercised after capture.
             _fixture.Peer.Send(new S_PartyInviteRecv { inviterEntityId = 701, inviterClass = (byte)InviterClass }.Write());
             yield return MapEntryPlayFixture.Wait(() => ScreenUiProbe.ShownTexts("파티 초대").Length > 0,
                 "S_PartyInviteRecv shows the invite popup", 3);
@@ -215,9 +215,61 @@ namespace Dawnholder.Client.Tests.PlayMode
             NoteChecks(PopupWindowChecks(popup, group, layout, skin), failures);
             NotePointers("pointers at capture");
             NoteRenderersAround(EarlierWhiteDot, 80f);
-            yield return CaptureBothSizes(() => ScreenUiProbe.ShownTexts("파티 초대").Length > 0);
+            NoteScenesAndCameras();
+            var frame = new CaptureResult();
+            yield return Capture(frame);
+            Note("minimum capture", "not run: this Party contract captures only current 1920x1080");
+            WriteRecord();
+            Assert.IsTrue(frame.Written && frame.SameSizeAsScreen && frame.SampledColours > 1,
+                "the actual Game view frame was saved at its own size and is not flat");
+            Assert.AreEqual(PrimaryWidth, frame.Width);
+            Assert.AreEqual(PrimaryHeight, frame.Height);
+            yield return ObservePartyResponses(popup, group, layout, failures);
+            WriteRecord();
             // After the PNG and record exist, so a failing requirement still leaves the frame and every measured value.
             Assert.IsEmpty(failures, "party invite layout requirements:\n" + string.Join("\n", failures));
+        }
+
+        // Use the existing fixture mouse through the live input module; do not invoke listeners directly. The peer
+        // observes the wire intent only, not server membership. The first invite's unmodified frame already exists.
+        IEnumerator ObservePartyResponses(PartyInvitePopup popup, CanvasGroup group, PartyInviteLayout layout, List<string> failures)
+        {
+            foreach ((Component button, byte answer) in new[] { (layout.Accept, (byte)1), (layout.Decline, (byte)0) })
+            {
+                if (button == null) continue; // The missing-button requirement is already recorded.
+                if (answer == 0)
+                {
+                    _fixture.Peer.Send(new S_PartyInviteRecv { inviterEntityId = 702, inviterClass = (byte)InviterClass }.Write());
+                    yield return ScreenUiProbe.WaitUntil(() => group.alpha == 1f, 3f,
+                        shown => NoteChecks(new[] { new PartyInviteLayout.Check("response.second-invite-shown", shown, $"alpha {group.alpha}") }, failures));
+                }
+                int before = _fixture.Peer.Count(PacketID.C_PartyRespond);
+                Vector2 point = PartyInviteLayout.ScreenRectOf(button).center;
+                yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, point);
+                yield return ScreenUiProbe.WaitUntil(() => _fixture.Peer.Count(PacketID.C_PartyRespond) > before, 3f,
+                    received => Note("response observed on wire", received));
+                yield return _fixture.Frames(3);
+                int after = _fixture.Peer.Count(PacketID.C_PartyRespond);
+                C_PartyRespond packet = _fixture.Peer.Last<C_PartyRespond>(PacketID.C_PartyRespond);
+                bool correctPacket = after == before + 1 && packet != null && packet.accept == answer
+                    && packet.inviterEntityId == (answer == 1 ? 701 : 702);
+                GameObject[] hiddenHits = new[] { layout.Accept, layout.Decline }
+                    .Where(target => target != null).SelectMany(target => ScreenUiProbe.RaycastHits(PartyInviteLayout.ScreenRectOf(target).center))
+                    .Where(hit => hit.transform.IsChildOf(popup.transform)).ToArray();
+                NoteChecks(new[]
+                {
+                    new PartyInviteLayout.Check("response.one-correct-intent-" + answer, correctPacket,
+                        $"before {before}, after {after}, wire inviter {packet?.inviterEntityId}, answer {packet?.accept}"),
+                    new PartyInviteLayout.Check("response.hidden-input-off-" + answer,
+                        group.alpha == 0f && !group.interactable && !group.blocksRaycasts && !PartyState.Instance.HasPendingInvite && hiddenHits.Length == 0,
+                        $"alpha {group.alpha}, interactable {group.interactable}, blocksRaycasts {group.blocksRaycasts}, pending {PartyState.Instance.HasPendingInvite}, own hits {hiddenHits.Length}"),
+                }, failures);
+                yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, point);
+                yield return _fixture.Frames(3);
+                int afterHiddenClick = _fixture.Peer.Count(PacketID.C_PartyRespond);
+                NoteChecks(new[] { new PartyInviteLayout.Check("response.hidden-click-sends-none-" + answer,
+                    afterHiddenClick == after, $"before hidden click {after}, after {afterHiddenClick}") }, failures);
+            }
         }
 
         // Kept apart from the layout observer: the live window's canvas, shown state and B1 artwork compared with the shared
@@ -548,7 +600,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Component[] buttons = all.Where(c => Is(c, "UnityEngine.UI.Button") && ScreenUiProbe.IsShown(c)).ToArray();
             Component ButtonOf(Component c) => buttons.FirstOrDefault(button => c.transform.IsChildOf(button.transform));
             string Label(Component button) => string.Join(" ", button.GetComponentsInChildren<TMP_Text>(true).Where(ScreenUiProbe.IsShown).Select(text => text.text));
-            Component[] graphics = all.Where(c => !(c is TMP_Text) && Is(c, "UnityEngine.UI.Graphic") && ScreenUiProbe.IsShown(c) && ButtonOf(c) == null).ToArray();
+            Component[] graphics = all.Where(c => !IsTextRenderer(c) && Is(c, "UnityEngine.UI.Graphic") && ScreenUiProbe.IsShown(c) && ButtonOf(c) == null).ToArray();
             TMP_Text[] texts = root.GetComponentsInChildren<TMP_Text>(true).Where(text => ScreenUiProbe.IsShown(text) && ButtonOf(text) == null).ToArray();
 
             Panel = graphics.OrderByDescending(graphic => Area(ScreenRectOf(graphic))).FirstOrDefault();
@@ -562,6 +614,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             if (Panel != null) _facts.Add($"panel | {Path(Panel.transform)} screen {ScreenRectOf(Panel)} local {Size(Panel)} sprite {Describe(SpriteOf(Panel))} raycastTarget {Get(Panel, "raycastTarget")}");
             foreach (Component header in Headers) _facts.Add($"header {Path(header.transform)} | screen {ScreenRectOf(header)} order {Order(header)}");
             foreach (TMP_Text text in texts) _facts.Add($"{(titles.Contains(text) ? "title" : "body")} text {Path(text.transform)} | '{text.text.Replace("\n", "\\n")}' screen {ScreenRectOf(text)} order {Order(text)}");
+            foreach (TMP_SubMeshUI subMesh in all.OfType<TMP_SubMeshUI>().Where(ScreenUiProbe.IsShown))
+                _facts.Add($"text renderer {Path(subMesh.transform)} | owner {(subMesh.textComponent == null ? "none" : Path(subMesh.textComponent.transform))}, classified as text {IsTextRenderer(subMesh)}, raycastTarget {subMesh.raycastTarget}");
             foreach (Component button in buttons) _facts.Add($"button {Path(button.transform)} | label '{Label(button)}' screen {ScreenRectOf(button)} local {Size(button)} interactable {Get(button, "interactable")} order {Order(button)}");
             foreach (Component decoration in decorations) _facts.Add($"decoration {Path(decoration.transform)} | {decoration.GetType().Name} raycastTarget {Get(decoration, "raycastTarget")} colour alpha {((Color)Get(decoration, "color")).a} screen {ScreenRectOf(decoration)} order {Order(decoration)}");
 
@@ -580,7 +634,9 @@ namespace Dawnholder.Client.Tests.PlayMode
                 $"accept {Get(Accept, "interactable")}, decline {Get(Decline, "interactable")}");
             Add("layout.accept-inside-panel", Inside(accept, panel), $"accept {accept}, panel {panel}");
             Add("layout.decline-inside-panel", Inside(decline, panel), $"decline {decline}, panel {panel}");
-            Add("layout.buttons-apart", !Overlaps(accept, decline), $"accept {accept}, decline {decline}");
+            bool buttonsSeparated = accept.xMax < decline.xMin - Slack || decline.xMax < accept.xMin - Slack
+                || accept.yMax < decline.yMin - Slack || decline.yMax < accept.yMin - Slack;
+            Add("layout.buttons-apart", buttonsSeparated, $"positive gap required; accept {accept}, decline {decline}");
 
             TMP_Text[] shownTitles = titles.Where(text => !string.IsNullOrWhiteSpace(text.text)).ToArray();
             TMP_Text[] shownBodies = bodies.Where(text => !string.IsNullOrWhiteSpace(text.text)).ToArray();
@@ -602,6 +658,9 @@ namespace Dawnholder.Client.Tests.PlayMode
                     if (regions[i].kind != regions[j].kind && !(IsButtonKind(regions[i].kind) && IsButtonKind(regions[j].kind)) && Overlaps(regions[i].rect, regions[j].rect))
                         clashes.Add($"{regions[i].name} {regions[i].rect} x {regions[j].name} {regions[j].rect}");
             Add("layout.regions-apart", clashes.Count == 0, clashes.Count == 0 ? "title, body and button regions are disjoint" : string.Join("; ", clashes));
+            Rect[] textRegions = shownTitles.Concat(shownBodies).Select(ScreenRectOf).ToArray();
+            Add("layout.buttons-below-text", textRegions.Length > 0 && textRegions.All(region => accept.yMax <= region.yMin + Slack && decline.yMax <= region.yMin + Slack),
+                $"button tops {accept.yMax}/{decline.yMax}; text bottoms {string.Join(", ", textRegions.Select(region => region.yMin))}");
 
             Component[] catching = decorations.Where(decoration => (bool)Get(decoration, "raycastTarget")).ToArray();
             Add("decor.raycast-off", catching.Length == 0, catching.Length == 0 ? $"{decorations.Length} decoration graphic(s), none catches the pointer"
@@ -634,6 +693,12 @@ namespace Dawnholder.Client.Tests.PlayMode
         }
 
         void Add(string id, bool pass, string detail) => Checks.Add(new Check(id, pass, detail));
+
+        // TMP creates fallback-material submeshes as children owned by one TextMeshProUGUI. They render that text,
+        // not decoration; an arbitrary Graphic under a text is still checked. All remain in real raycast results.
+        static bool IsTextRenderer(Component component) => component is TMP_Text ||
+            component is TMP_SubMeshUI subMesh && subMesh.textComponent != null
+                && subMesh.transform.IsChildOf(subMesh.textComponent.transform);
 
         static bool IsButtonKind(string kind) => kind == "accept" || kind == "decline";
 
@@ -750,7 +815,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             internal string[] MustFail = Array.Empty<string>();
             internal Vector2 Accept = new(-70f, -52f), Decline = new(70f, -52f);
             internal Vector2 BodyPosition = new(0f, 4f), BodySize = new(360f, 36f);
-            internal bool Title = true, EmptyBody, Blocker;
+            internal bool Title = true, EmptyBody, Blocker, BlockerUnderText;
         }
 
         // Panel 400x180 centred; header and title (0,52) 304x48; body (0,4) 360x36; buttons 120x40 at (-70,-52)/(70,-52).
@@ -759,11 +824,16 @@ namespace Dawnholder.Client.Tests.PlayMode
             new() { Name = "well-formed" },
             new() { Name = "accept below the panel", Accept = new(-70f, -140f), MustFail = new[] { "layout.accept-inside-panel" } },
             new() { Name = "buttons overlapping", Decline = new(-30f, -52f), MustFail = new[] { "layout.buttons-apart" } },
+            new() { Name = "buttons touching", Decline = new(50f, -52f), MustFail = new[] { "layout.buttons-apart" } },
             new() { Name = "body over the buttons", BodyPosition = new(0f, -40f), BodySize = new(360f, 60f), MustFail = new[] { "layout.regions-apart" } },
             new() { Name = "empty body", EmptyBody = true, MustFail = new[] { "layout.body-shown", "layout.body-names-inviter" } },
             new() { Name = "no title", Title = false, MustFail = new[] { "layout.title-shown" } },
             new() { Name = "pointer-catching decoration over accept", Blocker = true,
                 MustFail = new[] { "decor.raycast-off", "decor.not-covering", "input.buttons-reached-by-raycast" } },
+            new() { Name = "pointer-catching decoration under text", Blocker = true, BlockerUnderText = true,
+                MustFail = new[] { "decor.raycast-off", "decor.not-covering", "input.buttons-reached-by-raycast" } },
+            new() { Name = "buttons above the text", Accept = new(-70f, 63f), Decline = new(70f, 63f),
+                MustFail = new[] { "layout.buttons-below-text" } },
         };
 
         // The well-formed control must pass every check; each defect control must fail at least its own checks.
@@ -784,6 +854,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 }
                 finally { UnityEngine.Object.Destroy(root); }
                 string[] failing = layout.Checks.Where(check => !check.Pass).Select(check => check.Id).ToArray();
+                layout.NoteFacts("control " + spec.Name, note);
                 bool expected = spec.MustFail.Length == 0 ? failing.Length == 0 : spec.MustFail.All(id => failing.Contains(id));
                 note("control " + spec.Name, $"{(expected ? "as expected" : "UNEXPECTED")} | must fail [{string.Join(", ", spec.MustFail)}] | failing [{string.Join(", ", failing)}]");
                 if (!expected)
@@ -820,7 +891,10 @@ namespace Dawnholder.Client.Tests.PlayMode
             if (spec.Blocker)
             {
                 var blocker = new GameObject("Blocker", typeof(RectTransform));
-                blocker.transform.SetParent(panel.transform, false);
+                // Keep this late-drawn graphic above the button even when a TMP object owns its transform.
+                Transform parent = spec.BlockerUnderText ? Text(panel.transform, "", font).transform : panel.transform;
+                if (spec.BlockerUnderText) Place(parent, Vector2.zero, new Vector2(400f, 180f));
+                blocker.transform.SetParent(parent, false);
                 Place(blocker.AddComponent(PartyInviteLayout.UiType("Image")), spec.Accept, new Vector2(120f, 40f));
             }
             return root;
