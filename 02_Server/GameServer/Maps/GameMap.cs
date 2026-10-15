@@ -47,6 +47,8 @@ public class GameMap
     //   virtual OnEnemyKilled가 이 콜백을 invoke — SpyGameMap override는 base 미호출이므로 미영향(정상).
     readonly Action<int, EnemyEntity>? _onEnemyKilled;
     readonly Func<GameSession, int, int>? _readAttackBonus;
+    readonly Action<IReadOnlyList<(int EntityId, GameSession Session)>>? _onDungeonCleared;
+    Dungeon.DungeonClearState? _dungeonClear;
 
     // System 인스턴스 — tick thread 안에서만 사용 (§1.1 정합).
     readonly PlayerPhysicsSystem _playerPhysicsSystem = new();
@@ -76,15 +78,18 @@ public class GameMap
     public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null,
                    MapTerrain? terrain = null, MapContent? content = null,
                    Action<int, EnemyEntity>? onEnemyKilled = null, InstanceKey? instanceKey = null,
-                   Func<GameSession, int, int>? readAttackBonus = null)
-        : this(EnemyRespawnPlacement.Default, mapId, idAllocator, terrain, content, onEnemyKilled, instanceKey, readAttackBonus)
+                   Func<GameSession, int, int>? readAttackBonus = null,
+                   Action<IReadOnlyList<(int EntityId, GameSession Session)>>? onDungeonCleared = null)
+        : this(EnemyRespawnPlacement.Default, mapId, idAllocator, terrain, content, onEnemyKilled, instanceKey,
+            readAttackBonus: readAttackBonus, onDungeonCleared: onDungeonCleared)
     {
     }
 
     internal GameMap(EnemyRespawnPlacement placement, MapId mapId = MapId.HuntingGround,
                      Func<int>? idAllocator = null, MapTerrain? terrain = null, MapContent? content = null,
                      Action<int, EnemyEntity>? onEnemyKilled = null, InstanceKey? instanceKey = null,
-                     Func<GameSession, int, int>? readAttackBonus = null)
+                     Func<GameSession, int, int>? readAttackBonus = null,
+                     Action<IReadOnlyList<(int EntityId, GameSession Session)>>? onDungeonCleared = null)
     {
         MapId = mapId;
         InstanceKey = instanceKey;
@@ -93,6 +98,7 @@ public class GameMap
         _content = content;
         _onEnemyKilled = onEnemyKilled;
         _readAttackBonus = readAttackBonus;
+        _onDungeonCleared = onDungeonCleared;
         _respawnSystem = new RespawnSystem(placement);
         Portals = PortalTable.GetPortalsFor(mapId);
         _publisher = new MapPacketPublisher(this);
@@ -133,6 +139,8 @@ public class GameMap
 
     // 맵에 속한 portal 목록. PortalTable 단일 진실 공급원.
     public IReadOnlyList<Portal> Portals { get; }
+
+    internal Dungeon.DungeonClearState? DungeonClear => _dungeonClear;
 
     // 플레이어 스폰 좌표 — content가 있으면 content 기준, 없으면 원점 fallback.
     internal Vector2 PlayerSpawnPosition =>
@@ -442,6 +450,8 @@ public class GameMap
         {
             SetStageCleared();
             _publisher.BroadcastStageClear(target.EntityId);
+            _dungeonClear = Dungeon.DungeonClearState.Capture(MapId, InstanceKey, Players);
+            if (_dungeonClear != null) _onDungeonCleared?.Invoke(_dungeonClear.Beneficiaries);
         }
         RemoveEnemy(target.EntityId);
         // Normal은 원위치, Golem은 주입된 좌/우 교대. Boss는 별도 빈 방 재출현 경로를 사용한다.

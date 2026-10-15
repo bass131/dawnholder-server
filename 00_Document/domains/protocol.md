@@ -47,7 +47,7 @@ v18에서 `ProtocolVersion.Current`를 18로 올렸고 v17 연결은 기존 버�
 
 39번의 결과는 기존 `InventoryResult.Success`·`CurrencyCap`·`InventoryFull`만 사용한다. 클라이언트 [DungeonClearResultHandler](../../03_Client/Assets/Scripts/Network/Handlers/Dungeon/DungeonClearResultHandler.cs)는 정확한 길이·헤더·결과값, 골드 0~`InventoryLimits.MaxCurrency`, 각 칸의 카탈로그 아이템과 수량 1~`MaxStack` 또는 빈 칸 0/0을 검사한다. 잘못된 결과는 상태를 바꾸지 않고 버린다. 유효 결과는 현재 연결의 메인 스레드에서 보상 창에 전달하며 인벤토리나 보상량을 클라이언트에서 계산하지 않는다.
 
-[DungeonClearRewards](../../98_Shared/GameData/Dungeon/DungeonClearRewards.cs)는 임시 보상표(골드 50, Material 1, CoinPouch 1)와 패킷 칸 수 3을 공유한다. 현재 서버는 이 표를 소비하지 않고 39번을 만들거나 40번을 등록하지 않는다. 따라서 선택을 마친 세션의 40번은 기존 미등록 요청 경로에서 응답·상태 변경·연결 종료 없이 버려진다. 클라이언트 확인은 `CanSendGameplay`일 때 `reserved=0`을 `SendIntent`로 한 번 보내는 의도이며 서버의 보상 지급이나 맵 복귀 완료를 뜻하지 않는다.
+[DungeonClearRewards](../../98_Shared/GameData/Dungeon/DungeonClearRewards.cs)는 임시 보상표(골드 50, Material 1, CoinPouch 1)와 패킷 칸 수 3을 공유한다. 서버는 보스방 복사본의 수혜자마다 이 표를 원자 지급하고 39번 결과를 보낸다. 성공은 표 순서의 골드·아이템과 뒤이은 36번 snapshot, 거부는 결과 코드와 골드 0·세 칸 0/0이며 snapshot은 없다. 등록된 [40번 처리기](../../02_Server/GameServer/Handlers/Dungeon/DungeonClearConfirmHandler.cs)는 선택 뒤 정확한 길이 5·헤더·reserved 0을 검증한다. 현재 맵 job에서 같은 연결의 미확인 수혜자만 마을 이동을 요청하며 나머지는 응답·상태 변경·연결 종료 없이 버린다. 클라이언트 확인은 `CanSendGameplay`일 때 `reserved=0`을 `SendIntent`로 한 번 보내는 의도이며 서버의 보상 지급이나 맵 복귀 완료를 뜻하지 않는다.
 
 ## v17 경제 패킷
 

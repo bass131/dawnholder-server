@@ -193,16 +193,16 @@ namespace Dawnholder.Client.Tests.PlayMode
         {
             yield return MapEntryPlayFixture.Wait(() => HudController.Instance != null && HudController.Instance.isActiveAndEnabled &&
                 CharacterStatus != null && CharacterStatus.gameObject.activeInHierarchy &&
-                Area(Intersect(ScreenRect(CharacterStatus), ScreenArea)) > 0f, "additive HUD with character_status on screen", 10);
+                Area(Intersect(ScreenUiProbe.ScreenRect(CharacterStatus), ScreenArea)) > 0f, "additive HUD with character_status on screen", 10);
             // The panel follows the HUD in its own Update; wait until its rectangle holds still for two frames.
-            Rect previous = ScreenRect(Panel);
+            Rect previous = ScreenUiProbe.ScreenRect(Panel);
             int still = 0;
             float deadline = Time.realtimeSinceStartup + 3f;
             while (still < 2)
             {
                 Assert.Less(Time.realtimeSinceStartup, deadline, "the inventory panel never settled");
                 yield return null;
-                Rect current = ScreenRect(Panel);
+                Rect current = ScreenUiProbe.ScreenRect(Panel);
                 still = current == previous ? still + 1 : 0;
                 previous = current;
             }
@@ -212,12 +212,12 @@ namespace Dawnholder.Client.Tests.PlayMode
         {
             yield return WaitForHudAndSettledPanel();
             Assert.AreEqual(1f, InventoryPanelProbe.Group.alpha, $"{moment}: the panel is shown");
-            Rect panel = ScreenRect(Panel);
+            Rect panel = ScreenUiProbe.ScreenRect(Panel);
             HudGraphic[] hud = HudGraphics();
             HudGraphic[] statusGraphics = hud.Where(graphic => graphic.Path.StartsWith("character_status")).ToArray();
             HudGraphic[] statusOnScreen = statusGraphics
                 .Where(graphic => graphic.Shown && Area(Intersect(graphic.Drawn, ScreenArea)) > 0f).ToArray();
-            Rect status = ScreenRect(CharacterStatus);
+            Rect status = ScreenUiProbe.ScreenRect(CharacterStatus);
 
             // Positive control in the same frame: with the panel's top centre moved onto a drawn character_status
             // graphic, the same detector must report that graphic. The panel's own placement is restored at once.
@@ -228,20 +228,20 @@ namespace Dawnholder.Client.Tests.PlayMode
                 Vector2 placed = Panel.anchoredPosition;
                 Vector2 target = statusOnScreen[0].Drawn.center;
                 Panel.position = new Vector3(target.x, target.y, Panel.position.z);
-                controlHits = Overlapping(ScreenRect(Panel), hud).Select(graphic => graphic.Path).ToArray();
+                controlHits = Overlapping(ScreenUiProbe.ScreenRect(Panel), hud).Select(graphic => graphic.Path).ToArray();
                 Panel.anchoredPosition = placed;
-                controlRestored = Same(panel, ScreenRect(Panel));
+                controlRestored = Same(panel, ScreenUiProbe.ScreenRect(Panel));
             }
 
             string[] drawnOverlaps = Overlapping(panel, hud).Select(graphic => graphic.ToString()).ToArray();
-            Rect[] buttons = PanelButtons().Select(ScreenRect).ToArray();
+            Rect[] buttons = PanelButtons().Select(ScreenUiProbe.ScreenRect).ToArray();
             string[] blockedButtons = hud.Where(graphic => graphic.RaycastTarget &&
                 buttons.Any(button => Area(Intersect(graphic.Box, button)) > 0f)).Select(graphic => graphic.Path).ToArray();
             Rect[] labels = InventoryPanelProbe.Root.GetComponentsInChildren<TMP_Text>()
                 .Where(label => label.gameObject.activeInHierarchy && !string.IsNullOrEmpty(label.text))
-                .Select(label => ScreenRect((RectTransform)label.transform)).ToArray();
+                .Select(label => ScreenUiProbe.ScreenRect((RectTransform)label.transform)).ToArray();
             int slotRows = Enumerable.Range(1, InventoryLimits.MaxSlots)
-                .Count(slot => Contains(ScreenArea, ScreenRect((RectTransform)InventoryPanelProbe.Root.Find($"Inventory/Slot{slot}"))));
+                .Count(slot => Contains(ScreenArea, ScreenUiProbe.ScreenRect((RectTransform)InventoryPanelProbe.Root.Find($"Inventory/Slot{slot}"))));
             Debug.Log($"[PR2 verifier] {moment}: screen {Screen.width}x{Screen.height}; " +
                 $"HUD canvas sort {HudCanvas.sortingOrder} scale {HudCanvas.scaleFactor:F4} {ScalerSettings(HudCanvas)}; " +
                 $"panel canvas sort {Panel.GetComponentInParent<Canvas>().rootCanvas.sortingOrder} " +
@@ -278,20 +278,20 @@ namespace Dawnholder.Client.Tests.PlayMode
                 var rect = (RectTransform)renderer.transform;
                 Color color = graphic is TMP_Text text ? text.color : (Color)graphic.GetType().GetProperty("color").GetValue(graphic);
                 bool raycastTarget = (bool)graphic.GetType().GetProperty("raycastTarget").GetValue(graphic) && BlocksRaycasts(rect);
-                Rect box = ScreenRect(rect);
+                Rect box = ScreenUiProbe.ScreenRect(rect);
                 Rect drawn = box;
                 if (graphic is TMP_Text label)
                 {
                     bool laidOut = !string.IsNullOrEmpty(label.text) && label.textInfo != null && label.textInfo.characterCount > 0;
-                    drawn = laidOut ? Bounds(rect, label.textBounds) : Rect.zero;
+                    drawn = laidOut ? ScreenUiProbe.Bounds(rect, label.textBounds) : Rect.zero;
                 }
                 if (color.a <= 0f || Area(drawn) <= 0f)
                 {
-                    if (raycastTarget) graphics.Add(new HudGraphic(PathOf(rect, root), Rect.zero, box, false, true));
+                    if (raycastTarget) graphics.Add(new HudGraphic(ScreenUiProbe.PathOf(rect, root), Rect.zero, box, false, true));
                     continue;
                 }
                 bool shown = renderer.GetInheritedAlpha() > 0f;
-                graphics.Add(new HudGraphic(PathOf(rect, root), drawn, box, shown, raycastTarget));
+                graphics.Add(new HudGraphic(ScreenUiProbe.PathOf(rect, root), drawn, box, shown, raycastTarget));
             }
             return graphics.ToArray();
         }
@@ -307,7 +307,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             foreach (Transform child in HudCanvas.transform)
             {
                 if (!child.gameObject.activeInHierarchy) continue;
-                yield return child is RectTransform rect ? $"{child.name} {ScreenRect(rect)}" : $"{child.name} (plain Transform)";
+                yield return child is RectTransform rect ? $"{child.name} {ScreenUiProbe.ScreenRect(rect)}" : $"{child.name} (plain Transform)";
             }
         }
 
@@ -338,27 +338,6 @@ namespace Dawnholder.Client.Tests.PlayMode
             if (scaler == null) return "no CanvasScaler";
             object Read(string property) => scaler.GetType().GetProperty(property).GetValue(scaler);
             return $"CanvasScaler {Read("uiScaleMode")} reference {Read("referenceResolution")} match {Read("matchWidthOrHeight")}";
-        }
-
-        static string PathOf(Transform transform, Transform root)
-        {
-            var names = new List<string>();
-            for (Transform current = transform; current != null && current != root; current = current.parent) names.Insert(0, current.name);
-            return string.Join("/", names);
-        }
-
-        static Rect ScreenRect(RectTransform rect)
-        {
-            var corners = new Vector3[4];
-            rect.GetWorldCorners(corners);
-            return Rect.MinMaxRect(corners[0].x, corners[0].y, corners[2].x, corners[2].y);
-        }
-
-        static Rect Bounds(Transform owner, Bounds local)
-        {
-            Vector3 min = owner.TransformPoint(local.min);
-            Vector3 max = owner.TransformPoint(local.max);
-            return Rect.MinMaxRect(Mathf.Min(min.x, max.x), Mathf.Min(min.y, max.y), Mathf.Max(min.x, max.x), Mathf.Max(min.y, max.y));
         }
 
         static Rect Intersect(Rect a, Rect b) => Rect.MinMaxRect(Mathf.Max(a.xMin, b.xMin), Mathf.Max(a.yMin, b.yMin),

@@ -39,6 +39,7 @@ internal static class HandlerRegistry
             { PacketID.C_PartyLeave,     new PartyLeaveHandler() },
             { PacketID.C_InventoryRequest, new InventoryRequestHandler() },
             { PacketID.C_ItemUse,        new ItemUseHandler() },
+            { PacketID.C_DungeonClearConfirm, new Dungeon.DungeonClearConfirmHandler() },
             { PacketID.C_GuildRequest, new GuildRequestHandler() },
             { PacketID.C_StrongholdUpgrade, new StrongholdUpgradeHandler() },
             { PacketID.C_WeaponEnhance, new WeaponEnhanceHandler() },

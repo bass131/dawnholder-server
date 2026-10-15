@@ -1,5 +1,7 @@
 #nullable enable
 using System.Collections;
+using Dawnholder.Client.Network;
+using Dawnholder.Client.State;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,11 +55,23 @@ namespace Dawnholder.Client.UI
             if (Instance == this) Instance = null;
         }
 
+        void OnDisable()
+        {
+            Hide();
+        }
+
         // 서버 S_StageClear 경로 (main thread).
         // bossEntityId는 로깅용 — UI에는 단순히 연출만 표시.
         public void Show(int bossEntityId)
         {
             Debug.Log($"[StageClearUI] Stage Clear! (boss entity {bossEntityId})");
+            // A late 15 must not cover an already pending 39; the reward state owns that connection's lifetime.
+            if (!isActiveAndEnabled ||
+                DungeonClearRewardState.Instance?.HasPendingFor(UnityClientSession.Instance) == true)
+            {
+                Hide();
+                return;
+            }
             if (_group == null)
             {
                 Debug.LogWarning("[StageClearUI] _group null — Canvas wire 누락.");
@@ -90,6 +104,15 @@ namespace Dawnholder.Client.UI
             _activeFade = StartCoroutine(FadeRoutine());
         }
 
+        internal void Hide()
+        {
+            // Stop the old writer before hiding so its next frame cannot restore the banner over the rewards.
+            if (_activeFade != null) StopCoroutine(_activeFade);
+            _activeFade = null;
+            if (_group != null) _group.alpha = 0f;
+            if (_image != null) _image.gameObject.SetActive(false);
+        }
+
         // 페이드 인: 0 → 1 (0.4s) 후 유지 (manual close).
         IEnumerator FadeRoutine()
         {
@@ -103,6 +126,7 @@ namespace Dawnholder.Client.UI
                 yield return null;
             }
             _group.alpha = 1f;
+            _activeFade = null;
         }
 
         // ============================================================
