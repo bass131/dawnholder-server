@@ -66,6 +66,31 @@ namespace Dawnholder.Client.Tests.PlayMode
             return RectTransformUtility.WorldToScreenPoint(camera, world);
         }
 
+        // These rectangle readings are for ScreenSpaceOverlay canvases, where world corners are screen pixels.
+        // Read the live geometry; the product's placement formula is not an expected-value oracle.
+        internal static Rect ScreenRect(RectTransform rect)
+        {
+            var corners = new Vector3[4];
+            rect.GetWorldCorners(corners);
+            return Rect.MinMaxRect(corners[0].x, corners[0].y, corners[2].x, corners[2].y);
+        }
+
+        internal static Rect Bounds(Transform owner, Bounds local)
+        {
+            Vector3 min = owner.TransformPoint(local.min);
+            Vector3 max = owner.TransformPoint(local.max);
+            return Rect.MinMaxRect(Mathf.Min(min.x, max.x), Mathf.Min(min.y, max.y), Mathf.Max(min.x, max.x), Mathf.Max(min.y, max.y));
+        }
+
+        // Older probes log paths relative to root; presentation snapshots include root's name for context.
+        internal static string PathOf(Transform transform, Transform root, bool includeRoot = false)
+        {
+            var names = new List<string>();
+            for (Transform current = transform; current != null && current != root; current = current.parent) names.Insert(0, current.name);
+            string path = string.Join("/", names);
+            return includeRoot ? root.name + "/" + path : path;
+        }
+
         internal static bool OnScreen(Vector2 point) =>
             point.x >= 0f && point.x <= Screen.width && point.y >= 0f && point.y <= Screen.height;
 
