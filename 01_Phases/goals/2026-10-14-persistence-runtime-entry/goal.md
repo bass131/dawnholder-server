@@ -1,6 +1,6 @@
 # 실제 DB 연결·로딩 게이트·재접속 직업 복원
 
-상태: Windows Plugins 두 DLL 반영을 마쳤고 다음 첫 일은 최신 main 통합과 새 독립 검증자의 서버·Unity 소비자 실제 검증이다. 앞선 서버 코드 재검증은 1,469통과·실패0·건너뜀5이며 PR242 당시 head의 CI4개도 성공했다. DLL 반영의 자체 점검을 소비자 PASS로 확대하지 않는다. 실제 DB/DPAPI·정상 서버·봇·게임 흐름과 최종 사용자 병합 승인은 남아 있으며 전체 goal 완료는 아니다.
+상태: 양쪽 소비자 독립 강 검증은 Unity 기존 시험 보완 전 차단이다. DLL 반영·실제 패킷 소비자 22건과 서버 전체 1,497통과·실패0은 확인했다. 다음 첫 일은 신규 Astra의 fixture/기존 단정 보완과 자동 설정2 복원이다. PR242 draft·실제 DB/DPAPI·정상 서버·봇·Unity 장면9·최종 사용자 병합 승인은 남아 있다.
 
 ## 진척 단계
 
@@ -246,3 +246,13 @@ Main msg_a8dd25f254a5가 전한 사용자 원문: 「대시보드 결정 응답:
 - Task task_6d7b057bfe38/ctx_49bcdf624fc9의 보고/메모 전체와 현재 입력69의 허용DLL2 차이·실제 Git diff를 리드가 대조하고 release/정확instance/idle/literalclose로 종료했다. runtime-entry-dll-promotion-2/{report.md,context.md,lead-source-sample.json,lead-final-settlement.json}에 실제 bytes·출처·정산을 둔다. 역사 V2 당시 두 DLL SHA 미기록 한계와 초기 출력처리/exit 전사 교정을 보존했고 소비자 실행 검증은 다음 신규 세션 몫이다.
 - HB 정본helper는333초 over(공식질문 미해소 중 상태 사이)로 보존했다. 실제 공식질문~회신388초와 중간status 때문에 현 인접신호 helper가 대기를 빼지 못한 범위를 한 줄로 공개하며 별도 transcript 감사는 하지 않았다.
 - Main msg_818353d70c45의 PR243 정본화와 다음 안전 지점 main 통합을 따라 DLL/goal을 로컬 체크포인트로 보존한 뒤 main을 통합한다. 진행 중이던 D2 고정 입력과 과거 판정은 바꾸지 않는다. 통합 뒤 새 기준으로 서버·Unity 실제 검증을 이어가며 PR 병합은 하지 않는다.
+
+## 2026-10-15 - DLL 반영과 최신 main 통합
+- D2 구현자는 고정 Linux 소스와 Windows DLL2를 반영하고 종료했다. 기존 meta/GUID와 나머지 입력을 보존했으며 양쪽 소비자 실행 검증은 아직 아니다. 원문·정산: runtime-entry-dll-promotion-2/.
+- 메인 지시에 따라 기존 PR242 head 계보를 보존하는 merge로 main6740f26을 통합했다. 로컬18c4facd는 기존61b66214의 후손이고 수동 제품 수정은 없다. 참고 rebase 결과는 별도 로컬 branch에 보존하며 force push는 하지 않는다. 근거: runtime-entry-dll-promotion-2/lead-main-merge-final.json.
+- 새 강 검증은 통합 상태의 서버 전체1회와 Unity EditMode1회·실제 패킷 소비자를 다룬다. DB/DPAPI/정상 launcher/봇/실제 장면9는 후속 관측으로 남긴다. 계약·입력·결과: runtime-entry-unity-dll-verification-1/.
+
+## 2026-10-15 - 양쪽 소비자 독립 판정과 fixture 보완
+- 새 독립 강 판정은 차단이다. DLL 출처와 실제 Unity 로드 bytes·소켓→handler→메인 큐의 새 시험22건은 통과해 옛DLL 차단은 해소했다. 통합 서버 전체는1,497통과·실패0·기존제외5다. Unity 전체는477건중339통과·138실패이며128건본문은fixture누수로미실행이다.
+- 차단 #1은캐릭터로드성공입력이없는기존fixture, #4~#6은HUD직업입력·옛protocol19단정·EditMode파괴/동일인스턴스재사용단정이다. #2생성실패정리/#3초기화전TimeScale복원도같은좁은보정에서다룬다. 다음은새Astra와새독립Opus각한작업이며현재수정/재실행은아직없다.
+- 검증자는정산·정확종료했다. 자동설정2와IDE/UserSettings/LocalLow시험사본부작용은보존·공개하고tracked자동변경은커밋하지않는다. 초기읽기Git계약위반·생존신호초과3구간은Main에인계하며상세는근거에둔다. 원문/전수표/실제수치/정산: runtime-entry-unity-dll-verification-1/{verdict.md,context.md,lead-final-settlement.json}.
