@@ -34,4 +34,13 @@ internal sealed class GuildState
 
     internal GuildState WithStrongholdUpgrade()
         => new(checked(Revision + 1), Treasury - GuildRules.StrongholdCost, GuildRules.MaxStrongholdLevel);
+
+    internal GuildState WithDungeonClearCredit()
+    {
+        int gain = Math.Min(GuildRules.DungeonClearCredit, GuildRules.TreasuryCap - Treasury);
+        // Saturation is a successful zero credit, even when the revision is exhausted.
+        if (gain == 0) return this;
+        if (Revision == uint.MaxValue) throw new InvalidOperationException("Guild revision exhausted during dungeon clear.");
+        return new GuildState(Revision + 1, Treasury + gain, StrongholdLevel);
+    }
 }

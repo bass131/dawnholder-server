@@ -10,6 +10,7 @@ internal static class GuildRules
     internal const uint GuildId = 1;
     internal const string GuildName = "새벽 길드";
     internal const int JoinSeed = 5;
+    internal const int DungeonClearCredit = 10;
     internal const int TreasuryCap = 1_000_000_000;
     internal const byte MaxStrongholdLevel = 2;
     internal const int StrongholdCost = 30;

@@ -118,10 +118,10 @@ internal sealed class InventoryRegistry
         _pendingJobs.Enqueue(() => ApplyKill(session, killerId, kind, enemyId));
     }
 
-    internal void EnqueueDungeonClear(IReadOnlyList<(int EntityId, GameSession Session)> beneficiaries)
+    internal void EnqueueDungeonClear(IReadOnlyList<(int EntityId, GameSession Session)> beneficiaries, GuildRegistry guild)
     {
         foreach (var recipient in beneficiaries)
-            _pendingJobs.Enqueue(() => ApplyDungeonClear(recipient.Session, recipient.EntityId));
+            _pendingJobs.Enqueue(() => ApplyDungeonClear(recipient.Session, recipient.EntityId, guild));
     }
 
     internal void Forget(GameSession session)
@@ -183,9 +183,9 @@ internal sealed class InventoryRegistry
         _sendToEntity(recipientId, snapshot);
     }
 
-    void ApplyDungeonClear(GameSession session, int entityId)
+    void ApplyDungeonClear(GameSession session, int entityId, GuildRegistry guild)
     {
-        if (!IsActive(session, entityId)) return;
+        if (!IsActive(session, entityId) || !guild.OwnsDungeonClear(session, entityId)) return;
 
         Entry entry = GetOrCreate(session, entityId);
         InventoryReward reward = new(DungeonClearRewards.Currency, DungeonClearRewards.Items.ToArray());
@@ -199,15 +199,34 @@ internal sealed class InventoryRegistry
         }
 
         ArraySegment<byte> reply = Dungeon.DungeonClearPackets.Result(result);
-        ArraySegment<byte> snapshot = default;
-        if (result == InventoryResult.Success) snapshot = InventoryPackets.Snapshot(next);
-        if (!IsActive(session, entityId)) return;
+        if (result != InventoryResult.Success)
+        {
+            if (IsActive(session, entityId) && guild.OwnsDungeonClear(session, entityId)) session.Send(reply);
+            return;
+        }
 
-        // Prepare both packets before the single commit. Direct sends preserve the result even
-        // during migration, when SendToEntity would skip a player without a current map.
-        if (result == InventoryResult.Success) entry.State = next;
-        session.Send(reply);
-        if (result == InventoryResult.Success && IsActive(session, entityId)) session.Send(snapshot);
+        ArraySegment<byte> snapshot = InventoryPackets.Snapshot(next);
+        GuildRegistry.PreparedDungeonClearCredit credit =
+            guild.PrepareDungeonClearCredit(session, entityId, GuildView.From(next));
+
+        // Both owners' next values, holders and every outgoing packet exist before this final
+        // owner check. No callback, allocation, lookup or I/O may interrupt these publications.
+        if (!IsActive(session, entityId) || !credit.IsOwnerActive) return;
+        entry.State = next;
+        credit.Commit();
+
+        try
+        {
+            // Direct sends preserve the result during migration. Transport failure after commit
+            // neither rolls back the pair nor prevents the other members' prepared updates.
+            if (IsActive(session, entityId)) session.Send(reply);
+            if (IsActive(session, entityId)) session.Send(snapshot);
+            credit.SendToBeneficiary();
+        }
+        finally
+        {
+            credit.SendToOtherMembers();
+        }
     }
 
     bool IsActive(GameSession session, int entityId)

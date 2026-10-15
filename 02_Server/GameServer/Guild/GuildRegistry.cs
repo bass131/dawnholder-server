@@ -88,6 +88,15 @@ internal sealed class GuildRegistry
         => EnqueueRequest(session, entityId,
             connection => Act(connection, GuildAction.WeaponEnhance, expectedRevision));
 
+    // Clear eligibility comes from Content's captured recipient and these connection owners.
+    // Town/alive checks belong only to purchase availability, never to receiving a clear reward.
+    internal bool OwnsDungeonClear(GameSession session, int entityId)
+        => FindDungeonClearOwner(session, entityId) != null;
+
+    internal PreparedDungeonClearCredit PrepareDungeonClearCredit(GameSession session, int entityId,
+        InventoryRegistry.GuildView rewardedInventory)
+        => new(this, session, entityId, rewardedInventory);
+
     internal void Forget(GameSession session)
     {
         session.CompleteGuildRequest();
@@ -244,6 +253,17 @@ internal sealed class GuildRegistry
         => entityId > 0 && session.EntityId == entityId && !session.IsClosing &&
             session.Account?.AccountId == accountId && _ownsJoiningPlayer(session, entityId);
 
+    Connection? FindDungeonClearOwner(GameSession session, int entityId)
+    {
+        if (session.Account is not { } account ||
+            !_members.TryGetValue(account.AccountId, out Connection? connection) || connection == null ||
+            !ReferenceEquals(connection.Session, session) || connection.EntityId != entityId || !IsActive(connection))
+        {
+            return null;
+        }
+        return connection;
+    }
+
     bool IsActive(Connection connection)
         => !connection.Session.IsClosing && connection.Session.EntityId == connection.EntityId &&
             connection.Session.Account?.AccountId == connection.AccountId &&
@@ -277,6 +297,80 @@ internal sealed class GuildRegistry
 
     static void Diagnose(string phase, Exception exception)
         => Console.WriteLine($"[GuildRegistry] {phase} failed: {exception}");
+
+    // Same-tick, single-use partner of Inventory's prepared clear reward. All snapshots and
+    // recipient storage are built before either economy changes. Only the beneficiary's failure
+    // aborts its reward; a different member's failed preparation is isolated from the settlement.
+    internal sealed class PreparedDungeonClearCredit
+    {
+        readonly GuildRegistry _owner;
+        readonly GuildState _next;
+        readonly Connection _beneficiary;
+        readonly PreparedSnapshot _snapshot;
+        readonly (Connection Connection, PreparedSnapshot Snapshot)[] _others;
+
+        internal PreparedDungeonClearCredit(GuildRegistry owner, GameSession session, int entityId,
+            InventoryRegistry.GuildView rewardedInventory)
+        {
+            _owner = owner;
+            _beneficiary = owner.FindDungeonClearOwner(session, entityId)
+                ?? throw new InvalidOperationException("Dungeon clear guild owner is no longer active.");
+            _next = owner._state.WithDungeonClearCredit();
+            _snapshot = PrepareSnapshot(_beneficiary, _next, rewardedInventory,
+                owner._members.Count, owner._onlineCount, GuildChangeKind.TreasuryCredit, ReadLocation(_beneficiary));
+
+            List<(Connection, PreparedSnapshot)> others = new();
+            foreach (Connection? connection in owner._members.Values)
+            {
+                if (connection == null || ReferenceEquals(connection, _beneficiary) || !owner.IsActive(connection)) continue;
+                try
+                {
+                    if (!owner._inventory.TryReadGuildView(connection.Session, connection.EntityId,
+                        out InventoryRegistry.GuildView inventory)) continue;
+                    PreparedSnapshot snapshot = PrepareSnapshot(connection, _next, inventory,
+                        owner._members.Count, owner._onlineCount, GuildChangeKind.TreasuryCredit, ReadLocation(connection));
+                    if (owner.IsActive(connection)) others.Add((connection, snapshot));
+                }
+                catch (Exception ex)
+                {
+                    Diagnose("dungeon clear recipient preparation", ex);
+                }
+            }
+            _others = others.ToArray();
+        }
+
+        internal bool IsOwnerActive => _owner.IsActive(_beneficiary);
+
+        // Inventory calls this immediately after its own reference assignment. Do not move any
+        // preparation or owner checks here: the entire two-owner commit is value publication.
+        internal void Commit()
+        {
+            _owner._state = _next;
+            _beneficiary.Sequence = _snapshot.Sequence;
+            foreach (var recipient in _others)
+                recipient.Connection.Sequence = recipient.Snapshot.Sequence;
+        }
+
+        internal void SendToBeneficiary()
+        {
+            if (IsOwnerActive) _beneficiary.Session.Send(_snapshot.Payload);
+        }
+
+        internal void SendToOtherMembers()
+        {
+            foreach (var recipient in _others)
+            {
+                try
+                {
+                    if (_owner.IsActive(recipient.Connection)) recipient.Connection.Session.Send(recipient.Snapshot.Payload);
+                }
+                catch (Exception ex)
+                {
+                    Diagnose("dungeon clear recipient send", ex);
+                }
+            }
+        }
+    }
 
     readonly record struct PreparedSnapshot(long Sequence, ArraySegment<byte> Payload);
 

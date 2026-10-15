@@ -286,9 +286,10 @@ public class GameWorld
                 _inventory.EnqueueKill(killerId, target.Kind, target.EntityId);
         };
 
-        // The map captures beneficiaries; settlement runs in the World inventory phase.
+        // The map captures beneficiaries once. Inventory settles their personal reward and
+        // prepared guild credit together, before the World drains ordinary guild requests.
         Action<IReadOnlyList<(int EntityId, GameSession Session)>> onClear =
-            recipients => _inventory.EnqueueDungeonClear(recipients);
+            recipients => _inventory.EnqueueDungeonClear(recipients, _guild);
         if (_mapData.TryGetValue(id, out var pair))
         {
             return new GameMap(id, NextEntityId, pair.Terrain, pair.Content, onKill, key,
