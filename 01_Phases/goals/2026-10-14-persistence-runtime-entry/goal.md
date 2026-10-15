@@ -29,19 +29,29 @@
 - 시범은 Core 실제 DB 단계 끝 또는 2026-10-16 저녁 중 먼저까지다. 보호 자원·권한·push·병합 규칙에 닿는 실수1회 또는 메인이 잡은 계약 오류2회면 Sol xhigh로 원복한다. 비교 목적은 리드 적합성의 지속 여부와 토큰 가성비다. 기존 수치와 다른 작업량을 같은 조건의 성능 측정으로 표현하지 않는다.
 - R-8의 문맥 비우기 목적 교체와 구분한 사용자 결정에 따른 모델 시범이다. 기존 Sol은 새 작업 없이 정산·인계 기록을 commit/normal push하고 status 한 통 후 턴을 끝낸다. 기존 pane 종료·새 리드 기동은 메인이 맡는다. 제품·자원·Git 권한 확대와 새 목표 착수는 없다.
 
+### DB 단계 자원·경계 승인 — 실행은 다음 재개 때(2026-10-15)
+
+메인 `msg_2c59021a4f48`(2026-10-15T07:07:39Z, from `term_e2961048-266e-4503-b52b-dfb986d8c9b5`)가 전달한 메인 pane 제출 사용자 결정이다. 이 pane의 직접 사용자 입력으로 격상하지 않는다. 기록 시각은 `Thu Oct 15 07:08:00 UTC 2026` (`date.exe -u` 출력)이다.
+
+> 대시보드 결정 응답: 1) Core 재접속 복원의 실제 DB 단계: 새 시험용 SQL 컨테이너·DB·로그인·비밀·TLS 자원 이름과 경계를 승인할지 → A 이 이름·경계로 승인 , 대신 다음 작업재개때 진행
+
+- 승인 범위: container `dawnholder-sqlserver-runtime-entry-r1`, volume `dawnholder-sqlserver-runtime-entry-r1-data`, DB `Dawnholder_Test_RuntimeEntry_R1`, login `dh_runtime_entry_r1`(허용5RPC), `127.0.0.1:14335`, privateRoot `LOCALAPPDATA/Dawnholder/runtime-entry-r1`, 새 CurrentUser DPAPI, 실행 전용 TLS 키·인증서, 자식 프로세스 한정 CA 신뢰, 요청한 고정 image·pull never·메모리 한도·restart no다. 아래 준비안과 요청 `msg_4174d0256746`의 이름·경계 안에서만 새 자원을 만든다.
+- **실행은 다음 작업 재개 때다.** 오늘 작업자·검증자·DB·컨테이너·WSL 실행을 열지 않는다. 다음 재개는 새 작업자 실행 카드 고정 → 새 독립 정적 검증 → 실제 실행 순서다. 기존 보호 자원은 건드리지 않으며 삭제는 별도 승인이다. 자원 승인으로 미작성 실행 카드나 실제 성공을 승인·확인한 것으로 표현하지 않는다.
+- 메인 R-2는 마감 head `369482ccc92a9ca312610163b73993b41c3d9af4`, 두 checkout clean, rollout 존재, 재개 블록을 대조했다. 이번 변경은 이 결정을 기록하는 문서 작업뿐이다.
+
 ## 재개 지점
 
 ### 2026-10-15 세션 마감 — Astra medium
 
 기록 시각: `Thu Oct 15 07:03:53 UTC 2026` (`C:/Program Files/Git/usr/bin/date.exe -u` 출력). 메인 마감 계약 `msg_14c12329873c` 적용. 이 절이 아래 이전 인계 상태보다 우선한다.
 
-- **다음 첫 일:** 메인에게 아래 DB 정확 자원·DPAPI/TLS/감사 경계의 사용자 결정 결과를 확인한다. 승인 전 실행0, 승인 후에도 신규 외부 작업자의 고정 카드와 독립 검증이 필요하다. PR242 본문 갱신은 완료했고 draft를 유지한다.
+- **다음 첫 일:** 승인된 DB 단계 진행: 새 작업자 실행 카드 고정부터 시작한다. 사용자 결정 msg_2c59021a4f48에 따라 다음 작업 재개 때만 진행하며, 새 독립 정적 검증 뒤 실제 실행한다. 오늘 실행0이다. PR242 본문 갱신은 완료했고 draft를 유지한다.
 - 메인 `msg_a1a519ca00b8`의 R-2가 Unity 소비자 PASS를 수용했다(goal 전체 PASS 아님). PR 본문에 서버1497통과/실패0/제외5, Unity484통과/실패0/제외0, DLL 양쪽 소비자 검증과 DB/Play/CI 미완료를 반영했다. XML HudAndMap22건을 직접 대조했고 판정서20건 표기의 원문은 보존했다. 재조회 본문 일치, 당시 head `c348aabbdd1ea9739d2ae79a38a61d92f1223a59` 확인.
 - 검증자 운영 O-1~O-5는 메인 판단상 제품 비차단. O-3 오류 원시 삭제는 위반으로 남고 PASS로 소급 면제하지 않는다. O-1·O-5 기록 보존, O-2·O-4·O-C는 동결 뒤 후보로 인계한다.
 - **현재 goal의 열린 Task·Dispatch 없음**, core-parallel 작업자 pane0, reclaimable0. Run의97 Dispatch는 모두 정산 상태다. 단, 같은 Run의 과거 `task_12ac7862e00d`(2026-10-10, 「3 - 정지 재측정 네 번째 시도(오프라인 예행 먼저)」)가 `ready`로 남아 있다. 실행 중 작업과 구분해 메인에 보고하며 임의 종료/재개하지 않는다. retained/external 표시는 pane 생존 증거가 아니다.
 - Run `run_b36cc92a4cf4`, 대화 ID `01a13e5a-4d04-7e11-962c-35e8ea3ac2ac`. rollout `~/.codex/sessions/2026/10/15/rollout-2026-10-15T15-57-48-01a13e5a-4d04-7e11-962c-35e8ea3ac2ac.jsonl`. 다음 세션에 같은 대화로 Astra medium 시범을 잇는다. 화면 GPT-6-Astra medium, backend unknown.
-- **남은 사용자 결정:** container `dawnholder-sqlserver-runtime-entry-r1`, volume `dawnholder-sqlserver-runtime-entry-r1-data`, DB `Dawnholder_Test_RuntimeEntry_R1`, login `dh_runtime_entry_r1`, loopback14335, privateRoot `C:/Users/bass1/AppData/Local/Dawnholder/runtime-entry-r1`; 새 CurrentUser DPAPI·TLS 키/인증서·프로세스 한정 공개 CA 신뢰·별도 키 누출 감사 경계. image/예산·보호 자원·삭제 제한은 아래 준비안을 유지한다. TrustServerCertificate=false, 전역 신뢰 변경/비밀 argv·env·log0. UUIDv5/CharacterId·정확 TLS 파일 경로는 카드에서 고정할 대상이다.
-- 교차 발신: DB 승인 요청 `msg_4174d0256746`07:02:40Z, 마감 지시07:02:41Z. 마감 수신 전에 이미 보냈으며 재전송0, 다음 세션에 메인이 사용자 결정으로 올릴 안건으로 이월한다.
+- **승인된 자원·경계(다음 재개 때만 실행):** container `dawnholder-sqlserver-runtime-entry-r1`, volume `dawnholder-sqlserver-runtime-entry-r1-data`, DB `Dawnholder_Test_RuntimeEntry_R1`, login `dh_runtime_entry_r1`, loopback14335, privateRoot `C:/Users/bass1/AppData/Local/Dawnholder/runtime-entry-r1`; 새 CurrentUser DPAPI·TLS 키/인증서·프로세스 한정 공개 CA 신뢰·별도 키 누출 감사 경계. image/예산·보호 자원·삭제 제한은 아래 준비안을 유지한다. TrustServerCertificate=false, 전역 신뢰 변경/비밀 argv·env·log0. UUIDv5/CharacterId·정확 TLS 파일 경로는 카드에서 고정할 대상이다.
+- 교차 발신: DB 승인 요청 `msg_4174d0256746`07:02:40Z, 마감 지시07:02:41Z. 마감 수신 전에 이미 보냈으며 재전송0, 이후 msg_2c59021a4f48에서 자원·경계가 승인됐고 실행 시점은 다음 작업 재개로 한정됐다.
 - Content `msg_9c6c56e686bb`는 snapshot lock=True·정확반환=False 보고다. Core가 해당 Task/Dispatch를 대조하지 않아 실행허가/정확반환 근거로 쓰지 않았다. Content Unity 우선/Core WSL 우선·단일Editor 약속 유지. 새 작업자·검증자·DB·DPAPI·컨테이너·WSL 실행0, Core 중량 실행/예약0.
 - 근거 `B/lead-resume-{context.md,pr242-before.md,pr242-body.md,pr242-after.json,inbox-2.json}`와 `B/lead-wrapup-{workers,tasks,terminals}.json`. 마감 계약에 따라 새 독립 세션을 열지 않았으며 이번은 기록 갱신이다. 기존 최종 판정 원문·SHA는 아래 유지한다.
 
