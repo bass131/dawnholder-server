@@ -293,6 +293,38 @@ PR177 Gardener2의 [정리 후보2](../../.backups/verification/2026-10-04-teamm
 | `codex-session-write-guard` | Codex 출력·쓰기 경계 기술 가드 | 기존 MergeGate·SessionGuard는 Claude Code hook이다. 이번 Codex PR 병합/main 갱신 가드와 별개로 출력 버림·첫 메모·할당 쓰기 경계를 기술화할지 검토한다 | 메인 사용자 지시 보충 전달 `msg_3345bd69d295`(2026-10-13T09:58:30Z), 범위 승인 `msg_f6fcab954e76`(10:12:35Z); [Astra 리드·수신 핫픽스 goal](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md) 항목 4·6의 범위 분리 | 이번 병합 금지 가드의 실제 적용/신뢰 경계 확인 뒤 별도 범위·사용자 판단. 정상 UI 신뢰 기록과 전역 설정 수동 변경을 구분한다 | Rules | 대기 |
 | `reviewer-opus-after-astra-settles` | 리드 Astra 안착 뒤 검증자 Opus 복귀 | 리드 Astra 전환이 안착하면 검증자 모델 시범의 기본 배정을 Opus 5.5로 되돌릴지 검토한다 | 메인 사용자 전언 전달 `msg_132ccdcee6f7`(2026-10-13T11:06:16Z): 「만약에 아스트라 리드를 성공적으로 안착시키면 예전처럼 검증자를 Opus 5.5를 써도 됄 것 같은데」; [리드 Astra 전환 goal](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md)에서 조건부 후보로 수신 | 메인 제안 기준: 다시 연 리드 약 하루의 rollout에서 우편함 반복 대기 없음, 감당 가능한 Codex 주간 사용량, 압축 뒤 맥락 손실 재작업 없음. 수치와 함께 메인이 사용자에게 실제 전환을 올리며 현재 시범은 유지 | Rules·메인 | 대기 |
 
+## 던전 클리어 goal에서 연결한 후보
+
+| ID | 제목 | 이유 | 출처(누가·언제·메시지 ID) | 선행 조건 | 담당 후보 | 상태 |
+|---|---|---|---|---|---|---|
+| `ui-layer-sort-design` | UI 계층·창 정렬 기준 통합 | C9에서 기존 배너가 보상 창을 가렸다. 여러 런타임 Canvas가 정렬 숫자를 따로 소유한다. 카테고리·창 이름 enum과 레이어별 루트로 기준을 모을지 검토한다. 아래 상세 참고 | 사용자 원문·결정 A를 메인 Claude가 `msg_b78153624c8b`로 전달(2026-10-13T15:39:15Z, 10-14 KST); [던전 클리어 goal](../../01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md)의 C9 S-1·S-2 후속 | C9는 두 결함만 최소 수정한다. Art UI 키트를 Unity에 붙이기 직전 별도 goal 범위·소유·사용자 판단을 확정한다. 후보 등록만으로 착수하지 않는다 | Content·Art·메인 | 대기 |
+
+### ui-layer-sort-design의 원문·검토 범위
+
+메인이 전달한 사용자 원문이며 이 문서 작성자의 직접 수신으로 격상하지 않는다.
+
+1. 「UI쪽에 Stacking 처리가 제대로 안됐나보네 Z값 기준으로 정렬하는거랑 / 그리고 원래 UGUI 형식 보면은 부모 오브젝트로 하위 오브젝트로 묶어서 관리하기도 하니까, 그 부분 설계가 아예없나?」
+2. 「그리고 Stacking할때 일단 분류상으로 전역 Variable로 0,1,2,3,4 식으로 카테고리로 먼저 Z Depth 분류하고 이후에 안에서 세부적으로 Stacking Value 셋업하는 방식으로 하는게 더 깔끔해보이긴 해」
+3. 「그리고 값으로만 관리하기 힘드니까 변수명으로 Enum 컨트롤 해도 좋고」
+
+사용자 결정 A는 「C9 최소 수정 + 계층 따로」다. 메인 제안 방향은 `UiLayer`(Hud 0·Window 1·Popup 2·Notice 3·Overlay 4) × 간격 + 카테고리 내부 세부값이다. 숫자는 표 한 곳, 사용 코드는 창 이름 `UiSlot` enum으로 접근한다. 레이어마다 루트 Canvas를 두고 창은 그 아래에 붙이며 열린 창끼리의 앞뒤는 형제 순서로 관리하는 안이다. EditMode 시험은 표 누락·값 중복·필수 관계를 검사하는 안이다. 아직 설계·구현 완료가 아니며, 기존 씬/수명/입력 계약과 동적 창의 이관 방법은 별도 goal에서 정한다.
+
+메인 확인을 Content가 HEAD `d8cc35fa`에서 경로·숫자로 재대조한 현재 값은 다음과 같다. 모두 `03_Client/Assets/Scripts/` 아래의 런타임 Screen Space Overlay Canvas다.
+
+| 파일·행 | sortingOrder |
+|---|---:|
+| UI/InventoryPanelView.cs:32 | 5 |
+| UI/DungeonClearRewardWindow.cs:156 | 15 |
+| Scenes/EndingController.cs:93 | 500 |
+| Gameplay/NpcDialogPanel.cs:129 | 920 |
+| UI/StageClearUI.cs:119 | 1000 |
+| UI/ToastUI.cs:102 | 1100 |
+| UI/QuestGrantedPopup.cs:67 | 1150 |
+| UI/QuestAlert.cs:109 | 1180 |
+| UI/PartyInvitePopup.cs:160 | 1200 |
+
+현재 공용 UI 루트·정렬 상수 표가 없다는 것은 메인의 조사 보고다. C9 S-2의 최소 수정에서 보상 창 표시 때 배너를 숨기거나 닫는 방향을 먼저 검토하는 것은 메인이 덧붙인 지침이다(msg_b78153624c8b; 출처 정정 msg_df4bb91a6e67). 사용자 결정은 C9 최소 수정과 공용 계층의 별도 처리다. 새 정렬 숫자를 흩어 넣지 않으며 불가피하게 숫자를 바꾸면 해당 줄에 이 후보 ID를 주석으로 남긴다. Art UI 적용 전 검토하는 이유는 같은 창을 두 번 고치는 일을 줄이기 위해서다. [2026-05-23 사전 검토의 SortingLayer 이관 후보](../archive/server/reviews.md#source-c0f45396f300)는 과거 참고이며 현재 착수 권한이 아니다.
+
 ## 다중 계정 로그인 goal에서 연결한 후보
 
 [다중 계정 로그인 goal](../../01_Phases/goals/2026-10-11-multi-account-login/goal.md#다음-계획-후보)의 범위 밖 관찰을 도착시킨다. 출처의 근거 파일은 `.backups/verification/2026-10-11-multi-account-login/` 기준이며 Git 제외다. 등록은 구현·착수 승인이 아니다. Gardener의 새 제안 둘은 메인 회신 `msg_73ee54bc1e4b`(2026-10-13T14:32:32Z)로 기존 `contract-context-check`·`powershell-all-evidence`에 근거만 더한다. Core O-8은 [Core 영속 통합 goal](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md)의 기존 기록에 도착했으므로 이곳에 중복 등록하지 않는다(Core `msg_0807635fc2b3`, 현재 core-active의 기록, World 종료 Gardener 절의 출처 참조).

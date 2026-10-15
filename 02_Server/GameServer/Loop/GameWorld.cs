@@ -279,12 +279,15 @@ public class GameWorld
             });
 
             // Independent of boss quest reset; the economy job retains only immutable values.
-            _inventory.EnqueueKill(killerId, target.Kind, target.EntityId);
+            if (!EnemyCatalog.For(target.Kind).IsBoss)
+                _inventory.EnqueueKill(killerId, target.Kind, target.EntityId);
         };
 
+        // Public maps are constructed before the inventory registry; resolve it when a clear runs.
+        Action<IReadOnlyList<(int EntityId, GameSession Session)>> onClear = recipients => _inventory.EnqueueDungeonClear(recipients);
         if (_mapData.TryGetValue(id, out var pair))
-            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content, onKill, key);
-        return new GameMap(id, NextEntityId, onEnemyKilled: onKill, instanceKey: key);
+            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content, onKill, key, onClear);
+        return new GameMap(id, NextEntityId, onEnemyKilled: onKill, instanceKey: key, onDungeonCleared: onClear);
     }
 
     void OnTick(long tickNumber)

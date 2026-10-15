@@ -406,6 +406,21 @@ public class GameSession : PacketSession
                 getKillCount: self.GetKillCount));
     }
 
+    internal void SubmitDungeonClearConfirm()
+    {
+        if (_entityId < 0) return;
+
+        GameMap? currentMap = GetMap();
+        if (currentMap == null)
+        {
+            Console.WriteLine("[Trust] GameSession.SubmitDungeonClearConfirm: GetMap() null — config/shutdown/migration race");
+            return;
+        }
+
+        int entityId = _entityId;
+        currentMap.EnqueueJob(() => Dungeon.DungeonClearConfirmation.Execute(this, entityId, currentMap));
+    }
+
     // ── 파티 (M5 Phase 04 / M7.6 P03 추출) ────────────────────────────────────
     //
     // 파티 오케스트레이션(거절 규칙·결성·해산·통보 + tick 마샬링)은 PartyFlow로 추출.

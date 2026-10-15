@@ -1,9 +1,9 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 던전 패킷·창 PR은 [PR230](https://github.com/bass131/dawnholder-server/pull/230)으로 올렸다. 독립 검증이 찾은 규칙 위반 하나(V-1)를 고쳤고 재검증이 통과했다. 다음은 CI와 사용자 병합 승인이다(2026-10-11). 던전 클리어 PR은 리드 설계 초안(C1~C9)을 World가 확인했다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **구현·독립 검증·C9 실제 경로를 통과하고 PR239 ready·병합 준비를 마무리한다. D-10은 메인 해석 A로 확정됐다. goal은 미완이며 사용자 병합 승인·제품 PR 병합·Gardener·종료 기록이 남았다. #4/#5는 미해소 동결 뒤 정리다.**
 
-- 담당: Content 리드(`[Content 리드 Opus]`). 시작 기준 `origin/main` = `cc20d428f7988fdcb232a7c811cf2e729446abdc`.
-- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침).
+- 담당: Content 리드 [Content 리드 Astra], 지정/표시 gpt-6-astra xhigh, backend unknown. 시작 기준 origin/main = cc20d428f7988fdcb232a7c811cf2e729446abdc.
+- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침, 병합 뒤 원격 삭제). 던전 클리어 PR branch `feat/dungeon-clear-server-20261011`(base `999b1b98`).
 - 착수 원천: 메인 `msg_9fe1d49e00bb`(2026-10-10T07:39:37Z)가 전달한 사용자 승인. 원문은 아래 [적용 중인 사용자 결정](#적용-중인-사용자-결정)에 있다. 범위 원문은 리드 초안 `msg_f1bba119c853`이다.
 - 로컬 원문·계약·판정은 `.backups/verification/2026-10-10-dungeon-clear-rewards/`에 둔다(Git 밖).
 
@@ -14,7 +14,7 @@
 | 항목 | 내용 |
 |---|---|
 | 만들 것 | (결함) HUD 골드를 서버 재화에 연결한다. 인벤토리 패널을 「I」 키로 열고 닫는다. (던전) 보스방 복사본의 클리어 정의와 보상표, 클리어 결과 패킷과 확인 요청 패킷(39·40번), 클라이언트 보상 창과 「확인」 전송, 사냥터 포탈의 던전 입구 표시, 서버 클리어 판정과 보상 원자 지급, 보스 처치자 보상을 클리어 보상으로 합치기, 「확인」 뒤 마을 복귀 요청, 봇 두 파티 시나리오, 기능 문서. |
-| 건드릴 곳 | (결함) 클라이언트 `UI/HudController.cs`, `UI/InventoryPanel.cs`·`UI/InventoryPanelView.cs`, 입력 연결, EditMode 시험. R10은 `Scenes/99.UI/UI.unity`의 HUD 골드 글자(`GoldText`, 필요하면 `Gold_bar`) 직렬화 값과 PlayMode 시험(사용자 결정 37 A). (던전 패킷·창) PDL·생성 패킷·프로토콜 버전, Shared GameData의 던전 보상표(새 폴더), 클라이언트 새 보상 창·수신 핸들러. (던전 서버) 서버 새 던전 폴더, `Items/KillRewardPolicy.cs`·`Items/InventoryRegistry.cs`의 보상 연결, `GameMap` 보스 사망 분기 안쪽과 `GameWorld` 처치 콜백(World 인스턴스 맵 PR 병합 뒤), `HandlerRegistry` 등록 한 줄, 새 핸들러, 서버 시험, 봇. 마을 복귀는 World의 「서버가 시키는 이동」 진입점을 부르기만 한다. 이 goal.md, CURRENT의 Content 줄, FEATURE_MAP·영역 문서의 해당 줄. |
+| 건드릴 곳 | (결함) 클라이언트 `UI/HudController.cs`, `UI/InventoryPanel.cs`·`UI/InventoryPanelView.cs`, 입력 연결, EditMode 시험. R10은 `Scenes/99.UI/UI.unity`의 HUD 골드 글자(`GoldText`, 필요하면 `Gold_bar`) 직렬화 값과 PlayMode 시험(사용자 결정 37 A). (던전 패킷·창) PDL·생성 패킷·프로토콜 버전, Shared GameData의 던전 보상표(새 폴더), 클라이언트 새 보상 창·수신 핸들러. (던전 서버) 서버 새 던전 폴더, `Items/KillRewardPolicy.cs`·`Items/InventoryRegistry.cs`의 보상 연결, `GameMap` 보스 사망 분기 안쪽과 `GameWorld` 처치 콜백(World 인스턴스 맵 PR 병합 뒤), `HandlerRegistry` 등록 한 줄, `Sessions/GameSession.cs`의 확인 요청 제출 메서드 하나(2026-10-11 사용자 결정), 새 핸들러, 서버 시험, 봇. 마을 복귀는 World의 「서버가 시키는 이동」 진입점을 부르기만 한다. 이 goal.md, CURRENT의 Content 줄, FEATURE_MAP·영역 문서의 해당 줄. |
 | 하지 않을 것 | 새 맵 번호·맵 데이터·포탈 줄. 인스턴스 생성·입장·정리, 맵 종류 표, 맵 이동, 보스 처치 때 퀘스트 초기화 범위(모두 World). 새 아트·보스 패턴. 길드·거점. DB 저장. 난이도·매칭·재입장 제한·시간제한·자동 퇴장. 기존 보스방 → 엔딩 → 마을 길의 제거. 다른 대기 후보(`inventory-ui-readability-followup`, `inventory-label-ellipsis-glyph`, `hud-pointer-attack-ux` 등). Unity scene·prefab 저작은 필요하면 메인에 요청한다. |
 | 관찰 가능한 완료조건 | 아래 여덟 개다. |
 
@@ -96,16 +96,16 @@ P6~P8을 PlayMode로 보는 이유: 실제 씬의 전투 씬 초기화와 dispat
 
 **실행**: WSL `dotnet` 빌드·시험 전체, 실제 생성기 재생성 diff, Windows에서 Shared·ClientNet DLL 재빌드와 `03_Client/Assets/Plugins/` 사본 diff(메인 조건 2), 새 서버와 기존 봇 접속 회귀, Unity 컴파일·EditMode 전체, 독립 검증의 PlayMode 전체(서버 lane, 회귀). 실화면은 클리어 PR에서 한다. 7777과 Unity batch 같은 큰 실행은 Core SQL 컨테이너 재측정과 Management 운영툴 중간 점검(7777)에 미리 알려 겹치지 않게 하고, 메모리 4GB 기준을 원시로 남긴다(메인 조건 3).
 
-### 던전 클리어 PR의 요구(리드 초안)
+### 던전 클리어 PR의 요구
 
-완료조건 4~8을 서버에서 만든다. 리드 초안이고, World 리드가 GameMap·GameWorld·확인 맥락을 확인했다(아래 「World 확인」). 클리어 PR 착수 때 이 절을 확정한다. 원고는 근거 폴더의 `clear-pr-prep/lead-design-clear-pr.md`이고, 사실 근거는 HEAD `54b7d88a`의 리드 직접 대조와 읽기 전용 조사 1회다.
+완료조건 4~8을 서버에서 만든다. World 리드가 GameMap·GameWorld·확인 맥락을 확인했고(아래 「World 확인」), 메인이 클리어 PR 범위를 확인했다(리드 요청 `msg_0d95711472f4`, 메인 `msg_a3531f312474`). 원고는 근거 폴더의 `clear-pr-prep/lead-design-clear-pr.md`다. 사실 근거는 HEAD `54b7d88a`의 리드 직접 대조와 읽기 전용 조사 1회다. PR230 병합 뒤 origin/main `999b1b98`에서 리드가 다시 대조했고, 아래의 코드 위치와 바뀔 기존 시험의 줄 번호가 모두 같았다.
 
 | 번호 | 요구 | 확인 방법 |
 |---|---|---|
 | C1 | 보스방 복사본(`MapId.BossRoom`이고 `InstanceKey`가 있음)에서 보스가 처음 죽는 틱에, 그 틱의 그 맵 `Players` 중 세션이 살아 있는 사람이 수혜자다. 파티 소속은 다시 보지 않는다. 그 틱에 이동 중인 사람, 사냥터 복사본에 남은 파티원, 클리어 뒤 들어온 사람은 수혜자가 아니다. | 서버 시험 |
 | C2 | 수혜자마다 `DungeonClearRewards` 묶음을 기존 `InventoryTransitions.Grant`로 전부 주거나 전부 거부한다. 성공이면 상태를 한 번 commit하고 revision이 1 오른다. 거부(`InventoryFull`·`CurrencyCap`)면 상태가 그대로다. | 서버 시험 |
 | C3 | 수혜자마다 39 `S_DungeonClearResult`를 정확히 한 번 보낸다. 성공이면 결과 `Success`와 준 골드·아이템, 그 뒤 새 snapshot이다. 거부면 결과 코드만 있고 골드 0·빈 칸이며 snapshot은 없다. 순서는 아이템 사용과 같다(결과 → snapshot). | 서버 시험 |
-| C4 | 같은 복사본의 클리어 보상은 두 번 나가지 않는다. 기존 `IsStageCleared` 한 번 규칙에 묶는다. 보스는 방이 빌 때만 다시 나오고, 빈 복사본은 그 틱 끝에 정리된다. | 서버 시험 |
+| C4 | 같은 클리어의 보상은 두 번 나가지 않는다. 지급은 기존 `IsStageCleared`가 false에서 true로 바뀌는 한 번에 묶는다. 보스는 방이 빌 때만 다시 나온다. 빈 복사본은 들어오는 사람이 없으면 그 틱 끝에 정리된다. 입장 대기 중인 사람이 있어 남은 빈 보스방은 보스를 다시 내고, 그 처치는 새 클리어로 그때 방에 있는 사람에게 지급된다. 지급 단위는 복사본이 아니라 처치다(독립 검증 V-1, 리드 결정 2026-10-11, `lead-r2-clear-verify/r2.md`). | 서버 시험(`DungeonClearRepeatClearTests` 포함) |
 | C5 | 보스 처치자에게 따로 가던 처치 보상은 나가지 않는다. 일반·골렘 처치 보상은 그대로다. | 서버 시험. 기존 보스 보상 시험은 옛 세부로 분류해 고친다 |
 | C6 | 40 `C_DungeonClearConfirm`은 정확한 길이 5·머리·`reserved` 0만 받고, 캐릭터 선택 뒤에만 받는다. 현재 맵 job 안에서, 그 맵이 클리어된 보스방 복사본이고 보낸 사람이 그 복사본의 수혜자이며 아직 확인하지 않았을 때만 `MapMigration.MoveToPublicMap(session, entityId, map, MapId.Town)`을 부른다. 그 밖은 상태·패킷 변화 없이 버린다. `Accepted`가 아니면 수혜자 표시를 남겨 다시 누를 수 있다. | 서버 시험 |
 | C7 | 마을 도착은 World 진입점이 정한 기본 입장 지점이고, 인벤토리·재화·파티가 보존된다. | 서버 시험(진입점 보존은 World 시험이 이미 증명하고, 여기서는 연결만 본다) |
@@ -121,13 +121,15 @@ P6~P8을 PlayMode로 보는 이유: 실제 씬의 전투 씬 초기화와 dispat
 5. 확인 요청은 세션에서 맵 job으로 간다. 서버 새 던전 핸들러가 길이·머리·`reserved`를 검사하고 `GameSession`의 새 제출 메서드를 부른다. 이 메서드는 포탈 입장 제출처럼 현재 맵(이동 중이면 없음)과 entityId를 잡아 현재 맵 job으로 넘긴다. job 안에서 소유 확인 → 수혜자 집합 확인 → `MoveToPublicMap` → `Accepted`면 집합에서 지운다. `HandlerRegistry`에 한 줄을 더한다.
 6. 모든 단계가 World 틱 스레드의 메모리 작업이고 DB·파일 I/O는 없다.
 
+**건드릴 곳 보충**(2026-10-11 사용자 결정): 5번의 제출 메서드는 `Sessions/GameSession.cs`의 `SubmitEnterPortal` 옆에 같은 모양으로 하나만 더한다. 이 파일의 다른 구간은 바꾸지 않는다. 쓰기 전 알림과 병합 순서는 아래 「파트 간 소유와 계약」의 세션·등록 행을 따른다.
+
 리드가 정한 것(이유):
 
 - `RevisionExhausted`는 `Grant`가 돌려줄 수 있지만 P3의 결과 값 셋에 없다. 연결마다 revision이 40억 번 바뀌어야 나오는 값이라 실제로 닿지 않는다. 이 경우 결과 패킷을 보내지 않고 기록만 한다. 수혜자 표시는 남아 확인은 할 수 있다. 패킷·창 PR의 P3을 바꾸지 않으려는 선택이다.
 - 수혜자는 맵 `Players`로 판정한다. 아래 「파트 간 소유와 계약」의 클리어 대상 합의와 같다.
 - 결과는 직접 송신한다. 처치 snapshot은 이동 중 생략될 수 있다([서버 영역 계약](../../../00_Document/domains/server.md)). 클리어 결과는 창과 「확인」의 시작점이라, 생략되면 그 사람이 보스방에 멈춘다.
 
-바뀔 기존 시험(옛 세부, 요구 출처 C5 = 범위 승인 질문 3 A): `GameServer.Tests/Items/InventoryAuthorityBoundaryTests.cs`의 보스 보상 묶음(20행)과 그 묶음으로 거부를 보이는 두 시험(39~61행), 보스가 처치자에게 주는 50+2(168~188행). `InventoryWireContractTests.cs`의 `BossKill_GrantsPouchMaterialAndFiftyCurrencyInItemIdOrder`(254~264행). 선행 시험 작성자가 고치고 분류표와 같은 명령의 전후 원시를 남긴다(메인 결정 `msg_71e41e231d55`).
+바뀔 기존 시험(옛 세부, 요구 출처 C5 = 범위 승인 질문 3 A): `GameServer.Tests/Items/InventoryAuthorityBoundaryTests.cs`의 보스 보상 묶음(20행)과 그 묶음으로 거부를 보이는 두 시험(39~61행), 보스가 처치자에게 주는 50+2(168~188행). `InventoryWireContractTests.cs`의 `BossKill_GrantsPouchMaterialAndFiftyCurrencyInItemIdOrder`(254~264행). PR230의 P4 시험 `Dungeon/DungeonClearPacketContractTests.cs`도 바뀐다(요구 출처 C6). 147행은 「서버는 40 처리기를 등록하지 않는다」를 단정하고, 152행은 같은 전제를 실패 메시지에 담는다. 이 PR이 처리기를 등록하므로 옛 세부다. 나머지 단정(마을의 비수혜자가 보낸 40은 응답·종료·인벤토리 변화가 없음)은 C6에서도 맞으므로 그대로 둔다. World 병합 작업자는 같은 파일의 `JoinAndEnter`(188~197행)에 로그인 한 단계를 더한다(World `msg_3b64363cd9dd`). 선행 시험 작성자가 고치고 분류표와 같은 명령의 전후 원시를 남긴다(메인 결정 `msg_71e41e231d55`). 문서 `FEATURE_MAP.md` 20행의 「서버는 아직 39번 미발신·40번 미등록」과 `domains/protocol.md` 22행의 같은 내용도 구현과 함께 바꾼다.
 
 봇: 두 파티 시나리오는 지금 `Party/InstanceMapIsolationSmoke.cs`(네 봇, 마을 → 사냥터 → 마을)뿐이다. 이것은 바꾸지 않고, 보스방까지 가는 새 시나리오를 더한다. 보스 문은 기존 DEBUG 치트로 연다(`BossStageClearSmoke`와 같은 방식). 단정은 파티마다 39번 한 번, 결과 Success, 골드와 아이템이 Shared 표와 같음, snapshot revision +1, 확인 뒤 마을 맵 이동, 다른 파티의 39번 0이다.
 
@@ -151,8 +153,9 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 | 입구 | 기존 마을 → 사냥터 포탈이다. Content가 맵 종류 표·포탈 표에 더할 줄은 없다(World `msg_6e96d918962c` 1). |
 | 클리어 대상 | 보스 사망 틱의 그 보스방 복사본 플레이어 목록. 파티원 재확인은 하지 않는다(같은 메시지 2). 열쇠는 `GameMap.InstanceKey`(`InstanceKey?`)다. 공용 맵은 null이고 복사본은 값이 있다. `InstanceKey`는 `Owner`(Party/Solo)와 `Id`를 가진 값 비교 record struct이며, 복사본에 들어갈 때 정해져 그 안에서 파티를 나가도 바뀌지 않는다(World `msg_14c7e14412f3` 1, World 선행 시험 commit `3511b66c`). |
 | 마을 복귀 | Content의 「확인」 처리기가 플레이어 한 명씩 World 진입점을 부른다. 틱 스레드의 현재 맵 job 안에서 부른다. Content 요구: 도착 좌표 기본값은 World가 정함, 예외 대신 거부 결과, 이동 중 인벤토리·파티 보존(Content `msg_92f0e5340ca3`, World `msg_6e96d918962c` 3). World 답(`msg_25abb610ef01`): 도착은 도착 맵의 기본 입장 지점(`GameMap.PlayerSpawnPosition`, 최초 입장·재접속과 같은 곳), 인스턴스 밖·이동 중·세션 종료 중·같은 사람 두 번째 호출은 상태를 바꾸지 않는 거부, 성공하면 포탈 이동과 같은 맵 이동 패킷만 나간다. 진입점은 `MapMigration.MoveToPublicMap(GameSession session, int entityId, GameMap currentMap, MapId destination, Vector2? spawn = null)` → `MapMoveResult`다. 거부 검사 순서는 `SessionClosing` → `AlreadyMigrating` → `NotInThatMap` → `NotInInstanceMap` → `DestinationNotPublic`이고, 모두 통과하면 `Accepted`다. 공용 맵 도착은 다음 틱 이내다(World `msg_14c7e14412f3` 2). |
-| PDL·생성 패킷·프로토콜 버전 | 던전 패킷·창 PR이 39·40번과 버전 17 → 18을 쓴다. World 인스턴스 맵 PR은 PDL을 바꾸지 않는다. World의 다중 계정 로그인과 같은 시기에 열리면 먼저 병합되는 쪽이 앞 번호를 갖고, 뒤 PR이 main을 받아 재생성해 번호를 다시 확인한다(같은 메시지 4). 기존 번호 재사용·재배열 금지. World 로그인 패킷 `C_Login{string accountName}`·`S_LoginResult{byte result}`(`LoginResult` Accepted0·InvalidName1·AlreadyOnline2)도 main 기준 39·40·v18을 계획한다(World `msg_4e01d634628b`, commit `757b59ac`). World가 먼저 병합되면 Content PR은 버전 단정·생성 코드·이력 주석·DLL에 더해 World 시험 `Network/LoginProtocolContractTests.cs`의 T9(로그인 패킷이 가장 큰 두 번호)와 Content P4 시험(`Dungeon/DungeonClearPacketContractTests.cs`, 직업 선택 입장에 로그인 helper가 필요)을 맞춘다. Content가 먼저면 World가 41·42를 쓴다. |
-| `GameMap.cs` 보스 사망 분기, `GameWorld.cs` 처치 콜백, `Items/InventoryRegistry.cs` | World 인스턴스 맵 PR 병합 전에는 Content가 쓰지 않는다. World는 `InventoryRegistry.cs` 본문을 바꾸지 않을 계획이며, 바꿔야 하면 쓰기 전에 알린다(같은 메시지 5). |
+| PDL·생성 패킷·프로토콜 버전 | 던전 패킷·창 PR이 39·40번과 버전 17 → 18을 쓴다. World 인스턴스 맵 PR은 PDL을 바꾸지 않는다. World의 다중 계정 로그인과 같은 시기에 열리면 먼저 병합되는 쪽이 앞 번호를 갖고, 뒤 PR이 main을 받아 재생성해 번호를 다시 확인한다(같은 메시지 4). 기존 번호 재사용·재배열 금지. World 로그인 패킷 `C_Login{string accountName}`·`S_LoginResult{byte result}`(`LoginResult` Accepted0·InvalidName1·AlreadyOnline2)도 main 기준 39·40·v18을 계획한다(World `msg_4e01d634628b`, commit `757b59ac`). World가 먼저 병합되면 Content PR은 버전 단정·생성 코드·이력 주석·DLL에 더해 World 시험 `Network/LoginProtocolContractTests.cs`의 T9(로그인 패킷이 가장 큰 두 번호)와 Content P4 시험(`Dungeon/DungeonClearPacketContractTests.cs`, 직업 선택 입장에 로그인 helper가 필요)을 맞춘다. Content가 먼저면 World가 41·42를 쓴다. **결과**: PR230이 먼저 병합돼(2026-10-11T10:57:10Z) 39·40·v18은 Content가 쓴다. World 로그인은 41·42와 v19로 다시 번호를 매긴다(Content 알림 `msg_929b97d8c951`). World 병합 작업자는 Content 시험 `Dungeon/DungeonClearPacketContractTests.cs`의 `JoinAndEnter`에 로그인 한 단계를 더하고(`msg_3b64363cd9dd`), `domains/protocol.md` v18 절 첫 문장을 과거 시제로 바꾼다(`msg_725c091951ad`). |
+| `GameMap.cs` 보스 사망 분기, `GameWorld.cs` 처치 콜백, `Items/InventoryRegistry.cs` | World 인스턴스 맵 PR 병합 전에는 Content가 쓰지 않는다. World는 `InventoryRegistry.cs` 본문을 바꾸지 않을 계획이며, 바꿔야 하면 쓰기 전에 알린다(같은 메시지 5). 인스턴스 맵은 main에 들어왔다(`2bbd710d`). Content는 쓰기 전에 World에 다시 알린다. |
+| `Sessions/GameSession.cs`, `Handlers/HandlerRegistry.cs` | 아이템 goal 때는 GameDev(지금 Core) 소유 파일로 순차 쓰기 허용을 받았다. World 로그인 PR도 `GameSession`의 로그인 상태와 `HandlerRegistry` 한 줄을 바꾼다. Content는 쓰기 전에 World·Core 리드에 함께 알리고, 늦게 병합되는 PR이 main을 받는다(메인 조건 `msg_a3531f312474`). |
 | 포트 7777 | 서로 실행 전에 Orca 메시지로 알리고 DEVELOPMENT의 전역 lock·listener 검사를 따른다. |
 | CURRENT | Content 줄만 바꾼다. 다른 파트 줄은 보존한다. |
 
@@ -168,7 +171,109 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 ## 적용 중인 사용자 결정
 
+### 밤 checkpoint·draft PR와 아침 C9 재개 — 메인 판단
+
+메인 msg_a7fed9270e28(2026-10-14T15:55:55Z)은 사용자 밤샘 위임에 따른 판단이며 새 사용자 결정이 아니다. 검증된 C9 변경분을 checkpoint commit/push하고 draft PR로 둔다. 사용자 MinimapRT.renderTexture·ProjectSettings.asset은 커밋하지 않으며 goal·C9를 완료로 쓰지 않는다.
+
+세크기실화면·실서버클리어→확인→Town·SFX는 아침 사용자 MCP 연결 승인 뒤 이어간다. 그전 Editor·MCP호출·실화면검증자를열지 않는다. 구실화면계약의HEAD·프로토콜18 설명 갱신은같은goal의준비로허용된다. ProjectSettings define한줄의원사용자bytes복원·자동변경본보존은아침보고에공개하고 이파일에더쓰지않는다.
+
+메인 msg_d5e7bee01931(2026-10-14T16:03:43Z)이 위 판단의 5번을 대체했다. Art는 Content checkpoint를 직접 cherry-pick·merge·파일복사하지 않는다. C9가 아침 실화면 확인과 사용자 병합 승인 뒤 main에 반영되고 Art가 rebase한 후에만 Window 제품 쓰기·실제 RED를 시작한다. StageClearUI는 보존 입력이다. Art 확인은 msg_68680f581c78이다. 이전 판단 아래 이미 보낸 SHA 통지는 역사 사실이며 직접 합류 권한이 아니다. 통합순서는 Content C9가 먼저다. 이번 밤 Git/PR receipt는 c9-fix-review-3-prep/에 보존하고 현재 goal은 아침 실화면을 기다리는 미완 상태로 유지한다.
+
+
+### 현재 goal 종료 뒤 정리하고 멈춤 — 현행
+
+메인 전달 사용자 지시 msg_8083e4e88be8, 작성2026-10-14T14:46:39Z. 메인 pane의 사용자 원문을 전달받았으며 Content pane의 직접 사용자 입력으로 격상하지 않는다. 전달 원문:
+
+> [메인 Claude] 사용자 지시 전달: 지금 goal을 끝내면 정리하고 멈춘다
+>
+> 사용자 원문(메인 pane Enter 제출, 2026-10-14T14:44:08Z(23:44 KST; 메인 정정 msg_0a388e8f3f55)): 「그리고 영속성 부분은 너가 더 전문가니까 Goal 초안 작성하고 진행까지 계속 진행해줘, Core쪽 진도를 좀 빠르게 뺴보자 / 나머지 세션은 Taste에 민감한 부분이니까 그 파트들은 목표 끝나면 마무리하고 정리하는 식으로하자」
+>
+> 너의 파트에 적용:
+> 1. 지금 진행 중인 goal은 시연 우선 모드 그대로 끝까지 간다. 범위를 넓히지 않는다.
+> 2. goal이 끝나면(PR head 보고·병합 대기 상태 포함) 종료 점검과 goal 기록 정리까지 하고 멈춘다. 다음 goal 초안을 쓰거나 새 작업자를 열지 않는다. 다음 일은 아침에 사용자가 직접 정한다. 이유는 화면·연출·문서 표현처럼 사용자 취향이 결정에 들어가는 영역이기 때문이다.
+> 3. 멈출 때 메인에 status 한 통: PR 번호와 정확한 head, 동결 뒤 정리 목록, 사용자가 아침에 정할 것 한두 줄.
+> 4. 이미 정한 Unity 순서(Art→World→Content)와 Core WSL 우선 조율은 그대로다.
+> 5. Rules: 모델 라우팅 핫픽스 goal을 끝내면 같은 방식으로 멈춘다. PR2 가드는 계속 보류다.
+>
+> goal 「적용 중인 사용자 결정」에 위 원문과 이 msg ID를 기록하라. 메인이 전달한 사용자 지시이며 각 pane의 직접 입력으로 격상하지 않는다.
+
+Content 적용: 이 goal의 승인 범위·시연 우선 모드만 계속한다. PR 번호·정확 head를 보고하고 병합 대기에 도달하면 종료 점검·goal 기록 정리 뒤 멈춘다. 동결 뒤 정리 목록과 아침에 사용자가 정할 사항을 메인에 함께 전달한다. 다음 goal 초안/새 작업자/시연 경로 밖 정리는 착수하지 않는다. 이전의 다음 Content goal 인계 계획은 사용자 아침 결정까지 보류한다.
+
+
+### 밤 동안 Core 우선과 WSL 병행 — 2026-10-14
+
+메인 알림 msg_b21b951d51c9(14:38:34Z). 사용자 원문(메인 pane 제출, 메인 전달이며 이 pane의 직접 입력으로 격상하지 않음): 「우편함 처리와 리드 감독을 나 자는사이에 계속 처리해줘, 목표는 마일스톤 작업을 향해 작업하는거야 / 특히 Core쪽 진전이 별로 안돼서 그 부분을 우선적으로 지시해줘」.
+
+메인 판단(새 사용자 결정 아님): Core WSL dotnet 빌드·시험은 그 실행 직전 여유 물리 메모리6GiB 이상일 때 Unity의 Art→World→Content 순서와 병행할 수 있다. WSL 무거운 실행끼리 겹치면 Core가 먼저이며 리드끼리 알린다. Unity 순서와 현재 파트 작업은 유지한다. Content는 Core WSL 반환을 Unity의 추가 선행조건으로 삼지 않고, 기존 Unity관문·사용자 파일 보호를 유지한다.
+
+
+### 리드 전원 Sol xhigh 전환 — 2026-10-14
+
+메인 전달 사용자 결정 msg_fb14daf225c6, 작성2026-10-14T14:21:18Z. 메인의 사용자 원문 전달과 적용 해석이며 Content pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> [메인 Claude] 사용자 결정 전달: 리드 전원 Sol, 리드·작업자 effort xhigh
+>
+> 사용자 원문(메인 pane Enter 제출, 메인 전달이며 네 pane의 사용자 직접 입력으로 격상하지 않는다):
+> - 23:2x KST 「음 그리고 리드급 아무래도 Sol Max로 전체적으로 확장해야 될 거 같아, Astra 토큰 사용량이 감당이 안되네」
+> - 이어서 「음 Sol 그리고 정정사항은 작업자랑 리드 전부 Xhigh로 변경, 핫픽스 적용 지시해줘」
+> - 앞선 「리드 하나만 Sol max 시범」(msg_928a88962458)은 이 결정으로 대체된다.
+>
+> 메인 해석(사용자가 다르게 정정하면 그것을 따른다):
+> - 리드: 기본 다섯과 승인된 추가 파트 모두 gpt-6.1-sol, effort xhigh. 발신 태그는 AGENTS 「리드 모델 계열이 바뀌면 태그의 모델명도 그 계열로 바뀐다」에 따라 [<파트> 리드 Sol]이다.
+> - 작업자: Sol 배정 작업자는 gpt-6.1-sol xhigh(지금까지 max). Astra 배정 작업자는 그대로 gpt-6-astra xhigh다.
+> - 독립 검증자 모델 시범 배정(Opus·Astra)과 R-7, 확정 실패 3회 뒤 Advisor는 바꾸지 않는다.
+> - 전환 기간에는 같은 파트의 [<파트> 리드 Astra]와 [<파트> 리드 Sol]을 모두 인정하고 from_handle·Task·Dispatch 대조는 그대로 한다.
+>
+> 지금부터 적용:
+> 1. 새로 여는 Sol 배정 작업자는 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`로 연다(max 아님). 이미 돌고 있는 작업자는 실행 중에 바꾸지 않는다.
+> 2. 너(리드)의 전환: 다음 안전 지점에서 메인에 「Sol 전환 준비됨」 status를 보내고 턴을 끝내라. 안전 지점은 작업자 기동·정산·공식 ask 답 전송이 단계 중간에 걸려 있지 않은 때다. 메인이 너의 같은 Codex 대화를 gpt-6.1-sol xhigh로 다시 열고(R-8 목표 중간 재개와 같은 방식), 새 handle에 진입 메시지를 보낸다. 같은 Run을 run-use로 인수하면 된다. 진행 중인 작업자·검증자는 그대로 둔다.
+> 3. 「Sol 전환 준비됨」에는 현재 Task·Dispatch·대기 중인 공식 ask와 다음 첫 행동을 짧게 적어라. 재개 뒤 그걸로 잇는다.
+> 4. 정본(AGENTS·ORCA) 반영은 Rules가 핫픽스로 한다. 그 전에도 이 사용자 결정이 적용 근거다. goal에 원문과 이 msg ID를 기록하라.
+
+Content 적용: 현재 검증자 Opus는 유지한다. 새 Sol 배정 작업자는 gpt-6.1-sol xhigh이며 Astra 작업자·독립 검증 모델 시범은 유지한다. 현 리드는 안전 지점 인계를 남긴 뒤 메인이 같은 대화를 gpt-6.1-sol xhigh로 재개할 때까지 [Content 리드 Astra]를 유지한다. 재개 뒤 새 handle과 실제 표시를 대조하고 [Content 리드 Sol]을 사용한다. 이 기록은 실제 런타임 전환 완료의 증거가 아니다.
+
+
+### 10-28 동결까지 시연 우선 모드 — 현행
+
+메인 전달 사용자 결정 msg_e6960028241c, 작성2026-10-14T14:11:26Z. 메인 pane에 제출된 사용자 선택을 전달받았으며 Content pane의 직접 사용자 입력으로 격상하지 않는다. 아래는 전달 원문이다.
+
+> [메인 Claude] 사용자 결정 전달: 10-28 기능 동결까지 「시연 우선 모드」
+>
+> 사용자 원문(메인 pane Enter 제출, 2026-10-14 23:10 KST 무렵): 「대시보드 결정 응답: 1) 10-28 시연 - 동결까지 시연 경로 우선 모드로 검증 절차를 줄일지, 지금 절차를 유지할지 → A 시연 우선 모드」
+> 기간: 지금부터 2026-10-28 기능 동결까지. 동결 뒤에는 원래 절차로 돌아간다.
+> 목표: 10-13 승인 시나리오의 영상 장면(특히 3·6·7·8 길드 순환과 5 보스 보상)을 10-28까지 실제로 돌게 한다.
+>
+> 줄이는 것
+> 1. 동작에 영향 없는 지적은 통과를 막지 않는다. 시험 코드 중복, 문서 표현, 주석 위치, 이름, 가독성·배치 지적이 여기에 든다. 판정문에 번호로 남기고 goal의 「동결 뒤 정리」 목록에 쌓는다. 단, 제품 계산을 복제해 항상 통과하는 시험과 측정값 위장은 동작 검증을 무너뜨리므로 지금처럼 막는다.
+> 2. 같은 산출물의 독립 재검증은 1회까지다. 그 재검증에서도 막히면 새 검증을 열지 말고 메인에 올린다. 메인이 진행, 좁은 수정, 장면 축소 중 하나를 정한다.
+> 3. 운영 미준수는 판정문 「운영 미준수」 절에 공개만 하고 제품 판정을 막지 않는다. 생존 신호 간격, 해시 전수 대조 누락, 보고 형식이 여기에 든다. 금지 구간 실행, 메모와 결과의 불일치, 결론과 본문의 모순은 지금처럼 메인에 올린다.
+> 4. 작업자 계약에 새 하네스나 시각 계산 같은 준비 장치를 더하지 않는다. 시작은 기존 도구와 리드의 공식 답으로 한다.
+> 5. 시연 장면과 관계없는 작업은 지금 지점에서 멈추고 동결 뒤 잇는다. Rules의 PR2 병합 가드 작업과 그 재검증(msg_24db67e316be)이 여기에 든다. 다른 파트도 시연 장면 밖 후보는 착수하지 않는다.
+>
+> 그대로 지키는 것
+> - 서버가 상태와 판정을 소유하고 경계에서 입력을 검증한다. 패킷 ID 재사용 금지, PDL·생성 코드·양쪽 직렬화 계약, 공유 DLL 양쪽 검증도 그대로다.
+> - 구현자와 검증자를 분리하고, 실제 실행(빌드·봇·실화면·DB)으로 동작을 확인하는 독립 검증 1회는 남는다. 수행하지 않은 실행을 성공으로 보고하지 않는다.
+> - Unity .meta·GUID 보존, 사용자 파일(Content MinimapRT.renderTexture·ProjectSettings.asset) 보호, Core 보존 DB와 옛 실패 자원 접근 금지, 무거운 실행의 리드 간 순서 조율도 그대로다.
+> - PR마다 정확한 head로 사용자 병합 승인을 받는다.
+>
+> 할 일
+> - 각 리드는 goal의 「적용 중인 사용자 결정」에 위 원문과 이 msg ID를 기록하고, 지금 진행 중인 계약에 이 기준을 적용한다. 이미 받은 판정 가운데 1번에 해당하는 차단은 「동결 뒤 정리」로 옮기고 다음 단계로 간다.
+> - 애매하면(동작 영향 여부 등) 리드가 메인에 한 줄로 묻는다.
+> - Rules는 동결 뒤 정본 반영 후보로 이 결정을 기록한다.
+> 메인이 전달한 사용자 결정이며 각 pane의 직접 입력으로 격상하지 않는다.
+
+Content 적용: 현재 실행 준비 중인 재검증3에 전달(msg_fec530f29f2f)했다. 동작 영향 없는 #4·#5와 문서/가독성 관찰은 아래 동결 뒤 정리로 옮긴다. 이전 msg_5bfad1184fd1·msg_a2bdc1ea1817의 다음 실화면 묶음·PR 전 필수추출 조건은 이 후속 사용자 결정으로 대체한다. 기존 판정 원문과 번호는 미해소로 보존한다. 현재 계약/spec/inputs 원본은 유지하고, 이전 goal SHAfa55e754…는 c9-fix-review-3-prep/goal-before-demo-priority.md에 보존해 새 결정 적용과 구분한다. 현재 검증은 정책 수신 전에 시작했으며, 이후 막히면 새 독립 검증을 열지 않고 메인에 올린다.
+
+
+- **오늘 마감·재부팅 전 안전 지점**(메인 전달 `msg_9c6867e907ba`, 2026-10-13T18:33:00Z). 사용자 원문 「일단 오늘 작업 좀 오래해서 현황판 수정이랑 나머지 리드급 남은 작업만 마무리하고 쉴까 하는데 어때?」, 「대시보드 결정 응답: 1) 오늘 마무리 방식 - 40분 안에 끝낼 것만 끝내고 안전 지점에서 멈출지, 지금 바로 멈출지 → A 40분 마감」. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 효과: 19:15Z(04:15 KST)까지 정산·작업자 pane 종료, 신규 작업자/검증자/Unity·DB·Docker·WSL 큰 실행 금지, 미완 제품은 미커밋 보존, goal 재개 기록만 commit/push. 리드 pane은 사용자가 닫는다. Content의 오늘 추가 batch는 없고 ProjectSettings의 자동변경 한 항목을 원래 사용자 hash로 지금 복원한다. R-1은 조사 결과의 확정/미확정을 남기고 정산한다.
+
 정본에 반영하지 않은, 이 goal에만 적용하는 사용자 결정이다. 모두 메인이 전달했으며 리드 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+- **C9 최소 수정·UI 계층 별도**(메인 `msg_b78153624c8b`, 2026-10-13T15:39:15Z, 10-14 KST). 사용자 원문 순서: ① 「UI쪽에 Stacking 처리가 제대로 안됐나보네 Z값 기준으로 정렬하는거랑 / 그리고 원래 UGUI 형식 보면은 부모 오브젝트로 하위 오브젝트로 묶어서 관리하기도 하니까, 그 부분 설계가 아예없나?」 ② 「그리고 Stacking할때 일단 분류상으로 전역 Variable로 0,1,2,3,4 식으로 카테고리로 먼저 Z Depth 분류하고 이후에 안에서 세부적으로 Stacking Value 셋업하는 방식으로 하는게 더 깔끔해보이긴 해」 ③ 「그리고 값으로만 관리하기 힘드니까 변수명으로 Enum 컨트롤 해도 좋고」 ④ 「대시보드 결정 응답: 1) UI 계층 설계 - C9는 두 결함만 고치고 계층 설계는 따로 할지, C9에 같이 넣을지 → A C9 최소 수정 + 계층 따로」. 효과: C9는 S-1·S-2만 최소 수정하고 공용 UI 계층은 [BACKLOG ui-layer-sort-design](../../../00_Document/operations/BACKLOG.md#ui-layer-sort-design의-원문검토-범위)으로 분리한다.
+
+- **메인 지침(사용자 결정 아님) — C9 배너와 정렬 숫자**: 메인이 같은 전달 `msg_b78153624c8b`에 덧붙인 지침은 「보상 창이 뜰 때 배너를 닫거나 숨기는 쪽을 먼저 검토」다. 새 정렬 숫자를 흩어 넣지 않고 불가피한 숫자 변경 줄에는 후보 ID를 남기며, Art UI 적용 직전 공용 계층의 별도 범위를 정한다. 출처 정정 `msg_df4bb91a6e67`(2026-10-13T16:37:38Z)에 따라 이를 사용자 결정으로 표현하지 않는다. 리드는 이 지침 안에서 숨김/닫음 경로를 이번 최소 수정 방향으로 선택했다(`msg_4ffd7444eb6a`); 구현 방향·batch 1회 허가·4GiB 관문은 유지한다.
+
+- **Unity 실행 허용 줄 유지**(메인 `msg_ed1f78c433f4`, 2026-10-13T14:07Z). 사용자 원문 「그리고 아무래도 매번 넣기 불편하니까 필요한 워크트리에는 계속 세팅해주는게 좋겠어」. 사용자가 직접 추가한 `mcp__unity-mcp__Unity_RunCommand` 허용 줄을 C9 뒤에도 유지한다. 아래 과거 결정의 종료 후 삭제 조건을 대체하며, 새 작업·시트 사용 권한은 각 할당 범위를 따른다.
 
 - **다음 goal과 우선순위**(메인 `msg_6d3f7b2831e6`, 2026-10-10 16:24 KST 메인 pane 제출). 원문 「7) 19 - Content 다음 goal → A 던전 + 결함 둘」, 「5) 17 - 마일스톤 우선순위(기능 동결 10월 28일까지) → A 인스턴스 던전 먼저」. 효과: 10-08 승인 던전 초안 v3을 goal로 옮기고, 인스턴스 맵이 들어올 때까지 기술 계약·클라이언트 쪽을 먼저 한다. 그동안 결함 둘을 같은 goal 첫 PR로 고친다.
 - **범위 승인**(메인 `msg_9fe1d49e00bb`, 2026-10-10T07:39:37Z). 원문 「대시보드 결정 응답: 1) 계획 검토 - Content Content 던전 클리어·보상과 결함 둘 goal 범위(질문 셋, 추천 전부 A) → A 승인 (초안 msg_f1bba119c853)」. 효과: 범위 초안 v1 그대로이고 세 질문 모두 A다. 1 HUD 골드를 서버 재화에 연결한다. 2 「I」 키로 패널을 열고 닫는다. 3 보스 처치자 보상을 없애고 클리어 보상 하나로 합친다. PR 순서 결함 → 패킷·창 → 클리어도 승인 범위다.
@@ -184,24 +289,47 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - **재확인 동안만 Unity 코드 실행 허용**(메인 `msg_63aa0980d58a`, 2026-10-10T14:12:50Z). 원문 「대시보드 결정 응답: 1) 38 - 골드 수정 실제 화면 재확인 동안 Unity 코드 실행 허용 → A 재확인 동안만 허용」. 효과: 메인이 content-active `.claude/settings.local.json`에 허용 한 줄을 넣었고, 재확인 검증자는 그 뒤에 새로 기동했다. MCP 사용이 끝난 뒤 리드 요청(`msg_cd7e37a05073`)으로 메인이 그 한 줄을 지웠다(`msg_aa4aae54b7d7`, 15:12:15Z). 남은 내용은 `skillOverrides`뿐이다.
 - **메인 확인(사용자 결정 아님) — 던전 패킷·창 PR 범위**(`msg_33d93ad1147f`, 2026-10-10T16:04:16Z). 리드 초안 `msg_9747b2350231`의 1~6과 달라진 점 넷을 승인 범위 안의 구현 방식 선택으로 확인했다. 조건 셋은 「던전 패킷·창 PR의 요구」에 반영했다. 전투 씬 초기화 파일을 「건드릴 곳」 보충으로 적는다. 39·40을 맨 아래에 더하고 서버·Unity 양쪽 검증과 Plugins 사본 diff를 원시로 남긴다. 큰 실행은 Core 재측정·Management 중간 점검과 겹치지 않게 미리 알린다.
 - **Content·Core 우선**(메인 `msg_e9af11e8efee`, 2026-10-11T07:46:38Z). 원문 「일단 좀 급한게 컨텐츠랑 코어쪽이니까 이 쪽 작업 우선해보자, 운영툴은 재개지점 맥락확보하고 세션 정리해줘」. 효과: Content·Core가 먼저다. Management는 재개 지점을 남기고 닫으며, 그 7777 중간 점검 일정은 없어졌다(메인 조건 3의 Management 겹침 대상이 사라짐). World·Rules는 큰 실행이 겹치면 양보한다. 큰 실행 전 알림은 그대로 한다.
+- **라우팅 핫픽스**(메인 `msg_154e43b875cb`, 2026-10-11T11:03:16Z). 원문 「대시보드 결정 응답: 1) 모델 라우팅 - 모든 리드를 문맥 25만에서 압축하도록 지금 적용할지 → A 전체 적용 · 2) 모델 라우팅 - 리드가 같은 메시지로 두 번 깨는 것을 지금 규칙으로 막을지 → A 지금 적용 · 3) 모델 라우팅 - 로컬 DB 설치·기동 도구의 검증을 지금부터 Astra로 옮길지 → A 지금부터 Astra · 4) 모델 라우팅 - 선행 시험 작성자를 Codex로 옮기는 시점 → A 10-31 평가 때」. 이 goal에 닿는 효과는 셋이다. 1: Content 리드는 `--autocompact 250000`으로 다시 떴다. 압축 뒤 맥락을 잃어 일을 다시 한 사례가 나오면 바로 메인에 보고한다. 2: 우편함 대기 background가 살아 있는데 Orca 자동 알림으로 깨면 도구 호출 없이 한 줄로 턴을 끝낸다. 대기가 꺼졌거나 확실하지 않으면 check로 처리하고 대기를 다시 연다. 4: 선행 시험 작성자는 10-31 평가 때까지 신규 `claude-opus-5-5` 그대로다. 3은 로컬 DB 도구 검증이라 이 goal에 해당하지 않는다. **결정 2 정정**(메인 `msg_6e84b81f7e50`, 2026-10-11T11:49:52Z): 「대기를 다시 연다」는 사용자 결정 2에 없던 메인의 덧붙임이었고 ORCA 정본과 어긋났다. 사용자가 정본을 유지했다. 원문(메인 pane Enter 제출) 「대시보드 결정 응답: 1) 라우팅 정본 반영 - 메모리 부족으로 꺼진 우편함 대기를 리드가 다시 켜지 않는 규칙을 유지할지 → A 유지 · 2) 라우팅 정본 반영 - 규칙 문서 크기가 약 1.8KB 느는 것을 허용할지 → A 허용」. 정정판: 대기가 아직 돌고 있고(종료·kill 알림을 받지 않음) Orca 자동 알림으로 깼으면 도구 호출 없이 한 줄로 턴을 끝내고, 메시지는 대기가 끝나 깰 때 처리한다. 대기가 메모리 회수로 꺼졌거나 살아 있는지 확실하지 않으면 `--wait` 없는 check로 처리한다. 메모리 회수로 꺼진 대기는 스스로 다시 켜지 않는다. 메시지 도착·시간 초과로 정상 종료한 대기를 다음 대기로 여는 것은 그대로다.
+- **클리어 PR의 세션 파일 제출 메서드**(메인 `msg_a3531f312474`, 2026-10-11T11:06:04Z). 원문 「대시보드 결정 응답: 1) Content 클리어 PR - 세션 파일에 확인 요청 제출 메서드 하나를 더하는 것을 범위에 넣을지 → A 넣는다」. 효과: `Sessions/GameSession.cs`에 확인 요청 제출 메서드 하나가 「건드릴 곳」에 들어간다. 나머지 범위는 메인이 리드 요청 `msg_0d95711472f4`와 승인 범위를 대조해 차이가 없었다. 메인 조건은 둘이다. `GameSession`·`HandlerRegistry`는 쓰기 전에 World·Core 리드에 함께 알리고 늦게 병합되는 PR이 main을 받는다. 7777·Unity 큰 실행은 미리 묻는다. 구현자 신규 `gpt-6-astra` xhigh(신호 2·3·4)와 선행 시험 신규 `claude-opus-5-5` 배정도 확인했다.
+- **마감 준비**(메인 `msg_e5eef9da3206`, 2026-10-11T14:03:05Z). 원문 「일단 슬슬 마감 준비도 하자, 각 파트 마지막 작업 끝나면 재개 포인트 잡고 마무리하는 방향으로 지시해줘」. 효과: Content의 마지막 작업은 돌던 독립 검증의 결과 처리까지다. 새 작업자 세션은 열지 않는다. 리드는 정산하고 남은 프로세스 0을 확인한 뒤 재개 지점을 고쳐 자기 branch에 커밋·push하고 메인에 「마감 준비 완료」를 보낸다. C9 실화면과 Unity 실행 허용 결정은 다음 세션이다.
+- **10-28 시연 영상 방향**(메인 `msg_acaf45a27240`, 2026-10-13T03:34:07Z). 원문 「대시보드 결정 응답: 1) 10-28 시연 영상 - 길드 거점 최소 순환을 새로 넣을지 → A 길드 거점 넣음」. 이 goal에 닿는 효과: 진행 중인 이 goal은 지금 순서(봇 → 실화면 → PR)대로 끝까지 간다. 던전 클리어 보상은 영상의 한 장면 후보다. 시연 시나리오 승인 전에는 새 goal을 열거나 준비하지 않는다.
+- **10-28 시연 계획과 파트 배정 승인**(메인 `msg_2b5d1c958117`, 2026-10-13T03:46:57Z). 원문 「대시보드 결정 응답: 1) 계획 검토 - Main 10-28 시연 영상 시나리오와 파트 배정 → A , 코멘트 「A로 가되 길드거점은 맵형태로 나중에 시간나면 꼭 만들었으면 좋겠어, 시각적인 성장 이펙트나 이런게 도드라지면 좋겠네, Shader로 해결할 수 있는건 해결하고, 문제는 이제 애니메이션 시트를 만드는게 문제인데, 이게 GPT Image 2.5로 해결이 되는지, 아니면 힉스필드나 Unity AI 토큰으로 만들어서 해결해야 하는지도 문제네, 그리고 Unity AI로 시트화 시키는건 애니메이션 일관화가 프롬프팅으로는 랜덤성이 짙어서 원하는거를 뽑을때 까지 드는 비용도 생각해야 돼」」. 승인된 계획 원문은 저장소 밖 `C:/Dev/DawnHolder_Dashboard/plans/demo-video-1028-scenario.md`다. 이 goal에 닿는 효과: 이 goal은 지금 순서대로 끝낸다. 다음 Content goal(길드 화면과 두 클라이언트 촬영 리허설)은 R-8대로 새 리드가 연다. 같은 `03_Client`를 쓰는 아트 파트와 파일 소유(스크립트는 Content, 그림·셰이더 자산은 아트)와 Unity 실행 시각을 조율한다(리드 알림 `msg_587619160192`).
+- **C9 실화면 동안만 Unity 코드 실행 허용**(메인 `msg_a7191a5cc619`, 2026-10-13T05:15:10Z). 원문 「대시보드 결정 응답: 1) 실화면 두 건 - 확인하는 동안만 Unity 코드 실행을 허용할지(World 로그인, Content 던전 클리어) → A 확인 동안만 허용」. 효과: Unity MCP 시트는 World 로그인 실화면이 먼저 쓴다(`msg_5caf86048690`). World가 시트를 풀면 메인이 content-active `.claude/settings.local.json`(Git 무시)에 허용 한 줄을 넣고 SHA256을 알린다. 그 알림 전에는 Editor·검증자를 띄우지 않는다. MCP 사용이 끝나면 리드가 「허용 줄 지울 차례」를 알리고, 메인이 그 한 줄만 지운다. `skillOverrides`는 남긴다.
+- **메인 판단(사용자 결정 아님) — C9 실화면을 사용자 복귀 뒤로 미룸**(`msg_73e4d39722f3`, 2026-10-13T05:49:57Z). World는 05:47Z에 시트를 풀었다(`msg_28246f9ce402`). 그러나 사용자가 자리를 비웠다(메인이 전한 메인 채팅 원문 「일단 나 잠깐 자고올게」). C9는 사용자가 Unity 창의 MCP 연결 승인을 눌러야 한다. 지금 Editor를 띄우면 그 단계에서 멈춘 채 메모리만 잡으므로, 메인은 허용 줄을 넣지 않았다. 결정 A의 C9 허용은 유효하며, 사용자 복귀 뒤 메인이 줄을 넣고 알린다. 그 사이 리드는 C9 검증 계약을 준비해 둔다.
+
+메인 적용 판단 msg_a7eb36987003(14:12:30Z)은 사용자 결정의 적용이며 새 사용자 결정이 아니다. G1~G9·G5·Digits·OverlayRect 모두 동결 뒤 정리로 확인했다. 다음 묶음에서 해당 파일을 어차피 고치면 함께 추출할 수 있으나 필수나 PR 차단 조건은 아니다. G8/G9·Digits·OverlayRect는 판정문에 #5로 위치·귀속을 남기고, G9의 null 허용/fixture Assert/PropertyInfo 캐시 의미를 보존한다. 현 검증은 처분을 기다리지 않고21개 실제 실행 절차를 계속하며 Art→World 실제 반환 뒤 조율한다. 판정 차단 사유는 동작 결함·항상 통과하는 시험·측정값 위장·실행 미수행이다.
+## 동결 뒤 정리
+
+근거: 사용자 시연 우선 결정 msg_e6960028241c. 동작 영향 없는 항목으로 현재 통과를 막지 않으며 **미해소**로 남긴다. 2026-10-28 기능 동결 뒤 원래 절차로 돌아가 처리하고, 지금 시연 경로 밖 정리를 착수하지 않는다.
+
+| 번호 | 미해소 항목·원문 근거 | 이후 처리 |
+|---|---|---|
+| #4 - 공통 화면 판독·패널 찾기 중복 | 재검증2 report.md 「#4 상세」, G1 IsGraphic/G2 Contains·ScreenArea/G3 Area/G4교차/G7 Root.Find("Inventory") | ScreenUiProbe·InventoryPanelProbe로 책임별 추출 검토. 기존 메인의 PR 전 필수 조건은 후속 사용자 결정으로 대체 |
+| #5 - Button·EventSystem·숫자·사각형 판독 중복 | 재검증3 msg_df62e08cced1, reading-uses-survey.json. G8 Inventory43·76·303/ScreenUiProbe145, G9 ScreenUiProbe114·132/Presentation586, Digits4곳, OverlayRect Inventory779/ScreenUiProbe.ScreenRect. 기존 코드/이전 검증자 귀속 | 공통 조회를 추출하되 호출자의 null 허용·fixture Assert·PropertyInfo 캐시 의미 보존. 이번 구현자 결함으로 옮기지 않음 |
+| O-1~O-3 - 설명·표현 정리 | 재검증2 report.md 설계 관찰: helper 머리 주석, 경로 접두 표현, client.md 검증 상태 문장 | 동작 영향 없는 문서·가독성 정리 |
+| G5·Digits - 공통 변경 이유 판단 후보 | 두 프레임 정착 대기와 숫자 판독4곳. 검증자 판단 보류, 제품 동작 영향 없음 | 동결 뒤 같은 변경 이유면 추출, 다르면 보존 이유 기록. 지금 새 검사 도구 도입 없음 |
 
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-11T10:22:55Z(`lead-goal-edit-1011c/clock.txt`)이다. 패킷·창 PR의 재검증이 통과하고 PR230을 만든 시점이다.
-
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | [PR230 - 던전 패킷·창](https://github.com/bass131/dawnholder-server/pull/230)의 정확한 head CI를 확인하고, 메인에 병합 승인 요청(R-4 준비 보고)을 보낸다. 병합 뒤에는 클리어 PR 착수 전에 World 다중 계정 로그인 PR과의 패킷 번호·버전 순서를 다시 맞춘다 |
-| 열린 Task·Dispatch | 없다. 독립 검증 `ctx_9d95ce82d14f`, V-1 수정 `ctx_9c05d9c7936b`, 재검증 `ctx_47fddb9f9d06`은 정산했다 |
-| 작업 공간 / branch | `content-active` / `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 10-11에 origin/main `6782cd67`을 합침) |
-| PR | 던전 패킷·창은 PR230(OPEN, 이 기록 커밋 전 head `a35b7611`). 결함 PR은 [PR221 - HUD 골드와 인벤토리 패널 「I」 키](https://github.com/bass131/dawnholder-server/pull/221)로 병합됐다(head `f135eaf1`, merge commit `e775bc77`) |
-| 리드 세션 / Run | `term_89459727-3c79-4004-a8d0-859d7a0052a9`(10-11 재진입) / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`) |
-| 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`, `03_Client/ProjectSettings/ProjectSettings.asset`. 커밋·되돌리기·stash 금지 |
-| 작업자·실행 자원 | Content 작업자 pane 0(10:20:04Z `terminal list`). Content는 10:21Z에 Unity·7777을 놓았다고 World·Core에 알렸다(`msg_bc322f3be185`, `msg_f67847b73b60`). Core SQL 컨테이너가 10:30Z 전후 시작 예정이다(Core `msg_8b4ad1f30afd`) |
-| 로컬 부수 변경 | `ProjectSettings.asset`은 10:21Z에 사용자 원래 상태 `4a8db0bd…`로 되돌렸다. TimeManager는 HEAD와 같다. 클리어 PR의 Unity batch가 다시 쓰면 같은 방식으로 되돌린다 |
-| 남은 결정·준비 | 사용자 결정으로 남은 것은 PR230 병합 승인뿐이다. World 다중 계정 로그인과의 병합 순서에 따라 패킷 번호와 시험을 맞춘다(「파트 간 소유와 계약」 PDL 행). C9 실화면에는 Unity 코드 실행 허용 결정이 다시 필요하다 |
+| 다음 첫 일 | PR239 최종 head·CI·판정 원문을 메인에 보고하고 정확 head의 사용자 병합 승인을 기다린다. 병합 뒤 결과 기록·Gardener·종료 기록 PR·종료 점검을 이어간다. 다음 goal·작업자는 시작하지 않는다 |
+| 현재 단계 | C9 범위 1~4 독립 PASS, 제품 결함 0. PR239 ready·미병합이며 goal 전체는 아직 완료하지 않았다. #4/#5 정리는 동결 뒤로 보존한다 |
+| 작업 공간 / branch | content-active / feat/dungeon-clear-server-20261011. 최신 main 합류와 검증 코드 기준은 `c9-screen-resume-20261015-prep/main-merge-receipt.json`, 최종 head·원격 일치·CI는 같은 폴더의 `final-pr-state.json`·`final-closeout.json` |
+| PR / 결정 대기 | [239 - 던전 클리어 보상 원자 지급과 마을 복귀](https://github.com/bass131/dawnholder-server/pull/239). D-10 해석 A는 메인 판단(`msg_9ad3fa95a015`)이며 사용자 결정이 아니다. 병합 승인 요청 때 공개한다. 추가 실행은 없고 Codex는 병합하지 않는다 |
+| 작업자 / 자원 | 열린 작업자·실행·예약 0. 이번 검증자는 succeeded·settled 뒤 release와 정확 pane 종료를 마쳤다. Content의 Editor·7777·MCP 시트는 반환했다. 다른 파트의 현재 자원은 각자 fresh gate로 확인한다 |
+| 검증 근거 | `.backups/verification/2026-10-10-dungeon-clear-rewards/c9-screen-resume-20261015/report.md`·`verdict.json`. 원시 수치·실행·정산·생존 신호 집계는 같은 상위 폴더의 `c9-screen-resume-20261015-prep/final-closeout.json`과 연결 근거 |
+| 보호 / 미커밋 | 제품·시험 미커밋 변경 없음. 기존 사용자 MinimapRT·ProjectSettings 변경은 보존했다. 고정 입력 42개와 보호 파일 4개 불변을 대조했으며 stage·복원·stash하지 않는다 |
+| 리드 / 설정 | 현재 [Content 리드 Sol], 화면 GPT-6.1-Sol xhigh, backend unknown. 현재 Run·세션 식별자는 prep/active.json. 사용자 결정에 따른 settings.local.json 허용 줄은 유지한다 |
 
-**남은 순서**: PR230 CI → 사용자 병합 승인 → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+### 기존 아트 경계
+
+C9의 실제 main 병합 뒤 Art가 rebase한 다음 창 작업을 진행한다. Content checkpoint의 직접 cherry-pick·merge·파일 복사는 하지 않는다(`msg_d5e7bee01931`).
+
+| 항목 | 경계 |
+|---|---|
+| 아트 인계: 대장장이 | 이 goal은 `Npc_BlackSmith.prefab`·`BlackSmith.controller`·대장장이 동작 코드를 바꾸지 않는다. 컨트롤러 기본 상태 교체, 새 망치질 클립, 다듬은 시트와 `.meta`는 아트 효과 PR이 맡는다. 다음 Content goal이 상호작용 컴포넌트를 그 프리팹에 붙이게 되면 쓰기 전에 아트와 파일·시기를 나눈다(아트 `msg_55ea71c3ee0a`, 리드 회신 `msg_136ca02071fc`) |
+| 아트 인계: UI 창 조각 | 창 그림은 조각 조합형이다. 조각 PNG·`.meta`·9-slice, 조각 프리팹, 표시 전용 helper, 코드로 짓는 네 창(`InventoryPanelView`·`DungeonClearRewardWindow`·`PartyInvitePopup`·`NpcDialogPanel`)에 조각을 입히는 일은 아트 UI 창 PR이 맡는다. 조각 이름·변형은 그 PR 병합 때 고정하고, Content의 길드 패널·대장간 화면은 그 조각을 쓴다. 길드 패널·대장간을 코드로 지을지 프리팹·씬으로 지을지는 미정이다. C9가 보상 창 겹침 결함을 찾으면 이 PR에서 그 파일을 고칠 수 있고, 쓰기 전에 아트와 순서를 나눈다(아트 `msg_d87cbec99258`, 리드 회신 `msg_2f7a25007d10`) |
 
 ## 진척 단계
 
@@ -212,11 +340,12 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - [x] R10 골드 넘침 수정·재확인
 - [x] 결함 PR 병합
 - [x] 패킷·창 구현·검증
-- [>] PR230 병합
-- [ ] 클리어 설계 확정
-- [ ] 클리어 서버 구현
-- [ ] 검증·실제 플레이
-- [ ] 클리어 PR 병합
+- [x] PR230 병합
+- [x] 클리어 설계 확정
+- [x] 클리어 선행 시험
+- [x] 클리어 서버 구현
+- [x] 검증·실제 플레이
+- [>] PR239 병합
 - [ ] 결과 기록·Gardener
 - [ ] 종료 기록 병합
 
@@ -224,7 +353,8 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 - 범위 초안·사용자 승인·World 계약 확인까지 했다. 원문은 근거 폴더의 `scope-draft-v1.md`와 `inbox/`에 있다.
 - 결함 PR은 선행 시험 → 구현 → 수정 1 → 독립 검증 → PR 생성(CI) → R9 실화면 → R10 수정 루프와 실화면 재확인 → 사용자 병합 승인까지 끝났다(아래 다섯 절). 실행한 것: Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), CI, Unity Editor 실화면(MCP). 실행하지 않은 것: 봇, 빌드 단독 실행, 사람 손 입력.
-- 던전 패킷·창 PR은 선행 시험 → 구현 → 줄 끝 수정 → 독립 검증(차단 V-1) → V-1 수정 → 재검증(통과) → PR230 생성까지 했다(아래 세 절). 실행한 것: WSL 빌드·서버 시험, Windows 솔루션 빌드, 추출본 생성기·DLL 재현, Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), 봇 회귀. 실행하지 않은 것: 실화면, DB.
+- 던전 패킷·창 PR은 선행 시험 → 구현 → 줄 끝 수정 → 독립 검증(차단 V-1) → V-1 수정 → 재검증(통과) → PR230 생성 → 사용자 병합 승인까지 끝났다(아래 세 절). 실행한 것: WSL 빌드·서버 시험, Windows 솔루션 빌드, 추출본 생성기·DLL 재현, Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), 봇 회귀. 실행하지 않은 것: 실화면, DB.
+- 던전 클리어 PR은 선행 시험 → 서버 구현 → 독립 검증(판정 보류, 봇 미실행) → 봇 검증(통과)까지 했다(아래 네 절). 실행한 것: WSL 빌드, 필터·전체 서버 시험, 서식 검사, 봇 빌드, 7777 봇 실행(C8과 기존 봇 회귀). 실행하지 않은 것: Unity·실화면, DB, CI.
 
 ### 선행 시험 — RED 준비 성공, 2026-10-10
 
@@ -290,7 +420,7 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 ### R10 골드 한 줄 맞춤 — 통과, 2026-10-10
 
-| 단계 | Task / 모델 | 결과 | 원시 |
+| 단계 | #1~#3 변경분Strong PASS21/21, done15:29:43.857Z 뒤정산·정확pane종료. #4/#5는동결뒤정리. 세크기실화면/SFX·goal전체PASS는미실행 |
 |---|---|---|---|
 | 선행 시험(RED) | `task_31bcf8848ee0`, 신규 `claude-opus-5-5` | PlayMode 2개 중 7~10자리 시험 실패(두 줄·테두리 밖), 6자리 이하 시험 통과. 커밋 `a9e74a1f` | `r10-tdd/report.md`, `runs/playmode-red-1/results.xml`(SHA256 `d56ea8a9…`) |
 | 구현 | `task_d0826fbf1ec3`, 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown) | `UI.unity` GoldText TMP 다섯 필드(자동 크기 12~18, 줄바꿈 끔, 상하 margin −10)와 client.md 한 문장. PlayMode 네 클래스 26/26, EditMode 417/417. 커밋 `74fce329` | `r10-impl/report.md`, `runs/playmode-green-2/`(`ec3d184c…`), `runs/editmode-regression-2/`(`2928993b…`) |
@@ -407,6 +537,243 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - **라우팅 시범 기록**: Astra 1회차(구현)의 독립 결함은 V-1 하나이고 귀속은 리드 계약·기존 코드다. Sol 1회차(줄 끝 수정)의 독립 결함은 0이다. Sol 2회차(V-1 수정)의 독립 결함은 0이다. 절차 실패는 300초 초과 heartbeat가 구현 셋, 줄 끝 수정 하나, V-1 수정 하나다.
 - **설정 파일 되돌림**: 재검증이 이 PR의 마지막 batch였다. 그 뒤 메인 판단 `msg_c9fac8091065`대로 `ProjectSettings.asset`을 `5a03375a…` → `4a8db0bd…`로 되돌렸다. 되돌림 사본과의 차이는 Unity가 지운 SENTIS define 한 줄뿐이었다. TimeManager는 HEAD와 같다(`lead-settings-restore-1011/`).
 - **미실행**: 실화면(클리어 PR), 서버 시험·봇·DLL 재현의 재검증 재실행(판정 diff가 서버·공유 코드를 건드리지 않음), DB.
+- **병합**: CI 4/4 통과(가장 긴 dotnet-tests 24m11s, 10:49:36Z 완료)·MERGEABLE CLEAN인 head `ac98fe69`로 메인에 승인 묶음을 보냈다(`msg_c78e1ddae8f8`). 그 사이 PR229(Rules 동결 전 규칙 문서)가 먼저 병합됐다. 겹치는 파일은 CURRENT 하나였고 `git merge-tree` 충돌이 0이라 다시 합치지 않았다(`merge-tree-704baa5e.txt`). 사용자가 메인 pane에 「병합 승인: PR230 head ac98fe6927e8ca6a41b5a66962bbb18e73feab2f」를 제출했고, 메인이 병합했다(2026-10-11T10:57:10Z, merge commit `999b1b98ba38934568f852adc2d22c9ee333d864`, 메인 `msg_8659906ef748`). 원격 branch는 병합 뒤 지워졌다(11:09Z `git ls-remote` 0건).
+- **번호 확정 알림**: 병합 직후 World에 39·40·v18이 main에 들어갔고 World 로그인은 41·42를 쓴다고 알렸다(`msg_929b97d8c951`). 버전 18을 리터럴로 단정하는 서버·클라이언트 시험 위치도 함께 보냈다.
+
+### 클리어 선행 시험 — RED 준비 성공, 2026-10-11
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_534677b6c002` / `ctx_21e5054b19a8`, `[Content 검증자]`, 11:30:57Z~11:57:09Z |
+| 모델 | 지정 `claude-opus-5-5`. 최초 실행 명령 `claude --model claude-opus-5-5`(TEMP `.backups/tmp/clear-tdd`), 화면 표시 「Opus 5.5 with xhigh effort」. backend 실제 모델 unknown |
+| 계약 | `clear-tdd-contract.md` v1 SHA256 `57b95bf6…0704`(CODE_CONVENTION 7개 절 원문 포함), 요약 spec `clear-tdd-spec.md`(`7dd810c8…acef`), 고정 입력 `clear-tdd-inputs.txt`(입력 38개·보호 파일 3개) |
+| 보고 | `clear-tdd/report.md`, worker_done `msg_4ea27ad985d2`(succeeded) |
+| 커밋 | 시험 8파일 `2e2c5c92`(+1106/−21) |
+
+| 실행 | total / pass / fail / skip | 원시(SHA256 앞 8자) |
+|---|---|---|
+| 고칠 기존 세 클래스, 고치기 전 | 61 / 61 / 0 / 0 | `runs/server-before/server-before.trx`(`3418d808`) |
+| 같은 세 클래스 + 새 두 클래스, 고친 뒤 | 80 / 58 / 22 / 0 | `runs/server-after/server-after.trx`(`881f7b66`) |
+| 봇 빌드(`sync-wsl.sh build`) | 경고 4·오류 0. 경고는 기준과 같은 기존 네 건이고 봇·새 시험 파일은 0 | `runs/server-after/build.txt`(`1e6fab94`) |
+
+- **결과**: 실패 22개는 새 시험 19개 전부와 고친 기존 시험 3개다. 모두 아직 없는 동작 때문이다. 클리어 결과 39번 미발신, 40번 처리기 미등록, 확인 뒤 마을행 `S_MapTransition` 없음, 지금 `KillRewardPolicy`의 보스 처치 보상, Boss 종류 예외 없음이다. 컴파일 오류, fixture·환경 실패, 고친 시험 밖의 기존 시험 실패는 0이다.
+- **지금 통과하는 둘(양성 대조)**: CurrencyCap 묶음 거부와 나중 아이템 넘침 거부다. 지금의 `InventoryTransitions.Grant`가 이미 묶음 전체를 거부한다. 클리어 지급이 같은 `Grant`를 쓰라는 것이 C2라 구현 뒤에도 통과해야 한다. 새 시험의 「39가 오지 않는다」「40이 버려진다」 단정은 모두 같은 시험 안의 짝(수혜자의 39 하나, 이어진 올바른 40의 이동, 처리기 등록)과 묶여 지금 실패한다. 대상 0 통과가 아니다.
+- **고친 기존 시험**: 다섯 단정을 (a) 옛 세부로 분류했다. 보스 보상 묶음과 그 거부 시험, 보스 처치자 50+2, `BossKill_GrantsPouchMaterialAndFiftyCurrencyInItemIdOrder`, P4의 「40 미등록」이다. 기준 61개는 모두 통과였고, 기대값을 일괄 재생성하거나 완화한 것은 없다. 좁힌 것 하나(CurrencyCap)와 뒤집은 것 하나(P4 등록)가 있다.
+- **P4 등록 단정 뒤집기(리드 수용)**: `DungeonClearPacketContractTests.cs`는 이제 `HandlerRegistry.TryGet`으로 40 처리기 등록을 단정한다(132·147행). 위 「던전 클리어 PR의 요구」의 서버 흐름 5가 등록 한 줄을 정했다. 그 아래 「바뀔 기존 시험」은 미등록 단정만 옛 세부로 분류했다. 등록 단정을 지우면 「마을 비수혜자의 40은 버린다」가 미등록 서버에서도 통과해 공허해진다.
+- **시험에 없는 요구(독립 검증으로 넘김)**: wire의 CurrencyCap bytes는 코드 대조로 본다. Accepted가 아닌 이동 거부 뒤 다시 누르기는 결정적으로 재현할 수 없어 코드 검토로 본다. `RevisionExhausted`는 시험이 없어 코드 검토로 본다.
+- **관찰면이 구현을 묶는 지점(리드 채택)**: 보고서 7절의 일곱 가지를 구현 계약 조건으로 넣는다. 정착은 `SettleTicks` 3 안이다. 수혜자의 경제 패킷 순서는 [39, 36]이다. 40 처리기는 `HandlerRegistry`에 등록한다. 도착 이동은 `S_MapTransition`(Town, `TownSpawnX`, 0)이다. 보스 정책 예외는 미지 종류와 같은 예외 타입이다. 버린 40 뒤에는 새 패킷 종류가 없다. 같은 틱의 40 두 번은 이동 하나다.
+- **구현 계약에 넣을 것**: `InventoryAuthorityBoundaryTests.cs` 12행 머리 주석 「boss 50 + material 1 + pouch 1」을 함께 고친다. WSL 명령은 `wsl -d Ubuntu --exec bash 99_Tools/sync-wsl.sh …` 형태로 적는다. 결과 경로를 `/mnt/c/…`로 넘기는 명령에는 `MSYS_NO_PATHCONV=1`을 붙인다.
+- **리드 R-2**(`lead-r2-clear-tdd/r2.md`): 시험 8파일·TRX 2개·보호 파일 3개의 hash가 보고와 같다. TRX를 직접 다시 세어 61 → 80(58/22)과 클래스별 수가 같았다. 실패 메시지 22개를 TRX에서 읽어 모두 미구현 사유임을 봤다. 고친 기존 파일의 diff가 계약 구간 안이고 `JoinAndEnter`(188~197행)는 그대로다. 새 시험 세 파일 전문과 봇 시나리오 표본을 읽었다. 기대값은 goal 리터럴·공유 보상표·`InventoryLimits.MaxStack`·조회 전후 비교로만 정하고, reflection·제품 계산 복제는 없다.
+- **부수 변경**: 기준 TRX가 Git Bash 경로 변환 때문에 WSL 작업 사본 아래에 생겼다. 작업자가 근거 폴더로 옮겼고 빈 디렉터리 사슬이 남았다(저장소 밖). 작업자가 경로 없는 `git diff --stat`을 한 번 실행해 보호 파일의 변경 줄 수가 출력에 섞였다. 내용 읽기·쓰기는 없었고 보호 hash는 그대로다. 둘 다 작업자가 스스로 보고했다.
+- **생존 신호(helper, `lead-settle-clear-tdd/liveness.txt`)**: 신호 22개, 가장 긴 간격 157초, 300초 초과 0, 질문 0이다.
+- **정산**: 대기 확인(tui-idle, 「Baked for 26m 29s」) → worker-release(retained/external_terminal) → close(ptyKilled true) → 11:57:46Z 목록에서 사라짐(`lead-settle-clear-tdd/settlement.md`).
+
+### 클리어 서버 구현 — 결과, 2026-10-11
+
+| 항목 | 값 |
+|---|---|
+| 구현 Task / Dispatch | `task_2bfe92fb8745` / `ctx_068349d19378`, `[Content 구현 Astra]`, 12:16:31Z~12:49:11Z |
+| 모델 | 지정 `gpt-6-astra` xhigh. 최초 실행 명령 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 화면 표시 「GPT-6-Astra xhigh」(Codex v0.162.1). backend 실제 모델 unknown. 배정 신호 2·3 |
+| 계약 | `astra-clear-impl-contract.md` v1 SHA256 `c86500d9…`(CODE_CONVENTION 7개 절 원문 포함), 요약 spec `astra-clear-impl-spec.md`, 고정 입력 `astra-clear-impl-inputs.txt`(입력 42개·보호 파일 3개) |
+| 보고 | `astra-clear-impl/report.md`, worker_done `msg_84d3ce223f45`(succeeded, 14파일) |
+| 커밋 | `654b2728`(14파일 +208/−16) |
+
+| 실행 | total / pass / fail / skip | 원시(SHA256 앞 8자) |
+|---|---|---|
+| 필터 5클래스, 쓰기 전 | 80 / 58 / 22 / 0 | `runs/filter-before/`(`bbbea2ad`) |
+| 서버 전체, 쓰기 전 | 1004 / 977 / 22 / 5 | `runs/full-before/`(`b2cf6203`). 실패 이름이 필터의 22개와 같다 |
+| 필터, 첫 구현 | 80 / 27 / 53 / 0 | `runs/filter-after/`(`83f40670`). 아래 SELF-1 |
+| 필터, 수정 뒤 | 80 / 80 / 0 / 0 | `runs/filter-after-fix1/`(`5011602a`) |
+| 서버 전체, 수정 뒤 | 1004 / 999 / 0 / 5 | `runs/full-after/`(`240c6358`). skip 5는 기존 `Skip` 속성 시험이다 |
+| WSL 빌드 세 번 | 경고 4·오류 0 | `build-before.txt`·`build-after.txt`·`build-after-fix1.txt`. 경고는 기준과 같은 기존 네 건이다 |
+| 서식 검사 | exit 0, 제품 294파일 수정 0, 도구 시험 244 / 244 | `format-after*`, `format-after-evidence/` |
+
+- **구현**: 보스 분기(`GameMap.HandleEnemyDeath`)가 `Dungeon/DungeonClearState.Capture`로 그 순간의 수혜자를 잡는다. World의 Inventory 단계가 `InventoryRegistry.ApplyDungeonClear`에서 기존 `InventoryTransitions.Grant`로 지급하고 39와 성공 snapshot을 직접 보낸다. 보스는 `GameWorld.MakeMap`에서 `EnqueueKill`을 빼고 `KillRewardPolicy`에서 Boss 줄을 지웠다. 40은 `Handlers/Dungeon/DungeonClearConfirmHandler` → `GameSession.SubmitDungeonClearConfirm` → `Dungeon/DungeonClearConfirmation.Execute` → `MapMigration.MoveToPublicMap(…, MapId.Town)`이다. 요구별 위치와 시험 이름은 보고서 「요구별 구현과 시험」 표에 있다.
+- **설계 결정(구현자)**: 던전 파일은 상태·확인·wire 조립 셋으로 나눴다. 상태 객체는 첫 클리어 때 만든다. 같은 복사본이 빈 방 재출현 뒤 다시 클리어되면 새 수혜자 집합으로 교체한다. 콜백은 읽기 전용 `(EntityId, Session)` 목록을 넘긴다. 결과는 `SendToEntity` 대신 캡처한 session에 직접 보내 이동 틈에서도 빠지지 않게 했다.
+- **SELF-1(구현 중 자체 수정)**: 첫 구현의 필터 실패 53개가 모두 `Delegate to an instance method cannot have null 'this'`였다. 공용 맵이 `InventoryRegistry`보다 먼저 만들어져 메서드 그룹의 대상이 null이었다. `MakeMap`의 콜백만 지연 lambda로 바꾼 한 번의 수정으로 80/80이 됐다. 실패 원시와 이름별 분류(`filter-after.classification.json`)를 보존했다. 독립 검증의 확정 실패 집계가 아니다.
+- **시험 대신 코드 대조로 남긴 요구 셋**: wire의 CurrencyCap bytes, Accepted가 아닌 이동 거부 뒤 다시 확인, `RevisionExhausted`다. 구현자는 코드 대조만 했다고 표시했고, 보고서 「독립 코드 대조로 남긴 요구 셋」이 읽는 순서를 준다. 독립 검증이 판정한다.
+- **리드 R-2**(`lead-r2-clear-impl/r2.md`): 변경 14파일과 보호 세 파일의 hash가 보고와 같다. TRX 다섯 개를 node로 다시 세어 표의 수와 같았다. 빌드 원시 세 개의 경고·오류 수도 같다. 파일 시각으로 기준선 실행이 첫 제품 쓰기(12:22:56Z)보다 앞서고, 최종 빌드·시험·서식이 마지막 쓰기(12:26:35Z)보다 뒤임을 봤다. diff 전문(269줄)과 새 네 파일을 읽어 계약 소유 구간 안임을 확인했다. 머리 주석·부분 한정 이름 같은 관찰 다섯은 검증자에게 넘긴다.
+- **생존 신호(helper, `lead-settle-clear-impl/liveness.txt`)**: 신호 12개, 기동 → 첫 신호 약 46초, 가장 긴 간격 222초, 300초 초과 0, 질문 0이다.
+- **정산**: 대기 확인(tui-idle, 「Worked for 32m 45s」) → worker-release(retained/external_terminal) → close(ptyKilled true) → 12:49:41Z 목록에서 사라짐(`lead-settle-clear-impl/settlement.md`).
+- **미실행**: 7777 서버, C8 봇, Unity, DB, PacketGenerator, 원본 제품 Windows 빌드는 돌리지 않았다. 승인된 서식 검사가 근거 폴더의 격리 snapshot에서 Shared·ClientNet을 빌드했지만 원본 Plugins DLL은 바뀌지 않았다. 구현자는 첫 Git 읽기 세 명령에 `GIT_OPTIONAL_LOCKS=0`을 빠뜨렸다고 스스로 보고했다(읽기 전용, 쓰기 Git 없음).
+
+### 클리어 독립 검증 — 판정 보류(봇 미실행), 2026-10-11
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_af8b7df35b78` / `ctx_8aa7d29336af`, `[Content 검증자]`, 첫 신호 13:08:30Z, worker_done 14:29:47Z |
+| 모델 | 신규 `claude-opus-5-5` xhigh. 화면 표시 「Claude Code v2.1.296 · Opus 5.5 with xhigh effort」. backend 실제 모델 unknown |
+| 계약 | `opus-clear-verify-contract.md` SHA256 `6438e486…`, 요약 spec `opus-clear-verify-spec.md`(`b693c644…`), 고정 입력 `opus-clear-verify-inputs.txt`(`f19dec0f…`) |
+| 결과 | `opus-clear-verify/verdict.md`(`609fb7ed…`), worker_done `msg_6facf25b1815`. **판정 보류(봇 미실행), 차단 결함 없음.** 결함 V-1·V-2는 낮음, 비차단이다 |
+| 새 시험 | `Dungeon/DungeonClearRefusalTests.cs`(82줄), `Dungeon/DungeonClearRepeatClearTests.cs`(92줄), 9결과. 이 기록 커밋에 넣었다 |
+
+| 실행 | total / pass / fail / skip | 원시(SHA256 앞 8자) |
+|---|---|---|
+| 서버 전체, 새 시험 전 | 1004 / 999 / 0 / 5 | `runs/full-before/`(`81681813`) |
+| 서버 전체, 새 시험 뒤 | 1013 / 1008 / 0 / 5 | `runs/full-after/`(`a8f942f7`). 늘어난 9건이 새 시험이다. skip 5는 기존 `Skip` 속성 시험이다 |
+| WSL 빌드 | 경고 4·오류 0 | 판정 근거는 `runs/build-before2/`·`runs/build-after/`다. `build-before`는 근거가 아니다(운영 기록) |
+| 서식 검사 | exit 0, 제품 296파일 수정 0, 도구 시험 244 / 244 | `runs/format-after-2/`. 첫 실행 `format-after`는 무효다(운영 기록) |
+| C8 봇과 기존 봇 회귀 | 미실행 | `runs/bot/gate-summary.json`. 시작 조건 확인 18회, 충족 0회 |
+
+- **V-1(낮음, 명세)**: C4의 옛 셋째 문장 「빈 복사본은 그 틱 끝에 정리된다」가 입장 대기 중인 빈 보스방에서 성립하지 않았다. `InstanceMapRegistry.RemoveIdle`이 들어오는 사람이 있는 복사본을 남긴다. 그러면 `GameMap.MaybeRespawnBoss`가 보스를 다시 내고 `_stageCleared`를 false로 되돌린다. 그 처치는 새 클리어로 지급된다. 새 시험 `DungeonClearRepeatClearTests`가 실제 월드 틱 순서로 재현했다. 구현은 C4 둘째 문장과 `server.md`대로다.
+- **V-1 리드 결정 「처치마다 한 번」**: 사용자 완료조건 5·6이 처치 단위다. 판정 O-1대로 해금이 처치 뒤에도 남아, 새 복사본 재도전과 경제 영향이 같다. 그래서 제품·`server.md`·새 시험은 그대로 두고 C4만 고쳤다(`lead-r2-clear-verify/r2.md`). 「복사본마다 한 번」을 골랐다면 구현·`server.md`·새 시험의 마지막 단정이 바뀌었다.
+- **V-2(낮음)**: 구현자가 고친 `InventoryAuthorityBoundaryTests.cs:10-13` 머리 주석이 클리어 묶음의 출처를 아이템 goal 승인표 리터럴이라고 적는다. 실제 출처는 공유 `DungeonClearRewards`(10-08 결정 2 A)다. 다음에 그 파일을 고칠 때 바로잡는다(「다음 계획 후보」).
+- **코드 대조로 판정한 요구 셋**: wire CurrencyCap, Accepted가 아닌 이동 거부 뒤 다시 확인, `RevisionExhausted` 모두 지적이 없다. 이동 거부는 새 시험이 `AlreadyMigrating`으로 실행했다. 나머지 둘의 실행은 상태 심기 없이는 불가라 하지 않았다.
+- **선행 시험 품질과 고친 기존 다섯 단정**: (a) 옛 세부 분류가 맞다. 기대값 일괄 재생성·완화와 제품 계산 복제는 없다.
+- **설계 관찰**: O-1(해금 수명, World 소유)과 O-2~O-5는 「다음 계획 후보」로 옮겼다. O-6은 선행 시험의 보스 처치가 직접 호출이라는 관찰이고, 실제 전투 경로는 C8 봇이 본다.
+- **판정 보류의 이유**: 강 등급은 실제 진입 1회 전에는 통과하지 않는다. 이 PR의 실제 진입은 봇 `DungeonClearSmoke`다. 리드가 조건부로 허락했지만(`msg_60b01e559689`), 사용자 게임 실행과 메모리 4GB 미달로 14:25Z까지 시작 조건이 한 번도 맞지 않았다. 봇이 통과하면 나머지 판정은 그대로 쓴다. 실패하면 새로 분류한다.
+- **큰 실행 보류**: Core SQL 컨테이너 진단 동안 리드가 큰 실행을 막았다(`msg_ab3bfab2d9d8` 13:12:59Z → 해제 `msg_1d6f2b271287` 13:32:44Z, Core 끝 알림 `msg_a18ed271d458`).
+- **리드 R-2**(`lead-r2-clear-verify/r2.md`): HEAD·status·보호 세 파일·새 시험 hash가 판정과 같다. TRX 두 개를 node로 다시 세어 표의 수와 같았다. 서식 exit, 봇 관문 요약, 7777 마감 원시도 판정과 같다.
+- **생존 신호(helper, `lead-settle-clear-verify/liveness.txt`)**: 신호 34개, 가장 긴 간격 273초, 300초 초과 0이다. 질문 셋(메모리 `msg_c5525803aca8`, 서식 회수 `msg_a3ec91c73364`, 봇 `msg_da2c43981385`)에 모두 답했다.
+- **정산**: 대기 확인(tui-idle) → worker-release(retained/external_terminal) → close(ptyKilled true) → 14:30:25Z 목록에서 사라짐(`lead-settle-clear-verify/settlement.md`).
+- **미실행**: C8 봇·기존 봇 회귀, C9 실화면·Unity·MCP, DB·CI·PacketGenerator·Windows `dotnet build`.
+
+### 클리어 봇 검증 — 통과, 2026-10-13
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_2f58855b1557` / `ctx_c59f731adc3d`, `[Content 검증자]`, 첫 신호 04:23:22Z, worker_done 04:59:54Z |
+| 모델 | 신규 `claude-opus-5-5` xhigh. 화면 표시 「Claude Code v2.1.296 · Opus 5.5 with xhigh effort」. backend 실제 모델 unknown |
+| 계약 | `opus-bot-verify-spec.md` SHA256 `9980585c…`. 10-11 계약에서 봇 항목만 남긴 판이다. 고정 입력 `opus-bot-verify-inputs.txt`, 사전 확인 `opus-bot-verify-preflight.txt`. 검증 대상 HEAD `0d5bdbdb` |
+| 결과 | `opus-bot-verify/verdict.md`(`17a5420e…`), worker_done `msg_4ecd858382df`. **봇 검증 통과, 새 결함 없음.** 10-11 판정의 보류가 닫혀 이 PR 독립 검증의 최종 상태는 통과다 |
+
+| 실행 | 결과 | 원시(SHA256 앞 8자) |
+|---|---|---|
+| C8 봇과 기존 봇 회귀(계약의 봇 명령 한 번) | 04:52:44Z~04:54:22Z, exit 0, `PASS=8 FAIL=0`. C8 줄은 `DungeonClearSmoke: success=True parties=2 cleared=2 rewarded=4 returned=4`다 | `opus-bot-verify/runs/bot-1/output.txt`(`540810a8`) 1665·2649행 |
+| 시작 관문 | 여유 물리 9,994,016KiB·가상 13,496,540KiB, 7777 listener 없음. 리드 허락 `msg_0591890f9d92`(04:52:14Z) 뒤 시작했다 | `runs/bot-1/gate.txt`·`memory.txt` |
+| 서버 로그 | 8개 모두 오류 줄 0이다. C8 로그에서 보스방 복사본 둘 생성, 확인 넷, 마을 도착 넷이 보인다 | `runs/log-summary.json`(`1c7f7a9c`), `logs/` |
+
+- **봇 관찰(비차단)**: O-B1은 두 파티가 동시에 처치해 「상대 복사본 결과 0」이 「봇마다 39 하나」로만 관찰된다는 한계다. 그 오배달은 서버 시험의 두 복사본 시험이 막는다. O-B2는 성공 줄의 단계 값이 리터럴이라 로그에 실제 관찰값이 없다는 가독성 지적이다. 둘 다 「다음 계획 후보」로 옮겼다.
+- **이전 판정의 V-1·V-2**: 그대로다. V-1은 리드 결정 「처치마다 한 번」으로 C4에 반영했고, V-2는 다음 계획 후보다.
+- **리드 R-2**(`lead-r2-bot-verify/r2.md`): HEAD·보호 세 파일·`output.txt` 1665·2649행·성공 줄 8·사유 줄 0·C8 서버 로그 줄·서버 로그 오류 0·로그 사본 16개 hash·성공 경로 코드(`DungeonClearSmoke.cs:113` 한 곳, `sync-wsl.sh:154-155`)가 판정과 같다. 판정서 147행의 heartbeat 간격과 World 실행 서술만 실제와 다르다(운영 기록).
+- **7777 조율**: World 서식 검사의 WSL dotnet이 04:51:40Z에 0이 된 뒤 허락했다(`bot-verify-prep/wsl-idle-poll.txt`). 해제(04:54:22Z)는 World·Core·Rules·아트 리드에 알렸다(`outbox/122-bot-release.txt`).
+- **생존 신호(helper, `lead-settle-bot-verify/liveness.txt`)**: 신호 14개, 가장 긴 간격 609초, 300초 초과 1건이다(운영 기록).
+- **정산**: 대기 확인(tui-idle) → worker-release(retained/external_terminal) → close(ptyKilled true) → 05:01:45Z 목록에서 사라짐(`lead-settle-bot-verify/settlement.md`).
+- **미실행**: C9 실화면·Unity·MCP, 서버 전체 시험(10-11 판정 그대로), DB·CI·PacketGenerator·Windows `dotnet build`.
+
+### C9 실화면 — 차단, 2026-10-14
+
+- 기록 커밋78a5000d 뒤 최신 main/World PR235를 merge1c593f5b로 합쳤다. 자동 병합 충돌0, 사용자 세 파일 hash 동일(c9-world-merge-before.json/after.json). 이전 C9 판정은 d8cc35fa의 실적이며 합친 HEAD 실적으로 확대하지 않는다. 다음 최소 수정은 표시 수명·패킷 도착 순서를 다뤄 구현 Astra xhigh(라우팅 신호2), 선행 시험·독립 검증은 각각 신규 Opus다. 강 등급을 유지한다. 계층 전면 재설계·새 아트·프로토콜 변경은 이번 수정 밖이다.
+
+- 신규 외부 Opus(task_4ebd46df972b / ctx_bd2dc65abca4, 지정/표시 claude-opus-5-5 xhigh·backend unknown)가 HEAD d8cc35fa·계약v3에서 범위1~4를 수행했다. outcome succeeded는 수행 완료이며 제품은 **차단 S-1·S-2**다. 원문 c9-screen/report.md, 리드 실사·정산 lead-astra-resume-1013/c9-audit-settlement.md.
+- S-1: 패널 열림 때 창∩패널은 709×399 14707.38, 802×451 18804.74, 1920×1080 107805.60px². S-2: 기존 StageClearUI 배너가 보상 줄을 덮음. 기존 클라이언트 귀속이나 C9를 막아 이 PR에서 수정한다(메인 msg_efe8f8c75321·Art 순서 문의 msg_9882e3a187cb). C9 같은 계약/각 번호 최초 NOT PASS 각1건·수정 시도0회.
+- 클리어→보상50·재료1·주머니1→확인40번1회→마을 복귀, 일반 처치 보상, 엔딩·재접속, 버튼/닫힌 자리 입력은 관측됐다. DB·사람 손 입력 미실행. 캡처709×399·1920×1080와 driver·서버 로그를 리드가 표본 대조했다. 메인의 R-2를 대신하지 않는다.
+- **검증자 보고 불일치**: 원문251·288~293행은 홈 자동 쓰기4건을 위반으로 적고295행은 규칙 위반 차단 사유를 해당 없음으로 적었다. 이 “없음”은 통과 근거가 아니다. 전체 경로·SHA·내용·비밀 확인 범위는 c9-outside-write-audit.json과 리드 실사에 기록했다. 초기 읽기 출력·Unity driver/콘솔 응답이며 알려진 자격증명 패턴0·표본에서 비밀 관측 없음(임의 형식 비밀 부재 보증 아님). 삭제하지 않았다.
+- **계약 위반: 사전 안내 없이 종료**. Editor 종료15:14:46Z보다 예고 첫 수신15:30:56Z가 늦고 메인도 사전 안내를 받지 못했다. 다음 계약은 종료 준비 공식 ask의 **리드 확인 응답 뒤에만** Editor를 닫는다(메인 msg_efe8f8c75321).
+- 생존 신호 helper: 원시25건·최대241초·300초 초과0(c9-liveness-result.json). 원문270행 자동 heartbeat16회·15:21:24Z까지는 실제18회·15:29:25Z까지와 달라 보정했다. driver 컴파일 실패2회는 제품 확정 실패에 추가하지 않는다.
+- 정산: worker-release retained→exact pane close ptyKilled=true→목록 부재·소유 프로세스0. mute False·크기709×399·GameViewSizes hash복원·서버/7777 해제. 종료 후15:33:04Z fresh hash는 MinimapRT7123af77…, ProjectSettings4a8db0bd…, TimeManager1a83e54a…로 기존과 같다. 사용자 파일 복원·stage·stash 없음.
+- 현행 허용 줄 결정: 메인 msg_ed1f78c433f4가 전한 사용자 원문 「그리고 아무래도 매번 넣기 불편하니까 필요한 워크트리에는 계속 세팅해주는게 좋겠어」에 따라 settings.local.json의 mcp__unity-mcp__Unity_RunCommand를 유지한다. 과거 임시 허용 뒤 삭제 조건은 대체됐다. C9 밖 임의 MCP 사용 권한으로 넓히지 않는다. 다음 신규 연결 승인 필요는 메인에 미리 알린다.
+
+### C9 최소 수정 선행 시험 — RED 준비, 2026-10-14
+
+- 신규 Opus task_6f3c337c6365 / ctx_f0b7349b7107, 지정/화면 claude-opus-5-5 xhigh·backend unknown. 기준 f2753663·계약17eac97a…, 공식 release msg_4ffd7444eb6a 뒤 overlap-red-1 한 번 실행. test commit ceb0096c(새 cs793행·Unity 생성meta2행). 제품 수정0.
+- XML 직접 대조: total6/pass2/fail4/skip0/필터밖0, 네 실패는 S-1 두 순서의 겹침15971.1982px²와 S-2 두 순서의 가림367/367·414/414 프레임이다. 전제·양성 대조·보존 단정은 통과했고 컴파일/fixture/환경 실패0. 화면은640x480만, 세 크기 실화면·기존 회귀·서버/봇·DB·CI는 미실행이다. TDD RED는 새 확정 제품 실패 집계로 더하지 않는다.
+- 원시: c9-fix-tdd/report.md SHA256 bd2738683d86733eb25dbe1579ab182b58c1f05cc7ca040f8b27c3df2cc18bab, verdict.json e83607da…, runs/overlap-red-1/results.xml d60cee2d…·result.json·editor.log. 원문은 보존한다. Unity16:38:01~16:40:18Z exit2(137.496초)·timeout아님·음소거0→1→0 복원. 16:52:14Z 정산 뒤 pane/전용 프로세스 부재 확인.
+- 판정 한계: S-2는 표시 alpha와 기하 교차이며 임의 정렬의 실제 픽셀 가림 검사가 아니다. 메인 지침 안에서 리드가 선택한 숨김/닫음 경로의 회귀 검사다. 배너 preserveAspect 엔진 배치를 시험에서 계산했고 sprite padding은 미반영이며 상자/잉크를 모두 기록했다. HUD 겹침은 로그만, 실제 음향은 미청취다. 이후 신규 독립 검증이 테스트 품질과 실제 제품 경로를 별도로 판정한다.
+- 부수 변경: Unity가 ProjectSettings define 한 줄과 AppData/LocalLow/DefaultCompany/03_Client/TestResults.xml 사본을 자동 기록했다. 사본은 허용 근거XML과 byte/hash 동일하며 삭제하지 않았다. Claude 자동 세션 jsonl도 보고했고 홈 tool-results는 없었다. 자동 쓰기를 허용 범위 준수로 확대하지 않는다. 설정 한 줄은 위 복원 시점까지 stage하지 않는다.
+- 수신/생존 신호 실패: 작업자가 delivery_9faf54b53cb2를 ack하지 않아 완료 전 check도 replayed=true였고 출처 정정 msg_a1a96ba431d9를 못 받았다. goal/BACKLOG 수정자는 리드이며 메인 msg_df4bb91a6e67의 출처 정정만 수행했다. c9-fix-tdd-source-erratum.md가 원 계약27행/실행 reply의 출처 표현을 정정한다. 전체 inbox1000에서 현재 Dispatch11신호를 대조한 c9-tdd-liveness-all.json은 heartbeat300초 초과423초·333초 두 건이다. 일부 수신본만의573초 관측은 전체 원시로 교정했다.
+- 리드 자체 누락: 이번 batch 전 Core 자원 조율과 메인 통지는 했으나 goal의 네 파트 시작 통지 중 World/Rules/Art를 빠뜨렸다. 다음 큰 실행은 네 파트 전달 receipt를 갖춘 뒤 시작한다. 기존 규칙 적용이며 새 반복 규칙을 만든 것이 아니다. 메인 보고 msg_5bc0a9a46ce0·msg_9579c9bcf865, 사전 메모/감사 연결 lead-astra-resume-1013/c9-tdd-settlement-context.md. 유효 RED와 절차 한계를 분리하며 제품/절차 PASS를 선언하지 않는다.
+
+### C9 최소 수정 1차 구현 — 회귀 실패·현재 수정 미실행, 2026-10-14
+
+- 신규 Astra task_1cf65e5fd8c8 / ctx_69cc0cc2d6da(요청/화면 gpt-6-astra xhigh·backend unknown)는 UI 두 파일만 수정했다. 기준 HEAD8f6740c5, 고정 계약42d40013…, 구현 완료 보고는 failed다. 전체 원문 report SHA256 `0d932cd1f77f5090565a9e3654041f467fc92e340a261ba25c6c328711c245ab`, result `af112d2aa61f204c1c19d76975ce883061769250758b34bfbcee2f70bf47ff55`를 리드가 읽고 XML·diff·hash·전체 수신 원시와 대조했다.
+- **시험한 v1:** 두 파일 +50/-2, Window84cc38b4…/StageClear1a55a155…. overlap-green-1은6/6/실패0/skip0/필터밖0(XMLb82560cb…), S-1 교차0·S-2 가림0(640x480만). related-regression-1은14/12/2/0/0(XMLd7d3afae…)이고 확인 클릭 후40 기대1/실제0 두 건이 실패했다. SceneTests139행(F-1)·SceneChangeTests77행(F-2)은 P7 보존 요구이며 원인은(d)미확정이다. 원래 코드와 동일 회귀 재실행/프레임 계측을 하지 않아 초기 표시/LateUpdate 순서 가설을 확정하지 않는다.
+- **현재 미실행 v2:** 리드 범위 축소17:53:09Z 전17:52:42Z에 Window 표시 갱신을 배치 뒤로 모으는 +2/-2 후속 수정이 있었다. 현재 전체+52/-4, Window25e10cb2…는 미실행이다. v1 diff SHA d12ac740…는 사전 리드 감사와 동일하고 product-v1.diff/hash에 보존했다. 현재 product.diff/hash와 구분하며 v1의6/6을 현재 코드 통과로 사용하지 않는다. 제3batch 질문 msg_80490316e603은 msg_e1e542aecac5로 실행 없이 실패 정산에 답했다.
+- 자원: batch1 17:32:54~17:33:34Z exit0, batch2 17:49:26~17:50:02Z exit2(실제 시험실패·timeout아님). 둘 다 원시 물리/커밋 각4GiB 이상·Unity0/lock없음에서 시작해 음소거0→1→0 복원, 종료 뒤Unity0를 확인했다. 네 파트 사전·시작·종료 통지를 보존했다. 두 번째 release17:48:23Z는 Art 이전 계획+이번 사전 통지를 근거로 했고 새 Art 충돌없음 회신17:48:40Z는 실제 Unity 시작 전 도착했다. 이 시각 차이를 숨기지 않는다.
+- 절차·보호: 전체 inbox1000에서 현재 Dispatch heartbeat14개를 계수해 최대4분 계약 초과5구간(271/284/259/256/250초),5분초과0을 확인했다. 앞선3→4구간 중간 보고는 최종5로 교정하며 제품 실패 수에 합산하지 않는다. 보호4hash는 동일. 홈 TestResults 자동 사본은 마지막 XML과 byte/hash 동일, Codex 자동 transcript는 실행 중 lock으로 hash미확인이다. 자동 부수 출력을 규칙 PASS로 표현하지 않는다.
+- 정산·다음: worker_done failed msg_8091543706cc→worker-release retained→정확 pane close,18:05:45Z pane0·리드1·Unity0/lock없음. 완료 실패 산출물1건과 F-1/F-2 원인 미확정을 기록한다. 기존 S-1/S-2 독립 차단 각1회·개발 중 자체 수리·미실행 v2를 같은 번호의 확정실패로 이중 집계하지 않는다. 새 Astra가 기존 v2의 타당성부터 확인하고 필요한 최소 수정·두 필터 실행을 새 자원 조율 뒤 수행한다. 그 뒤 신규 Opus의 독립 판정과 C9 실화면을 진행한다. 메인 보고 msg_316b1243b10d·msg_a9765f461276, 후속 준비 메모 c9-fix-r1-prep/lead-context.md.
+
+### C9 확인 클릭 R-1 — 원인 미확정·실행 없이 마감 정산, 2026-10-14
+
+- 기준 HEAD `83ffad2641aa9d29f852a11b25f8d9b3860b54db`, 계약 SHA256 `f3854e4a90c5a8dd677232d6e54ee52ba8fcb599fe3abedebffd07f3f3901fe5`. 신규 Astra `task_7cc454b14f0d / ctx_79042651b1db`는 요청/최초 launch/화면 gpt-6-astra xhigh, backend unknown이었다. 첫 맥락·52입력/55경로 확인 뒤 기존 상태/씬/포인터 흐름과 원문을 읽었다. **이번 제품쓰기0·테스트/fixture/harness쓰기0·Unity실행0**이며 인계 v2를 그대로 첫 후보로 채택한 정적 판단만 남겼다.
+- F-1/F-2는 모두 **(d) 원인 미확정**이다. v1의 표시 공개 뒤 LateUpdate 배치와 이미 읽은 포인터 좌표의 어긋남은 가설이다. v2의 배치 뒤 공개가 해결했는지, 동적 프레임·좌표 및 v1/v2 A/B는 미실행이다. 선행 v1의6/6·12/14를 현재 v2 통과로 쓰지 않는다. 요구 검증은 같은4클래스14회귀 → 별도1클래스6시험 → 신규 독립 Opus → 709×399·802×451·1920×1080 실제 C9 화면 순으로 남는다.
+- 공식 실행 질문 `msg_06d4fe01128c`는 물리151856/커밋여유1594644KiB 및 Core 우선창으로 `msg_4fc0b92eb17e` HOLD 답을 받았다. 이후 메모리는 회복됐지만 마감 지시 `msg_ba939809dbdf`에 따라 실행하지 않았다. Core는 실제 fixture 중단·자원 정리 후 `msg_ab9430189ee8`로 창을 반환했으며 반환을 오늘 새 실행 권한으로 쓰지 않았다. 해당 회차의 failed는 필수 검증 미실행 정산이고 확정 제품 결함 횟수 증가가 아니다.
+- 최종 원문 `c9-fix-r1/report.md` SHA256 `89da8b2d8f7ae0c87fcb7038008bea8f433f2373ec11429cbfe7e6a9a89fd64c`, `result.json` SHA256 `e6a3ebd6565ccbe62ca93a3e847cd421a309de1aa86bdc727748761f44b8a650`. 리드는 원문 전체·실제 제품/보호 hash·diff·수신 원시를 대조했다. 선행 v2와 제품 bytes는 동일하고 저장 diff SHA256 `c8b18c09626bfa6c0cda43d4d299bfebb8504e40003624d7c999153b43be9a69`는 선행 PowerShell diff와 저장 형식이 달라 hash만 다르다. 이번 새 변경량이 아니라 인계 제품 변경량 +52/-4다.
+- 최종 고정입력은51개 동일+승인된 리드 설정복원1개다. 리드가18:35:37.6117263Z `Standalone: SENTIS_ANALYTICS_ENABLED;APP_UI_EDITOR_ONLY` 한 항목만 복원해 ProjectSettings 전체 SHA256 `4a8db0bd0b2416d9a9536527cba7ba2ae8c9e0c4e38313f7d363c359667cd21a`가 원래 사용자 bytes와 일치했다. MinimapRT·TimeManager·settings allow·시험/meta는 보존했다. 전후 bytes/hash는 `c9-fix-r1-prep/day-wrap-ProjectSettings-restore.json`, 제품 diff/hash는 `day-wrap-product.diff`·`day-wrap-preserved-files.json`에 있다.
+- 운영: 최종 현재 신원의 heartbeat10개, 인접 최대208초,240초/300초 초과0을 리드가 원시에서 재계수했다. 작업자의 첫 heartbeat 파싱0건 오류 등 도구상 오류는 report/result에 교정 원시와 함께 보존하며 제품 실패로 합산하지 않는다. provider transcript의 사용 중 hash미확인은 그대로 남겼다. 정상 종료 신호 `msg_6f7959f6e056`(18:42:25Z, failed)와 신원을 대조한 뒤 worker-release retained/external_terminal → 정확 pane `term_68f0246d-7211-4801-8725-3953e7ff766e` close ptyKilled=true를 확인했다. 리드 pane은 유지한다. `c9-fix-r1-prep/day-wrap-*`가 정산·종료·수신·자원 관측 원시다.
+- 본 마감 기록은 정산/재개 기록이며 제품·문서 독립 PASS가 아니다. 오늘 새 검증자를 열지 않는 마감 지시를 적용했고, 현재 goal 전체 종료·PR·Gardener는 수행하지 않았다.
+
+### 재부팅 뒤 같은 목표 재개, 2026-10-14
+
+- 메인 `msg_bd52a4852787`(09:16:33Z)은 사용자 「리드 재개 시점 → B 재부팅 먼저」 결정 뒤 페이지 파일 적용을 확인하고 같은 대화를 재개한 계약이다. 메인 보고: 처음24576MB/최대40960MB, AutomaticManagedPagefile=False, TotalVirtualMemorySize57761704KB. 이 값을 Content의 직접 관측으로 쓰지 않는다. 새 권한으로 전역 설정을 바꾸지 않았다.
+- 리드는 현재 pane/메인 출처·경로·branch·HEAD·원격·미커밋4파일 hash를 새로 대조했다. 초기 old-Run check의 consumer_fenced 뒤 현재 terminal-only inbox에서 계약을 읽고 run-use로 같은 Run generation6을 인수했다. 인수 뒤 비대기 check는0건이었고 현재 회신 주소·READY를 메인에 보냈다(`msg_d1e00774be50`, `msg_ece991873c9f`). 우편함 wait/sleep을 열지 않았다.
+- main20ce59dd 합류 중 예상 BACKLOG 한 충돌만 났다. Content UI계층 후보·World 로그인 후보의 양쪽 전체 블록을 보존했고 최종 문서가 두 원문 조합과 동일함을 기계 대조했다. CURRENT는 World 행 자동변경을 확인했다. 합류 commit6f6fd690a5be6c8efb05f116135532bfdb6f800f를 자기 branch로 push·원격 확인했다. 제품/사용자 네 dirty와 TimeManager/settings allow hash는 모두 그대로이며 stash/사용자 restore/제품 commit은 없었다. 합류 자체를 시험 통과로 쓰지 않는다.
+- 새 입력에는 R-1 조사·정산 원문과 복원 후 설정을 넣고, 이전 미실행 v2를 새 실행 근거와 분리한다. 새 R-2는 동일 C9 범위의 후속 계약이며 R-1 마감/환경 미실행을 확정 제품 결함 횟수로 올리지 않는다. 큰 실행 전 현재 네 파트와 새로 조율한다. 첫 World RED를 먼저 보내고 Content는 반환과 자기 공식 실행 질문까지 조사/코드만 한다.
+- 원시와 사전 메모: `.backups/verification/2026-10-10-dungeon-clear-rewards/resume-20261014-0916/`. 현재 작업자 신원·모델/launch/화면·고정 계약·실행 상태는 발행 receipt와 `c9-fix-r2-active.json`에 기록한다. 현재까지 새 Unity/WSL/서버/DB/빌드 실행은0이다.
+
+### C9 R-2 v3 체크포인트 — 2026-10-14
+
+- 메인 `msg_4cbb8767c123`(10:29:29Z)은 사용자 「C9 두 결함만 최소 수정, 계층 설계는 별도」 안에서 v3 계속을 확인했다. **v3 같은14회귀에서 F-2가 같은 경로로 다시 실패하면 v4 쓰기 전에 멈추고 원인 한 줄을 메인에 알린다.** 공개 시점과 클릭 좌표 산출 시점의 수정 방향은 그때 재판단한다. 이는 메인 지침이며 사용자 직접 입력으로 격상하지 않는다.
+- v1→v2→임시진단→v3를 진단 포함4회로 보수적으로 세어 `msg_172f5d70a935`로 체크포인트를 알렸다. 영구 후보3개와 임시 진단을 구분하며 확정 실패3회 집계와 섞지 않는다. R-2는 개발 중 자체검증·미정산이고 R-1 환경/마감 미실행을 제품 실패로 추가하지 않는다.
+- v2 Window25e10cb2…의 `related-v2-1`:10:01:09.615→10:02:44.927Z, PID31388,95.312초,exit2,14/13/1/skip0/필터밖0. XML SHA187127b1f14570bb4616b4d9b0b2e74a8195abf70845ef9db0d39a621ec2667e. F-1 PASS, F-2 다음맵 확인40 기대1/실제0이다.
+- 진단 Window1b2872f5…의 `related-diag-1`:10:21:34.955→10:22:08.195Z, PID34748,33.239초,exit2,같은14/13/1/skip0/필터밖0. XML SHAa33c2a99846642a877aa963f5da4019857d6c27ef25483de6d40d59167667327. HuntingGround frame371 확인Y79.882~100.666 공개→375 HUD/입력모듈 등장과 Y52.004~72.788 이동→378down/380up point(320,90.274) insideFalse·Confirm미진입을 직접 관측했다. 이 경로 F-2는(c) 표시/입력 회귀이며 진단 타이밍 영향과 F3 반올림 한계를 남긴다. v1 F-1의 정확한 동적 원인은(d)미측정이다.
+- v3는 진단을 제거한 v2에 기존 `UpdateVisibility`의 active EventSystem/currentInputModule 준비 조건과 근접 주석만 +6/-1 추가했다(`msg_85b273ad9408`). Window SHA01c5c3bb1ce32ba34a64c462a391e178605ee5865abcd27e392b36f5aa367f80, StageClear1a55a155… 불변. 이 조건이 모든 HUD 배치 완료를 항상 보장한다고 단정하지 않는다. v3는 미실행이며 14→별도6·독립 판정·실화면이 남았다. tests/fixture/harness·소비/송신/scene/배치/sorting 불변, 새 helper 없음.
+- 이번 goal 변경은 메인의 기록 요구에 따른 리드 쓰기다. 고정57입력의 원 goal SHA05b66698a2e4520ffe1086c5a9311c95dd772c1d7397efdb60aab898e2d6db36을 `c9-fix-r2-prep/goal-before-v3-checkpoint.md`에 보존하고 새hash/명시적 예외를 작업자에게 전달한다. 계약·입력manifest·HEAD27a7109a… 원본은 유지한다. 사전메모/receipt는 `c9-fix-r2-prep/goal-v3-checkpoint-*`다.
+
+### C9 v3 자체 완료·R-2 정산 — 2026-10-14
+
+- 현재 Window01c5c3bb…/Stage1a55a155…의 `related-v3-1`은 raw14/pass14/fail0/skip0/필터밖0(XML23855c99…), `overlap-v3-1`은6/6/0/0/0(XML6a8f0d6d…)이다. 리드가 각 result/XML/mute 원시와 실제 PID/시작·종료/Unity0를 직접 대조했다. 코드 변경 전체+58/-5 중 R-2 영구 변경은 Window+6/-1이며 진단은 제거됐다. 메인의 v3 동일 F-2 재실패 시 v4 전 중단 조건은 이번에는 발생하지 않았다.
+- 구현 Task `task_5874e882fad9` / Dispatch `ctx_33ff882f81ea`, 보고 `c9-fix-r2/report.md` SHA85fd2d82ad8441f7d7406923e55b219f781907785dd4f3ab2dc74034904de064, result SHA7d19dfa5491fabdb3fa46a5e0678433eb30f25a342791141d7faf215ec5c445c. worker_done succeeded 뒤 원문·실제diff·보호입력을 대조해 구현 인계를 수용했으며 `worker-release retained/external_terminal` 후 해당pane만 close해 ptyKilled=true를 확인했다. 독립 PASS가 아니다.
+- 원 사용자 ProjectSettings 복원은 리드가 마지막 batch 뒤11:11:32.295Z에 완료했다(4a8db0bd…). TimeManager HEAD bytes 일치, Minimap/settings 보존, stage/commit0. 기존 고정57은55일치+승인Window/리드goal2예외, 예상밖0이었다. 실행 당시 설정5a03과 사후 복원4a8, 리드 쓰기와 구현자 쓰기를 구분한다.
+- 현재 Dispatch heartbeat40개를 리드가 수신 원시에서 재계수했다. 240초 초과636/554/254초3건(300초 초과2건), 시작→첫60초/마지막→done53초다. 3분 목표 초과191/203초는4분이내다. nudge wrapper exit 미회수와 함께 원문에 공개했으며 동기600초 차단 원인 주장은 철회 상태다. 운영위반을 제품확정실패 횟수로 세지 않는다. 메인 msg_fa24aab90162(11:21:25Z)는 이 Task의 heartbeat3건/nudge wrapper미회수만 제품독립판정 통과 차단에서 제외하고 「운영 미준수(메인 결정 처리)」 절로 원문 공개하도록 결정했다. 제품/시험/보호hash 영향 증거가 없다는 근거와 원시 밖 활동 미측정 한계를 남기고 신규검증자는 큰 실행 전 이전 작업자계열 잔여프로세스0을 확인한다. 메모/규칙원문 누락·결과불일치·제품규칙 위반은 그대로 차단이다. 메인 판단이며 사용자 결정이 아니다. 원문은 c9-fix-review-1-prep/operating-disposition-main.json이다.
+- 다음은 신규 Opus 강 코드검증(실사·독립시험 작성/실행·현재 실제 진입), 이어 세 크기 실제 C9/MCP·SFX다. 코드시험은 실제 서버/전체플레이/실화면을 대신하지 않는다. Content 서버 PR은 아직 생성0이며 World의 clear→guild 연결은 Content 서버 main 병합 뒤 경계를 유지한다. 현 Core SQL 재개 창 동안 Content 중량실행/예약0이며 신규 실행은 별도 조율한다.
+
+### C9 독립 batch23·판정 정정과 좁은 후속 — 2026-10-14
+
+- 독립 Opus task_8bdd89e3c3d0/ctx_73d243e4adb3의 신규3+기존20 시험을 합친 review-combined-1 정확1회는 raw23/pass23/fail0/skip0/필터밖0이었다. XML SHA1cde8bd10dbae5b77928237cb359aa4232d760054414b28ddf11004b027d372f, PID28264/81.5165742초/exit0. 실제 씬·임시TCP·가상입력·batch640×480이며 실제세크기/청각SFX/실서버 검증은 아니다.
+- report.md SHA c68aea3a31b8b950db325d02b34d65f9406ccea80b8d5bc2f2a973e025bb6563와 verdict.json SHA1834a5df45e6a4234a43f16c7d44b323246ec6482aa97cea80348b3eaa6f2348을 보존한다. done succeeded msg_ac9041c1ecdf는 수행종료이며 리드는 원문의 PASS를 최종 수용하지 않았다. #1 client.md 계약 누락은 리드계약 귀속, #2 파괴된 버튼을 로그 때 재판독하는 오류와 #3 세 번째 화면기하 helper 사본은 검증자 귀속이다. #3을 비차단으로 넘긴 결론은 task-context 통과차단 기준과 어긋난다. 실제 제품 실패를 찾았다는 뜻은 아니다.
+- 현재handle/ctx의 heartbeat49개 서버 created_at을 전수 대조하면12:14:08→12:18:26=258초1건이다. 원문은 ask/status를 포함한52receipt 간격 최대218초로 초과0을 잘못 보고했다. 중간에 허가된 batch시작/종료 status가 있었고 제품/시험/보호hash/자원 영향 증거는 없다. 근거 c9-fix-review-1-prep/settlement-heartbeat-audit.json 및 settlement-inbox-raw.json.
+- **메인 결정 msg_6f7c889d6fa9(12:30:20Z)**: 원문보존·PASS보류, 새 외부작업자로 #1~#3만 수정한다. #3은 ScreenUiProbe로 추출해 세 클래스가 쓰게 하며 기존 두 시험 수정도 새계약에 명시한다. 새 독립검증은 수정diff·변경시험클래스 재실행·교정판정문으로 좁히고 제품2파일 hash불변을 확인한다. 기존23/23·자원반환은 유효하며 같은 제품판정을 반복하지 않는다. Unity는 Art cold import 실제반환 뒤 조율한다. 메인 판단이며 사용자 결정이 아니다.
+- **생존 간격 기준 적용**: 같은 메인 결정이258초 자체에 오늘 기준msg_82d1fc4a4081을 적용했다(600초이하·허가batch구간·영향증거없음). 혼합계산은 이전 검증자의 보고정확성 결손으로 별도 공개하고 교정판정은 heartbeat 서버시각만 사용한다. R-2의636/554/254초와 nudge회수제한에는 기존 개별결정msg_fa24aab90162를 유지한다.
+- 사용자 설정 복원 뒤 검증자의 13hash 재확인과 completed/정확identity/idle을 대조했다. worker-release retained→해당terminal close ptyKilled=true로 정산했다. 메인 즉시보고msg_d84c543bf2b0 및 원시는 prep/에 보존한다. 절차·판정 실패를 같은제품결함 확정실패3회로 세지 않는다.
+- 다음 수정 배정은 신규 gpt-6-astra xhigh다. 라우팅신호2(파괴된 Unity 객체와 판독/로그 수명), 신호4(기존세클래스의 기하·PathOf 의미를 보존한 helper 추출 설계)를 적용한다. #1~#3 수정·제품불변·변경시험 독립재실행과 교정판정문이 완료조건이다. 무관한 UI계층/프로토콜/제품정리는 하지 않는다.
+- 후속 검증 등급은 보수적 강이다(다파일 시험 추출과 로그 수명, 제품+시험 변경50줄 이상 가능). 실제diff줄수는 구현보고에서 고정한다. 새 독립 Opus는 #1~#3 diff·근거 실사, 필요한 독립시험 보완과 변경클래스 실제실행, 교정판정문을 수행하며 제품전체를 다시 판정하지 않는다.
+
+### C9 문서·관측 시험 수정 완료와 변경분 재검증 준비 — 2026-10-14
+
+- Astra 구현 task_5d4123e92f44/ctx_09b9b9044cab은12:59:04Z done succeeded(msg_553662b5c426)로 쓰기를 종료했다. 문서의 배너/자리예약/입력준비 계약, 파괴된 Unity 객체 대신 캡처값을 쓰는 로그, 세 클래스 공통 화면 판독을 허용5파일에 수정했다. 원시 변경은 +65/-99(C# +61/-99, 문서+4/-0), 강 등급 유지다.
+- report SHA9d24276196cbb7d11edf4bbbca925fc81533b93c1d4515022633915b5a71ae55, result SHAa5d0ad1f3360a409e605e7a8a72caa8cf12b1000712ca5ed746ff23a6142c21e, changes.diff SHA998eecb75dd7ed0bf8b677d5e2d8f90425e934b43f67b978e539403359dd5183. 리드가 전문·실제diff·41입력 hash를 대조해 허용 외36개 불변을 확인했다. 정적35체크/소스18시험·211단정 보존은 자체점검이고 Unity/컴파일/실서버 실행0이다.
+- 구현자의 서버 heartbeat11개는 중간최대149초, dispatch→첫106초/실제제출→첫20.172초, 마지막→done74초다. `worker-show.lastHeartbeatAt=null`과 check 미표시를 누락으로 본 리드 추론은 서버 원시 대조 뒤 msg_ec16cce8acdb로 즉시 철회했다. 이번 작업자240초 위반은 없으며 이전 검증자의258초 처분과 섞지 않는다. 교정은 조회 결과와 메시지 원시를 구분하는 정산 단계에서 했고 새 정본 규칙은 만들지 않는다.
+- exact/settled/idle을 확인하고 worker-release retained 뒤 정확terminal close ptyKilled=true로 종료했다. 근거 c9-review-fixes-1-prep/settlement.json·worker-terminal-close.json. 이 완료는 독립 PASS나 goal 완료가 아니다.
+- 신규 Opus는 메인 msg_6f7c889d6fa9 범위대로 #1~#3 수정diff·문서/원시·독립시험 보완과 변경클래스 재실행·교정판정을 맡는다. 직접3클래스18시험 외 InventoryServerIntegrationTests 한 시험이 HudOverlapProbe를52/56/104행에서 간접 호출한다. 독립검증은 그 의미/커버리지를 실사하고 실제 서버 미실행을 명시하며 필수근거가 부족하면 공식ask/보류한다. 제품 전체·실서버 범위를 자동 확대하지 않는다.
+- Art import 실제반환을 받은 뒤 Core 첫 WSL RED1회 창과 충돌 없음으로 조율했다. 다음 Unity는 Core 실제반환과 새 조율 뒤에만 실행한다. 새 계약 c9-fix-review-2-contract.md와 경로/hash preflight, 신규 Task/Dispatch/모델·실제제출 근거를 별도 보존한다.
+
+### C9 변경분 재검증2 정산과 잔여 중복 결정 — 2026-10-14
+
+- 신규 Opus 검증 task_2665e05e9f28/ctx_314fc0b322ad은13:35:16.671Z `failed`로 종료했다(msg_841c26c00a2a). 원문은 `c9-fix-review-2/report.md` SHAe3b205750ec9472ad2e9c39a73da83f8ea97a88771404fdf2290cbc19a91b69f, `verdict.json` SHAa8dd597be2911365b99dadec1fa4e789c99852e3cd3e4153e788dacd7a656c33다. #1~#3 자체의 정적 실사는 지적 없음이고, #4 잔여 중복이 차단이다. 이번 구현자 귀속이 아닌 기존 시험·이전 검증자·리드 계약 경계로 구분했다.
+- 독립 검증자는 Presentation에 로그 진실성 단정5개(+17/-0), 신규 ScreenUiProbeTests3개와 meta(GUID9e546ea6191e235ede5277e4efb2f376)를 작성했다. 리드가 실제diff·신규파일·원문 전체와 고정72입력을 대조했다. 허용 Presentation 외71개는 불변이고 새 cs/meta 해시도 보고와 같다. 새 시험은 컴파일·실행하지 않았다. Unity 실제 진입0이며 21개 필터와 세 크기 실화면·실제 SFX 청취는 남는다.
+- 메인 msg_5bfad1184fd1(작성13:29:19Z)은 위 done과 같은 Delivery에서13:35:17Z 처음 도착했다. 그 전 리드의 조건부 종료 지시 msg_3d30fb819629에 따라 검증자가 이미 정산했으므로 「계속」 결정을 종료 전에 전달한 것으로 소급 기록하지 않는다. 원문 판정은 보존하며 완료 세션은 재사용하지 않는다.
+- **메인 결정 처리 — 다음 묶음에서 추출:** IsGraphic(Inventory327/Overlap605/Presentation569), Area(346/625/595), Contains(352/636/604)는 이번 통과 차단에서 제외한다. 다음 C9 세 크기 실화면 묶음 계약에 세 함수를 ScreenUiProbe로 추출하고 세 클래스가 사용하도록 명시하며, 그 묶음의 독립 검증과 PR 병합 전에 반드시 해소한다. 메인 판단이며 사용자 결정이 아니다. 이 세 함수와 이 PR 경계에만 적용한다.
+- 같은 검증의 전수표는 세 시험의 정적 helper91개 범위다. 추가 G2 ScreenArea(186/56/56), G4교차(Inventory343/Overlap622/Presentation599~600), G7패널조회(Inventory185·763/Overlap445·451/Presentation477)는 자동 유예하지 않았다. 메인에 원문·적용 한계·새 세션 필요성을 msg_235479fc1af0으로 보고하고 처분을 요청했다. G5 두 프레임 정착 대기는 리드 설계 검토가 남는다. 다음 계약은 이 목록과 시험 폴더 전체 추가 목록을 묶어 처리한다.
+- 최종 서버 원시의 정확 handle/Task/Dispatch heartbeat48개, 최초13:09:13Z·최종13:35:04Z, 최대105초, 240초 초과0, 마지막→done12초다. 보고의43개는13:32:42Z까지의 중간 집계로 명시되어 있으며 최종 집계와 혼동하지 않는다. 근거 `c9-fix-review-2-prep/settlement-heartbeat-audit.json`·`settlement-inbox-all.json`.
+- failed/settled·exactWorker·handle/incarnation과 완료 뒤 빈 prompt를 확인한 뒤 release retained/external_terminal, 정확 pane close ptyKilled=true로 종료했다. reclaimable0. 제품/사용자 보호 hash 불변, Content 중량실행/예약0, 새 작업자0이다. 상태 변경·시각·결정 원문은 prep/settlement.json·settlement-delivery.json·worker-release.json·worker-terminal-close.json에 보존한다. 이 정산은 독립 PASS·goal 완료가 아니다.
+
+### C9 잔여 중복의 묶음 처리와 재검증3 준비 — 2026-10-14
+
+- 메인 msg_a2bdc1ea1817(13:41:52Z)은 원문 report SHA·#4 표와 소스를 R-2 대조한 뒤 G2 ScreenArea·G4교차·G7패널조회도 같은 한정 유예에 넣었다. 같은 시험 책임이고 제품 동작 영향이 없으며 이번 구현자 귀속이 아니어서 다음 실화면 작업 때 한 번에 추출한다는 판단이다. 메인 판단이며 사용자 결정이 아니다.
+- 다음 C9 실화면 묶음 필수 대상: G1 IsGraphic, G2 Contains·ScreenArea, G3 Area, G4교차는 ScreenUiProbe; G7패널조회는 InventoryPanelProbe로 추출한다. O-1 머리 주석도 보강한다. G5 두 프레임 대기는 그 묶음에서 리드가 Update/LateUpdate의 변경 이유를 판정하고, 같은 이유면 추출/다르면 보존 이유를 goal에 남긴다. 묶음 전체의 독립 확인·PR 병합 전 해소가 필수다.
+- 신규 독립 세션은 현재 수정과 추가시험을 실사하고 21개 필터를 실제 실행한다. 판정에 두 메인 결정 ID·영향·한계와 **「#4: 메인 결정으로 유예한 차단 — 다음 묶음 전까지 미해소」**를 명시한다. 유예를 해소나 실행 PASS로 쓰지 않는다. 현재 제품2파일은 hash대조하며 같은 제품전체판정을 반복하지 않는다. 강 등급 유지, 새 계약/사전hash/실행원시는 c9-fix-review-3와 prep에 둔다.
+- 세 파일 이상 같은 메서드 몸체를 경고하는 기계 검사 후보는 지금 채택하지 않는다. #3·#4는 한 사건을 나눠 발견한 첫 발생으로만 기록한다. 다음 목표에서 같은 누락이 재발하면 Rules에 올린다. 결정 도착 시차에는 별도 조치를 만들지 않는다.
+- Unity는 Core·World·Rules·Art의 최신 창 조율과 신규 검증자 공식ask/fresh관문 뒤 한 번씩 허용한다. 현재 중량실행/예약0이며 새 검증자는 먼저 읽기·독립시험 실사/보완만 한다. 종료한 재검증2 원문과 입력은 보존한다.
+
+### C9 #1~#3 변경분 강 PASS·재검증3 정산 — 2026-10-15(KST)
+
+- 신규 Opus task_576e184ed4bb/ctx_b6c38a02dabe는 worker_done msg_5cefe32c9242(15:29:43.857Z)로 succeeded/쓰기종료했다. report SHAab3861cb4328a7cf4072c8eca0a13857c5861d688ae011836b7287ae33be3270, verdict SHA8ffc5cb6499e9af87b075ea8e44fd40ef33a05f3cac0f36496ff95a08862f64c. 리드가 원문전문·실제명령/실행원시·XML·보존/변경·독립설계판단을읽고 이변경분범위PASS를인수했다. 새시험쓰기0이며 이전독립단정5개와신규3시험을직접실사해판별력이충분하다고판정했다.
+- 공식답 msg_5a19686d8e18 아래 기존harness1회: Unity PID28676 15:21:00.4022806Z→15:22:55.4351077Z(115.0328초),exit0/timeoutfalse/harnessError null. 실제XML SHA9e014b02f7a7eab0f125f77ea4ca043cc9af9d81ce3f317d6dda2d93c781a09e의test-case를리드가직접계수해21/21/실패0/skip0/필터밖0을확인했다(Inventory9·Overlap6·Presentation3·ScreenUiProbeTests3). BossRoom→Town 뒤 live false·판독순간/이동뒤동일로그·Town not shown 원문도읽었다. 근거 prep/lead-xml-audit.json.
+- 고정88입력중87개는정산때도같다. goal한파일만명시정책버전 b522db21…로추적했다. 제품Window01c5c3bb…/StageClear1a55a155…불변. 원문표 「보호6파일 현재동일」은실행전실사값이며실행후설정한자동변경은뒤쪽표에공개됐다. 정산에서는전/후/복원을분리하고그표현을실행후6개불변근거로쓰지않는다.
+- Unity자동ProjectSettings.asset4a8db0bd…→5a03375a…는597행 Standalone define의 SENTIS_ANALYTICS_ENABLED 삭제1줄뿐이었다. 리드가freshUnity0/lock없음·전체SHA/줄차이를대조해현재bytes를보존한뒤원사용자bytes4a8db0bd0b2416d9a9536527cba7ba2ae8c9e0c4e38313f7d363c359667cd21a로복원했다. Gitrestore/stage하지않았고다른dirty/Minimap은보존했다. prep/settings-restore-receipt.json·ProjectSettings-before-lead-restore.asset.
+- 기본LocalLow TestResults.xml은실행직전250141bytes/SHA92fe2b0d…사본을보존했고,후370472bytes/SHA9e014b02…로이번XML과같이덮였다. 메인 msg_a920ed41f308에따라원본복원/삭제없이부수출력으로공개한다. Unity자동Library/Logs/Temp는미측정. mute는원값0으로finally복원됐고리드가현재0/Unity0/lock없음을재확인했다.
+- heartbeat92개/최대142초/240초초과0/120초목표7초과/마지막→done27초를서버created_at만재계산했다. shell&대기1회와120초목표초과는원문운영미준수절에공개됐으며시연우선기준으로제품판정을막지않는다. source수집/계산은prep/settlement-heartbeat-audit.json.
+- exact/settled/완료뒤빈prompt 확인→release retained/external_terminal→정확pane close ptyKilled=true로종료했다. 미제출draft는사용자지시나종료보류근거로쓰지않았다. 네파트에실제자원반환/현재실행·예약0을통지했다. #4G7하위경로41·52·74·244와#5/O-4 위치보충은원문전수표에남기고동결뒤정리로유지한다. 제품계산복제/측정위장/동작결함은지적0이다.
+- 이판정은변경분PASS이며실서버7777·709×399/802×451/1920×1080 실제화면·SFX청취·goal전체PASS가아니다. 남은C9는기존새MCP연결승인gate(구c9-screen-contract.head.md 92·104~106행)와현재사용자수면상태를메인에보고하고밤checkpoint/초안PR·아침재개처리를확인했다(msg_2d6177a4952d). 새Editor/새실화면검증자/다음goal은아직열지않았다. 기존C9승인범위는유지하고구HEAD/프로토콜18 계약의버전갱신이필요하다.
+- Art msg_20dca31acbaa의다섯파일질문에는Window만고정입력/미커밋+34/-5·전체SHA·보존동작·읽기전용사본을답했다(msg_f8dd9f97b4d7). 다른네파일은Contentdiff/manifest입력0. Art의구HEAD가확인클릭/입력준비수정을덮지않도록공통기준/PR합류를메인과조율하도록알렸고Content사본쓰기권한을넓히지않았다.
+
+### 239 - 던전 클리어 보상 원자 지급과 마을 복귀 draft PR
+
+- 메인 msg_a7fed9270e28에 따라 검증된11경로만checkpoint commit a9c46dada1d54a48455031cb0f1402f0c2d2dfd9으로정리하고원격같은branch에push·SHA일치를확인했다. 사용자Minimap/ProjectSettings·TimeManager/settings·근거원시는stage하지않았다. sourceHEAD27a에서검증한제품/시험bytes를변경하지않았으며goal/보고기록만추가했다.
+- draft PR [239](https://github.com/bass131/dawnholder-server/pull/239)를 main 기준으로 생성했다. C9·goal은 완료가 아니다. 코드 checkpoint SHA 통지는 이전 메인 판단 아래 보냈으며, 이후 읽은 msg_d5e7bee01931과 Art 확인 msg_68680f581c78에 따라 Art 직접 합류를 하지 않는다. Content C9가 main에 반영된 뒤 Art가 rebase하고 Window를 쓰는 순서를 유지한다.
+- 아침메인보고항목: Content 실화면 검증 — MCP 연결 승인 필요. 실서버클리어→확인→Town/709×399·802×451·1920×1080/SFX가남았다. 해당승인전Editor/MCP호출/실화면검증자0,추가goal초안/작업자0이다. Unity가바꾼ProjectSettings define1줄의보존/원사용자bytes복원은공개하고그파일에더쓰지않는다.
+- 미해소동결뒤정리목록은#4/#5·G5·Digits·O-1~O-4다. 밤에이를고치거나추가검증하지않는다. 실제PR최종head/CI·사용자보호hash·완료보고는prep/final-pr-state.json과night-checkpoint-closeout.json에보존한다. PR은draft이며별도사용자승인없이병합/auto-merge하지않았다.
 
 ### 운영 기록(첫 발생)
 
@@ -433,8 +800,24 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - V-1 수정 작업자의 첫 감사 파일 `sol-v1-fix/audit-final.json`이 204,499,098바이트가 됐다. PowerShell이 Git stderr 경고의 ErrorRecord를 JSON 객체로 직렬화했다. 근거 폴더(Git 밖)라 커밋 영향은 없고, 작업자가 보고에 스스로 적고 문자열로 정규화한 감사를 다시 남겼다.
 - 재검증자가 서버 lane Start를 전경으로 돌려 도구가 300초 뒤 백그라운드로 넘겼다. `Run-ServerLane.ps1`의 Start는 Stop까지 launcher에 붙어 있다(`:164-165`). 그 구간에 heartbeat 간격이 314초가 됐다. 이전 독립 검증자는 처음부터 백그라운드로 돌렸다. 첫 발생이라 이 goal에만 적는다.
 - Content가 Unity·7777을 쥐고 있는 동안 World 검증자의 봇 회귀(7777만, 09:30Z~09:36Z)를 V-1 수정 단계 사이에 끼웠다. World가 시작 전에 묻고 끝나자 해제를 알려 재검증과 겹치지 않았다(World `msg_784b84931692` → `msg_91b307b9bcdf`).
+- 리드의 PR230 병합 승인 요청(`msg_c78e1ddae8f8`)이 재검증 뒤 들어온 커밋을 `ac98fe69` 하나로 적었다. 실제로는 `a35b7611`(검증자 시험)과 `ac98fe69`(goal) 둘이었다. 메인 R-2가 찾았고 승인에는 영향이 없었다(`msg_8659906ef748`). 첫 발생이라 이 goal에만 적는다. 다음 보고부터 리드는 base 이후 리드 커밋을 `git log`로 뽑아 빠짐없이 적는다.
+- 라우팅 핫픽스 결정 1로 메인이 Content 리드 pane을 `--autocompact 250000`과 `--resume`으로 다시 띄웠다(11:05Z). 대화는 이어졌고 handle은 `term_e90e3c30-…`으로 바뀌었다. 리드는 같은 Run에 `run-use`로 다시 묶었다(consumer_generation 3, `inbox/run-use-1011d.json`). 이 시각 앞뒤 우편함 기록의 리드 handle이 다른 이유다.
+- 리드의 클리어 선행 시험 계약이 WSL 시험 명령을 `wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh test --filter "…"` 형태로 적었다. 이 형태에서는 필터 인자의 `|`를 셸이 파이프로 읽어 exit 127로 끝났다(`clear-tdd/runs/server-before/test-attempt1-shell-pipe.txt`). 작업자가 이전 선행 시험 근거의 `--exec` 형태로 바꿔 통과했다. 계약 귀속이며 첫 발생이라 이 goal에만 적는다. 다음 계약부터 `--exec` 형태를 적는다.
+- 같은 작업자의 기준 시험에서 `--results-directory /mnt/c/…`가 Git Bash 경로 변환으로 `C:/Program Files/Git/mnt/c/…`가 되어 TRX가 WSL 작업 사본 아래에 생겼다(`clear-tdd/runs/server-before/trx-move.txt`). 작업자가 hash를 잰 뒤 옮기고, 작성 뒤 실행에는 `MSYS_NO_PATHCONV=1`을 붙였다. Git Bash 경로 변환은 `git show`·`orca terminal send`에서도 났지만 정본 규칙은 없다. 다음 계약에 넣고, 반복 규칙으로 올릴지는 종료 기록 때 본다.
+- 다른 리드의 메시지가 기록과 다른 handle에서 왔다(Core `msg_66c29be758cb`, `term_24b8aa94…`, 이전 기록은 `term_a9595668…`). `orca orchestration run-show --id run_b36cc92a4cf4`의 `coordinator_handle`이 같은 값이라 Core 리드의 재기동(Run 갱신 11:08:26Z)으로 보고 처리했다(`inbox/core-run-show-1246.json`). 태그와 handle이 Run 기록과도 어긋나면 처리하지 않고 메인에 보고한다.
+- 클리어 검증자의 서식 검사 첫 실행 중 13:44Z 무렵 메모리 부족으로 Claude Code가 검증자의 백그라운드 셸을 회수했다. 하위 프로세스는 계속 돌아 13:52:28Z exit 1로 끝났다. 출력은 콘솔 제목 설정 중 「파이프의 다른 끝에 프로세스가 없습니다」였다. 리드가 끝까지 두되 요약과 증거가 끝까지 쓰이지 않으면 무효로 정했다(`msg_241b5a3ab284`, 원시 `outbox/110-format-orphan-check.txt`). 검증자가 새 폴더로 다시 돌려 통과했다. 작업자의 긴 실행이 회수된 첫 발생이라 이 goal에만 적는다.
+- 클리어 검증자가 리드의 큰 실행 보류 dispatch를 읽기 전에 13초짜리 WSL 증분 빌드(`build-before`)를 시작했다. 직전 check와 실행 사이에 보류가 도착했다. 판정 근거로 쓰지 않았고 검증자가 스스로 보고했다. 첫 발생이라 이 goal에만 적는다. 다음 계약에 「큰 실행 직전에 우편함을 확인한다」를 넣는다.
+- 클리어 검증자의 큰 출력이 홈 `~/.claude/projects/…/tool-results/`에 자동 사본으로 2건 남았다. 위 R10 항목에 이어 같은 goal의 세 번째 관측이다. 계약 안내 「큰 출력은 파일로 받는다」만으로는 첫 화면 출력 몇 건이 남는다. 두 번째 이상 발생이라 교정 층 판단을 종료 기록 때 메인에 올린다. 검증자는 hook이 그 세션에 대해 쓴 `.claude/state/session-guard/` 상태 파일(Git 제외)도 허용 밖 위치로 스스로 보고했다.
+- 사용자 게임(약 9GB) 실행으로 여유 메모리가 4GB 아래에 머물러 C8 봇을 돌리지 못했다. 리드가 14:15Z~14:25Z 조건부 창을 열었지만 조건 확인 18회 모두 미충족이었다. World·Core에 예고와 취소를 보냈다(`outbox/112-*`, `outbox/115-*`). 첫 발생이라 이 goal에만 적는다.
+- 마감 중 리드 Bash 도구가 명령 문자열이 대략 60~90자를 넘으면 실행 wrapper가 잘려 「unexpected EOF」로 실패했다. 짧은 `echo` 시험으로 길이 문제임을 확인했고, 스크립트 파일과 glob 짧은 경로로 우회했다. 앞서 따옴표 섞인 긴 한 줄이 실패한 것도 같은 원인으로 본다. 도구 사실이라 메모리 후보다.
+- 10-13 리드 재개 직후 Bash가 `echo hi`까지 「unexpected EOF」로 실패했다. 메인 `msg_c6a79968a042`에 따르면 원인은 Codex 플러그인 SessionStart hook이 `~/.claude/session-env/<세션>/` 파일에 줄을 쌓은 것이다. 사용자가 정리 스크립트로 줄였고, 메인이 같은 대화로 새 pane을 열어 03:42Z에 복구됐다.
+- 봇 검증자의 첫 공식 질문(`msg_61c24e4d4f7f`, 04:25:36Z, 7777 시작 허락) 명령이 약 10분 막혀 heartbeat가 609초 끊겼다(다음 신호 04:35:45Z). ORCA의 「heartbeat 5분 유지」에 어긋난다. 검증자는 그 뒤 heartbeat를 섞는 대기로 바꿔 약 4분 간격을 지켰다. 판정서 147행은 「약 4분 간격으로 보냈다」고 적어 처음 10분과 맞지 않는다. 판정 근거에는 쓰이지 않았다. 첫 발생이라 이 goal에만 적는다(`lead-r2-bot-verify/r2.md`, `lead-settle-bot-verify/settlement.md`).
+- 리드의 7777 허락 회신(`msg_0591890f9d92`)에 미리 써 둔 「지금 World는 Windows 쪽 서식 검사만 돌린다(WSL·7777 안 씀)」가 남았다. 실제로는 그 서식 검사가 WSL dotnet을 썼고 04:51:40Z에 이미 끝나 있었다. 검증자가 이 문장을 판정서 147행에 옮겼다. 허락 판단과 판정 결과에는 영향이 없다. 리드 귀속이며 첫 발생이라 이 goal에만 적는다. 다음부터 미리 쓴 회신은 보내기 직전 원시와 다시 맞춘다.
+- 봇 검증자도 홈 `~/.claude/projects/…/tool-results/`에 자동 사본 2건과 `.claude/state/session-guard/` 상태 파일 1건을 허용 밖 생성으로 스스로 보고했다. 판정 근거에는 쓰이지 않았다. tool-results는 이 goal의 네 번째 관측이라 위 항목대로 종료 기록 때 교정 층 판단에 함께 올린다.
 
 ## 다음 계획 후보
+
+- **UI 계층·창 정렬 기준 통합**: 사용자 결정 A(메인 `msg_b78153624c8b`)로 [BACKLOG `ui-layer-sort-design`](../../../00_Document/operations/BACKLOG.md#ui-layer-sort-design의-원문검토-범위)에 등록했다. 상세는 후보 한 곳에서 관리하며 C9에 계층 설계를 포함하지 않는다.
 
 이 goal에서 발견한 범위 밖 후보는 출처와 함께 한 줄로 적고 [BACKLOG](../../../00_Document/operations/BACKLOG.md)의 ID를 붙인다. 등록은 착수 권한이 아니다. 아래는 결함 PR 독립 검증의 비차단 관찰이며, BACKLOG 등록 여부는 종료 기록 때 정한다.
 
@@ -457,3 +840,36 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - 클라이언트는 거부 결과(`CurrencyCap`·`InventoryFull`)에 실린 골드·아이템도 받아 둔다. 창은 사유만 보인다. 클리어 PR 설계 C3의 「거부 = 골드 0·빈 칸」과 맞출지 클리어 PR 착수 때 정한다(독립 검증 O-2).
 - PlayMode 던전 창 시험 두 클래스가 helper(39 encoder·`HasNumber`·`Confirms`)를 사본으로 가진다. 세 번째 사용처가 생기면 `ScreenUiProbe` 옆 probe로 뽑는다(독립 검증 O-4, 재검증 O-2).
 - 서버 lane Stop이 다섯 번 모두 INT 20초 안에 끝나지 않아 TERM으로 정리됐다. 서버의 INT 처리를 확인할 후보다(독립 검증·재검증 O-5).
+- **HUD PlayMode 시험 간헐 시간 초과**: World 재검증의 서버 lane PlayMode 전체(12:03:59Z~12:05:15Z)에서 `HudGoldAndPanelToggleSceneTests.ClosedPanel_LetsAClickOnItsUseSpotAttack_AndAfterIThatClickUses_AcrossAMapMove`가 「Timed out: the open panel's Use」로 한 번 실패했다. 가짜 서버 peer의 `C_ItemUse`를 실시간 3초 기다리는 곳(`HudGoldAndPanelToggleSceneTests.cs:93`)이다. 같은 HEAD 재실행은 3/3·3/3 통과였고 원인은 확정하지 못했다. 대기 한도를 늘리거나 프레임 수 기반 대기로 바꾸는 안이 있다. 출처는 World `msg_75c883fc0f0b`와 World 근거 `.backups/verification/2026-10-11-multi-account-login/reverify/verdict.md` O-4다. 클리어 PR의 검증에서 같은 시간 초과가 나면 이 관찰로 분류하고 원시를 남긴다.
+- **클리어 시험 머리 주석 출처**: `InventoryAuthorityBoundaryTests.cs:10-13`이 클리어 묶음을 아이템 goal 승인표 리터럴이라고 적는다. 실제로는 공유 `DungeonClearRewards`(10-08 결정 2 A)에서 읽는다. 다음에 그 파일을 고치는 작업에서 바로잡는다(클리어 독립 검증 V-2).
+- 보스 처치 뒤에도 `_bossUnlocked`가 남아, 같은 사람이 바로 새 복사본에서 다시 클리어할 수 있다. 재도전 제한이 필요하면 World·Quest가 해금 수명을 정한다. 결정은 사용자·메인이다(클리어 독립 검증 O-1).
+- 재출현이 `_stageCleared`만 되돌리고 `_dungeonClear`는 다음 클리어까지 남는다. 확인 job이 `IsStageCleared`를 먼저 봐서 지금은 안전하다. 재출현 때 상태도 비우거나 상태 객체가 세대를 확인하는 안이 있다. `MaybeRespawnBoss`가 World 소유 구간이라 함께 정한다(O-2).
+- `DungeonClearState`가 수혜자 `GameSession` 참조를 복사본 정리나 다음 클리어까지 든다. 확인 집합만 남기고 수혜자 목록은 콜백 뒤 버리는 안이 있다(O-3).
+- `HandlerRegistry`·`GameMap`·`InventoryRegistry`·`GameSession`이 `using` 대신 `Dungeon.` 부분 한정 이름을 쓴다. 다음에 그 파일을 고치는 PR에서 `using`으로 바꾼다(O-4).
+- `DungeonClearState` 머리 주석에 호출처가 없다. 한 줄을 더한다(O-5).
+- **봇 동시 처치의 관찰 한계**: `DungeonClearSmoke`의 두 파티가 같은 시각에 보스를 잡아, 상대 복사본 결과 0이 「봇마다 39 하나」로만 관찰된다(`DungeonClearSmoke.cs:89,106-112`). 한 파티가 먼저 잡고 조용한 창 동안 다른 파티의 39가 0인지 본 뒤 두 번째 파티가 잡는 안이 있다(봇 검증 O-B1).
+- **봇 성공 줄의 리터럴 값**: `parties=2 cleared=2 rewarded=4 returned=4`가 검사 통과 뒤 대입하는 리터럴이라 로그에 실제 관찰값(보스 ID, revision 전후, 골드)이 없다(`Program.cs:56`, `DungeonClearSmoke.cs:63,91,100,104`). 실제 통과 수와 봇별 관찰값을 찍는 안이 있다(봇 검증 O-B2).
+
+### C9 실화면 지금 재개 — 메인 2026-10-15 지시
+
+메인 msg_0a240e3cafcc(00:47:13Z)가 전달한 사용자 원문은 「밤사이에 뭐 한게 없는데??」, 「일단 그 사이에 밀린 작업 리드급들한테 지시해줘」다. 메인 지시로 현재 C9 실서버·709×399/802×451/1920×1080 실화면·SFX 검증을 지금 재개한다. 최신 main19664796 합류 후 현재 HEAD·로그인v19 계약을 고정한다. Editor를 먼저 열고 신규 Opus 검증자 한 명만 MCP에 연결하며, 사용자 연결 승인이 필요하면 즉시 메인에 알린다. Unity는 Content 우선이고 Art는 반환 뒤다.
+
+새 계약은 실행 단계와 직전 메모리/hash/잔여 프로세스 자동 관문을 묶어 승인하며 단계별 now-start 답을 반복 대기하지 않는다. 관문 실패·계획 밖 실행과 실제 사용자 MCP 연결 승인은 별도 질문한다. Unity 단일·WSL Core우선·Core WSL과 Unity 물리6GiB/commit4GiB 병행·SQL/Unity 비동시를 지키며 짧은 통지의 회신을 기다리며 멈추지 않는다. heartbeat 지연은 구간/이유 한 줄, 의심 근거가 있을 때만 전수 원시 대조다. 세부 원시는 근거 폴더에 두고 기록 커밋은 단계 결과 때 묶는다. 이는 메인 운영 지시이며 검증 절차 자체의 별도 경량화는 사용자 결정 전 적용하지 않는다.
+
+C9 통과 뒤 PR239 ready·정확head/CI/판정 원문으로 메인에 병합 준비를 보고한다. 직접 병합/auto-merge하지 않는다. goal 종료 점검 뒤 멈추고 다음 goal은 열지 않는다. 이전 밤 대기는 이 재개 지시로 대체하되 실제 MCP 연결 승인 전 Play/MCP 실행은 하지 않는다.
+
+### 적용 중인 사용자 결정 — 검증·운영 경량화
+
+메인 전달 msg_64ba6e18eda2(2026-10-15T00:53:36Z)의 사용자 원문: 「대시보드 결정 응답: 1) 검증 경량화 1 - 실행 단계 승인을 계약 때 한 번에 할지 → A 계약 때 일괄 승인 · 2) 검증 경량화 2 - 생존 신호 300초 초과를 매번 원시 감사할지 → A 한 줄 기록 + 기존 집계만 · 3) 검증 경량화 3 - goal 기록을 결정·단계 결과·결함만으로 줄일지 → A 핵심만 기록 · 4) 검증 경량화 4 - 파트 간 무거운 실행 조율을 메시지 대신 공용 잠금 도구로 할지 → A 공용 잠금 도구」.
+
+1~3은 지금 적용한다. 기존 v4 검증 계약의 남은 실행 단계·순서·자동 관문도 일괄 승인하며 실패 관문/계획 밖만 질문한다. heartbeat 지연은 구간·이유 한 줄과 기존 집계·R-2만, 의심 근거가 있을 때만 추가 원시 감사한다. goal은 결정·단계 결과·결함만 기록하고 세부 원시는 근거 폴더, 기록 커밋은 단계 종료 때 묶는다. 기존 기록은 고치지 않는다. 4는 메인이 새 Rules goal로 만들며 도구 main 반영 전 Unity 하나(Content우선)·WSL Core우선·6GiB/4GiB 병행 기준과 짧은 통지를 유지하고 회신을 기다리며 멈추지 않는다. 독립 검증·역할 분리·강/약·보존 자원·전역 설정 금지·병합 승인은 유지한다. 전달 원문/계약 인계는 c9-screen-resume-20261015-prep/에 보존한다.
+
+### 239 - C9 실제 경로 통과와 병합 준비
+
+신규 외부 Opus의 C9 범위 1~4 판정은 통과·결함 0이다. 실제 로그인 v19→일반 처치→보스방 클리어→보상 창→확인→Town, 세 크기와 패널 열림·닫힘의 HUD/패널 무겹침·확인 적중, 별도 복사본에서 확인 없이 Ending→제품 재접속→Town 보존 경로를 관측했다. 이전 S-1·S-2는 재현되지 않았다. 판정 원문은 `c9-screen-resume-20261015/report.md`와 `verdict.json`, 리드 실사·정산·실행 원시는 같은 이름의 prep 폴더다. 실제 청취·사람 손 입력·DB·봇 재실행은 하지 않았다. SFX는 사용자 지시대로 음소거 상태의 재생·클립·오류 관측과 구분한다.
+
+**D-10 해석 A는 메인 판단(msg_9ad3fa95a015)이며 사용자 결정이 아니다. 사용자에게 PR239 병합 요청 때 공개한다.** 같은 Play·같은 연결의 전체 클리어 흐름 중 보상 창이 뜬 뒤 크기를 바꿨고, 한 해상도를 고정한 전체 흐름은 별도로 돌리지 않았다. 메인은 범위 2의 명시적 크기 변경 허용과 세 크기의 raycast·겹침 대조에 따라 범위 1을 충족한 것으로 확정했다. 추가 B 실행은 하지 않으며 사용자가 B를 선택하면 새 검증자로 수행한다.
+
+보호 사용자 파일은 보존됐고 Editor·7777·음소거·MCP 시트는 정산·반환했다. 검증자는 완료 뒤 정확 pane을 닫아 재사용하지 않는다. heartbeat/Monitor 지연·관문 재측정·도구 자동 출력·layout/AccountName 자동 저장·늦게 읽은 지시는 원문 D-1~D-12에 공개했다. 기존 생존 집계 도구 결과도 prep에 보존했다. 비차단 관찰 O-1~O-9와 기존 #4/#5는 해소로 쓰지 않으며 현재 승인 범위 밖의 새 수정은 시작하지 않는다.
+
+검증한 제품·시험 bytes는 그대로이고 이 단계 커밋은 goal 결과 기록만 묶는다. PR239 ready 뒤 최종 head·CI·판정 원문으로 메인에 병합 준비를 보고한다. 사용자 승인·메인 병합·Gardener·종료 기록이 남아 goal 전체 완료가 아니며, 이 목표 뒤 새 goal은 자동으로 열지 않는다.

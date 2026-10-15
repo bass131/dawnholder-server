@@ -45,6 +45,10 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 [DungeonClearRewardWindow](../../03_Client/Assets/Scripts/UI/DungeonClearRewardWindow.cs)는 `CombatBootstrap`이 게임플레이 씬에 만드는 전용 Canvas다. 성공이면 서버가 보낸 정수 골드와 카탈로그 이름·개수를 표시하고, 용량 거부이면 받은 보상이 없다는 안내와 이유만 표시한다. 현재 연결의 `CanSendGameplay`가 참일 때만 「확인」이 pending 결과를 먼저 소비하고 40번(`reserved=0`)을 한 번 보낸다. 같은 프레임 중복 클릭과 자동 재시도는 송신을 추가하지 않으며, 송신 예외에서도 소비한 창은 닫힌다. 정상 반환은 서버 처리 완료의 확인이 아니다. 게임플레이 밖 씬·연결 종료·disable에서는 CanvasGroup의 표시와 입력을 모두 끄고, disable/destroy 때 실제로 구독한 상태에서 해제한다. 열린 창도 확인 버튼만 raycast를 받으며 닫힌 창은 클릭과 공격을 막지 않는다.
 
+창은 `LateUpdate`에서 활성 HUD의 `character_status` 하단과 같은 씬의 활성 `InventoryPanel`이 가진 `Inventory` 하단을 읽어 그 아래 공간에 배치한다. 인벤토리 패널이 닫혀도 자리를 예약하므로 「I」로 열고 닫을 때 보상 창과 「확인」 위치를 바꾸지 않는다. 배치 후 현재 활성 씬의 창에 같은 연결의 pending 결과가 있고, 현재 `EventSystem`과 `currentInputModule`이 모두 활성·enabled인 경우에만 표시와 raycast를 공개한다. 이는 입력 기반 준비 조건이며 모든 HUD 배치가 끝났다는 보장은 아니다. 「확인」의 송신 가능 여부는 별도로 현재 연결의 `CanSendGameplay`를 따른다.
+
+StageClear 배너는 보상 표시를 덮지 않도록 숨긴다. 15번 뒤 39번이 오면 보상 창을 공개할 때 `StageClearUI.Hide`를 호출하고, 39번 뒤 15번이 오면 `StageClearUI.Show`가 같은 연결의 pending 보상을 확인해 숨긴 채 반환한다. `Hide`는 진행 중 fade를 먼저 멈춰 다음 프레임에 배너가 다시 나타나지 않게 한다. `StageClearHandler`의 `Show` 뒤 StageClear SFX 호출 경로는 남아 있으며 배너 숨김과 별개다. 이 코드 경로 확인은 실제 소리 청취나 709×399·802×451·1920×1080 화면에서의 겹침 검증을 대신하지 않는다.
+
 [DungeonEntranceLabel](../../03_Client/Assets/Scripts/UI/DungeonEntranceLabel.cs)은 같은 bootstrap에서 Town 씬의 기존 단일 `PortalTrigger` 위에 「던전 입구」를 붙인다. 포탈 collider의 위쪽에 여백을 둔 world-space TMP 글자이며 raycast를 받지 않는다. 포탈의 자식으로 씬과 함께 사라지고, HuntingGround·BossRoom에는 생성하지 않는다. 맵·포탈 표와 scene·prefab은 이 표시에 관여하지 않는다.
 
 ## 원격 보간
