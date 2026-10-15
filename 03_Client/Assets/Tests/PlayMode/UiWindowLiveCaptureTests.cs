@@ -225,8 +225,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual(PrimaryWidth, frame.Width);
             Assert.AreEqual(PrimaryHeight, frame.Height);
             yield return ObservePartyResponses(popup, group, layout, failures);
-            WriteRecord();
-            // After the PNG and record exist, so a failing requirement still leaves the frame and every measured value.
+            WriteRecord(phase: "responses");
+            // After the PNG and both records exist, so a failing requirement still leaves the frame and every measured value.
             Assert.IsEmpty(failures, "party invite layout requirements:\n" + string.Join("\n", failures));
         }
 
@@ -536,9 +536,10 @@ namespace Dawnholder.Client.Tests.PlayMode
             Debug.Log($"[Art 검증자 capture] {_window} {key}: {value}");
         }
 
-        void WriteRecord()
+        void WriteRecord(string phase = null)
         {
-            string path = Path.Combine(_output, _window + "-record.txt");
+            string name = phase == null ? _window : _window + "-" + phase;
+            string path = Path.Combine(_output, name + "-record.txt");
             Assert.IsFalse(File.Exists(path), "record output must be new: " + path);
             File.WriteAllLines(path, _record);
         }
