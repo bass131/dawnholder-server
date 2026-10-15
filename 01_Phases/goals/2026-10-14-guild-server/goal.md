@@ -2,7 +2,15 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 고정된 길드 서버·두 봇·공유 DLL 산출물을 신규 Opus가 강 독립 검증한다. 실제 클리어 자체 전체시험1443통과·실패0·기존제외5와 두 봇 실제순환1회/DLL2 배포를 정산했다. 구현 원문은 E/`clear-implementation-01/`, E/`bot-consumer-01/`이며 전체봇회귀·Unity 소비자/G7·최종독립/전체 goal PASS·CI/PR는 아직 남아 있다.
+**다음 첫 일:** 사용자 재개 뒤 지침·현재 Git·새 Run/신원·자원 관문을 다시 확인한다. 신규 외부 세션이 TEST-F01(새 시험의 처치36 수신 순서 가정)을 수정하고, 새 최종 강 독립 검증자가 서버 whole 재검증·기존22봇 회귀(C)·격리 Unity whole EditMode(D)를 포함해 판정한다. UNITY-01(기존 Unity 시험의 v19 단정과 v20 DLL)을 요구 원문과 대조하고 실제 실행으로 분류한다. 오늘 PR·CI·수정 작업자는 시작하지 않았다.
+
+**2026-10-15 세션 마감:** `date.exe -u '+%Y-%m-%dT%H:%M:%SZ'` 출력 `2026-10-15T07:20:33Z`. 메인 판단 `msg_f934bb915687`에 따라 자원 차단 상태로 현재 검증자만 정산했다(사용자 결정으로 격상하지 않는다). **열린 Task·Dispatch 없음, 작업자 pane 0**, 리드 pane 하나만 남았다. 제품 기준 HEAD/기존 remote는 `e2744dc7b642ccf631d1263fa94636eb25757374`이며 이 마감 기록만 별도 normal commit/push한다.
+
+- **최종 Opus 판정 보류:** Task `task_d1317f9f3f31` / Dispatch `ctx_94419ce34274`, 요청 `claude-opus-5-5`·최초 실행/화면 Opus5.5 xhigh·backend unknown. B 무필터 whole 1회는 06:51:46.896Z~06:54:11.180Z/exit1, 1456행=1450통과/1실패/5실제NotExecuted. 기존1448개 outcome 변화0, 신규8개 중7통과/1실패다. TEST-F01은 검증자 신규 시험 결함이며 D3·D8·G4·I5의 해당 단정 미도달/미확정, 제품 확정 실패나 강 독립 PASS가 아니다.
+- **C/D 미실행:** C 준비1은 빈 배열 `.Count` 관문 명령 오류, 준비2는 물리4.18GiB<필수6GiB로 정지했다. 원본22봇·서버·Unity 실행0, D 사본 `gfr1/p` 미생성이다. 사용자 PioneerGame을 건드리거나 회복 대기 폴링/기준 완화를 하지 않았다. UNITY-01은 `InventoryProtocolCompatibilityTests.cs:33`의19 단정과 현재20의 정적 불일치 위험이며 실행 실패로 세지 않는다.
+- **원문·정산:** E/`final-review-01/verdict.md` SHA256 `75767C1A7900A3BB73B82AB08BCAE23CF7A731401D45B777659DD54D3FB5ED4C`. 보고/context·감사와 `lead-b-source-review.json`·`lead-final-audit-review.json`을 대조했다. 보호2565 hash 불일치0, 자기근거105+신규시험4+리드도구복사2=111개 bytes/hash 불일치0. TEMP/WSL clone·전역 자동 상태·프로세스 전생애 전수 감사는 하지 않았다. 운영 미준수 HB410·347초/관문 명령 오류는 공개하며 제품 결함으로 바꾸지 않는다.
+- **미커밋 시험 보존:** `02_Server/GameServer.Tests/Guild/GuildClearSettlementTests.cs`, `GuildPacketCompatibilityTests.cs`, `03_Client/Assets/Tests/EditMode/GuildProtocolCompatibilityTests.cs`와 그 `.meta` 정확4개는 수정·삭제·stage·commit하지 않았다. 동결 hash 그대로이며 E/`final-review-01/uncommitted-tests/`에 동일bytes 사본과 `lead-uncommitted-tests-backup.json`을 보관했다. 첫 파일에 알려진 실패 TEST-F01이 남아 있다. 다른 추적/사용자 파일의 미커밋 변경은 관측되지 않았다.
+- **종료:** worker_done `msg_d9b240735c6d` failed/쓰기종료를 실사하고 release→동일 terminal/incarnation·완료/빈prompt→정확 pane close(ptyKilled=true)했다. `lead-tasks-final.json`의11 Task는 completed/failed, `lead-all-workers-final.json`의 미결 Dispatch0·`lead-workers-after-close.json`의 reclaimable 조회0, `lead-terminals-after-close.json`의World 리드1/작업자0이다. 후속 수정·재검증/CI·제품 PR/병합은 미실행으로 다음 세션에 이월한다.
 
 **2026-10-15 재개:** 메인 `msg_99948c9dedd6`(00:47:13Z)이 이전 대기 지점을 바꿨다. 현재 제품·시험을 checkpoint commit/push로 보존하고, Content 실제 clear와 무관한 기초 길드 범위를 신규 Opus 강 독립 검증한다. 실제 clear 연결·Unity·두 봇·전체 goal 판정은 남겨 둔다. 상세 결정은 아래 「아침 기초 검증 재개」이며 이전 대기 기록은 당시 상태로 보존한다.
 
