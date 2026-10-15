@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Input;
 using Dawnholder.Client.Network;
@@ -24,7 +25,8 @@ namespace Dawnholder.Client.Tests
     internal sealed class EntryBindingFixture : IDisposable
     {
         readonly List<GameObject> _objects = new();
-        readonly List<Type> _singletons = new();
+        readonly Dictionary<Type, Component> _singletons = new();
+        bool _admitted;
         internal readonly UnityClientSession Session;
         internal readonly LocalPlayerMovement Player;
         internal readonly PlayerPredictor Predictor;
@@ -35,12 +37,20 @@ namespace Dawnholder.Client.Tests
         internal EntryBindingFixture(UnityClientSession session)
         {
             Session = session;
-            Player = Component<LocalPlayerMovement>(true);
-            Predictor = new PlayerPredictor(new MoveParams(5, 8));
-            SetField(Player, "_predictor", Predictor);
-            Remote = Component<RemoteEntityRegistry>(true);
-            Enemies = Component<EnemyRegistry>(true);
-            SessionTestTools.Call(session, "SetLocalEntityId", 7);
+            try
+            {
+                Player = Component<LocalPlayerMovement>(true);
+                Predictor = new PlayerPredictor(new MoveParams(5, 8));
+                SetField(Player, "_predictor", Predictor);
+                Remote = Component<RemoteEntityRegistry>(true);
+                Enemies = Component<EnemyRegistry>(true);
+                SessionTestTools.Call(session, "SetLocalEntityId", 7);
+            }
+            catch
+            {
+                Dispose();
+                throw;
+            }
         }
 
         internal T Component<T>(bool singleton = false) where T : Component
@@ -54,9 +64,33 @@ namespace Dawnholder.Client.Tests
                 var property = typeof(T).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
                 Assert.IsNull(property.GetValue(null), "fixture cannot replace an existing owner");
                 property.GetSetMethod(true).Invoke(null, new object[] { component });
-                _singletons.Add(typeof(T));
+                _singletons.Add(typeof(T), component);
             }
             return component;
+        }
+
+        // Positive gameplay fixtures opt in explicitly. Constructor/Begin/Ready remain usable before a load
+        // result, so the authority-negative tests exercise the real closed gate without hidden preparation.
+        internal void Admit(ManualConnectionQueue queue, TestSocketPair sockets)
+        {
+            if (_admitted)
+            {
+                Assert.IsTrue(Session.CharacterLoad.IsSuccess);
+                return;
+            }
+            Assert.IsTrue(Session.HandshakeOk, "admission requires a completed handshake");
+            Assert.IsNull(Session.CharacterLoad.Status);
+            Assert.IsNull(ClassLoadout.ServerClass, "fixture cannot replace another connection's authority");
+            Session.SendCharacterSelect(0);
+            CollectionAssert.AreEqual(new byte[] { 5, 0, 16, 0, 0 }, sockets.ReadFrame(), "explicit Knight selection");
+            Session.OnRecvPacket(new ArraySegment<byte>(new byte[] { 6, 0, 48, 0, 0, 0 }));
+            Assert.IsNull(Session.CharacterLoad.Status, "the handler must await the main queue");
+            queue.Drain();
+            _admitted = Session.CharacterLoad.IsSuccess;
+            Assert.IsTrue(_admitted, "the valid server result must establish authority");
+            Assert.AreEqual(CharacterClass.Knight, ClassLoadout.ServerClass);
+            Session.SetLocalEntityId(7);
+            Assert.AreEqual(7, Session.LocalEntityId, "entity binding follows the successful load");
         }
 
         internal long Begin(byte map = 0, float x = 2, float y = 3)
@@ -86,9 +120,20 @@ namespace Dawnholder.Client.Tests
 
         public void Dispose()
         {
-            foreach (Type type in _singletons)
-                type.GetProperty("Instance").GetSetMethod(true).Invoke(null, new object[] { null });
-            for (int i = _objects.Count - 1; i >= 0; i--) UnityEngine.Object.DestroyImmediate(_objects[i]);
+            foreach (KeyValuePair<Type, Component> owned in _singletons)
+            {
+                var property = owned.Key.GetProperty("Instance");
+                if (ReferenceEquals(property.GetValue(null), owned.Value))
+                    property.GetSetMethod(true).Invoke(null, new object[] { null });
+            }
+            _singletons.Clear();
+            for (int i = _objects.Count - 1; i >= 0; i--)
+                if (_objects[i] != null) UnityEngine.Object.DestroyImmediate(_objects[i]);
+            _objects.Clear();
+            if (_admitted && ClassLoadout.ServerClass == CharacterClass.Knight &&
+                (UnityClientSession.Instance == null || ReferenceEquals(UnityClientSession.Instance, Session)))
+                ClassLoadout.ResetServerClass();
+            _admitted = false;
         }
     }
 
@@ -97,6 +142,7 @@ namespace Dawnholder.Client.Tests
         UnityClientSession _session;
         ManualConnectionQueue _queue;
         EntryBindingFixture _views;
+        TestSocketPair _sockets;
         int _latency;
         readonly List<Action> _delayed = new();
         readonly List<float> _delays = new();
@@ -111,9 +157,12 @@ namespace Dawnholder.Client.Tests
             _queue = new ManualConnectionQueue();
             _session = new UnityClientSession(() => true, _queue.Post, (action, delay) => { _delayed.Add(action); _delays.Add(delay); },
                 (action, seconds) => _deadlines.Add(seconds));
+            _sockets = new TestSocketPair();
+            _session.Start(_sockets.Client);
             _session.Publish();
             SessionTestTools.Handshake(_session, _queue);
             _views = new EntryBindingFixture(_session);
+            _views.Admit(_queue, _sockets);
         }
 
         [TearDown]
@@ -121,6 +170,7 @@ namespace Dawnholder.Client.Tests
         {
             _session?.Cleanup();
             _views?.Dispose();
+            _sockets?.Dispose();
             _delayed.Clear();
             _delays.Clear();
             _deadlines.Clear();
@@ -336,8 +386,7 @@ namespace Dawnholder.Client.Tests
         [TestCase(true)]
         public void DelayedIntent_RechecksMapEpochWithinSameSession(bool changeEntry)
         {
-            using var sockets = new TestSocketPair();
-            _session.Start(sockets.Client);
+            TestSocketPair sockets = _sockets;
             try
             {
                 _views.Begin();

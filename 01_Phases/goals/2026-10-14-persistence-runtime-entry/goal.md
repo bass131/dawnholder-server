@@ -256,3 +256,9 @@ Main msg_a8dd25f254a5가 전한 사용자 원문: 「대시보드 결정 응답:
 - 새 독립 강 판정은 차단이다. DLL 출처와 실제 Unity 로드 bytes·소켓→handler→메인 큐의 새 시험22건은 통과해 옛DLL 차단은 해소했다. 통합 서버 전체는1,497통과·실패0·기존제외5다. Unity 전체는477건중339통과·138실패이며128건본문은fixture누수로미실행이다.
 - 차단 #1은캐릭터로드성공입력이없는기존fixture, #4~#6은HUD직업입력·옛protocol19단정·EditMode파괴/동일인스턴스재사용단정이다. #2생성실패정리/#3초기화전TimeScale복원도같은좁은보정에서다룬다. 다음은새Astra와새독립Opus각한작업이며현재수정/재실행은아직없다.
 - 검증자는정산·정확종료했다. 자동설정2와IDE/UserSettings/LocalLow시험사본부작용은보존·공개하고tracked자동변경은커밋하지않는다. 초기읽기Git계약위반·생존신호초과3구간은Main에인계하며상세는근거에둔다. 원문/전수표/실제수치/정산: runtime-entry-unity-dll-verification-1/{verdict.md,context.md,lead-final-settlement.json}.
+
+## 2026-10-15 - Unity fixture 보정 자체 GREEN·독립 재검증 인계
+- 신규 Astra task_a51dd8b4e565/ctx_31f461ff129e가 기존 시험/helper11개(+296/-46)의 명시적 로드 성공 입력·생성 실패 정리·초기화 전 시간 복원·권위 HUD·literal21·reset 뒤 새 인스턴스 경계를 보정했다. 기본 fixture/공용 Handshake의 무로드 의미와 NEW22·제품/DLL/meta를 보존했고 설정2는 초기/사후 각각1회 지정 baseline으로 복원했다. 원문 보고·맥락 전문/실제 diff·입력2109/주요 근거12 hash 및 기존 실패138의 실제 PASS 대응을 리드가 확인해 구현 작업을 정산·정확 pane 종료했다.
+- 원본 P2 whole EditMode 자체1회는05:21:16.7774830Z→05:22:54.2224802Z, exit0/97.4449972초, 481PASS/0FAIL/0skip이다. 기존477은 protocol 시험명19→21 대응1을 포함해 모두통과했고 추가4 및 불변NEW22도통과했다. 이전cold/이번warm Library·TEMP/동시WSL관측 차이를 공개하며 자체GREEN을 독립PASS로 소급하지 않는다. 새 독립 Opus의 강 검증·독립 시험·전체 실제 실행은 다음 단계다.
+- 반환은 worker 교정 UTCticks와 리드 별도 rawbirth 대조에서 root1+관측고유자식14 모두PID부재·Editor0/자기lock0/kill0로 확인했다(생애전수아님). DateTime/문자열 혼용 반환·리드 재파싱·집계v1·늦은현재형·ask wrapper 출력 누락의 원문과 정정을 보존했다. 생존helper는05:24:36~05:30:08의332초 over1(설정복원/138대응·보고 작성)이며 추가 전사감사는 하지 않았다.
+- 상세 원문·전수표·원시·정산은 `.backups/verification/2026-10-14-persistence-runtime-entry/runtime-entry-unity-fixture-correction-1/{report.md,context.md,raw/D-original138-detailed.json,lead-final-source-check.json,lead-final-settlement.json,lead-terminal-close.json}`에 둔다. Content 다음 창에 정확반환을 전달했고 현재 이 보정의 추가 실행/예약은0이다. 실제 DB/DPAPI·정상 서버/봇·Play 장면9·새 독립판정·새 head CI/사용자 병합 승인 등 전체goal 조건은 아직 남는다.
