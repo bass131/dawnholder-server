@@ -867,7 +867,7 @@ $ast = [Management.Automation.Language.Parser]::ParseFile($hashCommon, [ref]$tok
 $topLevel = @($ast.EndBlock.Statements)
 $definitions = @($topLevel | Where-Object { $_ -is [Management.Automation.Language.FunctionDefinitionAst] })
 $hashFunctions = @(
-    'Get-MigrationText', 'Get-MigrationHash', 'Get-ModuleDefinitionHash',
+    'Get-MigrationText', 'Get-MigrationHash', 'ConvertTo-ExpectedModuleDefinition', 'Get-ModuleDefinitionHash',
     'New-ModuleHashTarget', 'Get-ModuleHashRows', 'Test-ModuleHashConsumers'
 )
 # Reviewed definition set: fix 3 split input reading, occurrence registration and manifest token checks into
@@ -877,7 +877,7 @@ $reviewedHashFunctions = $hashFunctions + @(
 )
 $sortedHashFunctions = ($reviewedHashFunctions | Sort-Object) -join ','
 $definedNames = (@($definitions | ForEach-Object Name) | Sort-Object) -join ','
-Assert-True -Name 'ModuleHash.Common.ps1 -> definitions only (nine reviewed functions, no top-level statement)' `
+Assert-True -Name 'ModuleHash.Common.ps1 -> definitions only (ten reviewed functions, no top-level statement)' `
     -Condition (@($parseErrors).Count -eq 0 -and $topLevel.Count -eq $definitions.Count -and
     $definedNames -ceq $sortedHashFunctions) `
     -Detail ((@($topLevel | ForEach-Object { $_.GetType().Name }) -join ',') + '; names=' + $definedNames)
@@ -948,7 +948,7 @@ foreach ($case in $importCases) {
         $probe.ExitCode -eq 0 -and $null -ne $probe.Result -and $probe.Result.Kept -eq $sentinels.Count) `
         -Detail $probe.Output
     if ($case.Exact) {
-        Assert-Equal -Name ("dot-sourcing $($case.Name) adds exactly its nine reviewed hash functions") `
+        Assert-Equal -Name ("dot-sourcing $($case.Name) adds exactly its ten reviewed hash functions") `
             -Expected $sortedHashFunctions -Actual ($added -join ',')
     }
     else {

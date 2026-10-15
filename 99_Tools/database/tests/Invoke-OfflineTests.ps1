@@ -28,6 +28,7 @@ $suites = @(
     @{ File = 'TestEnvironmentLifecycle.Tests.ps1'; Directory = 'test-environment-lifecycle' },
     @{ File = 'EnvironmentGuards.Tests.ps1'; Directory = 'environment-guards' },
     @{ File = 'TestDatabaseContract.Tests.ps1'; Directory = 'test-database-contract' },
+    @{ File = 'PreservationEngine.Tests.ps1'; Directory = 'preservation-engine' },
     @{ File = 'ContainerConnection.Tests.ps1'; Directory = 'container-connection' }
 )
 $exe = [Diagnostics.Process]::GetCurrentProcess().Path
