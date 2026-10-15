@@ -559,6 +559,15 @@ public class GameSession : PacketSession
                 return;
             }
 
+            // A World admission needs the real login identity even if a protected entry hook
+            // was used. Reject before creating a player or an inventory registration.
+            if (self._world != null && !self.IsLoggedIn)
+            {
+                Console.WriteLine("[Trust] World admission without login — disconnecting");
+                self.Disconnect();
+                return;
+            }
+
             // 헌법 #1: spawn 좌표를 서버가 정함 (content.bin PlayerSpawn 기준).
             Vector2 spawnPos = map.PlayerSpawnPosition;
 
@@ -571,29 +580,53 @@ public class GameSession : PacketSession
             self._entityId = entity.EntityId;
             self.SetCurrentMap(map);
 
-            // Economy admission follows the actual player owner, before sends can fail/close.
-            // World close cleanup ends this registration; portal moves keep the same lifetime.
-            self._world?.Inventory.Register(self, entity.EntityId);
-            if (self._world != null && !self._world.Guild.Register(self, entity.EntityId)) return;
-
-            S_EnterMap pkt = new S_EnterMap
+            Action? publishGuildAdmission = null;
+            try
             {
-                entityId = entity.EntityId,
-                spawnX = entity.Position.X,
-                spawnY = entity.Position.Y
-            };
-            self.Send(pkt.Write());
+                // Commit admission before publishing the player, but defer guild notification
+                // until EnterMap, authoritative HP, and the initial roster have been sent.
+                // World close cleanup owns failed admissions too; portal moves retain the state.
+                self._world?.Inventory.Register(self, entity.EntityId);
+                if (self._world != null &&
+                    !self._world.Guild.Register(self, entity.EntityId, out publishGuildAdmission))
+                {
+                    self.Disconnect();
+                    return;
+                }
+                if (self.IsClosing) return;
 
-            // 진입 직후 권위 HP 1회 송신 — 클라 HUD 초기화. Owner 연결 완료 후 즉시.
-            map.SendPlayerHp(entity);
+                S_EnterMap pkt = new S_EnterMap
+                {
+                    entityId = entity.EntityId,
+                    spawnX = entity.Position.X,
+                    spawnY = entity.Position.Y
+                };
+                self.Send(pkt.Write());
+                if (self.IsClosing) return;
 
-            // self에게 기존 roster(player + 살아있는 enemy) 1:1 Send — 통합 메서드.
-            map.SendInitialRosterTo(self, existing);
+                // 진입 직후 권위 HP 1회 송신 — 클라 HUD 초기화. Owner 연결 완료 후 즉시.
+                map.SendPlayerHp(entity);
+                if (self.IsClosing) return;
 
-            // 자기 외 모든 player에게 신규 entity broadcast (except self — 본인은 로컬 선예측).
-            map.BroadcastPlayerJoin(entity, self);
+                // self에게 기존 roster(player + 살아있는 enemy) 1:1 Send — 통합 메서드.
+                map.SendInitialRosterTo(self, existing);
+                if (self.IsClosing) return;
 
-            Console.WriteLine($"[Map] Player {entity.EntityId} entered — roster:{existing.Count}, enemies:{map.Enemies.Count}");
+                // 자기 외 모든 player에게 신규 entity broadcast (except self — 본인은 로컬 선예측).
+                map.BroadcastPlayerJoin(entity, self);
+
+                Console.WriteLine($"[Map] Player {entity.EntityId} entered — roster:{existing.Count}, enemies:{map.Enemies.Count}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GameSession] World admission failed: {ex}");
+                self.Disconnect();
+            }
+            finally
+            {
+                // A post-commit close/send failure cannot roll back the seed or suppress peers.
+                publishGuildAdmission?.Invoke();
+            }
         });
     }
 

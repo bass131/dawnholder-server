@@ -42,19 +42,25 @@ public class BroadcastTests : IDisposable
 
     class TestGameSession : GameSession
     {
+        readonly GameWorld _loginWorld;
         readonly GameMap _injectedMap;
         public List<byte[]> SentPackets { get; } = new();
         public int DisconnectCalls { get; private set; }
 
-        public TestGameSession(GameMap map) { _injectedMap = map; }
+        public TestGameSession(GameWorld world, GameMap map) : base(world)
+        {
+            _loginWorld = world;
+            _injectedMap = map;
+        }
         protected override GameMap GetMap() => _injectedMap;
 
-        // handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
+        // Authenticate without draining the map job; each test controls the admission tick.
         public override void OnConnected(EndPoint endPoint)
         {
-            CompleteHandshakeAndEnter();   // _handshakeCompleted = true
-            SetCharacterClass(0);           // HasSelectedClass = true (Knight)
-            EnterGameWorldIfReady();        // → EnterGameWorld() 호출
+            base.OnConnected(endPoint);
+            OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+            LifecycleTestWorld.LogIn(_loginWorld, this);
+            OnRecvPacket(new C_CharacterSelect { characterClass = 0 }.Write());
         }
         public override void Send(ArraySegment<byte> seg)
         {
@@ -102,7 +108,7 @@ public class BroadcastTests : IDisposable
     [Fact]
     public void TwoSessions_FirstReceivesPlayerJoin_WhenSecondJoins()
     {
-        TestGameSession s1 = new(_map);
+        TestGameSession s1 = new(_world, _map);
         s1.OnConnected(Ep());
         _map.Tick(1); // s1 AddPlayer + S_EnterMap (자기에게)
         // s1.SentPackets[0]=S_HandshakeResult, [1]=S_EnterMap
@@ -110,7 +116,7 @@ public class BroadcastTests : IDisposable
         int s1BaselineCount = s1.SentPackets.Count;
 
         // s2 접속
-        TestGameSession s2 = new(_map);
+        TestGameSession s2 = new(_world, _map);
         s2.OnConnected(Ep());
         _map.Tick(2); // s2 EnterGameWorld job 처리 → s1에 S_PlayerJoin broadcast
 
@@ -134,7 +140,7 @@ public class BroadcastTests : IDisposable
         //     Boss 1마리 spawn (entityId=2, Boss/(30,0)/HP 100) → s1 OnConnected 시 S_EntitySpawn 2건 받음
         //   - entityKind 분류: Normal=0, Boss=1 (wire byte 약속)
         //   - 헌법 #1 정합: server-only spawn 흐름 (클라가 트리거 X)
-        TestGameSession s1 = new(_map);
+        TestGameSession s1 = new(_world, _map);
         s1.OnConnected(Ep());
         _map.Tick(1); // EnterGameWorld job 처리 → enemy roster Send 포함
 
@@ -174,11 +180,11 @@ public class BroadcastTests : IDisposable
     [Fact]
     public void SecondSession_ReceivesInitialRoster_OnJoin()
     {
-        TestGameSession s1 = new(_map);
+        TestGameSession s1 = new(_world, _map);
         s1.OnConnected(Ep());
         _map.Tick(1);
 
-        TestGameSession s2 = new(_map);
+        TestGameSession s2 = new(_world, _map);
         s2.OnConnected(Ep());
         _map.Tick(2); // s2 EnterGameWorld job 처리
 
@@ -197,8 +203,8 @@ public class BroadcastTests : IDisposable
     [Fact]
     public void RemainingSession_ReceivesPlayerLeave_WhenOtherLeaves()
     {
-        TestGameSession s1 = new(_map);
-        TestGameSession s2 = new(_map);
+        TestGameSession s1 = new(_world, _map);
+        TestGameSession s2 = new(_world, _map);
         s1.OnConnected(Ep());
         s2.OnConnected(Ep());
         _map.Tick(1); // 두 AddPlayer 모두 처리
@@ -225,8 +231,8 @@ public class BroadcastTests : IDisposable
     [Fact]
     public void Snapshot_BroadcastsToAll_IncludingSelf()
     {
-        TestGameSession s1 = new(_map);
-        TestGameSession s2 = new(_map);
+        TestGameSession s1 = new(_world, _map);
+        TestGameSession s2 = new(_world, _map);
         s1.OnConnected(Ep());
         s2.OnConnected(Ep());
         _map.Tick(1); // AddPlayer 처리
@@ -254,14 +260,14 @@ public class BroadcastTests : IDisposable
         //   4) Tick → FIFO로 s2 EnterGameWorld가 먼저 실행 → 그 시점에 _players=[s1] *남아있고* s1.IsClosing=true
         //      → BroadcastToAll의 IsClosing skip / initial roster의 IsClosing skip이 *반드시* 작동해야 통과
         //      → skip 깨지면 s1.SentPackets에 PlayerJoin 박힘 = 테스트 fail
-        TestGameSession s1 = new(_map);
+        TestGameSession s1 = new(_world, _map);
         s1.OnConnected(Ep());
         _map.Tick(1); // s1 자리잡힘 (_closing=0, _players=[s1])
 
         int s1BaselineCount = s1.SentPackets.Count;
 
         // race window: s2 enter job 먼저 enqueue → s1 disconnect 그 다음 (IsClosing 즉시 세팅).
-        TestGameSession s2 = new(_map);
+        TestGameSession s2 = new(_world, _map);
         s2.OnConnected(Ep());           // s2 EnterGameWorld enqueue (먼저)
         s1.OnDisconnected(Ep());        // cleanup enqueue (뒤) + Interlocked로 _closing=1 즉시
 

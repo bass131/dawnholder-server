@@ -25,8 +25,9 @@ internal sealed class GuildRegistry
         _ownsJoiningPlayer = ownsJoiningPlayer;
     }
 
-    internal bool Register(GameSession session, int entityId)
+    internal bool Register(GameSession session, int entityId, out Action? publishAdmission)
     {
+        publishAdmission = null;
         if (session.Account is not { } account || !CanAdmit(session, entityId, account.AccountId)) return false;
         Connection connection;
         PreparedSnapshot snapshot;
@@ -51,12 +52,20 @@ internal sealed class GuildRegistry
                 throw new InvalidOperationException("Guild admission has no inventory owner.");
             snapshot = PrepareSnapshot(connection, next, inventory, members.Count, online, kind,
                 ReadLocation(connection));
+            // Prepare the notification before commit; the session publishes it only after its
+            // initial map packets. A failed map send must still notify the other members.
+            Action publish = () =>
+            {
+                SendSnapshotIsolated(connection, snapshot);
+                Broadcast(kind, connection);
+            };
             if (!CanAdmit(session, entityId, account.AccountId)) return false;
 
             _members = members;
             _onlineCount = online;
             _state = next;
             connection.Sequence = snapshot.Sequence;
+            publishAdmission = publish;
         }
         catch (Exception ex)
         {
@@ -65,11 +74,7 @@ internal sealed class GuildRegistry
             return false;
         }
 
-        // Economic admission is already final. Isolate each send so a failing new connection
-        // cannot prevent existing members from observing the seed/presence change.
-        SendSnapshotIsolated(connection, snapshot);
-        Broadcast(kind, connection);
-        return IsActive(connection);
+        return true;
     }
 
     internal void EnqueueQuery(GameSession session, int entityId)

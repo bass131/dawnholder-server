@@ -4,6 +4,7 @@ using Dawnholder.Server.GameServer.Tests.Maps;
 using Shared.GameData;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
+using Shared.Protocol;
 
 namespace GameServer.Tests.Network;
 
@@ -33,14 +34,14 @@ public class GameSessionLifecycleTests : IDisposable
         public TestGameSession(GameMap map) { _injectedMap = map; }
         protected override GameMap GetMap() => _injectedMap;
 
-        // handshake mock: 본 테스트는 *handshake 이후*의 race 흐름 검증.
-        // 월드 진입 = handshake + class 선택 양쪽 충족 필요.
-        // lifecycle race 검증 목적이라 두 조건 모두 우회.
+        // Prepare real login without draining the map; tests own the admission/close tick order.
+        // Closed reverse-order inputs still reach the real packet rejection boundary.
         public override void OnConnected(EndPoint endPoint)
         {
-            CompleteHandshakeAndEnter();     // handshake 우회 (_handshakeCompleted = true)
-            SetCharacterClass(0);             // class 선택 우회 (Knight)
-            EnterGameWorldIfReady();          // 두 조건 충족 → EnterGameWorld() 호출
+            base.OnConnected(endPoint);
+            OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+            if (!IsClosing) LifecycleTestWorld.LogIn(GameWorld.Instance, this);
+            OnRecvPacket(new C_CharacterSelect { characterClass = 0 }.Write());
         }
         public override void Send(ArraySegment<byte> _) { }
         public override void OnSend(int numOfBytes) { }

@@ -58,7 +58,9 @@ public class PartyRejectionTests : IDisposable
     {
         PartySession s = new();
         s.OnConnected(new IPEndPoint(IPAddress.Loopback, 0));
-        s.Bypass(characterClass);
+        s.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+        LifecycleTestWorld.LogIn(_world, s);
+        s.OnRecvPacket(new C_CharacterSelect { characterClass = characterClass }.Write());
         _town.Tick(tick);
         return s;
     }
@@ -303,11 +305,5 @@ public class PartyRejectionTests : IDisposable
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { }
 
-        public void Bypass(byte characterClass)
-        {
-            CompleteHandshakeAndEnter();
-            SetCharacterClass(characterClass);
-            EnterGameWorldIfReady();
-        }
     }
 }

@@ -2,27 +2,38 @@ using System.Net;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Entities;
+using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
+using Dawnholder.Server.GameServer.Tests.Maps;
 using Shared.GameData;
 using Shared.Protocol;
 
 namespace GameServer.Tests.Maps;
 
-public class MapPublicationContractTests
+[Collection("GameWorldRegistryTests")]
+public class MapPublicationContractTests : IDisposable
 {
+    GameWorld? _world;
+
+    public void Dispose() => _world?.Stop();
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public void Entry_PublishesOrderedRosterAndOneJoinPerLiveObserver(bool migration)
     {
-        int nextId = 100;
-        var source = new GameMap(MapId.Town, () => ++nextId);
-        var destination = new GameMap(migration ? MapId.HuntingGround : MapId.Town,
-            () => ++nextId, content: new MapContent(7.5f, 4f, new[]
+        _world = new GameWorld(new Dictionary<MapId, (MapTerrain?, MapContent?)>
+        {
+            [migration ? MapId.HuntingGround : MapId.Town] = (null, new MapContent(7.5f, 4f, new[]
             {
                 new EnemySpawnPoint((byte)EnemyKind.Normal, 100f, 0f),
-            }));
+            })),
+        });
+        var source = _world.Map;
+        var destination = migration
+            ? _world.GetOrCreateInstance(MapId.HuntingGround, InstanceKey.ForSolo(1))
+            : source;
         var deliveries = new List<Delivery>();
         var first = new RecordingSession("first", destination, deliveries);
         var second = new RecordingSession("second", destination, deliveries);
@@ -42,7 +53,7 @@ public class MapPublicationContractTests
         {
             var sourceObserver = new RecordingSession("source", source, deliveries);
             source.AddPlayer(sourceObserver, new Vector2(-100f, 0f));
-            entrant.Enter(CharacterClass.Mage);
+            entrant.Enter(_world, CharacterClass.Mage);
             source.Tick(1);
             PlayerEntity player = source.GetPlayer(entrant.EntityId)!;
             player.Hp = expectedHp = 23;
@@ -62,8 +73,8 @@ public class MapPublicationContractTests
         }
         else
         {
-            entrant.Enter(CharacterClass.Mage);
-            deliveries.Clear(); // Handshake acknowledgement precedes queued world entry.
+            entrant.Enter(_world, CharacterClass.Mage);
+            deliveries.Clear(); // Handshake and login acknowledgements precede queued world entry.
         }
 
         byte[] firstRoster = JoinBytes(p1.EntityId, -10.5f, 2.25f, CharacterClass.Mage);
@@ -200,14 +211,14 @@ public class MapPublicationContractTests
     [Fact]
     public void Migration_CloseBeforeDestinationTick_PublishesNoArrivalOrJoin()
     {
-        int nextId = 0;
-        var source = new GameMap(MapId.Town, () => ++nextId);
-        var destination = new GameMap(MapId.HuntingGround, () => ++nextId);
+        _world = new GameWorld(new Dictionary<MapId, (MapTerrain?, MapContent?)>());
+        var source = _world.Map;
+        var destination = _world.GetOrCreateInstance(MapId.HuntingGround, InstanceKey.ForSolo(1));
         var deliveries = new List<Delivery>();
         var entrant = new RecordingSession("entrant", source, deliveries, destination);
         var observer = new RecordingSession("observer", destination, deliveries);
         destination.AddPlayer(observer, Vector2.Zero);
-        entrant.Enter(CharacterClass.Knight);
+        entrant.Enter(_world, CharacterClass.Knight);
         source.Tick(1);
         int entityId = entrant.EntityId;
         Portal portal = source.Portals.Single(p => p.Dest == MapId.HuntingGround);
@@ -260,11 +271,11 @@ public class MapPublicationContractTests
 
     sealed class RecordingSession(string name, GameMap map, List<Delivery> deliveries, GameMap? destination = null) : GameSession
     {
-        public void Enter(CharacterClass characterClass)
+        public void Enter(GameWorld world, CharacterClass characterClass)
         {
-            CompleteHandshakeAndEnter();
-            SetCharacterClass((byte)characterClass);
-            EnterGameWorldIfReady();
+            OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+            LifecycleTestWorld.LogIn(world, this);
+            OnRecvPacket(new C_CharacterSelect { characterClass = (byte)characterClass }.Write());
         }
 
         public void CloseWithoutWorldCleanup() => OnDisconnected(new IPEndPoint(IPAddress.Loopback, 0));
