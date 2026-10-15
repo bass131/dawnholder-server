@@ -9,6 +9,13 @@
 // - re-check contract #5~#7 and #9 (computed cd only matters when a push needs the location);
 // - git-push(1) "<refspec>": a <dst> such as heads/main is matched against the remote's refs, so it
 //   names refs/heads/main; `--prune` deletes remote branches without a local counterpart.
+// User decision 7 (msg_5c404e04e508, goal.md 「적용 중인 사용자 결정」 7) changed two expectations
+// here, citing E/guard-redesign-02-contract-v1.md:
+// - a computed cd path and `;` are outside S1~S3 (lines 53 and 55), so a push after them is an
+//   intended Unsupported form deny, also when git -C names a work repository (line 70);
+// - the inspection budget is combined with the candidate check (「판정/오류/안내」 3 and 4): input
+//   beyond a budget is denied only when it names a protected command and is kept otherwise; it
+//   never runs on or executes anything.
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { test } from 'node:test';
@@ -17,6 +24,7 @@ import {
   assertBlocked, assertKept, bashInput, blockReason, createFixture, createRepository, createSubdirectory,
   expectBlocked, expectKept, git, PR, runHook,
 } from './hook-fixture.mjs';
+import { assertUnsupported, expectUnsupported } from './unsupported-form.mjs';
 
 // Refs and configuration of a repository, to show that a judgement wrote neither.
 const localState = (fixture, directory) => [
@@ -88,6 +96,9 @@ test('#9 re-check: a computed cd matters only when a later push needs the locati
     'cd $env:TEMP; Get-ChildItem',
     'cd "$(git rev-parse --show-toplevel)" && git status',
     `Set-Location (Join-Path $PWD 'sub dir'); git log -1`,
+  ]);
+  // Decision 7: the `;` form names a push, so it is denied even though git -C names a work repository.
+  await expectUnsupported(t, fixture, feature.directory, [
     `cd $env:TEMP; git -C "${feature.directory}" push origin feat/guard`,
   ]);
   await expectBlocked(t, fixture, feature.directory, [
@@ -95,18 +106,25 @@ test('#9 re-check: a computed cd matters only when a later push needs the locati
     `cd "$(git rev-parse --show-toplevel)"; gh pr merge ${PR}`,
     'Set-Location $HOME; git push origin main',
   ]);
+  // Decision 7: a computed location is unsupported grammar, not an input/I/O error.
   const run = runHook(fixture, bashInput(sub, 'cd $env:TEMP; git push'));
-  assertBlocked(fixture, run, 'computed cd before an implicit push');
-  assert.match(blockReason(run), /error/i, 'an unknown push location is an error deny');
+  assertUnsupported(fixture, run, 'computed cd before an implicit push');
+  assert.doesNotMatch(blockReason(run), /^\s*Error deny/i, 'an unsupported location is not an error deny');
 });
 
-test('requirement 8: oversized or deeply nested input ends in an error deny instead of running on', async t => {
+test('requirement 8 with decision 7: input beyond a budget is denied only when it names a protected command', async t => {
   const fixture = await createFixture(t);
   const feature = await createRepository(fixture, { name: 'feature-repo' });
-  for (const command of [`${'git status; '.repeat(2100)}git log -1`, `${'('.repeat(40)}git status${')'.repeat(40)}`]) {
-    const run = runHook(fixture, bashInput(feature.directory, command));
-    assertBlocked(fixture, run, `budget: ${command.slice(0, 30)}`);
-    assert.match(blockReason(run), /error/i, 'a budget stop is an error deny');
+  // No push or merge word: beyond the command count or nesting budget the command is kept.
+  for (const command of [`${'git status; '.repeat(2100)}git log -1`, `${'('.repeat(40)}git status${')'.repeat(40)}`,
+    `${'git status && '.repeat(2100)}git log -1`]) {
+    assertKept(fixture, runHook(fixture, bashInput(feature.directory, command)), `budget without a candidate: ${command.slice(0, 30)}`);
+  }
+  // The same budgets with a protected candidate at the end are still denied.
+  for (const command of [`${'git status; '.repeat(2100)}gh pr merge ${PR}`,
+    `${'('.repeat(40)}git push origin main${')'.repeat(40)}`,
+    `${'git status && '.repeat(2100)}git push origin feat/guard`]) {
+    assertUnsupported(fixture, runHook(fixture, bashInput(feature.directory, command)), `budget with a candidate: ${command.slice(0, 30)}`);
   }
   assertKept(fixture, runHook(fixture, bashInput(feature.directory, `${'git status; '.repeat(50)}git log -1`)), 'small chain');
 });

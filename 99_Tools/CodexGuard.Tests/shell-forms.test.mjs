@@ -12,11 +12,20 @@
 //   text in a plain data quote is kept. The body of PowerShell -EncodedCommand is excluded.
 // Dynamic execution, aliases, external script contents, reused shell stdin and other clients are
 // outside the requirement and listed with reasons in the requirement table.
+//
+// User decision 7 (msg_5c404e04e508, goal.md 「적용 중인 사용자 결정」 7) narrowed the precise forms
+// to one command, && chains and a literal cd before push. Three samples change, citing
+// E/guard-redesign-02-contract-v1.md: `Set-Location <dir>; git push` (`;`, line 53),
+// `git commit -m "$(cat <<'EOF' … EOF)"` (a heredoc inside an execution substitution, line 54) and
+// `bash -c "echo '…merge…'"` (a shell host naming a merge, lines 55 and 70) are now an intended
+// Unsupported form deny. Single-command data quotes, comments and a heredoc without an execution
+// substitution stay kept (S1 data, line 54).
 import { test } from 'node:test';
 
 import {
   assertRemotesUntouched, createFixture, createRepository, createSubdirectory, expectBlocked, expectKept, PR,
 } from './hook-fixture.mjs';
+import { expectUnsupported } from './unsupported-form.mjs';
 
 test('requirement 4: blocked commands inside POSIX and PowerShell compounds are blocked', async t => {
   const fixture = await createFixture(t);
@@ -88,7 +97,8 @@ test('supplement 1 Q5: cd before an implicit push, executed substitutions and a 
     ]);
   });
   await t.test('cd into the repository on a work branch', async t => {
-    await expectKept(t, fixture, onMain.directory, ['cd ../feature-repo && git push', 'Set-Location ../feature-repo; git push']);
+    await expectKept(t, fixture, onMain.directory, ['cd ../feature-repo && git push']);
+    await expectUnsupported(t, fixture, onMain.directory, ['Set-Location ../feature-repo; git push']);
   });
   await t.test('command substitution that runs the command', async t => {
     await expectBlocked(t, fixture, onFeature.directory, [
@@ -124,13 +134,11 @@ test('requirement 4: the words inside data quotes, commit messages, titles and c
     'git commit -m "Block gh pr merge and git push origin main"',
     "git commit -m 'docs: gh pr merge --auto stays blocked' -m 'git push --force origin main too'",
     "git commit -F - <<'EOF'\nBlock gh pr merge\n\ngit push origin main stays blocked\nEOF",
-    "git commit -m \"$(cat <<'EOF'\nBlock gh pr merge --auto\n\ngit push origin HEAD:main stays blocked\nEOF\n)\"",
     `cat > notes.md <<'EOF'\ngh pr merge ${PR}\ngit push origin main\nEOF`,
     `echo "gh pr merge ${PR}"`,
     "echo 'git push origin main'",
     'printf \'%s\\n\' "git push --force origin main"',
     `Write-Output 'gh pr merge ${PR}'`,
-    `bash -c "echo 'gh pr merge ${PR}'"`,
     'grep -rn "gh pr merge" 99_Tools',
     'rg -n "git push origin main" 00_Document',
     "Select-String -Path README.md -Pattern 'gh pr merge'",
@@ -139,6 +147,12 @@ test('requirement 4: the words inside data quotes, commit messages, titles and c
     `gh issue comment 5 --body "run gh pr merge ${PR} after approval"`,
     'git push origin feat/guard # never git push origin main',
     'git fetch origin main && git push origin feat/guard',
+  ]);
+  // Decision 7: an execution substitution around a heredoc and a shell host naming a merge are
+  // outside S1 data, so the merge/push words in them are denied with rewrite guidance.
+  await expectUnsupported(t, fixture, repository.directory, [
+    "git commit -m \"$(cat <<'EOF'\nBlock gh pr merge --auto\n\ngit push origin HEAD:main stays blocked\nEOF\n)\"",
+    `bash -c "echo 'gh pr merge ${PR}'"`,
   ]);
   assertRemotesUntouched(fixture, repository, 'after the data quotes');
 });

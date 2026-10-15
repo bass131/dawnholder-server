@@ -18,9 +18,19 @@
 // - pwsh runs the string given to -CommandWithArgs and its alias -cwa.
 // - Both hosts run a literal given to iex/Invoke-Expression through an abbreviated -C/-Com, the
 //   -Command: form, or the pipeline ("statements" rows).
+//
+// User decision 7 (msg_5c404e04e508, goal.md 「적용 중인 사용자 결정」 7) ends the host-option
+// simulation: every shell host, -File/-Command boundary and evaluator form is unsupported, and one
+// that names a push or merge anywhere in its text is an intended Unsupported form deny
+// (E/guard-redesign-02-contract-v1.md line 55: host option meaning is not simulated to allow it;
+// line 70: wrapped quoted commands are detected conservatively). The measured host facts above
+// still explain why the blocked samples are protected actions; the samples kept only because a
+// host would have treated the merge words as data now expect that deny. Wrapped commands without
+// such words stay kept.
 import { test } from 'node:test';
 
 import { createFixture, createRepository, expectBlocked, expectKept, PR } from './hook-fixture.mjs';
+import { expectUnsupported } from './unsupported-form.mjs';
 
 async function workRepository(t) {
   const fixture = await createFixture(t);
@@ -36,10 +46,8 @@ test('#3 re-check: Windows PowerShell runs a positional first argument as a comm
     `powershell -NoProfile "gh pr merge ${PR}"`,
     `powershell.exe -NoLogo -NonInteractive "git push origin main"`,
   ]);
-  await expectKept(t, fixture, cwd, [
-    `powershell "gh pr view ${PR}"`,
-    `powershell -NoProfile "Write-Output 'gh pr merge ${PR}'"`,
-  ]);
+  await expectKept(t, fixture, cwd, [`powershell "gh pr view ${PR}"`]);
+  await expectUnsupported(t, fixture, cwd, [`powershell -NoProfile "Write-Output 'gh pr merge ${PR}'"`]);
 });
 
 test('#3 re-check: a bare value option before -Command still lets Windows PowerShell run the command', async t => {
@@ -82,7 +90,7 @@ test('#3 re-check: the forms fixed by the first fix stay inspected and kept wher
     `pwsh -noninteractive -noprofile -c "gh pr merge ${PR}"`,
     `pwsh -WorkingDirectory . -Command "gh pr merge ${PR}"`,
   ]);
-  await expectKept(t, fixture, cwd, [
+  await expectUnsupported(t, fixture, cwd, [
     `pwsh -File script.ps1 -Command "gh pr merge ${PR}"`,
     `pwsh -NoProfile -Command "Write-Output 'gh pr merge ${PR}'"`,
   ]);
@@ -99,7 +107,7 @@ test('#4 re-check: one literal string given to iex/Invoke-Expression is inspecte
   ]);
   await expectKept(t, fixture, cwd, [
     `'gh pr view ${PR}' | iex`,
-    `iex -C 'Write-Output "gh pr merge ${PR}"'`,
     `Invoke-Expression -Command 'gh pr checks ${PR}'`,
   ]);
+  await expectUnsupported(t, fixture, cwd, [`iex -C 'Write-Output "gh pr merge ${PR}"'`]);
 });

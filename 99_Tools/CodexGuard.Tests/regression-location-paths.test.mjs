@@ -21,9 +21,18 @@
 //   runs exactly when cd failed, still in the starting folder (posix rows of the same names).
 // - `{ cd <dir>; } | cat; …` keeps the parent folder; commands inside the piped group run in the
 //   group's folder (posix "group piped…" rows).
+//
+// User decision 7 (msg_5c404e04e508, goal.md 「적용 중인 사용자 결정」 7) replaced the rule above for
+// every form outside S1~S3: `;`, `||`, `&`, groups, pipes, if/else and try/catch/finally around a
+// push are an intended Unsupported form deny with rewrite guidance, also when every path would end
+// on a work branch (E/guard-redesign-02-contract-v1.md lines 53, 55 and 70; the decision names
+// `cd X || exit 1; git push` (#12) as "거부 뒤 다시 쓰기"). Samples the old rule kept now expect that
+// deny; samples it blocked stay blocked. Only `cd <literal> &&` chains (S2/S3) are still judged by
+// location, so their kept samples stay kept.
 import { test } from 'node:test';
 
 import { createFixture, createRepository, expectBlocked, expectKept } from './hook-fixture.mjs';
+import { expectUnsupported } from './unsupported-form.mjs';
 
 async function repositories(t) {
   const fixture = await createFixture(t);
@@ -54,7 +63,8 @@ test('#1 re-check: a body that runs only when cd failed stays in the starting re
 
 test('#1 re-check: an explicit cd failure boundary that exits keeps a push whose every path is a work branch', async t => {
   const { fixture, onMain } = await repositories(t);
-  await expectKept(t, fixture, onMain.directory, [
+  // Decision 7 (#12): rewrite as `cd <path> && git push`; the exit-boundary forms are denied.
+  await expectUnsupported(t, fixture, onMain.directory, [
     'cd ../feature-repo || exit 1; git push',
     'cd ../feature-repo || exit; git push',
     'cd ../feature-repo || { echo missing; exit 1; }; git push',
@@ -79,7 +89,7 @@ test('#1 re-check: group pipes keep the parent folder and run the group body in 
       '{ cd ../feature-repo; } | cat; git push',
       'echo | { cd ../feature-repo; }; git push',
     ]);
-    await expectKept(t, fixture, onMain.directory, [
+    await expectUnsupported(t, fixture, onMain.directory, [
       '{ cd ../feature-repo; git push; } | cat',
       'cd ../feature-repo; { cd ../feature-two; } | cat; git push',
       'cd ../feature-repo && { git status; } | cat && git push',
@@ -101,16 +111,17 @@ test('#1 re-check: && and || chains keep every reachable location and drop unrea
     'cd ../feature-repo && git push || git push',
     'false || cd ../feature-repo; git push',
   ]);
+  // S2/S3: only `&&` chains of literal cd keep their location judgement.
   await expectKept(t, fixture, onMain.directory, [
     'cd ../feature-repo && git push',
-    'cd ../feature-repo || cd ../feature-two && git push',
     'cd ../feature-repo && cd ../feature-two && git push',
   ]);
+  await expectUnsupported(t, fixture, onMain.directory, ['cd ../feature-repo || cd ../feature-two && git push']);
   await expectBlocked(t, fixture, feature.directory, [
     'cd ../main-repo || cd ../feature-two && git push',
     'cd ../feature-two && cd ../main-repo && git push',
   ]);
-  await expectKept(t, fixture, feature.directory, [
+  await expectUnsupported(t, fixture, feature.directory, [
     'false && cd ../main-repo || git push',
     'cd ../main-repo || git push',
   ]);
@@ -124,7 +135,7 @@ test('#1 re-check: try/catch/finally keeps exception paths and drops what a catc
     'try { cd ../main-repo } catch [System.IO.IOException] { cd ../feature-two } finally { git push }',
     'try{cd ../main-repo}catch{cd ../feature-two};git push',
   ]);
-  await expectKept(t, fixture, onMain.directory, [
+  await expectUnsupported(t, fixture, onMain.directory, [
     'try { cd ../feature-repo; git push } catch { Write-Output failed }',
     'try{cd ../main-repo}catch{cd ../main-repo}finally{cd ../feature-repo};git push',
   ]);
@@ -137,7 +148,7 @@ test('#1 re-check: if/else forms written with and without spaces keep their reac
     'if (Test-Path x){cd ../feature-two}else{cd ../main-repo};git push',
     'if [ -f a ]; then if [ -f b ]; then cd ../feature-two; else cd ../main-repo; fi; fi; git push',
   ]);
-  await expectKept(t, fixture, onMain.directory, [
+  await expectUnsupported(t, fixture, onMain.directory, [
     'if (Test-Path x){cd ../feature-repo}else{cd ../feature-two};git push',
     'if [ -f a ]; then cd ../feature-repo; else cd ../feature-two; fi && git push',
   ]);

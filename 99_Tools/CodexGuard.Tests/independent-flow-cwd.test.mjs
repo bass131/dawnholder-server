@@ -12,9 +12,17 @@
 // on a work branch. Which path a condition takes at run time is not known to a hook, so `false`,
 // `test -d …`, try/catch and pipelines count as either way. A POSIX pipeline runs cd in a subshell
 // while PowerShell runs it in the session, so both locations are possible for the same text.
+//
+// User decision 7 (msg_5c404e04e508, goal.md 「적용 중인 사용자 결정」 7 and completion condition 4)
+// replaced the precise reading of these control forms: only one command, && chains and a literal
+// cd before push are judged precisely; any other form that names a push or merge is an intended
+// Unsupported form deny with rewrite guidance, even when every path would end on a work branch
+// (E/guard-redesign-02-contract-v1.md lines 55 and 70). Samples that the old rule kept for that
+// reason now expect that deny; samples that were already blocked stay blocked.
 import { test } from 'node:test';
 
 import { createFixture, createRepository, expectBlocked, expectKept, PR } from './hook-fixture.mjs';
+import { expectUnsupported } from './unsupported-form.mjs';
 
 async function repositories(t) {
   const fixture = await createFixture(t);
@@ -82,16 +90,19 @@ test('requirement 4: PowerShell catch and finally blocks written without a space
 
 test('requirement 3 preservation: when every path ends on a work branch the implicit push is kept', async t => {
   const { fixture, onMain, feature } = await repositories(t);
-  await expectKept(t, fixture, onMain.directory, [
+  // Decision 7: S3 `cd <literal> && git push` stays a precise, kept work-branch push.
+  await expectKept(t, fixture, onMain.directory, ['cd ../feature-repo && git push']);
+  // Decision 7: an if/else, `;` or `||` around a push is outside S1~S3, so it is an intended deny.
+  await expectUnsupported(t, fixture, onMain.directory, [
     'if [ -f marker ]; then cd ../feature-repo; else cd ../feature-two; fi; git push',
     'if (Test-Path marker) { cd ../feature-repo }else{ cd ../feature-two }; git push',
-    'cd ../feature-repo && git push',
   ]);
-  await expectKept(t, fixture, feature.directory, [
+  await expectUnsupported(t, fixture, feature.directory, [
     'if [ -f marker ]; then cd ../feature-two; fi; git push',
     'cd ../feature-two || cd .; git push',
-    `try { gh pr view ${PR} } catch{ gh pr checks ${PR} }`,
   ]);
+  // No push or merge word: an unsupported form without a protected candidate is kept.
+  await expectKept(t, fixture, feature.directory, [`try { gh pr view ${PR} } catch{ gh pr checks ${PR} }`]);
 });
 
 test('requirement 4 preservation: the same control words inside data are not commands', async t => {

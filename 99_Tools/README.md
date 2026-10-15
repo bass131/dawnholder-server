@@ -145,22 +145,49 @@ node --test "99_Tools/CodexGuard.Tests/*.test.mjs"
 
 [프로젝트 등록](../.codex/hooks.json)은 `^Bash$`에 동기 command 하나를 둔다. POSIX `command`와 Windows 기본 `cmd /C`용 `commandWindows`는 `git rev-parse --show-toplevel`의 로컬 결과로 정확한 진입 파일을 찾는다. 공백 root·하위 cwd의 인용을 유지하며 root 조회 실패·빈 결과·entry 부재는 이유를 stderr에 쓰고 exit2로 막는다. Node stdin·출력·exit는 그대로 전달한다. session cwd가 저장소 밖이거나 중첩 별도 저장소면 그 위치의 Git root를 사용하므로 프로젝트 선언 위치와 달라질 수 있다. 별도 hook 셸 설정의 Windows 실행은 별도 확인 대상이다.
 
-판정 책임은 [command-policy](CodexGuard/command-policy.mjs)의 순회, [shell-command](CodexGuard/shell-command.mjs)의 명시 셸 읽기, [gh-policy](CodexGuard/gh-policy.mjs)의 gh 인자/API, [git-push-policy](CodexGuard/git-push-policy.mjs)의 로컬 Git 읽기·목적지 정책으로 나뉜다. Node 표준 라이브러리만 쓰고 입력 명령을 실행하지 않는다. Git 읽기는 셸 없이 고정 read-only 하위 명령과 분리된 인자로 실행한다. 한 번의 Git 읽기는 최대3초·출력2MiB, 전체 판정은12초·명령2048개·중첩32단계, stdin은1MiB를 상한으로 한다. handler timeout20초는 내부 판정 오류를 deny로 돌려줄 여유를 둔다.
+판정 책임은 [command-policy](CodexGuard/command-policy.mjs)의 경로 선택·성공한 cd 위치 전달, [command-shape](CodexGuard/command-shape.mjs)의 지원 형태 판별, [protected-command](CodexGuard/protected-command.mjs)의 보호 후보 인덱스로 나뉜다. [shell-command](CodexGuard/shell-command.mjs)는 인용·본문·치환의 어휘 경계, [gh-policy](CodexGuard/gh-policy.mjs)는 gh 인자/API, [git-push-policy](CodexGuard/git-push-policy.mjs)는 로컬 Git 읽기·목적지 정책을 소유한다. [inspection-budget](CodexGuard/inspection-budget.mjs)은 작업량 계수와 한도를 소유한다. Node 표준 라이브러리만 쓰고 입력 명령을 실행하지 않는다. Git 읽기는 셸 없이 고정 read-only 하위 명령과 분리된 인자로 실행한다. 한 번의 Git 읽기는 최대3초·출력2MiB, 로컬 Git 판정 예산은12초다. 지원 연결은2048명령, 셸 중첩은32단계, stdin은1MiB 상한이다. handler timeout20초와 내부 판정은 별개이며 실제 처리시간의 일반 보증은 아니다.
 
-| 구분 | 지원 동작 |
+가드는 다음 단순 형태만 정밀 판정한다. 지원 밖의 명시 보호 후보는 목적지가 작업 branch처럼 보여도 **Unsupported form**으로 거부한다. 이유와 「단순하게 다시 써라」 및 `cd <경로> && git push origin <branch>` 예를 안내하며, 사람이 다시 작성해야 한다. 가드가 입력을 고쳐 실행하지 않으며 main/기본 branch 갱신과 PR 병합은 단순하게 다시 써도 금지다. 후보 없는 명령은 문법 해석에 실패해도 통과한다.
+
+| 구분 | 정밀 지원 형태와 경계 |
 |---|---|
-| gh 차단 | 모든 역할의 `gh pr merge`(auto·disable-auto 포함), REST PR merge endpoint의 비GET/필드 기본POST, inline GraphQL `mergePullRequest`·`enablePullRequestAutoMerge`·`enqueuePullRequest` mutation |
-| gh 보존 | PR create/view/checks, 일반 조회·명시 GET merge 조회·`disablePullRequestAutoMerge`, 다른 REST 쓰기와 데이터 인자 속 낱말 |
-| Git 차단 | 모든 원격의 main·그 원격의 로컬 근거로 확인한 기본 branch로 향하는 push. `heads/<branch>` 축약을 포함한 refspec·복수·force/delete·wildcard·all/mirror, `--all/--branches --prune` 삭제, 기본 push·remote.push·push.default·원격 선택 설정을 검사 |
-| Git 보존 | 로컬 merge·조회, 확인된 작업 branch 목적지, branch와 구분되는 명시 tag ref. 출발 branch 이름만으로 막지 않음 |
-| 셸 | 명시 compound·pipe·줄바꿈·기본 POSIX/PowerShell 제어 형태, `bash/sh -c`·`pwsh/powershell -Command`·`cmd /c`, `env`·`command`·`exec`, 명시 cd/Set-Location·git -C, 실행되는 명령/프로세스 치환·한 리터럴 문자열 eval/iex(Invoke-Expression의 `-Command` 포함) |
-| 데이터 | 인용된 메시지·PR제목·검색문구·주석·heredoc/here-string 본문 자체는 명령으로 취급하지 않음. 비인용 POSIX heredoc·PowerShell 큰따옴표 here-string 안의 실행되는 치환은 검사 |
+| S1 | 한 리터럴 실행 파일과 리터럴 인자·옵션. 인용/절대 실행 경로·공백·git/gh의 `.exe`·기존 전역 옵션/값을 보존한다. PowerShell 선행 `&`의 리터럴 호출도 단일 호출로 읽는다 |
+| S2 | S1끼리의 `&&` 연결. 붙여 쓰거나 `&&` 뒤 공백용 줄바꿈을 쓸 수 있다. 조건 명령을 실행하거나 성공/실패를 추측하지 않고 각 명시 보호 동작을 검사한다 |
+| S3 | S2 안의 리터럴 경로 `cd`/`Set-Location`, 또는 push 자체의 리터럴 `git -C`. 인용 공백·절대/상대/하위 경로를 지원하고 성공한 cd의 위치만 다음 명령으로 전달한다 |
+| S1 데이터 | 인용 인자·주석·단일 명령의 실행 치환 없는 리터럴 heredoc/here-string 본문은 데이터다. 본문 줄바꿈·괄호·아포스트로피·PowerShell 인용 escape를 보존한다 |
+| 지원 밖 | `;`·단독 명령 줄바꿈·`||`·파이프/백그라운드·그룹/분기/루프/try-catch-finally, 셸 호스트·env/command/exec·eval/iex, 실행 치환·계산 경로 등. 보호 후보가 있으면 안내 있는 거부, 없으면 통과 |
+
+예를 들어 `cd "space repo" && git push origin feat/work`는 이동한 저장소의 정책으로 판정하고, `cd "space repo"; git push origin feat/work`와 `cd X || exit 1; git push`는 지원 밖으로 거부한다. `git commit -m "gh pr merge를 쓰지 않는다"`는 S1 데이터로 보존하며, `bash -c "echo 'gh pr merge 12'"`는 지원 밖에 명시 후보가 있어 거부한다. 빈/공백/주석만인 명령도 보존한다.
+
+본문을 데이터로 보낼 heredoc은 구분자를 따옴표로 막아라.
+
+실행 접두·호출의 정밀 지원 목록과 이유는 다음과 같다. 목록 밖 실행 파일도 단독 리터럴 명령으로 사용할 수 있지만, 그 인자에 별도 `git`/`gh` 실행 파일 토큰과 보호 동작이 드러나면 지원 밖 접두로 거부한다. 예를 들어 `runner gh pr merge 12`와 `Start-Process gh -ArgumentList "pr merge 12"`는 안내 거부다. `runner "gh pr merge 12"`처럼 하나의 리터럴 데이터 인자에 들어간 문자열은 S1 데이터이며, 외부 프로그램이 그 데이터를 다시 실행하는지는 복원하지 않는다.
+
+| 알려진 호출·명령 | 정밀 지원의 이유·경계 |
+|---|---|
+| 리터럴 실행 파일 직접 호출, 선행 PowerShell `&` | 실행 파일과 인자를 그대로 읽는다. 이름·인용/절대 경로·`.exe`를 보존한다. dot-source `. gh …`·`. git …`는 정밀 지원하지 않고 명시 보호 후보가 있으면 안내 거부한다 |
+| `git`, `gh` | 각 도구의 인자·조회/데이터 제외는 해당 정책이 소유한다. 작업 branch push·로컬 merge·조회는 기존 정책으로 판정한다 |
+| `echo`, `printf`, `Write-Output`, `Write-Host`, `true`, `false`, `test`, `[`, `pwd`, `Get-Location` | 명령 이름처럼 보이는 인자를 데이터로 다루며 호출 셸의 위치를 바꾸지 않는 알려진 형태다. 성공 여부나 함수/alias 재정의는 추론하지 않는다 |
+| `cd`, `Set-Location` | S3의 한 리터럴 경로만 위치 변화로 추적한다. push의 `git -C`는 Git 정책에서 처리한다 |
+
+알려지지 않은 선행 명령 뒤 `&&`의 보호 명령은 호출 셸의 위치 영향을 확정할 수 없어 안내 거부한다. 따라서 `sl`·`chdir`·`builtin cd` 뒤 push를 출발 저장소로 판정하지 않는다. `nohup`·`timeout`·`sudo`·`nice`·`xargs`·`wsl`·`stdbuf`·`start`·`Start-Process` 뒤에 별도 보호 명령이 드러나는 경우도 지원 밖이다. 이 이름들을 하나씩 추가한 거부 목록으로 판정하지 않고 알려진 호출·인자·위치 경계를 적용한다. 보호 후보가 없는 일반 명령은 계속 통과한다.
+
+후보 탐색은 원문 후보 lexer 한 번, 위치별 역방향 옵션/API 요약 한 번, 요약을 읽는 후보 방문 한 번으로 구성한다. 별도의 셸 lexer도 전체 입력에 한 번만 호출한다. 후보마다 suffix를 재토큰화하거나 API argv를 다시 훑지 않는다. 원문 토큰의 정규화는 토큰당 한 번이고 API endpoint 요약은 토큰에 연결된 공유 객체에 보관한다. 원문 quote 쌍은 종류별로 겹치지 않아 문자열 생성량이 선형이며, 셸 치환은 같은 source의 절대 offset을 사용해 순차 치환마다 남은 source 사본을 만들지 않는다. here-string 검색도 source의 시작 위치를 이동한다. 중첩 본문 방문은 기존32단계 상한으로 제한한다. 두 view에서 실제 명령 위치와 데이터 판단이 충돌하는 명시 보호 후보는 안내 거부하고, 위에서 입증한 S1 인자·주석·본문과 API 조회는 보존한다.
+
+결정적 작업량은 문자 처리·생성한 부분 문자열 길이·토큰/단계 방문·위치 resolve 입력 길이를 논리 단위로 센다. 후보 인덱스는 유한한 선형 예약 작업으로 먼저 완성하며, 그 작업량도 전체 계수에 포함한다. 이후 정밀 단계가 예산을 소진하면 저장된 후보가 있을 때 안내 거부, 없을 때 통과한다. 한도는 **4,294,967,296 논리 단위**이며 메모리 용량이나 시간 한도가 아니다. serialized 입력1MiB 안에서 32단계 중첩 본문까지 포함한 어휘/요약의 보수적1024n 예약과 최대2048명령의 누적 경로 resolve 입력2048n을 포괄하도록 잡았다(n은 command와 cwd의 문자 길이 합). 후보 탐색의 시간·공간은 O(n), 위치 정밀 단계는 고정 명령 상한을 가진 O(2048n)이고 Git I/O 한도는 별도다. 정상 지원 입력이 이 작업량 한도에 닿지 않도록 한 설계 근거이며 특정 머신의 시간 측정으로 선형성이나 실제 Codex timeout 결과를 증명하지 않는다.
+
+| 보호 후보 계열 | 지원 형태 안의 실제 정책과 보존 |
+|---|---|
+| `git [전역옵션] push` | 모든 원격의 main·그 원격의 로컬 근거로 확인한 기본 branch 갱신을 거부한다. `heads/<branch>`·복수/force/delete/wildcard·all/mirror·`--all/--branches --prune`·기본 push·remote.push·push.default·원격 선택을 검사한다. 작업 branch 목적지·명시 tag ref·보호 목적지 없는 단순 `--all`은 보존한다 |
+| `gh [전역옵션] pr merge` | 전체 거부(auto·disable-auto 포함). PR create/view/checks와 인자 데이터는 보존한다 |
+| `gh api`의 `repos/{owner}/{repo}/pulls/{pr}/merge` | 절대 URL·쿼리를 포함한 비GET 또는 필드/본문 기본POST를 거부한다. 기본/명시 GET은 보존한다 |
+| `gh api graphql`의 inline query | `mergePullRequest`·`enablePullRequestAutoMerge`·`enqueuePullRequest` mutation을 거부한다. 조회·`disablePullRequestAutoMerge`·문자열/주석의 mutation 이름은 보존한다 |
+
+후보는 단독 merge/push 낱말 전체가 아니다. 로컬 `git merge`, npm/docker push, 다른 REST 쓰기는 보호 집합에 넣지 않는다. 지원 밖에서도 REST/GraphQL의 입증된 조회·데이터와 보호 변경을 구분하며, 래퍼에 인용된 명시 보호 명령은 보수적으로 탐지한다. 호스트 옵션 의미나 복잡한 실행 흐름을 추정해 허용하지 않는다.
 
 원격 기본 branch 근거는 `refs/remotes/<remote>/HEAD`의 유효한 로컬 symbolic ref다. 이름으로 선택한 원격은 별도 pushurl이 있어도 그 이름의 설정과 HEAD 근거를 유지한다. 직접 지정한 URL은 로컬 remote의 url/pushurl에 대응해 HEAD 근거만 사용한다. 단일 추적 branch 이름으로 기본 branch를 추정하지 않는다. 근거가 없으면 대상 원격을 밝힌 **Error deny**와 사람이 검증한 기본 branch로 `git remote set-head <remote> <verified-default-branch>`를 수행하는 복구 안내를 낸다(그 추적 ref가 이미 있어야 함). 대응되지 않는 URL에는 먼저 실제 원격 이름을 확인하도록 안내하며 URL을 원격 이름 자리에 넣지 않는다. 가드는 네트워크 조회나 refs/config 수리를 하지 않는다. 명시 main 갱신은 이 근거가 없어도 **Policy deny**다. matching/wildcard 판단에 사용하는 로컬 refs는 실제 원격과 다를 수 있다.
 
-실행 위치는 순차 명령·`&&`/`||`·파이프·if/else·try/catch/finally에서 가능한 위치를 보존하며 조건 명령을 실행해 참/거짓을 추측하지 않는다. 계산된 cd/Set-Location만으로 차단하지 않고, 뒤 push가 필요한 위치를 확정하지 못할 때 오류 deny한다. 그 사이의 명시 gh 병합이나 실행되는 치환 검사는 계속한다. 기본 제어 형태와 회귀 표본을 다루는 정적 해석이며 셸 전체의 실행 의미를 보장하지 않는다.
-
-정책 차단과 잘못된 JSON/대상 입력·잡힌 내부 예외·필요한 Git 읽기 실패 모두 exit0의 `hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason }` 한 객체를 반환하며 이유의 Policy/Error로 구별한다. 정상·비대상 사건/도구는 stdout 없이 exit0으로 기존 권한 판단에 넘긴다. 명시 allow/ask·명령 rewrite·Claude 승인 소비·메인 예외는 없다. stdout에는 진단 로그를 섞지 않는다.
+지원 형태의 정책 차단, 지원 밖 보호 후보, 잘못된 JSON/대상 입력·잡힌 내부 예외·필요한 Git 읽기 실패는 모두 exit0의 `hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason }` 한 객체를 반환한다. 이유의 **Policy deny / Unsupported form / Error deny**로 구별한다. 보호 후보 없는 문법 오류는 입력 envelope/I/O 오류와 구분해 통과시킨다. 정상·비대상 사건/도구는 stdout 없이 exit0으로 기존 권한 판단에 넘긴다. 명시 allow/ask·명령 rewrite·Claude 승인 소비·메인 예외는 없다. stdout에는 진단 로그를 섞지 않는다.
 
 설치 Codex0.162.1의 공식 문서/대응 소스 기준 등록이다. 정상 TUI의 프로젝트 신뢰와 hook 신뢰는 필요하며 최초/변경 picker는 [R-6](../00_Document/operations/ORCA.md#r6-first-screen)에 따라 메인에게 넘긴다. 신뢰는 사용자 설정의 source 경로·event·group/handler 위치별 선언 해시 상태다. 같은 경로·정의의 새 세션에서 유지될 수 있다는 것은 소스상 추론이며 외부 스크립트 본문까지 해시로 보호한다고 주장하지 않는다. 에이전트가 전역 신뢰 설정을 쓰거나 우회하지 않는다. headless `codex exec`는 미신뢰 hook을 건너뛸 수 있다.
 
@@ -168,8 +195,7 @@ node --test "99_Tools/CodexGuard.Tests/*.test.mjs"
 
 독립 검토에서 확인한 추가 한계는 다음과 같다. 이 목록은 새 지원 범위를 뜻하지 않는다.
 
-- 명령 표본에서 `time`·`nohup`·`timeout`·`xargs`·`sudo`·`nice`·`wsl` 접두, `cmd /k`, 여러 낱말을 주는 `eval gh pr merge …`는 검사하지 않았다. 한 리터럴 문자열 eval과 구분한다.
-- 공백 없는 `ForEach-Object{…}`·`%{…}`는 독립 표본에서 명령으로 인식하지 못했다. `catch{…}`·`catch [Type]{…}`의 어휘 수리가 일반 scriptblock·별칭 지원을 뜻하지 않는다.
+- 외부 실행 파일·스크립트의 내부 의미는 읽지 않는다. 위 호출 목록 밖의 명시 보호 명령 위치는 안내 거부하지만 리터럴 인자 데이터·외부 파일/불투명 인코딩에서 실행될 명령을 새로 복원하지 않는다.
 - 다른 원격 변경 경로인 `gh api repos/{o}/{r}/merges`, Git refs REST 수정, `gh repo sync`는 범위 밖이다(원격 변경 가능성은 코드/계약에 따른 추론, 실제 실행 없음). `.exe` 외 명시 `gh.cmd`·`gh.bat` 등 shim 이름도 인식 대상이 아니다(코드 확인).
 - 공식 POSIX runner의 `$SHELL -lc`에서 login profile이 stdout을 출력하거나 비POSIX 셸이 등록 구문을 해석하지 못하면 hook 실패로 이어질 수 있다(설치 버전 소스에 따른 추론, Linux 미실행). Windows wrapper 회귀는 공식 `%COMSPEC% /C "<commandWindows>"` 형태를 사용하며 `/D /S`를 추가한 실행과 구분한다.
 

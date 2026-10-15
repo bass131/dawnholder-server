@@ -4,6 +4,7 @@
 
 ## 재개 지점
 
+- 2026-10-15 새 Rules 리드가 메인 `msg_27c6fd9cb341`에 따라 PR2 미커밋 16경로를 내용 교정 없이 **동결 보존·미검증·`msg_1074f0ee17f7`로 중단** 상태로 한 커밋/push에 보존한다. 사전 목록·SHA256과 원본 사본은 `.backups/verification/2026-10-15-verification-lightening-execution-lock/freeze-before.json` 및 `frozen-working-files/`에 두며 PR2 검증·재개는 하지 않는다.
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. 현재 PR2 branch `feat/codex-merge-guard-20261013`, 생성 당시 최신 main/base `44bd4319f78078f6fcc3f4941590f6371d58e2b7`. PR1 branch는 `docs/astra-lead-mailbox-20261013`, 당시 base는 `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`였다.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
