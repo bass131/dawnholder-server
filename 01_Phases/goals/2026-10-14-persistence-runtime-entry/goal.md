@@ -1,6 +1,6 @@
 # 실제 DB 연결·로딩 게이트·재접속 직업 복원
 
-상태: 기존 11시험 수정과 S1~S4 메모 대조의 독립 강 재검증 범위가 통과했다. 무필터 전체 시험은 1,469통과·실패0·건너뜀5다. 다음 첫 일은 Windows DLL 반영·Unity 양쪽 소비자 검증과 실제 경로 관측이다. 실제 DB/DPAPI·정상 서버·봇/CI 및 최종 사용자 병합 승인은 남아 있으며 전체 goal 완료는 아니다.
+상태: Windows Plugins 두 DLL 반영을 마쳤고 다음 첫 일은 최신 main 통합과 새 독립 검증자의 서버·Unity 소비자 실제 검증이다. 앞선 서버 코드 재검증은 1,469통과·실패0·건너뜀5이며 PR242 당시 head의 CI4개도 성공했다. DLL 반영의 자체 점검을 소비자 PASS로 확대하지 않는다. 실제 DB/DPAPI·정상 서버·봇·게임 흐름과 최종 사용자 병합 승인은 남아 있으며 전체 goal 완료는 아니다.
 
 ## 진척 단계
 
@@ -239,3 +239,10 @@ Main msg_a8dd25f254a5가 전한 사용자 원문: 「대시보드 결정 응답:
 - 운영 편차는 초기 읽기 전용 Git 두 호출과 C9/메인 관문 대기·최종 판정 작성 중 신호 지연 두 구간이다. 메인에 공개했고 helper 원시는 같은 근거 폴더의 lead-liveness.json에 둔다. 판정서의 서버 전체시험은 테스트 진입으로만 집계하며 새 제품 launcher/정상 서버/DB/Unity 실행으로 넓히지 않는다.
 
 - PR242 - 영속성 서버 진입·로딩 게이트·직업 복원 초안을 생성했다: https://github.com/bass131/dawnholder-server/pull/242. 독립 통과한 코드/시험과 관련 문서를 commit/push했고 코드·시험 bytes를 보존했다. 새 의존성 SqlClient6.1.7/Pkcs9.0.21과 알려진 O1~O6, DLL/Unity·실제 DB/봇·CI 미완료를 PR 본문에 명시했다. 병합 승인 요청이나 전체 goal 완료가 아니며 #5 DLL 병합 관문을 유지한다. 원시 Git/PR 근거는 runtime-entry-reverification-1/lead-*.json 및 lead-pr-body.md에 둔다.
+
+## 2026-10-15 - DLL 반영과 통합 검증 준비
+
+- DLL1차는 UNC 첫 읽기 미반환·제품쓰기0으로 환경 미완료 정산했다. 새 외부 Astra2가 정확 WSL CLI로 source50과 bin/clone Plugins/수집본 byte 출처를 대조한 뒤 Windows DLL 두 개를 각각 한 번 반영했다. 소스·PDL·meta/GUID는 보존됐고 두 DLL 밖 제품 변경은 없다.
+- Task task_6d7b057bfe38/ctx_49bcdf624fc9의 보고/메모 전체와 현재 입력69의 허용DLL2 차이·실제 Git diff를 리드가 대조하고 release/정확instance/idle/literalclose로 종료했다. runtime-entry-dll-promotion-2/{report.md,context.md,lead-source-sample.json,lead-final-settlement.json}에 실제 bytes·출처·정산을 둔다. 역사 V2 당시 두 DLL SHA 미기록 한계와 초기 출력처리/exit 전사 교정을 보존했고 소비자 실행 검증은 다음 신규 세션 몫이다.
+- HB 정본helper는333초 over(공식질문 미해소 중 상태 사이)로 보존했다. 실제 공식질문~회신388초와 중간status 때문에 현 인접신호 helper가 대기를 빼지 못한 범위를 한 줄로 공개하며 별도 transcript 감사는 하지 않았다.
+- Main msg_818353d70c45의 PR243 정본화와 다음 안전 지점 main 통합을 따라 DLL/goal을 로컬 체크포인트로 보존한 뒤 main을 통합한다. 진행 중이던 D2 고정 입력과 과거 판정은 바꾸지 않는다. 통합 뒤 새 기준으로 서버·Unity 실제 검증을 이어가며 PR 병합은 하지 않는다.
