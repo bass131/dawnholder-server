@@ -1,6 +1,6 @@
 # 실제 SQL 설치·엔진 판정
 
-상태(2026-10-15 KST): 사용자 A의 G2-R2 실제 SQL 한 수명은 독립 PASS다. C0~C10·정확 정지보존·같은 gate의 값 감사를 마쳤고 신규 자원은 PR 검토까지 보존한다. runtime login 실제 접속·유효 권한과 launcher·게임 흐름·G4 정리는 남아 있으며 PR237은 draft다. 다음은 남은 실제 경로의 계약·자원 순서를 고정하는 일이며 전체 goal 완료나 병합 승인이 아니다.
+상태(2026-10-16 KST): PR237 병합 완료(2026-10-15T11:23:07Z, 03e25baa93dda9f78d941e00ae89d54778405cb4). G2-R2 실제 엔진 판정은 완료됐고 후속 시연 경로는 PR242에서 완료했다. 5 RPC 전수 등 동결 뒤 실제 관측은 미실행이며 BACKLOG `persistence-live-observation-followup`으로 남긴다. 보호 자원 G4 정리는 미실행·별도 사용자 결정이며 현재 종료 문서 재실사 단계다. [최신 종료 기록](#2026-10-16-종료-기록)을 따른다.
 
 이전 상태 기록: **2026-10-09 재시도 3회차로 DB 생성 1단계(A2·B2·A3·B3, 정지·꺼내기)를 완료했다(메인 판정 `msg_b2365c472ed4`). 시험 DB는 Baseline001 상태로 보존돼 있고 2단계(Complete·U-01·Test-Database)와 G4 정리는 미실행이다.** 남은 범위는 2026-10-10 사용자 승인으로 WSL2 리눅스 컨테이너 기준으로 개정했다(다섯 질문 모두 A, 「현재 범위·PR 경계」). 이 goal은 영속화 줄만 맡는다(결정 18 A). 2026-10-10 R-7 설계 검토를 반영해 범위를 보완했다(「현재 범위·PR 경계」의 「R-7 설계 검토 결과와 채택」). 재개 정본은 「재개 지점」의 첫 블록이고, 1단계 세부는 「DB 생성 1단계 재시도 계획」 블록이다. 아래는 그 전 경과다. 2026-10-05 DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다. 2026-10-08 사용자가 SQL 시작 거부 조사 v3를 관리자·일반 창에서 1회씩 실행했다(SQL 시작 0회). 리드 판독에서 DATA 백업 검증은 성공했고, 「여는 방식」 가설은 약해졌고, SQL 서비스 실행 맥락에서만 거부된다는 쪽이 유력하다. 원인은 미확정이다. 사용자가 다음 진단으로 A 콘솔 시작 분리 시험을 골랐다. v1 문서 실사는 규칙 위반 2건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 실사에서 통과(전달 가능)했다. 메인 결정으로 카드 ⑩ 조건을 고쳤고, 카드 v3 실사의 빈틈(SCS-10)을 고친 카드 v4가 카드 한정 실사를 통과해 전달본이 됐다. 사용자가 12:44Z에 1회 실행했고 master가 열렸다(OPENED, 데이터 변경은 master 두 파일). 리드 판독은 서비스 실행 맥락 쪽 거부(1a)와 「그사이 원인이 사라짐」을 아직 가르지 못한다. 사용자가 A 서비스 시작 재확인을 골랐다. 리드가 실행 파일·카드 v1(D: 부착은 diskpart)을 쓰고 작성자 점검을 통과시켰다. v1 실사는 120자 규칙 1건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 재실사에서 PASS(전달 가능, 비차단 1건)했다. 사용자 결정으로 카드 v2 대기 대신 Fable 작업자가 진단·처치를 맡았다(아래 「재개 지점」). 10-09 처치에서 서비스가 두 회차 연속 정상 시작·질의·정지했다. 설정 변경은 없고 원인은 미확정이다. 독립 검증 차단 2건(스크립트 작성 규칙·준수 주장)은 사용자 A로 기록·수용했다. DB 생성은 여전히 미실행이며 재시도는 따로 사용자 승인을 받는다.
 
@@ -211,11 +211,11 @@
 - [x] 컨테이너 범위·설계 검토
 - [x] 위험 확인 시험
 - [x] 도구 전환 PR 병합
-- [>] 컨테이너 DB 생성
-- [ ] 실제 엔진 판정
-- [ ] 엔진 판정 PR 병합
-- [ ] 시험 DB 정리
-- [ ] 결과 기록·종료
+- [x] 컨테이너 DB 생성
+- [x] 실제 엔진 판정
+- [x] PR237 병합
+- [ ] 보호 자원 처분
+- [>] 결과 기록·종료
 
 2026-10-10 컨테이너 범위 승인으로 단계를 다시 짰다. 「Windows DB 생성 1단계」는 10-09 재시도 3회차 완료다. 「컨테이너 범위·설계 검토」는 범위 개정 commit, R-7 설계 검토(`goal-review.md`), 메인 승인까지다. 「위험 확인 시험」은 R-7과 나란히 할 수 있다. 두 PR 단계의 번호는 PR을 연 뒤 적는다. 아래 문단은 개정 전 설명이다.
 
@@ -357,6 +357,22 @@
 - 현재 승인된 DB1단계/사용자 실행자/20:00 KST 기한/서비스 종료/2단계 별도 승인 경계는 유지한다. 새 실행 실적은 아직 없다.
 
 ## 다음 계획 후보
+
+- SQL 실행 카드·감사 후속: BACKLOG `persistence-card-audit-observations`(g2prep·상수·카드 O1~O5·G O-1~O-4).
+
+- 종료 Gardener 제안: BACKLOG `prepush-ci-format-checks`·`contract-context-check`(후보 등록이며 채택/구현 전).
+
+2026-10-16 종료 이관: 아래 역사 표는 보존하며 현재 상세·처분은 BACKLOG를 따른다.
+
+- N4~N8·REP-01·VHD 전제 안내: BACKLOG `persistence-install-card-observations`·`script-formatting-followup`.
+- PowerShell/.NET·allowlist: BACKLOG `powershell-dotnet-boundary-checklist`·`database-allowlist-drift-test`.
+- 전투 관찰: BACKLOG `combat-smoke-timeout-investigation`·`enemy-hit-dead-guard`.
+- 마감 뒤 복구 범위: BACKLOG `persistence-recovery-post-deadline`.
+- VHD 자동부착·사람 조회 공존: BACKLOG `sql-environment-human-access`.
+- Plugins 부재 비교: BACKLOG `formatter-plugin-presence-proof`.
+- 보호 SQL 자원 처분: BACKLOG `persistence-protected-resource-disposition`.
+- 노트북 도구 후보: BACKLOG `laptop-sql-express-demo-tool`.
+
 
 메인 `msg_4225094298bb`에 따라 **기록만** 한다. 기존 BACKLOG 항목과 과거 후보 원문은 그대로 두고 여기서는 출처를 연결한다. 아래 개선이 실제 현재 완료조건을 막는 결함으로 확인되면 그 사실을 근거로 현재 범위 안 수정인지 판정하며, 후보라는 이름으로 필요한 수정을 생략하지 않는다.
 
@@ -2258,3 +2274,27 @@ Main msg_a8dd25f254a5가 전한 사용자 원문: 「대시보드 결정 응답:
 - 신규 독립 Opus task_19d9fe8698fd/ctx_dbb74f817398 판정은 PASS·새 결함0이다. 리드가 verdict/context 원문 전체와 실제 원천 표본·입력118 불일치0을 대조했고 release→정확 completed/instance/idle→literal close로 종료했다. 근거는 .backups/verification/2026-10-04-persistence-integration/formal-g2-r2-native-execution-20261015/{verdict.md,lead-final-source-sample.json,lead-final-settlement.json}이며 Main 최종 보고는 msg_7e68c73fadaf다.
 - 공개 관찰은 측정 도구 오류3건의 Run 전 보정·무효 표본 보존, 읽기용 WSL의 Ubuntu 기동1건(Run 전 자동종료), 정지 exit137이다. HB 412초(#1/preflight)·386초(gate/fresh/Run 기동)는 lead-liveness-final.json의 정본 집계로 남기고 사용자 경량화 결정에 따라 추가 transcript 감사는 하지 않았다.
 - 이 카드의 Test-Database는 sa 접속이다. runtime login 실제 접속·유효 권한, launcher/5RPC/P2 게임 흐름과 G4 정리는 이 판정 밖이며 다음 실제 검증으로 남긴다. 새 수명 재시도·보존 자원 재시작·삭제·병합은 하지 않았다. PR237은 draft를 유지한다.
+
+<a id="latest-closeout"></a>
+
+## 2026-10-16 종료 기록
+
+다음 첫 일은 Gardener 결과를 포함한 종료 기록 PR의 독립 문서 실사와 메인 종료 점검이다. 메인 msg_60623606bf13이 두 goal 종료 기록을 승인했다. 사용자 직접 입력으로 격상하지 않는다. 이 절이 과거 재개 블록보다 최신이며 과거 경과는 보존한다. 공통 시연 결과·노트북 초안은 [runtime 종료 기록](../2026-10-14-persistence-runtime-entry/goal.md#2026-10-16-종료-기록), 후보 상세는 [BACKLOG](../../../00_Document/operations/BACKLOG.md#core-영속성-종료에서-연결한-후보)를 따른다.
+
+PR237은 2026-10-15T11:23:07Z에 03e25baa93dda9f78d941e00ae89d54778405cb4로, PR242는 2026-10-15T23:02:36Z에 1c7cf40ceafa7f42d578451d9fae9b10ada0673b로 메인이 병합했다. 리드는 gh pr view의 MERGED·mergeCommit·mergedAt을 대조했다. 원시는 .backups/verification/2026-10-16-core-persistence-closeout/pr237.json 및 pr242.json이다.
+
+시연 경로의 실제 실행·독립 판정과 메인 예외 수용은 runtime-entry goal의 최종 독립 판정 수용 절 및 기존 원시를 따른다. 이 종료 문서 작업에서 SQL·Unity·서버 시험을 재실행하지 않는다. 동결 뒤 관측과 runtime V O1~O8·R O1~O5, NUL assertion 후보, CodeRules3/SessionGuard2 로컬 미해결은 통과로 바꾸지 않는다.
+
+G4의 judgment-r2 컨테이너·볼륨·비밀 및 옛 dawnholder-sqlserver·judgment는 보호 자원이며 이번 작업에서 조회·변경·삭제하지 않는다. 처분 여부는 별도 사용자 결정 후보로 남는다. PR242의 신규 runtime-entry-r1 자원 제거 완료와 이 보존 자원을 혼동하지 않는다.
+
+다음 계획은 사용자 결정 A(msg_9fa3df979283)의 노트북 SQL Express 시연 DB 도구 범위 초안 후보뿐이다. 종료 기록 병합과 범위 승인 뒤 새 리드가 시작하며 이 goal에서 구현·접속·설정 변경하지 않는다.
+
+### 종료 Gardener와 남은 절차
+
+종료 실사 #3 리드 메모 시각 칸 누락은 메인 rollout 대조로 선행 확인(23:10:41.984Z) 후 msg_6f9eeca03972가 비차단 수용했다. 메모에 사후 시각을 소급하지 않으며 원문은 `.backups/verification/2026-10-16-core-persistence-closeout/main-review-decision.json`이다.
+
+신규 Gardener task_8f719c38b9b9/ctx_2f7fccaef46c가 정리 후보 두 개를 제안했다(완료 msg_3b4d36cb8b27). 원문은 `.backups/verification/2026-10-16-core-persistence-closeout/gardener-context-report.md`다. PR242 PowerShell38건은 로컬 Changed, C#17건은 원격 CI 실패다. 「같은 PR에서 CI 실패 두 번」으로 합치지 않는다. PR226의 PS16건까지 반복 근거이며 과거 원시를 읽은 관찰이지 이번 재실행이 아니다.
+
+제안은 언어별 CI 대응 서식 검사 묶음 helper(BACKLOG `prepush-ci-format-checks`)와 계약·판정의 CI 대응 검사 칸(기존 `contract-context-check`의 추가 근거)이다. 후보 등록만 하며 채택·구현은 메인과 사용자 판단이다. 첫 보고 파일명이 memo-first와 충돌한 것은 `gardener-context-report.md` 한 파일로 정정했고 가드를 우회하지 않았다. Gardener는 문서 독립 통과 판정을 대신하지 않는다.
+
+종료 문서 실사 원문은 `.backups/verification/2026-10-16-core-persistence-closeout/review-2/verdict.md`에 별도로 남기며(초기 차단 #1~#3 원문은 review-1에 보존), 그 실사·종료 기록 PR의 CI·사용자 승인·메인 병합·종료 점검 전 전체 종료로 선언하지 않는다. 다음 goal은 자동 시작하지 않는다.

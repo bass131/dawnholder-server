@@ -1,6 +1,6 @@
 # 실제 DB 연결·로딩 게이트·재접속 직업 복원
 
-상태: 시연 경로의 독립 검증을 마쳤고 메인 msg_6794d5227945가 #3 NUL 입력 변경과 운영 편차를 비차단으로 수용했다. 동결 뒤 항목은 미실행 상태로 남는다. 들여쓰기 한정 교정 뒤 Changed 로컬 검사 위반0과 기존 시험 동일을 확인했다. PR242 갱신·새 head CI 진행 단계다. 사용자 정확 head 승인과 메인 병합은 미완료다.
+상태(2026-10-16 KST): PR242 병합 완료(2026-10-15T23:02:36Z, 1c7cf40ceafa7f42d578451d9fae9b10ada0673b). 시연 경로 완료와 메인 수용 범위를 유지한다. 동결 뒤 관측·운영 후보·로컬 미해결5건은 남아 있으며 현재는 Gardener 및 종료 문서 실사 단계다. 다음 goal은 미착수다.
 
 ## 진척 단계
 
@@ -11,8 +11,11 @@
 - [x] 독립 검증(메인 수용·동결 뒤 범위 별도)
 - [x] 시연 실제 경로 관측(미실행 항목은 동결 뒤 목록)
 - [x] PR 생성(draft)
-- [ ] 통합·병합
+- [x] PR242 병합
+- [>] 종료 기록·실사
+
 ## 적용 중인 사용자 결정
+
 ### PR242 뒤 노트북 SQL Express 설치 도구 — 기록만
 
 메인 `msg_9fa3df979283`가 전달한 사용자 원문(메인 pane Enter 제출):
@@ -418,3 +421,66 @@ Loading 입력 거부·DB 지연 비차단의 기존 서버 시험 이름/통과
 - 메인 msg_3be15baefcea 및 msg_8b2ef7504a1e는 도구 시험에 영향 없는 C#공백 교정임을 근거로 추가 진단·재시도0, 로컬 실패·편차를 동결 뒤 정리 후보로 남기고 commit/push 후 새 head 원격4CI로 판정하도록 명시했다. SessionGuard의 한 번 실행은 실패한 시험2건을 포함한다. 실패를 통과로 바꾸거나 편차를 소급 승인하지 않는다.
 - C/raw/final-audit.json은 tracked3328 중 승인2파일만 변경·의도밖drift0·보호1117불변이며 리드 현재 diff/hash와 일치한다. process-return-audit.json은 기록된 최상위 PID/birth 잔존0·현재Linux소유후보0, 생애 후손 전수추적은 아니다. 작업자는 outcome=failed로 정산했고 release→동일incarnation653f9b1b-e15f-45fc-b0cf-1a80eddf7f0a/idle확인→pane종료했다.
 - 서버1502건은 소스 동일 근거로 재사용했고 이번 재실행이 아니다. SQL/Unity/게임 재실행0, 이전 독립 판정과 메인 수용을 유지한다. 다음은 새 head 원격4CI이며 사용자 exact head 승인·메인 병합은 미완료다.
+
+## 2026-10-16 종료 기록
+
+다음 첫 일은 Gardener 결과를 포함한 종료 기록 PR의 독립 문서 실사와 메인 종료 점검이다. 메인 msg_60623606bf13이 두 goal 종료 기록을 승인했다. 사용자 직접 입력으로 격상하지 않는다. 이 절이 과거 재개 블록보다 최신이며 과거 경과는 보존한다.
+
+PR237은 2026-10-15T11:23:07Z에 03e25baa93dda9f78d941e00ae89d54778405cb4로, PR242는 2026-10-15T23:02:36Z에 1c7cf40ceafa7f42d578451d9fae9b10ada0673b로 메인이 병합했다. 리드는 gh pr view의 MERGED·mergeCommit·mergedAt을 대조했다. 원시는 .backups/verification/2026-10-16-core-persistence-closeout/pr237.json 및 pr242.json이다.
+
+시연 경로의 실제 실행·독립 판정과 메인 예외 수용은 runtime-entry goal의 최종 독립 판정 수용 절 및 기존 원시를 따른다. 이 종료 문서 작업에서 SQL·Unity·서버 시험을 재실행하지 않는다. 동결 뒤 관측과 runtime V O1~O8·R O1~O5, NUL assertion 후보, CodeRules3/SessionGuard2 로컬 미해결은 통과로 바꾸지 않는다.
+
+G4의 judgment-r2 컨테이너·볼륨·비밀 및 옛 dawnholder-sqlserver·judgment는 보호 자원이며 이번 작업에서 조회·변경·삭제하지 않는다. 처분 여부는 별도 사용자 결정 후보로 남는다. PR242의 신규 runtime-entry-r1 자원 제거 완료와 이 보존 자원을 혼동하지 않는다.
+
+다음 계획은 사용자 결정 A(msg_9fa3df979283)의 노트북 SQL Express 시연 DB 도구 범위 초안 후보뿐이다. 종료 기록 병합과 범위 승인 뒤 새 리드가 시작하며 이 goal에서 구현·접속·설정 변경하지 않는다.
+
+### 종료 Gardener와 남은 절차
+
+종료 실사 #3 리드 메모 시각 칸 누락은 메인 rollout 대조로 선행 확인(23:10:41.984Z) 후 msg_6f9eeca03972가 비차단 수용했다. 메모에 사후 시각을 소급하지 않으며 원문은 `.backups/verification/2026-10-16-core-persistence-closeout/main-review-decision.json`이다.
+
+신규 Gardener task_8f719c38b9b9/ctx_2f7fccaef46c가 정리 후보 두 개를 제안했다(완료 msg_3b4d36cb8b27). 원문은 `.backups/verification/2026-10-16-core-persistence-closeout/gardener-context-report.md`다. PR242 PowerShell38건은 로컬 Changed, C#17건은 원격 CI 실패다. 「같은 PR에서 CI 실패 두 번」으로 합치지 않는다. PR226의 PS16건까지 반복 근거이며 과거 원시를 읽은 관찰이지 이번 재실행이 아니다.
+
+제안은 언어별 CI 대응 서식 검사 묶음 helper(BACKLOG `prepush-ci-format-checks`)와 계약·판정의 CI 대응 검사 칸(기존 `contract-context-check`의 추가 근거)이다. 후보 등록만 하며 채택·구현은 메인과 사용자 판단이다. 첫 보고 파일명이 memo-first와 충돌한 것은 `gardener-context-report.md` 한 파일로 정정했고 가드를 우회하지 않았다. Gardener는 문서 독립 통과 판정을 대신하지 않는다.
+
+종료 문서 실사 원문은 `.backups/verification/2026-10-16-core-persistence-closeout/review-2/verdict.md`에 별도로 남기며(초기 차단 #1~#3 원문은 review-1에 보존), 그 실사·종료 기록 PR의 CI·사용자 승인·메인 병합·종료 점검 전 전체 종료로 선언하지 않는다. 다음 goal은 자동 시작하지 않는다.
+
+## 다음 goal 범위 초안 — 노트북 SQL Express 시연 DB 도구
+
+승인 전 후보이며 새 goal 착수가 아니다. 연결 후보는 BACKLOG `laptop-sql-express-demo-tool`이다. 아래 권고는 리드의 설계 초안이고 사용자 결정 A의 세부 승인으로 간주하지 않는다.
+
+- **만들 것:** 이미 설치된 Windows SQLEXPRESS에 명시한 신규 시연 DB만 준비하는 도구와 노트북 실행 카드. 읽기 전용 사전 점검 → 변경 계획 표시 → 승인한 인스턴스 설정/시연 DB 준비 → 검증 → 소유 자원만 정리/설정 복구의 경계를 둔다. 재실행은 기존 DB를 초기화하지 않고 소유·버전 불일치에서 중단한다.
+- **건드릴 곳:** `99_Tools/database/`의 Windows 준비 도구·시험·문서, 기존 SQL migration/catalog 재사용 접점, `99_Tools/Start-PersistenceServer.ps1`의 endpoint/CA/자격증명 입력 중 필요한 경계, 실행 안내와 새 goal. 정확 파일과 공용 코드 추출 범위는 착수 설계에서 확정한다.
+- **하지 않을 것:** 기존 SQL 설치 재설치·업그레이드, VHD 도입, 기존 DB 데이터/스키마 변경·삭제, 게임 프로토콜/저장 규칙 변경, 데스크톱 보호 SQL 자원 접근, 전역 WSL 네트워크 모드 강제 전환, LAN 전체 개방, sa 활성화, 비밀의 Git/로그 기록. 현재 종료 작업에서는 노트북 SQL 접속·설정 변경0이다.
+- **관찰 가능한 완료조건:** 도구의 충돌/소유권/재실행/실패 복구 시험, 기존 Docker 경로 회귀, 노트북에서 카드의 실제 진입 1회 이상과 전후 인스턴스 설정·기존 DB 보존 근거, 신규 시연 DB migration 및 WSL 서버의 TLS 검증 연결·저장/재접속·정상 종료 관측. 보호 DB 보존 확인 방식은 사용자와 노트북 담당자가 승인한 메타데이터/기존 백업 기준으로 정하며 기존 DB 내용을 읽거나 수정하는 시험을 임의 추가하지 않는다. 이 머신의 대역 시험만으로 노트북 통과를 선언하지 않는다.
+
+### 연결 방식 권고와 확인할 분기
+
+메인 전달 사전 정보는 DESKTOP-88BJKQH/bass1, MSSQL17.SQLEXPRESS 17.0.1000.7(SQL Server 2025 Express), Windows 인증만·TCP 꺼짐·포트 없음·ForceEncryption0·서버 인증서 없음이다. 물리 섹터4096/4096, WSL user의 SDK10.0.301(~/.dotnet), pwsh7.6.7, Unity6000.6.4f1도 메인 기록이며 여기서 재측정하지 않았다. 기존 인스턴스를 재사용하는 권고는 이 보고를 전제로 한다.
+
+1. **TCP/포트:** 충돌 검사 후 고정 포트를 지정하고 WSL에서 접근 가능한 Windows endpoint를 실행 직전에 확인한다. NAT에서는 Windows host IP가 필요하고 mirrored에서는 localhost 연결이 가능하므로 현재 모드를 탐지한다. NAT 주소를 영구 상수로 두지 않으며, 선택한 주소/이름과 인증서 이름 검증의 일치를 먼저 설계한다. 기존 모드를 유지하고 방화벽은 해당 시연 포트·필요 WSL 범위만 사용자 승인으로 연다. [Microsoft WSL 네트워킹](https://learn.microsoft.com/en-us/windows/wsl/networking).
+2. **TLS:** `Encrypt=Mandatory`·`TrustServerCertificate=false`를 유지한다. Windows SQL에 맞는 서버 인증서와 서비스 계정의 개인키 읽기 권한을 준비하고 SAN에 실제 클라이언트 연결 이름을 포함한다. 인증서는 SQL 요구사항(서버 인증 EKU·유효기간·AT_KEYEXCHANGE 등)을 점검한다. 현재 Linux 컨테이너 인증서 생성을 Windows에 그대로 적용하지 않는다. CA 신뢰는 PR242의 자식 프로세스 한정 경로를 우선 재사용하고, 인스턴스 전체 ForceEncryption 변경은 기본에 넣지 않는다. [Microsoft 인증서 요구사항](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/certificate-requirements?view=sql-server-ver17).
+3. **인증/비밀:** Windows 관리자 인증으로 준비하고, 혼합 인증 전환 뒤 시연 DB 범위의 전용 runtime SQL 로그인을 만든다는 안을 추천한다. sa는 활성화하지 않는다. 인증 모드 변경은 인스턴스 재시작이 필요하므로 기존 DB 접속의 중단 영향을 사용자에게 먼저 알린다. DPAPI 비밀은 노트북 Windows 사용자로 새로 만들며 데스크톱 암호화 파일을 복사하지 않는다. [Microsoft 인증 모드 변경](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/change-server-authentication-mode?view=sql-server-ver17).
+4. **공유/분리:** SQL migration/catalog·runtime 권한·TLS 연결 검증·런처의 stdin/자식 CA 전달은 공유 후보, Windows 서비스/레지스트리/인증서 저장소와 Docker 컨테이너 생애는 분리 후보다. 현행 LinuxSqlHost의 ContainerHostname 계약은 Windows 인스턴스 식별과 다르므로 억지로 재사용하지 않는다. 근거: `LinuxSqlHost/HostPlan.cs`, `SqlLifecycle.cs`, `Start-PersistenceServer.ps1`(PR242 병합 기준). 서버 저장 로직은 그대로 둔다.
+
+### PR 경계와 사람이 할 일
+
+추천은 새 goal 안에서 PR1 도구·실패/보호 시험·실행 카드, PR2 노트북 실제 실행 결과·필요한 범위 안 수정·최종 기록으로 나누는 것이다. PR1 승인·병합만으로 노트북 실증을 통과 처리하지 않는다. 제품 변경의 TDD·독립 검증과 실행 카드 실제 진입은 현행 규칙을 따르며, 카드 회차·놓친 결함을 새 goal에 기록한다. 이 종료 PR은 초안만 담는다.
+
+노트북 Claude는 승인된 카드와 정확 버전을 받아 노트북에서 수행하고 원시·환경·exit·실행/미실행을 반환한다. 사용자는 인스턴스 설정 변경·인증서/개인키 권한·방화벽의 관리자 확인과 서비스 재시작 시간대를 승인한다. OS 재부팅이 필요하다고 실제 확인되면 사용자가 수행하며 무조건 재부팅하지 않는다. 실행 전 설정 백업·되돌리기 범위를 확인하고, 실패 시 기존 인스턴스를 자동 삭제하지 않는다. 이 머신 리드는 노트북 접근 권한이 없으므로 결과를 수신해 검증하며 실행을 대신했다고 보고하지 않는다.
+
+새 리드 시작 전 사용자 결정은 이 범위/PR 분할, 인스턴스 수준 설정과 중단 창, Astra medium 시범의 계속·확대·원복이다. 현재 대화는 같은 goal 종료 기록까지만 허용된다.
+
+## 다음 계획 후보
+
+- publish 보존·컨테이너 강화: BACKLOG `persistence-environment-hardening`.
+- U의 우편함·후손 반환 관찰: BACKLOG `persistence-harness-mailbox-observations`.
+
+- 종료 Gardener 제안: BACKLOG `prepush-ci-format-checks`·`contract-context-check`(후보 등록이며 채택/구현 전).
+
+상세·처분은 [BACKLOG](../../../00_Document/operations/BACKLOG.md#core-영속성-종료에서-연결한-후보)를 따른다. 메인 msg_60623606bf13의 종료 이관이며 착수 승인이 아니다.
+
+- 실제 서버·화면·RPC·인증서 관측: BACKLOG `persistence-live-observation-followup`.
+- R/V 관찰과 NUL assertion: BACKLOG `persistence-runtime-review-observations`.
+- 로컬 미해결5건: BACKLOG `windows-local-checker-paths`.
+- 보호 SQL 자원 처분: BACKLOG `persistence-protected-resource-disposition`.
+- 노트북 도구 초안: BACKLOG `laptop-sql-express-demo-tool`.
