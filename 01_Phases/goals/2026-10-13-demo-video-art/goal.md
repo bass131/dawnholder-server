@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **같은 승인 목표의 밤 작업을 안전 지점에서 마감한다. 05 반입은 강 독립 PASS, 06 독립 판정은 메인 msg_5a5c4d0d5490에 따른 조건부 통과다. 마지막 실제108건106통과1실패1판정불가이며 H1=b 시험 좌표 오류·비차단, 탈퇴 뒤 입력626=#T2 미관측·비차단으로 동결 뒤 정리에 남긴다. 이를 입력 관측 성공이나 전체 강 검증 완료로 확대하지 않는다. 제품14573c80 변경0, 검증자 정산·정확 종료·근거138파일 동결·S1 복원을 완료했다. 보고 수치 불일치는 원문 보존·메인 보고했고 반복 규칙 후보는 메인이 아침 Rules로 올린다. 실제 게임/전후 화면·아침 미관/배치5곳·Window6/C9가 남아 goal 전체 완료는 아니며, C9 main 반영→Art rebase 의존과 PR 경계에 따라 draft PR0으로 정리 커밋까지만 한다. 현재 Art 작업자0·Unity/WSL/DB 실행·허가·예약0, 추가 자동 실행/수정·다음 goal 착수0이다.**
+상태: **같은 승인 목표를 안전 지점에서 멈춘 상태다. 05 반입은 강 독립 PASS, 06 독립 판정은 메인 msg_5a5c4d0d5490에 따른 조건부 통과다. 마지막 실제108건106통과1실패1판정불가이며 H1=b 시험 좌표 오류·비차단, 탈퇴 뒤 입력626=#T2 미관측·비차단으로 동결 뒤 정리에 남긴다. 이를 입력 관측 성공이나 전체 강 검증 완료로 확대하지 않는다. 제품14573c80 변경0, 검증자 정산·정확 종료·근거138파일 동결·S1 복원을 완료했다. 보고 수치 불일치는 원문 보존·메인 보고했고 반복 규칙 후보는 메인이 Rules로 올린다. UI 여백 충돌5곳은 메인 msg_62f9677557ea가 전달한 사용자 A 기존 배치 유지로 결정돼 이동 작업을 만들지 않는다. 실제 게임/전후 화면·새 실화면 우려/Party HUD 미관·Window6/C9가 남아 goal 전체 완료는 아니며, C9 main 반영→Art rebase 의존과 PR 경계에 따라 draft PR0·기록 커밋 뒤 대기를 유지한다. 현재 Art 작업자0·Unity/WSL/DB 실행·허가·예약0, 추가 자동 실행/수정·다음 goal 착수0이다.**
 
 - 담당: Art 리드(`[Art 리드 Sol]`, 2026-10-14 Sol xhigh 같은 대화 재개부터). 이전 리드 계열은 Opus·Astra였다. 사용자 결정 `msg_d4146a180138`을 적용했고 현재 화면/turn_context는 gpt-6.1-sol xhigh, 실제 backend unknown이다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며 메인이 R-8로 새 목표의 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -184,7 +184,7 @@
 |---|---|
 | Sol 전환 완료 관측 | 메인 재개 msg_55e9fff98129 뒤 같은 대화 ID 01a13573-b029-7f30-b2cf-f2e8d014cc3d를 새 handle term_95ee6115-3eab-441a-8e7a-3020259818c1/incarnation13d22f59-debb-4db8-a8f6-757eda02fc8c에서 이어간다. 첫 consumer_fenced 뒤 run-use로 같은 Run consumer4 인수·check0건, 화면 GPT-6.1-Sol xhigh/문맥19%·최근 turn_context 모델/effort 일치·backendunknown을 확인했다. READY msg_beadcdacb7f2 송신. 기존 Opus 검증자/ask 유지, 원시는 sol-resume-context.md·sol-resume-screen.json·sol-ready-receipt.json |
 | 전환 뒤 첫 행동 결과 | READY msg_beadcdacb7f2 뒤 최종5파일/새 자원 관문을 통과했고 공식 reply msg_08b1f6a32b89에 시연 우선 추가 지침과 기존 runner 실행창을 함께 전달했다. Start14:39:01.4577569Z/StopNew14:49:01.4577569Z/Deadline15:24:01.4577569Z, 최대1회/총45분/runtime1800초. 실제 시작14:39:47.837Z는 허용창 안이다. 새 하네스·재준비 장치 추가0, 리드 제품/시험/runner쓰기0 |
-| 다음 첫 일 | 메인 msg_5a5c4d0d5490의 조건부 통과·626 미관측/비차단과 아래 재개 순서를 읽는다. 아침 사용자 VIS-01·03·04·05/배치5곳 판단과 실제 게임·전후 화면 확인, Content C9 main 반영→Art rebase→Window6 후속 범위를 메인의 새 할당으로 재개한다. #T1/#T2/O-1 재관측은 동결 뒤 별도 정리 계약 전까지 실행0이다. 현재는 정리 커밋·마감 보고 뒤 멈춘다 |
+| 다음 첫 일 | 조건부 통과 msg_5a5c4d0d5490과 사용자 기존 배치 유지 전달 msg_62f9677557ea를 읽는다. 여백 충돌5곳 판단은 완료됐으며 새 배치 이동/재질문0이다. Content C9(PR239) main 반영→Art rebase→Window·실화면→같은 UI 창 PR 순서를 메인의 재개 할당으로 이어간다. 선행 조건 전 새 실행0·대기를 유지한다. 실화면에서 새로 거슬리는 곳만 사용자 확인으로 올리고 #T1/#T2/O-1 재관측은 동결 뒤 별도 정리 계약 전까지0이다 |
 | 현재 Task·Dispatch | 실행 중 작업자 없음. 마지막 task_8996465ba633 / ctx_b11cdf06e51f의 worker_done msg_ce147c9bf43d는 succeeded(판정 작성 완료)다. H1=b·626 미관측을 남기는 Art 조건부 통과를 메인 msg_5a5c4d0d5490이 확정했다. 최초 claude --model claude-opus-5-5, 화면 Opus5.5 xhigh/Claude Code2.1.300/backend unknown, verifies는 구현 task_5a2f837e8a5e다. release retained/external_terminal 뒤 handle term_81197d42-8593-49d4-a8fe-c2562d0fb7a2 / incarnation a066892e-6398-4e93-8893-d1ee04dbb355를 대조해 정확 pane 종료·ptyKilledtrue·reclaimable0이다. 이 세션은 재사용하지 않는다 |
 | 이전 취소 Task·Dispatch | 10-13 B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
@@ -196,7 +196,7 @@
 | 기록 보존 | `013f37ef`을 새 branch의 `c9c34b41`로 옮겨 push했다. 옛 branch에 최신 main을 받은 merge head `857dae52`와 새 head의 tree가 같다(diff exit 0). 옛 branch는 삭제하지 않았다 |
 | 작업자·실행 자원 | Art 리드1·작업자0, Art Unity/WSL/DB 실행·허가·예약0이다. 마지막 실행의 고유 관측135 PID+birth 정확생존0·Unity0·lock false·kill0을 대조하고 Core/World/Content에 창을 반납했다. S1 동일 define1줄은 파일 사용 종료 확인 뒤 HEAD bytes로 복원21030bytes/b04c1808…·해당status0이다. 원문/근거138파일 동결·fixed115 hash 불일치0이며 다음 자동 재검증0이다 |
 | Unity·화면 조작 | 사용자 지시(메인 채팅 전달) 원문 「그리고 만약에 MCP 연결이나 컴퓨터 조작관련 행동이 필요하면 Codex CLI가 아닌 Codex Desktop을 통한 GPT Astra한테 명령하면 대신 조작 잘 해줄거야, 권한 최대한 자율로 줄게」. Art가 UI 창 PR에서 Unity를 열 때 쓸 수 있다. 큰 실행 전 메모리 4GB 원시와 다른 리드 알림은 그대로다 |
-| 남은 결정·준비 | 실제 게임/PlayMode·전후 화면, VIS-01·03·04·05와 배치5곳(현황판 art-window-inset-conflicts-1015), Window·RewardWindow6가 아침 유보다. Window는 Content C9 실화면 확인·사용자 병합 승인·main 반영→Art rebase 뒤만 착수한다. 직접 Content cherry-pick/merge/복사0, MCP/Desktop은 메인 시트·시각 지정 뒤다. 05·06은 같은 UI 창 PR이며 새 자산 PR0·이번 draft PR0이다. #T1/#T2/O-1은 동결 뒤 정리 후보, 보고 불일치 반복 규칙 후보는 메인이 Rules로 전달한다. 출처 기록 세 가지(사용자, 10-27 전)와 현재 goal 뒤 묶음은 남아 있고 다음 goal 자동 착수0이다 |
+| 남은 결정·준비 | 배치5곳(현황판 art-window-inset-conflicts-1015)은 msg_62f9677557ea의 사용자 A 기존 배치 유지로 확정했다. 실제 게임/PlayMode·전후 화면·그 화면의 새 미관 우려/Party HUD VIS-05, Window·RewardWindow6는 남는다. Window는 Content C9(PR239) 실화면 확인·사용자 병합 승인·main 반영→Art rebase 뒤만 착수한다. 직접 Content cherry-pick/merge/복사0, MCP/Desktop은 메인 시트·시각 지정 뒤다. 05·06은 같은 UI 창 PR이며 새 자산 PR0·현재 draft PR0이다. #T1/#T2/O-1은 동결 뒤 정리 후보, 보고 불일치 반복 규칙 후보는 메인이 Rules로 전달한다. 출처 기록 세 가지(사용자, 10-27 전)와 현재 goal 뒤 묶음은 남아 있고 다음 goal 자동 착수0이다 |
 
 **남은 순서**: 비교 글 → 무료 시범 → 시범 PR → UI 창 PR → 효과 PR → 10-21 판단 → 발판·지형 PR → 마지막 손질 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
@@ -704,3 +704,20 @@
 - **PR 마감 경계:** goal의 UI 창 PR은 실화면 전후 근거 뒤이며, 후속 scope는05·06을 같은 UI 창 PR에 둔다. 메인 msg_bf15b35d8410/기존 기록565행의 Window 의존은 Content C9 main 반영→Art rebase다. 아직 그 의존과 실제 화면 근거가 없어 별도 자산 PR이나 불완전한 UI draft를 새로 만들지 않고 정리 커밋까지만 한다. 제품·고정 시험·원문 근거를 보존하고 사용자 병합 승인 요청도 아직 하지 않는다.
 - **재개 순서:** (1) 메인의 새 재개 할당과 현재 goal을 대조하고 아침 사용자 VIS-01·03·04·05/배치5곳 및 실제 게임·PlayMode·전후 화면 확인 순서를 받는다. MCP/Desktop은 메인이 시트·시각을 정한 뒤다. (2) Content C9의 사용자 실화면 확인·명시 병합 승인·main 반영 뒤 Art rebase로 기준을 맞춘다. 직접 checkpoint cherry-pick/merge/파일 복사0이다. (3) 같은 goal의 Window/RewardWindow6 적용·필요 검증은 그 기준과 새 외부 세션 계약으로만 재개한다. (4) #T1/#T2/O-1 재관측은 동결 뒤 별도 정리 계약으로 다루고, 기술·실화면/미관 의존이 충족된 같은 UI 창 PR의 정확 head를 메인에 보고한다. 각 PR 사용자 병합 승인은 그대로 별도다.
 - 현재는 작업자·Unity/WSL/DB·허가/예약0, product14573c80·소유 시험99ace32a 고정, evidence138files/판정 SHA83ecc1a8…·fixed115 mismatch0·S1 복원 완료로 멈춘다. 목표 전체 완료·미실행 통과로 보고하지 않으며 새 목표 초안·작업자·자동 후속0이다. 원문 메인 지시는 `ui-window-input-rereview-launch/main-final-nonblocking-cleanup-direction.json`에 보존했다.
+
+### 06 - 사용자 결정: UI 여백 충돌5곳 기존 배치 유지 — 2026-10-15 KST
+
+- **사용자 결정 전달 — A 기존 배치 유지**(메인 `msg_62f9677557ea`, `2026-10-15T00:37:57Z`). 메인이 전달한 메인 pane Enter 제출 사용자 원문은 「대시보드 결정 응답: 1) UI 창 적용 - 승인 시안의 여백과 기존 배치가 겹치는 5곳을 기존 배치대로 둘지, 시안대로 옮길지 → A 기존 배치 유지」다. Art pane 사용자 직접 입력으로 격상하지 않는다.
+- 메인은 사용자가 결정 전에 B1 최종 PNG 미리보기3장(`ui-kit-b1-ring-fix/package/kit/preview`의 inventory·npc-dialog·party, 1920×1080)을 보았고5곳의 차이를 표로 설명했다고 전달했다. 실게임 화면을 확인한 결정으로 쓰지 않는다.
+
+| 결정된 곳 | 유지할 현재 구현 |
+|---|---|
+| 인벤토리 제목 x12/y10과 시안 inset16 충돌 | 기존 제목 위치·글자 영역 유지 |
+| 인벤토리 슬롯 x6과 시안 inset8 충돌 | 기존 슬롯 배치·크기 유지 |
+| 인벤토리 사용 버튼50×35·16pt | 기존 버튼 크기·글자 영역 유지 |
+| NPC 구분선·장식과 본문 겹침 | 현재 본문 영역 유지, 겹치는 시안 구분선·장식 추가0 |
+| 파티 초대 버튼이 판 바깥에 있는 배치 | 기존 버튼 위치 유지, 판 안으로 이동0 |
+
+- 5곳의 시안 여백·장식이 빠지는 것은 결정된 상태다. 새 배치 이동 작업을 만들거나 같은5곳의 선택을 다시 요청하지 않는다. 실제 화면에서 새로 거슬리는 곳이 관측되면 그 곳만 사용자 확인으로 올린다(메인 전달의 시연 뒤 재검토 후보). Party HUD VIS-05와 실제 게임/PlayMode·전후 화면의 미실행은 별도로 남는다.
+- 재개 순서는 **Content C9(PR239) main 반영 → Art rebase → Window·실화면 → 같은 UI 창 PR**으로 그대로다. 선행 조건 전에는 새 실행·작업자·제품 수정을 열지 않는다. 이번에는 이 goal 기록만 commit/push하고 멈춘다. 기존 독립 판정·제품·시험·scope·동결 근거는 바꾸지 않는다.
+- 원문 메시지와 출처는 `ui-window-input-rereview-launch/main-layout-five-decision-msg_62f9677557ea.json`에 보존했다. 이 절이 이전 마감 기록의5곳 사용자 판단 대기를 해소한다.
