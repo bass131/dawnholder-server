@@ -1,9 +1,9 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **구현·독립 검증·C9 실제 경로를 통과하고 PR239 ready·병합 준비를 마무리한다. D-10은 메인 해석 A로 확정됐다. goal은 미완이며 사용자 병합 승인·제품 PR 병합·Gardener·종료 기록이 남았다. #4/#5는 미해소 동결 뒤 정리다.**
+상태: **제품 PR239가 사용자 승인 뒤 병합됐다. C9는 독립 PASS이며 D-10 A는 메인 공개 뒤 사용자 승인됐다. 현재 Gardener를 마치고 종료 기록 문서 실사·PR을 진행하며 goal 전체 종료와 R-8은 아직이다. #4/#5는 미해소 동결 뒤 정리다.**
 
-- 담당: Content 리드 [Content 리드 Astra], 지정/표시 gpt-6-astra xhigh, backend unknown. 시작 기준 origin/main = cc20d428f7988fdcb232a7c811cf2e729446abdc.
-- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침, 병합 뒤 원격 삭제). 던전 클리어 PR branch `feat/dungeon-clear-server-20261011`(base `999b1b98`).
+- 담당(착수 시점): Content 리드 [Content 리드 Astra], 지정/표시 gpt-6-astra xhigh, backend unknown. 시작 기준 origin/main = cc20d428f7988fdcb232a7c811cf2e729446abdc.
+- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침, 병합 뒤 원격 삭제). 던전 클리어 PR branch `feat/dungeon-clear-server-20261011`(base `999b1b98`; PR239 병합 완료).
 - 착수 원천: 메인 `msg_9fe1d49e00bb`(2026-10-10T07:39:37Z)가 전달한 사용자 승인. 원문은 아래 [적용 중인 사용자 결정](#적용-중인-사용자-결정)에 있다. 범위 원문은 리드 초안 `msg_f1bba119c853`이다.
 - 로컬 원문·계약·판정은 `.backups/verification/2026-10-10-dungeon-clear-rewards/`에 둔다(Git 밖).
 
@@ -313,14 +313,13 @@ Content 적용: 현재 실행 준비 중인 재검증3에 전달(msg_fec530f29f2
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | PR239 최종 head·CI·판정 원문을 메인에 보고하고 정확 head의 사용자 병합 승인을 기다린다. 병합 뒤 결과 기록·Gardener·종료 기록 PR·종료 점검을 이어간다. 다음 goal·작업자는 시작하지 않는다 |
-| 현재 단계 | C9 범위 1~4 독립 PASS, 제품 결함 0. PR239 ready·미병합이며 goal 전체는 아직 완료하지 않았다. #4/#5 정리는 동결 뒤로 보존한다 |
-| 작업 공간 / branch | content-active / feat/dungeon-clear-server-20261011. 최신 main 합류와 검증 코드 기준은 `c9-screen-resume-20261015-prep/main-merge-receipt.json`, 최종 head·원격 일치·CI는 같은 폴더의 `final-pr-state.json`·`final-closeout.json` |
-| PR / 결정 대기 | [239 - 던전 클리어 보상 원자 지급과 마을 복귀](https://github.com/bass131/dawnholder-server/pull/239). D-10 해석 A는 메인 판단(`msg_9ad3fa95a015`)이며 사용자 결정이 아니다. 병합 승인 요청 때 공개한다. 추가 실행은 없고 Codex는 병합하지 않는다 |
-| 작업자 / 자원 | 열린 작업자·실행·예약 0. 이번 검증자는 succeeded·settled 뒤 release와 정확 pane 종료를 마쳤다. Content의 Editor·7777·MCP 시트는 반환했다. 다른 파트의 현재 자원은 각자 fresh gate로 확인한다 |
-| 검증 근거 | `.backups/verification/2026-10-10-dungeon-clear-rewards/c9-screen-resume-20261015/report.md`·`verdict.json`. 원시 수치·실행·정산·생존 신호 집계는 같은 상위 폴더의 `c9-screen-resume-20261015-prep/final-closeout.json`과 연결 근거 |
-| 보호 / 미커밋 | 제품·시험 미커밋 변경 없음. 기존 사용자 MinimapRT·ProjectSettings 변경은 보존했다. 고정 입력 42개와 보호 파일 4개 불변을 대조했으며 stage·복원·stash하지 않는다 |
-| 리드 / 설정 | 현재 [Content 리드 Sol], 화면 GPT-6.1-Sol xhigh, backend unknown. 현재 Run·세션 식별자는 prep/active.json. 사용자 결정에 따른 settings.local.json 허용 줄은 유지한다 |
+| 다음 첫 일 | 신규 Astra가 종료 문서를 실사한 뒤 Gardener 결과를 포함한 종료 기록 PR 하나와 정확 head를 메인에 보고한다. 그 PR의 사용자 병합 승인·메인 병합·종료 점검·R-8을 기다리며 다음 goal은 시작하지 않는다 |
+| 현재 단계 | 제품 PR239 병합 완료·C9 범위 1~4 독립 PASS. Gardener는 끝났고 종료 문서 실사·PR이 남아 goal 전체 종료 전이다. #4/#5는 동결 뒤 정리로 미해소다 |
+| 작업 공간 / branch | content-active / docs/content-dungeon-clear-closeout-20261015. 최신 main에서 만든 기준·보호 대조는 closeout-20261015/branch-base.json |
+| 제품 병합 / 결정 | PR239 head 9f3f58198baea8e5bde12472f06032f113de35c3·CI4 성공 → 2026-10-15T02:55:03Z main merge 6b94d30a2284338e5ceafebacf5b7c54e3fd79f0. 승인 원문·D-10 사용자 A는 메인 msg_9baceeac9dc0 전달 |
+| 작업자 / 자원 | C9 검증자 정산·정확 pane 종료 완료. Content 중량 실행·예약 0이며 종료 문서/Gardener만 진행한다. 새 Unity·서버·DB 실행은 계획하지 않는다 |
+| 검증 / 원시 근거 | C9 판정은 .backups/verification/2026-10-10-dungeon-clear-rewards/c9-screen-resume-20261015/report.md·verdict.json. 종료 근거는 같은 상위 폴더 closeout-20261015/에 둔다 |
+| 보호 / 리드 | 사용자 MinimapRT·ProjectSettings 변경과 TimeManager·settings.local.json은 보존한다. 현재 [Content 리드 Sol], 화면 GPT-6.1-Sol xhigh/backend unknown. 세션 식별자는 앞 단계 prep/active.json과 종료 worker receipt로 추적한다 |
 
 ### 기존 아트 경계
 
@@ -345,9 +344,9 @@ C9의 실제 main 병합 뒤 Art가 rebase한 다음 창 작업을 진행한다.
 - [x] 클리어 선행 시험
 - [x] 클리어 서버 구현
 - [x] 검증·실제 플레이
-- [>] PR239 병합
-- [ ] 결과 기록·Gardener
-- [ ] 종료 기록 병합
+- [x] PR239 병합
+- [x] 결과 기록·Gardener
+- [>] 종료 기록 병합
 
 ## 실제 결과와 미실행
 
@@ -817,38 +816,47 @@ C9의 실제 main 병합 뒤 Art가 rebase한 다음 창 작업을 진행한다.
 
 ## 다음 계획 후보
 
-- **UI 계층·창 정렬 기준 통합**: 사용자 결정 A(메인 `msg_b78153624c8b`)로 [BACKLOG `ui-layer-sort-design`](../../../00_Document/operations/BACKLOG.md#ui-layer-sort-design의-원문검토-범위)에 등록했다. 상세는 후보 한 곳에서 관리하며 C9에 계층 설계를 포함하지 않는다.
+후보 상세·원판정의 출처·선행 조건은 BACKLOG 한 곳에서 관리한다. 아래는 종료 이관의 도착 링크이며 채택·착수 승인이 아니다. 기존 상세는 Git의 이관 전 원문과 closeout 근거 snapshot에 보존했다.
+- UI 계층·창 정렬 기준: BACKLOG `ui-layer-sort-design`.
+- HUD 골드 출처 주석: BACKLOG `inventory-ui-readability-followup`.
+- 연결별 UI 표시 상태: BACKLOG `client-ui-session-state`.
+- HUD 골드 중복 렌더: BACKLOG `inventory-ui-readability-followup`.
+- HUD 삭제 필드 직렬화: BACKLOG `inventory-ui-readability-followup`.
+- 씬 전환 시험 경계: BACKLOG `inventory-fixture-boundaries`.
+- Input System 내부 fixture: BACKLOG `inventory-fixture-boundaries`.
+- HUD 폰트 줄 metrics: BACKLOG `hud-gold-font-layout`.
+- 작은 화면 숫자 판독성: BACKLOG `hud-pointer-attack-ux`.
+- HUD 골드 높이 여유: BACKLOG `hud-gold-font-layout`.
+- HUD 측정 시험 중복: BACKLOG `ui-probe-duplication`.
+- 게임 UI·아트 기준: BACKLOG `game-ui-style-reference`.
+- 패킷 생성기 줄 끝: BACKLOG `packet-generator-line-endings`.
+- 사제·궁수 기획 후보: BACKLOG `priest-archer-class-planning`.
+- 게임플레이 씬 판정: BACKLOG `inventory-ui-readability-followup`.
+- 보상 창 생성 불변식: BACKLOG `dungeon-window-construction-lifetime`.
+- 보상 상태 생성 책임: BACKLOG `dungeon-window-construction-lifetime`.
+- 거부 보상의 표시 상태: BACKLOG `dungeon-rejected-reward-state`.
+- 던전 창 시험 helper: BACKLOG `ui-probe-duplication`.
+- 서버 lane 정상 종료: BACKLOG `server-lane-graceful-stop`.
+- HUD PlayMode timeout: BACKLOG `hud-playmode-timeout-investigation`.
+- 클리어 시험 출처 주석: BACKLOG `dungeon-code-readability`.
+- 보스 해금 수명: BACKLOG `boss-unlock-lifetime`.
+- 재출현 클리어 상태 정리: BACKLOG `dungeon-clear-state-lifetime`.
+- 클리어 수혜자 참조 수명: BACKLOG `dungeon-clear-state-lifetime`.
+- 던전 부분 한정 이름: BACKLOG `dungeon-code-readability`.
+- 클리어 상태 호출처 주석: BACKLOG `dungeon-code-readability`.
+- 봇 복사본 격리 관측: BACKLOG `dungeon-bot-isolation-observation`.
+- 봇 성공 로그 실측: BACKLOG `dungeon-bot-isolation-observation`.
+- C9 #4/#5 잔여 중복·설명: BACKLOG `ui-probe-duplication`(동결 뒤 정리, 미해소).
 
-이 goal에서 발견한 범위 밖 후보는 출처와 함께 한 줄로 적고 [BACKLOG](../../../00_Document/operations/BACKLOG.md)의 ID를 붙인다. 등록은 착수 권한이 아니다. 아래는 결함 PR 독립 검증의 비차단 관찰이며, BACKLOG 등록 여부는 종료 기록 때 정한다.
-
-- `HudController` 클래스 요약에 골드의 출처(InventoryState 미러)가 없다. 지금은 FEATURE_MAP·client.md에서 찾는다(판정 「사람 가독성 지적」).
-- `UnityClientSession`이 UI 표시 bool을 가진다. 표시 상태가 늘면 연결이 소유하는 작은 표시 상태 객체로 옮긴다(O-1).
-- `HudController`의 `OnEnable`·`Start`가 `BindInventory` 뒤 `RenderGold`를 한 번 더 부른다. 동작 영향은 없다(O-2).
-- `UI.unity`에 지운 필드 `_mockGold: 0`의 직렬화 잔여가 있다. 다음 scene 저장 때 Unity가 지운다(O-3).
-- EditMode 씬 전환 시험은 맵 입장과 SceneTransition이 함께 걸린 경우만 본다. 지금 제품 경로에서는 둘이 늘 겹친다(O-4).
-- EditMode 가상 키보드가 Input System 내부 `runPlayerUpdatesInEditMode`에 기댄다. 패키지 업데이트 때 fixture가 먼저 깨진다(O-5).
-- 실화면 driver의 HUD 골드 넘침 검사는 이 폰트에서 쓸 수 없었다(R9 판정 O-1). R10 재확인 driver는 줄 수와 글리프 quad로 바꿨다(`r10-screen/driver/`). 폰트 asset의 줄 metrics가 비정상인지는 남은 확인 후보다.
-- 작은 렌더 해상도에서 HUD 골드 판독성: 709×399·802×451에서는 크기 18이든 14든 한 글자가 5~7 px이라 숫자가 뭉개져 보인다. R10의 수치 기준(크기 12 이상)은 충족한다. 작은 창의 판독성 목표가 필요한지는 사용자·메인이 정한다(R10 재확인 판정 O-1).
-- HUD 골드의 높이 여유가 얇다. 배치 높이 34.92와 줄 높이 34.35의 차이가 0.57이다. 폰트·줄 간격·상자 높이가 조금만 바뀌어도 모든 값이 줄어든다. 지금은 6자리 크기 18 단정 시험이 막는다(R10 독립 판정 O-1).
-- R10 두 PlayMode 시험 클래스가 측정 코드(`Measure`·`GoldLayout`)를 사본으로 가진다. 세 번째 사용처가 생기면 공용 helper로 뽑는다(R10 독립 판정 O-3).
-- **게임 UI·아트 스타일 기준 문서화**: 기준 게임은 Moonlighter다. 차이는 둘이다. 시점은 Moonlighter가 Top-View, 우리는 사이드 스크롤이다. 플레이 형태는 Moonlighter가 솔로, 우리는 온라인이다. 출처는 메인 `msg_4dffdfb3323b` 원문 「우리가 원하는 게임의 스타일에 제일 가까운게 Moonlighter거든? 그래서 게임 UI나 디자인 셋업할때 참고하면 좋을거 같아, 근데 그 게임같은 경우에는 Top-View 게임인데, 우리 게임은 Side Scroll인게 차이점이야」와 `msg_4df6930b3cf0` 원문 「거기에 그 게임은 솔로게임인데 우리는 온라인 게임인거고」다. 문서 위치·형식은 goal로 올릴 때 정한다. 종료 기록 때 BACKLOG에 등록한다.
-- **패킷 생성기 줄 끝**: 생성기가 Windows에서 `Environment.NewLine`으로 CRLF를 섞어 써서, 생성기를 돌린 작업본으로 만든 Plugins `Shared.dll`이 커밋 소스로 다시 빌드한 DLL과 달라진다. 경제 PR과 이 PR에서 두 번 났다. 생성기가 LF로 쓰게 고치는 것(구조 층)이나 Shared 소스·Plugins DLL 일치 검사(검사 층)가 후보다. 출처는 「운영 기록(첫 발생)」의 줄 끝 항목과 `lead-r2-eol-fix/r2.md`다. 종료 기록 때 BACKLOG에 등록한다.
-- **직업 추가 — 사제·궁수**(10-13 발표에서 추가 예정으로 표기). 출처는 메인 `msg_9f231a21d4cc`가 전달한 원문 「음 첫 대문 배경에 직업이 색깔만 바뀌고 겹치니까 좀 어색한데, 이참에 다른 직업군도 넣어볼까? 사제, 궁수도?」와 「대시보드 결정 응답: 1) 33 - 발표 표지에 사제·궁수를 넣을지 → A 추가 예정 직업으로 넣음」이다. 지금 게임 직업은 전사·마법사 둘이고 저장소에 두 직업 계획은 없다. 착수와 기획 내용은 goal로 올릴 때 사용자와 정한다. 종료 기록 때 BACKLOG에 등록한다.
-- **게임플레이 씬 이름 사본 정리**: `UI/InventoryPanel.cs:158-159`(Town·HuntingGround·BossRoom·GameplayTest)와 `Bootstrap/LocalPlayerSpawner.cs:36`(GameplayTest 없음)이 `Combat/CombatBootstrap.cs:36` `CombatScenes`와 따로 있다. 패널도 보상 창처럼 자기 씬이 활성인지 보게 하거나 공용 판정으로 모은다. `LocalPlayerSpawner`는 spawn 대상이라 의미가 같은지 먼저 확인한다. 출처는 패킷·창 PR 독립 검증 V-1과 재검증 O-4다. 종료 기록 때 BACKLOG에 등록한다.
-- 보상 창의 「installer만 창을 만든다」는 불변식이 주석으로만 있다. `BuildRuntime`은 public static이고 지금 호출처는 installer 하나다(재검증 O-1).
-- 보상 창 `Update`가 매 프레임 `DungeonClearRewardState.EnsureInstance()`를 불러, 상태가 없으면 만든다. 상태 생성을 한 곳에 두고 창은 null을 허용하는 안이 있다(독립 검증 O-1).
-- 클라이언트는 거부 결과(`CurrencyCap`·`InventoryFull`)에 실린 골드·아이템도 받아 둔다. 창은 사유만 보인다. 클리어 PR 설계 C3의 「거부 = 골드 0·빈 칸」과 맞출지 클리어 PR 착수 때 정한다(독립 검증 O-2).
-- PlayMode 던전 창 시험 두 클래스가 helper(39 encoder·`HasNumber`·`Confirms`)를 사본으로 가진다. 세 번째 사용처가 생기면 `ScreenUiProbe` 옆 probe로 뽑는다(독립 검증 O-4, 재검증 O-2).
-- 서버 lane Stop이 다섯 번 모두 INT 20초 안에 끝나지 않아 TERM으로 정리됐다. 서버의 INT 처리를 확인할 후보다(독립 검증·재검증 O-5).
-- **HUD PlayMode 시험 간헐 시간 초과**: World 재검증의 서버 lane PlayMode 전체(12:03:59Z~12:05:15Z)에서 `HudGoldAndPanelToggleSceneTests.ClosedPanel_LetsAClickOnItsUseSpotAttack_AndAfterIThatClickUses_AcrossAMapMove`가 「Timed out: the open panel's Use」로 한 번 실패했다. 가짜 서버 peer의 `C_ItemUse`를 실시간 3초 기다리는 곳(`HudGoldAndPanelToggleSceneTests.cs:93`)이다. 같은 HEAD 재실행은 3/3·3/3 통과였고 원인은 확정하지 못했다. 대기 한도를 늘리거나 프레임 수 기반 대기로 바꾸는 안이 있다. 출처는 World `msg_75c883fc0f0b`와 World 근거 `.backups/verification/2026-10-11-multi-account-login/reverify/verdict.md` O-4다. 클리어 PR의 검증에서 같은 시간 초과가 나면 이 관찰로 분류하고 원시를 남긴다.
-- **클리어 시험 머리 주석 출처**: `InventoryAuthorityBoundaryTests.cs:10-13`이 클리어 묶음을 아이템 goal 승인표 리터럴이라고 적는다. 실제로는 공유 `DungeonClearRewards`(10-08 결정 2 A)에서 읽는다. 다음에 그 파일을 고치는 작업에서 바로잡는다(클리어 독립 검증 V-2).
-- 보스 처치 뒤에도 `_bossUnlocked`가 남아, 같은 사람이 바로 새 복사본에서 다시 클리어할 수 있다. 재도전 제한이 필요하면 World·Quest가 해금 수명을 정한다. 결정은 사용자·메인이다(클리어 독립 검증 O-1).
-- 재출현이 `_stageCleared`만 되돌리고 `_dungeonClear`는 다음 클리어까지 남는다. 확인 job이 `IsStageCleared`를 먼저 봐서 지금은 안전하다. 재출현 때 상태도 비우거나 상태 객체가 세대를 확인하는 안이 있다. `MaybeRespawnBoss`가 World 소유 구간이라 함께 정한다(O-2).
-- `DungeonClearState`가 수혜자 `GameSession` 참조를 복사본 정리나 다음 클리어까지 든다. 확인 집합만 남기고 수혜자 목록은 콜백 뒤 버리는 안이 있다(O-3).
-- `HandlerRegistry`·`GameMap`·`InventoryRegistry`·`GameSession`이 `using` 대신 `Dungeon.` 부분 한정 이름을 쓴다. 다음에 그 파일을 고치는 PR에서 `using`으로 바꾼다(O-4).
-- `DungeonClearState` 머리 주석에 호출처가 없다. 한 줄을 더한다(O-5).
-- **봇 동시 처치의 관찰 한계**: `DungeonClearSmoke`의 두 파티가 같은 시각에 보스를 잡아, 상대 복사본 결과 0이 「봇마다 39 하나」로만 관찰된다(`DungeonClearSmoke.cs:89,106-112`). 한 파티가 먼저 잡고 조용한 창 동안 다른 파티의 39가 0인지 본 뒤 두 번째 파티가 잡는 안이 있다(봇 검증 O-B1).
-- **봇 성공 줄의 리터럴 값**: `parties=2 cleared=2 rewarded=4 returned=4`가 검사 통과 뒤 대입하는 리터럴이라 로그에 실제 관찰값(보스 ID, revision 전후, 골드)이 없다(`Program.cs:56`, `DungeonClearSmoke.cs:63,91,100,104`). 실제 통과 수와 봇별 관찰값을 찍는 안이 있다(봇 검증 O-B2).
+- Git Bash 경로 변환의 교정 층 판단: BACKLOG `git-bash-windows-path-arguments`.
+- tool-results 자동 출력의 교정 층 판단: BACKLOG `designated-temp-wording`.
+- C9 월드 시야 가림: BACKLOG `ui-layer-sort-design`.
+- C9 확인 버튼 UI 소리: BACKLOG `reward-confirm-ui-sound`.
+- C9 TMP 경고·귀속 조사: BACKLOG `town-font-missing-warning`.
+- Unity MCP 기존 허용 결정의 정본 연결: BACKLOG `unity-mcp-permission-canon`.
+- 질문 대기와 heartbeat가 섞인 집계 의미: BACKLOG `liveness-helper-followup`.
+- Gardener 후보1(조회 실행 근거 동반): BACKLOG `pr-observation-evidence`.
+- Gardener 후보2(후보 절 밖 이월 검사): BACKLOG `candidate-check-excluded-section`(기존 ID 보충).
 
 ### C9 실화면 지금 재개 — 메인 2026-10-15 지시
 
@@ -873,3 +881,17 @@ C9 통과 뒤 PR239 ready·정확head/CI/판정 원문으로 메인에 병합 �
 보호 사용자 파일은 보존됐고 Editor·7777·음소거·MCP 시트는 정산·반환했다. 검증자는 완료 뒤 정확 pane을 닫아 재사용하지 않는다. heartbeat/Monitor 지연·관문 재측정·도구 자동 출력·layout/AccountName 자동 저장·늦게 읽은 지시는 원문 D-1~D-12에 공개했다. 기존 생존 집계 도구 결과도 prep에 보존했다. 비차단 관찰 O-1~O-9와 기존 #4/#5는 해소로 쓰지 않으며 현재 승인 범위 밖의 새 수정은 시작하지 않는다.
 
 검증한 제품·시험 bytes는 그대로이고 이 단계 커밋은 goal 결과 기록만 묶는다. PR239 ready 뒤 최종 head·CI·판정 원문으로 메인에 병합 준비를 보고한다. 사용자 승인·메인 병합·Gardener·종료 기록이 남아 goal 전체 완료가 아니며, 이 목표 뒤 새 goal은 자동으로 열지 않는다.
+
+### 239 - 제품 병합 확인과 종료 기록 준비
+
+메인 msg_9baceeac9dc0(2026-10-15T02:55:31Z)가 전달한 사용자 승인 원문은 「병합 승인: PR239 head 9f3f58198baea8e5bde12472f06032f113de35c3」다. 메인이 정확 head를 대조해 병합했고 GitHub 원천에서 mergedAt2026-10-15T02:55:03Z·merge6b94d30a2284338e5ceafebacf5b7c54e3fd79f0·최종 head CI4 SUCCESS를 확인했다(closeout-20261015/product-pr-merged.json). D-10 메인 해석을 사용자 승인 요청에 공개했고 사용자가 A로 승인했다는 메인 전달도 함께 기록한다.
+
+제품·시험을 더 바꾸지 않고 기존 후속 후보의 출처·도착을 BACKLOG로 정산했다. 후보 등록은 채택이나 새 goal 승인이 아니다. Gardener·종료 기록 PR·사용자 병합 승인·메인 종료 점검/R-8이 남았으며, 다음 goal은 시작하지 않는다.
+
+### 종료 Gardener와 기록 보완 — 2026-10-15
+
+신규 외부 Opus Gardener는 작업을 마쳤고 원문 [gardener.md](gardener.md)를 byte 그대로 보존했다. 새 제품 결함0·정리 제안2·비차단 기록9이며, 완료/정확 pane 종료와 입력·보호 대조는 closeout-20261015/gardener-settlement.json에 있다. 제안은 BACKLOG 대기로만 연결했고 채택·검사 구현·새 goal 착수는 하지 않았다. 후보2는 기존 candidate-check-excluded-section과 겹쳐 새 ID 대신 보충했으며 원문 판단과 리드 대조 차이를 메인에 공개한다.
+
+기록1~3은 종료 이월 판단·C9 후속 관찰·Unity 허용 결정의 도착 ID를 보완했다. 기록4~6은 hash 대상(작업본 bytes/커밋 blob), 조회 명령·UTC·exit, 서로 다른 후보 검사 기준을 종료 근거에서 구분했다. 기록7은 C9 네 생존 지연 구간과 당시 대기·실행 상황을 한 줄씩 연결했고 단일 원인 미확정은 유지한다. 기록8은 착수 리드/병합된 branch 표기를 분리했다. 기록9의 질문 ID와 답 ID는 원문을 고치지 않고 구별했다. 실제 대응·원시 경로는 closeout-20261015/gardener-disposition.md다.
+
+병합·CI 조회의 실행 근거는 closeout-20261015/product-pr-observation-with-execution.json, 메인의 승인 전달 원문은 main-closeout-instruction.json이다. 신규 Gardener 생존 신호는 기존 helper로 15신호·최대136초·300초 초과0을 확인했다(gardener-liveness.json). 기존 C9 원문/원시·#4/#5 미해소·미실행 범위는 보존했다. 현재 제품/시험 추가 변경과 중량 실행0이며 종료 문서 독립 실사·PR·해당 head의 사용자 병합 승인·메인 종료 점검/R-8을 남긴다.
