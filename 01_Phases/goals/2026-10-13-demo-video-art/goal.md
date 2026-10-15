@@ -1,8 +1,8 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **인벤토리·NPC 대화와 고친 파티 창의 현재 1920 보기는 사용자 통과다. 독립 검증을 막은 시험 기록 결함 T-2는 신규 Astra가 두 출력으로 분리했고 격리 컴파일 뒤 정산·종료했다. 실제 두 기록의 불변성과 최종 XML은 새 Opus의 독립 검증 대상이며 아직 독립 PASS가 아니다. 기존 failed 원시·C9 main 통합·05 강 PASS·06 조건부 통과(H1/626 동결 뒤 정리)는 유지하며 실제 전후·최소 화면/Party HUD·Window는 남아 있다.**
+상태: **인벤토리·NPC 대화와 고친 파티 창의 현재 1920 보기는 사용자 통과다. T-2 수리는 신규 Opus의 강 독립 검증에서 기술 PASS이며 실제 GUI Party 1건도 통과했다. 두 기록의 분리·첫 기록 불변·실제 응답·마지막 단언을 확인했고 검증자 정산·정확 종료·근거 동결과 알려진 자동 설정 한 줄 복원을 끝냈다. UI 창 PR을 준비한다. 기존 failed 원시·C9 main 통합·05 강 PASS·06 조건부 통과(H1/626 동결 뒤 정리)는 유지하며 실제 전후·최소 화면/Party HUD·Window는 남아 있다.**
 
-**다음 첫 일:** 신규 Opus에게 T-2 수리 보고·실제 diff·실패 원시부터 독립 실사를 맡기고, 같은 정상 Party 진입의 두 불변 기록·실제 응답·최종 XML을 재검증한다. 필요한 시험 보완과 실제 실행은 계약 단계와 고정 입력 인계로 분리한다. 독립 차단을 해결한 뒤 UI 창 PR의 정확 head·CI·판정 원문을 메인에 보고한다. 근거는 `.backups/verification/2026-10-13-demo-video-art/ui-party-layout-fix/record-fix/`와 `ui-party-record-fix-launch/`에 있다.
+**다음 첫 일:** UI 창 PR을 준비하고 정확 head·CI·독립 판정 원문과 남은 화면 한계를 메인에 보고한다. 실제 전후·최소 화면/Party HUD·Window 미확인을 전체 완료로 바꾸지 않으며 병합은 메인의 사용자 명시 승인 관문을 따른다. 새 판정은 `.backups/verification/2026-10-13-demo-video-art/ui-party-layout-fix/record-recheck/verdict.md`, 실행·정산·설정 복원 근거는 `ui-party-record-recheck-launch/`에 있다.
 
 - 담당: Art 리드(`[Art 리드 Sol]`, 2026-10-14 Sol xhigh 같은 대화 재개부터). 이전 리드 계열은 Opus·Astra였다. 사용자 결정 `msg_d4146a180138`을 적용했고 현재 화면/turn_context는 gpt-6.1-sol xhigh, 실제 backend unknown이다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며 메인이 R-8로 새 목표의 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -787,3 +787,10 @@
 - 신규 Astra xhigh가 기존 시험 한 파일의 후행 기록 호출과 기록 helper만 바꿨다. 첫 화면 기록은 유지하고 응답 기록을 별개 새 파일로 남기며, 두 파일 모두 기존 새 파일 보호를 유지한다. 제품·meta·다른 창·관측기·대조군·최종 실패 단언과 이전 failed 근거를 보존했다.
 - 격리 csc 자체점검은 오류 없이 끝났고 리드는 보고 전체·실제 diff·컴파일 원문·보존 감사를 대조했다. 실제 Party·두 출력 불변·최종 XML은 미실행이며 구현 완료를 독립 PASS로 바꾸지 않는다. 구현자는 정산·정확 종료했고 재사용하지 않는다.
 - 다음 신규 Opus는 Astra 구현의 독립 검증 배정에 따른다. 사용자 현재 모양 통과를 보존하며 현재 T-2 수리와 원래 파티 표시·입력 계약을 함께 판정한다. 원문은 `ui-party-layout-fix/record-fix/implementation-report.md`, 정산·동결·라우팅 근거는 `ui-party-record-fix-launch/`에 둔다.
+
+### 06 - T-2 강 독립 PASS 정산·UI 창 PR 준비
+
+- 신규 Opus는 수리 보고·실제 diff·실패 원시부터 독립 실사하고 Party 기록 관측만 기존 시험 한 파일에 보완했다. 소스 쓰기 종료 뒤 같은 bytes를 리드가 커밋했고, fresh 관문을 통과한 실제 GUI Party 한 번은 XML 1건 중 1건 통과·실패/건너뜀 0, Unity exit 0이었다. 격리 csc도 오류 없이 끝났고 제품·meta·다른 창과 기존 failed 근거는 보존됐다.
+- 첫 화면 기록과 후행 응답 기록은 별개 새 파일이며 첫 기록 bytes가 불변이었다. 실제 수락·거절, 기존 출력 보호의 거절, 마지막 실패 단언 0건을 확인했다. 관측 34/34와 대조군 10/10은 NUnit 1건과 구분한다. 리드는 판정 전체와 실제 XML·두 기록·마지막 단언 표본을 대조했다.
+- 검증자는 정산·정확 종료했고 근거 전체를 동결했다. 알려진 자동 설정 한 줄은 원본을 보존한 뒤 메인의 기존 상시 권한으로 HEAD bytes에 복원했다. 자동 heartbeat 형식 거절 뒤 교정, 생존 신호 300초 초과와 실행 중 메모리 표본은 운영 한계로 공개했으며 제품 결함으로 집계하지 않았다.
+- 사용자 현재 모양 A를 보존한다. 실서버·DB·실제 before·최소 화면과 남은 Party HUD/보상 창, CI를 이번 PASS로 확대하지 않는다. 판정은 `ui-party-layout-fix/record-recheck/verdict.md`, 원시·표본·생존 신호·근거 동결·설정 복원은 `ui-party-record-recheck-launch/`에 있다. 다음은 UI 창 PR의 정확 head·CI와 남은 한계 보고이며 전체 goal 종료나 병합 승인이 아니다.
