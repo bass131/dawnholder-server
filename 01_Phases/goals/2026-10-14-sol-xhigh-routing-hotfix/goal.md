@@ -2,6 +2,8 @@
 
 ## 재개 지점
 
+- 다음 첫 일: 종료 기록4파일의 독립 문서 확인을 마치고 PR의 정확한 head를 메인에 보고한 뒤 멈춘다. 다음 goal은 메인이 R-8의 새 리드에게 맡긴다.
+
 - 메인 `msg_440213ef0ff7`의 사용자 지시 전달과 범위 v1 승인 `msg_7b06b4c0cae3`에 따른 별도 문서 goal이다. 승인 출처는 사용자 밤 판단 위임에 따른 메인 판단이며 새 사용자 결정이 아니다.
 - 작업 공간 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-sol-xhigh-hotfix`, 제품 PR branch(병합됨) `docs/sol-xhigh-routing-hotfix`, 당시 최신 main/base `20ce59ddd72d0cb72b6e230e386a62587b9bfe1b`.
 - 리드 `[Rules 리드 Sol]`, 현재 handle `term_9763f046-8be8-4d0b-aaa8-5214fb800be3`, 회신 `run:run_54319375ed08`(consumer_generation3). worker는 별도 Task/Dispatch로 추적한다. Main은 `term_e2961048-266e-4503-b52b-dfb986d8c9b5`이며 사용할 때 현재 동일성을 확인한다.
@@ -113,6 +115,8 @@
 
 - BACKLOG `verification-execution-claim-check` · 독립 검증 보고의 실행 여부·단언 수 대조. 등록만 승인됐으며 다음 goal 범위는 사용자가 정한다.
 
+- BACKLOG `verification-operating-simplification-canon` · 사용자 결정 완료, 1~3 문서 정본화·4 공용 잠금 도구는 새 리드의 다음 goal 대상이다.
+
 ## PR238 병합 기록과 종료 정산
 
 - 승인 원문(메인 창 사용자 제출을 메인이 전달): `병합 승인: PR238 head 3df9a3ee6d696a64a02ada62f879b7619da994e9`. 원천은 현재 메인 `term_e2961048-266e-4503-b52b-dfb986d8c9b5`의 `msg_4468b157f0a3`(2026-10-15T00:32:03Z)이며 Rules pane의 직접 사용자 입력으로 격상하지 않는다. 원문 전체는 E/merge-main-original.json에 보존했다.
@@ -141,3 +145,10 @@
 
 - 제품 완료조건1~5는 PR238 병합으로 충족했다. 기존 제품 문서 PASS 입력 HEAD는 보존하며 이번 종료 기록의 실사를 제품/런타임 PASS로 넓히지 않는다. Gardener·BACKLOG 후보 등록·기록 지적 처분·작업자 정산을 이 종료 기록 PR 하나에 묶는다.
 - 남은 절차는 종료 기록 PR의 별도 사용자 정확 head 병합 승인·메인/사용자 종료 점검·메인의 R-8 종료/교체다. 리드는 PR의 정확 head 보고 뒤 멈추고 다음 goal·새 운영 규칙·PR2 재개를 하지 않는다. Rules 중량 실행/예약/예정0이다. Content C9 preflight 알림 msg_8dc27f784b3e는 Content 실행 소유 통지로만 보존하며 Rules 실행 허가로 사용하지 않는다.
+
+### 사용자 결정 추가 - 검증·운영 경량화
+
+메인 전달 `msg_b49fffe1ccaa`(2026-10-15T00:53:37Z), 사용자 원문(메인 Enter 제출, 메인 보고09:53 KST 전): 「대시보드 결정 응답: 1) 검증 경량화 1 - 실행 단계 승인을 계약 때 한 번에 할지 → A 계약 때 일괄 승인 · 2) 검증 경량화 2 - 생존 신호 300초 초과를 매번 원시 감사할지 → A 한 줄 기록 + 기존 집계만 · 3) 검증 경량화 3 - goal 기록을 결정·단계 결과·결함만으로 줄일지 → A 핵심만 기록 · 4) 검증 경량화 4 - 파트 간 무거운 실행 조율을 메시지 대신 공용 잠금 도구로 할지 → A 공용 잠금 도구」. 전체 원문과 적용 경계는 E/verification-operating-simplification-original.json이다. 메인 전달을 직접 사용자 입력으로 격상하지 않는다.
+
+- 1~3은 지금 적용한다. 계약에서 실행 단계·순서·자동 관문을 일괄 승인하고 실패·계획 밖 실행만 질문한다. heartbeat는 기동 직후 첫 신호, 초과 구간·이유 한 줄과 기존 정산 helper·메인 R-2를 유지하며 의심 근거가 있을 때만 구간별 원시 감사한다. 새 goal 기록은 결정·단계 결과·결함과 근거 경로로 줄이고 기존 기록은 보존한다. 앞선 메인 운영 판단의 미결 상태는 이 사용자 결정으로 해소됐다.
+- 1~3 정본화와 4 공용 잠금 도구는 BACKLOG `verification-operating-simplification-canon`에 「사용자 결정 완료, 다음 goal 대상」으로 등록한다. 도구 병합 전 기존 Content Unity 우선·Core WSL 우선·직전 메모리 관문을 유지한다. 독립 세션/역할 분리·병합 승인·강약 등급·보존 자원·전역 설정 금지는 그대로다. 지금 goal에서 규칙/도구를 구현하거나 다음 goal을 열지 않는다.
