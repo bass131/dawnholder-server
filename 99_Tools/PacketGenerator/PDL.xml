@@ -468,4 +468,46 @@
     <packet name="S_LoginResult">
         <byte name="result"/>
     </packet>
+    <!-- Guild IDs 43..47. Prices, availability, and sequence are server-owned.
+         Snapshot name: 1..16 UTF-16 code units; validate its byte length before Read. -->
+    <packet name="C_GuildRequest">
+        <byte name="reserved"/>
+    </packet>
+    <packet name="S_GuildSnapshot">
+        <long name="snapshotSequence"/>
+        <byte name="changeKind"/>
+        <uint name="guildId"/>
+        <uint name="guildRevision"/>
+        <int name="treasury"/>
+        <byte name="strongholdLevel"/>
+        <byte name="maxStrongholdLevel"/>
+        <byte name="blacksmithUnlocked"/>
+        <int name="memberCount"/>
+        <int name="onlineMemberCount"/>
+        <uint name="inventoryRevision"/>
+        <byte name="weaponLevel"/>
+        <byte name="maxWeaponLevel"/>
+        <int name="attackBonus"/>
+        <int name="strongholdCost"/>
+        <int name="weaponCurrencyCost"/>
+        <int name="weaponMaterialId"/>
+        <int name="weaponMaterialCount"/>
+        <byte name="strongholdAvailability"/>
+        <byte name="weaponAvailability"/>
+        <string name="guildName"/>
+    </packet>
+    <packet name="C_StrongholdUpgrade">
+        <uint name="expectedGuildRevision"/>
+    </packet>
+    <packet name="C_WeaponEnhance">
+        <uint name="expectedInventoryRevision"/>
+    </packet>
+    <packet name="S_GuildActionResult">
+        <byte name="action"/>
+        <byte name="result"/>
+        <uint name="requestedRevision"/>
+        <uint name="guildRevision"/>
+        <uint name="inventoryRevision"/>
+        <long name="snapshotSequence"/>
+    </packet>
 </PDL>

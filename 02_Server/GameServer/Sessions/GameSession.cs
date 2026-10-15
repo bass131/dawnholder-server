@@ -4,6 +4,7 @@ using System.Numerics;
 using Dawnholder.Server.GameServer.Accounts;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Handlers;
+using Dawnholder.Server.GameServer.Guild;
 using Dawnholder.Server.GameServer.Items;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
@@ -42,6 +43,7 @@ public class GameSession : PacketSession
     // Separate from movement budgets. One queued economic request owns this guard until its
     // tick job finishes (including send failure), or the connection closes.
     int _inventoryRequestPending;
+    int _guildRequestPending;
 
     // handshake 완료 플래그. OnRecvPacket 첫 진입에서 false면 → handshake 패킷만 허용,
     // 다른 패킷 = 즉시 Disconnect. first-packet 강제 = isolation 보장 (version 검증 전 다른 패킷 차단).
@@ -117,6 +119,7 @@ public class GameSession : PacketSession
     {
         if (Interlocked.Exchange(ref _closing, 1) == 1) return;
         CompleteInventoryRequest();
+        CompleteGuildRequest();
         Console.WriteLine($"[GameSession] OnDisconnected from {endPoint}");
         RequestWorldClose();
     }
@@ -453,6 +456,20 @@ public class GameSession : PacketSession
 
     internal void CompleteInventoryRequest() => Interlocked.Exchange(ref _inventoryRequestPending, 0);
 
+    internal void SubmitGuildRequest()
+        => SubmitGuildRequest((guild, entityId) => guild.EnqueueQuery(this, entityId));
+
+    internal void SubmitStrongholdUpgrade(uint expectedRevision)
+        => SubmitGuildRequest((guild, entityId) => guild.EnqueueStrongholdUpgrade(this, entityId, expectedRevision));
+
+    internal void SubmitWeaponEnhance(uint expectedRevision)
+        => SubmitGuildRequest((guild, entityId) => guild.EnqueueWeaponEnhance(this, entityId, expectedRevision));
+
+    internal void CompleteGuildRequest() => Interlocked.Exchange(ref _guildRequestPending, 0);
+
+    // Read on the World tick only. Guild observes map ownership/alive state without mutating it.
+    internal GameMap? ReadGuildMap() => GetMap();
+
 #if DEBUG
     // [시연 디버그 치트] C_CheatCommand 처리. 유일 호출자=CheatCommandHandler(둘 다 #if DEBUG).
     //   Release에는 부재(치트 사슬 빌드타임 봉합, 헌법 #3 / SN-02).
@@ -557,6 +574,7 @@ public class GameSession : PacketSession
             // Economy admission follows the actual player owner, before sends can fail/close.
             // World close cleanup ends this registration; portal moves keep the same lifetime.
             self._world?.Inventory.Register(self, entity.EntityId);
+            if (self._world != null && !self._world.Guild.Register(self, entity.EntityId)) return;
 
             S_EnterMap pkt = new S_EnterMap
             {
@@ -609,6 +627,31 @@ public class GameSession : PacketSession
 
     // 종료 대상을 소켓 스레드의 순간적인 맵 조회로 결정하지 않는다.
     protected virtual void RequestWorldClose() => _world?.RequestSessionClose(this);
+
+    void SubmitGuildRequest(Action<GuildRegistry, int> enqueue)
+    {
+        GameWorld? world = _world;
+        int entityId = _entityId;
+        if (world == null || IsClosing || !_handshakeCompleted || !IsLoggedIn || !HasSelectedClass || entityId <= 0)
+            return;
+        if (Interlocked.CompareExchange(ref _guildRequestPending, 1, 0) != 0) return;
+        try
+        {
+            if (IsClosing)
+            {
+                CompleteGuildRequest();
+                return;
+            }
+            // Movement is checked by the tick job so an admitted but migrating connection gets
+            // Unavailable in the ordered purchase result, rather than silently losing its request.
+            enqueue(world.Guild, entityId);
+        }
+        catch
+        {
+            CompleteGuildRequest();
+            throw;
+        }
+    }
 
     void SubmitEconomyRequest(Action<InventoryRegistry, int> enqueue)
     {

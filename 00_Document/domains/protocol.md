@@ -8,9 +8,31 @@ PDL 수정 → 생성기 실행 → 생성 diff와 [ProtocolVersion](../../98_Sh
 
 패킷 ID를 재사용하거나 정의 순서를 바꾸지 않는다. 필드 끝 추가도 기존 읽기 코드에 영향을 준다. 버전 일치로 연결을 제한하는 현재 핸드셰이크와 새 동작을 함께 검증한다. 전송의 프레임 길이 검사는 [서버](../../02_Server/Network/FrameValidator.cs)와 [클라이언트](../../04_ClientNet/FrameValidator.cs)에 각각 있다.
 
+## v20 길드·거점·개인 강화
+
+`ProtocolVersion.Current=20`이며 equality handshake가 v19 연결을 거부한다. 기존 1..42 번호와 필드는 보존하고 PDL 끝에 아래 필드를 추가한다. LittleEndian이고 전체 길이는 ushort size/id의 4바이트 머리를 포함한다.
+
+| ID·이름 | 머리 뒤 필드 순서 | 전체 길이 |
+|---|---|---|
+| 43 C_GuildRequest | byte reserved(0) | 5 |
+| 44 S_GuildSnapshot | long snapshotSequence, byte changeKind, uint guildId, uint guildRevision, int treasury, byte strongholdLevel, byte maxStrongholdLevel, byte blacksmithUnlocked, int memberCount, int onlineMemberCount, uint inventoryRevision, byte weaponLevel, byte maxWeaponLevel, int attackBonus, int strongholdCost, int weaponCurrencyCost, int weaponMaterialId, int weaponMaterialCount, byte strongholdAvailability, byte weaponAvailability, string guildName | 66 + 이름 UTF-16 바이트 수 |
+| 45 C_StrongholdUpgrade | uint expectedGuildRevision | 8 |
+| 46 C_WeaponEnhance | uint expectedInventoryRevision | 8 |
+| 47 S_GuildActionResult | byte action, byte result, uint requestedRevision, uint guildRevision, uint inventoryRevision, long snapshotSequence | 26 |
+
+서버 핸들러는 Read 전 정확한 길이·머리·reserved를 검사한다. 송신 이름은 1..16 UTF-16 code unit이며 기본 `새벽 길드`로 44는 76바이트다. 소비자는 Read 전에 최소66바이트·머리와 offset64의 UInt16 이름 바이트 길이(2..32, 짝수), 전체 size=66+이름 바이트 수를 검사해야 한다. 계정 GUID는 전송하지 않는다.
+
+[GuildAction](../../98_Shared/GameData/Enums/GuildAction.cs)은 StrongholdUpgrade=1, WeaponEnhance=2다. [GuildChangeKind](../../98_Shared/GameData/Enums/GuildChangeKind.cs)는 Query=0, Membership=1, TreasuryCredit=2, StrongholdUpgrade=3, WeaponEnhance=4, Presence=5다. TreasuryCredit의 실제 Content clear 연결은 후속이다. [GuildResult](../../98_Shared/GameData/Enums/GuildResult.cs)는 Success=0, Stale=1, NotMember=2, NotInTown=3, Dead=4, FacilityLocked=5, MaxLevel=6, InsufficientCurrency=7, InsufficientMaterial=8, RevisionExhausted=9, Unavailable=10이며 가능 여부에도 같은 코드를 쓴다. Snapshot의 Success는 현재 이용 가능 표시이며 성공 이벤트가 아니다.
+
+44의 범위는 금고0..10억, 거점1..2/max2, 해금0/1과 level2의 동치, 회원수≥온라인수≥0, 무기0..1/max1, bonus0/5와 무기 단계의 동치다. 최고 단계의 다음 비용과 재료 수는0이며 재료ID는1이다. 단계0의 시설 잠김 상태에도 강화 가격20·재료1개를 표시한다. 가능 여부는 [서버의 거부 순서](server.md#길드와-강화)를 따르되 expectedRevision 비교만 제외한다.
+
+접속별 sequence는1부터 증가하고 long.MaxValue 뒤 발행을 종료하며 wrap하지 않는다. 회원/온라인 변화는 sequence로 정렬하고 공동 경제 revision과 분리한다. 정상 조회는44 하나, 거점 성공은47→구매자44와 다른 회원44, 거점 거부(stale 포함)는47→현재44다. 강화 성공은47→36→44, 강화 stale은47→현재36→44, 강화의 다른 거부는47→현재44다. 47은 입력의 action·요청 판을 그대로 돌려주고 해당44의 sequence를 가리킨다. 내부 오류는 정상 거부로 바꾸지 않으며 송신 실패가 확정값을 되돌리거나 재지급하지 않는다.
+
+소비자는 연결 세대와 더 큰44 sequence를 검사하고, 개인 판은 유효36/44의 최댓값으로 합쳐야 한다. 낮은 개인 판의44는 공동 표시만 갱신하며 개인 강화/가격/가능 여부를 덮지 않는다. 구매 pending은 연결 소유1개이며 일치하는47과 지목된44 모두를 처리할 때 끝낸다. 창 재개·시간 경과·다른 이유의 방송으로 해제/재전송하지 않는다. 조회 pending은 더 큰 Query44로 끝낸다. 첫 동기화/재조회/옛 sequence는 성장 효과를 재생하지 않는다. 이 소비자 구현·Unity DLL·봇 검증은 별도 후속 범위다.
+
 ## v19 계정 로그인
 
-`ProtocolVersion.Current=19`이며 v18 연결은 기존 버전 일치 검사로 거부한다. 기존 ID 1..40의 번호·필드는 보존하고 PDL 끝에 `C_Login`(41, `string accountName`)과 `S_LoginResult`(42, `byte result`)를 추가했다. 문자열은 UInt16 바이트 길이와 UTF-16 LittleEndian 내용이며, 서버는 길이 머리와 전체 프레임의 정확한 일치를 먼저 확인한다.
+v19에서 계정 로그인을 추가했으며 v18 연결은 당시 버전 일치 검사로 거부했다. 기존 ID 1..40의 번호·필드는 보존하고 PDL 끝에 `C_Login`(41, `string accountName`)과 `S_LoginResult`(42, `byte result`)를 추가했다. 문자열은 UInt16 바이트 길이와 UTF-16 LittleEndian 내용이며, 서버는 길이 머리와 전체 프레임의 정확한 일치를 먼저 확인한다.
 
 접속 순서는 `C_Handshake` → 성공 → `C_Login` → `Accepted` → `C_CharacterSelect`다. [AccountNameRule](../../98_Shared/GameData/Accounts/AccountNameRule.cs)은 3~16자 ASCII 영문·숫자·밑줄을 받으며 A-Z만 소문자로 바꾸고 공백은 자르지 않는다. [LoginResult](../../98_Shared/GameData/Enums/LoginResult.cs)는 Accepted=0, InvalidName=1, AlreadyOnline=2다. 거부 결과 뒤 연결을 끊고, 같은 연결의 두 번째 로그인은 결과 없이 버린다. 계정 번호는 서버에만 두며 비밀번호 인증·DB 저장은 포함하지 않는다.
 

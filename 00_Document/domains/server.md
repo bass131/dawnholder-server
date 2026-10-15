@@ -36,9 +36,21 @@ handshake 뒤 [LoginHandler](../../02_Server/GameServer/Handlers/Session/LoginHa
 
 실제 처치 callback `GameWorld.MakeMap`은 퀘스트 분기와 독립적으로 `EnqueueKill`을 호출한다. [KillRewardPolicy](../../02_Server/GameServer/Items/KillRewardPolicy.cs)가 임시 처치자 지급·적 종류별 묶음을 정하며, job은 그때 등록된 세션 owner와 처치 값을 고정한다. [InventoryTransitions](../../02_Server/GameServer/Items/InventoryTransitions.cs)는 전체 묶음 또는 아이템 1개 사용의 다음 상태를 먼저 검사·계산하고 Registry가 한 번 commit한다. 성공마다 revision+1, 거부·조회는 불변이며 상한 거부는 부분 지급하지 않는다. 카탈로그·8슬롯/스택/재화 상한의 자리표시 값은 [공유 Items](../../98_Shared/GameData/Items/)에 있다.
 
-`GameWorld.OnTick`은 맵 틱 전후에 연결 종료를 정리한 다음 Party → Quest → Inventory → 빈 복사본 정리 → cleanup barrier 순으로 실행한다. `DrainSessionCloses`의 `InventoryRegistry.Forget`은 등록·상태·요청 guard를 정리한다. 종료 뒤 요청/보상과 이전 owner의 늦은 job은 새 상태를 만들지 않는다. 요청 guard는 처리의 성공·거부·예외에도 해제한다. 등록 전 입력과 새로 도착한 이동 중 입력은 무응답 거부하며, 이미 큐에 들어간 요청은 이동 틈에서도 같은 등록으로 처리할 수 있다.
+`GameWorld.OnTick`은 맵 틱 전후에 연결 종료를 정리한 다음 Party → Quest → Inventory → Guild → 빈 복사본 정리 → cleanup barrier 순으로 실행한다. `DrainSessionCloses`의 `InventoryRegistry.Forget`은 등록·상태·요청 guard를 정리한다. 종료 뒤 요청/보상과 이전 owner의 늦은 job은 새 상태를 만들지 않는다. 요청 guard는 처리의 성공·거부·예외에도 해제한다. Inventory의 등록 전 입력과 새로 도착한 이동 중 입력은 무응답 거부하며, 이미 큐에 들어간 요청은 이동 틈에서도 같은 등록으로 처리할 수 있다.
 
 조회·사용 결과는 캡처한 session에 직접 답하고, 처치 snapshot은 기존 `GameWorld.SendToEntity`로 보낸다. 이 공용 경로는 맵 소속이 없거나 다음 맵 job 전에 소유자가 사라지면 push를 생략할 수 있다. commit된 경제 상태는 유지되어 이후 조회로 받을 수 있으며 송신 실패 뒤 rollback·재지급·재시도 큐는 없다. wire와 결과 순서는 [v17 경제 패킷](protocol.md#v17-경제-패킷)에 있다. PR1은 메모리 상태와 패킷까지이며 DB 저장·로드, 클라이언트 상태 미러·인벤토리 UI(PR2)는 구현하지 않았다.
+
+## 길드와 강화
+
+[GuildRegistry](../../02_Server/GameServer/Guild/GuildRegistry.cs)는 World 틱에서 AccountId별 회원 키·현재 online 접속과 접속별 sequence를 소유하고, [GuildState](../../02_Server/GameServer/Guild/GuildState.cs)의 불변 금고·거점·revision을 교체한다. 실제 첫 입장 시 회원과 시드5를 함께 준비·확정하며 재접속은 시드를 다시 받지 않는다. 회원/금고/거점은 프로세스 수명이며 종료 시 동일 session의 online만 해제한다. 신규 가입의 준비 실패나 증가가 필요한 공동 revision 고갈은 부분 가입 없이 진단·접속 종료한다. 금고가10억으로 포화되면 실제 증가와 공동 revision 증가는0이다.
+
+길드43/45/46은 [Handlers/Guild](../../02_Server/GameServer/Handlers/Guild/) → `GameSession.SubmitGuildRequest/SubmitStrongholdUpgrade/SubmitWeaponEnhance` → GuildRegistry 큐다. 길드 pending1은 Inventory pending1과 별도이며 World가 Inventory 뒤 Guild를 drain한다. 정상/거부/예외/종료에서 guard를 해제한다. 구매 거부 순서는 현재 session·EntityId·AccountId/회원 → 이동/맵부재 → Town → 생존 → expectedRevision → 최고 단계 → 강화 시설 해금 → 관련 revision 고갈 → 재화 → 재료다. 미입장/잘못된 wire/종료 입력은 무응답으로 버린다.
+
+[GuildRules](../../02_Server/GameServer/Guild/GuildRules.cs)는 서버 가격과 판정을 모은다. 거점은 공동30으로1→2, 강화는 개인20·Material1로0→1/공격력+5다. `InventoryState.WeaponLevel`이 개인 성장의 유일한 원천이며 `InventoryTransitions.Enhance`가 비용·단계·revision을 함께 만든다. Grant/Use/처치도 단계를 보존한다. Guild는 Inventory의 값 view와 `PreparedEnhancement`만 소비하며 Entry.State를 직접 바꾸지 않는다. 다음 상태·holder·47/44/36 직렬화를 먼저 끝내고 마지막 동일 owner 검사 뒤 준비값만 게시한다. commit 뒤 Send 실패는 rollback/재지급하지 않으며 공동 방송은 수신자별로 격리한다.
+
+World가 만든 맵의 `GameMap.ComputePlayerDamage` → [PlayerDamage](../../02_Server/GameServer/Combat/PlayerDamage.cs) → `InventoryRegistry.ReadAttackBonus`가 평타 전사/마법사·Dash·Thunderbolt의 단일 권위 조회 경계다. 기본 PlayerStats와 기존 Formulas 최소피해·적→플레이어 피해는 보존한다. 맵 이동/리스폰은 Inventory 수명을 바꾸지 않고, 이미 생성한 projectile/deferred Damage는 생성 당시 값을 유지한다. 해당 틱의 맵 공격은 Guild drain보다 먼저이므로 그 틱 강화 전 값을 쓰고 다음 공격부터 확정값을 읽는다.
+
+현재 기본 가입/조회/구매/강화 경계까지이며 Content 실제 clear→공동 적립, DB 저장, 클라이언트 길드 소비자와 두 봇 순환은 후속이다. 임시 boss-kill 길드 보너스나 대체 clear hook은 없다. 기존 일반 처치 개인 보상은 그대로다. 패킷 순서·상관·소비자 의무는 [v20 계약](protocol.md#v20-길드거점개인-강화)에서 확인한다.
 
 ## 즉시 적 피해
 

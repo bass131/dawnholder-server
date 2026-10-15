@@ -46,6 +46,7 @@ public class GameMap
     // Q2: 적 사망 시 호출되는 외부 콜백. GameWorld.MakeMap에서 QuestRegistry.OnKill 연결.
     //   virtual OnEnemyKilled가 이 콜백을 invoke — SpyGameMap override는 base 미호출이므로 미영향(정상).
     readonly Action<int, EnemyEntity>? _onEnemyKilled;
+    readonly Func<GameSession, int, int>? _readAttackBonus;
 
     // System 인스턴스 — tick thread 안에서만 사용 (§1.1 정합).
     readonly PlayerPhysicsSystem _playerPhysicsSystem = new();
@@ -74,14 +75,16 @@ public class GameMap
 
     public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null,
                    MapTerrain? terrain = null, MapContent? content = null,
-                   Action<int, EnemyEntity>? onEnemyKilled = null, InstanceKey? instanceKey = null)
-        : this(EnemyRespawnPlacement.Default, mapId, idAllocator, terrain, content, onEnemyKilled, instanceKey)
+                   Action<int, EnemyEntity>? onEnemyKilled = null, InstanceKey? instanceKey = null,
+                   Func<GameSession, int, int>? readAttackBonus = null)
+        : this(EnemyRespawnPlacement.Default, mapId, idAllocator, terrain, content, onEnemyKilled, instanceKey, readAttackBonus)
     {
     }
 
     internal GameMap(EnemyRespawnPlacement placement, MapId mapId = MapId.HuntingGround,
                      Func<int>? idAllocator = null, MapTerrain? terrain = null, MapContent? content = null,
-                     Action<int, EnemyEntity>? onEnemyKilled = null, InstanceKey? instanceKey = null)
+                     Action<int, EnemyEntity>? onEnemyKilled = null, InstanceKey? instanceKey = null,
+                     Func<GameSession, int, int>? readAttackBonus = null)
     {
         MapId = mapId;
         InstanceKey = instanceKey;
@@ -89,6 +92,7 @@ public class GameMap
         _terrain = terrain;
         _content = content;
         _onEnemyKilled = onEnemyKilled;
+        _readAttackBonus = readAttackBonus;
         _respawnSystem = new RespawnSystem(placement);
         Portals = PortalTable.GetPortalsFor(mapId);
         _publisher = new MapPacketPublisher(this);
@@ -352,6 +356,10 @@ public class GameMap
         destY = best;
         return true;
     }
+
+    // Read connection growth on the same World tick. Deferred hits capture this result once.
+    internal int ComputePlayerDamage(PlayerEntity attacker, EnemyStats target)
+        => PlayerDamage.Compute(attacker, target, _readAttackBonus);
 
     // **호출 invariant**: tick thread 또는 ctor에서만 (단일 thread invariant 유지).
     //

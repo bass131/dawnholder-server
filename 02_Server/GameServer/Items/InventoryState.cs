@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Dawnholder.Server.GameServer.Guild;
 using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Items;
@@ -10,8 +11,10 @@ internal sealed class InventoryState
     static readonly InventoryState s_empty = new(0, 0, Array.Empty<InventorySlot>());
     readonly ReadOnlyCollection<InventorySlot> _slots;
 
-    internal InventoryState(uint revision, int currency, IEnumerable<InventorySlot> slots)
+    internal InventoryState(uint revision, int currency, IEnumerable<InventorySlot> slots, byte weaponLevel = 0)
     {
+        if (weaponLevel > GuildRules.MaxWeaponLevel)
+            throw new InvalidOperationException("Inventory weapon level invariant violated.");
         if (currency < 0 || currency > InventoryLimits.MaxCurrency)
             throw new InvalidOperationException("Inventory currency invariant violated.");
         ArgumentNullException.ThrowIfNull(slots);
@@ -35,6 +38,7 @@ internal sealed class InventoryState
         _slots = Array.AsReadOnly(canonical);
         Revision = revision;
         Currency = currency;
+        WeaponLevel = weaponLevel;
     }
 
     internal static InventoryState Empty => s_empty;
@@ -42,6 +46,8 @@ internal sealed class InventoryState
     internal uint Revision { get; }
 
     internal int Currency { get; }
+
+    internal byte WeaponLevel { get; }
 
     internal IReadOnlyList<InventorySlot> Slots => _slots;
 

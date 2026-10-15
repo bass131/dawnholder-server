@@ -1,3 +1,4 @@
+using Dawnholder.Server.GameServer.Guild;
 using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Items;
@@ -32,7 +33,7 @@ internal static class InventoryTransitions
                 slots.Add(stack);
         }
 
-        next = new InventoryState(current.Revision + 1, (int)currency, slots);
+        next = new InventoryState(current.Revision + 1, (int)currency, slots, current.WeaponLevel);
         return InventoryResult.Success;
     }
 
@@ -53,7 +54,24 @@ internal static class InventoryTransitions
         int index = Array.FindIndex(slots, slot => slot.ItemId == itemId);
         int count = slots[index].Count - 1;
         slots[index] = count == 0 ? default : new InventorySlot(itemId, count);
-        next = new InventoryState(current.Revision + 1, (int)currency, slots);
+        next = new InventoryState(current.Revision + 1, (int)currency, slots, current.WeaponLevel);
         return InventoryResult.Success;
+    }
+
+    internal static GuildResult Enhance(
+        InventoryState current, bool facilityUnlocked, uint expectedRevision, out InventoryState next)
+    {
+        next = current;
+        GuildResult result = GuildRules.WeaponAvailability(
+            InventoryRegistry.GuildView.From(current), facilityUnlocked, expectedRevision);
+        if (result != GuildResult.Success) return result;
+
+        InventorySlot[] slots = current.Slots.ToArray();
+        int index = Array.FindIndex(slots, slot => slot.ItemId == GuildRules.WeaponMaterial);
+        int remaining = slots[index].Count - GuildRules.WeaponMaterialCount;
+        slots[index] = remaining == 0 ? default : new InventorySlot(GuildRules.WeaponMaterial, remaining);
+        next = new InventoryState(current.Revision + 1, current.Currency - GuildRules.WeaponCurrencyCost,
+            slots, GuildRules.MaxWeaponLevel);
+        return GuildResult.Success;
     }
 }

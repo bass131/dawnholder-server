@@ -44,7 +44,7 @@ internal sealed class DashAction : IGameAction
 
         foreach (EnemyEntity target in targets)
         {
-            int damage = Formulas.ComputeDamage(caster.Stats, target.Stats, CombatConstants.BaseDamage);
+            int damage = map.ComputePlayerDamage(caster, target.Stats);
             if (map.ApplyImmediateEnemyHit(target, caster.EntityId, damage, HitEffect.Dash))
             {
                 // 허딩: 생존 적을 대쉬 진행 방향으로 밀침. 기존 KnockbackVx 채널 재사용

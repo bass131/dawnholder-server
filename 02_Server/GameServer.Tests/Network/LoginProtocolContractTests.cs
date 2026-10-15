@@ -36,15 +36,14 @@ public sealed class LoginProtocolContractTests
         Assert.Equal(Enumerable.Range(1, 38), expected);
     }
 
-    // T9: C_Login and S_LoginResult come after 38 and are the two largest IDs, request before result.
+    // T9: C_Login and S_LoginResult keep 41 and 42, request before result. Later packets are appended
+    // after them (guild 43..47, 01_Phases/goals/2026-10-14-guild-server technical contract v1, I9), so
+    // the numbers are fixed literals rather than "the two largest IDs".
     [Fact]
-    public void T9_LoginPackets_AreTheTwoLargestIds_AfterTheExistingThirtyEight()
+    public void T9_LoginPackets_KeepFortyOneAndFortyTwo()
     {
-        int largest = Enum.GetValues<PacketID>().Max(id => (int)id);
-
-        Assert.True((int)PacketID.C_Login > 38, $"C_Login reuses existing ID {(int)PacketID.C_Login}");
-        Assert.Equal(largest - 1, (int)PacketID.C_Login);
-        Assert.Equal(largest, (int)PacketID.S_LoginResult);
+        Assert.Equal(41, (int)PacketID.C_Login);
+        Assert.Equal(42, (int)PacketID.S_LoginResult);
     }
 
     // T9: C_Login reads back the written name, including the 16-character maximum.
