@@ -268,6 +268,12 @@ hook은 방식 `--merge`·`--squash`·`--rebase` 중 하나를 받지만 운영 
 
 ## 공유 자원
 
+명시적 도구 진입은 [ExecutionLock 계약](../../99_Tools/ExecutionLock/README.md)의
+`node 99_Tools/ExecutionLock/execution-lock.mjs <request.json>`이다. 같은 저장소의 Git common directory에
+대기/실행 상태를 공유하며 `inspect`는 조회만 한다. Windows 실제 관측·소유 확인·자식 수명과 실패 원시를 함께 남긴다.
+이 도구를 거치지 않는 IDE/셸 직접 실행 전체를 막지 않으며 기존 WSL 원본별 잠금·포트·DB 소유를 대체하지 않는다.
+도구의 존재나 조회 성공을 실제 실행 승인·main 반영으로 해석하지 않는다.
+
 공용 실행 잠금 도구가 main에 들어가기 전에는 기존 수동 조율을 유지한다. **Unity는 한 번에 하나이며 Content 우선, WSL끼리는 Core 우선**이다. **Core WSL과 Unity 병행은 실행 직전 물리 여유 6GiB와 commit 여유 4GiB를 모두 충족**할 때만 한다. 상대에게 짧게 알리고 회신을 기다리느라 멈추지 않되, 관측 불가·소유 불명확·실행 충돌을 허가로 바꾸거나 남의 프로세스를 선점·종료하지 않는다. 이 기준의 연결은 도구 구현·완료 주장이 아니며 원문과 PR 경계는 [승인 goal](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md)에 둔다.
 
 | 자원 | 확인할 경계 |

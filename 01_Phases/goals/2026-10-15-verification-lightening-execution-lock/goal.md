@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일: 고정된 선행 RED와 실행 계약으로 신규 Astra 구현자를 발행한다.** PR243은 사용자 승인 뒤 메인이 병합했다. 선행 시험 작성자는 쓰기를 종료했고 정산·pane 종료를 마쳤다. 구현 뒤 신규 Opus의 강 독립 검증과 CI를 수행한다.
+**다음 첫 일: 쓰기 종료된 구현과 원시를 고정해 신규 Opus 강 독립 검증자를 발행한다.** PR243은 사용자 승인 뒤 메인이 병합했다. Astra 구현자는 자체 시험과 Windows 실제 진입 결과를 보고하고 쓰기를 종료했으며 정산·pane 종료를 마쳤다. 독립 검증과 CI는 아직 남았다.
 
 작업 공간은 `rules-active`, 현재 도구 PR 브랜치는 `feat/shared-execution-lock-20261015`다. 문서 PR 브랜치는 `docs/verification-lightening-20261015`였다. 최신 main에서 시작한 기준·현재 Run·모델 관측·receipt는 근거 폴더 E의 `lead-context.md`와 해당 진입 원시에 둔다. E는 `.backups/verification/2026-10-15-verification-lightening-execution-lock/`다.
 
@@ -15,8 +15,8 @@
 - [x] PR243 병합
 - [x] 잠금 설계 확정
 - [x] 선행 실패 시험
-- [>] 잠금 도구 구현
-- [ ] 독립 강 검증
+- [x] 잠금 도구 구현
+- [>] 독립 강 검증
 - [ ] 도구 병합
 - [ ] 종료 점검과 기록
 
@@ -80,6 +80,10 @@ PR 생성 뒤 병합 단계 이름에 실제 PR 번호를 넣는다.
 - **PR2 실행 계약:** 같은 저장소 공통 상태를 쓰는 JSON runner, Unity/WSL 대기 우선순위와 비선점, 직전 관측·병행 관문, PID/시작 identity·자식 수명과 실패/취소를 E/`pr2-execution-contract-v1.md`에 고정했다. 기본 상태는 Git common directory의 전용 Git 제외 경로이며 실제 관측과 시험용 주입을 구분한다. 대역의 무해한 Node 자식과 Windows 실제 진입의 확인 범위를 나누고, 새로운 단독 메모리 수치·전역 설정·직접 실행 전체 차단은 추가하지 않는다. 신규 Opus의 선행 RED 원시 뒤 Astra 구현을 발행한다.
 - **선행 시험 단계:** 신규 Opus가 실행 계약 v1과 공식 질문/답을 연결한 v1.1 보충으로 요구 시험·fixture를 작성했다. 기준 RED는 제품 미존재로 제품 단언이 실행되지 않은 상태이며 fixture 자가점검과 구분했다. 원시는 E/`pr2-tdd/run-20261015T042311Z/`, 보고/충실도 한계는 E/`pr2-tdd/report.md`, 고정 시험은 E/`pr2-tdd-frozen-inputs.json`이다. 정산/종료와 heartbeat 초과 구간·이유 미확정 기록은 E/`pr2-tdd-release.json`·`pr2-tdd-close.json`·`pr2-tdd-liveness-accounting.md`에 둔다. 제품 보조 프로세스·spawn 직후 관측의 대역 한계는 구현자에게 알리고, 그 한계가 원인인 실패와 실제 제품 결함을 분리한다. 선행 RED는 제품 독립 PASS가 아니다.
 
+- **구현 단계:** 신규 Astra가 공용 실행 잠금과 관련 문서·CI를 구현하고 쓰기를 종료했다. 자체 고정 시험과 무해한 Node의 실제 Windows 정상·실패·timeout 진입은 확인했으나 독립 PASS·CI는 아니다. 원문은 E/`pr2-implement/report.md`, 동결 입력은 E/`pr2-implementation-frozen-inputs.json`, 정산/종료는 E/`pr2-implement-release.json`·`pr2-implement-close.json`이다. timeout 뒤 보존 lease와 과거 원인 미확정 오류·사전 실행 근거 저장 누락은 원시 그대로 신규 독립 검증에 넘긴다. 범위 안 개발 수정 체크포인트와 메인의 회차·시간 상한은 E/`pr2-implement-operating-limit-v1.md`에 보존한다.
+
 ## 결함과 다음 후보
 
 현재 산출물의 독립 판정·결함 번호는 없다. 현재 범위 밖 후보는 기존 BACKLOG 정본에 두며, 이 goal에 상세 후보 장부를 복제하지 않는다.
+
+- **후속 후보:** 메인 전달 `msg_c0ce69d388b3`의 사용자 원문 「자체 오케스트레이션 검토는 동결 뒤 백로그로 넘겨줘」에 따라 10-28 기능 동결 뒤 검토 후보를 종료 기록 PR 또는 다음 정상 문서 PR에서 BACKLOG에 반영한다. 현재 착수·Orca 교체 결정·PR2 범위 확대는 아니며, 반영 뒤 ID를 메인에 회신한다.

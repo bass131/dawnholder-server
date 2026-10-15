@@ -107,6 +107,21 @@ node 99_Tools/Orca/check-message.mjs .backups/수신입력.json
 
 입력 `message/expected`, 빈 heartbeat/공식 blocking ask의 예외와 지원 한계는 [ORCA 수신 정본](ORCA.md#dispatch-message-policy), 순수 API와 명령은 [Tools README](../../99_Tools/README.md#orca-메시지-수신-판정)에 있다. JSON stdout과 exit0(허용)/1(정책 위반)/2(입력·도구 실패)를 반환하고 메시지 전송·ack·라이프사이클·파일/네트워크 쓰기는 하지 않는다. 기존 workflow의 별도 신규 Opus 회귀 진입은 `99_Tools/Orca.Tests/message-policy.test.mjs`이며 부재/load 실패/nonzero는 실패다. 위 과거 CodeRules 실행을 이 신규 회귀의 성공으로 해석하지 않는다.
 
+## 공용 실행 잠금
+
+Windows에서 `node 99_Tools/ExecutionLock/execution-lock.mjs <request.json>`을 실행한다. `inspect`는 읽기 조회,
+`run`은 승인된 실행파일과 argv를 받아 Git common directory의 공통 상태로 대기·admission·수명을 조율한다.
+최소 JSON·입력 범위·결과 status/exit·원시 위치는 [도구 계약](../../99_Tools/ExecutionLock/README.md)에 있다.
+Windows PowerShell/CIM과 기존 Node를 사용하며 별도 설치·전역 설정은 없다. 다른 OS의 기본 관측은 tool-error다.
+
+기존 WSL 원본별 잠금·포트·자원 소유와 실제 실행 승인은 계속 필요하다. 모든 IDE/셸 직접 실행을 막지 않으며,
+Windows WSL client의 종료만으로 내부 영속 서버/DB 종료를 보장하지 않는다. 관측 실패·소유 불명확은 실행하지 않고
+근거/상태를 보존한다. 실제 Unity/WSL/게임/DB 실행과 무해한 Node 회귀는 구분해 기록한다.
+
+독립 회귀는 기존 절대 전용 폴더에 `EXECUTION_LOCK_TESTS_WORK`를 지정한 뒤
+`node --test --test-concurrency=1 99_Tools/ExecutionLock.Tests/execution-lock.test.mjs`로 실행한다.
+Linux CI의 대역 관측과 Windows 실제 CLI 관측을 별도로 확인한다.
+
 ## 결과 해석
 
 검사 명령·환경·관찰 결과·생략 항목·원본 로그 위치를 목표에 기록한다. 서버·봇 통과와 Unity 에디터·게임 외관·SQL 연결을 구분한다. 이전 실행 수치는 [완료된 셋업 목표](../../01_Phases/goals/2026-09-29-codex-setup/goal.md)의 당시 근거이며 새 변경의 성공을 대신하지 않는다. 현재 main의 SQL 영속화는 구현 완료로 취급하지 않는다.

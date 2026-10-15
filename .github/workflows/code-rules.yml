@@ -269,6 +269,35 @@ jobs:
           cat "$backlog_results/stdout.txt" "$backlog_results/stderr.txt"
           exit "$backlog_exit"
 
+      - name: Run independent ExecutionLock regressions
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          execution_lock_results="$RULES_OUTPUT/execution-lock-independent-tests"
+          mkdir -p "$execution_lock_results/work"
+          export EXECUTION_LOCK_TESTS_WORK="$execution_lock_results/work"
+          printf '%s\n' 'node --test --test-concurrency=1 99_Tools/ExecutionLock.Tests/*.test.mjs' \
+            > "$execution_lock_results/command.txt"
+          printf '%s\n' "$EXECUTION_LOCK_TESTS_WORK" > "$execution_lock_results/work-root.txt"
+          node --version > "$execution_lock_results/node-version.txt"
+          shopt -s nullglob
+          execution_lock_tests=(99_Tools/ExecutionLock.Tests/*.test.mjs)
+          set +e
+          if test "${#execution_lock_tests[@]}" -gt 0; then
+            node --test --test-concurrency=1 "${execution_lock_tests[@]}" \
+              > "$execution_lock_results/stdout.txt" 2> "$execution_lock_results/stderr.txt"
+            execution_lock_exit=$?
+          else
+            : > "$execution_lock_results/stdout.txt"
+            printf '%s\n' 'Independent test suite is missing: 99_Tools/ExecutionLock.Tests/*.test.mjs' \
+              > "$execution_lock_results/stderr.txt"
+            execution_lock_exit=1
+          fi
+          printf '%s\n' "$execution_lock_exit" > "$execution_lock_results/exit.txt"
+          cat "$execution_lock_results/stdout.txt" "$execution_lock_results/stderr.txt"
+          exit "$execution_lock_exit"
+
       - name: Preserve results even on failure
         if: always()
         uses: actions/upload-artifact@v4

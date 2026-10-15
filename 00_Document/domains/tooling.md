@@ -16,4 +16,9 @@
 
 WSL 실행은 원본 경로별 복사 공간과 잠금을 사용한다. 7777 포트가 다른 작업에 속하면 종료하지 않고 충돌을 보고한다. 시나리오와 원본 로그 위치를 결과에 남긴다.
 
+[ExecutionLock](../../99_Tools/ExecutionLock/README.md)은 명시적으로 맡긴 Unity/WSL 실행을 Git common directory의
+공용 상태로 조율한다. 입력/결과 JSON, Content Unity·Core WSL 대기 우선, 양방향 6GiB/4GiB 병행 관문,
+PID/시작 identity·자식 수명은 도구 계약에서 확인한다. Windows 실제 관측과 Linux CI의 injected 관측은 구분한다.
+기존 WSL 잠금·포트 소유 및 실제 게임/DB 검증을 대체하지 않는다. 상태 손상·소유 불명확·관측 실패는 실행 허가가 아니다.
+
 과거 QA knowledge는 전용 검증 사례가 없는 색인이었다. 이 문서는 존재하지 않았던 실적을 추가하지 않고 현재 테스트·도구 진입점으로 대체했다. [원문](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/.claude/knowledge/qa/_index.md).
