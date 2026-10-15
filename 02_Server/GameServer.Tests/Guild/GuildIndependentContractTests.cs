@@ -2,7 +2,6 @@ using System.Buffers.Binary;
 using System.Net;
 using System.Numerics;
 using System.Text;
-using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Entities;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
@@ -190,7 +189,8 @@ public sealed class GuildIndependentContractTests : IDisposable
     }
 
     // D8: a push carries the recipient's own personal values and location with the same communal state.
-    // Treasury: 6 seeds − the stronghold 30 + the newcomer's seed.
+    // Treasury: 6 seeds − the stronghold 30 + the clear credit of the one beneficiary who funded the enhance
+    // (G2, approved A) + the newcomer's seed = 15.
     [Fact]
     public void MembershipPush_CarriesEachRecipientsOwnWeaponAndLocation()
     {
@@ -216,7 +216,7 @@ public sealed class GuildIndependentContractTests : IDisposable
         {
             Assert.Equal(Kind.Membership, snapshot.ChangeKind);
             Assert.Equal(own.GuildRevision, snapshot.GuildRevision);
-            Assert.Equal(Approved.Seed, snapshot.Treasury);
+            Assert.Equal((6 * Approved.Seed) - Approved.StrongholdPrice + Approved.ClearCredit + Approved.Seed, snapshot.Treasury);
             Assert.Equal(7, snapshot.MemberCount);
             Assert.Equal(7, snapshot.OnlineMemberCount);
         }
@@ -233,13 +233,14 @@ public sealed class GuildIndependentContractTests : IDisposable
 }
 
 // Literals of technical contract v1 (approved A values, packet IDs, changeKind and result codes) and of
-// the existing v17 kill reward table. Kept apart from product constants on purpose.
+// the existing v18 Content clear reward. Kept apart from product constants on purpose.
 internal static class IndependentSpec
 {
     internal static class WireId
     {
         internal const ushort InventoryRequest = 35;
         internal const ushort InventorySnapshot = 36;
+        internal const ushort DungeonClearResult = 39;
         internal const ushort GuildRequest = 43;
         internal const ushort GuildSnapshot = 44;
         internal const ushort StrongholdUpgrade = 45;
@@ -280,6 +281,7 @@ internal static class IndependentSpec
         internal const int WeaponPrice = 20;
         internal const int WeaponBonus = 5;
         internal const int TreasuryCap = 1_000_000_000;
+        internal const int ClearCredit = 10;
         internal const int BossCurrency = 50;
         internal const string GuildName = "새벽 길드";
     }
@@ -456,17 +458,25 @@ internal static class IndependentWire
 }
 
 // Real-entry world for the independent tests. Treasury comes only from real admissions (seed 5 each),
-// personal funds only from a real melee kill (v17 boss reward), and leaving Town only through the real
-// portal request after a fixture placement next to the Town portal (PortalTable: x = 20, portal 1).
+// personal funds only from a real BossRoom clear (the Content clear reward), and leaving Town only through
+// the real portal request after a fixture placement next to the portal (PortalTable: Town x = 20 and
+// hunting ground x = 25, portal 1 each).
 internal sealed class IndependentGuildWorld : IDisposable
 {
     // Test allowances, not contract values: replies leave from the World tick or a map job.
     internal const int ReplyTicks = 3;
-    const int KillTicks = 8;
     const int TownPortalId = 1;
+    const int BossRoomPortalId = 1;
+    const int BossUnlockKills = 20;
     static readonly Vector2 TownPortalPosition = new(20f, 0f);
+    static readonly Vector2 BossRoomPortalPosition = new(25f, 0f);
 
-    readonly GameWorld _world = new(new Dictionary<MapId, (MapTerrain?, MapContent?)>());
+    // Only the boss room has map data: its one boss, far from the arrival point x = 22. Town and the hunting
+    // ground stay empty as before.
+    readonly GameWorld _world = new(new Dictionary<MapId, (MapTerrain?, MapContent?)>
+    {
+        [MapId.BossRoom] = (null, new MapContent(0f, 0f, new[] { new EnemySpawnPoint((byte)EnemyKind.Boss, 60f, 0f) })),
+    });
     long _tick;
     int _accountSerial;
 
@@ -533,17 +543,35 @@ internal sealed class IndependentGuildWorld : IDisposable
         Assert.Equal(2, Query(buyer).StrongholdLevel);
     }
 
-    // Existing v17 boss reward (currency 50 + Material 1 + CoinPouch 1) through the real melee and kill
-    // callback; a one-HP boss is placed in front of the attacker.
+    // The Content clear reward (currency 50 + Material 1 + CoinPouch 1 to each beneficiary of a BossRoom copy;
+    // since C5 a boss killer gets no kill reward), then the real 40 back to Town. Fixture inputs: the boss room
+    // gate through the quest credit entry (20 real kills would add their own rewards), the portal placements,
+    // and the room's death handler run in its job as DungeonClearTestWorld.KillBoss does. The clear capture,
+    // the settlement and the move to Town are the product path.
     internal void KillBoss(IndependentSession attacker)
     {
-        GameMap map = MapOf(attacker);
-        PlayerEntity player = PlayerOf(attacker);
-        EnemyEntity boss = map.SpawnEnemy(EnemyKind.Boss, player.Position.X + 1f, player.Position.Y, maxHp: 1);
-        attacker.Receive(new C_Attack { targetEntityId = boss.EntityId, attackerClientTick = (int)(_tick + 1) }.Write());
-        Tick(KillTicks);
-        Assert.False(map.Enemies.ContainsKey(boss.EntityId), "fixture: the real melee must kill the one-HP boss");
-        Tick(CombatConstants.MeleeCooldownTicks);
+        for (int i = 0; i < BossUnlockKills; i++) _world.Quest.OnKill(attacker.EntityId);
+        MoveOutOfTown(attacker);
+        PlayerOf(attacker).Position = BossRoomPortalPosition;
+        attacker.Receive(new C_EnterPortal { portalId = BossRoomPortalId }.Write());
+        Tick(ReplyTicks);
+        GameMap bossRoom = MapOf(attacker);
+        Assert.True(bossRoom.MapId == MapId.BossRoom, "fixture: the real portals must lead to a boss room copy");
+
+        EnemyEntity boss = Assert.Single(bossRoom.Enemies.Values, enemy => enemy.Kind == EnemyKind.Boss);
+        int mark = attacker.Mark;
+        bossRoom.EnqueueJob(() =>
+        {
+            boss.Hp = 0;
+            bossRoom.HandleEnemyDeath(boss, attacker.EntityId);
+        });
+        Tick(ReplyTicks);
+        byte[] clear = Assert.Single(attacker.Since(mark, WireId.DungeonClearResult));
+        Assert.True(clear[4] == Code.Success, "fixture: the real clear must pay this beneficiary");
+
+        attacker.Receive(new C_DungeonClearConfirm { reserved = 0 }.Write());
+        Tick(ReplyTicks);
+        Assert.True(MapOf(attacker).MapId == MapId.Town, "fixture: the beneficiary's 40 must move it to Town");
     }
 
     internal void PlaceAtTownPortal(IndependentSession session) => PlayerOf(session).Position = TownPortalPosition;
