@@ -719,6 +719,14 @@
 
 ## 재개 지점
 
+### 2026-10-15 Core 단독 재개 — PR237 통합
+
+- 다음 첫 일: 기록 포함 최종 head의 전체 CI·문서 실사를 확인하고 PR237 병합 준비를 메인에 보고한다. 메인 판단 msg_2e3e764a9aa1에 따라 사용자 exact-head 승인·메인 병합 뒤에만 PR242가 최신 main을 받는다. 실제 runtime·게임 연결 근거는 PR242 DB 단계에서 확보하며 이 트랙에서 DB/컨테이너/보호 자원을 재조회하지 않는다.
+- 메인 판단 msg_ce21bd7715dc에 따라 최신 main5c161949를 normal merge했다. 통합 head08f1c5ed96596f4814718649834706e051973ef6, remerge-diff0·기존 PR 제품/시험16경로 blob 불일치0다. main 통합만이므로 기존 독립 판정을 유지한다. 새 head CI4개는 조회 시 진행 중이며 통과로 보고하지 않는다.
+- 두 트랙은 core-active(PR237)/core-parallel(PR242)로 나눴고 Git은 Core 리드 한 명이 소유한다. 무거운 로컬 실행은 한 번에 하나, PR242 DB 우선이다. 사용자 프로세스를 건드리지 않는다. 기록 시각: Thu Oct 15 10:30:24 UTC 2026.
+- 근거: core-parallel/.backups/verification/2026-10-14-persistence-runtime-entry/lead-pr237-{merge-context.md,remerge-diff.txt,blob-check.json,ci-after-merge.json,remote-after-merge.json}. 이 기록 변경은 독립 실사 전이며 최종 승인 묶음에 포함하기 전에 대조한다. G2-R2 PASS·보호 자원 보존·G4 별도 승인·각 PR exact-head 사용자 병합 승인은 그대로다.
+
+
 ### 재부팅 뒤 Run 인수·main 맞춤·재검증 준비 — 2026-10-14
 
 **현재 재개 정본이다.** 메인 `msg_5f8a65d2f59a`(2026-10-14T09:16:33Z)가 사용자 재부팅 우선 결정과 페이지 파일 적용 확인을 전달해 같은 goal 재개를 지시했다. 이전 마감의 신규 실행 금지는 이번 재개 지시 범위에서 해제됐으며, DB는 새 계약·상한 자체 확인·4GiB·파트 조율·시작 관문 뒤에만 연다. 정식 G2와 보존 DB는 별도 사용자 승인이다.
