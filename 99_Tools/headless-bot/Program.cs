@@ -23,6 +23,7 @@ using Dawnholder.Tools.HeadlessBot.Scenarios.Persistence;
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario BossGate
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario PartyQuest
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario InventorySmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario DungeonClearSmoke
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -71,6 +72,14 @@ if (string.Equals(scenarioName, "InstanceMapIsolationSmoke", StringComparison.Or
 {
     InstanceMapIsolationSmoke.Result r = await InstanceMapIsolationSmoke.Run(host, port);
     Console.WriteLine($"[Bot] InstanceMapIsolationSmoke: success={r.Success} parties={r.PartiesFormed} isolated={r.IsolatedBots} returned={r.ReturnedBots}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "DungeonClearSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    DungeonClearSmoke.Result r = await DungeonClearSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] DungeonClearSmoke: success={r.Success} parties={r.PartiesFormed} cleared={r.ClearedParties} rewarded={r.RewardedBots} returned={r.ReturnedBots}");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }
