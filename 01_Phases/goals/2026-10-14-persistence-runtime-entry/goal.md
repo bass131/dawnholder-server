@@ -77,6 +77,16 @@
 - v3는 로그 옵션 최소 수정 → 실패한 정확 새 container 제거 → Create/Start → Bootstrap → Runtime 일괄 승인이다. volume·privateRoot는 계약이 허용하면 재사용하고 아니면 같은 승인 이름으로 다시 만든다. 기존 보호 자원·Windows SQL 접근0이다.
 - Docker CLI stderr는 sa 값을 치환한 사본과 치환 사실을 근거에 남긴다. 비밀 원문을 출력하지 않으며 길이/hash만으로 원인 기록을 대신하지 않는다.
 - v3에서 create·start·logging·mount·entrypoint·sa bootstrap 등 Docker 전제가 다시 실패하면 추가 수정 없이 보존·정산하고 **Docker 방식 중단**으로 메인에 보고한다. Docker 없는 방식은 메인이 사용자와 정해 새 계약으로 전달한다. 그 전 대안 설계·Windows SQL 조회는 하지 않는다.
+### Docker 실패 시 Windows SQL Express 조건부 허용(2026-10-15)
+
+메인 `msg_0ed06132bca4`(2026-10-15T14:31:34Z)가 전달한 사용자 원문(메인 pane Enter 제출)이다. 이 pane 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) Core DB - Docker 마지막 시도 실패 시 Windows SQL Express 사용 허용 → A 미리 허용
+
+- v3가 Docker 전제로 실패한 경우에만 로컬 SQL Express `MSSQL$SQLEXPRESS` / `D:\MSSQL2025`의 새 `Dawnholder_Test_RuntimeEntry_R1` DB·`dh_runtime_entry_r1` 로그인으로 전환한다. 관리자 인증은 사용자 Windows 계정이며 sa 비밀번호는 쓰지 않는다.
+- 허용 범위는 시험 서버 인증서의 인스턴스 설치·SQL 서비스 재시작을 포함한다. 게임 서버의 TrustServerCertificate=false와 chain/name 검증, WSL 자식 한정 CA 전달을 유지하며 전역 CA 신뢰 저장소 추가0이다.
+- 메인 보호 조건: 기존 DB·로그인·데이터 읽기/쓰기 및 전체 목록 조회0. 변경 전 원래 인증서 설정을 기록하고 시험 뒤 되돌림·새 시험 DB/로그인 삭제를 한다. 되돌림 실패 또는 과거 master 파일 접근 거부 시작 실패 재발은 임의 수정 없이 보존·보고한다.
+- `C:\myVHDX.vhdx`의 D: 마운트는 사용자가 한다. v3 실패 보존·정산과 Docker 방식 중단 보고 뒤 메인이 마운트를 요청하며, 확인을 받은 후에만 새 실행 계약을 발행한다. 지금은 v3 우선, SQL Express 조회/서비스 조작0이며 대안의 정적 계약 초안만 허용된다. v3 성공 시 이 허용은 사용하지 않는다.
 ## 재개 지점
 
 - 작업 위치 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-parallel`, branch `feat/persistence-runtime-entry-20261015`, PR242 draft. Run `run_b36cc92a4cf4`, 리드 `[Core 리드 Astra]` medium 시범/backend unknown. Codex 병합 금지다.
