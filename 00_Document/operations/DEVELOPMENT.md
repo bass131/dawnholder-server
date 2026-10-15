@@ -118,8 +118,17 @@ Windows PowerShell/CIM과 기존 Node를 사용하며 별도 설치·전역 설�
 Windows WSL client의 종료만으로 내부 영속 서버/DB 종료를 보장하지 않는다. 관측 실패·소유 불명확은 실행하지 않고
 근거/상태를 보존한다. 실제 Unity/WSL/게임/DB 실행과 무해한 Node 회귀는 구분해 기록한다.
 
-독립 회귀는 기존 절대 전용 폴더에 `EXECUTION_LOCK_TESTS_WORK`를 지정한 뒤
-`node --test --test-concurrency=1 99_Tools/ExecutionLock.Tests/execution-lock.test.mjs`로 실행한다.
+독립 회귀는 기존 절대 전용 폴더에 `EXECUTION_LOCK_TESTS_WORK`를 지정한 뒤 아래 두 명령을 모두 실행한다.
+
+```powershell
+node --test --test-concurrency=1 99_Tools/ExecutionLock.Tests/execution-lock.test.mjs
+node --test --test-concurrency=1 `
+  99_Tools/ExecutionLock.Tests/lifetime-cleanup.test.mjs `
+  99_Tools/ExecutionLock.Tests/ancestry-boundaries.test.mjs `
+  99_Tools/ExecutionLock.Tests/inspect-consistency.test.mjs
+```
+
+기본·수명·조상 경계·조회 일관성을 포함하며 CI의 `*.test.mjs`와 같은 네 시험 파일이다.
 Linux CI의 대역 관측과 Windows 실제 CLI 관측을 별도로 확인한다.
 
 ## 결과 해석

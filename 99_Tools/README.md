@@ -10,6 +10,7 @@
 - [세션 쓰기 가드](#세션-쓰기-가드): Claude Code의 우편함 출력·쓰기 위치·메모 순서 검사.
 - [생존 신호 간격](#생존-신호-간격): 저장한 Orca 메시지의 Dispatch별 송신 간격 검사.
 - [공용 실행 잠금](ExecutionLock/README.md): Unity/WSL의 명시적 실행 조율·읽기 조회·관측과 수명 근거.
+  [시험 명령](ExecutionLock/README.md#시험과-지원-경계)의 두 명령을 모두 실행하면 CI와 같은 기본·수명·조상 경계·조회 회귀를 포함한다.
 
 [도구·검증 계약](../00_Document/domains/tooling.md)과 [정확한 명령](../00_Document/operations/DEVELOPMENT.md)을 따른다. 생성기는 Shared 소스를 변경하고 서버·봇은 7777 포트를 사용한다. 봇은 ClientNet·Shared에 의존하므로 계약 변경 후 함께 확인한다.
 

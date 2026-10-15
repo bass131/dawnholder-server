@@ -13,6 +13,14 @@ export function findIdentityConflict(state, observation) {
   return null;
 }
 
+// A parent PID without its generation is not an ancestry proof. Both bundle discovery and
+// external-root counting use this edge rule so an older orphan cannot disappear between them.
+function parentRelation(child, parent) {
+  if (!parent || child.parentPid !== parent.pid) return false;
+  if (!parent.startedAt || !child.startedAt) return null;
+  return Date.parse(child.startedAt) >= Date.parse(parent.startedAt);
+}
+
 export function refreshBundle(entry, observation, ownChild = null) {
   const byPid = new Map(observation.processes.map(item => [item.pid, item]));
   const root = entry.root;
@@ -28,6 +36,7 @@ export function refreshBundle(entry, observation, ownChild = null) {
     root.parentPid = currentRoot.parentPid;
   }
   const known = new Map([root, ...entry.members].map(item => [item.pid, item]));
+  let uncertainAncestry = false;
   let changed = true;
   while (changed) {
     changed = false;
@@ -35,10 +44,16 @@ export function refreshBundle(entry, observation, ownChild = null) {
       if (known.has(processInfo.pid) || processInfo.pid === entry.owner.pid) continue;
       const parent = known.get(processInfo.parentPid);
       if (!parent) continue;
+      const relation = parentRelation(processInfo, parent);
+      if (relation === false) continue;
       if (!processInfo.startedAt) {
         throw fault('unknown-child-identity', `Related child PID ${processInfo.pid} has no start identity.`);
       }
-      if (parent.startedAt && Date.parse(processInfo.startedAt) < Date.parse(parent.startedAt)) continue;
+      const currentParent = byPid.get(parent.pid);
+      if (relation === null || !currentParent || !sameIdentity(parent, currentParent)) {
+        uncertainAncestry = true;
+        continue;
+      }
       // Parent PID is used only within the recorded lineage, never to merge same-name roots.
       const child = identity(processInfo);
       entry.members.push(child);
@@ -52,7 +67,7 @@ export function refreshBundle(entry, observation, ownChild = null) {
   });
   const rootUnproven = !root.startedAt && !entry.rootExited;
   const receiptStillLive = ownChild && !ownChild.exited;
-  return { live, uncertain: rootUnproven || Boolean(receiptStillLive && !currentRoot) };
+  return { live, uncertain: uncertainAncestry || rootUnproven || Boolean(receiptStillLive && !currentRoot) };
 }
 
 export function reconcile(state, observation, own = null) {
@@ -80,15 +95,18 @@ function priority(entry) {
 }
 
 function externalRoots(observation, active) {
-  const owned = new Set(active.flatMap(entry => [entry.root, ...entry.members].filter(Boolean).map(item => item.pid)));
+  const owned = active.flatMap(entry => [entry.root, ...entry.members].filter(Boolean));
   const byPid = new Map(observation.processes.map(item => [item.pid, item]));
   return observation.processes.filter(item => {
-    if (!processKind(item) || owned.has(item.pid)) return false;
+    if (!processKind(item) || owned.some(recorded => recorded.startedAt && sameIdentity(recorded, item))) return false;
     const visited = new Set([item.pid]);
+    let child = item;
     let parent = byPid.get(item.parentPid);
     while (parent && !visited.has(parent.pid)) {
-      if (processKind(parent) === processKind(item) || owned.has(parent.pid)) return false;
+      if (parentRelation(child, parent) !== true) break;
+      if (processKind(parent) === processKind(item)) return false;
       visited.add(parent.pid);
+      child = parent;
       parent = byPid.get(parent.parentPid);
     }
     return true;

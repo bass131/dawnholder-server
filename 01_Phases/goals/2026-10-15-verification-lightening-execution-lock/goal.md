@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일: 첫 독립 NOT PASS의 결함 4건과 고정 실패 시험으로 신규 Astra 수정자를 발행한다.** 첫 검증자는 쓰기를 종료했고 정산·pane 종료를 마쳤다. 범위 안 수정 뒤 다시 신규 Opus 강 독립 판정과 CI를 수행한다. PR243은 병합됐으며 도구 PR은 아직 준비 전이다.
+**다음 첫 일: 쓰기 종료된 수정본으로 신규 Opus 강 재검증자를 발행한다.** 수정자는 자체 비교·회귀 시험과 Windows 실제 진입을 보고하고 정산·pane 종료를 마쳤다. 결함 4건의 해소와 P1의 사전 저장·저장 실패 시 실행 차단을 새 검증자가 판정해야 한다. PR243은 병합됐으며 도구 PR은 아직 준비 전이다.
 
 작업 공간은 `rules-active`, 현재 도구 PR 브랜치는 `feat/shared-execution-lock-20261015`다. 문서 PR 브랜치는 `docs/verification-lightening-20261015`였다. 최신 main에서 시작한 기준·현재 Run·모델 관측·receipt는 근거 폴더 E의 `lead-context.md`와 해당 진입 원시에 둔다. E는 `.backups/verification/2026-10-15-verification-lightening-execution-lock/`다.
 
@@ -15,8 +15,8 @@
 - [x] PR243 병합
 - [x] 잠금 설계 확정
 - [x] 선행 실패 시험
-- [>] 잠금 도구 구현
-- [ ] 독립 강 검증
+- [x] 잠금 도구 구현
+- [>] 독립 강 검증
 - [ ] 도구 병합
 - [ ] 종료 점검과 기록
 
@@ -83,6 +83,7 @@ PR 생성 뒤 병합 단계 이름에 실제 PR 번호를 넣는다.
 - **구현 단계:** 신규 Astra가 공용 실행 잠금과 관련 문서·CI를 구현하고 쓰기를 종료했다. 자체 고정 시험과 무해한 Node의 실제 Windows 정상·실패·timeout 진입은 확인했으나 독립 PASS·CI는 아니다. 원문은 E/`pr2-implement/report.md`, 동결 입력은 E/`pr2-implementation-frozen-inputs.json`, 정산/종료는 E/`pr2-implement-release.json`·`pr2-implement-close.json`이다. timeout 뒤 보존 lease와 과거 원인 미확정 오류·사전 실행 근거 저장 누락은 원시 그대로 신규 독립 검증에 넘긴다. 범위 안 개발 수정 체크포인트와 메인의 회차·시간 상한은 E/`pr2-implement-operating-limit-v1.md`에 보존한다.
 - **첫 독립 검증 단계:** 신규 Opus가 보고·diff·실행 원문, 기존·독립 시험과 실제 Windows 진입을 검증해 NOT PASS로 판정했다. 원문 E/`pr2-verify/verdict.md`, 실패 시험 동결 E/`pr2-verify-frozen-inputs.json`, 정산/종료 E/`pr2-verify-release.json`·`pr2-verify-close.json`을 보존한다. 메인 `msg_8bf391ee01ee`가 범위 안 신규 Astra 수정 → 신규 Opus 재판정에 동의했고 회차·시간 상한을 유지했다. 기존 자체 GREEN을 독립 통과로 취급하지 않는다.
 - **사전 실행 근거 누락 P1:** 중간 실행의 하네스 해시·허용 부모 근거가 실행 뒤 저장된 실제 위반을 보존한다. 메인 `msg_8bf391ee01ee`는 사용자 결정과 구분한 메인 판단으로, 최종 수정본의 사전 관문 원시가 실행보다 먼저 저장되고 저장 실패 시 실행이 차단되는지를 새 독립 검증자가 확인해야 최종 차단 여부를 판단하도록 했다. 확인이 없으면 계속 차단이며 과거 위반의 삭제·면제는 아니다.
+- **수정 1 단계:** 신규 Astra가 결함 4건과 관련 문서의 시험 명령 연결을 수정하고 쓰기를 종료했다. 고정 시험 불변·자체 통과와 무해한 Windows 정상·실패·timeout·후속 실행, P1 사전 저장과 저장 실패 음성 확인을 보고했으나 새 독립 판정은 아니다. 원문 E/`pr2-fix1/report.md`, 원시·최종 정산 E/`pr2-fix1/closure.json`, 동결 입력 E/`pr2-fix1-frozen-inputs.json`, 정산/종료 E/`pr2-fix1-release.json`·`pr2-fix1-close.json`을 새 검증에 넘긴다. 부모 PID 재사용은 현실 조건의 재사용 이후 대역 snapshot과 실제 Node를 연결한 재현이며 실제 OS PID 재사용·Unity 실행으로 확대하지 않는다. state-store는 누적 5차이고 기존 메인 상한을 유지한다.
 
 ## 결함과 다음 후보
 

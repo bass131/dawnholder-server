@@ -166,8 +166,12 @@ async function startReserved(store, id, execution, signal, evidence) {
     });
     return child;
   } catch (error) {
-    // No PID after an interrupted state write is not proof of no spawn. Keep the state for review.
-    if (child?.process) child.process.unref();
+    // Once spawn returned a handle, the monitoring loop owns it even if the receipt/observation
+    // write failed. Never turn a started command into an unstarted admission failure.
+    if (child?.pid) {
+      child.startFailure = error;
+      return child;
+    }
     throw error;
   }
 }
@@ -175,11 +179,17 @@ async function startReserved(store, id, execution, signal, evidence) {
 async function updateExecution(store, id, child, { finished = false, terminate = false } = {}) {
   return store.transaction(async transaction => {
     const state = await transaction.read();
+    const rootExitObserved = child.exited;
     const observation = await transaction.observe();
-    const conflict = findIdentityConflict(state, observation);
-    if (conflict !== null) return { conflict, released: false, terminated: false };
     const entry = state.entries.find(item => item.id === id);
-    if (!entry) return { released: true, terminated: false };
+    if (!entry) {
+      throw fault('execution-state-lost', 'The started command has no execution record; its handle remains monitored.');
+    }
+    const ownState = { entries: [entry] };
+    const conflict = findIdentityConflict(ownState, observation);
+    if (conflict !== null) return { conflict, released: false, terminated: false, rootExitObserved };
+    const foreignState = { entries: state.entries.filter(item => item.id !== id) };
+    const foreignConflict = findIdentityConflict(foreignState, observation);
     if (child.exited) entry.rootExited = true;
     const bundle = refreshBundle(entry, observation, child);
     let terminated = false;
@@ -192,10 +202,13 @@ async function updateExecution(store, id, child, { finished = false, terminate =
       }
     }
     if (finished) entry.ownerFinished = true;
-    reconcile(state, observation, { id, child });
+    // Monitoring settles only this execution. An unrelated incarnation conflict must preserve
+    // that other record without abandoning our live command or changing its admission history.
+    reconcile(ownState, observation, { id, child });
+    if (ownState.entries.length === 0) state.entries = state.entries.filter(item => item.id !== id);
     await transaction.write(state);
     return { released: !state.entries.some(item => item.id === id), terminated,
-      bundle, root: entry.root, members: entry.members };
+      bundle, root: entry.root, members: entry.members, rootExitObserved, foreignConflict };
   });
 }
 
@@ -221,7 +234,15 @@ export async function runExecution(options) {
   const { id } = reservation;
   const child = await startReserved(store, id, execution, signal, evidence);
   if (child === null) return cancelled(context);
-  await evidence.event('spawn-receipt', { pid: child.pid, requestedAt: child.requestedAt,
+  let monitoringFailure = child.startFailure ?? null;
+  async function record(type, value) {
+    try {
+      await evidence.event(type, value);
+    } catch (error) {
+      monitoringFailure ??= fault('evidence-write-failed', error.message);
+    }
+  }
+  await record('spawn-receipt', { pid: child.pid, requestedAt: child.requestedAt,
     file: execution.file, args: execution.args, cwd: execution.cwd, shell: false, error: child.error });
   if (child.pid === null) {
     // The asynchronous spawn error is normally delivered before the next timer tick.
@@ -231,24 +252,51 @@ export async function runExecution(options) {
   }
   const deadline = child.startedMs + execution.timeoutMs;
   let interrupted = null;
+  let lastForeignConflict = null;
+  async function update(settings) {
+    try {
+      const current = await updateExecution(store, id, child, settings);
+      if (current.conflict !== undefined) {
+        throw fault('process-identity-mismatch', 'This started execution has a conflicting process identity.');
+      }
+      if (current.foreignConflict !== lastForeignConflict) {
+        await record('foreign-identity-conflict', { pid: current.foreignConflict, executionId: id });
+        lastForeignConflict = current.foreignConflict;
+      }
+      return current;
+    } catch (error) {
+      monitoringFailure ??= error;
+      await record('monitoring-failure', { code: error.code ?? 'tool-failure', message: error.message,
+        childExited: child.exited });
+      return { released: false, unavailable: true };
+    }
+  }
+  function failedMonitoring() {
+    return outcome(context, 'tool-error', monitoringFailure.code ?? 'tool-failure',
+      `Started command monitoring failed: ${monitoringFailure.message}`,
+      'Inspect the command exit and preserved execution state; '
+        + 'do not retry a command whose bundle is still unconfirmed.');
+  }
   try {
     for (;;) {
       if (signal?.aborted) interrupted = 'cancelled';
       else if (Date.now() >= deadline) interrupted = 'timed-out';
       if (interrupted) break;
-      const current = await updateExecution(store, id, child);
-      if (current.conflict !== undefined) {
-        child.process.unref();
-        return blocked(context, 'process-identity-mismatch');
-      }
+      const current = await update();
       if (current.released) {
         context.commandExitCode = child.code;
-        await evidence.event('command-exit', { code: child.code, signal: child.signal, error: child.error,
+        await record('command-exit', { code: child.code, signal: child.signal, error: child.error,
           root: current.root, members: current.members, released: true });
+        if (monitoringFailure) return failedMonitoring();
         if (child.error) throw fault('command-error', child.error);
         return outcome(context, child.code === 0 ? 'succeeded' : 'failed',
           child.code === 0 ? 'command-succeeded' : 'command-failed',
           `Command exited with ${child.code === null ? `signal ${child.signal}` : child.code}; bundle ended.`);
+      }
+      if (current.unavailable && child.exited) {
+        context.commandExitCode = child.code;
+        await retainAfterFailure(store, id, evidence);
+        return failedMonitoring();
       }
       await sleep(POLL_MS);
     }
@@ -256,13 +304,16 @@ export async function runExecution(options) {
     const cleanupDeadline = Date.now() + CLEANUP_LIMIT_MS;
     let cleanup;
     do {
-      cleanup = await updateExecution(store, id, child, { finished: true, terminate: true });
-      await evidence.event('cleanup', { requestedStatus: interrupted, ...cleanup });
-      if (cleanup.released || cleanup.conflict !== undefined || child.exited) break;
+      cleanup = await update({ finished: true, terminate: true });
+      await record('cleanup', { requestedStatus: interrupted, ...cleanup });
+      // An exit delivered while the write/retirement was awaited has not yet been observed by
+      // this update. Take another sample and commit it before reporting the final lease state.
+      if (cleanup.released || (child.exited && (cleanup.rootExitObserved || cleanup.unavailable))) break;
       await sleep(POLL_MS);
     } while (Date.now() < cleanupDeadline);
     context.commandExitCode = child.code;
     child.process.unref();
+    if (monitoringFailure) return failedMonitoring();
     return outcome(context, interrupted, interrupted,
       `${interrupted === 'cancelled' ? 'Cancellation' : 'Execution timeout'}; `
         + (cleanup?.released ? 'bundle ended and lease released.' : 'remaining or uncertain bundle state retained.'),
@@ -270,6 +321,8 @@ export async function runExecution(options) {
   } catch (error) {
     await retainAfterFailure(store, id, evidence);
     child.process.unref();
-    throw error;
+    context.commandExitCode = child.code;
+    monitoringFailure ??= error;
+    return failedMonitoring();
   }
 }

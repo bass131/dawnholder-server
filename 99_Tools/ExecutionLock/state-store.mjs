@@ -7,6 +7,7 @@ import { identity, sameIdentity } from './observation.mjs';
 
 const MUTEX_TIMEOUT_MS = 15000;
 const MAX_STATE_BYTES = 8 * 1024 * 1024;
+const SNAPSHOT_TIMEOUT_MS = 1000;
 
 function validIdentity(value, pending = false) {
   return object(value) && Number.isInteger(value.pid) && value.pid > 0
@@ -168,8 +169,12 @@ export function createStore(root, repositoryKey, observe, evidence) {
       || (pending.length && !allowRedundantPending)) {
       throw fault('incomplete-state-write', `Unknown or unfinished state files in ${root}.`);
     }
+    let ownerRecord = null;
     if (!locked && names.includes('transaction')) {
-      await readOwner();
+      ownerRecord = await readOwner();
+      if (!ownerRecord) {
+        throw fault('state-snapshot-changing', 'Transaction ownership could not be sampled consistently.');
+      }
       if (!names.includes('state.json')) {
         throw fault('state-transaction-active', 'The first state transaction has no committed snapshot yet.');
       }
@@ -189,12 +194,38 @@ export function createStore(root, repositoryKey, observe, evidence) {
         const pendingBytes = await readFile(join(root, name));
         if (!pendingBytes.equals(bytes)) throw new Error(`Uncommitted or partial state differs: ${name}`);
       }
+      if (!locked) {
+        // The file handle reads one atomically committed generation. Check the surrounding
+        // namespace again: pending bytes or an unconfirmed owner must never become a clean read.
+        const snapshotNames = items => items.filter(name => !/^(candidate|retired)-[a-f\d-]+$/.test(name)).sort();
+        const afterNames = await readdir(root);
+        if (JSON.stringify(snapshotNames(names)) !== JSON.stringify(snapshotNames(afterNames))
+          || (ownerRecord && !await sameOwnerRecord(ownerRecord))) {
+          throw fault('state-snapshot-changing', 'The committed snapshot namespace changed during the read.');
+        }
+      }
       return state;
     } catch (error) {
+      if (error.status) throw error;
       throw fault('invalid-state', `Cannot validate ${statePath}: ${error.message}`,
         'Preserve the original bytes and inspect recorded owners and process identities; no force-unlock is provided.');
     } finally {
       await handle?.close();
+    }
+  }
+
+  async function readSnapshot() {
+    const deadline = Date.now() + SNAPSHOT_TIMEOUT_MS;
+    for (;;) {
+      try {
+        return await read();
+      } catch (error) {
+        // Normal write/rename/retirement windows can look partial to a lock-free reader.
+        // Retry without creating a lock or repairing anything. A persistent partial/corrupt
+        // state still returns its actual validation error, never a fabricated empty snapshot.
+        if (Date.now() >= deadline) throw error;
+        await sleep(10);
+      }
     }
   }
 
@@ -367,5 +398,5 @@ export function createStore(root, repositoryKey, observe, evidence) {
     }
   }
 
-  return { read, transaction };
+  return { read: readSnapshot, transaction };
 }
