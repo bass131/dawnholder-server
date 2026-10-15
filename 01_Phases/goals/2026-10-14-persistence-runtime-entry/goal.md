@@ -1,6 +1,6 @@
 # 실제 DB 연결·로딩 게이트·재접속 직업 복원
 
-상태: 서버 독립 전체 1,497통과·실패0·기존제외5, fixture 보정 뒤 Unity 소비자 독립 전체 484통과·실패0·제외0이다. 검증 작업과 pane 정산은 끝났으며 열린 작업자0이다. 운영 편차와 메인 R-2 대조는 판단 대기, PR242는 draft다. 사용자 결정으로 Core 리드 Astra medium 교체 인계를 준비하며 실제 DB/DPAPI·정상 서버·봇·Play 장면9·최종 사용자 병합 승인은 남아 있다. 다음 순서는 아래 「재개 지점」을 따른다.
+상태: 서버 독립 전체 1,497통과·실패0·기존제외5, fixture 보정 뒤 Unity 소비자 독립 전체 484통과·실패0·제외0이다. 검증 작업과 pane 정산은 끝났으며 열린 작업자0이다. 메인 R-2는 Unity 소비자 PASS를 수용했고 운영 편차는 제품 비차단으로 판단했다. PR242 본문 갱신을 마쳤으며 draft다. 사용자 결정으로 Core 리드 Astra medium 인수를 마쳤고 세션 마감하며 실제 DB/DPAPI·정상 서버·봇·Play 장면9·최종 사용자 병합 승인은 남아 있다. 다음 순서는 아래 「재개 지점」을 따른다.
 
 ## 진척 단계
 
@@ -30,6 +30,21 @@
 - R-8의 문맥 비우기 목적 교체와 구분한 사용자 결정에 따른 모델 시범이다. 기존 Sol은 새 작업 없이 정산·인계 기록을 commit/normal push하고 status 한 통 후 턴을 끝낸다. 기존 pane 종료·새 리드 기동은 메인이 맡는다. 제품·자원·Git 권한 확대와 새 목표 착수는 없다.
 
 ## 재개 지점
+
+### 2026-10-15 세션 마감 — Astra medium
+
+기록 시각: `Thu Oct 15 07:03:53 UTC 2026` (`C:/Program Files/Git/usr/bin/date.exe -u` 출력). 메인 마감 계약 `msg_14c12329873c` 적용. 이 절이 아래 이전 인계 상태보다 우선한다.
+
+- **다음 첫 일:** 메인에게 아래 DB 정확 자원·DPAPI/TLS/감사 경계의 사용자 결정 결과를 확인한다. 승인 전 실행0, 승인 후에도 신규 외부 작업자의 고정 카드와 독립 검증이 필요하다. PR242 본문 갱신은 완료했고 draft를 유지한다.
+- 메인 `msg_a1a519ca00b8`의 R-2가 Unity 소비자 PASS를 수용했다(goal 전체 PASS 아님). PR 본문에 서버1497통과/실패0/제외5, Unity484통과/실패0/제외0, DLL 양쪽 소비자 검증과 DB/Play/CI 미완료를 반영했다. XML HudAndMap22건을 직접 대조했고 판정서20건 표기의 원문은 보존했다. 재조회 본문 일치, 당시 head `c348aabbdd1ea9739d2ae79a38a61d92f1223a59` 확인.
+- 검증자 운영 O-1~O-5는 메인 판단상 제품 비차단. O-3 오류 원시 삭제는 위반으로 남고 PASS로 소급 면제하지 않는다. O-1·O-5 기록 보존, O-2·O-4·O-C는 동결 뒤 후보로 인계한다.
+- **현재 goal의 열린 Task·Dispatch 없음**, core-parallel 작업자 pane0, reclaimable0. Run의97 Dispatch는 모두 정산 상태다. 단, 같은 Run의 과거 `task_12ac7862e00d`(2026-10-10, 「3 - 정지 재측정 네 번째 시도(오프라인 예행 먼저)」)가 `ready`로 남아 있다. 실행 중 작업과 구분해 메인에 보고하며 임의 종료/재개하지 않는다. retained/external 표시는 pane 생존 증거가 아니다.
+- Run `run_b36cc92a4cf4`, 대화 ID `01a13e5a-4d04-7e11-962c-35e8ea3ac2ac`. rollout `~/.codex/sessions/2026/10/15/rollout-2026-10-15T15-57-48-01a13e5a-4d04-7e11-962c-35e8ea3ac2ac.jsonl`. 다음 세션에 같은 대화로 Astra medium 시범을 잇는다. 화면 GPT-6-Astra medium, backend unknown.
+- **남은 사용자 결정:** container `dawnholder-sqlserver-runtime-entry-r1`, volume `dawnholder-sqlserver-runtime-entry-r1-data`, DB `Dawnholder_Test_RuntimeEntry_R1`, login `dh_runtime_entry_r1`, loopback14335, privateRoot `C:/Users/bass1/AppData/Local/Dawnholder/runtime-entry-r1`; 새 CurrentUser DPAPI·TLS 키/인증서·프로세스 한정 공개 CA 신뢰·별도 키 누출 감사 경계. image/예산·보호 자원·삭제 제한은 아래 준비안을 유지한다. TrustServerCertificate=false, 전역 신뢰 변경/비밀 argv·env·log0. UUIDv5/CharacterId·정확 TLS 파일 경로는 카드에서 고정할 대상이다.
+- 교차 발신: DB 승인 요청 `msg_4174d0256746`07:02:40Z, 마감 지시07:02:41Z. 마감 수신 전에 이미 보냈으며 재전송0, 다음 세션에 메인이 사용자 결정으로 올릴 안건으로 이월한다.
+- Content `msg_9c6c56e686bb`는 snapshot lock=True·정확반환=False 보고다. Core가 해당 Task/Dispatch를 대조하지 않아 실행허가/정확반환 근거로 쓰지 않았다. Content Unity 우선/Core WSL 우선·단일Editor 약속 유지. 새 작업자·검증자·DB·DPAPI·컨테이너·WSL 실행0, Core 중량 실행/예약0.
+- 근거 `B/lead-resume-{context.md,pr242-before.md,pr242-body.md,pr242-after.json,inbox-2.json}`와 `B/lead-wrapup-{workers,tasks,terminals}.json`. 마감 계약에 따라 새 독립 세션을 열지 않았으며 이번은 기록 갱신이다. 기존 최종 판정 원문·SHA는 아래 유지한다.
+
 
 ### 현재 소유권·Git
 
@@ -160,7 +175,7 @@
 
 ## 동결 뒤 정리
 - 계정별 영속 slot/스키마 확대는 이번범위밖후보다. 실제착수 때 BACKLOG의 기존후보와대조해중복없이기록한다.
-- 독립판정의 비동작지적은 원번호/근거와 함께 여기에 인계한다. 현재확정항목0이다.
+- 메인 msg_a1a519ca00b8 지시에 따라 U 검증자의 O-2(미ack 재독), O-4(거짓 후손), O-C(반환 관측)를 harness·우편함 후속 후보로 남긴다. 원천은 U/verdict.md 운영 공개·설계 관찰이다. 공용 BACKLOG 안정적 ID 대조·연결은 다음 기록 정리 때 수행하며 이번 마감에서 공용 후보를 중복 생성하지 않았다.
 
 ## 문서 준비 기록
 - 2026-10-14: 메인 승인 msg_fcb2a973fede와정정 msg_d8a5ccb79390에따라goal문서작성. 제품/PDL/Unity/시험쓰기·새writer0, 실제실행0. A/B검증통과뒤선행시험작성자와writer2명을기동하되DB실행은G2종료뒤다.
