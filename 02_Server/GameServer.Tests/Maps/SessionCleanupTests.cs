@@ -253,10 +253,11 @@ public sealed class SessionCleanupTests : IDisposable
         Tick(1);
         CapturedSession session = Join();
         Tick(2);
-        Assert.Equal(new[] { PacketID.S_HandshakeResult, PacketID.S_LoginResult, PacketID.S_EnterMap, PacketID.S_PlayerHp, PacketID.S_PlayerJoin },
-            session.Packets.Take(5).Select(Id));
+        Assert.Equal(new[] { PacketID.S_HandshakeResult, PacketID.S_LoginResult, PacketID.S_CharacterLoadResult,
+            PacketID.S_EnterMap, PacketID.S_PlayerHp, PacketID.S_PlayerJoin }, session.Packets.Take(6).Select(Id));
+        Assert.Equal(new byte[] { 6, 0, 48, 0, 0, 0 }, session.Packets[2]);
         S_PlayerJoin entryRoster = new();
-        entryRoster.Read(new ArraySegment<byte>(session.Packets[4]));
+        entryRoster.Read(new ArraySegment<byte>(session.Packets[5]));
         Assert.Equal(observer.EntityId, entryRoster.entityId);
         PlayerEntity original = Assert.Single(Players, p => ReferenceEquals(p.Owner, session));
         int originalId = original.EntityId;

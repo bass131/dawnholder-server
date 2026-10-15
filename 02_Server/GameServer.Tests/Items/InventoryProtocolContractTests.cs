@@ -10,7 +10,8 @@ namespace Dawnholder.Server.GameServer.Tests.Items;
 // Independent protocol checks for the economy packets: existing IDs keep the order of PDL.xml at
 // origin/main 11aa4b8 (before this goal), IDs 35..38 follow with the fixed lengths and
 // LittleEndian fields of the PR1 acceptance table, the dungeon goal's 39·40 come next (its P1), and
-// login appends 41·42. Version 19 is enforced by the existing equality handshake. Expected bytes are literals, never
+// login keeps 41·42, World reserves 43..47 and character loading appends 48. Version 21 is enforced
+// by the existing equality handshake. Expected bytes are literals, never
 // produced by the generator under test.
 [Collection("GameWorldRegistryTests")]
 public sealed class InventoryProtocolContractTests : IDisposable
@@ -38,7 +39,7 @@ public sealed class InventoryProtocolContractTests : IDisposable
         // Looked up by name: a direct PacketID member would not compile before the generator runs.
         string[] dungeon = { "S_DungeonClearResult", "C_DungeonClearConfirm" };
 
-        Assert.Equal(42, actual.Count);
+        Assert.Equal(48, actual.Count);
         for (int i = 0; i < BasePacketOrder.Length; i++)
         {
             Assert.Equal(i + 1, actual[BasePacketOrder[i]]);
@@ -52,6 +53,14 @@ public sealed class InventoryProtocolContractTests : IDisposable
             Assert.True(actual.TryGetValue(dungeon[i], out int id), $"dungeon goal P1: {dungeon[i]} is appended");
             Assert.Equal(39 + i, id);
         }
+        Assert.Equal(41, actual["C_Login"]);
+        Assert.Equal(42, actual["S_LoginResult"]);
+        Assert.Equal(43, actual["C_GuildRequest"]);
+        Assert.Equal(44, actual["S_GuildSnapshot"]);
+        Assert.Equal(45, actual["C_StrongholdUpgrade"]);
+        Assert.Equal(46, actual["C_WeaponEnhance"]);
+        Assert.Equal(47, actual["S_GuildActionResult"]);
+        Assert.Equal(48, actual["S_CharacterLoadResult"]);
     }
 
     [Fact]
@@ -93,21 +102,21 @@ public sealed class InventoryProtocolContractTests : IDisposable
     }
 
     [Fact]
-    public void ProtocolVersion_IsNineteen_AndTheHandshakeRejectsEighteen()
+    public void ProtocolVersion_IsTwentyOne_AndTheHandshakeRejectsTwenty()
     {
         ProbeSession previous = new(_world);
         ProbeSession current = new(_world);
         previous.OnConnected(Endpoint);
         current.OnConnected(Endpoint);
 
-        previous.OnRecvPacket(new C_Handshake { clientVersion = 18 }.Write());
-        current.OnRecvPacket(new C_Handshake { clientVersion = 19 }.Write());
+        previous.OnRecvPacket(new C_Handshake { clientVersion = 20 }.Write());
+        current.OnRecvPacket(new C_Handshake { clientVersion = 21 }.Write());
         S_HandshakeResult rejected = ReadSingle<S_HandshakeResult>(previous);
         S_HandshakeResult accepted = ReadSingle<S_HandshakeResult>(current);
 
-        Assert.Equal(19, ProtocolVersion.Current);
+        Assert.Equal(21, ProtocolVersion.Current);
         Assert.False(rejected.ok);
-        Assert.Equal(19, rejected.serverVersion);
+        Assert.Equal(21, rejected.serverVersion);
         Assert.True(previous.IsClosing);
         Assert.True(accepted.ok);
         Assert.False(current.IsClosing);

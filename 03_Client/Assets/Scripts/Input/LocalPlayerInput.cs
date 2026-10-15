@@ -111,8 +111,7 @@ namespace Dawnholder.Client.Input
             bool eDown = Keyboard.current.eKey.wasPressedThisFrame;
             if (!qDown && !eDown) return;
 
-            CharacterClass myClass = ClassLoadout.SessionSelectedClass
-                ?? (CharacterClass)ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
+            CharacterClass myClass = (CharacterClass)ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
 
             if (!ClientSkillCatalog.SkillKeyMap.TryGetValue(myClass, out (SkillId q, SkillId e) mapping)) return;
 

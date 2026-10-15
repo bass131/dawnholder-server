@@ -47,6 +47,8 @@ public sealed class ServerFixtureLifecycleTests
         login.Read(new(loginBytes));
         Assert.Equal((byte)LoginResult.Accepted, login.result);
         await stream.WriteAsync(new C_CharacterSelect { characterClass = 0 }.Write()).AsTask().WaitAsync(Limit);
+        byte[] loadBytes = await ReadFrame(stream);
+        Assert.Equal(new byte[] { 6, 0, 48, 0, 0, 0 }, loadBytes);
         byte[] enterBytes = await ReadFrame(stream);
         Assert.Equal(PacketID.S_EnterMap, (PacketID)BitConverter.ToUInt16(enterBytes, 2));
         S_EnterMap enter = new();

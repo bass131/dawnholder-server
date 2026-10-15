@@ -1,0 +1,73 @@
+using System.Text.Json;
+using Dawnholder.Server.GameServer.Persistence.Sql;
+
+namespace Dawnholder.Server.GameServer.Tests.Persistence.RuntimeEntry;
+
+/// <summary>
+/// Independent verification of the listen-before startup gate's deployment identity (technical-spec §2.1: configured
+/// database, schema/version and binding are checked before persistent admission opens). The server compares the migration
+/// manifest that dh.ReadAdmission returns with its own embedded migration sources. The expected catalog is the reviewed
+/// literal in 99_Tools/database/verify-schema.sql:395-399, which every installed database must equal; it is not computed
+/// by the product's hashing. The manifest shape is dh.ReadAdmission's
+/// <c>SELECT Version AS version, Name AS name, Checksum AS checksum FROM dh.SchemaVersion ORDER BY Version FOR JSON PATH</c>.
+/// </summary>
+public sealed class SqlPersistenceDeploymentCatalogTests
+{
+    sealed record CatalogRow(int Version, string Name, string Checksum);
+
+    static readonly CatalogRow[] ReviewedCatalog =
+    {
+        new(1, "001_initial.sql", "F28502BB1A8D683A66F596F15BA9EEC779E5110BAD8ADDAEE03E393F26E54FCC"),
+        new(2, "002_persistence_metadata.sql", "867F8CC52350029EE15E753EC9134DDB7F7FAD91D5A9383D0F2209EAAD2C3599"),
+        new(3, "003_module_metadata.sql", "A4F271547EC0E2E700413F51D8281A361D8654D383996E73F9476E4540A40F9B"),
+        new(4, "004_module_release.sql", "8A9BA4EDAE097AAD802ABC65BE5C873230BC243F6325845288F9E2B69953620A"),
+    };
+
+    static string Manifest(IEnumerable<CatalogRow> rows)
+        => JsonSerializer.Serialize(rows.Select(row => new { version = row.Version, name = row.Name, checksum = row.Checksum }));
+
+    [Fact]
+    public void ReviewedCatalog_PassesTheStartupDeploymentGate()
+    {
+        Exception? refused = Record.Exception(() => SqlPersistenceDeployment.ValidateManifest(Manifest(ReviewedCatalog)));
+
+        Assert.Null(refused);
+    }
+
+    public static TheoryData<string> Drifts => new()
+    {
+        "004 checksum differs by one digit",
+        "002 renamed",
+        "003 missing",
+        "001 and 002 swapped",
+        "unknown fifth migration",
+        "version numbering shifted",
+        "extra manifest field",
+        "not an array",
+    };
+
+    [Theory]
+    [MemberData(nameof(Drifts))]
+    public void CatalogDrift_FailsTheStartupDeploymentGate(string drift)
+    {
+        string manifest = drift switch
+        {
+            "004 checksum differs by one digit" => Manifest(ReviewedCatalog.Select(row => row.Version == 4
+                ? row with { Checksum = "9" + row.Checksum[1..] } : row)),
+            "002 renamed" => Manifest(ReviewedCatalog.Select(row => row.Version == 2
+                ? row with { Name = "002_persistence.sql" } : row)),
+            "003 missing" => Manifest(ReviewedCatalog.Where(row => row.Version != 3)),
+            "001 and 002 swapped" => Manifest(new[] { ReviewedCatalog[1], ReviewedCatalog[0], ReviewedCatalog[2], ReviewedCatalog[3] }),
+            "unknown fifth migration" => Manifest(ReviewedCatalog.Append(new CatalogRow(5, "005_future.sql", new string('0', 64)))),
+            "version numbering shifted" => Manifest(ReviewedCatalog.Select(row => row with { Version = row.Version + 1 })),
+            "extra manifest field" => JsonSerializer.Serialize(ReviewedCatalog.Select(row =>
+                new { version = row.Version, name = row.Name, checksum = row.Checksum, appliedUtc = "2026-10-15" })),
+            "not an array" => JsonSerializer.Serialize(new { version = 1, name = "001_initial.sql", checksum = ReviewedCatalog[0].Checksum }),
+            _ => throw new ArgumentOutOfRangeException(nameof(drift), drift, "unknown drift case"),
+        };
+
+        Exception? refused = Record.Exception(() => SqlPersistenceDeployment.ValidateManifest(manifest));
+
+        Assert.True(refused is not null, $"{drift}: the startup gate accepted a drifted deployment");
+    }
+}
