@@ -2,9 +2,9 @@
 
 ## 재개 지점
 
-**다음 첫 일: PR243의 고정 입력을 신규 Astra가 독립 문서 실사한 뒤 결과를 메인에 보고한다.** 작성자는 정본 5문서의 쓰기를 종료했고 정산·pane 종료를 마쳤다. 결정 1~3의 현행 적용은 계속하며 PR2 브랜치·작업자는 PR1 병합 뒤 시작한다.
+**다음 첫 일: PR2의 고정 실행 계약으로 신규 Opus가 선행 실패 시험을 작성한다.** PR243은 사용자 승인 뒤 메인이 병합했다. PR2는 최신 main의 별도 브랜치에서 시작하며 선행 시험 → Astra 구현 → 신규 Opus 강 독립 검증 순서로 진행한다.
 
-작업 공간은 `rules-active`, 문서 PR 브랜치는 `docs/verification-lightening-20261015`다. 최신 main에서 시작한 기준·현재 Run·모델 관측·receipt는 근거 폴더 E의 `lead-context.md`와 `run-create.json`에 둔다. E는 `.backups/verification/2026-10-15-verification-lightening-execution-lock/`다.
+작업 공간은 `rules-active`, 현재 도구 PR 브랜치는 `feat/shared-execution-lock-20261015`다. 문서 PR 브랜치는 `docs/verification-lightening-20261015`였다. 최신 main에서 시작한 기준·현재 Run·모델 관측·receipt는 근거 폴더 E의 `lead-context.md`와 해당 진입 원시에 둔다. E는 `.backups/verification/2026-10-15-verification-lightening-execution-lock/`다.
 
 ## 진척 단계
 
@@ -12,9 +12,9 @@
 - [x] 범위 초안 작성
 - [x] 사용자 범위 승인
 - [x] 경량화 정본 반영
-- [>] PR243 병합
-- [ ] 잠금 설계 확정
-- [ ] 선행 실패 시험
+- [x] PR243 병합
+- [x] 잠금 설계 확정
+- [>] 선행 실패 시험
 - [ ] 잠금 도구 구현
 - [ ] 독립 강 검증
 - [ ] 도구 병합
@@ -76,6 +76,8 @@ PR 생성 뒤 병합 단계 이름에 실제 PR 번호를 넣는다.
 - **범위 승인:** 메인 `msg_7fcc3dcf1084`의 사용자 원문은 「대시보드 결정 응답: 1) 계획 검토 - Rules Rules 새 goal 범위 - 검증 경량화 규칙 문서 PR과 공용 실행 잠금 도구 PR → A 승인 (초안 msg_ddb68c0b4007)」이다. 메인이 전문·초안 hash를 대조하고 전달했다. 승인본은 E/`scope-approved-original.md`, 수신 원문은 E/`check-next-instruction.json`이다. PR2 Astra 배정과 R-7 비포함은 사용자가 함께 본 정리본에 적힌 메인 판단이며 사용자 결정으로 격상하지 않는다. PR1 문서 작업·독립 실사를 이어가고, 실사 중 PR2 선행 시험 계약의 정적 준비만 허용한다.
 - **PR1 작성 단계:** 신규 Sol이 허용 5문서에 실행 단계 일괄 승인·heartbeat 정산·goal 핵심 기록과 정본 연결을 반영했다. 작성 보고·사전 메모·자체 정적 harness 원시는 E/`pr1-author/`이며 자체점검과 독립 판정을 구분한다. 쓰기 종료·정산/종료는 E/`check-author-update-02.json`·`pr1-author-release.json`·`pr1-author-close.json`, 생존 신호 정산은 E/`pr1-author-liveness-complete.json`으로 초과 구간이 없다. 신규 독립 문서 실사와 메인 R-2·별도 병합 승인은 남았다.
 - **PR243 - 검증 실행 승인·정산·목표 기록 경량화:** [draft PR](https://github.com/bass131/dawnholder-server/pull/243)을 만들었다. 독립 문서 실사 전 상태이며 최종 판정·정확 head·CI는 E의 검증/승인 묶음으로 전달한다. 실사 고정 뒤 이 goal을 판정 결과 기록으로 바꾸지 않는다.
+- **PR243 병합:** 신규 Astra 문서 실사 PASS·메인 R-2·정확 head CI 성공 뒤 사용자가 별도 병합 승인했고 메인이 병합했다. 승인 제출·관문 실행은 메인 `msg_4ae0c4249ce8` 전달이며, PR의 MERGED·병합 commit·시각은 E/`pr1-merge-observation.json`으로 읽기 확인했다. 판정/정산/최종 승인 묶음은 E/`pr1-review/`·`pr1-final-handoff.json`이다.
+- **PR2 실행 계약:** 같은 저장소 공통 상태를 쓰는 JSON runner, Unity/WSL 대기 우선순위와 비선점, 직전 관측·병행 관문, PID/시작 identity·자식 수명과 실패/취소를 E/`pr2-execution-contract-v1.md`에 고정했다. 기본 상태는 Git common directory의 전용 Git 제외 경로이며 실제 관측과 시험용 주입을 구분한다. 대역의 무해한 Node 자식과 Windows 실제 진입의 확인 범위를 나누고, 새로운 단독 메모리 수치·전역 설정·직접 실행 전체 차단은 추가하지 않는다. 신규 Opus의 선행 RED 원시 뒤 Astra 구현을 발행한다.
 
 ## 결함과 다음 후보
 
