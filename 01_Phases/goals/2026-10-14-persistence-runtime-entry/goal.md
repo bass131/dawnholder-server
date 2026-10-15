@@ -405,3 +405,16 @@ Loading 입력 거부·DB 지연 비차단의 기존 서버 시험 이름/통과
 - 같은 Changed `--base origin/main`은 `.backups/code-rules/run-2026-10-15T19-00-27.489Z-9448/results.json`에서 대상9/위반0/실패0/exit0. 오프라인 Boundary47통과, Input6통과+NUL1관측, Sdk5통과로 이전 개수와 같다. 제품 동작/시험 기대 변경0, SQL·Unity·게임 재실행0이다.
 - 근거 `B/runtime-entry-indentation-fix-1/{report.md,context.md,lead-source-check.json,raw/completion-summary.json}`. 보조 감사의 Changed/Boundary 과거 자식 이력 일부 누락은 UTC 비교 오류로 공개했으며 Input/Sdk와 마지막 잔존0·Boundary journal4개로 보완했다. 생애전수 반환 증명으로 확대하지 않는다. 작업자는 쓰기 종료·release·동일 incarnation/idle 확인 후 종료했다. heartbeat350초1회는 검토/보고 구간으로 기록한다.
 - 「검증자의 서식 지적 없음은 규칙 검사 통과를 뜻하지 않았다」는 관찰을 남긴다. 다음 검증 계약에 Changed 실행을 명시하는 것은 동결 뒤 후보이며 이번에 운영 정본을 임의 수정하지 않는다. 서식 기계 증명은 자체점검과 리드 원시 대조이며 신규 독립 판정으로 부르지 않는다.
+
+### C# 공백 교정·로컬 한계와 원격 판정 결정(2026-10-16)
+
+메인 msg_7327a57f1fff의 신규 Astra 작업 task_918b81c34dbd/ctx_2330ae93808b는 HostPlan.cs·SqlLifecycle.cs 두 파일의 17곳만 교정했다. 직전 head a184835d25ab44b78281894722558cf3cd2d545f의 dotnet-tests는 WHITESPACE17건으로 실패했고 다른3CI는 성공했다. 최초 보고18건은 오기이며17건으로 정정했다.
+
+- 근거 C는 B/runtime-entry-csharp-whitespace-fix-1이다. C/report.md·context.md 전문, 실제 diff(+28/-11), raw/preservation.json의 Debug/Release 토큰·문자열·주석·directive 보존 및 현재2파일 SHA를 리드가 대조했다(C/lead-source-check.json). 신규 독립 판정이 아니라 메인의 기계 교정 예외에 따른 자체검사와 리드 실사다.
+- 원제품 full format 재실행 exit0, Formatting.Tests244/244·420개C# 보존. Changed 대상9/위반0/실패0, Host restore/build0(기존 IDE0011 경고4), module production 위반0·회귀34실행/60skip, Architecture199중93pass/103skip/3expected failure exit0. Orca72/72·MergeGate126/126 성공. 각 명령·환경·종료코드·원시는 C/report.md 실행표 및 raw/*-command.json에 연결한다.
+- 최초 fullformat의 DrvFs 비실행 fixture1실패는 승인된 native Linux TMPDIR 재실행1회로 해소했다. Architecture Git Filename too long 오류12건은 원형 probe stderr 확인 뒤 짧은 Windows TEMP의 승인 재실행1회로 해소했다. 최초 실패 원시는 보존하며 재실행으로 덮어쓰지 않았다.
+- CodeRules23중20pass/3fail은 Windows 로컬 환경 한계, 미해결이다. PSSA8.3 alias/canonical 경계2건은 환경 실패, TypeScript ERR_PACKAGE_IMPORT_NOT_DEFINED 1건은 원인미확정으로 남긴다. 경로 길이 인과는 입증하지 않았다. 원시 C/raw/FCode-stdout.txt·code-failures.json. SessionGuard167중165pass/2fail은 junction 실제 대상의 memo-first/write-outside-checkout 거부이며 원인미확정이다(C/raw/FSessionGuard-stdout.txt·session-guard-failures.json). 합계 미해결5건이지 통과가 아니다.
+- SessionGuard 실행은 중단 지시 msg_59e709d50097(20:26:08Z) 응답을 읽기 전에 mailbox check와 다음 실행을 한 도구 호출에 연속 배치한 운영 편차다. PID39092, 시작20:26:39.5218942Z·종료20:26:45.0417210Z/exit1. 정확 수신시각은 미기록이나 다음 wrapper birth20:26:34.3357903Z 이전 check 반환이며 수신 전 시작으로 소급하지 않는다. Backlog 미실행. 사전 lock probe 누락 뒤 B선행 실행 편차와 승인 경위는 C/raw/operational-deviations.md에 보존한다.
+- 메인 msg_3be15baefcea 및 msg_8b2ef7504a1e는 도구 시험에 영향 없는 C#공백 교정임을 근거로 추가 진단·재시도0, 로컬 실패·편차를 동결 뒤 정리 후보로 남기고 commit/push 후 새 head 원격4CI로 판정하도록 명시했다. SessionGuard의 한 번 실행은 실패한 시험2건을 포함한다. 실패를 통과로 바꾸거나 편차를 소급 승인하지 않는다.
+- C/raw/final-audit.json은 tracked3328 중 승인2파일만 변경·의도밖drift0·보호1117불변이며 리드 현재 diff/hash와 일치한다. process-return-audit.json은 기록된 최상위 PID/birth 잔존0·현재Linux소유후보0, 생애 후손 전수추적은 아니다. 작업자는 outcome=failed로 정산했고 release→동일incarnation653f9b1b-e15f-45fc-b0cf-1a80eddf7f0a/idle확인→pane종료했다.
+- 서버1502건은 소스 동일 근거로 재사용했고 이번 재실행이 아니다. SQL/Unity/게임 재실행0, 이전 독립 판정과 메인 수용을 유지한다. 다음은 새 head 원격4CI이며 사용자 exact head 승인·메인 병합은 미완료다.

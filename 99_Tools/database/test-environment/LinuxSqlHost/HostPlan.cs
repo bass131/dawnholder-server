@@ -43,10 +43,14 @@ internal sealed class HostPlan
             throw new InvalidDataException();
         HostPlan plan = new()
         {
-            Endpoint = Required(root, "Endpoint"), Database = Required(root, "Database"),
-            RuntimeLogin = Required(root, "RuntimeLogin"), Hostname = Required(root, "ContainerHostname"),
-            ProductVersion = Required(root, "ExpectedProductVersion"), Collation = Required(root, "ExpectedCollation"),
-            LifetimeId = Required(root, "LifetimeId"), AccountId = root.GetProperty("AccountId").GetGuid(),
+            Endpoint = Required(root, "Endpoint"),
+            Database = Required(root, "Database"),
+            RuntimeLogin = Required(root, "RuntimeLogin"),
+            Hostname = Required(root, "ContainerHostname"),
+            ProductVersion = Required(root, "ExpectedProductVersion"),
+            Collation = Required(root, "ExpectedCollation"),
+            LifetimeId = Required(root, "LifetimeId"),
+            AccountId = root.GetProperty("AccountId").GetGuid(),
             CharacterId = root.GetProperty("CharacterId").GetGuid(),
             ConnectSeconds = root.GetProperty("ConnectSeconds").GetInt32(),
             CommandSeconds = root.GetProperty("CommandSeconds").GetInt32()

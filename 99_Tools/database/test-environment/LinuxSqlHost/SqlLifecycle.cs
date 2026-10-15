@@ -161,9 +161,14 @@ internal sealed class SqlLifecycle(HostPlan plan, CancellationToken cancellation
             throw new InvalidDataException();
         return new
         {
-            Status = "Succeeded", Operation = "bootstrap", DatabaseGuid = databaseGuid,
-            RuntimeSid = Convert.ToHexString(sid), SaDisabled = true,
-            AccountId = plan.AccountId, CharacterId = plan.CharacterId, SchemaVersion = 4
+            Status = "Succeeded",
+            Operation = "bootstrap",
+            DatabaseGuid = databaseGuid,
+            RuntimeSid = Convert.ToHexString(sid),
+            SaDisabled = true,
+            AccountId = plan.AccountId,
+            CharacterId = plan.CharacterId,
+            SchemaVersion = 4
         };
     }
 
@@ -236,10 +241,18 @@ internal sealed class SqlLifecycle(HostPlan plan, CancellationToken cancellation
             throw new InvalidDataException();
         SqlConnectionStringBuilder builder = new()
         {
-            DataSource = plan.Endpoint, InitialCatalog = database, Encrypt = SqlConnectionEncryptOption.Mandatory,
-            TrustServerCertificate = false, Pooling = false, PersistSecurityInfo = false,
-            IntegratedSecurity = false, MultipleActiveResultSets = false, Enlist = false,
-            ConnectRetryCount = 0, ConnectTimeout = plan.ConnectSeconds, ApplicationName = "Dawnholder.LinuxSqlHost"
+            DataSource = plan.Endpoint,
+            InitialCatalog = database,
+            Encrypt = SqlConnectionEncryptOption.Mandatory,
+            TrustServerCertificate = false,
+            Pooling = false,
+            PersistSecurityInfo = false,
+            IntegratedSecurity = false,
+            MultipleActiveResultSets = false,
+            Enlist = false,
+            ConnectRetryCount = 0,
+            ConnectTimeout = plan.ConnectSeconds,
+            ApplicationName = "Dawnholder.LinuxSqlHost"
         };
         SqlConnection connection = new(builder.ConnectionString, new SqlCredential(name, password));
         try
