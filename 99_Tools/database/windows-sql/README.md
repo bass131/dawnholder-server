@@ -7,6 +7,8 @@ PR1의 오프라인 검사·빌드 결과는 노트북 실행 성공이 아니�
 
 진입점은 `Invoke-WindowsSqlEnvironment.ps1`이다. `WindowsSql.Common.ps1`은 순수 판단과 수명,
 `WindowsSql.Adapter.ps1`은 실제 연산의 닫힌 목록, `Instance/Sql/Certificate/Verify`는 해당 I/O를 소유한다.
+`WindowsSql.CertificateKey.ps1`은 Prepare와 Certificate(Verify·Instance·Remove에서 사용)의
+키 취득·지원 조건·정확 키 파일·서비스 ACL 판정을 함께 소유한다.
 `Runtime/Store/PathLease`는 공개 입력과 파일·잠금을 담당한다. dot-source는 정의만 읽는다.
 CLI에는 adapter, SQL, script, 관측값, 머신 우회, 비밀, TLS 완화 인자가 없다.
 
@@ -28,6 +30,20 @@ CLI에는 adapter, SQL, script, 관측값, 머신 우회, 비밀, TLS 완화 인
 | 인증서 | 별도 Prepare 단계의 새 인증서·개인키 서비스 읽기 권한 부여 승인. OS 전역 Root 저장소 변경 없음 |
 | 저장 identity | 기존 서버 규칙으로 정한 persistedAccountName/AccountId, 새 CharacterId, slot 1 |
 | 출력 | SourceRoot 아래 공개 파일/근거, 현재 사용자 LOCALAPPDATA 아래 전용 PrivateRoot |
+
+인증서 키 검사는 Windows의 `crypt32`/CAPI 및 해당 SChannel CSP에 접근할 수 있는 실행 권한이 필요하다.
+지원 키는 인증서의 `CERT_KEY_PROV_INFO`에 **Microsoft RSA SChannel Cryptographic Provider**,
+`PROV_RSA_SCHANNEL`(12), 머신 키, `AT_KEYEXCHANGE`(1)가 기록된 기존 컨테이너의
+**비내보내기 RSA 2048비트 이상** 개인키다. 관리 코드에서 `RSACng` 또는
+`RSACryptoServiceProvider`로 보이는지만으로 지원 여부를 판정하지 않는다.
+CNG 전용 KSP·사용자 키·서명 전용/내보내기 가능 키와 증명할 수 없는 메타데이터는 거부한다.
+X509 KeyUsage의 KeyEncipherment나 CNG KeyUsage는 KeySpec의 대체 근거가 아니다.
+
+도구는 인증서의 공급자/컨테이너/KeySpec으로 **기존 키만** 열고, CAPI에서 인증서 공개키와 연결된 키를
+대조한다. 키 생성·내보내기·누락된 연결 복구·다른 컨테이너 검색은 하지 않는다. 키 파일은 CSP가 반환한
+고유 컨테이너 이름 한 개로 `CommonApplicationData\Microsoft\Crypto\RSA\MachineKeys` 바로 아래의
+실제 파일을 확인한다. 빈 이름·경로 이탈·대체 데이터 스트림·폴더·reparse/junction은 거부한다.
+정확 서비스 SID의 Allow Read가 필요하며 Deny·읽기 부족은 거부한다(Prepare는 검증 뒤 Read를 부여).
 
 이 버전은 `ListenOnAllIPs=1`, 가상 서비스 계정 `NT Service\MSSQL$<InstanceName>`,
 IPv4 NAT의 실제 route subnet `/20..32` 또는 mirrored의 `127.0.0.1`을 지원한다.
@@ -198,6 +214,24 @@ $LASTEXITCODE
 만들고 공개 PEM만 내보낸다. Root 저장소에 추가하지 않는다. 개인키는 비내보내기이며 argv/env/Git에 없다.
 `preparation.json`, `certificate-created.txt`, `certificate.json`은 private 폴더에 남는다.
 실패 exit1이면 그 폴더와 원시를 보존하고 재실행하지 않는다. thumbprint 기록 전 중단도 자동 성공/삭제로 추정하지 않는다.
+
+생성 직후 thumbprint를 먼저 기록하고, 공통 키 검사와 정확 키 파일의 서비스 읽기 ACL 확인이 끝난 뒤
+공개 PEM과 receipt를 쓴다. 키/ACL 단계 실패 시 인증서는 이미 생겼을 수 있고,
+ACL 부여 뒤 공개 PEM/receipt 기록 실패 시 읽기 권한도 남을 수 있다. 출력 파일의 부재는
+인증서·권한 부재의 증거가 아니다. 자동 삭제·키 재생성 없이 §8의 부분 실패 복구 절차로 넘긴다.
+
+| 공개 코드 | 의미와 다음 확인 |
+|---|---|
+| `WINDOWS_SQL_CERTIFICATE_KEY_ACCESS_FAILED` | 기존 개인키 취득·접근 또는 인증서/키 바인딩 확인 실패. 정확 대상과 실행 권한을 확인하며 새 키로 대체하지 않는다 |
+| `WINDOWS_SQL_CERTIFICATE_KEY_METADATA_UNAVAILABLE` | 공급자·컨테이너 정보나 키 속성을 안전하게 읽어 증명할 수 없음. null을 지원 판정으로 바꾸지 않는다 |
+| `WINDOWS_SQL_CERTIFICATE_KEY_UNSUPPORTED` | 읽은 키가 위 SChannel/머신/KeyExchange/비내보내기/RSA 조건 밖임 |
+| `WINDOWS_SQL_CERTIFICATE_KEY_ACL_ACCESS_FAILED` | 정확 키 파일의 ACL 조회·부여·재확인 실패. 권한 변경 완료 여부를 추정하지 않는다 |
+| `WINDOWS_SQL_CERTIFICATE_KEY_ACL_INVALID` | 서비스 SID의 Allow Read 부재·부족 또는 Deny 존재 |
+| `WINDOWS_SQL_CERTIFICATE_KEY_CHANGED` | 검증한 정확 키 파일과 receipt의 KeyFile 불일치 |
+| `WINDOWS_SQL_PATH_INVALID` / `WINDOWS_SQL_PATH_REPARSE` | 유효한 일반 키 파일 경로를 증명할 수 없거나 reparse 경로임 |
+
+오류에는 원래 공급자 예외나 키 내용을 출력하지 않는다. 이 검사는 실제 SQL의 인증서 로딩과 TLS 성공을
+대신하지 않으며 노트북의 실제 KeySpec/CAPI 상호운용·SQL 로딩은 별도 실행 근거로 확인해야 한다.
 
 Prepare 성공 뒤에도 Plan이 `Blocked`이거나 Apply 전에 중단하면 인증서와 서비스 계정의 개인키 읽기
 권한만 남을 수 있다. Apply의 lifecycle 기록이 없으면 Cleanup은 `WINDOWS_SQL_CLEANUP_STATE_MISSING`,
@@ -400,6 +434,8 @@ Cleanup은 해당 lifetime이 생성 완료한 login/DB/firewall만 제거하고
 원래 ForceEncryption 값은 쓰지 않고 보존·대조한다. 인증서 정리는 Cleaned/원본 설정 복원/정확
 thumbprint·서비스 키/credential hash를 확인한다. 공개 PEM·snapshot·receipt·journal은 증거로 남긴다.
 정리 중 실패도 재시도로 덮지 않고 `certificate-cleanup.json`의 Removing 상태를 보존한다.
+Remove도 §1·§4와 같은 키/파일/서비스 ACL 검사를 통과해야 제거 의도를 기록하고 삭제한다.
+접근 실패나 미지원 판정이 나면 receipt를 고치거나 키 조건을 완화하지 않고 현재 원시를 보존한다.
 
 **인증서만 남은 경우(Apply 전 중단·Plan Blocked):** lifecycle이 없으면 위 Cleanup/Remove 명령을
 사용할 수 없다. Cleanup은 상태·소유 자원·원래 설정 근거가 필요하고, Remove는 `Cleaned` 상태와
