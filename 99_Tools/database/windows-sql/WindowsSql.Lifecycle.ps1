@@ -169,6 +169,8 @@ function Invoke-WindowsSqlApply {
         return 'Applied'
     }
     catch {
+        # A refusal before the first snapshot must not itself create the first write as a failure journal.
+        if ($null -eq $snapshot) { throw 'WINDOWS_SQL_APPLY_FAILED' }
         # Failure never becomes rollback or success, even if journaling also fails.
         $failed = New-WindowsSqlState @stateArguments -Status 'Failed' -Snapshot $snapshot `
             -Completed $completed.ToArray() -FailedOperation $operation -PendingOperation $pending -FirewallRule $rule

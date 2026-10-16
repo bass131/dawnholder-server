@@ -374,6 +374,48 @@ Assert-True -Name 'IND-CLI-10 no private lifetime folder exists after all reject
 # =====================================================================================================
 # 3. Product definitions, the real PS5.1 source reader child and child-process lifetime.
 # =====================================================================================================
+# The service observation opens the exact instance service through the ServiceController type literal to read its
+# dependent services. The fixture instance has none. Service control is replaced at the RestartService seam below,
+# so any Stop/Start/Wait reaching this stand-in is recorded and refused.
+class AdapterFakeServiceController {
+    static [Collections.Generic.List[string]]$Calls = [Collections.Generic.List[string]]::new()
+    [string]$ServiceName
+    [object[]]$DependentServices = @()
+
+    AdapterFakeServiceController([string]$name) {
+        $this.ServiceName = $name
+        [AdapterFakeServiceController]::Calls.Add('Open:' + $name)
+    }
+
+    [void] Refresh() { [AdapterFakeServiceController]::Calls.Add('Refresh:' + $this.ServiceName) }
+    [void] Stop() { [AdapterFakeServiceController]::Refuse('Stop()') }
+    [void] Stop([bool]$stopDependentServices) {
+        [AdapterFakeServiceController]::Refuse('Stop(' + $stopDependentServices + ')')
+    }
+    [void] Start() { [AdapterFakeServiceController]::Refuse('Start') }
+    [void] WaitForStatus([object]$desired, [TimeSpan]$timeout) {
+        [AdapterFakeServiceController]::Refuse('WaitForStatus')
+    }
+    [void] Dispose() { [AdapterFakeServiceController]::Calls.Add('Dispose:' + $this.ServiceName) }
+
+    static [void] Refuse([string]$operation) {
+        [AdapterFakeServiceController]::Calls.Add('Control:' + $operation)
+        throw 'VERIFIER_FORBIDDEN_ServiceControl'
+    }
+}
+$accelerators = [psobject].Assembly.GetType('System.Management.Automation.TypeAccelerators')
+$controllerTypeNames = @('ServiceProcess.ServiceController', 'System.ServiceProcess.ServiceController')
+foreach ($typeName in $controllerTypeNames) { $accelerators::Add($typeName, [AdapterFakeServiceController]) }
+$boundControllerNames = @(foreach ($typeName in $controllerTypeNames) {
+        (& ([scriptblock]::Create('[' + $typeName + ']'))).FullName
+    })
+$controllerBound = @($boundControllerNames | Where-Object { $_ -cne 'AdapterFakeServiceController' }).Count -eq 0
+Assert-True -Name 'IND-SCM-00 ServiceController type literals resolve to the offline stand-in' `
+    -Condition $controllerBound -Detail ($boundControllerNames -join ',')
+if (-not $controllerBound) {
+    Add-TestResult -Name 'IND-FLOW-00 flows not executed: service observation cannot be replaced safely' -Outcome FAIL
+    Complete-TestSuite
+}
 . (Join-Path $script:ProductRoot 'WindowsSql.Common.ps1')
 . (Join-Path $script:ProductRoot 'WindowsSql.Adapter.ps1')
 $script:RealInvokeChild = ${function:Invoke-WindowsSqlChild}
@@ -1459,6 +1501,14 @@ Assert-True -Name 'IND-SECRET-01 generated runtime passwords appear in no file, 
     -Condition ($leaks.Count -eq 0) -Detail (@($leaks | ForEach-Object Name) -join ',')
 Assert-True -Name 'IND-SECRET-02 no forbidden real command was reached' `
     -Condition ($script:ForbiddenCalls.Count -eq 0) -Detail (@($script:ForbiddenCalls) -join ',')
+$serviceCalls = @([AdapterFakeServiceController]::Calls)
+$instanceService = 'MSSQL$' + $script:FixtureInstance
+$controlCalls = @($serviceCalls | Where-Object { $_ -clike 'Control:*' })
+$otherServices = @($serviceCalls | Where-Object { $_ -clike 'Open:*' -and $_ -cne ('Open:' + $instanceService) })
+$opened = @($serviceCalls | Where-Object { $_ -clike 'Open:*' }).Count
+Assert-True -Name 'IND-SCM-01 service observation opened only the exact instance and never controlled a service' `
+    -Condition ($opened -gt 0 -and $controlCalls.Count -eq 0 -and $otherServices.Count -eq 0) `
+    -Detail ('opened={0}; control={1}; other={2}' -f $opened, ($controlCalls -join ','), ($otherServices -join ','))
 
 # =====================================================================================================
 # 5. Real certificate gate rejections with in-memory certificates (no store, no persisted key).

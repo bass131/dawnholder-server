@@ -19,6 +19,7 @@ CLI에는 adapter, SQL, script, 관측값, 머신 우회, 비밀, TLS 완화 인
 |---|---|
 | 실행 위치 | 노트북의 실제 MachineName, 실행 사용자 SID, 관리자 토큰, checkout 절대 경로와 정확 commit |
 | 설치 | 정확 InstanceName/InstanceId/ProductVersion, 서비스 실행 계정과 Running 상태 |
+| 의존 서비스 | 정확 SQL 인스턴스의 의존 서비스 전체가 없거나 모두 `Stopped`이면서 시작 유형 `Disabled`인지 확인 |
 | 기존 자원 | 신규 DB `Dawnholder_...`, 신규 login `dh_...`, 신규 lifetime 32자리 소문자 hex |
 | 보호 기준 | 사용자/노트북 담당자가 고른 기존 백업·메타데이터 기준과 전후 비교 방법. 기존 DB 목록/내용 조회를 추가하지 않음 |
 | 설정 | 기존 LoginMode/TCP/고정·동적 포트/cert/ForceEncryption, 충돌 없는 신규 포트 |
@@ -30,9 +31,27 @@ CLI에는 adapter, SQL, script, 관측값, 머신 우회, 비밀, TLS 완화 인
 
 이 버전은 `ListenOnAllIPs=1`, 가상 서비스 계정 `NT Service\MSSQL$<InstanceName>`,
 IPv4 NAT의 실제 route subnet `/20..32` 또는 mirrored의 `127.0.0.1`을 지원한다.
-이 범위 밖의 설정·별도 서비스 계정·dependent service·관측 불가 상태는 중단한다.
+이 범위 밖의 설정·별도 서비스 계정·관측 불가 상태는 중단한다.
 NAT `/20..32`는 도구 지원 제한이며 WSL의 보편적 subnet 규칙이 아니다.
 LAN 전체 범위, WSL 모드 강제 변경, 인스턴스 업그레이드·재설치, sa 활성화는 하지 않는다.
+
+**의존 서비스 경계:** Preflight/Plan/Verify/Cleanup의 관측, Apply 첫 쓰기(설정 snapshot·journal·registry·DB 변경)
+전 검사와 도중 각 변경 직전 검사(mutation guard)에 같은 조건을 적용한다. 전체 의존 서비스를 관측하여
+빈 집합 또는 모든 서비스가 `Stopped` + `Disabled`일 때만 허용하며,
+서비스 이름에 따른 예외는 없다. Running·전환 중·Paused, Manual·Automatic, 값 누락·관측 실패는 중단한다.
+Apply와 Cleanup의 재시작 직전에도 새로 관측하고 조건이 달라졌으면 Stop 호출 전에 거부한다. 도구는 의존 서비스의
+강제·묵시적 정지, 삭제, 시작 유형 변경을 하지 않는다. SQL 서비스 정지는 `Stop(false)`를 사용해
+검사 뒤 의존 서비스가 활성화되면 SCM이 정지를 거부하게 한다. 관측과 정지는 원자적이지 않으므로
+검사 뒤 시작 유형·의존 관계 변경까지 잠그는 것은 아니다. 승인한 중단 시간 동안 다른 관리 작업을 피한다.
+
+의존 서비스 조건 위반·관측 실패의 공개 오류 코드는 다음과 같다. 다른 원인에도 같은 코드가 쓰이므로
+이 코드만으로 원인을 의존 서비스로 단정하지 않는다.
+
+| 단계 | 의존 서비스 조건 확인 시점 | 공개 오류 코드 |
+|---|---|---|
+| Preflight / Plan / Verify | 각 단계의 관측 | `WINDOWS_SQL_ADAPTER_FAILED` |
+| Apply | 첫 쓰기 전·도중 각 변경 직전·재시작 직전 | `WINDOWS_SQL_APPLY_FAILED` |
+| Cleanup | 단계 관측·각 변경 직전·복원에 따른 재시작 직전 | `WINDOWS_SQL_CLEANUP_FAILED` |
 
 MachineName에는 영문/숫자/하이픈 1~15자만 허용한다. 밑줄 등이 있는 머신은 v1에서 거부한다.
 제품 경로·모든 입력·PrivateRoot의 조상에 junction/symlink/reparse point가 있으면 중단한다.
@@ -363,6 +382,13 @@ $publicCa = Join-Path $sourceRoot $runtime.PublicCaPath
 현재 설정이 기록한 실제 사후값과 같아야 한다. 다른 사람이 바꾼 설정·소유권·불확실 부작용은
 어떤 삭제/복원보다 먼저 차단한다. DROP에 강제 rollback/다른 세션 종료를 사용하지 않는다.
 
+Cleanup에도 §1의 의존 서비스 조건(빈 집합 또는 전체 `Stopped` + `Disabled`)이 필요하다.
+DB/login만 정리하고 설정 복원·재시작이 필요 없는 경우에도 같은 조건을 적용한다.
+조건 미충족·관측 실패로 거부되면 정리/복원을 자동 진행하지 않고 현재 상태와 공개 원시를 보존해 담당자에게 보고한다.
+조건을 맞추려고 의존 서비스를 임의로 정지·삭제하거나 시작 유형을 바꾸지 않는다.
+환경 조정이 필요하면 정확 대상·조치·영향·순서를 별도로 승인받고, 조정 뒤 안전 조건을 다시 관측한 다음
+원래 계획/hash·승인 유효성 및 소유·상태 조건을 충족하는 승인된 Cleanup만 수행한다.
+
 ```powershell
 & $cli -PlanPath $planPath -ExpectedPlanHash $planHash -RuntimePath $runtimePath -Step Cleanup
 # Cleaned 확인 후, 별도 명시 명령으로 새 인증서/개인키와 확인된 DPAPI 파일만 정리:
@@ -388,6 +414,12 @@ thumbprint·서비스 키/credential hash를 확인한다. 공개 PEM·snapshot�
 별도로 승인받은 작업에서만 정리한다. 기존 인증서나 다른 키의 ACL은 삭제·변경하지 않는다.
 Apply 전에는 snapshot/resources/lifecycle가 없을 수 있으므로 부재를 기록하고 복원값을 추정하지 않는다.
 
+**lifecycle 없이 snapshot 파일만 남은 경우:** snapshot 저장 실패 뒤 `lifecycle.json` 없이
+`snapshot.json` 또는 `.pending` 파일만 남은 상태도 아래 수동 복구 절차를 적용한다.
+lifecycle 부재나 오류 코드만으로 실제 설정 변경이 없었다고 단정하지 않는다. 공개 실패 원시와
+원래 plan/runtime/hash·파일 소유 근거를 보존하고 담당자의 별도 복구 판단·구체 승인을 받는다.
+잔여 파일을 자동 삭제하거나 재Apply·Cleanup 우회로 복구하지 않으며, 비밀 파일을 복사·외부 공개하지 않는다.
+
 **실패한 login의 잔여 DPAPI 파일:** login 생성은 CurrentUser DPAPI 파일을 먼저 저장한다.
 그 뒤 SQL 생성·receipt 기록이 실패하거나 중단되면 `<PrivateRoot>\runtime.clixml`이 남고
 resources receipt의 `CredentialHash`는 null일 수 있다. hash가 null인 파일은 인증서 Remove가 자동 삭제하지 않는다.
@@ -399,7 +431,7 @@ lifetime·정확 CredentialPath와 실행 사용자 SID·파일 소유/ACL·현�
 
 **24시간 승인 만료 뒤 자동 Cleanup은 지원하지 않는다.** 원래 PlanHash와 snapshot을 유지한
 제한이며 `ExpiresUtc`만 고쳐 재승인을 흉내 내거나 receipt를 지워 새 lifetime으로 재시작하지 않는다.
-사용자는 적용 당일 정리를 계획한다. 승인 만료·불확실 실패·위 인증서/DPAPI 잔여 상태에서는 다음
+사용자는 적용 당일 정리를 계획한다. 승인 만료·불확실 실패·위 인증서/snapshot/DPAPI 잔여 상태에서는 다음
 수동 복구 절차의 정확 대상과 조치를 별도로 승인한다:
 
 1. 기존 plan/runtime/source hash, preparation/certificate receipt, snapshot/resources/lifecycle와 실패
