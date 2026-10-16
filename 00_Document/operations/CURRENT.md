@@ -2,7 +2,7 @@
 
 상태·결정·남은 일은 각 goal의 재개 안내에서 확인한다. 아직 병합되지 않은 goal은 아래 해당 worktree에서 읽는다. 다른 worktree의 로컬 기록이 이 checkout에도 있다고 가정하지 않는다.
 
-- Core: [실제 SQL 설치·엔진 판정 종료 기록](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md#2026-10-16-종료-기록) · [실제 DB 연결·로딩 게이트·재접속 직업 복원 종료 기록](../../01_Phases/goals/2026-10-14-persistence-runtime-entry/goal.md#2026-10-16-종료-기록) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-parallel` · `docs/core-persistence-closeout-20261016` · PR237·PR242 병합 완료, 종료 기록·문서 실사 중. 다음 goal 미착수.
+- Core: [노트북 SQL Express 시연 DB 도구](../../01_Phases/goals/2026-10-16-laptop-sql-express/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `feat/laptop-sql-express-20261016`
 
 - <a id="content-worktree"></a>Content: [던전 클리어·보상과 눈에 띄는 결함 둘](../../01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `docs/content-dungeon-clear-closeout-20261015`
 
