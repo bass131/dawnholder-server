@@ -1,6 +1,6 @@
 # 노트북 SQL Express 시연 DB 도구
 
-상태: 승인 범위로 PR1 준비 중. 데스크톱에서 도구·오프라인 실패/보호 시험·Docker 경로 회귀·실행 카드를 만들고, PR2의 실제 노트북 실행은 미실행으로 남긴다.
+상태: PR1(PR246) 병합 완료. 데스크톱 개발을 마감하고 노트북 PR2 실제 실행·원시 검증을 기다린다. PR1 오프라인 검증을 노트북 실증 성공으로 표현하지 않는다.
 
 ## 진척 단계
 
@@ -9,8 +9,8 @@
 - [x] 도구 구현
 - [x] 독립 검증
 - [x] 실행 카드 확정
-- [>] PR246 병합
-- [ ] 노트북 실제 실행
+- [x] PR246 병합
+- [>] 노트북 실제 실행
 - [ ] 실증 PR 병합
 - [ ] 종료 점검
 
@@ -44,11 +44,31 @@
 
 로컬 관리자 초기화는 lpc 고정·Integrated Security=true·Encrypt=false·TrustServerCertificate=false다. 위 조건은 실제 adapter와 독립 검증 계약에 원문으로 포함한다. 이 결정으로 데스크톱 SQL 접근이나 PR2 노트북 실행 시점 승인까지 받았다고 해석하지 않는다.
 
+### 작업 방식 개선 A와 노트북 이주 우선
+
+메인 전달 `msg_f4feb0b116b2`(2026-10-16T06:09:29Z)의 사용자 원문이다. 이 pane 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 작업 방식 개선 - 오늘 드러난 되돌이 원인을 언제 규칙에 넣을지 → C 코멘트 「A로 가면 좋은데, 일단 노트북 이주부터 빠르게」
+
+메인 적용 판단: A를 채택하되 노트북 이주가 우선이며 이를 늦추지 않는다. 규칙 정본 변경은 10-28 뒤 Rules 「후보 출구」 목표로 넘긴다. 이후 새 구현·수정 계약은 작업자가 worker_done 전 바뀐 언어의 code-rules Changed와 서식 대상이 있는 format-check를 실행하고 원시를 남긴다. 리드 push 전 검사도 유지한다. 완료 보고에는 경로별 「실제 실행 / 대역 / 미실행」 표를 두며, 대역 경로를 실제 구현 경로 검사로 표현하지 않는다. 보존·동일성 증명은 계약에 기존 format-check 근거·파서 token 비교 등 쓸 도구를 지정하고 새 범용 harness를 만들지 않는다. 새 코드가 없는 PR2에 무관한 작업을 추가하거나 PR1을 다시 열지 않는다.
+
+### 버전 대조 조회 명령 고정 — 메인 요청 msg_8b283e9f6b3e
+
+- 정확한 승인 machine·instance·InstanceId·공개 출력 폴더 4입력만 받는 별도 pwsh 7 조회 카드다. 64비트 Setup Version과 같은 LPC/Windows 통합인증 연결의 Shared memory·machine/instance·sysadmin·ProductVersion을 읽고 JSON에 대상·UTC·exit를 남긴다. 두 값 불일치/미관측이면 Preflight 전에 중단한다. ForceEncryption 하향·TCP/NP fallback·기존 DB 목록/내용 조회·SQL/registry 쓰기0.
+- 산출물: 데스크톱 `.backups/verification/2026-10-16-laptop-sql-express/pr2-prep/pr2-version-check.md`. SHA256 `56441CF97CAB1CA657AEDA1B0207C013E617C7A10A4F92F88AF68EF3B8897C1A`. 메인이 동일 hash로 USB `D:\Migration\pr2-version-check.md`에 복사했으며 노트북에서는 `E:\Migration\pr2-version-check.md`다(`msg_6024803a538e`).
+- 신규 Astra 작성 후 신규 Opus 독립 검토. 판정 원문은 데스크톱 `.backups/verification/2026-10-16-laptop-sql-express/pr2-prep/verification-1/report.md`·`verdict.json`. 문서/오프라인 통과·차단0이며 강 실제 진입은 미실행·판정 보류다. 실제 SQL·registry·복사 블록 전체를 데스크톱에서 실행하지 않았다. 근거 폴더는 Git 밖이며 노트북에는 메인이 압축본으로 옮긴다.
+- Low #1: 자식 pwsh 시작 실패 때 EXIT 줄이 오래된 LASTEXITCODE를 표시할 수 있다. 메인이 인계 8절에 **해당 실행의 새 JSON Status=Matched와 exit0 둘 다 확인, EXIT 줄 단독 판정 금지, 자식 시작 실패·JSON 부재면 중단**을 넣었다. 카드 bytes는 유지한다. InstanceId 매핑은 뒤 Preflight 검사를 유지하며 추가 registry 읽기를 이 카드에 넣지 않았다. U-1 실제 버전 두 원천 일치 여부는 노트북 원시 전까지 미확정이다.
+
 ## 재개 지점
 
-- 다음 첫 일: 메인 판단 msg_f865e434e6e7을 반영해 실제 Windows adapter·CLI·실행 카드 구현자를 발행한다. 이후 신규 Opus 독립 검증을 진행한다. 코어 구현자는 정산·종료했고 독립 검증은 아직 미실행이다.
-- 작업 경로 core-active, branch `feat/laptop-sql-express-20261016`, base `a9842cbc47036c4e747a13edae8b073aa82e7458`.
-- 현재 Run `run_3683a9d0b02d`. 원시·계약·맥락 메모는 `.backups/verification/2026-10-16-laptop-sql-express/` 아래다. 과거 Run/Task/Dispatch는 실행 권한이 아니다.
+- **다음 첫 일:** 노트북에서 USB `E:\Migration\00-노트북-에이전트-인계.md` 8절과 `E:\Migration\pr2-version-check.md`(SHA256 `56441CF97CAB1CA657AEDA1B0207C013E617C7A10A4F92F88AF68EF3B8897C1A`)를 읽는다. 조회 카드가 없거나 hash가 다르면 멈춘다. 복원·빌드·메모리 시연 뒤 승인된 실제 machine/instance, 기존 DB 보호 기준, 설정 백업/복구 범위, 관리자 확인·재시작 시간대를 사용자와 확정하고 PR2를 실행한다. 저장소 정본은 `99_Tools/database/windows-sql/README.md`다.
+- 기록 시각: `2026-10-16T07:16:57Z` (`C:/Program Files/Git/usr/bin/date.exe -u '+%Y-%m-%dT%H:%M:%SZ'` 실제 출력). 메인 마감 지시 `msg_c0e097045dcb`: 사용자가 데스크톱 개발을 마감하고 앞으로 노트북에서 이어가기로 했다.
+- 버전 대조에서 두 값·대상·UTC·exit를 기록한다. 불일치/미관측 또는 자식 실행 실패·새 JSON 부재면 Preflight 전에 중단한다. 성공을 EXIT 한 줄로 판단하지 않는다. 이후 카드 순서대로 Prepare/계획 승인/Preflight/Plan/Apply/Verify와 실제 저장·재접속·정상 종료를 관측한다. Cleanup은 별도 명시 승인이고 24시간 승인 만료 뒤 자동 Cleanup은 지원하지 않는다.
+- 원시는 `E:\Migration\pr2-results\<UTC>\`에 명령·환경·exit·stdout/stderr·JSON·승인/hash·전후 설정/보존 근거·실제 실행/대역/미실행 구분과 함께 남긴다. 비밀·DPAPI 파일·개인키·PrivateRoot 전체는 옮기지 않는다. **노트북의 새 Core 리드가 원시를 받아 검증·기록**하며, 직접 실행하지 않은 일을 실행했다고 쓰지 않는다. PR2 결과와 함께 PR을 열고 정확 head의 사용자 병합 승인을 받는다.
+- PR1 [PR246](https://github.com/bass131/dawnholder-server/pull/246)은 사용자 `병합 승인: PR246 head 28ccd0da4d32e4509ce36dae12fe5f58acfdff54` 뒤 메인이 `2026-10-16T06:16:22Z` 병합했다. 병합 commit `3261482ac75df3ed5ed9038b50d9d96935a0a445`(메인 통보 `msg_cfc56fdfab06`). PR1 완료는 PR2 실제 SQL/TLS/게임 성공이 아니다.
+- 재개 branch `feat/laptop-sql-express-pr2-20261016`, base는 위 병합 commit. 노트북 새 리드는 origin에서 이 branch를 받아 이 goal부터 읽는다. 데스크톱 Codex 대화와 Run은 노트북으로 옮겨지지 않으며 새 세션의 역할·배치·현재 주소를 확인한다.
+- **열린 Task·Dispatch 없음.** 모든 구현자·검증자는 정산·pane 종료했다. 이 데스크톱 lead handle `term_cccc865b-2522-43f8-836e-5251f9af803e`, Run `run_3683a9d0b02d`, 과거 Task·Dispatch는 기록일 뿐 실행 권한이 아니다. 과거 세션으로 지시하거나 작업자를 재사용하지 않는다.
+- 데스크톱 근거 `.backups/verification/2026-10-16-laptop-sql-express/`는 Git 밖이다. **노트북에는 메인이 압축본으로 옮긴다.** 없으면 확인 불가로 보고하며 역사 원시를 새 실행 근거로 대체하지 않는다. git의 이 goal과 실행 카드, USB 인계·조회 카드로 다음 작업의 경계와 순서를 확인할 수 있다.
 
 ## 계획과 검증 경계
 
@@ -128,4 +148,8 @@ R-7: 보호/실패 범주에 닿지만 이 목표의 한정 시범 지정은 전
 - PR1 실행 카드는 도구와 오프라인/대역 검증 범위에서 확정했다. 실제 SQL/LPC/TLS·인증서·서비스·방화벽·DPAPI·노트북 저장/복원은 PR2 미실행이다. U-1 버전 두 원천은 Preflight 전에 읽기 전용 기록·불일치 중단한다. O-6 정확 읽기 명령은 PR2 실행 계약에서 고정하고 O-7 Cleanup 오류코드 조건은 비차단 문구 관찰로 유지한다.
 - 모든 신규 코드의 첫 커밋은 최종 서식을 포함하므로 별도 공백 전용 commit은 만들지 않는다. 기존 역사 commit의 blame을 숨길 대상이 없어 .git-blame-ignore-revs 추가는 해당 없다.
 
-- PR1: [PR246 - 노트북 SQL Express 시연 도구와 보호 시험](https://github.com/bass131/dawnholder-server/pull/246), 최초 제품 commit319c19de262cc0e1f9120a282eb38989e9c059b7. 병합은 메인 전용이며 정확 head 사용자 승인 전 미실행.
+- PR1: [PR246 - 노트북 SQL Express 시연 도구와 보호 시험](https://github.com/bass131/dawnholder-server/pull/246), 최초 제품 commit319c19de262cc0e1f9120a282eb38989e9c059b7. 병합은 메인이 정확 head 사용자 승인 후 완료했으며 시각·병합 SHA는 위 재개 지점에 기록했다.
+
+## 다음 goal 첫 기록 후보 / 종료 Gardener 입력
+
+메인 `msg_6024803a538e`의 집계: 오늘 builder 속성 대입 문제는 **3회**다(Windows adapter 제품, verification-1 시험, PR2 버전 조회 검증 harness). 후자의 원시는 `pr2-prep/verification-1/offline-1~3.*`이며 harness 실패와 제품 확정 실패 집계를 혼동하지 않는다. 목표 종료 Gardener에서 기존 BACKLOG `powershell-dotnet-boundary-checklist`에 이 발생 근거·3회를 연결한다. `prepush-ci-format-checks`는 PR246이 네 번째 발생이라는 메인 전달과, `verification-execution-claim-check`는 adapter 대역 경로를 실제 검사로 보고한 근거를 함께 대조한다(`msg_f4feb0b116b2`). 새 목표 착수나 새 규칙 도입이 아니며 이번 마감에서는 BACKLOG를 수정하지 않는다.
