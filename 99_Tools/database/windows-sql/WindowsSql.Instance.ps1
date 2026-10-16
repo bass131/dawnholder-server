@@ -22,8 +22,13 @@ function Read-WindowsSqlInstanceIdentity {
             throw 'WINDOWS_SQL_IDENTITY_MISMATCH'
         }
         $setup = Open-WindowsSqlRegistryKey -Adapter $Adapter -Suffix '\Setup'
-        $version = [string]$setup.GetValue('Version')
-        if ($version -cne $Adapter.Plan.ExpectedProductVersion) { throw 'WINDOWS_SQL_IDENTITY_MISMATCH' }
+        # PatchLevel follows the engine; Setup/Version can remain at the initial installation version.
+        $version = $setup.GetValue('PatchLevel', $null, 'DoNotExpandEnvironmentNames')
+        if ($version -isnot [string] -or $version.Length -gt 64 -or
+            $version -cnotmatch '\A(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){3}\z' -or
+            $version -cne $Adapter.Plan.ExpectedProductVersion) {
+            throw 'WINDOWS_SQL_IDENTITY_MISMATCH'
+        }
         # Open validates the SQL-reported identity and this connection's Shared memory transport.
         [void](Get-WindowsSqlMaster -Adapter $Adapter)
         Assert-WindowsSqlCertificate -Adapter $Adapter

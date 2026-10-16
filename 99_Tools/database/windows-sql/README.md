@@ -45,15 +45,29 @@ WSL2 Ubuntu의 `wslinfo`, `ip`, Bash/Python3/rsync/flock/timeout/coreutils,
 SQL Server 2025 Express의 정확 ProductVersion은 현장 관측값으로 계획에 고정한다.
 과거 보고의 `17.0.1000.7`을 실제 확인 없이 채우지 않는다. 다른 버전·도구 설치는 별도 판단한다.
 
-**PR2 Preflight 전 버전 대조:** 현재 도구는 `ExpectedProductVersion` 하나를 승인 인스턴스의
-64비트 레지스트리 `SOFTWARE\Microsoft\Microsoft SQL Server\<InstanceId>\Setup`의 `Version`과
-SQL `SERVERPROPERTY('ProductVersion')` 양쪽에 비교한다. 패치된 노트북에서 두 원천이 일치하는지는
-아직 미확정이다. 노트북 담당자는 PR2에서 승인한 정확 machine/instance만 읽기 전용으로 조사하여
-두 값·조회 명령·대상·UTC·exit 원시를 `facts.json`과 근거에 남긴다. SQL 조회는 §2의 LPC/Windows 통합
-인증과 같은 연결의 Shared memory·machine/instance 확인을 유지하며 기존 DB 목록/내용은 읽지 않는다.
-두 원천이 일치할 때 그 실제 값을 계획에 넣어 승인받는다. 불일치하거나 어느 쪽이든 관측할 수 없으면
-Preflight 전에 중단하고 담당 리드에게 보고한다. 한쪽 값·최초 설치 버전을 임의로 승인값으로 고르거나
-제품의 버전 검사를 완화하지 않는다. 이 데스크톱에서는 조사하지 않았으며 PR1 통과로 해소되지 않는다.
+**PR2 Preflight 전 버전 대조:** 도구는 `ExpectedProductVersion` 하나를 승인 인스턴스의
+64비트 레지스트리 `SOFTWARE\Microsoft\Microsoft SQL Server\<InstanceId>\Setup`의 `PatchLevel`과
+같은 LPC 연결의 SQL `SERVERPROPERTY('ProductVersion')` 양쪽에 비교한다. `Setup/Version`은 패치 뒤에도
+최초 설치 값을 유지할 수 있는 설치 메타데이터이며 엔진 버전 비교나 fallback에 쓰지 않는다.
+`PatchLevel`은 문자열인 정규 네 부분 버전이어야 한다. 부재·빈 값·공백·불필요한 앞자리 0·잘못된 형식·
+승인값 불일치는 중단한다. 정확 InstanceName→InstanceId 매핑 검사와 plan v1 schema는 유지한다.
+
+조회는 [버전 조회 카드](version-check.md)의 승인한 발행본/hash로 수행한다. 입력은 정확한
+machine/instance/InstanceId/출력 폴더 네 개이며 승인 버전을 다섯째 입력으로 넣지 않는다.
+카드는 `PatchLevel`과 SQL 버전을 현장에서 조사하여 유효 형식과 정확 일치를 확인하고,
+`Setup/Version`은 별도 설치 메타데이터로 기록한다. §2의 LPC/Windows 통합 인증과 같은 연결의
+Shared memory·machine/instance·sysadmin 경계를 유지하며 기존 DB 목록/내용은 읽지 않는다.
+
+**해당 자식의 실제 exit0와 해당 실행에서 새로 생성된 JSON의 `Status=Matched`·`ExitCode=0`을 모두
+확인**한 뒤 일치한 엔진 버전을 계획의 `ExpectedProductVersion`에 넣고 전체 plan/hash 승인을 받는다.
+부모 PowerShell의 exit0·`PR2_VERSION_CHECK_EXIT` 한 줄·과거 Matched JSON만으로 성공을 판정하지 않는다.
+기존 wrapper는 자식 시작 실패 때 이전 `$LASTEXITCODE`를 표시할 수 있고 자식 실패가 부모 exit에
+반영된다고 보장하지 않는다. 시작 실패·실제 child exit 미관측·새 JSON 부재·불일치면 중단한다.
+명령 전체·네 입력·대상·UTC·stdout/stderr·child exit·새 JSON을 보존하고 담당 리드에게 전달한다.
+
+버전 오류로 중단한 실행은 수정 commit과 새로 검토·발행한 카드/hash로 재개한다. 기존 USB 카드와
+과거 결과는 보존하고, 수정본의 일치한 관측값을 이후 사용자 plan/hash 승인 없이 적용하지 않는다.
+오프라인 대역 시험은 실제 노트북 조회·SQL/TLS·PR2 실증 성공을 뜻하지 않는다.
 
 ## 2. 두 연결 경계를 구분한다
 

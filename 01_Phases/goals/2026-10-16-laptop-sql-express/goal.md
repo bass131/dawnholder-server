@@ -1,6 +1,6 @@
 # 노트북 SQL Express 시연 DB 도구
 
-상태: PR1(PR246) 병합 완료. 데스크톱 개발을 마감하고 노트북 PR2 실제 실행·원시 검증을 기다린다. PR1 오프라인 검증을 노트북 실증 성공으로 표현하지 않는다.
+상태: PR1(PR246) 병합 완료. 노트북 PR2 단계 1 실제 조회에서 버전 불일치로 Preflight 전에 중단했다. 원시를 보존했으며 후속 조사·수정 계약이 필요하다. PR1 오프라인 검증을 노트북 실증 성공으로 표현하지 않는다.
 
 ## 진척 단계
 
@@ -15,6 +15,66 @@
 - [ ] 종료 점검
 
 ## 적용 중인 사용자 결정
+
+### 노트북 PR2 실행 주체 — 메인 전달 msg_60f74e4e5818
+
+메인 pane에 Enter로 제출된 결정을 메인이 2026-10-16T09:02:59Z 전달했다. 이 Core pane의 직접 사용자 입력으로 격상하지 않는다. 원문은 `.backups/verification/2026-10-16-laptop-sql-express/laptop-entry-inbox.json`에 보존한다.
+
+> 대시보드 결정 응답: 1) 노트북 SQL Express 2단계 - 실행 카드를 누가 돌릴지 → A Claude 세션 실행
+
+- 메인이 노트북에 보조 Claude 실행 세션을 열고, 새 Core 리드는 원시를 검토·기록한다. Core 리드는 SQL·레지스트리·인증서·방화벽·서비스 변경 명령을 실행하지 않는다.
+- Unity 첫 실행·메모리 모드 시연 뒤 카드 실행을 시작한다. 실행 계약 초안은 먼저 준비한다. 실제 대상·보호 기준·관리자 확인·파일/hash·서비스 중단 창 승인은 카드의 각 관문을 유지한다.
+- 같은 노트북에서 결과를 전달하므로 USB 경유는 불필요하다는 메인 판단을 적용한다. 현재 `.backups` junction은 카드의 입력/출력 경로로 사용할 수 없어, 링크 없는 실행 경로를 계약 발행 전에 확정한다. junction은 이동·삭제하지 않는다.
+- Astra medium 시범 계속과 PR2 끝 평가, 작업 방식 개선 C 코멘트, 나머지 파트 보류를 유지한다. 도구 결함은 실행 세션이 고치지 않고 원시와 함께 반환하며, 새 Core 리드가 일반 수정·독립 검증 절차를 조정한다.
+
+### PR2 실행 전용 배치 — 메인 판단 msg_fff55ed77460
+
+- 메인이 2026-10-16T09:12:02Z 실행 SourceRoot·cwd를 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-parallel`로 확정했다. 사용자 결정이 아닌 메인 배치 판단이다. 도구 기준은 detached HEAD `7ac2a01ff98bfa5656251c70b582c6e9143aa26f`다.
+- 카드의 `.backups/windows-sql/` 경로를 그대로 쓰며 실행 세션이 정상 디렉터리로 만든다. `core-active/.backups` junction은 보존한다. 리드 v1의 `99_Tools` 아래 중첩 출력안은 해당 트리의 WSL 동기화에 출력이 섞이고 경로 치환 오류가 생길 수 있어 채택하지 않았다.
+- 메인이 신규 `claude-opus-5-5`·`[노트북 실행 Opus]` 세션을 열고 카드 한정 쓰기 권한을 발행 계약에 명시한다. handle·incarnation과 실행자 자신의 경로 조상 검사는 발행·실행 전에 확인한다. Unity 첫 실행·메모리 모드 시연은 아직 미완료이며 메인 확인 뒤 발행한다.
+- 계약 v1은 보존하고 `.backups/verification/2026-10-16-laptop-sql-express/execution-contract-laptop-pr2-draft-v2.md`에 배치를 반영했다. 사후 공개 결과 보존본은 `C:/Dev/DawnHolder_Project/.backups/verification/2026-10-16-laptop-sql-express/pr2-results/<UTC>`에 둔다. 실제 카드 실행·독립 판정은 미실행이다.
+
+### PR2 실행 계약 발행 — 메인 통보 msg_67a979cc857c
+
+- 메인은 2026-10-16T09:54:48Z `core-parallel`의 신규 `[노트북 실행 Opus]` 세션에 계약을 발행했다고 통보했다. 발행본은 `.backups/verification/2026-10-16-laptop-sql-express/execution-contract-laptop-pr2-issued.md`다. 리드는 파일 hash 일치와 현재 실행 세션의 경로·incarnation을 대조했으며 상세는 `lead-context-laptop-pr2.md`에 둔다. Task·Dispatch 없는 메인 보조 세션이다.
+- v2보다 발행본 덧붙임이 우선한다. 카드 한정 쓰기·단계별 원시 보고를 적용한다. 발행 당시의 실행 pane 직접 승인 한정은 아래 `msg_3368df03ed2e` 정정에 따라 단계 2부터 메인 경유 사용자 확인으로 바뀐다. 실행자는 비밀 없는 파일 목록과 원시 경로를 보내고, 검토 보존본 복사는 Core 리드가 한다. 전체 PrivateRoot·비밀은 복사하지 않는다.
+- Unity 첫 실행·메모리 시연·서버 정상 종료 완료와 PR2 전체 실행 창은 메인 관측·사용자 원문 전달로 접수했다. 원문은 「OK 일단 이상은 없어」, 「그래 1단계 뿐 만 아니라 전부 마무리 해보자」다. 이는 실행 pane의 단계별 승인이나 실행 직전 자원 관문을 대신하지 않는다.
+- 현재는 실행 세션의 단계별 원시를 기다린다. 실제 SQL/TLS/게임 실증 성공·원시 검토·독립 판정은 아직 확인하지 않았다. 실행 종료 뒤 신규 독립 검증을 조정하며 알림 없이 대기·반복 조회하지 않는다.
+
+### 사용자 확인 경로 정정 — msg_3368df03ed2e
+
+메인이 2026-10-16T10:11:49Z 전달한 사용자 원문(메인 pane Enter 제출)이다. 실행 pane 직접 입력으로 격상하지 않는다.
+
+> 보통 메인 세션통해서 이야기 하지 않았나? 이번에 노트북으로 환경 옮기면서 그런 맥락이 전부 없어졌나
+
+- 메인은 발행본 덧붙임 3의 직접 입력 한정이 자신의 설계였음을 밝히고 **단계 2부터 메인 경유 확인**으로 정정했다. 단계 1에서 이미 받은 직접 승인은 그대로 유효하다는 통보다. 실제 승인 원시 검토와 이 통보를 구분하며 기존 발행본은 보존한다.
+- 실행자는 확인 지점마다 단계 이름, 사용자에게 보일 파일·명령 전문의 경로/SHA256, 안건별 최대 두 선택지·선택 결과·추천·중단/재시작/관리자 확인 영향을 메인에 보낸다. 메인이 사용자에게 묻고 제출 원문과 메인 메시지 ID를 전달한다.
+- 승인 기록은 「메인 전달 사용자 원문」으로 남기며 실행 pane 직접 입력으로 바꿔 적지 않는다. 사용자가 실행 pane에 직접 제출한 승인도 유효하다. UAC 필요 명령은 직전 메인에 알리고 실제 창은 사용자가 직접 누른다.
+- 단계 1의 보호할 DB 유무 답은 메인이 사용자에게 받아 단계 2 확인 전에 전달한다. 나머지 계약·파일/hash 관문·실행 경계는 유지한다. 정정 원문은 `.backups/verification/2026-10-16-laptop-sql-express/laptop-followup-check-3.json`에 보존한다.
+
+### 기존 DB 보호 기준 확정 — 메인 전달 msg_29f42287a999
+
+2026-10-16T10:19:14Z 메인이 전달한 사용자 원문(메인 pane Enter 제출)이다. 실행 pane 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 노트북 SQL Express 2단계 - 지켜야 할 기존 DB가 있는지 → A 없음·중요하지 않음
+
+- 사용자가 본 A 설명은 「기존 DB 보호는 SQL 데이터 폴더의 기존 .mdf·.ldf 파일 이름과 크기를 실행 전후로 비교하는 것으로 한다. 따로 백업하지 않고 다음 단계로 간다.」다. 중요한 DB를 먼저 백업하는 B는 선택하지 않았다.
+- 이전 실행자의 `user-approval.md`에서 안건 2의 추천 A를 포함한다고 해석한 부분은 이 후속 원문으로 확정한다. 당시 미답·해석 기록을 소급 변경하지 않는다. 다음 실행 발행본의 단계 1·2에 이 원문과 메시지 ID를 붙인다.
+- 이 선택은 기존 DB 목록·내용 조회나 변경·삭제 권한을 추가하지 않는다. 파일 이름·크기 비교와 실제 DB 내용 보존 검증을 구분한다. 버전 수정 루프와 나머지 승인·실행 관문은 유지한다.
+
+### PSScriptAnalyzer 프로젝트 저장 승인과 실행 실패
+
+메인 `msg_63dad403f0fc`(2026-10-16T11:15:00Z)가 전달한 사용자 원문이다.
+
+> 대시보드 결정 응답: 1) 노트북 SQL Express 2단계 - PowerShell 규칙 검사 도구를 노트북에 받을지 → A 프로젝트 폴더에만 받기
+
+- 승인 범위는 CI와 같은 `Save-Module -Name PSScriptAnalyzer -RequiredVersion 1.25.0 -Repository PSGallery`를 지정 물리 경로 `C:/Dev/DawnHolder_Project/.backups/verification/2026-10-02-agent-rule-context/tool-cache/modules`에 한 번 실행하는 것이다. 전역 설치·신뢰 설정·PATH·실행 정책 변경은 하지 않는다.
+- 리드 수집 스크립트 실행은 exit1이었다. 여러 출력 스트림을 같은 `stdout.txt`에 직접 리다이렉트하면서 파일 잠금 충돌이 발생했다. PSGallery 다운로드 실패로 단정하지 않으며 manifest 부재·hash 미생성이다. 원시는 `version-fix/pssa-download/`의 명령·스크립트·stdout/stderr·result.json에 보존했다.
+- 실패 시 보고하라는 계약에 따라 재실행·출처 변경 없이 메인에 알린다. 이 수집 오류는 제품 VF-1 실패와 구분한다. code-rules PowerShell 검사는 계속 미실행이며 구현 작업의 오프라인 시험은 이어간다.
+- 이후 메인 판단 `msg_0d8a4925e26d`가 수집 오류 교정 후 같은 명령의 재실행 1회를 허용했다. 스트림별 파일을 분리한 실행은 2026-10-16T11:17:37Z~11:17:51Z exit0으로 끝났고 manifest의 ModuleVersion=1.25.0과 SHA256을 확인했다. 원시는 `version-fix/pssa-download/retry-1/result.json`·`manifest-check.json`에 보존하며 첫 실패 원시도 유지한다. 전역 설치·설정 변경은 하지 않았다.
+- 구현자에게 `msg_568b600dcca2`로 실제 manifest 경로/hash를 전달하여 기존 계약 단계 4의 미정 입력을 확정했다. 다운로드 성공은 code-rules 통과가 아니며 검사 결과는 후속 원시로 확인한다.
+
+### 최초 범위 승인
 
 메인 msg_c7aae3f50612(2026-10-16T00:34:01Z)가 전달한 메인 pane Enter 제출 원문이다. 이 pane의 직접 사용자 입력으로 격상하지 않는다. 원문·발신 근거는 `.backups/verification/2026-10-16-laptop-sql-express/entry-inbox.json`이다.
 
@@ -61,6 +121,7 @@
 
 ## 재개 지점
 
+- **다음 첫 일:** 버전 결함 VF-1의 신규 Astra 구현 결과를 받아 diff·GREEN·쓰기 종료를 대조하고 신규 Opus 강 독립 검증에 넘긴다. 메인 `msg_f4ac87fe9763`의 범위 안 수정 요청에 따른 계약은 `.backups/verification/2026-10-16-laptop-sql-express/version-fix/pretests-contract-v1.md`, 선행 Task/Dispatch는 같은 폴더 `pretests-dispatch.json`, 현재 구현은 `implementation-dispatch.json`에 있다. 구현 기동의 자동 제출 미관측을 R-5 Enter 1회로 복구했고 실제 Working을 확인했으나 transcript clipping으로 제출 전문 대조는 미완료여서 메인에 보고했다. 실제 실행은 중단 상태이며 추가 SQL/레지스트리 조회·Preflight 진행은 하지 않는다. 재실행은 수정 commit·새 실행 세션·새 발행본을 사용한다. 아래 USB·데스크톱 주소는 이전 인계 기록이며 현재 실행 권한이 아니다.
 - **다음 첫 일:** 노트북에서 USB `E:\Migration\00-노트북-에이전트-인계.md` 8절과 `E:\Migration\pr2-version-check.md`(SHA256 `56441CF97CAB1CA657AEDA1B0207C013E617C7A10A4F92F88AF68EF3B8897C1A`)를 읽는다. 조회 카드가 없거나 hash가 다르면 멈춘다. 복원·빌드·메모리 시연 뒤 승인된 실제 machine/instance, 기존 DB 보호 기준, 설정 백업/복구 범위, 관리자 확인·재시작 시간대를 사용자와 확정하고 PR2를 실행한다. 저장소 정본은 `99_Tools/database/windows-sql/README.md`다.
 - 기록 시각: `2026-10-16T07:16:57Z` (`C:/Program Files/Git/usr/bin/date.exe -u '+%Y-%m-%dT%H:%M:%SZ'` 실제 출력). 메인 마감 지시 `msg_c0e097045dcb`: 사용자가 데스크톱 개발을 마감하고 앞으로 노트북에서 이어가기로 했다.
 - 버전 대조에서 두 값·대상·UTC·exit를 기록한다. 불일치/미관측 또는 자식 실행 실패·새 JSON 부재면 Preflight 전에 중단한다. 성공을 EXIT 한 줄로 판단하지 않는다. 이후 카드 순서대로 Prepare/계획 승인/Preflight/Plan/Apply/Verify와 실제 저장·재접속·정상 종료를 관측한다. Cleanup은 별도 명시 승인이고 24시간 승인 만료 뒤 자동 Cleanup은 지원하지 않는다.
@@ -113,6 +174,26 @@ R-7: 보호/실패 범주에 닿지만 이 목표의 한정 시범 지정은 전
 
 ## 단계 결과와 설계 결정
 
+### PR2 단계 1 — 버전 불일치로 중단
+
+- 실행자 보고 `msg_79683f39bded`와 새 JSON을 리드가 대조했다. 2026-10-16T10:11:23Z 실제 조회에서 Registry64 `Setup/Version=17.0.1000.7`, SQL `ProductVersion=17.0.1145.4`, `Status=Failed`, `ExitCode=1`, `ErrorCode=VERSION_MISMATCH`다. 부모 pwsh exit0은 조회 통과가 아니며 자식 exit 줄은 1이다.
+- 같은 SQL 연결의 `Shared memory`, 정확 machine/instance, sysadmin1은 JSON에서 확인했다. 이는 관리 조회 경계의 근거이며 TLS/게임 성공이 아니다. 조회 카드와 실행 파일은 첫 네 입력 뒤 본문이 동일함을 대조했고, 공개 원시 9파일의 원본/보존본 SHA256이 모두 일치했다. 근거는 위 원시 폴더의 `copy-manifest.json`이다.
+- 실행자는 Preflight 전 중단·추가 조회/재실행/제품 수정/설정 변경 없음으로 보고했다. 리드는 원시를 읽었고 SQL에 직접 접속하지 않았다. 패치로 두 값이 달라졌다는 설명은 아직 추론이며 확인 사실로 쓰지 않는다. 후속 설치/Prepare/Apply/Verify/게임 단계와 신규 독립 판정은 미실행이다.
+- `user-approval.md`의 직접 원문은 「승인」이며 여러 안건 추천 전체 승인이라는 부분은 실행자 해석이다. 보호할 DB 유무 답은 부재로 기록되어 있으므로 단계 2 전 메인 경유 답을 받아야 한다. 현재 보고를 보호 기준 확정으로 격상하지 않는다.
+
+### VF-1 버전 원천 계약 수정 착수
+
+- 선행 시험 완료 보고 `msg_934d754fb5f2`와 원시를 대조했다. 새 suite 95 PASS/66 의도한 RED/4 OBSERVED, 기존 adapter 152 PASS/0 FAIL이며 제품 PASS가 아니다. 보고·시험 hash·정식 결과는 `version-fix/pretests-1/report.md` 및 `raw/run-20261016T110010Z/`에 있다. 작업자 정산·release 뒤 정확 pane 종료를 확인했다.
+- 남은 검사 환경: PSScriptAnalyzer 1.25.0 manifest 부재로 code-rules PowerShell 검사는 환경 실패, format-check는 해당 선행 작업에서 C# 변경 없음·WSL 미승인으로 미실행이다. 리드는 메인에 환경 경로 확인을 요청했다. 생존 신호 초과 4구간과 사유 미확정은 `version-fix/pretests-liveness-complete.json`에 보존한다.
+- 신규 Astra 구현 계약은 `version-fix/implementation-contract-v1.md`다. Instance 버전 검사·README·새 `windows-sql/version-check.md`만 고치고 선행 시험은 고정 입력으로 유지한다. 기존 USB 카드는 보존하며 새 조회 카드를 수정 commit에 포함하여 이후 새 실행 세션에 발행한다.
+- 선행 시험 질문 `msg_5466aa64781a`에 리드가 `msg_20ebf34b20fc`로 조회 카드 **네 입력 유지**를 확정했다. 카드에서는 PatchLevel과 같은 LPC 연결의 ProductVersion을 조사·대조하고, 일치한 실제 값을 이후 plan 승인으로 고정한다. 제품은 승인 ExpectedProductVersion까지 대조한다. 카드의 다섯째 승인 버전 인자·적응형 미판정은 허용하지 않는다. 원계약을 보존한 보충은 `version-fix/pretests-clarification-1.md`이며 남은 선행 시험과 다음 구현·검증 계약에 적용한다.
+- 메인 `msg_f4ac87fe9763`가 완료조건을 막는 범위 안 결함으로 수정 루프를 요청했다. 리드는 제품의 `WindowsSql.Instance.ps1`과 `WindowsSql.Sql.ps1`, 고정 조회 카드의 동일 비교 경계를 확인하고 계획 `msg_322185baa670`을 먼저 보냈다.
+- 설계는 승인 `ExpectedProductVersion`과 정확 Registry64 `Setup/PatchLevel` 및 같은 LPC 연결의 SQL `ProductVersion`을 대조한다. `Setup/Version`은 설치 메타데이터로 구분하며 PatchLevel 부재·형식오류·불일치에 Version fallback은 허용하지 않는다. schema·정확 identity·보안/TLS·소유 경계는 유지한다. 메인 관측의 PatchLevel=17.0.1145.4와 업데이트 원인 추론은 리드 실제 조회로 격상하지 않는다.
+- 신규 Opus 선행 시험을 발행했고 턴 시작 receipt를 확인했다. 다음은 신규 Astra xhigh 구현(입력 및 PS/.NET 경계 라우팅 신호 1·3), 신규 Opus 강 독립 검증이다. 실제 SQL 재실행은 이 오프라인 검증과 구분한다. 계약·모델/신원·원시는 `version-fix/`에 둔다. 아직 제품 수정·독립 PASS는 없다.
+- 실행 세션 정산 보고 `msg_a3c6f5426572`는 단계 1 중단, 후속 단계 미실행·pending 없음·설정 변경 없음이며 미답 보호 DB 질문을 이관했다. 세션 종료는 메인 소유이며 재사용하지 않는다. 이번 원시는 위 9개 공개 파일을 명시 복사한 범위로 보존했다.
+### PR1 선행 시험과 초기 결정
+
+
 - 선행 시험 pretests-1 완료. 원문 `.backups/verification/2026-10-16-laptop-sql-express/pretests-1/report.md`; 제품 부재로 Plan 106/106 FAIL, Lifecycle 98/98 FAIL(의도한 RED), LinuxSqlBoundary 47 PASS. 구현에 대한 GREEN은 미확인이다.
 - 기존 묶음은 pwsh7에서 346 PASS/343 FAIL/2 OBSERVED·결과 없는 suite6, PS5.1에서 1443 PASS/82 FAIL/9 OBSERVED. PS5.1의 82 FAIL은 기존 LINUX_SQL 안전 분류 목록 누락 후보이며 이번 제품 회귀로 섞거나 시험을 완화하지 않는다. 도구 제품 실행에 필요한 공유 코드 변경이면 영향 범위를 다시 검토한다.
 - 선행 시험자의 런타임 홈 tool-results 출력1건과 heartbeat 초과는 공개했다(msg_aa622253482f). 상세/집계는 pretests-1/report.md와 liveness-summary-corrected.json. 최초 입력형식 오류 집계도 보존했다. 제품 통과·운영 준수로 표현하지 않는다.
@@ -153,3 +234,14 @@ R-7: 보호/실패 범주에 닿지만 이 목표의 한정 시범 지정은 전
 ## 다음 goal 첫 기록 후보 / 종료 Gardener 입력
 
 메인 `msg_6024803a538e`의 집계: 오늘 builder 속성 대입 문제는 **3회**다(Windows adapter 제품, verification-1 시험, PR2 버전 조회 검증 harness). 후자의 원시는 `pr2-prep/verification-1/offline-1~3.*`이며 harness 실패와 제품 확정 실패 집계를 혼동하지 않는다. 목표 종료 Gardener에서 기존 BACKLOG `powershell-dotnet-boundary-checklist`에 이 발생 근거·3회를 연결한다. `prepush-ci-format-checks`는 PR246이 네 번째 발생이라는 메인 전달과, `verification-execution-claim-check`는 adapter 대역 경로를 실제 검사로 보고한 근거를 함께 대조한다(`msg_f4feb0b116b2`). 새 목표 착수나 새 규칙 도입이 아니며 이번 마감에서는 BACKLOG를 수정하지 않는다.
+
+### PR2 버전 수정과 CR-1 후속
+
+- VF-1 제품 구현 쓰기 종료 및 정산·pane 종료. 보고 `version-fix/implementation-1/report.md`: 버전161/0·adapter152/0·plan106/0·lifecycle98/0 자체점검이며 독립 PASS가 아니다. Changed는 선행시험 들여쓰기57건 CR-1로 exit1, 전체 통과 보류다.
+- 메인 `msg_3a101e62cfd7`는 이미 승인된 범위의 CR-1 수정 → 신규 Opus 강 독립 검증 → push 전 전체 format-check/Changed/module-boundaries → 새 카드hash·재발행 초안까지 계속하라고 요청했다. 구현 정산 뒤 후속 발행을 멈춘 공백이 있었으며 별도 사용자 결정을 기다릴 사유는 없었다.
+- 신규 Opus 테스트 소유 세션에 CR-1 공백만 발행했고 턴 시작을 확인했다. 계약 `version-fix/cr1-fix-contract-v1.md`, receipt `version-fix/cr1-start.json`. 기존 formatter 또는 손 수정·token 동일 대조로 좁히며 기대값·hash 대상·제품은 불변이다. 파일 자체 bytes hash 변화는 별도 기록한다. 이 완료 뒤 새 Opus가 강 독립 판정을 수행한다. 실제 SQL/registry/WSL/Unity 실증은 아직 미실행이다.
+- CR-1 수정 완료·정산·종료. 리드가 보고/Compare/Changed 원시를 대조했으며 57행 선행공백만 변경·9849 token 동일·Changed2대상 진단0이다. 자체점검 원문 `version-fix/cr1-fix-1/report.md`. 신규 Opus 강 검증의 접수/턴 시작을 확인했고 계약과 receipt는 `version-fix/verification-contract-v1.md`, `version-fix/verification-start.json`이다. 다음 첫 일은 독립 판정 처리 후 push 전 전체 검사와 새 카드 재발행 초안이다.
+- VF-1/CR-1 독립 강 검증은 오프라인 통과·차단0이다. 원문 `version-fix/verification-1/report.md`/`verdict.json`: 신규시험116 PASS, 기존4묶음517 PASS, 실패0. 원문과 주요 원시를 리드·메인이 대조했다. 실제 SQL/registry/TLS/DB/게임은 미실행이다. 비차단 O-1(plan진단)/O-3(주석탐색)/O-7(시험실행기결합)과 CI등록은 후속 후보, O-5검출공백은 신규시험으로 보완, O-6wrapper한계는 새 발행안내에 강조했다.
+- push 전 Changed3대상 진단0. Windows format 진입점은 필수SDK10.0.301 부재로 시작단계 실패(원시 `version-fix/prepush-1/format/sdk.log`). module 첫 관문은 commit여유4GiB 미달로 실행보류. 메인 `msg_ab0dca643372`가 Unity프로세스4개 중 실제 Editor1개가 메인 소유임을 확인했다. 남의 프로세스종료0.
+- 메인 `msg_18e9f313a766`에 따라 SDK를 설치하지 않고 로컬 commit 후 새 Core전용 WSL Git clone에서 정본 Linux format-check.sh와 module-boundaries를 실행한다. push는 전체검사 후다. Windows실패원시는 보존하며 Linux진입점으로 대체한다. 새 카드hash와 사용자보호DB/메인경유승인/childexit+새JSON 조건을 담은 v3초안은 메인이 대조했고 새commit만 확정하면 발행한다.
+- 생존 신호 정산은 `version-fix/closeout-all-inbox.json`/`closeout-all-liveness.json`. 구현자350·313초, 검증자620·376·424초 초과가 있었고 정확 원인은 보고에서 명시하지 않아 미확정이다. 시험수정자는 초과0. 최초 terminal-only inbox집계는 dispatch없음 입력오류로 별도 보존했다.
