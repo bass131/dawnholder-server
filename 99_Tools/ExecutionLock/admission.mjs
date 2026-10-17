@@ -1,11 +1,13 @@
 import { fault } from './contract.mjs';
 import { identity, processKind, sameIdentity } from './observation.mjs';
 
-// Identity mismatch is a separate veto, checked before changing even a waiting entry.
-export function findIdentityConflict(state, observation) {
+// Only the owning runner's exited ChildProcess can exempt its exact root record. A persisted
+// rootExited flag alone never exempts another owner's record, and members remain independent.
+export function findIdentityConflict(state, observation, exitedRoot = null) {
   const byPid = new Map(observation.processes.map(item => [item.pid, item]));
   for (const entry of state.entries) {
-    for (const recorded of [entry.owner, entry.root, ...entry.members].filter(Boolean)) {
+    const root = entry.root === exitedRoot ? null : entry.root;
+    for (const recorded of [entry.owner, root, ...entry.members].filter(Boolean)) {
       const current = byPid.get(recorded.pid);
       if (current && recorded.startedAt && !sameIdentity(recorded, current)) return recorded.pid;
     }
@@ -26,7 +28,7 @@ export function refreshBundle(entry, observation, ownChild = null) {
   const root = entry.root;
   if (!root) return { live: [], uncertain: entry.phase !== 'waiting' };
   const currentRoot = byPid.get(root.pid);
-  if (!root.startedAt && currentRoot) {
+  if (!root.startedAt && currentRoot && !entry.rootExited) {
     // Only the still-live ChildProcess receipt can authenticate a root not yet observed.
     // A PID found after that handle exits could already be a different incarnation.
     if (!ownChild || ownChild.exited || currentRoot.parentPid !== entry.owner.pid || !currentRoot.startedAt) {

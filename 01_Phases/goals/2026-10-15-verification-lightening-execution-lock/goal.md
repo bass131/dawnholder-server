@@ -2,17 +2,34 @@
 
 ## 재개 지점
 
-**다음 첫 일: 복원한 판정·실행 계약과 현재 바이트를 고정한 새 계약으로 결함 #1 잔여와 #5를 신규 Astra에게 맡긴 뒤, 쓰기 종료 후 신규 Opus가 강 재검증한다.** 메인 `msg_22bfbf852f3f`은 지난 절대시각 상한을 닫고 새 Astra의 계약 수신부터 60분 안에 자체 GREEN이 없으면 추가 수정/재실행 전 공식 ask → 메인 판단으로 갱신했다. 실제 수신·체크포인트 시각은 새 계약 receipt·작업자 최초 메모에 둔다. state-store는 누적 5차이며 6차 수정 전에 메인 판단을 받는다. Windows transaction rename 설계·#1 실패 2회/#5 1회·다른 산출물 3회 초과 체크포인트를 유지한다. PR243은 병합됐고 도구 PR은 아직 준비 전이다.
+**다음 첫 일: 10-28 뒤 메인의 재개 지시를 받으면 현재 수정본을 새 계약에 고정하고, 자원 배정·새 직전 관문을 거쳐 native E 1회를 수행한 뒤 신규 독립 검증자가 강 재판정한다.** 사용자 결정 A에 따라 현재 수정 단위를 정산하고 보류했다. 새 수정자·검증자·PR·push는 열지 않으며 branch는 로컬 commit만 남긴다. push 여부는 재개 때 판단한다. PR243은 병합됐고 도구 PR은 아직 준비 전이며, 최신 독립 판정은 계속 **NOT PASS**다.
+
+**현재 결과:** Astra의 runner/admission/README 1차 수정은 끝났고 고정 시험 41+6+11=58개가 자체 통과했다(skip 0·exit 0). 저장 실패·관문 거부 음성도 각 exit 3·명령 미시작·자기 잔여 0이다. native E는 Content Unity 관측과 메인 자원 배정 없음으로 미실행이며, 신규 독립 판정·CI도 미실행이다. 전체 계약 미완료로 `worker_done failed` 정산했으나 사용자 우선순위 보류에 따른 것이므로 제품 추가 확정 실패로 세지 않는다. 원문은 E/`pr2-fix2/report.md`·`closure.json`, 수신은 E/`laptop-resume-20261017/check-worker-closeout-wakeup.json`이다.
+
+**정산과 유지 경계:** 해당 Task/Dispatch는 정산됐고 worker-release 뒤 정확한 작업자 pane을 닫았다(E/`pr2-fix2-release.json`·`pr2-fix2-close.json`·`pr2-fix2-after-close-terminals.json`). 리드 pane은 최종 status 뒤 메인이 닫는다. #1 확정 실패 2회·#5 1회, state-store 누적 5차/6차 전 메인 판단, 다른 산출물 3회 초과 체크포인트와 Windows transaction rename 설계를 유지한다. 유효 시계는 E/`pr2-fix2-reissue-clock-v3.json`이며 v2 변환 오류 원시는 보존한다. 작업자 완료는 기존 체크포인트 전이고, 리드의 사후 정산은 추가 제품 실행이 아니다. 도구 main 반영 전 수동 자원 조율을 유지한다.
 
 **10-17 노트북 재개:** 메인 `msg_a6da409c8d2d`의 지시로 지정 원격 head를 확인하고 최신 main을 충돌 없이 통합했다. Rules 도구·시험·이 goal은 통합 전후 동일하며 근거는 E/`laptop-resume-20261017/integration-state.json`·`merge-main-result.json`이다. 과거 E는 이 노트북에 없어 이전을 요청했고, 메인 `msg_68bf1623f223`은 사용자 USB 이전 전까지 main 통합·재개 정리만 허용했다. 수신 원문은 같은 폴더의 `entry-mail-inbox.json`이다. 재검증 NOT PASS를 유지하고 새 Run·Task·Dispatch·수정자·검증자는 열지 않았다. 도구 main 반영 전 수동 조율을 유지하며 조건부 관리자 승인 정본 후보는 이번 범위에 넣지 않는다.
 
 **10-17 근거 복원과 재개:** 메인 `msg_9b4fd9d60b2e`의 ZIP을 로컬에 복사해 SHA256·목록·겹침을 확인하고 Windows tar `-k`로 풀었다. 13,099파일 모두 ZIP과 hash가 같고 겹침·중복·경로 이탈·덮어쓰기는 없다(E/`laptop-import-20261017/import-preflight.json`·`import-result.json`). 최종 판정 hash도 같으며 입력 raw hash 차이 17건은 모두 노트북 checkout의 CRLF를 LF로 바꾸면 과거 hash와 일치했다. 과거 manifest를 보존하고 새 계약에는 현재 바이트를 고정한다(E/`laptop-resume-20261017/restored-inputs-check.json`·`line-ending-input-comparison.json`). 시간 상한 갱신은 사용자 결정이 아닌 메인 판단이며 원문은 같은 폴더 `check-after-import.json`이다. 새 Run의 회신 주소를 메인에 알렸고 #1 잔여·#5를 runner/admission 중심으로 수정하는 계약을 준비한다. 이전 NOT PASS는 새 독립 판정 전까지 유지한다.
+
+**10-17 최초 계약 주입 폐기:** 입력 접수 뒤 시작이 미관측됐고 화면 기반 draft로 R-5의 전체 크기 대조 조건을 확인하지 못했다. 메인 `msg_4cc4e186ab74`의 명시 폐기 판단으로 Enter·재전송 없이 해당 Dispatch를 fence하고 정확한 pane을 닫았다. 이 폐기는 확정 실패·제품 수정 회차에 넣지 않으며 실제 수신이 확인된 새 Astra부터 60분을 센다. 같은 계약 v1·제품/시험 manifest를 보존해 신규 세션에 재발행한다. 이 행정 기록의 goal hash 차이는 별도 버전 고정 보충으로 명시하며 입력을 조용히 바꾸지 않는다. 관측·폐기 근거는 E/`pr2-fix2-start-status.json`·`pr2-fix2-before-discard-worker-read.json`·`pr2-fix2-main-discard-abandon.json`·`pr2-fix2-main-discard-close.json`이다. 시작 화면 애니메이션 원인설은 메인 추정이며 확정하지 않는다.
+
+**10-17 재발행과 원문 대조:** 메인 `msg_80ab52be92bd` 뒤 같은 pane의 단일 placeholder 크기·동일성을 직접 확인하고 bare Enter 한 번으로 실제 시작을 관측했다. Orca 검색이 알려 준 정확한 세션 원문에서 자동 지침과 분리된 해당 Task user 입력을 찾았다. 원 v1 계약 전문은 정확히 같고 행정 JSON의 CR 28개가 LF로 바뀌어 빈 줄만 늘었으며 값은 같았다. 불일치 때 즉시 영향 수정/실행을 보류한 뒤 메인 `msg_6298739d67d1`은 이 차이를 명시하고 같은 Task·Dispatch의 기존 범위 재개를 승인했다. 원시와 전수 위치는 E/`pr2-fix2-reissue-post-submit-comparison.json`·`pr2-fix2-reissue-contract-difference-classification.json`에 보존한다. 전달 차이는 제품 결함·확정 실패·수정 회차로 세지 않는다.
+
+**10-17 보류 처리 오류와 baseline:** 작업자가 보류 메시지를 반환한 check와 B 실행을 한 셸 호출로 묶어 메시지 해석 전에 B를 시작한 절차 오류를 보고했고 리드는 즉시 메인에 전달했다. 첫 Node 시험은 41통과·실패0·exit0이나 자기 집계 regex 오류로 하네스가 exit1 종료했고 두 후속 고정 명령은 미실행이다. 제품 수정은 없으며 원시는 E/`pr2-fix2/run/20261017T115857311Z-B/`다. 메인 `msg_c7dc9bff6f1c`은 진행 중 B의 유한 종료·원시 보존과 제품 확정 실패에서의 제외에 동의했다. 작업자 `msg_4ce3a3ce5e0a`의 읽기 전용 대기 보고와 실제 제품 diff 없음·종료 후 소유 잔여 0을 대조했다. 재개 지시는 check를 별도 호출로 해석한 뒤 다음 실행하도록 하며, 집계 오류/누락된 baseline을 먼저 보완한다.
+
+아래 두 문단은 10-15 당시 마감 기록이며, 현재 상태는 위 10-17 정산을 따른다.
 
 기록 시각은 `2026-10-15T07:46:59Z`(`date -u +%Y-%m-%dT%H:%M:%SZ` 실제 출력)이다. **열린 Task·Dispatch 없음**, 작업자·검증자 pane 0이다. 현재 리드 pane은 메인의 확인·종료를 기다린다. 정산 근거는 E/`session-wrapup-tasks.json`·`session-wrapup-workers.json`·`session-wrapup-pane-proof.json`이다.
 
 최종 판정은 E/`pr2-reverify1/verdict.md`다. #2·#3·#4는 해소, P1 최종 사전 저장·저장 실패 시 미시작 조건은 충족했으며 과거 위반 이력은 보존했다. #1은 같은 결함의 잔여 경로로 확정 실패 2회째, 신규 #5는 1회째다. 기존 47개 통과와 신규 11개 중 7개 통과·4개 실패를 구분하고, 실패를 보존한 새 시험 3개 파일을 채택했다. 수정과 다음 독립 재검증은 다음 세션으로 넘긴다.
 
 작업 공간은 `rules-active`, 현재 도구 PR 브랜치는 `feat/shared-execution-lock-20261015`다. 문서 PR 브랜치는 `docs/verification-lightening-20261015`였다. 최신 main에서 시작한 기준·현재 Run·모델 관측·receipt는 근거 폴더 E의 `lead-context.md`와 해당 진입 원시에 둔다. E는 `.backups/verification/2026-10-15-verification-lightening-execution-lock/`다.
+
+## 적용 중인 사용자 결정
+
+- **10-28 시연 우선 재정렬:** 메인 `msg_d069885010a1`이 전달한 사용자 원문은 「대시보드 결정 응답: 1) 10-28 시연 준비 - 길드 순환과 지금 있는 한 판 흐름의 실화면 리허설에 힘을 몰지 → A 시연 우선 재정렬」이다. 메인 pane에서 Enter 제출된 결정의 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. Rules는 지금 수정 단위까지만 수행하고 10-28 뒤로 보류한다. 수신 원문은 E/`laptop-resume-20261017/check-next-status-02.json`이다. 고정 입력은 작업자의 모든 쓰기 종료 뒤 해제해 이 기록을 추가했다.
+- **현재 정산 방식은 메인 판단:** `msg_917222c01a43`은 Rules에 실행 창을 배정할 수 없어 native E를 열지 않고 지금 정산하도록 했다. 수정본·미실행·실패 집계·다음 첫 일을 기록하고 로컬 commit 뒤 최종 status를 보낸다. 새 독립 검증자·수정자·PR·push는 없으며 리드 pane 종료는 메인이 한다. 원문은 E/`laptop-resume-20261017/check-after-settlement-preparation.json`이다.
 
 ## 진척 단계
 
@@ -24,7 +41,7 @@
 - [x] 잠금 설계 확정
 - [x] 선행 실패 시험
 - [x] 잠금 도구 구현
-- [>] 독립 강 검증
+- [>] 독립 강 검증 — 사용자 결정으로 10-28 뒤까지 보류
 - [ ] 도구 병합
 - [ ] 종료 점검과 기록
 
@@ -95,9 +112,12 @@ PR 생성 뒤 병합 단계 이름에 실제 PR 번호를 넣는다.
 
 - **수정 1 재검증 단계와 세션 마감:** 신규 Opus의 강 재검증은 NOT PASS다. #2·#3·#4는 해소했고 P1의 최종 사전 저장·저장 실패 미시작 조건은 원시로 충족했다. #1 잔여는 같은 공개 수명 계약·결함 번호를 유지해 확정 실패 2회째, 새 #5는 첫 확정 실패로 기록한다. 원문 E/`pr2-reverify1/verdict.md`, 입력 동결·시험 채택 E/`pr2-reverify1-frozen-inputs.json`, 정산/종료 E/`pr2-reverify1-release.json`·`pr2-reverify1-close.json`이다. 메인 `msg_fb60b1354d83`의 마감 지시에 따라 새 수정자·검증자·PR 준비 완료 전환은 열지 않았고 다음 세션으로 넘겼다. 생존 신호 초과와 이유 미확정은 E/`pr2-reverify1-liveness-accounting.md`에 보존한다.
 
+- **수정 2와 사용자 우선순위 보류:** 신규 Astra가 #1 잔여·#5에 대해 runner/admission/README를 각 1차 수정했다(제품 3파일 +41/−7). 고정 시험10·state-store·observation은 불변이다. 같은 명령의 baseline 41/41·6/6·7/11에서 수정 후 41/41·6/6·11/11로 바뀌었으나 구현자 자체 실행이다. baseline 실패 중 3건은 #1/#5 제품 경로, 정상 종료 PID 재사용 1건은 실제 snapshot의 중복 PID fixture 입력으로 분류했고 원시·시험을 그대로 보존했다(E/`pr2-fix2-baseline-fixture-triage-v1.json`). D 원시는 E/`pr2-fix2/run/20261017T121426542Z-D/summary.json`이다. native E·신규 독립 강 판정/P1 확인·CI는 미실행이고 전체 완료를 차단한다. 메인 `msg_917222c01a43`에 따라 작업자를 정산·종료했으며 제품 추가 확정 실패는 없다. 생존 신호 helper는 최대 297초·초과 0이다(E/`pr2-fix2-liveness-complete.json`). 리드의 보고·diff·hash 대조는 E/`laptop-resume-20261017/settlement-context.md`·`accepted-worker-final-input-checks.json`·`accepted-worker-artifact-checks.json`이며 독립 판정이 아니다.
+- **우편함 반환 분리의 메인 운영 판단:** `msg_4937c4792173`은 두 파트의 발생을 근거로 새 계약과 기존 작업자의 다음 지시에 「우편함 check·inbox의 반환은 그 결과만 받는 별도 도구 호출로 읽고 해석한 뒤에 다음 행동을 시작한다. check와 실행 명령을 한 셸 호출이나 한 batch로 묶지 않는다.」를 적용했다. 정본 반영은 보류 뒤 후속이며 이번에 규칙 파일을 고치지 않았다. 현재 작업자에게 공식 답 `msg_54ada7d8d315`로 전달했다. 작업자는 정산 중 선행 문서 patch와 후행 check를 한 batch에 넣은 추가 위반을 `msg_aa686d782d9d`로 보고했다. check 이후 실행/쓰기·launch는 없었다는 보고와 마지막 별도 check를 원문에 보존하며 제품 실패로 세지 않는다. 수신/답변 원시는 E/`laptop-resume-20261017/check-A-ack.json`·`reply-E-close-now.json`·`check-worker-closeout-wakeup.json`, 세부 절차·시계/하네스 교정은 E/`pr2-fix2/report.md`다.
+
 ## 결함과 다음 후보
 
-첫 독립 판정 원문 E/`pr2-verify/verdict.md`와 최신 재검증 원문 E/`pr2-reverify1/verdict.md`를 함께 보존한다. 개발 중 자체 수정 회차와 확정 실패 횟수는 구분한다. 다음 수정 대상은 #1 잔여와 #5다.
+첫 독립 판정 원문 E/`pr2-verify/verdict.md`와 최신 재검증 원문 E/`pr2-reverify1/verdict.md`를 함께 보존한다. 개발 중 자체 수정 회차와 확정 실패 횟수는 구분한다. 이번 수정본에 #1 잔여와 #5를 반영했지만 새 독립 판정이 없어 해소를 확정하지 않는다. 아래 판정·집계는 유지한다.
 
 - **1 - timeout·취소 종료 정산:** 원래 정리 루프 재현은 해소했으나 자기 root 종료 직후 PID 재사용 시 종료 기록보다 identity conflict를 먼저 판정해 lease가 남는 경로가 차단이다. 같은 공개 계약·관찰 가능한 실패·결함 번호의 잔여로 확정 실패 **2회**다. 코드 원인 차이와 번호 분류 근거도 판정 원문·입력 동결 메모에 보존한다.
 - **2 - 시작된 명령의 결과와 감시:** 해소. 확정 실패 이력 1회는 유지한다.

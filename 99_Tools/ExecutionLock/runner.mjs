@@ -176,6 +176,30 @@ async function startReserved(store, id, execution, signal, evidence) {
   }
 }
 
+function settleReclaimedExecution(state, observation, child, rootExitObserved) {
+  const receipt = child.settlement;
+  const entry = receipt ? structuredClone(receipt.entry) : null;
+  const owner = entry && observation.processes.find(item => sameIdentity(entry.owner, item));
+  // A waiter may reclaim after ownerFinished was committed. Absence alone proves nothing:
+  // keep the holder's last committed lineage, require its own exit receipt and a fresh end proof.
+  // A missing/reset state file also loses its sequence and must not masquerade as a reclamation.
+  if (!entry?.ownerFinished || !child.exited || entry.root?.pid !== child.pid
+    || entry.owner.pid !== process.pid || !owner || state.nextSequence < receipt.nextSequence) {
+    throw fault('execution-state-lost', 'The missing execution record has no confirmed reclamation proof.');
+  }
+  entry.rootExited = true;
+  const conflict = findIdentityConflict({ entries: [entry] }, observation, entry.root);
+  const bundle = refreshBundle(entry, observation, child);
+  if (conflict !== null || bundle.uncertain || bundle.live.length) {
+    throw fault('execution-state-lost', 'The missing execution record still has a live or unconfirmed bundle.');
+  }
+  // Settlement belongs to the holder even when another request removed the ended lease.
+  // Never restore the cached entry over newer state or claim ownership of the reclaiming request.
+  return { released: true, reclaimed: true, terminated: false, bundle,
+    root: entry.root, members: entry.members, rootExitObserved,
+    foreignConflict: findIdentityConflict(state, observation) };
+}
+
 async function updateExecution(store, id, child, { finished = false, terminate = false } = {}) {
   return store.transaction(async transaction => {
     const state = await transaction.read();
@@ -183,14 +207,15 @@ async function updateExecution(store, id, child, { finished = false, terminate =
     const observation = await transaction.observe();
     const entry = state.entries.find(item => item.id === id);
     if (!entry) {
-      throw fault('execution-state-lost', 'The started command has no execution record; its handle remains monitored.');
+      return settleReclaimedExecution(state, observation, child, rootExitObserved);
     }
+    const ownRootEnded = child.exited && entry.root?.pid === child.pid && entry.owner.pid === process.pid;
+    if (ownRootEnded) entry.rootExited = true;
     const ownState = { entries: [entry] };
-    const conflict = findIdentityConflict(ownState, observation);
+    const conflict = findIdentityConflict(ownState, observation, ownRootEnded ? entry.root : null);
     if (conflict !== null) return { conflict, released: false, terminated: false, rootExitObserved };
     const foreignState = { entries: state.entries.filter(item => item.id !== id) };
     const foreignConflict = findIdentityConflict(foreignState, observation);
-    if (child.exited) entry.rootExited = true;
     const bundle = refreshBundle(entry, observation, child);
     let terminated = false;
     if (terminate && !child.exited && entry.root?.startedAt) {
@@ -207,6 +232,7 @@ async function updateExecution(store, id, child, { finished = false, terminate =
     reconcile(ownState, observation, { id, child });
     if (ownState.entries.length === 0) state.entries = state.entries.filter(item => item.id !== id);
     await transaction.write(state);
+    child.settlement = { entry: structuredClone(entry), nextSequence: state.nextSequence };
     return { released: !state.entries.some(item => item.id === id), terminated,
       bundle, root: entry.root, members: entry.members, rootExitObserved, foreignConflict };
   });
