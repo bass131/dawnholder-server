@@ -909,3 +909,10 @@
 - 최종 판정 원문은 `.backups/verification/2026-10-13-demo-video-art/ui-reward-window-retry2/capture-report-final-V03.md`(SHA256 e69dd0492ea84c2afc5100a3f26aa15598379c5ee7fea2a66ecfc23927e5fb54)다. 리드는 전문·고정430/자기index131/hash·실제원시를 대조해 failed를 수락하고 release 뒤 해당 incarnation의 idle pane만 종료했다(ptyKilled=true/reclaimable[]). 실제 worker_done까지 생존신호21개·최대278초·300초초과0, 공식ask 대기5구간 제외 원시를 인접 launch에 보존했다.
 - 명령 반환 뒤 undefined session_id 저장 오류는 V03과 별도 공개했고 실제 명령을 다시 실행하지 않았다. 리드 사전 실사도 경로 구분자 결함을 발견하지 못했다. 기존 실패 원시와430입력/제품/source/meta/알려진 두 M를 보존했으며 V01·V02·V03은 서로 다른 원인으로 같은 결함3회로 합산하지 않는다.
 - 현재 검증자는 수리·재검증에 재사용하지 않는다. V03 좁은 수리와 실제 compiler/현재·before·1280 캡처는 새 계약으로 남고, 전체 UI PR·VIS-05·미관/최소/실서버DB 미완료를 유지한다. 메인이 이미 승인한 순차 큐에 따라 다음 신규 검증자 한 명은 생성 완료된 콘셉트8장의 실제 파일·출처·요구/제안 경계를 독립 정적 검토한다. 추가 imagegen/이미지 수정0이며 남은2회는 사용자 피드백 전 쓰지 않는다.
+
+### 콘셉트 독립 검토 P01 정산·신규 Astra high 이관
+
+- Sol 신규 검증자 task_66f1b57199b1/ctx_6f908aa85ea7는 우편함 check·ack와 후속 status/읽기를 한 호출로 묶은 #ART-SC-P01을 스스로 공개했다. 계약의 필수 수신 순서 위반으로 리드는 검토를 중단하고 failed를 수락했다. 이미지8장·참고7장 독립보기/PNG실측/harness0이며 생성자·이미지·제품 결함이나 미관판정으로 바꾸지 않는다.
+- 최종 부분실패 원문은 `.backups/verification/2026-10-13-demo-video-art/screen-concepts-review/verdict-process-failure.md`(SHA256 21fa82d5446d01dcb2dafb4c0d8327b45ef0872d754c4e10f17b71d89645e9fe), 정산시각변환 오류 정정은 같은 폴더 `settlement-errata.md`(SHA256 12d4381578ecb3ab06cb679d6afbca1f8b0b67a04c57901e1218fb1ba10232d6)다. 첫 max131 ledger는 덮지 않고 채택하지 않았다. 리드는 원문·148보호hash·실제자기11파일을 대조하고 실제worker_done까지 원문7신호/최대168초/300초초과0(공식ask108초 제외)을 기존helper로 확인했다. release 후 정확inc의 idle pane만 종료(ptyKilled=true/reclaimable[])했다.
+- 리드의 계약전송 요약137행/내부CR1개 오기는 원시와 달라 즉시79행/5개로 정정·공개했다. 실제 비어있지 않은 계약문자·들여쓰기·순서는 같고 CR개행운송차이만 있었다. 리드 오기를 검증자·생성자에 귀속하지 않는다. 원계약/원문/정정문을 모두 보존한다.
+- 메인 msg_0775e21d70b2(2026-10-17T18:21:38Z)는 사용자 임시격상 결정에 따라 같은 이미지검토의 다음 **신규 gpt-6-astra high** 세션에 동의했다. 격상 근거는 위 필수수신순서 위반이며 현재런타임 모델변경/정산세션재사용0이다. 새계약 맨앞에 우편함수신전용 호출→전체해석→다음호출에서 후속행동을 두고 같은8장 원완료조건을 처음부터 독립 판정한다. 추가imagegen/보정2회는 사용자피드백전0, 제품·Unity·dotnet·WSL0이다. 10-28뒤 공용도구 방지후보는 메인소유로 남기며 Art가 새도구를 만들지 않는다.
