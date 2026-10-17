@@ -2,7 +2,9 @@
 
 ## 재개 지점
 
-**다음 첫 일: 메인의 재개 지시 뒤 최신 지침·판정 원문·저장소 상태를 대조하고, 결함 #1 잔여와 #5를 고칠 신규 구현 계약을 준비한다.** 현재 재검증은 NOT PASS이며 오늘은 새 수정자·검증자와 PR 준비 완료 전환을 열지 않았다. state-store 누적 5차와 기존 6차 수정·시간 상한을 후속 계약에서 다시 대조한다. PR243은 병합됐으며 도구 PR은 아직 준비 전이다.
+**다음 첫 일: 데스크톱 근거 폴더가 도착하면 메인이 알린 ZIP·SHA256과 최종 판정·실행 계약·고정 입력·수정/시간 상한 원문을 대조한 뒤, 결함 #1 잔여와 #5를 고칠 신규 구현 계약을 준비한다.** state-store 누적 5차와 기존 6차 수정·시간 상한을 유지하며 원문 확인 전에 새 계약을 발행하지 않는다. PR243은 병합됐고 도구 PR은 아직 준비 전이다.
+
+**10-17 노트북 재개:** 메인 `msg_a6da409c8d2d`의 지시로 지정 원격 head를 확인하고 최신 main을 충돌 없이 통합했다. Rules 도구·시험·이 goal은 통합 전후 동일하며 근거는 E/`laptop-resume-20261017/integration-state.json`·`merge-main-result.json`이다. 과거 E는 이 노트북에 없어 이전을 요청했고, 메인 `msg_68bf1623f223`은 사용자 USB 이전 전까지 main 통합·재개 정리만 허용했다. 수신 원문은 같은 폴더의 `entry-mail-inbox.json`이다. 재검증 NOT PASS를 유지하고 새 Run·Task·Dispatch·수정자·검증자는 열지 않았다. 도구 main 반영 전 수동 조율을 유지하며 조건부 관리자 승인 정본 후보는 이번 범위에 넣지 않는다.
 
 기록 시각은 `2026-10-15T07:46:59Z`(`date -u +%Y-%m-%dT%H:%M:%SZ` 실제 출력)이다. **열린 Task·Dispatch 없음**, 작업자·검증자 pane 0이다. 현재 리드 pane은 메인의 확인·종료를 기다린다. 정산 근거는 E/`session-wrapup-tasks.json`·`session-wrapup-workers.json`·`session-wrapup-pane-proof.json`이다.
 
