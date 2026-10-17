@@ -916,3 +916,10 @@
 - 최종 부분실패 원문은 `.backups/verification/2026-10-13-demo-video-art/screen-concepts-review/verdict-process-failure.md`(SHA256 21fa82d5446d01dcb2dafb4c0d8327b45ef0872d754c4e10f17b71d89645e9fe), 정산시각변환 오류 정정은 같은 폴더 `settlement-errata.md`(SHA256 12d4381578ecb3ab06cb679d6afbca1f8b0b67a04c57901e1218fb1ba10232d6)다. 첫 max131 ledger는 덮지 않고 채택하지 않았다. 리드는 원문·148보호hash·실제자기11파일을 대조하고 실제worker_done까지 원문7신호/최대168초/300초초과0(공식ask108초 제외)을 기존helper로 확인했다. release 후 정확inc의 idle pane만 종료(ptyKilled=true/reclaimable[])했다.
 - 리드의 계약전송 요약137행/내부CR1개 오기는 원시와 달라 즉시79행/5개로 정정·공개했다. 실제 비어있지 않은 계약문자·들여쓰기·순서는 같고 CR개행운송차이만 있었다. 리드 오기를 검증자·생성자에 귀속하지 않는다. 원계약/원문/정정문을 모두 보존한다.
 - 메인 msg_0775e21d70b2(2026-10-17T18:21:38Z)는 사용자 임시격상 결정에 따라 같은 이미지검토의 다음 **신규 gpt-6-astra high** 세션에 동의했다. 격상 근거는 위 필수수신순서 위반이며 현재런타임 모델변경/정산세션재사용0이다. 새계약 맨앞에 우편함수신전용 호출→전체해석→다음호출에서 후속행동을 두고 같은8장 원완료조건을 처음부터 독립 판정한다. 추가imagegen/보정2회는 사용자피드백전0, 제품·Unity·dotnet·WSL0이다. 10-28뒤 공용도구 방지후보는 메인소유로 남기며 Art가 새도구를 만들지 않는다.
+
+### 화면 콘셉트 8장 — 신규 Astra 독립 기술검토 PASS
+
+- 신규 gpt-6-astra high 검증자 task_db090d58bbd5/ctx_e4ed3ccba931가 생성 Task task_9821cd3b0d04의 승인된 정적 콘셉트 전달 범위를 기술 PASS로 판정했다. 최종원문 `.backups/verification/2026-10-13-demo-video-art/screen-concepts-review-retry/verdict.md` SHA256 bdb3edd5070c72500db91befd38c9a306c8b001a36a2490c4854d9d5059f6281을 리드가 전문 읽었다. 미관최종승인·제품구현·실제Unity/게임/서버정책·전체goal/PR의 PASS는 아니다.
+- 독립검증의 고정169/생성105/PNG16파일·원복사8쌍/참고7·실제생성호출8·반환binary8/A전2·공식회신뒤6을 연결했다. 리드도 원본producer JSONL의8실호출과 반환8개를 별도로 읽어 원PNG/복사8쌍 byte동치·전부1672x941를 직접 대조했다. 실제보기는 검증자도구5묶음의15이미지출력으로 추적했다. 생성자의 과거 상수요약 정정은 #ART-SC-01로 역사와 실제계산을 보존해 해결판정했고 이전검증P01 failed/귀속을 덮지 않았다.
+- 리드는 자기35파일/순환selfhash제외34개 hash와 현재169입력을 대조하고 실제worker_done까지 기존helper6신호/최대251초/300초초과0을 확인했다. accepted succeeded 뒤 release·정확inc의idle pane만 close(ptyKilled=true/reclaimable[])해 신규검증자를 재사용하지 않는다. 당시goal4e8a 입력은 인접launch/goal-technical-review-input-0e90.md로 보존했고 이 기록은 종료 뒤 새관리버전이다.
+- 비차단 디자인 관찰은 기사/마법사비율·장식, 미래길드장소·발판/힐아이콘의 제안성, 큰보스·행동선택버튼·망토끝잘림, 보상창남색악센트/예시수치, CONCEPT표식누락이다. 원시·캡션과 함께 사용자선택으로 남긴다. 남은2호출은 피드백전 사용0이며 Git밖산출물보관/실제UI캡처와구분을 유지한다. 남은Art실행은 보상창V03 harness경로수리·실제csc/현재·before·1280 캡처와 기존VIS-05/UI PR이며 이 이미지PASS로 면제하지 않는다.
