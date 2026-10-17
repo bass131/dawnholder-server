@@ -13,6 +13,7 @@
 - 그 뒤 메인이 각각 한 번 배정한 EditMode·PlayMode를 실행해 87/87·12/12 Passed와 종료·잔여 0을 확인했다. 보상 창 강 판정 전문은 `ui-reward-window-review/verdict.md`(SHA256 `dd7b55d89d6061b37ccc41a6c59b134aac8091e669fe2297184d0f6976768ce9`)다. 검증자는 제품·시험 읽기를 종료했고 worker_done 뒤 release·현재 incarnation 대조·정확 pane 종료(ptyKilled true)를 마쳤다. 상세 원시는 `ui-reward-window-review-launch/`의 `lead-edit-xml-gate-exit-s1-audit.json`, `lead-play-xml-exit-audit.json`, `worker-release-final.json`, `exact-terminal-close-final.json`에 있다.
 - 생존 신호 정산: 정본 helper의 300초 초과는 11:52:03→12:00:07 UTC, 484초 한 구간(시험 source 일괄 작성)이다. 검증자가 heartbeat receipt만으로 추가 보고한 320초 구간에는 12:08:58의 공식 질문이 있어 모든 송신 신호를 세는 정본의 초과가 아니다. 원문을 바꾸지 않고 집계 기준을 구분했다. 근거는 `ui-reward-window-review-launch/final-liveness-{input,provenance,result}.json`이다.
 - 자동 변경은 알려진 ProjectSettings S1 한 줄과 실행 뒤 M으로 표시된 MinimapRT다. MinimapRT 현재 bytes는 HEAD와 같고 내용 diff 0이지만 실행 전 bytes를 재지 않아 줄 끝 원인은 추론이다. 수기 복원·index 정리·설정 commit은 하지 않았다. 미관·PNG·실서버/DB·CI는 이번 판정의 미실행 경계다. 메인 `msg_287acda89768`의 리드 깨우기 자동화 주소 수정과 검증자 모달의 Not now 처리는 메인 관측으로 접수했으며 독립 실측이나 설정 변경으로 보고하지 않는다.
+- 메인 `msg_29a93d39ff03`은 판정 전문 hash·기계 판독/결론·두 XML의 R-2 표본 일치를 확인하고 같은 후속 순서를 계속하도록 했다. PNG가 준비되면 메인에 경로를 보내 사용자에게 보여 준다. 다음 계약부터 메인 운영 판단 `msg_94fb2d65338b`의 「JSON의 시각 필드는 ConvertFrom-Json -DateKind String으로 읽거나 원문 문자열로 비교하고, 시각을 쓰는 실행 관문 스크립트는 실제 실행 창 전에 오프라인으로 한 번 통과시켜 본다.」를 적용한다. 규칙 정본 반영이나 사용자 새 결정으로 확대하지 않는다. PNG 계약 준비 메모는 `ui-reward-window-capture-launch/lead-context.md`다.
 
 ### 10-15 마감 인계 보존
 
