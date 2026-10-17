@@ -6,7 +6,7 @@
 
 - <a id="content-worktree"></a>Content: [던전 클리어·보상과 눈에 띄는 결함 둘](../../01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `docs/content-dungeon-clear-closeout-20261015`
 
-- World: [길드 서버 — 클리어 보상에서 거점·무기 성장까지](../../01_Phases/goals/2026-10-14-guild-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `feat/guild-server-20261014`
+- World: [길드 서버 — 클리어 보상에서 거점·무기 성장까지](../../01_Phases/goals/2026-10-14-guild-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `docs/guild-server-closeout-20261018`
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 
