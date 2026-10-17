@@ -902,3 +902,10 @@
 - 신규 Astra가 기존 글자·입력 Rect를 보존한 채 공통 Emphasis 배경·Header·보상 줄 Inset·Accept 버튼을 허용 제품 네 파일에 조립했다. 사용자 여백 A는 해당 보상 창에만 적용했다. 리드는 보고 전체·실제 diff·컴파일 원시와 불변 입력을 대조했다. 격리 컴파일 자체점검은 오류 없이 끝났으며 Unity 시험·실제 화면·독립 PASS는 미실행이다.
 - 구현자 쓰기·직접 사용 종료와 현재 파일을 대조한 뒤 완료를 수용하고 정확 pane을 종료해 근거를 동결했다. 제품·시험·설정을 임의 복원하지 않았다. 생존 초과는 공식 질문 대기와 보고 정리 사유를 기존 helper 원시와 함께 한 줄 정산했으며 별도 대화 감사나 도구 수리는 하지 않았다.
 - 메인 마감 지시에 따라 이 단계의 제품 네 파일과 goal 기록만 묶어 정상 commit·push하고 멈춘다. 신규 독립 Opus·캡처·PR은 열지 않으며 남은 기술·화면 확인과 다음 첫 일은 위 「재개 지점」에 둔다. 원문은 `ui-reward-window-implementation/implementation-report.md`, 정산·마감과 근거 동결은 인접 launch에 있다.
+
+### 06 - 보상 창 캡처 재검증 V03 실패 정산·다음 독립 검토
+
+- 신규 Sol xhigh 검증자는 V02 시계 충돌을 자기 사본에서 수리하고 P-01 추가 입력관문을 버전 고정해 준비했다. 새 v4 입력430개와 실제 메인 창을 연결한 preflight21관문은 통과했지만, 기존 wrapper의 같은 Windows 경로를 구분자 문자열로 비교한 cwd 검사만 실패했다(#ART-RWC-V03). 다른14관문·시간/330입력은 통과했고 wrapper1회 exit1 뒤 csc/Unity/snapshot/PNG/XML0으로 자원을 반환했다. 시간 초과나 제품 컴파일 실패로 기록하지 않는다.
+- 최종 판정 원문은 `.backups/verification/2026-10-13-demo-video-art/ui-reward-window-retry2/capture-report-final-V03.md`(SHA256 e69dd0492ea84c2afc5100a3f26aa15598379c5ee7fea2a66ecfc23927e5fb54)다. 리드는 전문·고정430/자기index131/hash·실제원시를 대조해 failed를 수락하고 release 뒤 해당 incarnation의 idle pane만 종료했다(ptyKilled=true/reclaimable[]). 실제 worker_done까지 생존신호21개·최대278초·300초초과0, 공식ask 대기5구간 제외 원시를 인접 launch에 보존했다.
+- 명령 반환 뒤 undefined session_id 저장 오류는 V03과 별도 공개했고 실제 명령을 다시 실행하지 않았다. 리드 사전 실사도 경로 구분자 결함을 발견하지 못했다. 기존 실패 원시와430입력/제품/source/meta/알려진 두 M를 보존했으며 V01·V02·V03은 서로 다른 원인으로 같은 결함3회로 합산하지 않는다.
+- 현재 검증자는 수리·재검증에 재사용하지 않는다. V03 좁은 수리와 실제 compiler/현재·before·1280 캡처는 새 계약으로 남고, 전체 UI PR·VIS-05·미관/최소/실서버DB 미완료를 유지한다. 메인이 이미 승인한 순차 큐에 따라 다음 신규 검증자 한 명은 생성 완료된 콘셉트8장의 실제 파일·출처·요구/제안 경계를 독립 정적 검토한다. 추가 imagegen/이미지 수정0이며 남은2회는 사용자 피드백 전 쓰지 않는다.
