@@ -1,8 +1,8 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **신규 Opus가 보상 창 구현 원시 실사와 독립 시험 작성을 마치고 시험 쓰기를 종료했다. 리드는 인계된 네 시험 파일의 hash·실제 diff·범위를 확인했으며, Unity 실행은 Content 뒤 메인의 순서 배정을 기다린다. 현재 Unity 시험·새 독립 판정은 아직 없다. 기존 보상 창 표시 구현과 격리 컴파일 자체점검, 인벤토리·NPC·고친 파티 창의 현재 1920 사용자 통과, 파티 T-2 강 독립 PASS, C9 main 통합·05 강 PASS·06 조건부 통과 기록은 유지한다. 보상 창 독립 검증·실제 전후·최소 화면·Party HUD VIS-05와 UI 창 PR은 남아 있다.**
+상태: **신규 Opus의 보상 창 강 독립 검증은 통과했다(제품 결함 0, EditMode 87/87·PlayMode 12/12, 두 실행 exit 0). 리드는 판정 전문·실제 diff·XML·관문·종료 원시를 대조하고 검증자를 정산·종료했다. 이 판정은 표시 조립·import·배치·입력 상태·씬 수명의 기술 판정이며 실화면 PNG·미관 통과는 아니다. 기존 인벤토리·NPC·고친 파티 창의 현재 1920 사용자 통과, 파티 T-2 강 독립 PASS, C9 main 통합·05 강 PASS·06 조건부 통과 기록은 유지한다. 보상 창 실제 전후·최소 화면, Party HUD VIS-05와 UI 창 PR은 남아 있다.**
 
-**다음 첫 일:** 리드가 시험 쓰기 종료의 같은 bytes와 현재 결정을 새 기준으로 인계하고, 메인의 Unity 배정 뒤 실행 창을 고정한다. 신규 Opus는 직전 자동 관문을 통과한 실제 EditMode·PlayMode로 같은 6건의 GREEN·대조군·다른 창 보존과 보상 창 씬 수명을 검증한다. 사용자 A에 따른 실제 전후·최소 화면에서 글자와 테두리의 붙음·겹침은 임의 수정 없이 메인에 올린다. 이어 Party HUD VIS-05와 남은 화면 근거를 갖춘 같은 UI 창 PR의 마지막 head·CI를 보고한다.
+**다음 첫 일:** 새 외부 작업자의 계약에서 보상 창 실제 전후·최소 화면 캡처를 준비하고, 메인의 새 Unity 배정과 직전 자동 관문 뒤 실행한다. 사용자 A에 따른 글자와 테두리의 붙음·겹침은 임의 수정 없이 메인에 올린다. 이어 Party HUD VIS-05와 남은 화면 근거를 갖춘 같은 UI 창 PR의 마지막 head·CI를 보고한다. 현재 Unity·WSL은 메인이 World에 배정한 창이므로 Art가 스스로 기동하지 않는다.
 
 ## 재개 지점
 
@@ -10,6 +10,9 @@
 - 이 노트북에는 이전 근거가 없으므로 `ui-reward-window-implementation/`, `ui-reward-window-implementation-launch/`, `ui-reward-window-tdd/`, `ui-reward-window-tdd-launch/` 네 폴더만 우선 이관해 달라고 메인에 보고했다(`msg_8d22c0a577ad`). 요구되는 구현 보고·사전 메모·원계약과 보충·실행 원시·실제 구현 Task 연결을 확인하기 전에는 독립 검증을 발행하지 않는다. READY와 요청 receipt는 `notebook-resume/ready-send-receipt.json`에 있다.
 - 메인의 근거 도착·정상 진행 지시 `msg_30223b946041` 뒤 위 네 폴더 318파일을 로컬 ZIP hash 재대조·목록/겹침 검사·덮어쓰기 없는 추출·내용 전수 hash 대조로 복원했다(기존 겹침·불일치 0). 구현 보고·보충2판의 여백 A 원문·실제 diff·정확 종료와 선행 XML을 대조했다. 현재 제품 네 파일과 선행 시험의 hash는 당시 보고값과 같고, 새 Run 회신 주소를 메인에 알렸다. 원시는 `laptop-import-20261017/`, 검증 발행 메모·고정 입력은 `ui-reward-window-review-launch/`다. 과거 실행의 재확인이며 현재 시험 통과나 독립 판정은 아니다.
 - 신규 Opus는 보상 창 여백·승인 조각·mesh 관측과 변형 대조군, 실제 Town의 버튼 상태·확인 입력·다음 씬 재표시 시험을 추가하고 source 쓰기를 종료했다. 리드는 공식 질문·사본·현재 네 파일의 hash 일치와 제품 변경 0·기존 단정 변경 0을 확인했다. 실행 전이므로 강 PASS·제품 결함 0 확정으로 확대하지 않는다. Content 실행이 끝나도 메인 배정 없이 Art를 기동하지 않는다. source 인계·보충과 실행 순서 요청은 `ui-reward-window-review-launch/`, 시험 원시는 `ui-reward-window-review/raw/source-handoff/`에 있다.
+- 그 뒤 메인이 각각 한 번 배정한 EditMode·PlayMode를 실행해 87/87·12/12 Passed와 종료·잔여 0을 확인했다. 보상 창 강 판정 전문은 `ui-reward-window-review/verdict.md`(SHA256 `dd7b55d89d6061b37ccc41a6c59b134aac8091e669fe2297184d0f6976768ce9`)다. 검증자는 제품·시험 읽기를 종료했고 worker_done 뒤 release·현재 incarnation 대조·정확 pane 종료(ptyKilled true)를 마쳤다. 상세 원시는 `ui-reward-window-review-launch/`의 `lead-edit-xml-gate-exit-s1-audit.json`, `lead-play-xml-exit-audit.json`, `worker-release-final.json`, `exact-terminal-close-final.json`에 있다.
+- 생존 신호 정산: 정본 helper의 300초 초과는 11:52:03→12:00:07 UTC, 484초 한 구간(시험 source 일괄 작성)이다. 검증자가 heartbeat receipt만으로 추가 보고한 320초 구간에는 12:08:58의 공식 질문이 있어 모든 송신 신호를 세는 정본의 초과가 아니다. 원문을 바꾸지 않고 집계 기준을 구분했다. 근거는 `ui-reward-window-review-launch/final-liveness-{input,provenance,result}.json`이다.
+- 자동 변경은 알려진 ProjectSettings S1 한 줄과 실행 뒤 M으로 표시된 MinimapRT다. MinimapRT 현재 bytes는 HEAD와 같고 내용 diff 0이지만 실행 전 bytes를 재지 않아 줄 끝 원인은 추론이다. 수기 복원·index 정리·설정 commit은 하지 않았다. 미관·PNG·실서버/DB·CI는 이번 판정의 미실행 경계다. 메인 `msg_287acda89768`의 리드 깨우기 자동화 주소 수정과 검증자 모달의 Not now 처리는 메인 관측으로 접수했으며 독립 실측이나 설정 변경으로 보고하지 않는다.
 
 ### 10-15 마감 인계 보존
 
