@@ -1,8 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.7" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.21" />
     <ProjectReference Include="..\..\98_Shared\Shared.csproj" />
     <ProjectReference Include="..\Network\Dawnholder.Server.Network.csproj" />
+  </ItemGroup>
+
+  <!-- ReadAdmission의 migration identity를 실행 권한 확대 없이 배포 원문과 대조한다. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\99_Tools\database\migrations\00*.sql">
+      <LogicalName>Persistence.Migrations.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
   <PropertyGroup>

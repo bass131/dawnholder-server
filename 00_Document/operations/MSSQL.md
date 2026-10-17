@@ -11,13 +11,25 @@ Windows PowerShell 5.1의 도구가 승인 계획 v2에 고정한 로컬 Linux S
 | [New-TestDatabase.ps1](../../99_Tools/database/test-environment/New-TestDatabase.ps1) | 승인 계획 경로·별도로 검토한 SHA256·정확 DB·manifest 경로. OfflinePlan은 입력 검토, Plan은 비밀 없는 Planned manifest, Create는 사전 검사와 DB 생성, Install은 설치 단계 |
 | [New-TestAdminCredential.ps1](../../99_Tools/database/test-environment/New-TestAdminCredential.ps1) | 같은 승인 입력과 Planned manifest. 첫 컨테이너 기동 **전** private 폴더와 sa DPAPI CLIXML을 한 번 생성하고 hash·저널을 기록. SQL·Docker 호출 없음 |
 | [Install-Database.ps1](../../99_Tools/database/Install-Database.ps1) | 정확 수명의 Baseline001 또는 Complete(001~004·module·권한·catalog)를 수명 도구에 전달 |
+| [Invoke-PreservationCheck.ps1][preservation] | `-Action Record`는 Baseline001에서 행 기록, `Compare`는 Installed에서 보존 대조 |
+| [Test-EngineBoundary.ps1][engine-boundary] | `-Action BeforeComplete`는 위치 A, `AfterComplete`는 위치 B. 모든 관측 rollback |
+| 위 두 도구의 승인 입력 | `-ApprovalPlanPath`, `-ExpectedApprovalPlanHash`, `-Database`, `-ManifestPath` |
+| 위 두 도구의 근거 입력 | 기존 절대 `-EvidenceDirectory` 아래 `-ResultPath`, `-SnapshotPath`. Record만 신규 스냅숏, 나머지는 기록본. 덮어쓰기 금지 |
 | [Initialize-CharacterBinding.ps1](../../99_Tools/database/test-environment/Initialize-CharacterBinding.ps1) | 승인된 slot1·AccountId·CharacterId 고정 바인딩 |
 | [Set-TestPrincipals.ps1](../../99_Tools/database/test-environment/Set-TestPrincipals.ps1) | runtime SQL 로그인·user·dh_runtime만 구성. 무작위 SID 계획·대조, 서버 role 0·DB role 정확히 하나·추가 직접 권한/소유 0 검사 |
 | [Test-Database.ps1](../../99_Tools/database/Test-Database.ps1) | 계획 경로/hash와 **-Endpoint**, **-Database** 필수. manifest를 읽고 동일 연결 helper로 두 연결을 열어 원래 rollback·잠금·계약 검사 수행 |
 | [Remove-TestEnvironment.ps1](../../99_Tools/database/test-environment/Remove-TestEnvironment.ps1) | 정산·quiescent·정확 identity/hash 확인. OfflinePlan / OnlinePreview / Execute를 구분하고 명시 확인과 manifest hash 뒤에만 정리 |
 | [Environment.Common.ps1](../../99_Tools/database/test-environment/Environment.Common.ps1) | v2 검증, 연결 설정·신원·오류 분류, ACL/DPAPI 파일, 저널의 단일 소유자 |
 
-순서는 OfflinePlan 검토 → Plan → New-TestAdminCredential → 승인된 카드의 컨테이너 기동/준비 확인 → Create → Baseline001 → 보존 fixture 확인 → Complete → binding → runtime 주체 → 시험 → 정산/정리다. 제품 상태는 Planned → Created → Baseline001 → Installed → Bound → PrincipalsReady → CleanupStarted → Removed를 유지한다. **PrincipalsReady는 runtime 주체 준비 완료**이며 recovery 계정은 만들지 않는다(사용자 결정 27 A). DB의 dh_recovery role과 4개 RPC 권한은 유지하며 복구 주체 형태·실증은 후속 goal이다.
+[preservation]: ../../99_Tools/database/test-environment/Invoke-PreservationCheck.ps1
+[engine-boundary]: ../../99_Tools/database/test-environment/Test-EngineBoundary.ps1
+
+순서는 OfflinePlan 검토 → Plan → New-TestAdminCredential → 승인된 카드의 컨테이너 기동/준비 확인 → Create → Baseline001 →
+보존 기록(Record) → 위치 A 관측(BeforeComplete) → Complete → 보존 대조(Compare) → 위치 B 관측(AfterComplete) →
+binding → runtime 주체 → 시험 → 정산/정리다.
+제품 상태는 Planned → Created → Baseline001 → Installed → Bound → PrincipalsReady → CleanupStarted → Removed를 유지한다.
+**PrincipalsReady는 runtime 주체 준비 완료**이며 recovery 계정은 만들지 않는다(사용자 결정 27 A).
+DB의 dh_recovery role과 4개 RPC 권한은 유지하며 복구 주체 형태·실증은 후속 goal이다.
 
 단계 저널 Pending/Done/Failed, 배타 .lock, 미완 .pending 보존을 유지한다. 실패한 단계를 자동 재시도·정리하지 않으며 같은 이름 DB·로그인을 채택하거나 회전하지 않는다. 이미지는 보존, 볼륨+시험 DB는 한 번 수명, 컨테이너는 같은 볼륨 위 프로세스 host다. 승인당 시도 3회·단계당 컨테이너 재생성 1회 상한과 직전 수명의 정리 원시를 카드가 확인한다.
 
@@ -133,15 +145,16 @@ runtime은 전용 SQL 로그인과 dh_runtime user로 만든다. recovery 주체
 
 manifest 순서는 codec 1개→내부 helper 8개→공개 RPC 9개→permissions다. DB 조회/쓰기 helper는 public RPC의 transaction 안에서 동작하고 자체 BEGIN/COMMIT/ROLLBACK을 소유하지 않는다. COMMIT 뒤 캡처 값만 투영하는 EmitPersistenceResult는 별도 결과 단계다.
 
-source checksum은 UTF-8/BOM 제외·CRLF→LF 기준이며 module의 남은 CR은 거부한다. manifest 자체는 BOM 없는 UTF-8·LF·끝 개행을 고정한다. engine definition의 기대 byte 수/hash는 검토된 소스의 UTF-16LE/BOM 제외 값이고, 실제 `sys.sql_modules` 대조에서는 CR만 제거한다. **실제 DB hash를 읽어 정답으로 채택하지 않는다.** manifest는 자신과 004 선언을 목록에 넣지 않아 hash 순환을 피한다. `MigrationManifest`의 기존 정렬된 `{version,name,checksum}` 형식은 유지하고, 004 SQL의 checksum이 선언된 코드 묶음을 연결한다.
+source checksum은 UTF-8/BOM 제외·CRLF→LF 기준이며 module의 남은 CR은 거부한다. manifest 자체는 BOM 없는 UTF-8·LF·끝 개행을 고정한다. engine definition의 기대 byte 수/hash는 검토된 소스 맨 앞의 정확한 `CREATE OR ALTER `를 `CREATE` 뒤 공백 세 칸으로 바꾼 기대 정의의 UTF-16LE/BOM 제외 값이고, 실제 `sys.sql_modules` 대조에서는 CR만 제거한다. 엔진에 보내는 DDL 원문은 바꾸지 않는다. **실제 DB hash를 읽어 정답으로 채택하지 않는다.** manifest는 자신과 004 선언을 목록에 넣지 않아 hash 순환을 피한다. `MigrationManifest`의 기존 정렬된 `{version,name,checksum}` 형식은 유지하고, 004 SQL의 checksum이 선언된 코드 묶음을 연결한다.
 
 [Database.Common.ps1](../../99_Tools/database/Database.Common.ps1)은 Complete 승인 입력·정확 대상과 소스를 고정한 뒤 별도 migration lock 아래 전체 신규 migration·module 배포·권한·metadata·[strict catalog](../../99_Tools/database/verify-schema.sql)를 하나의 transaction으로 묶는다. 자체 소유 transaction은 오류 시 rollback/dispose하며 전달받은 transaction은 호출자가 종결한다. 파일 하나는 SQL batch 하나이며 GO 분할기를 사용하지 않는다.
 
 [Module.Common.ps1](../../99_Tools/database/Module.Common.ps1)은 명시된 001~004/manifest/source를 검사하고 migration의 누락·미지/더 최신 버전·이름/checksum 불일치를 거부한다. 기존 module은 변경 source 적용 전에 등록 기록과 실제 객체 집합·정의·소유자/실행 컨텍스트를 대조하며, unchanged source도 검사한다. 첫 metadata 설치 외에는 비어 있거나 지워진 기록/객체를 자동 채택하지 않는다. 선언 hash가 맞는 변경 source만 적용하고 같은 묶음은 DDL을 생략하되 9grant와 최종 대조를 반복한다. 새 정의가 소스의 기대값과 맞아야 ModuleDefinition을 기록한다. drift를 덮어쓰거나 현재 선언과 다른 source를 자동 수선하지 않는다.
 
 현재 reader/catalog는 SchemaVersion4·테이블8·module18·정확9grant 등 고정 계약을 요구한다. [Environment.Common.ps1](../../99_Tools/database/test-environment/Environment.Common.ps1)도 수명 상태별 001/정확4개 migration을 대조하며 **수명 manifest 자체의 schema는 2**이다. 향후 코드 변경은 새 버전 선언과 그에 맞는 소스·도구·catalog 검토가 필요하다. 과거 migration checksum 변경이나 오래된 checkout의 강제 덮어쓰기로 되돌리지 않는다.
+release 4는 어느 DB에도 설치 완료된 적이 없어 선언 값을 제자리에서 고쳤다([적용 결정과 실행 근거](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md)): 컨테이너 엔진에서는 마지막 정의 대조가 거부돼 한 transaction 전체가 롤백됐고, 옛 Windows 시험 DB는 001 기준 상태에서 멈췄다. 이미 옛 004를 적용한 DB가 있으면 도구가 적용 이력의 004 checksum 차이 때문에 migration history 검사에서 `Migration history has a hole, unknown name/version or checksum drift; do not rewrite applied history.`로 먼저 멈추고 덮어쓰지 않는다.
 
-이 배포 경계는 구현 및 자체 오프라인 모의 대조까지이며 실제 SQL 문법/compiler·CREATE OR ALTER 저장 정의/hash·catalog·권한·중간 실패 atomic rollback은 아직 실행하지 않았다. 예상 engine metadata가 다르면 원문을 보존하고 검토된 수정부터 진행한다.
+SQL Server 17.0.5005.3에서 `CREATE OR ALTER `가 `CREATE` 뒤 공백 세 칸으로 저장되며, 머리말을 맞춘 정의/hash가 18개 모두 일치함을 관측했다([진단 실행 2026-10-11T14:09Z](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md#재개-지점)). 이 수정 뒤 실제 엔진 설치·catalog·권한·중간 실패 atomic rollback 검증은 아직 미실행이다. 다른 엔진의 저장 형태는 확인하지 않았으며, 기대 정의와 다르면 metadata 쓰기 전에 거부한다.
 
 ### 오프라인 module 구조 검사
 
@@ -160,7 +173,7 @@ hash 검사에는 `modules/manifest.json`, 정확 module SQL, `verify-schema.sql
 
 미등록 검사는 선택 DatabaseRoot 아래 `.sql`/`.ps1`/`.psm1`/`.psd1`/`.json` 제품 파일을 읽는다. 저장소 원본이나 다른 영역으로 넘어가지 않는다. 코드의 명시 제외 목록에는 root 상대 `tests/` 하위만 있으며, 고의 실패 fixture·보호 SHA·known-answer를 제품 등록에 넣지 않는다. `tests-extra/`나 다른 경로의 `tests/`는 제외되지 않는다. 주석·문자열도 포함해 앞뒤 hex 문자가 없는 정확64자리 hex literal을 등록 target의 File/Offset/Observed와 대조한다. 이미 등록된 값의 복사라도 다른 위치는 미등록이다. HashUnregisteredLiterals는 실제 File/Line/Offset/Observed와 등록 안내를 제공한다. HashTargetCount는 등록 대상만, HashViolationCount는 등록 drift와 미등록 literal의 합이다. 파일 읽기/열거 실패나 하위 link로 필수 검사를 못 하면 검사 불가이며 완료로 보고하지 않는다.
 
-manifest identity는 UTF-8 without BOM·LF·마지막 개행의 실물 bytes SHA256이다. module SourceChecksum과 migration checksum은 BOM 제외·CRLF→LF 원문의 UTF-8 hash이고, DefinitionChecksum/Bytes는 같은 정의의 UTF-16LE without BOM hash/byte 길이다. immutable001의 raw 보호 hash와 정규화 checksum은 의미가 다르다. manifest identity를 module source나 004 자체 checksum에 복사하지 않는다. 이 검사에서 source로 계산한 definition 기대값은 실제 엔진이 저장한 정의/hash의 증명이 아니다.
+manifest identity는 UTF-8 without BOM·LF·마지막 개행의 실물 bytes SHA256이다. module SourceChecksum과 migration checksum은 BOM 제외·CRLF→LF 원문의 UTF-8 hash이고, DefinitionChecksum/Bytes는 맨 앞 `CREATE OR ALTER `를 `CREATE` 뒤 공백 세 칸으로 바꾼 기대 정의의 UTF-16LE without BOM hash/byte 길이다. immutable001의 raw 보호 hash와 정규화 checksum은 의미가 다르다. manifest identity를 module source나 004 자체 checksum에 복사하지 않는다. 이 기대값은 관측한 엔진 저장 형태를 반영하지만, 오프라인 계산만으로 수정 뒤 실제 엔진 설치나 다른 엔진의 정의/hash 일치를 증명하지는 않는다.
 
 | 상태 | 뜻 | warning 파일럿 exit | Strict exit |
 |---|---|---|---|

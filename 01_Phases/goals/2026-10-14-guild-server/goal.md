@@ -2,6 +2,74 @@
 
 ## 재개 지점
 
+### 2026-10-18 — ENV-D01 한 줄 차이 조건부 수락·제품 PR 준비
+
+**현재 다음 첫 일:** 메인 `msg_e951138f3f3a`가 전달한 사용자 선택 A에 따라 검증을 **「ENV-D01 한 줄 차이를 명시한 조건부 통과」**로 리드 정산한다. 이미 검증한 bytes로 진행 중인 main merge의 index 충돌을 정리하고 commit → push → 제품 PR 한 개를 만든다. 제품/시험 추가 수정·중량 재실행은 없으며 사용자 병합 승인 전 메인 외 병합은 금지다. G1~G8·수치·수명·PR 경계는 유지하고 다음 goal은 시작하지 않는다.
+
+- **사용자 결정 원문(메인 pane 제출, 메인 전달):** 「대시보드 결정 응답: 1) 길드 서버 검증 - Unity가 시험용 사본의 분석 설정 한 줄을 자동으로 지운 채 돈 Unity 시험(493개 통과)을 PR 근거로 인정할지 → A 한계를 적고 인정」. 전달 출처는 `msg_e951138f3f3a`(2026-10-17T17:43:54Z, 현재 메인 `term_aa109e71-083b-4956-a50b-b6fe210a8b1b`)이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 선택지 A는 「설정 한 줄 차이를 명시한 조건부 통과」 정산과 길드 서버 PR 준비다.
+- **예외의 정확한 범위:** 격리 snapshot의 `03_Client/ProjectSettings/ProjectSettings.asset` 597행 `Standalone: SENTIS_ANALYTICS_ENABLED;APP_UI_EDITOR_ONLY` → `Standalone: APP_UI_EDITOR_ONLY` 한 줄이다. 원본 저장소 변경·다른 줄·다른 파일 차이는 허용하지 않는다. 원본과 완전히 같은 실행 조건이라고 주장하지 않으며, wrapper exit1/complete 없음·실제 Editor exit0/493P·원본 보존을 함께 기록한다. Content·Art도 정확히 같은 한 줄에만 같은 기준을 쓰라는 전달이며 World가 다른 파트 판정을 대신하지 않는다.
+- **원문 보존과 결과:** 신규 독립 검증 Task `task_bf510f3f46ac`/Dispatch `ctx_82af054f7e0e`의 원래 grade=strong / overall=deferred / ENV-D01 및 worker_done failed는 고치지 않는다. `strong-review-01/verdict.md`(SHA256 `AB8596CCB2227FC178F1CEF2AC28C22469707967B4817E5FCA3711BD0F77E6DA`), report와 drift 분석에 이 사용자 결정과 리드 정산을 연결한다. B 1642행=1637P/0F/기존5 NotExecuted, C 원본22봇 성공, D 493P/0F/0skip을 조건부 PR 근거로 사용한다. 제품 확정 회귀0이며 ENV를 구현자 확정 실패로 세지 않는다.
+- **현재 경계와 근거:** 실 DB·CI·Player build·UI 플레이·두 클라이언트 리허설은 아직 미실행이다. Content 독점 실행 창(`msg_782fdf543f48`) 동안 정적 Git/PR만 수행한다. `.backups/verification/2026-10-14-guild-server/laptop-resume-20261017/lead-pr-01/`의 context·pre-git-audit·리드 정산에 인가 전 index와 검증 입력 재대조를 보존한다. PR 발행 뒤 번호·정확40자 head·실제 CI 상태를 메인에 보고한다. goal 전체 종료와 Gardener·종료 기록은 제품 병합 뒤 별도다.
+
+### 2026-10-18 — 강 독립 검증 정산·ENV-D01 판단 대기
+
+**현재 다음 첫 일:** 메인/사용자가 D의 한정된 환경 차이 수락 여부 또는 원본 Sentis define 조건의 추가 보증 필요 여부를 판단한다. 현재 grade=strong / overall=deferred / ENV-D01이며 전체 PASS·goal 완료·Git/PR 단계로 올리지 않는다. G1~G8·수치·PR 경계는 유지하고 다음 goal은 자동 착수하지 않는다.
+
+- **실제 독립 실행:** B 무필터 whole1642행=1637 Passed/0 Failed/기존5 NotExecuted·새 독립8P, C 원본22봇 실제22성공, D Editor6000.6.4f1 무필터493P·새2P다. C는 두 계정의39→36→44·개인50골드/재료1/주머니1·금고10→30·거점2·강화+5/상대0·재접속개인0을 관측했다. 빌드 오류0/경고50의 귀속unknown, 실DB/CI/UI플레이·Player build 미실행을 유지한다.
+- **ENV-D01:** 격리 snapshot의 ProjectSettings.asset에서 SENTIS_ANALYTICS_ENABLED 한 심볼이 제거돼 D wrapper exit1/complete 없음이다. 실제4개 Bee response도 해당 심볼 부재이며 시험 전 define-change→reload를 확인했다. 패키지 자동 초기화 writer 후보와 일치하나 정확 호출/분기 trace는 없다. 게임/시험 조건부 사용과 해당 시험 누락은 찾지 못했지만 원본 define 조건의 동일 통과는 입증하지 않았다. 제품 확정 회귀는0이며 구현자 확정 실패3회로 합산하지 않는다.
+- **정산·종료:** 검증 Task task_bf510f3f46ac/Dispatch ctx_82af054f7e0e를 failed(보류)로 정산했다. 판정은 실제 구현 Task3개에 연결됐다. 원문·맥락·diff/raw 및 자기 산출물222/고정입력3430 hash drift0·repo3398 목록/index6CDEF3... 불변을 리드가 대조했다. 새 시험3+meta1만 작성됐고 정확 완료 pane을 닫아 ptyKilled와 리드 생존을 확인했다. 현재 goal의 이 갱신은 검증자 쓰기 종료 뒤 리드의 인가된 문서 변경이다.
+- **자원·운영:** 중량 창은 메인에 반환·승인 회수했고 이후 E 읽기 전용 감사만 했다. 신호44/heartbeat28, 기존 helper 최대777초/300초 초과11구간과 별도 heartbeat쌍 초과16구간을 공식ask 대기·작성/감사 누락·CLI outage로 구분해 원시 정산했다. 초기 heartbeat 형식5건·준비 helper 오류를 숨기지 않으며 완전 준수나 전체 OS 쓰기0을 주장하지 않는다. 현재 CLI1.4.229/runtime 교체와 동일 Task/handle 유지도 기록했다.
+- **근거·남은 경계:** .backups/verification/2026-10-14-guild-server/laptop-resume-20261017/strong-review-01/의 verdict.md(SHA AB8596CCB2227FC178F1CEF2AC28C22469707967B4817E5FCA3711BD0F77E6DA), report.md, unity-drift-analysis.md, lead-settlement-source-audit.json, lead-settlement-liveness*.json, lead-worker-terminal-close.json에 있다. 옛 전체 index 동등성 미증명과 현재 미병합9파일/27행은 유지한다. 재실행은 자동 권고하지 않으며 원본 define 실행 보증이 필요하면 새 담당 세션의 통제 방법·계약/범위를 먼저 고정하고 새 창에서 수행한다.
+### 2026-10-17 — 통합 자기실행 완료·신규 강 독립 검증 준비
+
+**현재 다음 첫 일:** 새 `gpt-6.1-sol` xhigh 외부 검증자가(10-20 20:00 KST 리셋까지 사용자 기간 결정) 보고·실제 diff·원시를 실사하고 의미 있는 독립 시험과 고정 실행 계획을 준비한다. 그 뒤 별도 메인 실행 창에서 B 전체 회귀·C 기존22봇·D 격리 Unity EditMode를 검증한다. G1~G8·PR 경계는 유지하며 독립 판정 전 전체 goal 통과로 쓰지 않는다.
+
+- **실제 결과:** Sync·실제 PDL 생성·전체 빌드·같은 build의 무필터 whole·원본3대상 배포가 각1회 성공했다. TRX1634행은1629 Passed/0 Failed/5 NotExecuted이며 미실행5개는 이전whole과 같다. 빌드 오류0/경고50의 기존·신규 귀속unknown을 유지한다. 현재 protocol21/ID1..48, 권위 직업 결과48 선행·loading/owner/종료 보존이 통합 기준이다.
+- **교정과 정산:** 세 INT 실패의 시험 교정을 실제 경계·독립 단정과 대조했고 owner 제거1회 및 전체 정리 단정의 통과 원시를 확인했다. 배포3개 모두 backup/시작bytes와 export/실제bytes가 일치한다. 자기근거140·원본3394파일 재해시 drift0, 허용 밖 변경0이다. 구현자는 정산·정확pane 종료했고 리드생존을 확인했다.
+- **운영 기록:** UTC 승인 관문 도구 실패를 보존하고 최소 두줄 교정·새계획/창/승인·실제 승인/시각관문 오프라인 통과 뒤 실행했다. 생존 helper의 공식ask 대기 초과와 별도 heartbeat 체크누락을 구분해 정산했다. 새 계약은 우편함 반환 별도호출과 JSON시각 원문 보존·실행전 오프라인 관문을 포함한다.
+- **근거와 미완료:** `.backups/verification/2026-10-14-guild-server/laptop-resume-20261017/integration-repair-01/`의 `report.md`, `lead-settlement-note.md`, `lead-settlement-audit.json`, `lead-whole-test-raw-review.json`, `lead-final-source-and-deployment-audit.json`, `terminal-close.json`에 있다. 현재 중량 실행 창은 메인에 반환됐고 추가 실행0이다. Git 미병합9파일/index는 아직 그대로이며 commit/push/PR/CI·독립 강 판정은 미완료다. 신규 검증 준비·현재연결은 같은 재개폴더의 `strong-review-01/` 및 `current-session-checkpoint.json`으로 잇는다. 다음 goal은 자동 착수하지 않는다.
+
+### 2026-10-17 — whole 시험 3실패 뒤 신규 교정 준비
+
+**현재 다음 첫 일:** 새 외부 Astra가 INT-FAIL-01~03의 시험 3파일을 교정하고 새 실행 계획을 고정한다. 제품 코드는 읽기 전용으로 시작하며, INT-FAIL-02의 최종 owner 상실 경계에 실제 도달한 뒤에도 실패하면 요구를 약화하지 않고 제품 결함 번호로 반환한다. 목표 G1~G8·PR 경계는 유지한다.
+
+- **실제 결과:** SDK10.0.301로 Sync·PDL 실제 생성·전체 빌드가 성공했다. 생성 ID1..48이 PDL과 일치한다. 빌드는 오류0/경고50(기존·신규 귀속 unknown), 서버 whole은 1634행=1626 Passed/3 Failed/5 NotExecuted다. 원래 TEST-F01과 수정 서버 3클래스 15행은 Passed다. export·원본 생성물/DLL 배포·Unity·22봇·신규 독립 검증은 미실행이다.
+- **실패 분류:** INT-FAIL-01은 48 선행을 누락한 옛 순서 단정(a), INT-FAIL-03은 더 이른 종료 guard 뒤의 옛 로그 단정(a)이다. INT-FAIL-02는 등록 전 GetMap에 걸린 fixture 훅(b 후보)/최종 owner 수명 요구(d 미확정)로 남는다. 구현자 분석이며 독립 판정이 아니다. 서로 다른 실패3건을 같은 계약·같은 결함의 확정 실패3회로 세지 않는다.
+- **정산:** Task task_7e542fab055b / Dispatch ctx_0df90d3577ed는 failed 부분 정산했다. report SHA256 B0B7305C29359AB6F4A02A4E49B1FA07B41668CB2BC6ABC48200EC587BE840A8과 실제 원문·맥락·diff·원시를 대조했다. 허용 시험4개만 +50/-31, 실행입력753·자기신고99파일 drift0, 원본 GenPackets/DLL2·index·보호flags 불변이다. worker-release retained 뒤 정확한 완료 pane을 닫았고 ptyKilled=true·리드 생존을 확인했다. 상세는 E/laptop-resume-20261017/integration-complete-01/lead-settlement-note.md 및 lead-settlement-source-audit.json이다.
+- **자원과 다음 실행:** 메인 msg_246c340c688c가 창 반환과 메인 직접 관측 WSL dotnet/GameServer/testhost/vstest0·Unity0·여유16.1GiB를 접수했다. 작업자/리드 자기 관측으로 올리지 않는다. 현재 중량 실행0이며 새 메인 「실행 창 시작」 전에는 재실행하지 않는다. 교정 뒤 새 입력의 생성→전체 빌드→무필터 whole→동일 build 생성물/DLL 배포를 잇고, 신규 Opus의 강 독립 B·C22봇·D격리 Unity EditMode는 별도 배정을 받는다.
+- **배정:** 후속 Astra xhigh는 시간·순서·수명/프로토콜 신호2·3에 따른다. R-7은 이 goal의 기존 비해당을 유지한다. 새 작업자도 사전 맥락·관련 원문·입력 hash와 실제 준수 위치를 남기며 이전 완료 세션은 재사용하지 않는다.
+
+**적용 중 사용자 결정 보충(메인 전달):** 메인 msg_41157a54bb93의 원문은 「대시보드 결정 응답: 1) 10-28 시연 준비 - 길드 순환과 지금 있는 한 판 흐름의 실화면 리허설에 힘을 몰지 → A 시연 우선 재정렬」이다. 길드 서버 통합→실행→신규 강 검증→PR을 최우선으로 잇는다. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 고정 goal 입력이 해제된 지금 기록한다.
+
+**운영 교정과 한계:** check/ack와 Sync launcher를 같은 batch로 묶어 보류 해석 전에 호출한 첫 오류는 만료 승인 관문에서 차단됐다(WSL 등0, msg_80659abfad1d). 메인 msg_793fa17c688d가 두 파트의 두 번째 발생을 근거로 정본 작업 재개 전까지 신규 계약과 기존 작업자 다음 지시에 적용하도록 한 원문은 「우편함 check·inbox의 반환은 그 결과만 받는 별도 도구 호출로 읽고 해석한 뒤에 다음 행동을 시작한다. check와 실행 명령을 한 셸 호출이나 한 batch로 묶지 않는다.」다. 메인 pane 안내가 사용자 입력과 경합한 리드의 첫 오류도 msg_9a55f9acc58e로 접수했으며, 이후 메인에는 orchestration만 보낸다. 제품 수정을 운영 규칙으로 대체하지 않는다.
+
+생존 helper는 현재 Dispatch의 12:09:07→12:14:21=314초(공식 ask 답변 대기 중, helper는 답 전 다음 신호라 보통 간격으로 분류), 12:59:14→13:04:56=342초(분류·보고 구간, 초과 사유 별도 미기록)를 over로 냈다. 현재 terminal 신호22/heartbeat12의 수신정책 위반은0이다. 과거의 일일 예외를 적용하지 않으며 원시·표본은 같은 E의 settlement-run-signals.json / lead-settlement-liveness.json / lead-settlement-signal-policy.json에 보존했다. 이전 고정 goal 원문도 같은 E/goal-frozen-input-before-resume-update.md에 보존했다.
+
+### 2026-10-17 노트북 재개 — 이전 기록
+
+**신규 세션 준비:** 통합 완성 계약과 관련 규칙 원문9절·입력34경로를 E/`laptop-resume-20261017/integration-complete-01/`에 고정했다. 새 Astra pane의 업데이트 선택창은 메인 `msg_eda20a7b8188`가 이번 창의 Skip만 처리했다. 리드가 같은 target/incarnation·빈 prompt·화면 GPT-6-Astra xhigh와 고정 입력34개 drift0을 재확인했다. 현재 다음 첫 일은 준비 완료한 신규 Astra에 교정/실행계획 계약을 최초 연결하는 것이다. 입력접수·실제턴시작과 최종판정을 구분하고 연결 원시를 같은 폴더에 보존한다. 실제 실행은 아직 승인/수행하지 않았다.
+**정상 재개(10-17 20:30 이후):** 메인 `msg_053d686c6342`가 사용자 귀환과 일시 정지 해제를 전달했다. **현재 다음 첫 일은 신규 Astra의 TEST-F01·구판/count 시험 교정과 PDL 실제 재생성/동일 build DLL/서버 whole 실행 계획을 고정하는 것**이다. 실행 단계는 새 계획의 실제 입력·자원 관문을 대조해 한 번에 승인하고, 구현 쓰기 종료 뒤 신규 Opus 최종 강 독립 검증(B·C22봇·DUnity)을 이어간다. 아래 일시정지는 당시 기록이며 더 이상 현재 보류 상태가 아니다.
+
+- **데스크톱 원문 도착:** E/`laptop-import-20261017/`에 USBzip 사본과 Windows tar 목록·경로/겹침 검사·추출 원시를 보존했다. hash 일치·198항목·이탈/겹침0·-k 추출 exit0/198파일이다. 현재4개 시험은 과거 동결 manifest와 모두 일치했고, 이관된 cs사본3개도 일치했다(meta사본은 압축에 없으나 manifest hash와 현재meta는 일치). 과거 판정문도 goal 기록 hash와 일치하며 직접 읽었다. E/`laptop-resume-20261017/historical-frozen-comparison.json`. 과거 실행을 이번 노트북 실행으로 세지 않는다.
+- **정적 통합 정산:** 기존 Astra는 메인 일시정지 사유의 failed 부분 정산으로 수기7충돌을 합성하고 종료했다. 보고·실제 양쪽diff·수기표식0·보호4hash·unmerged index 원문 동일을 대조했다. release 뒤 정확pane close를 확인했고 reclaimable0이다. 생성코드/Shared DLL과 stage는 남았으며 빌드·시험·배포 미실행이다. 제품 확정 실패/전체 PASS로 세지 않는다. E/`laptop-resume-20261017/integration-01/lead-settlement-source-review.json`.
+- **운영 정산:** 저장 신호의 11:21:37→11:26:46은309초이며 사유 별도 미기록이다. 태그붙은 heartbeat subject+빈body4건은 수신 helper의 body-tag 위반이다. 메인 `msg_271b3ca2db66`에 공개했고 다음 계약에서 공식 내용없는 alive 표식을 그대로 사용하는 경계를 명시한다. 제품 실패와 구분하며 원시는 같은 폴더 `all-run-signals.json`·`lead-liveness-review.json`이다.
+- **새 입력의 정적 대조:** 기존 Unity Inventory 시험은 현재 main에서 이미21로 교정돼 있다. 이전 UNITY-01은 역사 원문으로 보존하고 현재 버전/소비자 DLL·실제 Unity 실행으로 새 판정한다. Guild max/count47·serverVersion20·Unity Guild20은 새48/v21과 대조할 현재 정적 위험이며 실행 실패로 보고하지 않는다.
+**현재 일시 정지(10-17):** 메인 `msg_f5aa821e7c8d`에 따라 새 작업자·검증자와 중량 실행·commit/push/PR을 시작하지 않는다. 이미 연결된 Astra는 v1 정적 단위만 마무리한 뒤 부분 결과로 정산하며 pane은 보존한다. 현재 다음 첫 일은 그 작업자의 쓰기 종료·보고·보존 감사를 확인해 정산하고 메인에 최종 status를 보내는 것이다. 과거 근거 이전과 후속 생성/빌드·TEST-F01·최종 검증은 사용자 재개 뒤다. 이 상태 기록 전 고정 goal 입력은 E/`laptop-resume-20261017/integration-01/goal-input-v1.md`에 동일bytes 보존했고 변경 사실을 현재 작업자에게 알렸다.
+
+- **연결/실제 시작:** 새 Task/Dispatch와 source 원시는 E/`laptop-resume-20261017/integration-01/worker-start.json`에 있다. 최초 접수는 turn_start_unobserved였고 공식 JSON draft 크기/현재동일성 대조 뒤 R-5의 텍스트 없는 Enter1회로 제출했다. 같은 폴더 `submitted-contract-full-comparison.json`에서 세션 원문의 실제 user 입력1건과 공식 payload6354자 전체 일치를 확인했다. 실제 Working/도구 진행은 관측했으며 Orca의 start_unknown 기록과 구분한다. 이는 작업 착수이며 통합 완료나 독립 PASS가 아니다.
+- **정산 대기:** 현재 source 통합/실행계획의 작업자 결과를 기다리며 새 발행·대기 폴링을 열지 않는다. 원래계약 전체의 생성/DLL/실행 완료조건은 미충족이므로 메인 일시정지에 따른 failed 부분 정산으로 받고 제품 확정 실패에 세지 않는다. 상세 원문/변경·정산 근거는 같은 근거 폴더로 이어간다.
+
+**현재 다음 첫 일:** 최신 main의 영속성 입장 계약을 보존해 길드 branch 충돌을 신규 외부 구현자가 해결한다. 원본 PDL로 패킷/공유 DLL 재생성을 준비하고, 쓰기 종료 뒤 새 세션으로 TEST-F01 수정과 신규 최종 강 독립 검증(B whole·C 기존22봇·D 격리 Unity whole EditMode)을 이어간다. Unity v19 단정 위험은 현재 통합판의 요구 원문과 실제 실행으로 분류한다.
+
+메인 진입 `msg_96767f2a2087`로 보류 파트 중 World 재개를 받았다. 메인이 전달한 사용자 결정이며 이 pane의 직접 사용자 입력으로 격상하지 않는다. 데스크톱의 Run·handle·과거 실행 근거는 현재 권한/실행 실적으로 재사용하지 않는다. 새 Run/현재 신원·원격 SHA·진입 및 통합 원시는 E/`laptop-resume-20261017/`에 둔다.
+
+목표 branch로 전환하고 최신 main의 로컬 no-commit 통합을 시작했다. 예상 영역에서 실제 충돌9개가 나와 외부 구현으로 넘긴다. main의 현재 v21·기존 길드43..47·권위 직업 결과48과 영속 로딩/종료 계약을 보존하고, 새 wire 변경이 필요하면 조용히 번호/판을 바꾸지 않고 리드에 올린다. 과거 G7의 v20 표기는 당시 요구 원천으로 보존하며 현재 통합 호환성은 최신 main과 대조한다. PR 병합·commit/push·빌드·서버·봇·Unity는 아직 수행하지 않았다.
+
+이주 압축본에서 정확4개 untracked 시험을 동일 bytes로 복원했다. zip 사본→복원본 SHA256 불일치0은 E/`laptop-resume-20261017/restore-four-tests.json`에 있으며, 과거 동결 hash manifest/최종 판정 원문은 이 머신에 없어 `msg_904ef13d616a`로 데스크톱 E/`final-review-01/` 폴더를 요청했다. 과거 hash 확인 완료나 이전 실행 재현으로 보고하지 않으며, 네 시험은 원문 대조 전 수정·stage·commit하지 않는다. 관리자 명령은 사용자가 메인 창에서 실행하는 새 공통 결정을 따른다.
+
+발행 준비의 계약·입력 경로29개·관련 규칙9절 원문은 E/`laptop-resume-20261017/integration-01/`에 고정했다. 신규 Astra pane은 처음 Codex 업데이트 선택창으로 readiness=false였다. R-6에 따라 메인 `msg_c139d8fa5af3`가 이번 창의 Skip만 처리했고, 리드가 같은 target/incarnation·빈 prompt·화면 GPT-6-Astra xhigh를 재확인했다. **현재 다음 첫 일은 입력 hash를 고정하고 v1 정적 통합 계약을 최초 연결하는 것**이다. 연결 receipt는 같은 근거 폴더에 남기며 준비/입력접수/실제 턴 시작을 구분한다. 메인 `msg_c5308b3335a1`·`msg_e4e5b677fa3d`에 따른 과거 근거 도착 전 재실행·검증자 기동 금지는 유지한다.
+### 2026-10-15 세션 마감 당시 재개 기록
+
 **다음 첫 일:** 사용자 재개 뒤 지침·현재 Git·새 Run/신원·자원 관문을 다시 확인한다. 신규 외부 세션이 TEST-F01(새 시험의 처치36 수신 순서 가정)을 수정하고, 새 최종 강 독립 검증자가 서버 whole 재검증·기존22봇 회귀(C)·격리 Unity whole EditMode(D)를 포함해 판정한다. UNITY-01(기존 Unity 시험의 v19 단정과 v20 DLL)을 요구 원문과 대조하고 실제 실행으로 분류한다. 오늘 PR·CI·수정 작업자는 시작하지 않았다.
 
 **2026-10-15 세션 마감:** `date.exe -u '+%Y-%m-%dT%H:%M:%SZ'` 출력 `2026-10-15T07:20:33Z`. 메인 판단 `msg_f934bb915687`에 따라 자원 차단 상태로 현재 검증자만 정산했다(사용자 결정으로 격상하지 않는다). **열린 Task·Dispatch 없음, 작업자 pane 0**, 리드 pane 하나만 남았다. 제품 기준 HEAD/기존 remote는 `e2744dc7b642ccf631d1263fa94636eb25757374`이며 이 마감 기록만 별도 normal commit/push한다.
@@ -446,6 +514,17 @@ Content 서버 PR 병합 전에는 이 연결을 구현하지 않는다. 고정 
 > goal 「적용 중인 사용자 결정」에 위 원문과 이 msg ID를 기록하라. 메인이 전달한 사용자 지시이며 각 pane의 직접 입력으로 격상하지 않는다.
 
 현재 승인 goal과 범위를 시연 우선으로 계속한다. PR head 보고·병합 대기 포함 종료 지점에는 종료 점검·기록 정리 후 멈추고 다음 goal 초안·새 작업자를 열지 않는다. 메인에 PR번호/정확head·동결 뒤 정리·아침에 사용자가 정할 한두 항목을 보내며 다음 일은 아침 사용자 결정으로 잇는다. 기존 goal의 남은 구현·독립 검증을 위한 작업자는 현재 승인 범위로 구분한다.
+
+### 4 - 주간 리셋 전 신규 선행 시험·독립 검증은 Codex
+
+메인 `msg_567a439b0069`가 2026-10-17 23:4x KST에 전달한 사용자 원문은 「대시보드 결정 응답: 1) Claude 사용량 - 주간 리셋(화 20:00)까지 새로 여는 선행 시험·독립 검증 세션을 Codex로 돌릴지 → A 지금부터 Codex로」다. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+- 지금부터 **2026-10-20 20:00 KST**까지 새 선행 시험 작성자·독립 검증자는 Codex CLI `gpt-6.1-sol`, `model_reasoning_effort=xhigh`로 연다. 구현자·리드 배정과 검증 강도·구현자와 다른 신규 외부 세션 조건은 유지한다. 리셋 뒤 새 배정은 원래 모델 시범(Opus)으로 돌아간다.
+- 이미 작업 중인 Opus는 맡은 작업 하나를 끝내고 정산·종료하며 실행 중 모델을 바꾸지 않는다. 새 재검증 세션은 위 기간 배정을 따른다. 이 결정은 AGENTS 모델 라우팅 정본 개정 요청이 아니다.
+- 새 Codex 계약은 관련 규칙 원문·고정 입력 경로/hash·판정 기준·실행 순서를 자기완결로 담고 이전 대화 기억을 가정하지 않는다. 태그는 `[World 검증자]`, 요청/화면/backend 확인 칸은 유지하며 첫 선택창은 입력 없이 메인에 보고한다.
+- World의 신규 검증은 계약 주입 전 이 결정을 확인했다. 작업을 받지 않은 빈 Opus pane만 종료하고 새 Sol 검증자로 연결한다. 기존 목표 G1~G8·B 전체/C22봇/D 격리 Unity·PR 순서는 바꾸지 않는다. 세부 정산은 같은 재개폴더 `strong-review-01/`에 보존한다.
+
+추가로 메인 `msg_eb9f706cf800`이 전달한 사용자 원문은 「대신 Sol의 성능이 빈얃하다고 느낄경우 Astra로 격상」·「Astra로 격상시에는 Effort는 High로」다(메인 전달). 리드 또는 메인이 계약의 필수 관찰·실행 누락, 원시와 다른 주장/근거 없는 전부·없음, 맥락 손실 재작업, 계약 오해에 따른 범위 밖 쓰기 시도로 빈약함을 판단하면 같은 작업의 **다음 신규 세션을 gpt-6-astra high**로 연다. 실행 중 모델은 바꾸지 않으며 신호·원시 위치·새 모델/effort를 메인에 보고하고 이 goal에 기록한다. 아직 격상 판단은 없다.
 
 ## 동결 뒤 정리
 

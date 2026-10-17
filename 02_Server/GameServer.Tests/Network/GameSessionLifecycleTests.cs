@@ -1,4 +1,7 @@
+using System.Collections;
 using System.Net;
+using System.Reflection;
+using Dawnholder.Server.GameServer.Items;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Tests.Maps;
 using Shared.GameData;
@@ -68,23 +71,33 @@ public class GameSessionLifecycleTests : IDisposable
     public void ScenarioA_DisconnectBeforeTick_NoGhostPlayer()
     {
         // 핵심 race 시나리오 — deterministic.
-        // 1. OnConnected → AddPlayer job 1개 enqueue (아직 tick 안 함)
+        // 1. OnConnected → 로그인 후 직업 선택 예약 (아직 입장 tick 안 함)
         // 2. tick 전에 OnDisconnected → 별도 월드 close queue에 요청
         // 3. World tick → close queue 및 map job 처리 → players=0
         TestGameSession session = new(_map);
 
-        session.OnConnected(Ep());     // job 1 enqueue
+        session.OnConnected(Ep());
+        Assert.True(session.IsLoggedIn);
+        Assert.Equal(1, _world.Accounts.OnlineCount);
         Assert.Empty(_map.Players);     // 아직 tick 안 함
 
-        session.OnDisconnected(Ep());   // job 2 enqueue (closing 플래그 박힘)
+        session.OnDisconnected(Ep());
+        Assert.True(session.IsClosing);
         Assert.Empty(_map.Players);
 
-        Tick(1); // 두 job 처리
+        Tick(1);
 
-        // AddPlayer job은 _closing 체크로 skip. RemovePlayerBySession은 0건 제거(이미 없음).
-        // 결과: ghost player 없음.
+        // Closed/generation guards may reject before AddPlayer is queued; cleanup is the contract.
         Assert.Empty(_map.Players);
-        Assert.Contains("AddPlayer skipped", _consoleCapture.ToString());
+        Assert.Empty(_world.AllLiveMaps.SelectMany(map => map.Players));
+        Assert.True(session.IsClosing);
+        Assert.Equal(-1, session.EntityId);
+        Assert.Equal(0, _world.Accounts.OnlineCount);
+        Assert.Empty((IDictionary)typeof(InventoryRegistry)
+            .GetField("_registeredSessions", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(_world.Inventory)!);
+        Assert.Empty((IDictionary)typeof(InventoryRegistry)
+            .GetField("_states", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(_world.Inventory)!);
     }
 
     [Fact]

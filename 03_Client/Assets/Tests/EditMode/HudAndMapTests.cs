@@ -18,9 +18,15 @@ namespace Dawnholder.Client.Tests
         // EditMode에서 생성한 GameObject는 자동 파괴되지 않고, MapNameDisplay의
         // static 상태가 테스트 간 누수되므로 SetUp/TearDown으로 격리.
         readonly System.Collections.Generic.List<GameObject> _spawned = new();
+        CharacterClass? _serverClass;
 
         [SetUp]
-        public void SetUp() => MapNameDisplay.ResetForTest();
+        public void SetUp()
+        {
+            _serverClass = ClassLoadout.ServerClass;
+            ClassLoadout.ResetServerClass();
+            MapNameDisplay.ResetForTest();
+        }
 
         [TearDown]
         public void TearDown()
@@ -30,6 +36,8 @@ namespace Dawnholder.Client.Tests
                 Object.DestroyImmediate(go);
             }
             _spawned.Clear();
+            ClassLoadout.ResetServerClass();
+            if (_serverClass.HasValue) ClassLoadout.ApplyServerClass(_serverClass.Value);
             MapNameDisplay.ResetForTest();
         }
 
@@ -138,6 +146,9 @@ namespace Dawnholder.Client.Tests
             try
             {
                 ClassLoadout.SessionSelectedClass = selected;
+                // The invalid menu case still checks PlayerStats' fallback below. The server supplies a valid
+                // Knight result for that case; menu intent itself is never used as evidence of loaded authority.
+                ClassLoadout.ApplyServerClass(selected == (CharacterClass)255 ? CharacterClass.Knight : selected);
                 var hud = CreateHud(out Slider _);
                 var hpObject = new GameObject("ClassHpSlider");
                 var labelObject = new GameObject("ClassHpLabel");
@@ -165,6 +176,48 @@ namespace Dawnholder.Client.Tests
                 Assert.AreEqual("HP 11 / 211", label.text);
                 Assert.AreEqual(11f / 211, slider.value, 0.0001f);
                 Assert.AreEqual(initialHp, PlayerStats.ForClass(selected).InitialHp);
+            }
+            finally { ClassLoadout.SessionSelectedClass = previous; }
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void WithoutServerClass_MenuIntentDoesNotSupplyHp_AndServerHpStillWins(bool hpBeforeStart)
+        {
+            CharacterClass? previous = ClassLoadout.SessionSelectedClass;
+            try
+            {
+                ClassLoadout.SessionSelectedClass = CharacterClass.Mage;
+                var hud = CreateHud(out Slider _);
+                var hpObject = new GameObject("NoAuthorityHpSlider");
+                var labelObject = new GameObject("NoAuthorityHpLabel");
+                _spawned.Add(hpObject);
+                _spawned.Add(labelObject);
+                var slider = hpObject.AddComponent<Slider>();
+                var label = labelObject.AddComponent<TextMeshProUGUI>();
+                label.text = "awaiting HP";
+                slider.value = 0.25f;
+                var serialized = new UnityEditor.SerializedObject(hud);
+                serialized.FindProperty("_hpSlider").objectReferenceValue = slider;
+                serialized.FindProperty("_hpText").objectReferenceValue = label;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                if (hpBeforeStart) hud.ApplyServerHP(23, 203);
+
+                typeof(HudController).GetMethod("Start", System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.NonPublic).Invoke(hud, null);
+
+                Assert.IsNull(ClassLoadout.ServerClass);
+                if (!hpBeforeStart)
+                {
+                    Assert.AreEqual("awaiting HP", label.text, "menu Mage must not manufacture an HP placeholder");
+                    Assert.AreEqual(0.25f, slider.value);
+                    hud.ApplyServerHP(23, 203);
+                }
+                Assert.AreEqual("HP 23 / 203", label.text);
+                Assert.AreEqual(23f / 203, slider.value, 0.0001f);
+                hud.ApplyServerHP(11, 211);
+                Assert.AreEqual("HP 11 / 211", label.text);
+                Assert.AreEqual(11f / 211, slider.value, 0.0001f);
             }
             finally { ClassLoadout.SessionSelectedClass = previous; }
         }

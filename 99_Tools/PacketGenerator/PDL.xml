@@ -510,4 +510,9 @@
         <uint name="inventoryRevision"/>
         <long name="snapshotSequence"/>
     </packet>
+    <!-- Current-authority character admission. Success class is Knight=0/Mage=1; failures use255. -->
+    <packet name="S_CharacterLoadResult">
+        <byte name="result"/>
+        <byte name="characterClass"/>
+    </packet>
 </PDL>

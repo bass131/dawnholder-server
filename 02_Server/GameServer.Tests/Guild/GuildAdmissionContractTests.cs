@@ -13,7 +13,8 @@ namespace Dawnholder.Server.GameServer.Tests.Guild;
 
 // Independent re-verification of the guild admission fix (D-01 entry order, D-02 no half admission) against
 // technical contract v1 (snapshotSequence per connection, D1, D8) and the entry order of domains/server.md:
-// EnterMap → HP → the roster captured before the add → the join to everyone else. The boundaries here are the
+// CharacterLoadResult → EnterMap → HP → the roster captured before the add → the join to everyone else.
+// The boundaries here are the
 // ones the earlier tests leave open: a full roster with live enemies, two admissions in one tick, and a peer
 // whose join send fails. Expectations are contract literals (IndependentSpec) or before/after relations.
 // Entry: real handshake → C_Login → C_CharacterSelect → OnRecvPacket → HandlerRegistry → GameWorld.OnTick,
@@ -30,8 +31,8 @@ public sealed class GuildAdmissionContractTests : IDisposable
     public void Dispose() => _world.Dispose();
 
     // D-01: with two members and two live enemies in Town, the entrant's unfiltered stream is the login replies,
-    // then the whole map entry block, and only then its single admission 44. A 44 inside the roster passes a
-    // check of the first five packets but not this one. Each member sees the entrant join and one newer 44.
+    // then the authoritative class result and whole map entry block, and only then its single admission 44.
+    // A 44 inside the roster cannot pass this full prefix. Each member sees the entrant join and one newer 44.
     [Fact]
     public void Entry_SendsTheWholeMapEntryBlock_BeforeTheOnlyAdmission44()
     {
@@ -52,20 +53,24 @@ public sealed class GuildAdmissionContractTests : IDisposable
 
         PacketID[] expectedOrder =
         {
-            PacketID.S_HandshakeResult, PacketID.S_LoginResult, PacketID.S_EnterMap, PacketID.S_PlayerHp,
+            PacketID.S_HandshakeResult, PacketID.S_LoginResult, PacketID.S_CharacterLoadResult,
+            PacketID.S_EnterMap, PacketID.S_PlayerHp,
             PacketID.S_PlayerJoin, PacketID.S_PlayerJoin, PacketID.S_EntitySpawn, PacketID.S_EntitySpawn,
             PacketID.S_GuildSnapshot,
         };
         byte[][] head = entrant.Sent.Take(expectedOrder.Length).ToArray();
         Assert.Equal(expectedOrder, head.Select(IdOf));
-        Assert.Equal(entrant.EntityId, Read<S_EnterMap>(head[2]).entityId);
-        Assert.Equal(entrant.EntityId, Read<S_PlayerHp>(head[3]).entityId);
+        byte[] classResult = Assert.Single(entrant.Since(0, (ushort)PacketID.S_CharacterLoadResult));
+        // Fixed wire contract: size 6, packet 48, Success 0, selected Knight 0.
+        Assert.Equal(new byte[] { 6, 0, 48, 0, 0, 0 }, classResult);
+        Assert.Equal(entrant.EntityId, Read<S_EnterMap>(head[3]).entityId);
+        Assert.Equal(entrant.EntityId, Read<S_PlayerHp>(head[4]).entityId);
         Assert.Equal(new[] { first.EntityId, second.EntityId }.Order(),
-            head[4..6].Select(packet => Read<S_PlayerJoin>(packet).entityId).Order());
+            head[5..7].Select(packet => Read<S_PlayerJoin>(packet).entityId).Order());
         Assert.Equal(enemies.Select(enemy => enemy.EntityId).Order(),
-            head[6..8].Select(packet => Read<S_EntitySpawn>(packet).entityId).Order());
+            head[7..9].Select(packet => Read<S_EntitySpawn>(packet).entityId).Order());
 
-        IndependentSnapshot admitted = IndependentWire.ReadSnapshot(head[8]);
+        IndependentSnapshot admitted = IndependentWire.ReadSnapshot(head[9]);
         Assert.Single(entrant.Since(0, WireId.GuildSnapshot));
         Assert.Equal(1, admitted.Sequence);
         Assert.Equal(Kind.Membership, admitted.ChangeKind);

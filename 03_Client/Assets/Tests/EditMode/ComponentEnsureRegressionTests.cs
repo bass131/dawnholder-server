@@ -66,37 +66,95 @@ namespace Dawnholder.Client.Tests
         readonly HashSet<GameObject> _beforeFixture;
         readonly HashSet<GameObject> _beforeTest;
         internal readonly ManualConnectionQueue Queue = new();
-        internal readonly TestSocketPair Sockets = new();
+        internal readonly TestSocketPair Sockets;
         internal readonly UnityClientSession Session;
         internal readonly EntryBindingFixture Views;
+        bool _disposed;
 
         internal PilotSessionFixture()
         {
             Assert.IsNull(UnityClientSession.Instance);
             _beforeFixture = ComponentPilotTools.SceneRoots();
-            Session = new UnityClientSession(() => true, Queue.Post, (action, _) => { });
-            // R4 (pr2-acceptance.md): a gameplay Ready sends C_InventoryRequest, so the session needs a transport;
-            // without one ClientNet closes it and every later main-queue apply is skipped.
-            Session.Start(Sockets.Client);
-            Session.Publish();
-            SessionTestTools.Handshake(Session, Queue);
-            Views = new EntryBindingFixture(Session);
-            Views.Begin(x: 2, y: 3);
-            Views.Ready();
-            CollectionAssert.AreEqual(InventoryWire.InventoryRequest, Sockets.ReadFrame(), "R4 Ready query");
-            _beforeTest = ComponentPilotTools.SceneRoots();
+            try
+            {
+                Sockets = new TestSocketPair();
+                Session = new UnityClientSession(() => true, Queue.Post, (action, _) => { });
+                // R4 (pr2-acceptance.md): a gameplay Ready sends C_InventoryRequest, so the session needs a transport;
+                // without one ClientNet closes it and every later main-queue apply is skipped.
+                Session.Start(Sockets.Client);
+                Session.Publish();
+                SessionTestTools.Handshake(Session, Queue);
+                Views = new EntryBindingFixture(Session);
+                Views.Admit(Queue, Sockets);
+                Views.Begin(x: 2, y: 3);
+                Views.Ready();
+                CollectionAssert.AreEqual(InventoryWire.InventoryRequest, Sockets.ReadFrame(), "R4 Ready query");
+                _beforeTest = ComponentPilotTools.SceneRoots();
+            }
+            catch
+            {
+                Dispose();
+                throw;
+            }
         }
 
         internal HashSet<GameObject> Roots() => ComponentPilotTools.SceneRoots();
 
         public void Dispose()
         {
-            // 테스트가 만든 투사체·이펙트·원격/적 엔티티를 registry보다 먼저 지운다(편집 모드 Destroy 회피).
-            ComponentPilotTools.DestroyNewRoots(_beforeTest);
-            Session.Cleanup();
-            Views.Dispose();
-            Sockets.Dispose();
-            ComponentPilotTools.DestroyNewRoots(_beforeFixture);
+            if (_disposed) return;
+            _disposed = true;
+            try
+            {
+                // 테스트가 만든 투사체·이펙트·원격/적 엔티티를 registry보다 먼저 지운다(편집 모드 Destroy 회피).
+                try
+                {
+                    if (_beforeTest != null) ComponentPilotTools.DestroyNewRoots(_beforeTest);
+                }
+                finally { Session?.Cleanup(); }
+            }
+            finally
+            {
+                try { Views?.Dispose(); }
+                finally
+                {
+                    Sockets?.Dispose();
+                    ComponentPilotTools.DestroyNewRoots(_beforeFixture);
+                }
+            }
+        }
+    }
+
+    public sealed class PilotSessionFixtureTests
+    {
+        [Test]
+        public void ConstructionFailure_CleansOwnSessionAndViews_WithoutClearingForeignRegistry()
+        {
+            Assert.IsNull(UnityClientSession.Instance);
+            Assert.IsNull(LocalPlayerMovement.Instance);
+            Assert.IsNull(RemoteEntityRegistry.Instance);
+            Assert.IsNull(EnemyRegistry.Instance);
+            var foreignObject = new GameObject("Foreign registry ownership fixture");
+            foreignObject.SetActive(false);
+            var foreign = foreignObject.AddComponent<EnemyRegistry>();
+            var instance = typeof(EnemyRegistry).GetProperty("Instance");
+            instance.GetSetMethod(true).Invoke(null, new object[] { foreign });
+            HashSet<GameObject> roots = ComponentPilotTools.SceneRoots();
+            try
+            {
+                Assert.Throws<AssertionException>(() => new PilotSessionFixture());
+                Assert.IsNull(UnityClientSession.Instance, "the failed constructor must unpublish its own session");
+                Assert.IsNull(LocalPlayerMovement.Instance);
+                Assert.IsNull(RemoteEntityRegistry.Instance);
+                Assert.AreSame(foreign, EnemyRegistry.Instance, "the conflicting owner is not fixture-owned");
+                CollectionAssert.AreEquivalent(roots, ComponentPilotTools.SceneRoots());
+            }
+            finally
+            {
+                if (ReferenceEquals(EnemyRegistry.Instance, foreign))
+                    instance.GetSetMethod(true).Invoke(null, new object[] { null });
+                Object.DestroyImmediate(foreignObject);
+            }
         }
     }
 

@@ -80,7 +80,7 @@ namespace Dawnholder.Client.UI
             // ClassLoadout 경유 — process-local 캐시 우선 (다중 인스턴스 PlayerPrefs 오염 차단).
             int classValue = Bootstrap.ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
             PlayerStats stats = PlayerStats.ForClass((CharacterClass)classValue);
-            if (!_hasServerHp) UpdateHP(stats.MaxHp, stats.MaxHp);
+            if (!_hasServerHp && Bootstrap.ClassLoadout.ServerClass.HasValue) UpdateHP(stats.MaxHp, stats.MaxHp);
 
             UpdateMP(_mockMpCurrent, _mockMpMax);
             BindInventory();

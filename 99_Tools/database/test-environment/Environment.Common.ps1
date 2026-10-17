@@ -876,11 +876,11 @@ function New-DatabaseSqlCommand(
             if ($checked.Size) {
                 $parameter.Size = $checked.Size
             }
-            $parameter.Value = $(if ($null -eq $checked.Value) {
-                    [DBNull]::Value
-                } else {
-                    $checked.Value
-                })
+            if ($null -eq $checked.Value) {
+                $parameter.Value = [DBNull]::Value
+            } else {
+                $parameter.Value = $checked.Value
+            }
         }
         return $command
     } catch {

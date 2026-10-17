@@ -8,7 +8,7 @@ namespace GameServer.Tests.Network;
 
 /// <summary>
 /// 캐릭터 선택 핸들러 단위 테스트:
-/// `C_CharacterSelect` 수신 → 검증 → `PlayerStats` 박힘 흐름 전체 커버.
+/// `C_CharacterSelect` 수신 → 검증 → 소유 맵 tick → 권위 class/LoadResult 적용 흐름 커버.
 ///
 /// **검증 invariant** (5건):
 ///   1. happy_knight: characterClass=0 → Knight stats 박힘 (`Class==Knight`, `Hp==150`)
@@ -21,7 +21,7 @@ namespace GameServer.Tests.Network;
 ///   - GameMap 직접 주입(GetMap override) → GameWorld.Instance singleton race 차단
 ///   - Send/Disconnect override로 I/O 차단 (socket 없이 동작)
 ///   - `BypassHandshake()`로 handshake·로그인 우회 (lifecycle 테스트가 아니라 handler 로직 테스트)
-///   - `HasSelectedClass` / `GetStatsForTest` internal getter로 상태 검증
+///   - `HasSelectedClass` / `GetCasterClass`와 실제 map player로 상태 검증
 ///
 /// **헌법 #3 정합**: 테스트 3~4번이 invalid 입력 silent drop + cheat-flag 로그 검증.
 /// **헌법 #1 정합**: 테스트 1~2번이 서버가 stats를 박는 흐름 검증 (클라 수치 직접 박기 X).
@@ -104,9 +104,14 @@ public class CharacterSelectHandlerTests : IDisposable
 
         // act: characterClass=0 (Knight) 전송.
         s.OnRecvPacket(CharacterSelectPacket(0));
+        Assert.False(s.StatsSet); // 입장 결과는 수신 스레드에서 적용하지 않는다.
+        _map.Tick(2);
 
         // assert: HasSelectedClass = true + 로그에 Knight 박힘.
         Assert.True(s.StatsSet);
+        Assert.Equal(CharacterClass.Knight, s.GetCasterClass());
+        Assert.Equal(150, Assert.Single(_map.Players).Hp);
+        AssertLoadResult(s, 0);
         string log = _consoleCapture.ToString();
         Assert.Contains("Knight", log);
         // Knight MaxHp=150 로그 검증 (SetCharacterClass 로그 정합).
@@ -122,9 +127,14 @@ public class CharacterSelectHandlerTests : IDisposable
 
         // act: characterClass=1 (Mage) 전송.
         s.OnRecvPacket(CharacterSelectPacket(1));
+        Assert.False(s.StatsSet);
+        _map.Tick(2);
 
         // assert: HasSelectedClass = true + 로그에 Mage 박힘.
         Assert.True(s.StatsSet);
+        Assert.Equal(CharacterClass.Mage, s.GetCasterClass());
+        Assert.Equal(80, Assert.Single(_map.Players).Hp);
+        AssertLoadResult(s, 1);
         string log = _consoleCapture.ToString();
         Assert.Contains("Mage", log);
         // Mage MaxHp=80 로그 검증.
@@ -170,19 +180,34 @@ public class CharacterSelectHandlerTests : IDisposable
         // arrange: Knight로 첫 선택 완료.
         TestGameSession s = SetupHandshakedSession();
         s.OnRecvPacket(CharacterSelectPacket(0)); // Knight 선택
+        _map.Tick(2);
         Assert.True(s.StatsSet);
+        var originalStats = Assert.Single(_map.Players).Stats;
+        AssertLoadResult(s, 0);
         _consoleCapture.GetStringBuilder().Clear(); // 로그 초기화 (첫 선택 로그 제거)
 
         // act: 두 번째 선택 시도 (Mage로 바꾸려는 시도 = 중복).
         s.OnRecvPacket(CharacterSelectPacket(1));
+        _map.Tick(3);
 
         // assert: silent drop + [Trust] 로그 박힘 + Knight stats 유지 (Mage로 교체 X).
         // HasSelectedClass는 여전히 true (null → non-null 전환 X).
         Assert.True(s.StatsSet);
+        Assert.Same(originalStats, Assert.Single(_map.Players).Stats);
+        Assert.Equal(CharacterClass.Knight, s.GetCasterClass());
+        Assert.Equal(150, Assert.Single(_map.Players).Hp);
+        AssertLoadResult(s, 0);
         string log = _consoleCapture.ToString();
         Assert.Contains("[Trust] CharacterSelect: already selected", log);
         Assert.Contains("duplicate dropped", log);
         // Mage 선택 로그가 없어야 — 두 번째 SetCharacterClass 호출 X.
         Assert.DoesNotContain("Hp:80", log);
+    }
+
+    static void AssertLoadResult(TestGameSession session, byte expectedClass)
+    {
+        byte[] bytes = Assert.Single(session.SentPackets,
+            packet => BitConverter.ToUInt16(packet, 2) == 48);
+        Assert.Equal(new byte[] { 6, 0, 48, 0, 0, expectedClass }, bytes);
     }
 }

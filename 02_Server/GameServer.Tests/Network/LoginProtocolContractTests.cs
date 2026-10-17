@@ -36,11 +36,9 @@ public sealed class LoginProtocolContractTests
         Assert.Equal(Enumerable.Range(1, 38), expected);
     }
 
-    // T9: C_Login and S_LoginResult keep 41 and 42, request before result. Later packets are appended
-    // after them (guild 43..47, 01_Phases/goals/2026-10-14-guild-server technical contract v1, I9), so
-    // the numbers are fixed literals rather than "the two largest IDs".
+    // Login IDs remain 41/42 when World 43..47 and character loading 48 are appended (api-contract v2).
     [Fact]
-    public void T9_LoginPackets_KeepFortyOneAndFortyTwo()
+    public void T9_LoginPackets_KeepIdsFortyOneAndFortyTwo_AfterLaterAppends()
     {
         Assert.Equal(41, (int)PacketID.C_Login);
         Assert.Equal(42, (int)PacketID.S_LoginResult);

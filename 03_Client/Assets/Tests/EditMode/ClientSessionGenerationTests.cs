@@ -94,19 +94,32 @@ namespace Dawnholder.Client.Tests
         [TestCase(true)]
         public void PacketApplication_RechecksGenerationAtDrain(bool replaceBeforeDrain)
         {
+            using var sockets = new TestSocketPair();
             var queue = new ManualConnectionQueue();
             bool current = true;
-            var session = New(() => current, queue);
+            // Keep the original handshake-only session unadmitted. Gameplay snapshots now require a second,
+            // explicitly loaded session, but both callbacks must recheck the same current-generation predicate.
+            var handshakeSession = New(() => current, queue);
+            var session = New(() => current, queue, (action, _) => { }, (action, _) => { });
+            session.Start(sockets.Client);
+            SessionTestTools.Handshake(session, queue);
             using var views = new EntryBindingFixture(session);
+            views.Admit(queue, sockets);
+            UnityClientSession.SimulatedLatencyMs = 0;
             views.Begin();
             views.Ready();
-            session.OnRecvPacket(new S_HandshakeResult { ok = true, serverVersion = ProtocolVersion.Current, reason = "" }.Write());
+            CollectionAssert.AreEqual(InventoryWire.InventoryRequest, sockets.ReadFrame(), "Ready query before generation probe");
+            handshakeSession.OnRecvPacket(new S_HandshakeResult { ok = true, serverVersion = ProtocolVersion.Current, reason = "" }.Write());
             session.OnRecvPacket(new S_Snapshot { entityId = 7, serverTick = 123 }.Write());
             int unrelated = 0;
             queue.Post(() => unrelated++);
+            Assert.IsFalse(handshakeSession.HandshakeOk, "receipt must not apply the handshake before drain");
+            Assert.IsNull(handshakeSession.CharacterLoad.Status, "the handshake probe remains unadmitted");
+            Assert.AreEqual(0, session.LastReceivedServerTick);
             if (replaceBeforeDrain) current = false;
             queue.Drain();
-            Assert.AreEqual(!replaceBeforeDrain, session.HandshakeOk);
+            Assert.AreEqual(!replaceBeforeDrain, handshakeSession.HandshakeOk);
+            Assert.IsNull(handshakeSession.CharacterLoad.Status);
             Assert.AreEqual(replaceBeforeDrain ? 0 : 123, session.LastReceivedServerTick);
             Assert.AreEqual(1, unrelated, "generation change must not clear the entire dispatcher");
         }
@@ -202,6 +215,7 @@ namespace Dawnholder.Client.Tests
                 SessionTestTools.Handshake(session, queue);
                 session.SendIntent(new C_Ping { clientTimestampMs = 10 }.Write());
                 Assert.IsEmpty(delayed, "handshake alone is not gameplay readiness");
+                views.Admit(queue, sockets);
                 views.Begin();
                 views.Ready();
                 ReadyInventoryQuery.Consume(sockets, delayed, delays, 0, deadlines);

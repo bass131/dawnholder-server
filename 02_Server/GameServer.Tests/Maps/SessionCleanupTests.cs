@@ -10,6 +10,7 @@ using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
+using Xunit.Abstractions;
 
 namespace Dawnholder.Server.GameServer.Tests.Maps;
 
@@ -33,13 +34,16 @@ internal static class LifecycleTestWorld
 public sealed class SessionCleanupTests : IDisposable
 {
     readonly GameWorld _world = new(new Dictionary<MapId, (MapTerrain?, MapContent?)>());
+    readonly ITestOutputHelper _output;
     static readonly IPEndPoint Endpoint = new(IPAddress.Loopback, 0);
+
+    public SessionCleanupTests(ITestOutputHelper output) => _output = output;
 
     sealed class CapturedSession : GameSession
     {
         internal readonly List<byte[]> Packets = new();
         internal Action<PacketID>? OnPacket;
-        internal Action? OnMapRead;
+        internal Action<GameMap?>? OnMapRead;
         internal CapturedSession(GameWorld world) : base(world) { }
         public override void Send(ArraySegment<byte> packet)
         {
@@ -51,7 +55,7 @@ public sealed class SessionCleanupTests : IDisposable
         protected override GameMap? GetMap()
         {
             GameMap? map = base.GetMap();
-            OnMapRead?.Invoke();
+            OnMapRead?.Invoke(map);
             return map;
         }
     }
@@ -263,10 +267,11 @@ public sealed class SessionCleanupTests : IDisposable
         Tick(1);
         CapturedSession session = Join();
         Tick(2);
-        Assert.Equal(new[] { PacketID.S_HandshakeResult, PacketID.S_LoginResult, PacketID.S_EnterMap, PacketID.S_PlayerHp, PacketID.S_PlayerJoin },
-            session.Packets.Take(5).Select(Id));
+        Assert.Equal(new[] { PacketID.S_HandshakeResult, PacketID.S_LoginResult, PacketID.S_CharacterLoadResult,
+            PacketID.S_EnterMap, PacketID.S_PlayerHp, PacketID.S_PlayerJoin }, session.Packets.Take(6).Select(Id));
+        Assert.Equal(new byte[] { 6, 0, 48, 0, 0, 0 }, session.Packets[2]);
         S_PlayerJoin entryRoster = new();
-        entryRoster.Read(new ArraySegment<byte>(session.Packets[4]));
+        entryRoster.Read(new ArraySegment<byte>(session.Packets[5]));
         Assert.Equal(observer.EntityId, entryRoster.entityId);
         PlayerEntity original = Assert.Single(Players, p => ReferenceEquals(p.Owner, session));
         int originalId = original.EntityId;
@@ -303,6 +308,10 @@ public sealed class SessionCleanupTests : IDisposable
     [InlineData(2)] // the map owner disappears during preparation, before the final owner check
     public void RejectedAdmission_ClosesAndReclaimsMapInventoryAndAccount(int rejection)
     {
+        PlayerEntity? observedOwner = null;
+        int ignoredMapReads = 0;
+        int ownerRemovalAttempts = 0;
+        bool ownerRemovalSucceeded = false;
         CapturedSession session;
         if (rejection == 0)
         {
@@ -323,16 +332,38 @@ public sealed class SessionCleanupTests : IDisposable
             }
             else
             {
-                session.OnMapRead = () =>
+                session.OnMapRead = map =>
                 {
+                    // Admission now reads the map before AddPlayer too. Only the registered
+                    // owner's read in Guild.Register/ReadLocation reaches the precommit boundary.
+                    PlayerEntity? player = map?.GetPlayer(session.EntityId);
+                    if (player == null || !ReferenceEquals(player.Owner, session))
+                    {
+                        ignoredMapReads++;
+                        return;
+                    }
+                    observedOwner = player;
                     session.OnMapRead = null;
-                    Assert.True(_world.Map.RemovePlayer(session.EntityId));
+                    ownerRemovalAttempts++;
+                    ownerRemovalSucceeded = map!.RemovePlayer(player.EntityId);
                 };
             }
         }
 
         Tick(1);
 
+        if (rejection == 2)
+        {
+            // Assert outside the map job: its exception boundary must not swallow fixture failure.
+            _output.WriteLine($"owner boundary: entity={observedOwner?.EntityId}, " +
+                $"sameOwner={ReferenceEquals(observedOwner?.Owner, session)}, " +
+                $"attempts={ownerRemovalAttempts}, removed={ownerRemovalSucceeded}, ignoredReads={ignoredMapReads}");
+            Assert.NotNull(observedOwner);
+            Assert.True(observedOwner.EntityId > 0);
+            Assert.Same(session, observedOwner.Owner);
+            Assert.Equal(1, ownerRemovalAttempts);
+            Assert.True(ownerRemovalSucceeded);
+        }
         Assert.True(session.IsClosing);
         Assert.Equal(-1, session.EntityId);
         Assert.Empty(Players);

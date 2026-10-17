@@ -30,19 +30,22 @@ namespace Dawnholder.Client.Tests
         InventoryPanel _panel;
         UnityEngine.Object _timeManager;
         bool _timeManagerWasDirty;
+        bool _environmentCaptured;
         float _timeScale;
         int _latency;
 
         [SetUp]
         public void Setup()
         {
+            _environmentCaptured = false;
             Assert.IsNull(UnityClientSession.Instance, "another test left a published session");
             Assert.IsNull(InventoryPanel.Instance, "another test left an inventory panel");
             _latency = UnityClientSession.SimulatedLatencyMs;
-            UnityClientSession.SimulatedLatencyMs = 0;
             _timeScale = Time.timeScale;
             _timeManager = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TimeManager.asset")[0];
             _timeManagerWasDirty = EditorUtility.IsDirty(_timeManager);
+            _environmentCaptured = true;
+            UnityClientSession.SimulatedLatencyMs = 0;
             _scene = new GameplayTestScene();
             _keyboard = new VirtualKeyboard();
             _mirror = InventoryMirrorProbe.TryPublish();
@@ -54,11 +57,12 @@ namespace Dawnholder.Client.Tests
         {
             try
             {
-                if (Time.timeScale != _timeScale) Time.timeScale = _timeScale;
+                if (_environmentCaptured && Time.timeScale != _timeScale) Time.timeScale = _timeScale;
                 // In EditMode Time.timeScale is the TimeManager project setting; setting it marks that asset dirty and
                 // Unity rewrote ProjectSettings/TimeManager.asset on exit in run editmode-red-1. The value is restored
                 // above, so a mark this test made is cleared.
-                if (!_timeManagerWasDirty) EditorUtility.ClearDirty(_timeManager);
+                if (_environmentCaptured && _timeManager != null && !_timeManagerWasDirty)
+                    EditorUtility.ClearDirty(_timeManager);
                 if (_map != null) UnloadMap();
                 _connection?.Dispose();
             }
@@ -66,14 +70,41 @@ namespace Dawnholder.Client.Tests
             {
                 _mirror?.Dispose();
                 _keyboard?.Dispose();
-                if (!ReferenceEquals(InventoryPanel.Instance, null))
+                if (!ReferenceEquals(_panel, null) && ReferenceEquals(InventoryPanel.Instance, _panel))
                 {
                     // Only when the panel's OnDestroy failed; BuildRuntime would otherwise return a stale panel.
                     typeof(InventoryPanel).GetProperty("Instance").GetSetMethod(true).Invoke(null, new object[] { null });
                 }
-                UnityClientSession.SimulatedLatencyMs = _latency;
+                if (_environmentCaptured) UnityClientSession.SimulatedLatencyMs = _latency;
                 _scene?.Dispose();
+                _connection = null;
+                _mirror = null;
+                _keyboard = null;
+                _scene = null;
+                _timeManager = null;
+                _environmentCaptured = false;
             }
+        }
+
+        [Test]
+        public void SetupFailureBeforeCapture_LeavesExistingSessionTimeAndInputUntouched()
+        {
+            var failedFixture = new InventoryPanelToggleTests();
+            float timeScale = Time.timeScale;
+            int latency = UnityClientSession.SimulatedLatencyMs;
+            bool timeManagerDirty = EditorUtility.IsDirty(_timeManager);
+            Keyboard keyboard = Keyboard.current;
+            UnityClientSession session = UnityClientSession.Instance;
+
+            Assert.Throws<AssertionException>(() => failedFixture.Setup());
+            Assert.DoesNotThrow(() => failedFixture.Teardown());
+
+            Assert.AreSame(session, UnityClientSession.Instance);
+            Assert.IsFalse(session.IsClosed);
+            Assert.AreEqual(timeScale, Time.timeScale);
+            Assert.AreEqual(latency, UnityClientSession.SimulatedLatencyMs);
+            Assert.AreEqual(timeManagerDirty, EditorUtility.IsDirty(_timeManager));
+            Assert.AreSame(keyboard, Keyboard.current);
         }
 
         // R4: in a gameplay map I opens the panel and the next I closes it. I held for two frames is one press,
