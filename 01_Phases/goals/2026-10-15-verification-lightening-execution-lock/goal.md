@@ -2,9 +2,11 @@
 
 ## 재개 지점
 
-**다음 첫 일: 데스크톱 근거 폴더가 도착하면 메인이 알린 ZIP·SHA256과 최종 판정·실행 계약·고정 입력·수정/시간 상한 원문을 대조한 뒤, 결함 #1 잔여와 #5를 고칠 신규 구현 계약을 준비한다.** state-store 누적 5차와 기존 6차 수정·시간 상한을 유지하며 원문 확인 전에 새 계약을 발행하지 않는다. PR243은 병합됐고 도구 PR은 아직 준비 전이다.
+**다음 첫 일: 복원한 판정·실행 계약과 현재 바이트를 고정한 새 계약으로 결함 #1 잔여와 #5를 신규 Astra에게 맡긴 뒤, 쓰기 종료 후 신규 Opus가 강 재검증한다.** 메인 `msg_22bfbf852f3f`은 지난 절대시각 상한을 닫고 새 Astra의 계약 수신부터 60분 안에 자체 GREEN이 없으면 추가 수정/재실행 전 공식 ask → 메인 판단으로 갱신했다. 실제 수신·체크포인트 시각은 새 계약 receipt·작업자 최초 메모에 둔다. state-store는 누적 5차이며 6차 수정 전에 메인 판단을 받는다. Windows transaction rename 설계·#1 실패 2회/#5 1회·다른 산출물 3회 초과 체크포인트를 유지한다. PR243은 병합됐고 도구 PR은 아직 준비 전이다.
 
 **10-17 노트북 재개:** 메인 `msg_a6da409c8d2d`의 지시로 지정 원격 head를 확인하고 최신 main을 충돌 없이 통합했다. Rules 도구·시험·이 goal은 통합 전후 동일하며 근거는 E/`laptop-resume-20261017/integration-state.json`·`merge-main-result.json`이다. 과거 E는 이 노트북에 없어 이전을 요청했고, 메인 `msg_68bf1623f223`은 사용자 USB 이전 전까지 main 통합·재개 정리만 허용했다. 수신 원문은 같은 폴더의 `entry-mail-inbox.json`이다. 재검증 NOT PASS를 유지하고 새 Run·Task·Dispatch·수정자·검증자는 열지 않았다. 도구 main 반영 전 수동 조율을 유지하며 조건부 관리자 승인 정본 후보는 이번 범위에 넣지 않는다.
+
+**10-17 근거 복원과 재개:** 메인 `msg_9b4fd9d60b2e`의 ZIP을 로컬에 복사해 SHA256·목록·겹침을 확인하고 Windows tar `-k`로 풀었다. 13,099파일 모두 ZIP과 hash가 같고 겹침·중복·경로 이탈·덮어쓰기는 없다(E/`laptop-import-20261017/import-preflight.json`·`import-result.json`). 최종 판정 hash도 같으며 입력 raw hash 차이 17건은 모두 노트북 checkout의 CRLF를 LF로 바꾸면 과거 hash와 일치했다. 과거 manifest를 보존하고 새 계약에는 현재 바이트를 고정한다(E/`laptop-resume-20261017/restored-inputs-check.json`·`line-ending-input-comparison.json`). 시간 상한 갱신은 사용자 결정이 아닌 메인 판단이며 원문은 같은 폴더 `check-after-import.json`이다. 새 Run의 회신 주소를 메인에 알렸고 #1 잔여·#5를 runner/admission 중심으로 수정하는 계약을 준비한다. 이전 NOT PASS는 새 독립 판정 전까지 유지한다.
 
 기록 시각은 `2026-10-15T07:46:59Z`(`date -u +%Y-%m-%dT%H:%M:%SZ` 실제 출력)이다. **열린 Task·Dispatch 없음**, 작업자·검증자 pane 0이다. 현재 리드 pane은 메인의 확인·종료를 기다린다. 정산 근거는 E/`session-wrapup-tasks.json`·`session-wrapup-workers.json`·`session-wrapup-pane-proof.json`이다.
 
