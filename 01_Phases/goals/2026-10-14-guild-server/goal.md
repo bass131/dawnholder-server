@@ -4,12 +4,13 @@
 
 ### 2026-10-18 — ENV-D01 한 줄 차이 조건부 수락·제품 PR 준비
 
-**현재 다음 첫 일:** 메인 `msg_e951138f3f3a`가 전달한 사용자 선택 A에 따라 검증을 **「ENV-D01 한 줄 차이를 명시한 조건부 통과」**로 리드 정산한다. 이미 검증한 bytes로 진행 중인 main merge의 index 충돌을 정리하고 commit → push → 제품 PR 한 개를 만든다. 제품/시험 추가 수정·중량 재실행은 없으며 사용자 병합 승인 전 메인 외 병합은 금지다. G1~G8·수치·수명·PR 경계는 유지하고 다음 goal은 시작하지 않는다.
+**현재 다음 첫 일:** [PR249 - 길드 금고·거점 성장·무기 강화 서버](https://github.com/bass131/dawnholder-server/pull/249)의 CI 결과와 메인의 원문 대조·사용자 병합 승인을 확인한다. 메인 `msg_e951138f3f3a`가 전달한 사용자 선택 A에 따라 검증은 **「ENV-D01 한 줄 차이를 명시한 조건부 통과」**로 리드 정산했다. 검증한 bytes 그대로 main merge의 index 충돌9개를 해소하고 통합 commit·담당 branch push·제품 PR 생성을 마쳤다. 제품/시험 추가 수정·중량 재실행은 없으며 메인 외 병합은 금지다. G1~G8·수치·수명·PR 경계는 유지하고 다음 goal은 시작하지 않는다.
 
 - **사용자 결정 원문(메인 pane 제출, 메인 전달):** 「대시보드 결정 응답: 1) 길드 서버 검증 - Unity가 시험용 사본의 분석 설정 한 줄을 자동으로 지운 채 돈 Unity 시험(493개 통과)을 PR 근거로 인정할지 → A 한계를 적고 인정」. 전달 출처는 `msg_e951138f3f3a`(2026-10-17T17:43:54Z, 현재 메인 `term_aa109e71-083b-4956-a50b-b6fe210a8b1b`)이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 선택지 A는 「설정 한 줄 차이를 명시한 조건부 통과」 정산과 길드 서버 PR 준비다.
 - **예외의 정확한 범위:** 격리 snapshot의 `03_Client/ProjectSettings/ProjectSettings.asset` 597행 `Standalone: SENTIS_ANALYTICS_ENABLED;APP_UI_EDITOR_ONLY` → `Standalone: APP_UI_EDITOR_ONLY` 한 줄이다. 원본 저장소 변경·다른 줄·다른 파일 차이는 허용하지 않는다. 원본과 완전히 같은 실행 조건이라고 주장하지 않으며, wrapper exit1/complete 없음·실제 Editor exit0/493P·원본 보존을 함께 기록한다. Content·Art도 정확히 같은 한 줄에만 같은 기준을 쓰라는 전달이며 World가 다른 파트 판정을 대신하지 않는다.
 - **원문 보존과 결과:** 신규 독립 검증 Task `task_bf510f3f46ac`/Dispatch `ctx_82af054f7e0e`의 원래 grade=strong / overall=deferred / ENV-D01 및 worker_done failed는 고치지 않는다. `strong-review-01/verdict.md`(SHA256 `AB8596CCB2227FC178F1CEF2AC28C22469707967B4817E5FCA3711BD0F77E6DA`), report와 drift 분석에 이 사용자 결정과 리드 정산을 연결한다. B 1642행=1637P/0F/기존5 NotExecuted, C 원본22봇 성공, D 493P/0F/0skip을 조건부 PR 근거로 사용한다. 제품 확정 회귀0이며 ENV를 구현자 확정 실패로 세지 않는다.
-- **현재 경계와 근거:** 실 DB·CI·Player build·UI 플레이·두 클라이언트 리허설은 아직 미실행이다. Content 독점 실행 창(`msg_782fdf543f48`) 동안 정적 Git/PR만 수행한다. `.backups/verification/2026-10-14-guild-server/laptop-resume-20261017/lead-pr-01/`의 context·pre-git-audit·리드 정산에 인가 전 index와 검증 입력 재대조를 보존한다. PR 발행 뒤 번호·정확40자 head·실제 CI 상태를 메인에 보고한다. goal 전체 종료와 Gardener·종료 기록은 제품 병합 뒤 별도다.
+- **Git/PR 실제 결과:** 통합 commit `b1b2de1dcd27b128de2e4667892c7ca18dddf80f`는 기존 HEAD `c9120668a2fcce41a53b2e6527772a2a7ee8936e`와 고정 main `63aab6bacfb851deabe05b67995a0ae8705ab744`의 merge다. 미해결0·허용22경로 밖 index 불변·제품/시험 bytes 변경0이며 PR은64파일/8336추가·116삭제였다. main 유입의 기존 meta/생성 코드 공백을 따로 분류했고 통합 main 대비 PR 공백 검사는 통과했다. PR 최초 조회(2026-10-17T17:51Z)에서 GitHub base `48aabbd5d23c8ec7021ff22282c90f295db64c67`에도 MERGEABLE, CI4개 IN_PROGRESS, 자동 병합 없음이다. 이 PR 발행 기록만 후속 문서 commit하고 최종40자 head·CI 상태를 메인에 고정 보고한다.
+- **현재 경계와 근거:** 실 DB·Player build·UI 플레이·두 클라이언트 리허설은 미실행이다. CI는 PR 전 미실행에서 PR 후 실행 중으로 바뀌었으며 통과를 선기록하지 않는다. Content 독점 실행 창(`msg_782fdf543f48`) 동안 정적 Git/PR만 수행했다. `.backups/verification/2026-10-14-guild-server/laptop-resume-20261017/lead-pr-01/`의 context·pre-git/staging/pre-commit 감사·commit/push 결과·pr-state-first·리드 정산에 원시를 보존한다. goal 전체 종료와 Gardener·종료 기록은 제품 병합 뒤 별도다.
 
 ### 2026-10-18 — 강 독립 검증 정산·ENV-D01 판단 대기
 
@@ -559,7 +560,7 @@ Content 서버 PR 병합 전에는 이 연결을 구현하지 않는다. 고정 
 
 | 순서 | 담당·산출물 | 시작/종료 관문 |
 |---|---|---|
-| 1 - 길드 서버와 패킷 | World 제품 PR 하나: 패킷·공유 수치·길드/금고·거점/강화·공격 반영·시험·봇·관련 문서. 번호 미발행. | 사용자 범위 승인·기술 계약 고정 후 TDD 시작. 실제 Content 클리어 연결 구현은 그 서버 PR 병합과 새 main 반영 뒤. 강 등급 독립 검증·실제 서버 봇·소비자 호환성·CI 근거를 메인에 전달하고 사용자 명시 병합 승인. |
+| 1 - 길드 서버와 패킷 | [PR249 - 길드 금고·거점 성장·무기 강화 서버](https://github.com/bass131/dawnholder-server/pull/249): 패킷·공유 수치·길드/금고·거점/강화·공격 반영·시험·봇·관련 문서. | 강 독립 검증은 ENV-D01 한 줄 차이를 명시한 사용자 수락의 조건부 통과다. 실제 서버22봇·Unity 소비자493시험과 원문·최종 head·CI 상태를 메인에 전달한다. CI 통과와 별도로 사용자 명시 병합 승인이 필요하다. |
 | 2 - 길드 화면과 성장 표현 | Content의 별도 goal/PR: 길드 패널·기존 마을 대장장이 상호작용·거점 성장·강화 상태/거부·효과 연결. Art가 표현 자산을 제공한다. | 서버 wire 계약을 먼저 확정하고 서버 PR이 선행 병합한다. World branch 파일을 Content가 동시에 쓰지 않는다. 두 클라이언트 실화면·시연 리허설은 이 단계에서 확인한다. |
 | 3 - World 종료 기록 | World 제품 병합·로컬 결과 기록 뒤 Gardener와 종료 기록 PR 하나. | 독립 문서 실사·사용자 별도 병합 승인·미커밋/미정산 점검 뒤 메인의 R-8 교체. Content 미완료를 전체 시연 완료로 보고하지 않는다. |
 
