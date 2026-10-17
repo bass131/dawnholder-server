@@ -923,3 +923,9 @@
 - 독립검증의 고정169/생성105/PNG16파일·원복사8쌍/참고7·실제생성호출8·반환binary8/A전2·공식회신뒤6을 연결했다. 리드도 원본producer JSONL의8실호출과 반환8개를 별도로 읽어 원PNG/복사8쌍 byte동치·전부1672x941를 직접 대조했다. 실제보기는 검증자도구5묶음의15이미지출력으로 추적했다. 생성자의 과거 상수요약 정정은 #ART-SC-01로 역사와 실제계산을 보존해 해결판정했고 이전검증P01 failed/귀속을 덮지 않았다.
 - 리드는 자기35파일/순환selfhash제외34개 hash와 현재169입력을 대조하고 실제worker_done까지 기존helper6신호/최대251초/300초초과0을 확인했다. accepted succeeded 뒤 release·정확inc의idle pane만 close(ptyKilled=true/reclaimable[])해 신규검증자를 재사용하지 않는다. 당시goal4e8a 입력은 인접launch/goal-technical-review-input-0e90.md로 보존했고 이 기록은 종료 뒤 새관리버전이다.
 - 비차단 디자인 관찰은 기사/마법사비율·장식, 미래길드장소·발판/힐아이콘의 제안성, 큰보스·행동선택버튼·망토끝잘림, 보상창남색악센트/예시수치, CONCEPT표식누락이다. 원시·캡션과 함께 사용자선택으로 남긴다. 남은2호출은 피드백전 사용0이며 Git밖산출물보관/실제UI캡처와구분을 유지한다. 남은Art실행은 보상창V03 harness경로수리·실제csc/현재·before·1280 캡처와 기존VIS-05/UI PR이며 이 이미지PASS로 면제하지 않는다.
+
+
+### 우편함 경계 위반 한정 기록
+
+- 신규검증자 task_406178afc394/ctx_e727a5dcebe4의20:16:57.212Z 도구 call_de7f637eae17424fa6ca9b476eb48b67은 읽기전용 Get-Content7줄 뒤 같은shell에 check를 넣어 수신전용별도호출 계약의 문자조건을 위반했다. 반환count0/deliverynull·뒤실행/ack/send0을 리드가 실제도구전문과 대조했다. 검증자20:17:27Z 자체공개/공식ask20:17:44Z이며 은폐나 그전20:13:33~37Z 실제compile결과무효로 분류하지 않는다. 원시는 ui-reward-window-retry3-launch/mailbox-boundary-source-audit-v1.json 및 worker raw/receive-boundary-incident-v1.json이다.
+- 메인 msg_17b34a93136b(20:20:44Z)의 운영판단A로 같은Task의current후행을 조건부계속한다. 다음수신과 실제Unity직전fresh check는 각각check만담은 별도호출/원시보존이다. 이Task에서 같은경계위반이 한 번 더 나오면 재질문없이 정산·새세션B로 옮긴다. 이미지P01과 사실차이를 유지하고 같은계약·결함3회에 합산하지 않는다. 교정후보취합은 메인소유이며 Art가새도구/규칙을 추가하지 않는다. main원문은 인접launch/mailbox-boundary-main-A-original-v1.json이다.
