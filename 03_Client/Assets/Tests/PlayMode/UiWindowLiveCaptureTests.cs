@@ -644,9 +644,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _fixture.Frames(4);
         }
 
-        // noteAtMinimum adds a case's own readings at the minimum size and minimum receives that frame's result. Both are
+        // noteAtMinimum adds a case's own readings at the minimum size and minimumResult receives that frame's result. Both are
         // optional; the inventory and NPC dialogue cases call this without them.
-        IEnumerator CaptureBothSizes(Func<bool> stillShown, Action noteAtMinimum = null, CaptureResult minimum = null)
+        IEnumerator CaptureBothSizes(Func<bool> stillShown, Action noteAtMinimum = null, CaptureResult minimumResult = null)
         {
             NoteScenesAndCameras();
             Note("window shown before primary capture", stillShown());
@@ -663,7 +663,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 yield return _fixture.Frames(3);
                 Note("window still shown at minimum size", stillShown());
                 noteAtMinimum?.Invoke();
-                yield return Capture(minimum ?? new CaptureResult());
+                yield return Capture(minimumResult ?? new CaptureResult());
             }
             if (_gameView != null) Note("game view after captures", _gameView.Describe());
 #endif

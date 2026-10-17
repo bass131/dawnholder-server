@@ -2,9 +2,9 @@
 
 상태: **신규 Opus의 보상 창 강 독립 검증은 통과했다(제품 결함 0, EditMode 87/87·PlayMode 12/12, 두 실행 exit 0). 리드는 판정 전문·실제 diff·XML·관문·종료 원시를 대조하고 검증자를 정산·종료했다. 이 판정은 표시 조립·import·배치·입력 상태·씬 수명의 기술 판정이며 실화면 PNG·미관 통과는 아니다. 기존 인벤토리·NPC·고친 파티 창의 현재 1920 사용자 통과, 파티 T-2 강 독립 PASS, C9 main 통합·05 강 PASS·06 조건부 통과 기록은 유지한다. 보상 창 실제 전후·최소 화면, Party HUD VIS-05와 UI 창 PR은 남아 있다.**
 
-**다음 첫 일:** 보상 창의 새 Sol xhigh 검증자가 시험 이름 충돌3줄을 수리하고 source 쓰기를 끝냈다. 리드는 원본 bytes/실제diff를 대조했고, runner·compile-only 구체계획의 공식 인계를 받은 뒤 같은 source를 commit하고 실행 입력을 고정한다. 실제 컴파일·PNG는 아직0이다. 최신 자원 순서는 World 독점(2026-10-17T16:08:28Z부터 최대19:08:28Z) → Core 짧은 창 → Content → Art이며 매회 새 메인 배정이 필요하다. 이번 실패를 포함한 실제 Unity 상한3회와 before·최소1280의 미완을 유지한다. 이후 기존 Party HUD VIS-05·UI 창 PR 순서를 계속한다.
+**다음 첫 일:** 보상 캡처 검증자는 시험 이름 충돌3줄을 수리했지만 새 compile wrapper의 시각 변수 충돌 #ART-RWC-V02를 검출해 failed 정산·정확 종료했다. 리드는 같은 source bytes와 원시를 대조했고 이 기록과 함께 기계 checkpoint로 고정한다. 다음 신규 Sol xhigh 검증자가 자기 사본의 V02만 수리해 같은14건을 재대조하고 compile 계획을 인계한다. 실제 csc·Unity·PNG는 아직0이며 기존 source 수리를 실제 컴파일 통과로 확대하지 않는다. World 독점(2026-10-17T16:08:28Z부터 최대19:08:28Z) → Core 짧은 창 → Content → Art 순서와 매회 새 메인 배정을 유지한다. 실제 Unity 상한3회 중 사용1/잔여2(current재시도1+before1), 최소1280·Party HUD VIS-05·UI 창 PR은 미완이다.
 
-**병렬 콘셉트:** 사용자가 첫2장(캐릭터 선택·생성)의 화풍으로 진행하는 A를 골랐다. 실제 결정과 새 고정 입력으로 나머지6장(로그인→마을→길드 거점→던전→보스→보상)을 이어 만든다. 총 호출10회 중 사용2회, Git 밖 보관·실제 원/복사/hash/크기 대조 경계를 유지하고 여섯 장이 모두 나온 뒤 메인에 한 번에 전달한다.
+**병렬 콘셉트:** 사용자 A로 첫2장과 같은 화풍의 나머지6장을 진행 중이다. 공식 피드백 질문에는 reply msg_76f73fa7822b로 답했고 실제 단계2 입력은 frozen goal e24와 handoff fa7c에 고정했다. 통신 복구 때 작업자는 5장성공/호출5회(상한10)라고 보고했으며 리드는 동일 세션 소유를 확인해 남은3장(던전→보스→보상)을 이어가도록 msg_a57fde76fc9e로 답했다. 새 부분이미지 실사/PASS는 아직 없고, 원래 여섯 장이 모두 끝나면 원/복사 경로·전체hash·실제크기·의도를 한 번에 메인에 전달한다.
 
 ## 재개 지점
 
@@ -29,6 +29,10 @@
 - 최신 자원 인계는 메인 `msg_2b02a8b4af77`(2026-10-17T16:08:29Z)다. World가16:08:28Z부터 최대19:08:28Z까지 독점하고 이후 Core 짧은 창→Content 뒤 Art 재캡처다. 위의 이전 Core60분 순서를 대체하며 최대종료시각 경과가 자동 실행허가는 아니다. 이미지 생성은 이 창과 별개다. 메인은 첫2장의 실제 복사본 SHA256·1672×941 크기를 재계산하고 직접 열어 보고와 일치함을 확인한 뒤 사용자에게 전달했다.
 - 신규 캡처 검증자 Task `task_7ff6d48a7f80` / Dispatch `ctx_ab4602d2302b`는 신규 Codex `gpt-6.1-sol` xhigh(`[Art 검증자]`, backend unknown)다. R5 조건부 Enter1회 뒤 실제 Working과 현재Task heartbeat를 확인했다. 제출 계약은 내용20408문자가 고정 파일과 같고 말미LF1개만 빠졌으며 원시 완전일치로 보고하지 않았다. `CaptureBothSizes`의 주석/결과 매개변수/참조3줄만 `minimumResult`로 고쳐16:20:55Z source 쓰기를 끝냈다. 새SHA256 `c442a99bc3e548c06c5667850f7307875f82fcfac65f6b158adeed3124df81d0`(80016bytes), 원81481938(79998bytes)로 세곳 역치환 시 전체bytes 동일이다. 리드가 실제+3/-3 diff·위치인자 호출·기준34입력 중 선언한 source1개 외 차이0을 확인했다. meta·단언·데이터·제품·기존runner는 보존했다. 컴파일/Unity/PNG는 미실행이며 전체harness 공식 인계 전 source는 미커밋이다. 근거는 `ui-reward-window-retry/raw/source-repair-proof.json`, `ui-reward-window-retry-launch/lead-source-repair-audit-v1.json`이고 보고는 `msg_8f7ad191aebc`다.
 - 메인 `msg_e9b60fee4d0b`(2026-10-17T16:25:07Z)가 아래의 사용자 화풍 A를 전달해 나머지6장 진행을 지시했다. 사용자 추가 메모는 없으며 메인 추천인 「캐릭터 비율을 기존 스프라이트에 맞추기」를 사용자 지시로 넣지 않는다. 원문은 `screen-concepts-launch/user-style-decision-A-original-v1.json`에 보존하고 같은 이미지 Task의 공식 질문 `msg_24924d1519e7`에 실제 결정/새 고정 입력으로 답한다. 여섯 장이 모두 나온 뒤 경로·SHA256·크기·의도 한 줄씩 메인에 일괄 전달하며 개별 중간 보고는 하지 않는다. 제품/Assets·Unity·WSL0·호출상한10·Git밖 보관은 그대로다.
+
+- 보상 준비 Task `task_7ff6d48a7f80` / Dispatch `ctx_ab4602d2302b`는 새 PowerShell wrapper의 `-Now`/`$now` 충돌 #ART-RWC-V02를 검출했다. 같은14건 중 유효4건 expected0/actual10, 무효10건 expected10/actual10으로 positive control 실패이며 전체 통과가 아니다. 실제 csc/Unity/snapshot0, source c442와 buggy script5d74를 그대로 보존했다. 제품 확정 실패 횟수와 구분하고 리드 공식 답변 `msg_1943c8430afc`에 따라 추가수리 없이 정산했다.
+- 최종 판정 `ui-reward-window-retry/capture-report.md` SHA256 `5bc0d4c73d1e138dca6c69518e6959d2c3eee74c3c9df055a8372856fbee0302`를 전문 읽고 실제 diff·원시·closure·기준34입력(선언한 source/리드goal2차이, 나머지32일치)을 대조했다. `worker_done failed` `msg_8c66b3c6c5ea` 뒤 release·같은 incarnation의 idle 확인·정확 pane close(ptyKilled true)·reclaimable0을 마쳤다. 마지막 done까지 생존 신호12개/최대384초/초과1구간은 공식ask 대기 원시와 함께 `ui-reward-window-retry-launch/final-liveness-{input,result}-v1.json`에 보존했다. 새 세션은 `ui-reward-window-retry2-launch/`에서 준비하며 실제 source 컴파일은 미검토다.
+- 16:48Z 무렵 Orca metadata 부재와 `orca open`의 Orca.exe 탐색 실패를 관측해 종료/중복기동 없이 중단했다. 이후 같은CLI 표시버전1.4.229와 runtime53670d1f에서 기존Run/두Dispatch·실제incarnation을 확인했다. 이미지 작업자의 초기 ask identity 거부 원시는 보존했고 이후 같은Dispatch의 공식질문 `msg_56e9c7504b07`에 현재 소유 대조 후 답했다. Art 리드는 설치/업데이트·대체exe·전역설정 변경을 하지 않았으며 변경주체/원인은 미확정이다. 복구 전 미확정 ack는 복구 후 정상 수락됐다. 상세는 `runtime-unavailable-checkpoint-v1.json`·`inbox-after-runtime-recovery-v1.json`, 이미지 회신은 `screen-concepts-launch/runtime-recovery-official-reply-v1.json`이다.
 
 ### 10-15 마감 인계 보존
 
