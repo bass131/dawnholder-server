@@ -39,6 +39,8 @@
 - 재캡처 Taskcb909/ctxe234의 V02는 자기새사본 시계4곳만 분리했고 -Now/NowText·동일14입력/기대는 보존됐다. 유효4 exit0·무효10 exit10, runner14/wrapper14·소유10 예상일치다. P-01은 미완compile계획의 추가필수관문을 공식ask/답 msg_716d61a6491e로 보충해 별도읽기전용launch사본에 연결했다. 가상정상2/거부24 예상일치이며 실제metadata/mainprovenance/wrapper→csc 통합경로는 미실행이다. 리드는 기존59/준비25·45/compile322·runtime6·response2/launch18 기대hash, 원8script와rsp출력2곳 역변환전체bytes 및 원시를 대조했다. prepared-inputs-v2 SHA256 ce143a3965e1a499a8aff9d7a076af44cd5d81bfbd17b215ab1c110c22efc148, 근거 ui-reward-window-retry2-launch/prepared-v2-static-audit-v1.json, 판정보류 원문 ui-reward-window-retry2/capture-report-v2.md다.
 - 최신 자원정책은 메인 msg_b68e2f56b134/msg_67840e77db96다. World·Core 반환 후 Content가17:29:40Z부터 최대19:09:40Z까지독점하며 그동안Unity/Windowsdotnet/무거운WSL0이다. Art준비완료뒤 예상시간·고정hash로 메인에 요청하고 매회새배정을 기다린다. 이goal관리변경은 사전에검증자msg_d86d31507ab8로예고했고 준비612/frozenbaaa/원59·기존W원시/기대는보존한다. 새실행전용manifest만후행HEAD/goal로별도고정하며 source c442/제품/시험meta/모든harness수정0이다.
 
+- 메인 msg_b7831a6e491b는 Content 반환 뒤 첫 compile6분 순서를 접수했으나 실제window는 아직 미배정이다. 이어 도착한 사용자 ENV-D01 A를 위 사용자결정과 보충5판에 반영한다. 원4판의인정대기는이새결정으로대체하며격리snapshot의정확한줄만조건부로처리한다. 새행정checkpoint/실행입력v4는기존v3·426/HEAD690을보존하고goal결정기록1개차이와새문서참조만별도동결한다. source c442/제품/harness·입력원시변경0·actual기동0·pending자원질문712는유지한다.
+
 ### 10-15 마감 인계 보존
 
 - 기록 시각: `Thu Oct 15 07:06:51 UTC 2026` (`C:/Program Files/Git/usr/bin/date.exe -u` 원문). 메인 `msg_b8cfd0e50daa`가 전달한 사용자 마감 요청에 따라 돌고 있던 보상 창 구현만 받아 정산했다. **열린 Task·Dispatch 없음, 작업자 pane 0**이며 리드 pane은 메인 확인·종료를 기다린다.
@@ -195,6 +197,8 @@
 - **실행과 미실행 구분**: 이미지 생성, Unity 가져오기·컴파일·EditMode, 실화면 캡처, Play 모드 녹화, CI를 각각 따로 기록한다. 서버·DB는 이 goal에서 쓰지 않는다.
 
 ## 적용 중인 사용자 결정
+
+- **ENV-D01 격리 snapshot 설정 한 줄의 조건부 인정 — 사용자 A**(메인 `msg_5fd71dd53039`, 2026-10-17T17:43:55Z). 메인 pane 사용자 원문 전달: 「대시보드 결정 응답: 1) 길드 서버 검증 - Unity가 시험용 사본의 분석 설정 한 줄을 자동으로 지운 채 돈 Unity 시험(493개 통과)을 PR 근거로 인정할지 → A 한계를 적고 인정」. 선택지 A는 World를 「설정 한 줄 차이를 명시한 조건부 통과」로 정산하고 Content·Art도 정확히 같은 한 줄만 바뀌면 같은 기준으로 처리하는 것이다. 예외는 격리 snapshot의 `03_Client/ProjectSettings/ProjectSettings.asset` 597행 `Standalone: SENTIS_ANALYTICS_ENABLED;APP_UI_EDITOR_ONLY` → `Standalone: APP_UI_EDITOR_ONLY` 한 곳뿐이다. 전후 원bytes/hash·정확diff와 원본 불변을 입증하고 한계를 명시하면 기존 승인 후행 단계로 진행한다. 원본 저장소의 새 변경·다른 고정입력/보호파일 차이는 차단하며 자동재실행/복원/기대갱신0이다. Art는 GUI/현재S1·before입력에 SENTIS가 이미 없으므로 전후불변을 새ENV발생으로 쓰지 않는다. 「원본과 완전히 같은 조건」·World493건을 Art실적으로 쓰지 않으며 실제시험/PNG/최소1280 관문은 면제하지 않는다. 원문과 적용 계약은 `ui-reward-window-retry2-launch/ENV-D01-user-decision-original-v1.json`·`unity-settings-postcondition-supplement-v5.md`다. 이 전달은 Art pane의 사용자 직접 입력으로 격상하지 않는다.
 
 - **화면 콘셉트 첫2장 화풍 A — 나머지6장 진행**(메인 `msg_e9b60fee4d0b`, 2026-10-17T16:25:07Z). 사용자 원문(메인 pane 제출·메인 전달): 「대시보드 결정 응답: 1) 화면 콘셉트 - 첫 두 장(캐릭터 선택·생성)의 화풍으로 나머지 여섯 장을 이어 만들지 → A 이 화풍으로 진행」. 사용자 메모는 없다. 메인의 「캐릭터 비율을 기존 스프라이트에 맞추기」는 추천 설명이며 사용자 지시가 아니다. 첫2장 자체의 원·복사 PNG와 manifest를 보존하고 같은 화풍으로1로그인→4마을→5길드 거점→6던전→7보스→8보상을 만든다. 기존 호출상한10(사용2), 제품/실행0·Git밖 보관과 최종독립실사 경계는 유지한다. 이 결정은 Art pane의 사용자 직접 입력으로 격상하지 않는다.
 - **화면 콘셉트8종 병렬 추가**(메인 사용자 원문 전달 `msg_7b1ab0582bb0`, 2026-10-17T14:56:28Z; 범위 대조·제작 허용 `msg_8852ea06bd0f`, 15:08:34Z). 사용자 「디자인 부분도 미리 초안을 이미지로 만들어놓으면 이후에 만들 Art 리소스에도 도움 될 거 같은데」와 화면8개 요청을 위 [병렬 추가 범위](#화면-콘셉트-8장--승인된-병렬-추가-범위)에 고정했다. 첫2장 화풍 피드백 전 나머지6장 생성0, 호출상한10, 제품/실행0·Git밖보관·별도 문서보관PR 경계를 적용한다. 현재 캐릭터 UI·길드 맵 구현 승인으로 확대하지 않는다.
