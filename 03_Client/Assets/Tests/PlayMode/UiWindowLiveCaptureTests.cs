@@ -9,6 +9,7 @@ using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Gameplay;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
+using Dawnholder.Client.Rendering;
 using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
 using NUnit.Framework;
@@ -26,11 +27,11 @@ using UnityEditor;
 
 namespace Dawnholder.Client.Tests.PlayMode
 {
-    // Current-look captures of the inventory, NPC dialogue and party invite windows on the real Town and additive UI
-    // scenes, for the user's look check (01_Phases/goals/2026-10-13-demo-video-art 「06」 실화면). Each window opens by
-    // its normal entry: I after the wire inventory snapshot, E inside a scene NPC's trigger, S_PartyInviteRecv from
-    // the scripted peer. That peer is loopback test authority, not GameServer. Canvases, cameras and Overlay modes
-    // stay as the product builds them, and the Game view's final frame is saved without editing.
+    // Current-look captures of the inventory, NPC dialogue, party invite and dungeon reward windows on the real Town and
+    // additive UI scenes, for the user's look check (01_Phases/goals/2026-10-13-demo-video-art 「06」 실화면). Each window
+    // opens by its normal entry: I after the wire inventory snapshot, E inside a scene NPC's trigger, S_PartyInviteRecv
+    // and S_DungeonClearResult from the scripted peer. That peer is loopback test authority, not GameServer. Canvases,
+    // cameras and Overlay modes stay as the product builds them, and the Game view's final frame is saved without editing.
     // Runs only when the capture runner names its output folder, and needs the Editor's Game view (no -batchmode).
     public sealed class UiWindowLiveCaptureTests
     {
@@ -235,6 +236,47 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.IsEmpty(failures, "party invite layout requirements:\n" + string.Join("\n", failures));
         }
 
+        // The reward window frame the user judges for goal 06 「보상 창 여백」 A: the title and reward rows keep their text
+        // areas and the artwork lies behind them. The scripted peer sends the server's own reward table, which
+        // DungeonClearResultHandler, DungeonClearRewardState and CombatBootstrap's Town window show. The same test runs on
+        // the current project and on the before snapshot that differs only in the window's source, so it asserts the
+        // opening and both frame sizes; artwork and placement are recorded for the user, not judged here.
+        [UnityTest, Timeout(240000)]
+        public IEnumerator DungeonClearReward_ShownByTheScriptedPeersResult_CapturedFromTheGameView()
+        {
+            Begin("reward");
+            NoteRewardWindowSource();
+            yield return SelectPrimarySize();
+            yield return ReadySyncedTown();
+            yield return MoveFixtureMouseOffScreen();
+            bool shownBeforeResult = RewardWindowShown();
+            ArraySegment<byte> wire = ServerRewardResult();
+            Note("input path", "scripted peer S_DungeonClearResult -> DungeonClearResultHandler -> DungeonClearRewardState.Apply -> DungeonClearRewardWindow.LateUpdate publishes it");
+            Note("result data", $"DungeonClearRewards table: Success, currency {DungeonClearRewards.Currency}, items "
+                + string.Join(", ", DungeonClearRewards.Items.Select(item => $"{item.ItemId} x{item.Count}")));
+            Note("result wire", $"{wire.Count} bytes {BitConverter.ToString(wire.Array, wire.Offset, wire.Count)}");
+            Note("reward window shown before result", shownBeforeResult);
+            _fixture.Peer.Send(wire);
+            yield return MapEntryPlayFixture.Wait(RewardWindowShown, "S_DungeonClearResult shows the reward window", 3);
+            yield return _fixture.Frames(3);
+            yield return WaitForShaderCompilation();
+
+            NotePointers("pointers at capture");
+            NoteRewardWindow("primary");
+            NoteCamerasAndPlayer("primary");
+            var minimum = new CaptureResult();
+            yield return CaptureBothSizes(RewardWindowShown, () =>
+            {
+                NoteRewardWindow("minimum");
+                NoteCamerasAndPlayer("minimum");
+            }, minimum);
+            // The goal's minimum legal screen is part of this requirement, so a missing 1280x720 frame fails the case.
+            Assert.IsTrue(minimum.Written, "the minimum Game view frame was written (see 'game view select minimum')");
+            Assert.IsTrue(minimum.SameSizeAsScreen, "the minimum frame has the Game view's own size");
+            Assert.AreEqual(MinimumWidth, minimum.Width, "minimum frame width");
+            Assert.AreEqual(MinimumHeight, minimum.Height, "minimum frame height");
+        }
+
         // Use the existing fixture mouse through the live input module; do not invoke listeners directly. The peer
         // observes the wire intent only, not server membership. The first invite's unmodified frame already exists.
         IEnumerator ObservePartyResponses(PartyInvitePopup popup, CanvasGroup group, PartyInviteLayout layout, List<string> failures)
@@ -419,6 +461,122 @@ namespace Dawnholder.Client.Tests.PlayMode
             return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
         }
 
+        // Which window source this run's project holds on disk: the current project or the before snapshot.
+        void NoteRewardWindowSource()
+        {
+            string source = Path.Combine(Application.dataPath, "Scripts", "UI", "DungeonClearRewardWindow.cs");
+            Note("project Assets path", Application.dataPath);
+            Note("reward window source", File.Exists(source) ? $"{source} sha256 {Sha256(File.ReadAllBytes(source))}" : "missing: " + source);
+        }
+
+        // The server's reward table as the wire result; slot fields are set the way Snapshot sets inventory slots.
+        static ArraySegment<byte> ServerRewardResult()
+        {
+            var packet = new S_DungeonClearResult { result = (byte)InventoryResult.Success, currency = DungeonClearRewards.Currency };
+            for (int i = 0; i < DungeonClearRewards.Items.Count; i++)
+            {
+                typeof(S_DungeonClearResult).GetField($"reward{i}ItemId").SetValue(packet, (int)DungeonClearRewards.Items[i].ItemId);
+                typeof(S_DungeonClearResult).GetField($"reward{i}Count").SetValue(packet, DungeonClearRewards.Items[i].Count);
+            }
+            return packet.Write();
+        }
+
+        // Shown as the player sees it: the window publishes its CanvasGroup in LateUpdate once the input module is ready.
+        static bool RewardWindowShown()
+        {
+            DungeonClearRewardWindow window = DungeonClearRewardWindow.Instance;
+            CanvasGroup group = window == null ? null : window.GetComponent<CanvasGroup>();
+            return group != null && group.alpha > 0f;
+        }
+
+        // A project with an empty Library (the before snapshot) compiles shaders asynchronously and the Editor draws a
+        // placeholder until they finish. Both variants wait the same way; the outcome is recorded, not asserted.
+        IEnumerator WaitForShaderCompilation()
+        {
+#if UNITY_EDITOR
+            bool compilingWhenShown = ShaderUtil.anythingCompiling;
+            yield return ScreenUiProbe.WaitUntil(() => !ShaderUtil.anythingCompiling, 60f,
+                finished => Note("shader compilation", $"compiling when shown {compilingWhenShown}, finished within 60 s {finished}"));
+            yield return _fixture.Frames(3);
+#else
+            Note("shader compilation", "not an Editor run");
+            yield break;
+#endif
+        }
+
+        // The live reward window as drawn: canvas and group, then every object in draw order with its Game view rectangle,
+        // its piece or text (with the glyphs' drawn bounds) and the button state, then what the pointer first reaches at each
+        // text and the button. Read only; uGUI is reached by type name and reflection as in PartyInviteLayout.
+        void NoteRewardWindow(string stage)
+        {
+            DungeonClearRewardWindow window = DungeonClearRewardWindow.Instance;
+            if (window == null)
+            {
+                Note(stage + " reward window", "none");
+                return;
+            }
+            Canvas canvas = window.GetComponent<Canvas>();
+            CanvasGroup group = window.GetComponent<CanvasGroup>();
+            Note(stage + " reward window", $"scene {window.gameObject.scene.name} (active {SceneManager.GetActiveScene().name}), Screen {Screen.width}x{Screen.height}, "
+                + $"canvas {canvas.renderMode} order {canvas.sortingOrder} scaleFactor {canvas.scaleFactor:F3}, group alpha {group.alpha} interactable {group.interactable} blocksRaycasts {group.blocksRaycasts}");
+            Transform[] drawOrder = window.GetComponentsInChildren<Transform>(true);
+            for (int i = 1; i < drawOrder.Length; i++)
+            {
+                if (!(drawOrder[i] is RectTransform rect)) continue;
+                var parts = new List<string>
+                {
+                    $"order {i}", $"active {rect.gameObject.activeInHierarchy}", $"screen {PartyInviteLayout.ScreenRectOf(rect)}",
+                    $"local size {rect.rect.size}", $"scale {rect.localScale.x:F3}",
+                };
+                parts.AddRange(rect.GetComponents<Component>().Select(RewardPart).Where(part => part != null));
+                Note($"{stage} reward {ScreenUiProbe.PathOf(rect, window.transform)}", string.Join(", ", parts));
+            }
+            Component[] targets = window.GetComponentsInChildren<TMP_Text>().Where(ScreenUiProbe.IsShown).Cast<Component>()
+                .Concat(window.GetComponentsInChildren<Component>().Where(component => component.GetType().FullName == "UnityEngine.UI.Button"))
+                .ToArray();
+            foreach (Component target in targets)
+            {
+                Vector2 point = PartyInviteLayout.ScreenRectOf(target).center;
+                GameObject[] hits = ScreenUiProbe.RaycastHits(point);
+                Note($"{stage} raycast at {ScreenUiProbe.PathOf(target.transform, window.transform)} centre {point}",
+                    hits.Length == 0 ? "no hit" : $"first {PartyInviteLayout.Path(hits[0].transform)} of {hits.Length} hit(s)");
+            }
+        }
+
+        static string RewardPart(Component component)
+        {
+            if (component is TMP_Text text)
+                return $"text '{text.text.Replace("\n", "\\n")}' fontSize {text.fontSize} font {(text.font == null ? "none" : text.font.name)} color {text.color}, "
+                    + $"drawn glyphs {ScreenUiProbe.Bounds(text.transform, text.textBounds)}, raycastTarget {text.raycastTarget}";
+            switch (component.GetType().FullName)
+            {
+                case "UnityEngine.UI.Image":
+                    return $"image sprite {PartyInviteLayout.Describe(PartyInviteLayout.SpriteOf(component))} drawing {PartyInviteLayout.Describe((Sprite)PartyInviteLayout.Get(component, "overrideSprite"))} "
+                        + $"type {PartyInviteLayout.Get(component, "type")} color {PartyInviteLayout.Get(component, "color")} raycastTarget {PartyInviteLayout.Get(component, "raycastTarget")}";
+                case "UnityEngine.UI.Button":
+                    return $"button interactable {PartyInviteLayout.Get(component, "interactable")} transition {PartyInviteLayout.Get(component, "transition")}";
+                default:
+                    return component is RectTransform || component is CanvasRenderer ? null : component.GetType().Name;
+            }
+        }
+
+        // The view both source variants must share for a fair comparison. CameraFollow eases toward the player every
+        // LateUpdate, so the pose is read at capture time rather than assumed.
+        void NoteCamerasAndPlayer(string stage)
+        {
+            Note(stage + " frame", $"frameCount {Time.frameCount}, realtime {Time.realtimeSinceStartup:F3}");
+            foreach (Camera camera in Camera.allCameras)
+                Note($"{stage} camera {camera.name}", $"root {camera.transform.root.name}, position {camera.transform.position.ToString("F4")}, rotation {camera.transform.eulerAngles.ToString("F2")}, "
+                    + $"orthographic {camera.orthographic} size {camera.orthographicSize:F4}, depth {camera.depth}, cullingMask {camera.cullingMask}, clear {camera.clearFlags} {camera.backgroundColor}, pixelRect {camera.pixelRect}");
+            foreach (CameraFollow follow in UnityEngine.Object.FindObjectsByType<CameraFollow>())
+            {
+                Transform target = MapEntryPlayFixture.Field<Transform>(follow, "_target");
+                Note($"{stage} camera follow {follow.name}", $"target {(target == null ? "none" : PartyInviteLayout.Path(target) + " at " + target.position.ToString("F4"))}, "
+                    + $"offset {MapEntryPlayFixture.Field<Vector3>(follow, "_offset").ToString("F4")}, smoothing {MapEntryPlayFixture.Field<float>(follow, "_smoothing")}");
+            }
+            Note(stage + " player", _fixture.Player == null ? "none" : _fixture.Player.transform.position.ToString("F4"));
+        }
+
         void Begin(string window)
         {
             _output = Environment.GetEnvironmentVariable(OutputVariable);
@@ -486,7 +644,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _fixture.Frames(4);
         }
 
-        IEnumerator CaptureBothSizes(Func<bool> stillShown)
+        // noteAtMinimum adds a case's own readings at the minimum size and minimum receives that frame's result. Both are
+        // optional; the inventory and NPC dialogue cases call this without them.
+        IEnumerator CaptureBothSizes(Func<bool> stillShown, Action noteAtMinimum = null, CaptureResult minimum = null)
         {
             NoteScenesAndCameras();
             Note("window shown before primary capture", stillShown());
@@ -502,7 +662,8 @@ namespace Dawnholder.Client.Tests.PlayMode
                     reached => Note("Screen reached minimum size", reached));
                 yield return _fixture.Frames(3);
                 Note("window still shown at minimum size", stillShown());
-                yield return Capture(new CaptureResult());
+                noteAtMinimum?.Invoke();
+                yield return Capture(minimum ?? new CaptureResult());
             }
             if (_gameView != null) Note("game view after captures", _gameView.Describe());
 #endif
