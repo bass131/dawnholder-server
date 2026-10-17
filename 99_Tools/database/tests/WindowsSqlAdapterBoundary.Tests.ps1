@@ -48,6 +48,85 @@ foreach ($name in @('Restart-Service', 'Stop-Service', 'Start-Service', 'Set-Ser
             "`$script:ForbiddenCalls.Add('$name'); throw 'VERIFIER_FORBIDDEN_$name'"))
 }
 
+# The certificate gate reads key identity through the product's Add-Type class
+# Dawnholder.WindowsSql.CertificateKeyNative (CERT_KEY_PROV_INFO, CryptAcquireCertificatePrivateKey) and reopens CSP
+# keys with RSACryptoServiceProvider. Both names bind to these stand-ins and Add-Type refuses that class, so section 5
+# compiles no C#, makes no P/Invoke and opens no key container. Provider facts come from the case, never from CAPI.
+class AdapterFakeCertificateKeyNative {
+    static [Collections.Generic.List[string]]$Calls = [Collections.Generic.List[string]]::new()
+    static [hashtable]$ProviderInfo = @{}
+    static [object]$ExpectedCertificate = $null
+
+    static [object] ReadProviderParameters([object]$certificate) {
+        $thumbprint = [string]$certificate.Thumbprint
+        $same = [object]::ReferenceEquals($certificate, [AdapterFakeCertificateKeyNative]::ExpectedCertificate)
+        [AdapterFakeCertificateKeyNative]::Calls.Add('ReadProviderParameters:' + $thumbprint + ':' + $same)
+        if (-not [AdapterFakeCertificateKeyNative]::ProviderInfo.ContainsKey($thumbprint)) {
+            throw 'VERIFIER_UNREPRESENTED_CertificateKeyProviderInfo'
+        }
+        return [AdapterFakeCertificateKeyNative]::ProviderInfo[$thumbprint]
+    }
+
+    static [void] AssertKeyBinding([object]$certificate) {
+        [AdapterFakeCertificateKeyNative]::Calls.Add('AssertKeyBinding:' + [string]$certificate.Thumbprint)
+        throw 'VERIFIER_FORBIDDEN_CertificateKeyBinding'
+    }
+}
+
+class AdapterFakeCspKey {
+    AdapterFakeCspKey([object]$parameters) {
+        [AdapterFakeCertificateKeyNative]::Calls.Add('CspOpen:' + [string]$parameters.KeyContainerName)
+        throw 'VERIFIER_FORBIDDEN_CspKeyOpen'
+    }
+}
+
+# The directory lease compiles its own class as before; only a definition of the key native class is refused.
+function Add-Type {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$TypeDefinition)
+    if ($TypeDefinition.Contains('CertificateKeyNative')) {
+        [AdapterFakeCertificateKeyNative]::Calls.Add('Add-Type')
+        throw 'VERIFIER_FORBIDDEN_Add-Type'
+    }
+    Microsoft.PowerShell.Utility\Add-Type -TypeDefinition $TypeDefinition -ErrorAction Stop
+}
+
+# Registered before section 1 parses product files: the parser resolves and caches type literal names, so a name
+# parsed first would keep the real type.
+$accelerators = [psobject].Assembly.GetType('System.Management.Automation.TypeAccelerators')
+$keyTypeNames = [ordered]@{
+    'Dawnholder.WindowsSql.CertificateKeyNative' = [AdapterFakeCertificateKeyNative]
+    'Security.Cryptography.RSACryptoServiceProvider' = [AdapterFakeCspKey]
+    'System.Security.Cryptography.RSACryptoServiceProvider' = [AdapterFakeCspKey]
+}
+foreach ($typeName in $keyTypeNames.Keys) { $accelerators::Add($typeName, $keyTypeNames[$typeName]) }
+# Parsed after registration like product code: both lookup forms, the Add-Type command and its refusal.
+$keyProbe = & ([scriptblock]::Create(@'
+$refused = $false
+try { Add-Type -TypeDefinition 'namespace AdapterKeyProbe { public static class CertificateKeyNative {} }' }
+catch { $refused = $true }
+[pscustomobject]@{
+    Lookup = ('Dawnholder.WindowsSql.CertificateKeyNative' -as [type]).FullName
+    Native = [Dawnholder.WindowsSql.CertificateKeyNative].FullName
+    Csp = [Security.Cryptography.RSACryptoServiceProvider].FullName
+    SystemCsp = [System.Security.Cryptography.RSACryptoServiceProvider].FullName
+    AddTypeFile = (Get-Command -Name 'Add-Type').ScriptBlock.File
+    Refused = $refused
+    ProbeLoaded = $null -ne ('AdapterKeyProbe.CertificateKeyNative' -as [type])
+}
+'@))
+$keyBound = $keyProbe.Lookup -ceq 'AdapterFakeCertificateKeyNative' -and
+$keyProbe.Native -ceq 'AdapterFakeCertificateKeyNative' -and $keyProbe.Csp -ceq 'AdapterFakeCspKey' -and
+$keyProbe.SystemCsp -ceq 'AdapterFakeCspKey' -and $keyProbe.AddTypeFile -ceq $PSCommandPath -and
+$keyProbe.Refused -and -not $keyProbe.ProbeLoaded
+Assert-True -Name 'IND-CERT-KEY-00 key native class and CSP key names resolve to stand-ins; Add-Type refuses' `
+    -Condition $keyBound -Detail ($keyProbe | ConvertTo-Json -Compress)
+if (-not $keyBound) {
+    Add-TestResult -Name 'IND-FLOW-00 flows not executed: certificate key boundary cannot be replaced safely' `
+        -Outcome FAIL
+    Complete-TestSuite
+}
+
 function Write-JsonFile {
     param([string]$Path, $Value)
     $text = $Value | ConvertTo-Json -Depth 20
@@ -374,6 +453,49 @@ Assert-True -Name 'IND-CLI-10 no private lifetime folder exists after all reject
 # =====================================================================================================
 # 3. Product definitions, the real PS5.1 source reader child and child-process lifetime.
 # =====================================================================================================
+# The service observation opens the exact instance service through the ServiceController type literal to read its
+# dependent services. The fixture instance has none. Service control is replaced at the RestartService seam below,
+# so any Stop/Start/Wait reaching this stand-in is recorded and refused.
+class AdapterFakeServiceController {
+    static [Collections.Generic.List[string]]$Calls = [Collections.Generic.List[string]]::new()
+    [string]$ServiceName
+    [object[]]$DependentServices = @()
+
+    AdapterFakeServiceController([string]$name) {
+        $this.ServiceName = $name
+        [AdapterFakeServiceController]::Calls.Add('Open:' + $name)
+    }
+
+    [void] Refresh() { [AdapterFakeServiceController]::Calls.Add('Refresh:' + $this.ServiceName) }
+    [void] Stop() { [AdapterFakeServiceController]::Refuse('Stop()') }
+    [void] Stop([bool]$stopDependentServices) {
+        [AdapterFakeServiceController]::Refuse('Stop(' + $stopDependentServices + ')')
+    }
+    [void] Start() { [AdapterFakeServiceController]::Refuse('Start') }
+    [void] WaitForStatus([object]$desired, [TimeSpan]$timeout) {
+        [AdapterFakeServiceController]::Refuse('WaitForStatus')
+    }
+    [void] Dispose() { [AdapterFakeServiceController]::Calls.Add('Dispose:' + $this.ServiceName) }
+
+    static [void] Refuse([string]$operation) {
+        [AdapterFakeServiceController]::Calls.Add('Control:' + $operation)
+        throw 'VERIFIER_FORBIDDEN_ServiceControl'
+    }
+}
+
+$accelerators = [psobject].Assembly.GetType('System.Management.Automation.TypeAccelerators')
+$controllerTypeNames = @('ServiceProcess.ServiceController', 'System.ServiceProcess.ServiceController')
+foreach ($typeName in $controllerTypeNames) { $accelerators::Add($typeName, [AdapterFakeServiceController]) }
+$boundControllerNames = @(foreach ($typeName in $controllerTypeNames) {
+        (& ([scriptblock]::Create('[' + $typeName + ']'))).FullName
+    })
+$controllerBound = @($boundControllerNames | Where-Object { $_ -cne 'AdapterFakeServiceController' }).Count -eq 0
+Assert-True -Name 'IND-SCM-00 ServiceController type literals resolve to the offline stand-in' `
+    -Condition $controllerBound -Detail ($boundControllerNames -join ',')
+if (-not $controllerBound) {
+    Add-TestResult -Name 'IND-FLOW-00 flows not executed: service observation cannot be replaced safely' -Outcome FAIL
+    Complete-TestSuite
+}
 . (Join-Path $script:ProductRoot 'WindowsSql.Common.ps1')
 . (Join-Path $script:ProductRoot 'WindowsSql.Adapter.ps1')
 $script:RealInvokeChild = ${function:Invoke-WindowsSqlChild}
@@ -1459,6 +1581,14 @@ Assert-True -Name 'IND-SECRET-01 generated runtime passwords appear in no file, 
     -Condition ($leaks.Count -eq 0) -Detail (@($leaks | ForEach-Object Name) -join ',')
 Assert-True -Name 'IND-SECRET-02 no forbidden real command was reached' `
     -Condition ($script:ForbiddenCalls.Count -eq 0) -Detail (@($script:ForbiddenCalls) -join ',')
+$serviceCalls = @([AdapterFakeServiceController]::Calls)
+$instanceService = 'MSSQL$' + $script:FixtureInstance
+$controlCalls = @($serviceCalls | Where-Object { $_ -clike 'Control:*' })
+$otherServices = @($serviceCalls | Where-Object { $_ -clike 'Open:*' -and $_ -cne ('Open:' + $instanceService) })
+$opened = @($serviceCalls | Where-Object { $_ -clike 'Open:*' }).Count
+Assert-True -Name 'IND-SCM-01 service observation opened only the exact instance and never controlled a service' `
+    -Condition ($opened -gt 0 -and $controlCalls.Count -eq 0 -and $otherServices.Count -eq 0) `
+    -Detail ('opened={0}; control={1}; other={2}' -f $opened, ($controlCalls -join ','), ($otherServices -join ','))
 
 # =====================================================================================================
 # 5. Real certificate gate rejections with in-memory certificates (no store, no persisted key).
@@ -1536,18 +1666,49 @@ $certificateCases = @(
         Make = { New-TestCertificate -DnsNames @('other.example', $script:FixtureMachine) } },
     @{ Id = 'IND-CERT-06'; Name = 'CNG key instead of a CSP AT_KEYEXCHANGE machine key'
         Code = 'WINDOWS_SQL_CERTIFICATE_KEY_UNSUPPORTED'
-        Make = { New-TestCertificate -DnsNames @('localhost', $script:FixtureMachine) } }
+        Make = { New-TestCertificate -DnsNames @('localhost', $script:FixtureMachine) }
+        # CERT_KEY_PROV_INFO of a machine key in a CNG key storage provider: provider type 0, KeySpec 0.
+        ProviderInfo = {
+            $parameters = [Security.Cryptography.CspParameters]::new(0, 'Microsoft Software Key Storage Provider',
+                'adapter-fixture-ksp')
+            $parameters.KeyNumber = 0
+            $parameters.Flags = [Security.Cryptography.CspProviderFlags]::UseMachineKeyStore
+            return $parameters
+        } }
 )
+$keyCaseThumbprint = $null
 foreach ($case in $certificateCases) {
     $certificate = & $case.Make
     Set-CertificateCase -Scenario $certScenario -Certificate $certificate -ReceiptThumbprint $certificate.Thumbprint
     if ($case.ContainsKey('BreakReceipt')) { $certScenario.Runtime.CertificateReceiptHash = ('0' * 64) }
+    [AdapterFakeCertificateKeyNative]::ExpectedCertificate = $certificate
+    if ($case.ContainsKey('ProviderInfo')) {
+        $keyCaseThumbprint = $certificate.Thumbprint
+        [AdapterFakeCertificateKeyNative]::ProviderInfo[$keyCaseThumbprint] = & $case.ProviderInfo
+    }
     $script:CertificateReads = 0
     $message = Get-CaughtMessage { & $script:RealAssertCertificate -Adapter $certScenario.Adapter }
     $storeReadOk = if ($case.ContainsKey('BreakReceipt')) { $script:CertificateReads -eq 0 } else { $true }
     Assert-True -Name ($case.Id + ' certificate gate rejects ' + $case.Name) `
         -Condition ($message -ceq $case.Code -and $storeReadOk) -Detail ([string]$message)
 }
+[AdapterFakeCertificateKeyNative]::ExpectedCertificate = $null
+
+# Only the IND-CERT-06 certificate may reach the key boundary, and only its provider-info read: no key binding,
+# CSP open or native compile. The first record is the readiness probe of the Add-Type refusal.
+$keyCalls = @([AdapterFakeCertificateKeyNative]::Calls)
+$unexpectedKeyCalls = @($keyCalls | Select-Object -Skip 1 | Where-Object {
+        $_ -cne ('ReadProviderParameters:' + $keyCaseThumbprint + ':True')
+    })
+$compiledKeyNative = @([AppDomain]::CurrentDomain.GetAssemblies() |
+        ForEach-Object { $_.GetType('Dawnholder.WindowsSql.CertificateKeyNative', $false) } |
+        Where-Object { $null -ne $_ })
+$firstKeyCall = if ($keyCalls.Count -ge 1) { $keyCalls[0] } else { '' }
+$keyBoundaryClean = $firstKeyCall -ceq 'Add-Type' -and $unexpectedKeyCalls.Count -eq 0 -and $compiledKeyNative.Count -eq 0
+Assert-True -Name 'IND-CERT-KEY-01 key boundary saw only the IND-CERT-06 provider read; no binding, CSP or compile' `
+    -Condition $keyBoundaryClean -Detail ($keyCalls -join ',')
+Add-TestResult -Name ('IND-CERT-KEY-02 provider-info reads by the certificate gate: ' + ($keyCalls.Count - 1)) `
+    -Outcome OBSERVED
 
 # =====================================================================================================
 # 6. Real path lease, reparse refusal and private store ACL on this suite's own files.

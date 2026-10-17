@@ -22,8 +22,13 @@ function Read-WindowsSqlInstanceIdentity {
             throw 'WINDOWS_SQL_IDENTITY_MISMATCH'
         }
         $setup = Open-WindowsSqlRegistryKey -Adapter $Adapter -Suffix '\Setup'
-        $version = [string]$setup.GetValue('Version')
-        if ($version -cne $Adapter.Plan.ExpectedProductVersion) { throw 'WINDOWS_SQL_IDENTITY_MISMATCH' }
+        # PatchLevel follows the engine; Setup/Version can remain at the initial installation version.
+        $version = $setup.GetValue('PatchLevel', $null, 'DoNotExpandEnvironmentNames')
+        if ($version -isnot [string] -or $version.Length -gt 64 -or
+            $version -cnotmatch '\A(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){3}\z' -or
+            $version -cne $Adapter.Plan.ExpectedProductVersion) {
+            throw 'WINDOWS_SQL_IDENTITY_MISMATCH'
+        }
         # Open validates the SQL-reported identity and this connection's Shared memory transport.
         [void](Get-WindowsSqlMaster -Adapter $Adapter)
         Assert-WindowsSqlCertificate -Adapter $Adapter
@@ -97,6 +102,32 @@ function Assert-WindowsSqlRegistryUnchanged {
     [void](Get-WindowsSqlService -Adapter $Adapter)
 }
 
+function Assert-WindowsSqlDependentServices {
+    param($Controller)
+    $dependents = $null
+    try {
+        # Each check owns a fresh list; cached enumeration/status must not survive the preflight or a prior write.
+        $Controller.Refresh()
+        $dependents = $Controller.DependentServices
+        if ($null -eq $dependents) { throw 'WINDOWS_SQL_DEPENDENT_SERVICE' }
+        foreach ($dependent in $dependents) {
+            $dependent.Refresh()
+            if ([string]$dependent.Status -cne 'Stopped' -or [string]$dependent.StartType -cne 'Disabled') {
+                throw 'WINDOWS_SQL_DEPENDENT_SERVICE'
+            }
+        }
+    }
+    catch { throw 'WINDOWS_SQL_DEPENDENT_SERVICE' }
+    finally {
+        # The caller owns the instance controller; this helper owns every enumerated dependent, even on failure.
+        foreach ($dependent in $dependents) {
+            if ($null -ne $dependent -and $null -ne $dependent.PSObject.Methods['Dispose']) {
+                $dependent.Dispose()
+            }
+        }
+    }
+}
+
 function Get-WindowsSqlService {
     param($Adapter)
     $name = 'MSSQL$' + $Adapter.Plan.InstanceName
@@ -105,6 +136,9 @@ function Get-WindowsSqlService {
         $service.StartName -ine $Adapter.Runtime.ServiceAccount -or $service.State -cne 'Running') {
         throw 'WINDOWS_SQL_SERVICE_CHANGED'
     }
+    $controller = [ServiceProcess.ServiceController]::new($name)
+    try { Assert-WindowsSqlDependentServices -Controller $controller }
+    finally { $controller.Dispose() }
     return $service
 }
 
@@ -230,9 +264,9 @@ function Invoke-WindowsSqlInstanceMutation {
             }
             $controller = [ServiceProcess.ServiceController]::new('MSSQL$' + $Adapter.Plan.InstanceName)
             try {
-                # Never force-stop dependent services; an occupied/dependent boundary fails explicitly.
-                if ($controller.DependentServices.Count -ne 0) { throw 'WINDOWS_SQL_DEPENDENT_SERVICE' }
-                $controller.Stop()
+                Assert-WindowsSqlDependentServices -Controller $controller
+                # SCM must refuse active dependents even if one starts after the check; never cascade their stop.
+                $controller.Stop($false)
                 $controller.WaitForStatus('Stopped', [TimeSpan]::FromSeconds(45))
                 $controller.Start()
                 $controller.WaitForStatus('Running', [TimeSpan]::FromSeconds(45))

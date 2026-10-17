@@ -8,6 +8,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'WindowsSql.Runtime.ps1')
 . (Join-Path $PSScriptRoot 'WindowsSql.Store.ps1')
 . (Join-Path $PSScriptRoot 'WindowsSql.PathLease.ps1')
+. (Join-Path $PSScriptRoot 'WindowsSql.CertificateKey.ps1')
 $mutex = $null
 $owned = $false
 $lease = $null
@@ -71,19 +72,17 @@ try {
         [IO.File]::WriteAllText((Join-Path $private 'certificate-created.txt'), $certificate.Thumbprint)
         Set-WindowsSqlPrivateFileOwner -Path (Join-Path $private 'certificate-created.txt') `
             -Sid $preparation.ExecutorSid
-        $key = $certificate.PrivateKey
+        $keyFile = Get-WindowsSqlCertificateKeyFile -Certificate $certificate
+        $acl = Read-WindowsSqlCertificateKeyAcl -KeyFile $keyFile
         try {
-            if ($key -isnot [Security.Cryptography.RSACryptoServiceProvider]) {
-                throw 'WINDOWS_SQL_CERTIFICATE_KEY_UNSUPPORTED'
-            }
-            $keyFile = Join-Path ([Environment]::GetFolderPath('CommonApplicationData')) `
-            ('Microsoft\Crypto\RSA\MachineKeys\' + $key.CspKeyContainerInfo.UniqueKeyContainerName)
+            $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($serviceSid, 'Read', 'Allow'))
         }
-        finally { if ($null -ne $key) { $key.Dispose() } }
-        [void](Assert-WindowsSqlLocalPath -Path $keyFile)
-        $acl = Get-Acl -LiteralPath $keyFile
-        $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($serviceSid, 'Read', 'Allow'))
-        Set-Acl -LiteralPath $keyFile -AclObject $acl -ErrorAction Stop
+        catch { throw 'WINDOWS_SQL_CERTIFICATE_KEY_ACL_ACCESS_FAILED' }
+        Assert-WindowsSqlCertificateServiceAcl -Acl $acl -ServiceSid $serviceSid.Value
+        try { Set-Acl -LiteralPath $keyFile -AclObject $acl -ErrorAction Stop }
+        catch { throw 'WINDOWS_SQL_CERTIFICATE_KEY_ACL_ACCESS_FAILED' }
+        $confirmedAcl = Read-WindowsSqlCertificateKeyAcl -KeyFile $keyFile
+        Assert-WindowsSqlCertificateServiceAcl -Acl $confirmedAcl -ServiceSid $serviceSid.Value
         $pem = $certificate.ExportCertificatePem() + "`n"
         $caStream = [IO.FileStream]::new($ca, 'CreateNew', 'Write', 'None', 4096, 'WriteThrough')
         try {

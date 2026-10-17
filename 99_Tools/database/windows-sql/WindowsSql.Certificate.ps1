@@ -1,3 +1,5 @@
+. (Join-Path $PSScriptRoot 'WindowsSql.CertificateKey.ps1')
+
 function Read-WindowsSqlCertificateReceipt {
     param($Adapter)
     $path = Join-Path $Adapter.Plan.PrivateRoot 'certificate.json'
@@ -45,32 +47,13 @@ function Assert-WindowsSqlCertificate {
         if ($names -inotcontains $Adapter.Runtime.TlsServerName -or $names -inotcontains $Adapter.Plan.MachineName) {
             throw 'WINDOWS_SQL_CERTIFICATE_NAME_MISMATCH'
         }
-        $privateKey = $certificate.PrivateKey
-        try {
-            if ($privateKey -isnot [Security.Cryptography.RSACryptoServiceProvider] -or
-                $privateKey.KeySize -lt 2048 -or $privateKey.CspKeyContainerInfo.KeyNumber -ne 'Exchange' -or
-                -not $privateKey.CspKeyContainerInfo.MachineKeyStore -or $privateKey.CspKeyContainerInfo.Exportable) {
-                throw 'WINDOWS_SQL_CERTIFICATE_KEY_UNSUPPORTED'
-            }
-            $keyFile = Join-Path ([Environment]::GetFolderPath('CommonApplicationData')) `
-            ('Microsoft\Crypto\RSA\MachineKeys\' + $privateKey.CspKeyContainerInfo.UniqueKeyContainerName)
-            if ($keyFile -cne $receipt.KeyFile) { throw 'WINDOWS_SQL_CERTIFICATE_KEY_CHANGED' }
-            [void](Assert-WindowsSqlLocalPath -Path $keyFile)
-            $serviceSid = [Security.Principal.NTAccount]::new($Adapter.Runtime.ServiceAccount).Translate(
-                [Security.Principal.SecurityIdentifier]).Value
-            if ($serviceSid -cne $receipt.ServiceSid) { throw 'WINDOWS_SQL_SERVICE_CHANGED' }
-            $acl = Get-Acl -LiteralPath $keyFile
-            $rules = @($acl.GetAccessRules($true, $true, [Security.Principal.SecurityIdentifier]) | Where-Object {
-                    $_.IdentityReference.Value -ceq $serviceSid
-                })
-            if (@($rules | Where-Object AccessControlType -EQ 'Deny').Count -ne 0 -or
-                @($rules | Where-Object {
-                        $_.AccessControlType -eq 'Allow' -and
-                        ($_.FileSystemRights -band [Security.AccessControl.FileSystemRights]::Read) -eq
-                        [Security.AccessControl.FileSystemRights]::Read
-                    }).Count -ne 1) { throw 'WINDOWS_SQL_CERTIFICATE_KEY_ACL_INVALID' }
-        }
-        finally { if ($null -ne $privateKey) { $privateKey.Dispose() } }
+        $keyFile = Get-WindowsSqlCertificateKeyFile -Certificate $certificate
+        if ($keyFile -cne $receipt.KeyFile) { throw 'WINDOWS_SQL_CERTIFICATE_KEY_CHANGED' }
+        $serviceSid = [Security.Principal.NTAccount]::new($Adapter.Runtime.ServiceAccount).Translate(
+            [Security.Principal.SecurityIdentifier]).Value
+        if ($serviceSid -cne $receipt.ServiceSid) { throw 'WINDOWS_SQL_SERVICE_CHANGED' }
+        $acl = Read-WindowsSqlCertificateKeyAcl -KeyFile $keyFile
+        Assert-WindowsSqlCertificateServiceAcl -Acl $acl -ServiceSid $serviceSid
         $caPath = Get-WindowsSqlInputPath -Plan $Adapter.Plan -Relative $Adapter.Runtime.PublicCaPath
         $caBytes = [IO.File]::ReadAllBytes($caPath)
         if ($caBytes.Length -gt 16384 -or
