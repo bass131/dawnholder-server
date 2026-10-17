@@ -40,17 +40,27 @@ namespace Dawnholder.Client.Bootstrap
         void OnEnable()
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
+            ClassLoadout.AuthorityChanged += OnAuthorityChanged;
         }
 
         void OnDisable()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+            ClassLoadout.AuthorityChanged -= OnAuthorityChanged;
+        }
+
+        void OnAuthorityChanged()
+        {
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+                OnSceneLoaded(SceneManager.GetSceneAt(i), LoadSceneMode.Single);
         }
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             // 게임플레이 맵이 아니면 skip (MainMenu/CharacterSelect/UI 등).
             if (System.Array.IndexOf(GameplayScenes, scene.name) < 0) return;
+            if (!ClassLoadout.ServerClass.HasValue || UnityClientSession.Instance == null ||
+                !UnityClientSession.Instance.CharacterLoad.IsSuccess) return;
 
             // 이미 살아있는 Instance가 있으면 중복 spawn 차단.
             // DontDestroyOnLoad 씬에서 Play 중 같은 씬을 Reload해도 안전.

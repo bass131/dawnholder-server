@@ -203,7 +203,8 @@ public sealed class CharacterPersistenceOwner
                 lock (_gate)
                 {
                     _activeWork = null;
-                    work.Completion.TrySetResult(new PersistenceWorkResult(ToWorkStatus(outcome)));
+                    work.Completion.TrySetResult(new PersistenceWorkResult(ToWorkStatus(outcome),
+                        work.Acquire is not null && outcome == OperationOutcome.Acquired ? _storedClass : null));
                 }
             }
         }

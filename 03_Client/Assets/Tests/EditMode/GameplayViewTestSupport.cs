@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 
 namespace Dawnholder.Client.Tests
 {
@@ -32,6 +33,7 @@ namespace Dawnholder.Client.Tests
             Session.Publish();
             SessionTestTools.Handshake(Session, _queue);
             _views = new EntryBindingFixture(Session);
+            _views.Admit(_queue, _sockets);
         }
 
         internal UnityClientSession Session { get; }
@@ -66,6 +68,11 @@ namespace Dawnholder.Client.Tests
                 try
                 {
                     Session.Cleanup();
+                    // The product reset requests destruction of this connection's player. EditMode logs that
+                    // request; Dispose below completes only our fixture objects, without skipping the reset.
+                    if (_views.Player != null && ReferenceEquals(Dawnholder.Client.Prediction.LocalPlayerMovement.Instance, _views.Player))
+                        LogAssert.Expect(LogType.Error, "Entry fixture LocalPlayerMovement: Destroy may not be called from edit mode! " +
+                            "Use DestroyImmediate instead.\nDestroying an object in edit mode destroys it permanently");
                     NetworkService.ResetGlobalSessionMirrors();
                 }
                 finally

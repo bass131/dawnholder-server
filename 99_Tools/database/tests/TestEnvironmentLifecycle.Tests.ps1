@@ -2304,6 +2304,400 @@ $boundaryResolved = $resolvedBoundary -and $freshErrors -eq 0 -and [string]::Equ
 Assert-True -Name 'Environment.Common.ps1 resolves New-DatabaseSqlFailure to the shared SqlError.Common.ps1' `
     -Condition $boundaryResolved -Detail ('resolved=' + $resolvedBoundary + '; errors=' + $freshErrors)
 
+# ---- New-DatabaseSqlCommand parameter values at the real SqlClient boundary (main decision msg_500bacaf3e04). The
+# lifecycle runs shadow Invoke-DatabaseSql and the INSTALL-07 cases above fake this command factory, so no value has
+# crossed the PowerShell-to-SqlParameter assignment offline. Here the product helper builds a real SqlCommand on an
+# unopened SqlConnection and nothing executes. Every expected value below is the fixture input itself.
+function Invoke-ProductSqlCommand {
+    param([Parameter(Mandatory)][hashtable]$Parameters)
+    return & {
+        param($ProductFile, $InputParameters)
+        . $ProductFile
+        $file = [string](Get-Command -Name 'New-DatabaseSqlCommand' -CommandType Function).ScriptBlock.File
+        $connection = [Data.SqlClient.SqlConnection]::new('Data Source=lpc:.\OFFLINESTUB;Initial Catalog=master')
+        $commandArguments = @{
+            Connection = $connection
+            Sql = 'SELECT 1'
+            Parameters = $InputParameters
+        }
+        $returned = @()
+        $failure = $null
+        $commandType = ''
+        $commandText = ''
+        $timeout = -1
+        $transactionAbsent = $false
+        $observed = @{}
+        try {
+            $returned = @(New-DatabaseSqlCommand @commandArguments)
+            foreach ($command in $returned) {
+                $commandType = $command.GetType().FullName
+                $commandText = $command.CommandText
+                $timeout = $command.CommandTimeout
+                $transactionAbsent = $null -eq $command.Transaction
+                foreach ($parameter in $command.Parameters) {
+                    # Copy Value by property: a pipeline or subexpression would enumerate a byte[] into Object[].
+                    $observed[$parameter.ParameterName] = [pscustomobject]@{
+                        SqlDbType = [string]$parameter.SqlDbType
+                        Size = $parameter.Size
+                        Value = $parameter.Value
+                    }
+                }
+            }
+        }
+        catch {
+            $failure = $_.Exception.Message
+        }
+        finally {
+            # The returned command and the connection belong to this probe whatever the outcome.
+            foreach ($command in $returned) {
+                $command.Dispose()
+            }
+            $state = [string]$connection.State
+            $connection.Dispose()
+        }
+        [pscustomobject]@{
+            File = $file
+            Returned = $returned.Count
+            CommandType = $commandType
+            CommandText = $commandText
+            Timeout = $timeout
+            TransactionAbsent = $transactionAbsent
+            Parameters = $observed
+            Failure = $failure
+            ConnectionState = $state
+        }
+    } $commonFile $Parameters
+}
+
+function Get-ProbeSqlParameter {
+    param(
+        [Parameter(Mandatory)]$Probe,
+        [Parameter(Mandatory)][string]$Name
+    )
+    if ($Probe.Parameters.ContainsKey($Name)) {
+        return $Probe.Parameters[$Name]
+    }
+    return [pscustomobject]@{
+        SqlDbType = 'absent'
+        Size = -1
+        Value = $null
+    }
+}
+
+function Format-ProbeValue {
+    param($Value)
+    # Arrays first: comparing an array with $null filters its items instead of testing the reference.
+    if ($Value -is [Array]) {
+        $items = @($Value | ForEach-Object { '{0:X2}' -f $_ }) -join ''
+        return $Value.GetType().FullName + '(' + $Value.Length + ')' + $items
+    }
+    if ($null -eq $Value) {
+        return 'null'
+    }
+    return $Value.GetType().FullName + ':' + [string]$Value
+}
+
+$sqlCommandProbes = New-Object 'Collections.Generic.List[object]'
+
+# Non-zero bytes on both sides of 0x80, so a dropped, reordered or sign-converted byte changes the hex.
+$sidInput = [byte[]](0x10, 0x21, 0x32, 0x43, 0x54, 0x65, 0x76, 0x87, 0x98, 0xA9, 0xBA, 0xCB, 0xDC, 0xED, 0xFE, 0x0F)
+$sidHex = [BitConverter]::ToString($sidInput).Replace('-', '')
+# Same type and Size as the runtime login SID parameter in Set-TestPrincipals.ps1.
+$sidProbe = Invoke-ProductSqlCommand -Parameters @{
+    sid = (New-DatabaseSqlParameter -Type VarBinary -Value $sidInput -Size 16)
+}
+$sqlCommandProbes.Add($sidProbe)
+$sidParameter = Get-ProbeSqlParameter -Probe $sidProbe -Name '@sid'
+$sidText = Format-ProbeValue -Value $sidParameter.Value
+$sidIsByteArray = $null -eq $sidProbe.Failure -and $sidParameter.Value -is [byte[]]
+Assert-True -Name 'New-DatabaseSqlCommand: a 16-byte VarBinary SID reaches SqlParameter.Value as byte[]' `
+    -Condition $sidIsByteArray -Detail ('value=' + $sidText + '; failure=' + $sidProbe.Failure)
+$sidItems = @($sidParameter.Value)
+$sidItemsAreBytes = @($sidItems | Where-Object { $_ -isnot [byte] }).Count -eq 0
+$sidItemHex = @($sidItems | ForEach-Object { '{0:X2}' -f $_ }) -join ''
+$sidBytesInOrder = $sidItems.Count -eq $sidInput.Length -and $sidItemsAreBytes -and $sidItemHex -ceq $sidHex
+Assert-True -Name 'the same SID keeps its 16 byte values in their original order' `
+    -Condition $sidBytesInOrder `
+    -Detail ('expected=' + $sidHex + '; items=' + $sidItems.Count + '; bytes=' + $sidItemsAreBytes + '; hex=' +
+    $sidItemHex)
+$sidShapeKept = $sidParameter.SqlDbType -ceq 'VarBinary' -and $sidParameter.Size -eq 16
+Assert-True -Name 'the same SID parameter keeps SqlDbType VarBinary and its explicit Size 16' `
+    -Condition $sidShapeKept -Detail ('type=' + $sidParameter.SqlDbType + '; size=' + $sidParameter.Size)
+
+# Non-zero on purpose: a lone 0x00 already makes the product's `$null -ne $Value` test false, a separate question.
+$shortInput = [byte[]]@(0x7F)
+$shortProbe = Invoke-ProductSqlCommand -Parameters @{
+    sid = (New-DatabaseSqlParameter -Type VarBinary -Value $shortInput -Size 85)
+}
+$sqlCommandProbes.Add($shortProbe)
+$shortParameter = Get-ProbeSqlParameter -Probe $shortProbe -Name '@sid'
+$shortText = Format-ProbeValue -Value $shortParameter.Value
+$shortIsByteArray = $null -eq $shortProbe.Failure -and $shortParameter.Value -is [byte[]]
+$shortKept = $shortIsByteArray -and $shortParameter.Value.Length -eq 1 -and $shortParameter.Value[0] -eq 0x7F
+Assert-True -Name 'New-DatabaseSqlCommand: a 1-byte VarBinary value stays a 1-byte byte[], not a single Byte' `
+    -Condition $shortKept -Detail ('value=' + $shortText + '; failure=' + $shortProbe.Failure)
+
+$emptyProbe = Invoke-ProductSqlCommand -Parameters @{
+    sid = (New-DatabaseSqlParameter -Type VarBinary -Value ([byte[]]::new(0)) -Size 85)
+}
+$sqlCommandProbes.Add($emptyProbe)
+$emptyParameter = Get-ProbeSqlParameter -Probe $emptyProbe -Name '@sid'
+$emptyText = Format-ProbeValue -Value $emptyParameter.Value
+$emptyIsByteArray = $null -eq $emptyProbe.Failure -and $emptyParameter.Value -is [byte[]]
+$emptyKept = $emptyIsByteArray -and $emptyParameter.Value.Length -eq 0
+Assert-True -Name 'New-DatabaseSqlCommand: an empty VarBinary byte[] stays an empty byte[], not null or DBNull' `
+    -Condition $emptyKept -Detail ('value=' + $emptyText + '; failure=' + $emptyProbe.Failure)
+
+$nullProbe = Invoke-ProductSqlCommand -Parameters @{
+    sid = (New-DatabaseSqlParameter -Type VarBinary -Value $null -Size 85)
+    count = (New-DatabaseSqlParameter -Type Int -Value $null)
+}
+$sqlCommandProbes.Add($nullProbe)
+$nullSid = Get-ProbeSqlParameter -Probe $nullProbe -Name '@sid'
+$nullCount = Get-ProbeSqlParameter -Probe $nullProbe -Name '@count'
+$nullsAreDbNull = $null -eq $nullProbe.Failure -and $nullSid.Value -is [DBNull] -and $nullCount.Value -is [DBNull]
+$nullSizeKept = $nullSid.Size -eq 85
+$nullSidText = Format-ProbeValue -Value $nullSid.Value
+$nullCountText = Format-ProbeValue -Value $nullCount.Value
+Assert-True -Name 'New-DatabaseSqlCommand: null VarBinary and Int values become DBNull; the VarBinary keeps Size 85' `
+    -Condition ($nullsAreDbNull -and $nullSizeKept) `
+    -Detail ('sid=' + $nullSidText + '; count=' + $nullCountText + '; size=' + $nullSid.Size + '; failure=' +
+    $nullProbe.Failure)
+
+$scalarInputs = [ordered]@{
+    count = @{ Type = 'Int'; Value = [int]7 }
+    total = @{ Type = 'BigInt'; Value = [long]9007199254740993 }
+    level = @{ Type = 'TinyInt'; Value = [byte]200 }
+    enabled = @{ Type = 'Bit'; Value = $false }
+    id = @{ Type = 'UniqueIdentifier'; Value = [Guid]'0f4b8c1e-2d3a-4b5c-8d6e-7f8091a2b3c4' }
+}
+$scalarParameters = @{
+    name = (New-DatabaseSqlParameter -Type NVarChar -Value 'fixture-login' -Size 128)
+}
+foreach ($key in $scalarInputs.Keys) {
+    $scalarInput = $scalarInputs[$key]
+    $scalarParameters[$key] = New-DatabaseSqlParameter -Type $scalarInput.Type -Value $scalarInput.Value
+}
+$scalarProbe = Invoke-ProductSqlCommand -Parameters $scalarParameters
+$sqlCommandProbes.Add($scalarProbe)
+$scalarsChanged = New-Object 'Collections.Generic.List[string]'
+foreach ($key in $scalarInputs.Keys) {
+    $scalarExpected = $scalarInputs[$key].Value
+    $scalarActual = (Get-ProbeSqlParameter -Probe $scalarProbe -Name ('@' + $key)).Value
+    $scalarSameType = $null -ne $scalarActual -and $scalarActual.GetType() -eq $scalarExpected.GetType()
+    if (-not ($scalarSameType -and ($scalarActual -eq $scalarExpected))) {
+        $scalarsChanged.Add($key + '=' + (Format-ProbeValue -Value $scalarActual))
+    }
+}
+Assert-True -Name 'New-DatabaseSqlCommand: typed Int/BigInt/TinyInt/Bit/Guid values keep their CLR type and value' `
+    -Condition ($null -eq $scalarProbe.Failure -and $scalarsChanged.Count -eq 0) `
+    -Detail ('changed=' + ($scalarsChanged -join ', ') + '; failure=' + $scalarProbe.Failure)
+$loginName = Get-ProbeSqlParameter -Probe $scalarProbe -Name '@name'
+$stringKept = $loginName.Value -is [string] -and $loginName.Value -ceq 'fixture-login'
+$stringShapeKept = $loginName.SqlDbType -ceq 'NVarChar' -and $loginName.Size -eq 128
+Assert-True -Name 'the same command keeps the NVarChar string and its explicit Size 128' `
+    -Condition ($stringKept -and $stringShapeKept) `
+    -Detail ('value=' + (Format-ProbeValue -Value $loginName.Value) + '; type=' + $loginName.SqlDbType + '; size=' +
+    $loginName.Size)
+$commandShapeKept = $scalarProbe.Returned -eq 1 -and $scalarProbe.CommandText -ceq 'SELECT 1' -and
+$scalarProbe.Timeout -eq 30 -and $scalarProbe.TransactionAbsent -and $scalarProbe.Parameters.Count -eq 6
+Assert-True -Name 'the same command keeps its SQL text, CommandTimeout 30, no transaction and only its six parameters' `
+    -Condition $commandShapeKept `
+    -Detail ('returned=' + $scalarProbe.Returned + '; text=' + $scalarProbe.CommandText + '; timeout=' +
+    $scalarProbe.Timeout + '; noTransaction=' + $scalarProbe.TransactionAbsent + '; parameters=' +
+    $scalarProbe.Parameters.Count)
+
+# These inputs bypass New-DatabaseSqlParameter so the rejection happens inside New-DatabaseSqlCommand after it has
+# allocated the command. That command's Dispose has no observation point outside the helper and is not asserted here.
+$typeMismatch = 'Test environment SQL parameter type/length mismatch.'
+$rejectedInputs = @(
+    @{
+        Name = 'SID bytes held in an Object[]'
+        Parameter = [pscustomobject]@{
+            Type = [Data.SqlDbType]::VarBinary
+            Value = [object[]]$sidInput
+            Size = 16
+        }
+        Cause = $typeMismatch
+    },
+    @{
+        Name = 'a 17-byte byte[] for Size 16'
+        Parameter = [pscustomobject]@{
+            Type = [Data.SqlDbType]::VarBinary
+            Value = [byte[]]($sidInput + [byte]0x11)
+            Size = 16
+        }
+        Cause = $typeMismatch
+    },
+    @{
+        Name = 'a VarBinary without Size'
+        Parameter = [pscustomobject]@{
+            Type = [Data.SqlDbType]::VarBinary
+            Value = $null
+            Size = 0
+        }
+        Cause = 'SQL size is required.'
+    },
+    @{
+        Name = 'a long for Int'
+        Parameter = [pscustomobject]@{
+            Type = [Data.SqlDbType]::Int
+            Value = [long]7
+            Size = 0
+        }
+        Cause = $typeMismatch
+    },
+    @{
+        Name = 'an unsupported DateTime type'
+        Parameter = [pscustomobject]@{
+            Type = [Data.SqlDbType]::DateTime
+            Value = [datetime]::MinValue
+            Size = 0
+        }
+        Cause = 'Unsupported Test environment SQL parameter type.'
+    },
+    @{
+        Name = 'raw SID bytes without a typed parameter'
+        Parameter = $sidInput
+        Cause = 'Typed SQL parameters required.'
+    }
+)
+foreach ($case in $rejectedInputs) {
+    $rejected = Invoke-ProductSqlCommand -Parameters @{ value = $case.Parameter }
+    $sqlCommandProbes.Add($rejected)
+    $exactCause = $rejected.Failure -ceq $case.Cause
+    $noCommandReturned = $rejected.Returned -eq 0
+    Assert-True -Name ("New-DatabaseSqlCommand rejects $($case.Name): exact cause, no command returned") `
+        -Condition ($exactCause -and $noCommandReturned) `
+        -Detail ('failure=' + $rejected.Failure + '; returned=' + $rejected.Returned)
+}
+
+$probeProblems = New-Object 'Collections.Generic.List[string]'
+foreach ($probe in $sqlCommandProbes) {
+    $productHelper = [string]::Equals([IO.Path]::GetFullPath($probe.File), $commonFull,
+        [StringComparison]::OrdinalIgnoreCase)
+    $realCommand = $probe.Returned -eq 0 -or $probe.CommandType -ceq 'System.Data.SqlClient.SqlCommand'
+    $neverOpened = $probe.ConnectionState -ceq 'Closed'
+    if (-not ($productHelper -and $realCommand -and $neverOpened)) {
+        $probeProblems.Add($probe.File + '|' + $probe.CommandType + '|' + $probe.ConnectionState)
+    }
+}
+Assert-True -Name 'every New-DatabaseSqlCommand probe ran the product helper on a real SqlCommand, never opening SQL' `
+    -Condition ($sqlCommandProbes.Count -gt 0 -and $probeProblems.Count -eq 0) `
+    -Detail ('probes=' + $sqlCommandProbes.Count + '; problems=' + ($probeProblems -join ', '))
+
+# ---- Independent verifier checks of the same assignment boundary. The probes above cover byte[] lengths 0/1/16,
+# null, the supported scalars and six rejections. These add the SID shape Remove-TestEnvironment.ps1 passes, values
+# PowerShell treats as false, an explicit DBNull and the name, NVarChar length and null-entry rejections. Expected
+# values are the fixture inputs; nothing below recomputes what the product does.
+$verifierProbes = New-Object 'Collections.Generic.List[object]'
+
+# Remove-TestEnvironment.ps1 builds this SID with ConvertFrom-DatabaseSidHex (`return , $bytes`) and Size 85.
+$removeSidHex = '0x00F1E2D3C4B5A6978879695A4B3C2D1E'
+$removeProbe = Invoke-ProductSqlCommand -Parameters @{
+    name = (New-DatabaseSqlParameter -Type NVarChar -Value 'fixture-login' -Size 128)
+    sid = (New-DatabaseSqlParameter -Type VarBinary -Value (ConvertFrom-DatabaseSidHex -Hex $removeSidHex) -Size 85)
+}
+$verifierProbes.Add($removeProbe)
+$removeSid = Get-ProbeSqlParameter -Probe $removeProbe -Name '@sid'
+$removeSidText = Format-ProbeValue -Value $removeSid.Value
+$removeSidKept = $null -eq $removeProbe.Failure -and
+$removeSidText -ceq ('System.Byte[](16)' + $removeSidHex.Substring(2))
+$removeSidShapeKept = $removeSid.SqlDbType -ceq 'VarBinary' -and $removeSid.Size -eq 85
+Assert-True -Name 'New-DatabaseSqlCommand: the Remove-TestEnvironment SID from hex stays a 16-byte byte[], Size 85' `
+    -Condition ($removeSidKept -and $removeSidShapeKept) `
+    -Detail ('value=' + $removeSidText + '; type=' + $removeSid.SqlDbType + '; size=' + $removeSid.Size + '; failure=' +
+    $removeProbe.Failure)
+
+# A lone 0x00 is the one-item byte[] PowerShell evaluates as false; 85 bytes fills the declared Size exactly.
+$zeroByteInput = [byte[]]@(0x00)
+$fullSizeInput = [byte[]](0..84)
+$edgeProbe = Invoke-ProductSqlCommand -Parameters @{
+    zero = (New-DatabaseSqlParameter -Type VarBinary -Value $zeroByteInput -Size 85)
+    full = (New-DatabaseSqlParameter -Type VarBinary -Value $fullSizeInput -Size 85)
+}
+$verifierProbes.Add($edgeProbe)
+$zeroByteText = Format-ProbeValue -Value (Get-ProbeSqlParameter -Probe $edgeProbe -Name '@zero').Value
+$zeroByteKept = $null -eq $edgeProbe.Failure -and $zeroByteText -ceq (Format-ProbeValue -Value $zeroByteInput)
+Assert-True -Name 'New-DatabaseSqlCommand: a lone 0x00 byte[] stays a 1-byte byte[], not DBNull or a single Byte' `
+    -Condition $zeroByteKept -Detail ('value=' + $zeroByteText + '; failure=' + $edgeProbe.Failure)
+$fullSizeText = Format-ProbeValue -Value (Get-ProbeSqlParameter -Probe $edgeProbe -Name '@full').Value
+$fullSizeKept = $null -eq $edgeProbe.Failure -and $fullSizeText -ceq (Format-ProbeValue -Value $fullSizeInput)
+Assert-True -Name 'the same command keeps an 85-byte byte[] at Size 85 in order beside the other VarBinary value' `
+    -Condition $fullSizeKept -Detail ('value=' + $fullSizeText + '; failure=' + $edgeProbe.Failure)
+
+$falseLikeProbe = Invoke-ProductSqlCommand -Parameters @{
+    zero = (New-DatabaseSqlParameter -Type Int -Value 0)
+    empty = (New-DatabaseSqlParameter -Type NVarChar -Value '' -Size 128)
+    missing = (New-DatabaseSqlParameter -Type VarBinary -Value ([DBNull]::Value) -Size 16)
+}
+$verifierProbes.Add($falseLikeProbe)
+$zeroInt = (Get-ProbeSqlParameter -Probe $falseLikeProbe -Name '@zero').Value
+$emptyText = (Get-ProbeSqlParameter -Probe $falseLikeProbe -Name '@empty').Value
+$zeroIntKept = $zeroInt -is [int] -and $zeroInt -eq 0
+$emptyTextKept = $emptyText -is [string] -and $emptyText.Length -eq 0
+Assert-True -Name 'New-DatabaseSqlCommand: Int 0 and an empty NVarChar string reach SqlParameter.Value as themselves' `
+    -Condition ($null -eq $falseLikeProbe.Failure -and $zeroIntKept -and $emptyTextKept) `
+    -Detail ('zero=' + (Format-ProbeValue -Value $zeroInt) + '; empty=' + (Format-ProbeValue -Value $emptyText) +
+    '; failure=' + $falseLikeProbe.Failure)
+$dbNullParameter = Get-ProbeSqlParameter -Probe $falseLikeProbe -Name '@missing'
+$dbNullKept = $null -eq $falseLikeProbe.Failure -and $dbNullParameter.Value -is [DBNull] -and
+$dbNullParameter.Size -eq 16
+Assert-True -Name 'the same command keeps an explicit DBNull VarBinary input as DBNull with its Size 16' `
+    -Condition $dbNullKept `
+    -Detail ('value=' + (Format-ProbeValue -Value $dbNullParameter.Value) + '; size=' + $dbNullParameter.Size)
+
+# Rejections the block above does not reach; each still happens after the helper allocated its command.
+$verifierRejections = @(
+    @{
+        Name = 'a parameter name with a SQL separator'
+        Key = 'sid;x'
+        Parameter = (New-DatabaseSqlParameter -Type Int -Value 1)
+        Cause = 'Invalid SQL parameter name.'
+    },
+    @{
+        Name = 'an NVarChar value longer than its Size'
+        Key = 'name'
+        Parameter = [pscustomobject]@{
+            Type = [Data.SqlDbType]::NVarChar
+            Value = 'abc'
+            Size = 2
+        }
+        Cause = $typeMismatch
+    },
+    @{
+        Name = 'a null parameter entry'
+        Key = 'value'
+        Parameter = $null
+        Cause = 'Typed SQL parameters required.'
+    }
+)
+foreach ($case in $verifierRejections) {
+    $rejectedParameters = @{}
+    $rejectedParameters[$case.Key] = $case.Parameter
+    $rejected = Invoke-ProductSqlCommand -Parameters $rejectedParameters
+    $verifierProbes.Add($rejected)
+    $exactCause = $rejected.Failure -ceq $case.Cause
+    $noCommandReturned = $rejected.Returned -eq 0
+    Assert-True -Name ("New-DatabaseSqlCommand rejects $($case.Name): exact cause, no command returned") `
+        -Condition ($exactCause -and $noCommandReturned) `
+        -Detail ('failure=' + $rejected.Failure + '; returned=' + $rejected.Returned)
+}
+
+$verifierProblems = New-Object 'Collections.Generic.List[string]'
+foreach ($probe in $verifierProbes) {
+    $productHelper = [string]::Equals([IO.Path]::GetFullPath($probe.File), $commonFull,
+        [StringComparison]::OrdinalIgnoreCase)
+    $realCommand = $probe.Returned -eq 0 -or $probe.CommandType -ceq 'System.Data.SqlClient.SqlCommand'
+    $neverOpened = $probe.ConnectionState -ceq 'Closed'
+    if (-not ($productHelper -and $realCommand -and $neverOpened)) {
+        $verifierProblems.Add($probe.File + '|' + $probe.CommandType + '|' + $probe.ConnectionState)
+    }
+}
+Assert-True -Name 'every verifier probe ran the product helper on a real SqlCommand, never opening SQL' `
+    -Condition ($verifierProbes.Count -eq 6 -and $verifierProblems.Count -eq 0) `
+    -Detail ('probes=' + $verifierProbes.Count + '; problems=' + ($verifierProblems -join ', '))
+
 # ---- INSTALL-07 end to end through the real Install entry point. The runner's first command fails with the fixture
 # number 51001 inside the product Invoke-DbNonQuery (harness MigrationSqlNumber). Requirement 3 with 05/06: the
 # executor and the journal keep that number, provider text stays out, the step is journaled Failed, and nothing

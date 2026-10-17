@@ -76,6 +76,8 @@ public sealed class ServerHostLifecycleTests
             login.Read(new(loginBytes));
             Assert.Equal((byte)LoginResult.Accepted, login.result);
             await stream.WriteAsync(new C_CharacterSelect { characterClass = 0 }.Write());
+            byte[] loadBytes = await ReadFrame(stream);
+            Assert.Equal(new byte[] { 6, 0, 48, 0, 0, 0 }, loadBytes);
             PacketID[] expected = { PacketID.S_EnterMap, PacketID.S_PlayerHp };
             foreach (PacketID id in expected)
                 Assert.Equal(id, (PacketID)BitConverter.ToUInt16(await ReadFrame(stream), 2));
