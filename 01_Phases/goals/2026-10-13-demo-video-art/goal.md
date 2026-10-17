@@ -2,7 +2,7 @@
 
 상태: **신규 Opus의 보상 창 강 독립 검증은 통과했다(제품 결함 0, EditMode 87/87·PlayMode 12/12, 두 실행 exit 0). 리드는 판정 전문·실제 diff·XML·관문·종료 원시를 대조하고 검증자를 정산·종료했다. 이 판정은 표시 조립·import·배치·입력 상태·씬 수명의 기술 판정이며 실화면 PNG·미관 통과는 아니다. 기존 인벤토리·NPC·고친 파티 창의 현재 1920 사용자 통과, 파티 T-2 강 독립 PASS, C9 main 통합·05 강 PASS·06 조건부 통과 기록은 유지한다. 보상 창 실제 전후·최소 화면, Party HUD VIS-05와 UI 창 PR은 남아 있다.**
 
-**다음 첫 일:** 새 외부 작업자의 계약에서 보상 창 실제 전후·최소 화면 캡처를 준비하고, 메인의 새 Unity 배정과 직전 자동 관문 뒤 실행한다. 사용자 A에 따른 글자와 테두리의 붙음·겹침은 임의 수정 없이 메인에 올린다. 이어 Party HUD VIS-05와 남은 화면 근거를 갖춘 같은 UI 창 PR의 마지막 head·CI를 보고한다. 현재 Unity·WSL은 메인이 World에 배정한 창이므로 Art가 스스로 기동하지 않는다.
+**다음 첫 일:** 신규 캡처 검증자가 쓰기를 끝낸 시험 source와 현재 결정을 새 HEAD로 인계하고, 메인에게 current 캡처 1회 창을 요청한다. 실제 내장 최소 크기 지원과 1920 PNG를 먼저 관측하고, 최소가 안 되면 미완으로 남겨 대안을 정한다. before는 같은 게임 소스에 변경 전 보상 창 Git 원문을 쓴 별도 Unity 사본으로 재현한다. 사용자 A에 따른 글자와 테두리의 붙음·겹침은 임의 수정 없이 메인에 올린다. 이어 Party HUD VIS-05와 남은 화면 근거를 갖춘 같은 UI 창 PR의 마지막 head·CI를 보고한다. 현재 Unity·WSL은 메인이 World에 배정한 창이므로 Art가 스스로 기동하지 않는다.
 
 ## 재개 지점
 
@@ -14,6 +14,7 @@
 - 생존 신호 정산: 정본 helper의 300초 초과는 11:52:03→12:00:07 UTC, 484초 한 구간(시험 source 일괄 작성)이다. 검증자가 heartbeat receipt만으로 추가 보고한 320초 구간에는 12:08:58의 공식 질문이 있어 모든 송신 신호를 세는 정본의 초과가 아니다. 원문을 바꾸지 않고 집계 기준을 구분했다. 근거는 `ui-reward-window-review-launch/final-liveness-{input,provenance,result}.json`이다.
 - 자동 변경은 알려진 ProjectSettings S1 한 줄과 실행 뒤 M으로 표시된 MinimapRT다. MinimapRT 현재 bytes는 HEAD와 같고 내용 diff 0이지만 실행 전 bytes를 재지 않아 줄 끝 원인은 추론이다. 수기 복원·index 정리·설정 commit은 하지 않았다. 미관·PNG·실서버/DB·CI는 이번 판정의 미실행 경계다. 메인 `msg_287acda89768`의 리드 깨우기 자동화 주소 수정과 검증자 모달의 Not now 처리는 메인 관측으로 접수했으며 독립 실측이나 설정 변경으로 보고하지 않는다.
 - 메인 `msg_29a93d39ff03`은 판정 전문 hash·기계 판독/결론·두 XML의 R-2 표본 일치를 확인하고 같은 후속 순서를 계속하도록 했다. PNG가 준비되면 메인에 경로를 보내 사용자에게 보여 준다. 다음 계약부터 메인 운영 판단 `msg_94fb2d65338b`의 「JSON의 시각 필드는 ConvertFrom-Json -DateKind String으로 읽거나 원문 문자열로 비교하고, 시각을 쓰는 실행 관문 스크립트는 실제 실행 창 전에 오프라인으로 한 번 통과시켜 본다.」를 적용한다. 규칙 정본 반영이나 사용자 새 결정으로 확대하지 않는다. PNG 계약 준비 메모는 `ui-reward-window-capture-launch/lead-context.md`다.
+- 신규 Opus 캡처 검증자는 기존 `UiWindowLiveCaptureTests.cs`에 보상 창 케이스와 읽기 전용 관측을 추가하고 시험 쓰기를 종료했다. 리드는 실제 diff·동일 bytes·기존 단언 보존과 오프라인 시각 관문 원시를 대조했다. Unity·PNG·before 사본 생성은 아직 0이다. before의 정확한 일곱 CRLF/LF 차이·cold import/Editor 배치·긴 경로 위험과 최소 1280 내장 크기 부재 가능성은 숨기지 않으며 실제 성공으로 기록하지 않는다. source 인계·현재 상태/보충은 `ui-reward-window-capture-launch/`, 상세/시험 원시는 `ui-reward-window-capture/raw/source-handoff/handoff.md`에 있다. 현재 Opus는 맡은 작업을 끝내며 이후 새 세션만 아래 리셋 전 임시 모델 결정을 따른다.
 
 ### 10-15 마감 인계 보존
 
@@ -146,6 +147,11 @@
 - **실행과 미실행 구분**: 이미지 생성, Unity 가져오기·컴파일·EditMode, 실화면 캡처, Play 모드 녹화, CI를 각각 따로 기록한다. 서버·DB는 이 goal에서 쓰지 않는다.
 
 ## 적용 중인 사용자 결정
+
+- **리셋까지 새 선행 시험·독립 검증은 Codex**(메인 `msg_2dfd398dd1d7`, 2026-10-17T14:41:45Z 전달, 메인 pane Enter 제출 23:4x KST): 사용자 원문 「대시보드 결정 응답: 1) Claude 사용량 - 주간 리셋(화 20:00)까지 새로 여는 선행 시험·독립 검증 세션을 Codex로 돌릴지 → A 지금부터 Codex로」. 사용자에게 보인 A는 「새로 여는 선행 시험·독립 검증만 gpt-6.1-sol xhigh로 연다. 이미 도는 Opus 넷은 하던 일을 끝낸다. 메인 절약과 합쳐 리셋까지 Claude가 버틸 가능성이 커진다. 화요일 리셋 뒤 다시 Opus로 돌아간다.」다. 지금부터 **2026-10-20 20:00 KST**까지 새 선행 시험 작성자·독립 검증자는 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`로 연다. 구현자·리드 배정과 AGENTS 정본은 바꾸지 않는다. 리셋 뒤 원래 배정(Opus)으로 돌아간다. 메인 전달이며 이 pane 직접 사용자 입력으로 격상하지 않는다.
+- **위 임시 배정의 Astra 격상**(메인 `msg_3fb6aade11b9`, 2026-10-17T14:42:36Z 전달): 사용자 추가 원문 「대신 Sol의 성능이 빈얃하다고 느낄경우 Astra로 격상」, 「Astra로 격상시에는 Effort는 High로」. 리드 또는 메인이 Sol의 필수 관찰·실행 누락, 원시와 다른 주장/근거 없는 전부·없음 주장, 맥락 손실에 따른 반복, 범위 밖 쓰기 시도를 관측하면 같은 작업의 **다음 새 세션**을 `codex --model gpt-6-astra -c model_reasoning_effort=high`로 연다. 실행 중 모델은 바꾸지 않는다. 격상 신호·원시 위치와 새 세션 모델/effort를 메인에 보고하고 이 goal에 기록한다.
+- **현재 세션과 독립성 보존**: 이미 실행 중인 보상 PNG Opus는 맡은 작업 하나를 끝내고 정산·종료하며 중간에 모델을 바꾸거나 다시 띄우지 않는다. 이후 수정/재검증 등 새 세션은 위 임시 배정을 따른다. 태그는 `[Art 검증자]`, 구현자와 다른 신규 세션이라는 독립성·요청/화면/backend 구분을 유지한다. Codex 계약은 규칙 원문·고정 경로/hash·판정 기준·실행 순서를 자기완결로 넣는다. 새 Codex 첫 화면 선택창은 입력하지 않고 메인에 알려 R-6 처리를 받는다.
+- **이번 결정 기록의 입력 경계**: 미래 세션 전용 기록이며 현재 캡처 계약의 기술 요구는 바꾸지 않는다. 기록 전 goal 원문은 기준 HEAD `e0476fb2367b288d18b5bd42d9297d9393dad5ac`와 `ui-reward-window-capture-launch/goal-frozen-e047-before-model-policy.md`에 보존했고 현재 검증자에 `msg_7c28ab18dcb4`로 통지했다. source 쓰기 종료 인계에서 다음 실행용 HEAD/hash를 명시한다. 메인 원문은 `ui-reward-window-capture-launch/inbox-followup-20261017-3.json`에 있다.
 
 - **시연 우선 재정렬과 Unity 순서**(메인 `msg_0bf21872e4d4`, 2026-10-17T12:16:22Z 전달, 메인 pane Enter 제출 21:1x KST): 사용자 원문 「대시보드 결정 응답: 1) 10-28 시연 준비 - 길드 순환과 지금 있는 한 판 흐름의 실화면 리허설에 힘을 몰지 → A 시연 우선 재정렬」. 사용자 질문 「음 진척 방향 리스트 보면, 우리 28일에 뭐 보여줄게 없는데?」 뒤의 결정이다. World·Content 길드가 최우선이며, Content 다음은 리허설이 준비돼 있으면 리허설, 아니면 Art로 메인이 Unity 순서를 배정한다. 보상 창 검증과 10-18 UI 창 PR의 범위는 유지한다. Art는 Content와 직접 실행 순서를 확정하지 않고 메인에게 요청한다. 메인 전달을 이 pane의 사용자 직접 입력으로 격상하지 않는다.
 
