@@ -30,7 +30,7 @@ internal sealed class ThunderboltAction : IGameAction
         long impactTick = map.CurrentTick + CombatConstants.LightningDelayTicks;
         foreach (EnemyEntity target in targets)
         {
-            int damage = Formulas.ComputeDamage(caster.Stats, target.Stats, CombatConstants.BaseDamage);
+            int damage = map.ComputePlayerDamage(caster, target.Stats);
 
             map.EnqueueDeferredDamage(new DeferredImpact
             {

@@ -4,6 +4,7 @@ using System.Numerics;
 using Dawnholder.Server.GameServer.Accounts;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Handlers;
+using Dawnholder.Server.GameServer.Guild;
 using Dawnholder.Server.GameServer.Items;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
@@ -49,6 +50,7 @@ public class GameSession : PacketSession
     // Separate from movement budgets. One queued economic request owns this guard until its
     // tick job finishes (including send failure), or the connection closes.
     int _inventoryRequestPending;
+    int _guildRequestPending;
 
     // handshake 완료 플래그. OnRecvPacket 첫 진입에서 false면 → handshake 패킷만 허용,
     // 다른 패킷 = 즉시 Disconnect. first-packet 강제 = isolation 보장 (version 검증 전 다른 패킷 차단).
@@ -132,6 +134,7 @@ public class GameSession : PacketSession
         Interlocked.Increment(ref _admissionGeneration);
         Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Closed);
         CompleteInventoryRequest();
+        CompleteGuildRequest();
         Console.WriteLine($"[GameSession] OnDisconnected from {endPoint}");
         RequestWorldClose();
     }
@@ -483,6 +486,20 @@ public class GameSession : PacketSession
 
     internal void CompleteInventoryRequest() => Interlocked.Exchange(ref _inventoryRequestPending, 0);
 
+    internal void SubmitGuildRequest()
+        => SubmitGuildRequest((guild, entityId) => guild.EnqueueQuery(this, entityId));
+
+    internal void SubmitStrongholdUpgrade(uint expectedRevision)
+        => SubmitGuildRequest((guild, entityId) => guild.EnqueueStrongholdUpgrade(this, entityId, expectedRevision));
+
+    internal void SubmitWeaponEnhance(uint expectedRevision)
+        => SubmitGuildRequest((guild, entityId) => guild.EnqueueWeaponEnhance(this, entityId, expectedRevision));
+
+    internal void CompleteGuildRequest() => Interlocked.Exchange(ref _guildRequestPending, 0);
+
+    // Read on the World tick only. Guild observes map ownership/alive state without mutating it.
+    internal GameMap? ReadGuildMap() => GetMap();
+
     internal void SubmitCharacterSelect(byte intendedClass)
     {
         if (IsClosing || !IsLoggedIn || HasSelectedClass ||
@@ -616,6 +633,15 @@ public class GameSession : PacketSession
                 return;
             }
 
+            // A World admission needs the real login identity even if a protected entry hook
+            // was used. Reject before creating a player or an inventory registration.
+            if (self._world != null && !self.IsLoggedIn)
+            {
+                Console.WriteLine("[Trust] World admission without login — disconnecting");
+                self.Disconnect();
+                return;
+            }
+
             // 헌법 #1: spawn 좌표를 서버가 정함 (content.bin PlayerSpawn 기준).
             Vector2 spawnPos = map.PlayerSpawnPosition;
 
@@ -629,28 +655,53 @@ public class GameSession : PacketSession
             self.SetCurrentMap(map);
             Volatile.Write(ref self._admissionState, (int)CharacterAdmissionState.Active);
 
-            // Economy admission follows the actual player owner, before sends can fail/close.
-            // World close cleanup ends this registration; portal moves keep the same lifetime.
-            self._world?.Inventory.Register(self, entity.EntityId);
-
-            S_EnterMap pkt = new S_EnterMap
+            Action? publishGuildAdmission = null;
+            try
             {
-                entityId = entity.EntityId,
-                spawnX = entity.Position.X,
-                spawnY = entity.Position.Y
-            };
-            self.Send(pkt.Write());
+                // Commit admission before publishing the player, but defer guild notification
+                // until EnterMap, authoritative HP, and the initial roster have been sent.
+                // World close cleanup owns failed admissions too; portal moves retain the state.
+                self._world?.Inventory.Register(self, entity.EntityId);
+                if (self._world != null &&
+                    !self._world.Guild.Register(self, entity.EntityId, out publishGuildAdmission))
+                {
+                    self.Disconnect();
+                    return;
+                }
+                if (self.IsClosing) return;
 
-            // 진입 직후 권위 HP 1회 송신 — 클라 HUD 초기화. Owner 연결 완료 후 즉시.
-            map.SendPlayerHp(entity);
+                S_EnterMap pkt = new S_EnterMap
+                {
+                    entityId = entity.EntityId,
+                    spawnX = entity.Position.X,
+                    spawnY = entity.Position.Y
+                };
+                self.Send(pkt.Write());
+                if (self.IsClosing) return;
 
-            // self에게 기존 roster(player + 살아있는 enemy) 1:1 Send — 통합 메서드.
-            map.SendInitialRosterTo(self, existing);
+                // 진입 직후 권위 HP 1회 송신 — 클라 HUD 초기화. Owner 연결 완료 후 즉시.
+                map.SendPlayerHp(entity);
+                if (self.IsClosing) return;
 
-            // 자기 외 모든 player에게 신규 entity broadcast (except self — 본인은 로컬 선예측).
-            map.BroadcastPlayerJoin(entity, self);
+                // self에게 기존 roster(player + 살아있는 enemy) 1:1 Send — 통합 메서드.
+                map.SendInitialRosterTo(self, existing);
+                if (self.IsClosing) return;
 
-            Console.WriteLine($"[Map] Player {entity.EntityId} entered — roster:{existing.Count}, enemies:{map.Enemies.Count}");
+                // 자기 외 모든 player에게 신규 entity broadcast (except self — 본인은 로컬 선예측).
+                map.BroadcastPlayerJoin(entity, self);
+
+                Console.WriteLine($"[Map] Player {entity.EntityId} entered — roster:{existing.Count}, enemies:{map.Enemies.Count}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GameSession] World admission failed: {ex}");
+                self.Disconnect();
+            }
+            finally
+            {
+                // A post-commit close/send failure cannot roll back the seed or suppress peers.
+                publishGuildAdmission?.Invoke();
+            }
         });
     }
 
@@ -684,6 +735,31 @@ public class GameSession : PacketSession
 
     // 종료 대상을 소켓 스레드의 순간적인 맵 조회로 결정하지 않는다.
     protected virtual void RequestWorldClose() => _world?.RequestSessionClose(this);
+
+    void SubmitGuildRequest(Action<GuildRegistry, int> enqueue)
+    {
+        GameWorld? world = _world;
+        int entityId = _entityId;
+        if (world == null || IsClosing || !_handshakeCompleted || !IsLoggedIn || !HasSelectedClass || entityId <= 0)
+            return;
+        if (Interlocked.CompareExchange(ref _guildRequestPending, 1, 0) != 0) return;
+        try
+        {
+            if (IsClosing)
+            {
+                CompleteGuildRequest();
+                return;
+            }
+            // Movement is checked by the tick job so an admitted but migrating connection gets
+            // Unavailable in the ordered purchase result, rather than silently losing its request.
+            enqueue(world.Guild, entityId);
+        }
+        catch
+        {
+            CompleteGuildRequest();
+            throw;
+        }
+    }
 
     async Task ReceiveAdmissionAsync(CharacterAdmissionLifetime lifetime, long generation, GameMap admissionMap)
     {

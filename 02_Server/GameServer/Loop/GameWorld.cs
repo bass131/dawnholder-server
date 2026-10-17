@@ -1,6 +1,7 @@
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Accounts;
 using Dawnholder.Server.GameServer.Items;
+using Dawnholder.Server.GameServer.Guild;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Quest;
@@ -59,6 +60,7 @@ public class GameWorld
 
     // Connection-lifetime economy; unlike PlayerEntity, it survives map migration.
     readonly InventoryRegistry _inventory;
+    readonly GuildRegistry _guild;
     readonly AccountRegistry _accounts = new();
 
     /// <summary>
@@ -81,6 +83,9 @@ public class GameWorld
         _party = new PartyRegistry(OnPartyDisbanded);
         _quest = new QuestRegistry(_party.GetMembershipByEntity);
 
+        _inventory = new InventoryRegistry(IsActiveSession, SendToEntity);
+        _guild = new GuildRegistry(_inventory, IsActiveSession);
+
         _mapData = provider;
         _instances = new InstanceMapRegistry((id, key) => MakeMap(id, key));
         _maps = new Dictionary<MapId, GameMap>();
@@ -91,10 +96,6 @@ public class GameWorld
             _maps.Add(id, map);
             _publicMaps.Add(map);
         }
-
-        _inventory = new InventoryRegistry(
-            IsActiveSession,
-            SendToEntity);
 
         _scheduler = new TickScheduler(OnTick);
         if (Interlocked.CompareExchange(ref _instance, this, null) != null)
@@ -117,6 +118,7 @@ public class GameWorld
     public TickScheduler Scheduler => _scheduler;
 
     internal InventoryRegistry Inventory => _inventory;
+    internal GuildRegistry Guild => _guild;
     internal AccountRegistry Accounts => _accounts;
 
     internal int LiveInstanceCount => _instances.Count;
@@ -290,6 +292,7 @@ public class GameWorld
             }
             if (entityId >= 0) PartyFlow.CleanupOnDisconnect(this, entityId);
             _inventory.Forget(session);
+            _guild.Forget(session);
             _accounts.Forget(session);
             session.CompleteWorldLeave();
             foreach (var entry in removed)
@@ -325,11 +328,17 @@ public class GameWorld
                 _inventory.EnqueueKill(killerId, target.Kind, target.EntityId);
         };
 
-        // Public maps are constructed before the inventory registry; resolve it when a clear runs.
-        Action<IReadOnlyList<(int EntityId, GameSession Session)>> onClear = recipients => _inventory.EnqueueDungeonClear(recipients);
+        // The map captures beneficiaries once. Inventory settles their personal reward and
+        // prepared guild credit together, before the World drains ordinary guild requests.
+        Action<IReadOnlyList<(int EntityId, GameSession Session)>> onClear =
+            recipients => _inventory.EnqueueDungeonClear(recipients, _guild);
         if (_mapData.TryGetValue(id, out var pair))
-            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content, onKill, key, onClear);
-        return new GameMap(id, NextEntityId, onEnemyKilled: onKill, instanceKey: key, onDungeonCleared: onClear);
+        {
+            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content, onKill, key,
+                readAttackBonus: _inventory.ReadAttackBonus, onDungeonCleared: onClear);
+        }
+        return new GameMap(id, NextEntityId, onEnemyKilled: onKill, instanceKey: key,
+            readAttackBonus: _inventory.ReadAttackBonus, onDungeonCleared: onClear);
     }
 
     void OnTick(long tickNumber)
@@ -353,6 +362,7 @@ public class GameWorld
             Party.Tick(tickNumber);
             Quest.Tick(tickNumber);
             _inventory.Tick();
+            _guild.Tick();
             // 이번 틱의 입장·종료·등록부 작업 뒤, 플레이어와 입장 대기가 모두 없는 복사본만 정리한다.
             _instances.RemoveIdle();
             foreach (TaskCompletionSource completion in barriers) completion.TrySetResult();

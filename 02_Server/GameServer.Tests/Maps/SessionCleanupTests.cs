@@ -1,12 +1,16 @@
+using System.Collections;
 using System.Net;
 using System.Numerics;
 using System.Reflection;
 using Dawnholder.Server.GameServer.Entities;
+using Dawnholder.Server.GameServer.Guild;
+using Dawnholder.Server.GameServer.Items;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
+using Xunit.Abstractions;
 
 namespace Dawnholder.Server.GameServer.Tests.Maps;
 
@@ -30,12 +34,16 @@ internal static class LifecycleTestWorld
 public sealed class SessionCleanupTests : IDisposable
 {
     readonly GameWorld _world = new(new Dictionary<MapId, (MapTerrain?, MapContent?)>());
+    readonly ITestOutputHelper _output;
     static readonly IPEndPoint Endpoint = new(IPAddress.Loopback, 0);
+
+    public SessionCleanupTests(ITestOutputHelper output) => _output = output;
 
     sealed class CapturedSession : GameSession
     {
         internal readonly List<byte[]> Packets = new();
         internal Action<PacketID>? OnPacket;
+        internal Action<GameMap?>? OnMapRead;
         internal CapturedSession(GameWorld world) : base(world) { }
         public override void Send(ArraySegment<byte> packet)
         {
@@ -44,6 +52,12 @@ public sealed class SessionCleanupTests : IDisposable
             OnPacket?.Invoke(Id(bytes));
         }
         public override void Disconnect() => OnDisconnected(Endpoint);
+        protected override GameMap? GetMap()
+        {
+            GameMap? map = base.GetMap();
+            OnMapRead?.Invoke(map);
+            return map;
+        }
     }
 
     static PacketID Id(byte[] bytes) => (PacketID)BitConverter.ToUInt16(bytes, 2);
@@ -286,5 +300,139 @@ public sealed class SessionCleanupTests : IDisposable
         S_PlayerJoin destinationRoster = new();
         destinationRoster.Read(new ArraySegment<byte>(session.Packets[2]));
         Assert.Equal(observer.EntityId, destinationRoster.entityId);
+    }
+
+    [Theory]
+    [InlineData(0)] // protected hook without the required account
+    [InlineData(1)] // seed preparation fails before any membership commit
+    [InlineData(2)] // the map owner disappears during preparation, before the final owner check
+    public void RejectedAdmission_ClosesAndReclaimsMapInventoryAndAccount(int rejection)
+    {
+        PlayerEntity? observedOwner = null;
+        int ignoredMapReads = 0;
+        int ownerRemovalAttempts = 0;
+        bool ownerRemovalSucceeded = false;
+        CapturedSession session;
+        if (rejection == 0)
+        {
+            session = new CapturedSession(_world);
+            session.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+            session.SetCharacterClass(0);
+            session.EnterGameWorldIfReady();
+            Assert.False(session.IsLoggedIn);
+        }
+        else
+        {
+            session = Join();
+            if (rejection == 1)
+            {
+                // Unreachable by a short login sequence: inject only the exhausted revision.
+                typeof(GuildRegistry).GetField("_state", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .SetValue(_world.Guild, new GuildState(uint.MaxValue, 0, 1));
+            }
+            else
+            {
+                session.OnMapRead = map =>
+                {
+                    // Admission now reads the map before AddPlayer too. Only the registered
+                    // owner's read in Guild.Register/ReadLocation reaches the precommit boundary.
+                    PlayerEntity? player = map?.GetPlayer(session.EntityId);
+                    if (player == null || !ReferenceEquals(player.Owner, session))
+                    {
+                        ignoredMapReads++;
+                        return;
+                    }
+                    observedOwner = player;
+                    session.OnMapRead = null;
+                    ownerRemovalAttempts++;
+                    ownerRemovalSucceeded = map!.RemovePlayer(player.EntityId);
+                };
+            }
+        }
+
+        Tick(1);
+
+        if (rejection == 2)
+        {
+            // Assert outside the map job: its exception boundary must not swallow fixture failure.
+            _output.WriteLine($"owner boundary: entity={observedOwner?.EntityId}, " +
+                $"sameOwner={ReferenceEquals(observedOwner?.Owner, session)}, " +
+                $"attempts={ownerRemovalAttempts}, removed={ownerRemovalSucceeded}, ignoredReads={ignoredMapReads}");
+            Assert.NotNull(observedOwner);
+            Assert.True(observedOwner.EntityId > 0);
+            Assert.Same(session, observedOwner.Owner);
+            Assert.Equal(1, ownerRemovalAttempts);
+            Assert.True(ownerRemovalSucceeded);
+        }
+        Assert.True(session.IsClosing);
+        Assert.Equal(-1, session.EntityId);
+        Assert.Empty(Players);
+        Assert.Equal(0, _world.Accounts.OnlineCount);
+        Assert.Empty((IDictionary)typeof(InventoryRegistry)
+            .GetField("_registeredSessions", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(_world.Inventory)!);
+        Assert.Empty((IDictionary)typeof(InventoryRegistry)
+            .GetField("_states", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(_world.Inventory)!);
+        Assert.Empty((IDictionary)typeof(GuildRegistry)
+            .GetField("_members", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(_world.Guild)!);
+        Assert.DoesNotContain(session.Packets, packet => Id(packet) is PacketID.S_EnterMap
+            or PacketID.S_PlayerHp or PacketID.S_PlayerJoin or PacketID.S_GuildSnapshot);
+    }
+
+    [Theory]
+    [InlineData(PacketID.S_EnterMap, false)]
+    [InlineData(PacketID.S_EnterMap, true)]
+    [InlineData(PacketID.S_PlayerHp, false)]
+    [InlineData(PacketID.S_PlayerHp, true)]
+    [InlineData(PacketID.S_PlayerJoin, false)]
+    [InlineData(PacketID.S_PlayerJoin, true)]
+    public void InitialPublicationFailure_CleansConnectionButRetainsOneSeed(PacketID failureAt, bool throws)
+    {
+        CapturedSession observer = Join();
+        Tick(1);
+        CapturedSession session = Join();
+        string accountName = session.Account!.Value.Name;
+        bool faultReached = false;
+        session.OnPacket = id =>
+        {
+            if (id != failureAt) return;
+            faultReached = true;
+            if (throws) throw new IOException("fixture: initial publication send failed");
+            session.Disconnect();
+        };
+        observer.Packets.Clear();
+
+        Tick(2);
+
+        Assert.True(faultReached);
+        Assert.True(session.IsClosing);
+        Assert.Equal(-1, session.EntityId);
+        Assert.Same(observer, Assert.Single(Players).Owner);
+        Assert.Equal(1, _world.Accounts.OnlineCount);
+        var registrations = (Dictionary<int, GameSession>)typeof(InventoryRegistry)
+            .GetField("_registeredSessions", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(_world.Inventory)!;
+        Assert.Same(observer, Assert.Single(registrations).Value);
+        Assert.DoesNotContain(session.Packets, packet => Id(packet) == PacketID.S_GuildSnapshot);
+        Assert.DoesNotContain(observer.Packets, packet => Id(packet) == PacketID.S_PlayerJoin);
+        S_GuildSnapshot afterClose = new();
+        afterClose.Read(new ArraySegment<byte>(observer.Packets.Last(packet => Id(packet) == PacketID.S_GuildSnapshot)));
+        Assert.Equal(10, afterClose.treasury);
+        Assert.Equal(2, afterClose.memberCount);
+        Assert.Equal(1, afterClose.onlineMemberCount);
+
+        CapturedSession returning = new(_world);
+        returning.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+        returning.OnRecvPacket(new C_Login { accountName = accountName }.Write());
+        _world.Accounts.Tick();
+        Assert.True(returning.IsLoggedIn);
+        returning.OnRecvPacket(new C_CharacterSelect { characterClass = 0 }.Write());
+        Tick(3);
+        S_GuildSnapshot afterReturn = new();
+        afterReturn.Read(new ArraySegment<byte>(Assert.Single(returning.Packets,
+            packet => Id(packet) == PacketID.S_GuildSnapshot)));
+        Assert.Equal(10, afterReturn.treasury);
+        Assert.Equal(2, afterReturn.memberCount);
+        Assert.Equal(2, afterReturn.onlineMemberCount);
     }
 }

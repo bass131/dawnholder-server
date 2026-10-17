@@ -1,9 +1,13 @@
+using System.Collections;
 using System.Net;
+using System.Reflection;
+using Dawnholder.Server.GameServer.Items;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Tests.Maps;
 using Shared.GameData;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
+using Shared.Protocol;
 
 namespace GameServer.Tests.Network;
 
@@ -33,14 +37,14 @@ public class GameSessionLifecycleTests : IDisposable
         public TestGameSession(GameMap map) { _injectedMap = map; }
         protected override GameMap GetMap() => _injectedMap;
 
-        // handshake mock: 본 테스트는 *handshake 이후*의 race 흐름 검증.
-        // 월드 진입 = handshake + class 선택 양쪽 충족 필요.
-        // lifecycle race 검증 목적이라 두 조건 모두 우회.
+        // Prepare real login without draining the map; tests own the admission/close tick order.
+        // Closed reverse-order inputs still reach the real packet rejection boundary.
         public override void OnConnected(EndPoint endPoint)
         {
-            CompleteHandshakeAndEnter();     // handshake 우회 (_handshakeCompleted = true)
-            SetCharacterClass(0);             // class 선택 우회 (Knight)
-            EnterGameWorldIfReady();          // 두 조건 충족 → EnterGameWorld() 호출
+            base.OnConnected(endPoint);
+            OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+            if (!IsClosing) LifecycleTestWorld.LogIn(GameWorld.Instance, this);
+            OnRecvPacket(new C_CharacterSelect { characterClass = 0 }.Write());
         }
         public override void Send(ArraySegment<byte> _) { }
         public override void OnSend(int numOfBytes) { }
@@ -67,23 +71,33 @@ public class GameSessionLifecycleTests : IDisposable
     public void ScenarioA_DisconnectBeforeTick_NoGhostPlayer()
     {
         // 핵심 race 시나리오 — deterministic.
-        // 1. OnConnected → AddPlayer job 1개 enqueue (아직 tick 안 함)
+        // 1. OnConnected → 로그인 후 직업 선택 예약 (아직 입장 tick 안 함)
         // 2. tick 전에 OnDisconnected → 별도 월드 close queue에 요청
         // 3. World tick → close queue 및 map job 처리 → players=0
         TestGameSession session = new(_map);
 
-        session.OnConnected(Ep());     // job 1 enqueue
+        session.OnConnected(Ep());
+        Assert.True(session.IsLoggedIn);
+        Assert.Equal(1, _world.Accounts.OnlineCount);
         Assert.Empty(_map.Players);     // 아직 tick 안 함
 
-        session.OnDisconnected(Ep());   // job 2 enqueue (closing 플래그 박힘)
+        session.OnDisconnected(Ep());
+        Assert.True(session.IsClosing);
         Assert.Empty(_map.Players);
 
-        Tick(1); // 두 job 처리
+        Tick(1);
 
-        // AddPlayer job은 _closing 체크로 skip. RemovePlayerBySession은 0건 제거(이미 없음).
-        // 결과: ghost player 없음.
+        // Closed/generation guards may reject before AddPlayer is queued; cleanup is the contract.
         Assert.Empty(_map.Players);
-        Assert.Contains("AddPlayer skipped", _consoleCapture.ToString());
+        Assert.Empty(_world.AllLiveMaps.SelectMany(map => map.Players));
+        Assert.True(session.IsClosing);
+        Assert.Equal(-1, session.EntityId);
+        Assert.Equal(0, _world.Accounts.OnlineCount);
+        Assert.Empty((IDictionary)typeof(InventoryRegistry)
+            .GetField("_registeredSessions", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(_world.Inventory)!);
+        Assert.Empty((IDictionary)typeof(InventoryRegistry)
+            .GetField("_states", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(_world.Inventory)!);
     }
 
     [Fact]

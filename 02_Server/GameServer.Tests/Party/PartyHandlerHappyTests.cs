@@ -2,6 +2,7 @@ using System.Net;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
+using Dawnholder.Server.GameServer.Tests.Maps;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -61,7 +62,9 @@ public class PartyHandlerHappyTests : IDisposable
     {
         PartySession s = new();
         s.OnConnected(new IPEndPoint(IPAddress.Loopback, 0));
-        s.Bypass(characterClass); // 월드 진입 job enqueue
+        s.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+        LifecycleTestWorld.LogIn(_world, s);
+        s.OnRecvPacket(new C_CharacterSelect { characterClass = characterClass }.Write());
         _town.Tick(tick);         // EnterGameWorld 람다 처리 → _entityId 박힘
         return s;
     }
@@ -212,13 +215,6 @@ public class PartyHandlerHappyTests : IDisposable
 
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { DisconnectCalls++; }
-
-        public void Bypass(byte characterClass)
-        {
-            CompleteHandshakeAndEnter();
-            SetCharacterClass(characterClass);
-            EnterGameWorldIfReady();
-        }
 
         public void BypassHandshakeOnly() => CompleteHandshakeAndEnter();
     }

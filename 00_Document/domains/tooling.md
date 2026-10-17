@@ -17,3 +17,11 @@
 WSL 실행은 원본 경로별 복사 공간과 잠금을 사용한다. 7777 포트가 다른 작업에 속하면 종료하지 않고 충돌을 보고한다. 시나리오와 원본 로그 위치를 결과에 남긴다.
 
 과거 QA knowledge는 전용 검증 사례가 없는 색인이었다. 이 문서는 존재하지 않았던 실적을 추가하지 않고 현재 테스트·도구 진입점으로 대체했다. [원문](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/.claude/knowledge/qa/_index.md).
+
+## 두 봇 길드 성장 순환
+
+`bash 99_Tools/sync-wsl.sh bot GuildGrowthSmoke`는 새 DEBUG 서버에서 [GuildGrowthSmoke](../../99_Tools/headless-bot/Scenarios/Guild/GuildGrowthSmoke.cs)를 실행한다. 별도 두 계정이 같은 파티·보스방에 들어가 실제 공격으로 클리어하고, 39→36→자기44의 개인50/재료1/주머니1과 공동 금고10→30을 검사한다. DEBUG cheatType0은 퀘스트 게이트 준비만이며 실제 처치 실적이 아니다. Town 복귀·중복확인 뒤 같은 공동revision의 구매 둘 중 하나만 금고30을 소비하고, 한 명의 개인20/재료1 강화와 동등한 새 보스에 대한 실제 근접 Damage 차이+5/상대0, 같은 계정 재접속의 시드 중복0·공동 유지·개인 초기화를 확인한다.
+
+[GuildGrowthProbe](../../99_Tools/headless-bot/Scenarios/Guild/GuildGrowthProbe.cs)는 ProbeBase의 접속·이동을 재사용하며, 44의 Read 전 길이/이름·enum/범위·접속별 sequence와 47의 action/requestedRevision/target44를 검사한다. 일반 방송44는 구매 pending을 끝내지 않는다. 관측은 `[Guild wire]`/`[Guild observation]`에 기록하고 누락·파싱 오류·취소는 실패/exit1이다. 내부110초 취소와 finally의 자기 연결 종료를 쓰며 원본 runner의120초 제한을 유지한다.
+
+`run_bot_regression.sh`는 기존 목록을 보존하고 PartyQuest·InventorySmoke·DungeonClearSmoke·BossGate·GuildGrowthSmoke를 추가한다. 목록 등록과 전체 실행은 별개다. 길드 봇은 전사 근접 피해 비교이며 마법사·Dash·Thunderbolt·지연 피해·리스폰과 모든 실패 조합을 전수 검증하지 않는다. 실제 회귀/최종 독립 판정·Unity 양소비자·CI/PR은 해당 실행 근거로 별도 확인한다. WSL의 Shared/ClientNet DLL2를 별도 배포해도 Unity 컴파일 성공은 아니다.

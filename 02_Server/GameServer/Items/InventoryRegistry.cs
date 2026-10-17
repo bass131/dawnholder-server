@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Dawnholder.Server.GameServer.Guild;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 
@@ -54,6 +55,41 @@ internal sealed class InventoryRegistry
         });
     }
 
+    // Guild consumes a value view, never the mutable Entry or its State setter. Read-only guild
+    // sync preserves lazy Inventory allocation; only a personal economy operation needs a holder.
+    internal bool TryReadGuildView(GameSession session, int entityId, out GuildView view)
+    {
+        view = default;
+        if (!IsActive(session, entityId)) return false;
+        InventoryState state = _states.TryGetValue(session, out Entry? entry) ? entry.State : InventoryState.Empty;
+        view = GuildView.From(state);
+        return true;
+    }
+
+    internal int ReadAttackBonus(GameSession session, int entityId)
+    {
+        if (!IsActive(session, entityId) || !_states.TryGetValue(session, out Entry? entry)) return 0;
+        return GuildRules.AttackBonus(entry.State.WeaponLevel);
+    }
+
+    internal ArraySegment<byte> PrepareCurrentSnapshot(GameSession session, int entityId)
+    {
+        if (!IsActive(session, entityId)) throw new InvalidOperationException("Inventory owner is no longer active.");
+        return InventoryPackets.Snapshot(GetOrCreate(session, entityId).State);
+    }
+
+    internal GuildResult PrepareEnhancement(GameSession session, int entityId, bool facilityUnlocked,
+        uint expectedRevision, out PreparedEnhancement? prepared)
+    {
+        prepared = null;
+        if (!IsActive(session, entityId)) return GuildResult.NotMember;
+        Entry entry = GetOrCreate(session, entityId);
+        GuildResult result = InventoryTransitions.Enhance(entry.State, facilityUnlocked, expectedRevision,
+            out InventoryState next);
+        if (result == GuildResult.Success) prepared = new PreparedEnhancement(this, session, next);
+        return result;
+    }
+
     internal void EnqueueItemUse(GameSession session, int entityId, ItemId itemId, uint expectedRevision)
     {
         EnqueueRequest(session, entityId, entry =>
@@ -82,10 +118,10 @@ internal sealed class InventoryRegistry
         _pendingJobs.Enqueue(() => ApplyKill(session, killerId, kind, enemyId));
     }
 
-    internal void EnqueueDungeonClear(IReadOnlyList<(int EntityId, GameSession Session)> beneficiaries)
+    internal void EnqueueDungeonClear(IReadOnlyList<(int EntityId, GameSession Session)> beneficiaries, GuildRegistry guild)
     {
         foreach (var recipient in beneficiaries)
-            _pendingJobs.Enqueue(() => ApplyDungeonClear(recipient.Session, recipient.EntityId));
+            _pendingJobs.Enqueue(() => ApplyDungeonClear(recipient.Session, recipient.EntityId, guild));
     }
 
     internal void Forget(GameSession session)
@@ -147,9 +183,9 @@ internal sealed class InventoryRegistry
         _sendToEntity(recipientId, snapshot);
     }
 
-    void ApplyDungeonClear(GameSession session, int entityId)
+    void ApplyDungeonClear(GameSession session, int entityId, GuildRegistry guild)
     {
-        if (!IsActive(session, entityId)) return;
+        if (!IsActive(session, entityId) || !guild.OwnsDungeonClear(session, entityId)) return;
 
         Entry entry = GetOrCreate(session, entityId);
         InventoryReward reward = new(DungeonClearRewards.Currency, DungeonClearRewards.Items.ToArray());
@@ -163,15 +199,34 @@ internal sealed class InventoryRegistry
         }
 
         ArraySegment<byte> reply = Dungeon.DungeonClearPackets.Result(result);
-        ArraySegment<byte> snapshot = default;
-        if (result == InventoryResult.Success) snapshot = InventoryPackets.Snapshot(next);
-        if (!IsActive(session, entityId)) return;
+        if (result != InventoryResult.Success)
+        {
+            if (IsActive(session, entityId) && guild.OwnsDungeonClear(session, entityId)) session.Send(reply);
+            return;
+        }
 
-        // Prepare both packets before the single commit. Direct sends preserve the result even
-        // during migration, when SendToEntity would skip a player without a current map.
-        if (result == InventoryResult.Success) entry.State = next;
-        session.Send(reply);
-        if (result == InventoryResult.Success && IsActive(session, entityId)) session.Send(snapshot);
+        ArraySegment<byte> snapshot = InventoryPackets.Snapshot(next);
+        GuildRegistry.PreparedDungeonClearCredit credit =
+            guild.PrepareDungeonClearCredit(session, entityId, GuildView.From(next));
+
+        // Both owners' next values, holders and every outgoing packet exist before this final
+        // owner check. No callback, allocation, lookup or I/O may interrupt these publications.
+        if (!IsActive(session, entityId) || !credit.IsOwnerActive) return;
+        entry.State = next;
+        credit.Commit();
+
+        try
+        {
+            // Direct sends preserve the result during migration. Transport failure after commit
+            // neither rolls back the pair nor prevents the other members' prepared updates.
+            if (IsActive(session, entityId)) session.Send(reply);
+            if (IsActive(session, entityId)) session.Send(snapshot);
+            credit.SendToBeneficiary();
+        }
+        finally
+        {
+            credit.SendToOtherMembers();
+        }
     }
 
     bool IsActive(GameSession session, int entityId)
@@ -191,6 +246,34 @@ internal sealed class InventoryRegistry
         entry = new Entry(entityId);
         _states.Add(session, entry);
         return entry;
+    }
+
+    internal readonly record struct GuildView(uint Revision, int Currency, byte WeaponLevel, int MaterialCount)
+    {
+        internal static GuildView From(InventoryState state)
+            => new(state.Revision, state.Currency, state.WeaponLevel, state.GetCount(GuildRules.WeaponMaterial));
+    }
+
+    // A same-tick, single-use prepared write. Guild must recheck the connection immediately
+    // before Commit; no callback, lookup, allocation, or I/O occurs inside Commit itself.
+    internal sealed class PreparedEnhancement
+    {
+        readonly Entry _entry;
+        readonly InventoryState _next;
+
+        internal PreparedEnhancement(InventoryRegistry owner, GameSession session, InventoryState next)
+        {
+            _entry = owner._states[session];
+            _next = next;
+            View = GuildView.From(next);
+            Snapshot = InventoryPackets.Snapshot(next);
+        }
+
+        internal GuildView View { get; }
+
+        internal ArraySegment<byte> Snapshot { get; }
+
+        internal void Commit() => _entry.State = _next;
     }
 
     sealed class Entry

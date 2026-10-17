@@ -19,6 +19,8 @@
 | 아이템·인벤토리·재화 | `Handlers/Inventory/` → `GameSession.SubmitInventoryRequest/SubmitItemUse` → `Items/InventoryRegistry.cs`의 연결 등록·상태 → `InventoryTransitions.cs`; 일반·골렘 처치 입력은 `GameWorld.MakeMap` → `InventoryRegistry.EnqueueKill/ApplyKill` → `KillRewardPolicy.cs`(보스 제외) | `Network/Handlers/Inventory/` → `State/InventoryState.cs`·`InventorySnapshotState.cs` → `UI/HudController.cs` 골드; `MapEntryCoordinator.Ready` → `Network/InventoryRequestController.cs`의 재조회·사용/결과 → `UI/InventoryPanel.cs`·`InventoryPanelView.cs`; I 열림 상태는 `Network/UnityClientSession.IsInventoryPanelOpen`이 연결별 소유 |
 | 던전 클리어·보상·복귀 | `GameMap.HandleEnemyDeath` → `Dungeon/DungeonClearState.cs`(수혜자·미확인 집합) → `InventoryRegistry.EnqueueDungeonClear/ApplyDungeonClear` → `Dungeon/DungeonClearPackets.cs`(39); [공유 보상표](../98_Shared/GameData/Dungeon/DungeonClearRewards.cs); `Handlers/Dungeon/DungeonClearConfirmHandler.cs`(40) → `GameSession.SubmitDungeonClearConfirm` → `Dungeon/DungeonClearConfirmation.cs` → `MapMigration.MoveToPublicMap` | `Network/Handlers/Dungeon/DungeonClearResultHandler.cs` → `State/DungeonClearRewardState.cs` → `UI/DungeonClearRewardWindow.cs`; `Combat/CombatBootstrap.cs` → `UI/DungeonEntranceLabel.cs`(Town 포탈 위) |
 
+길드·거점·개인 강화의 서버 진입점은 `Handlers/Guild/` → `GameSession.SubmitGuildRequest/SubmitStrongholdUpgrade/SubmitWeaponEnhance` → `Guild/GuildRegistry.cs`다. 공동 상태/판정/표현은 `GuildState`·`GuildRules`·`GuildPackets`, 개인 성장과 소비는 `Items/InventoryRegistry`·`InventoryState`·`InventoryTransitions`가 소유한다. 세 공격 액션은 `GameMap.ComputePlayerDamage` → `Combat/PlayerDamage.cs`로 현재 강화값을 읽는다. 실제 clear 적립은 `InventoryRegistry.ApplyDungeonClear`와 `GuildRegistry.PreparedDungeonClearCredit`의 선준비·연속 게시·39→36→44로 연결된다. 두 봇 진입은 [GuildGrowthSmoke](../99_Tools/headless-bot/Scenarios/Guild/GuildGrowthSmoke.cs), 연결별 wire 관측은 [GuildGrowthProbe](../99_Tools/headless-bot/Scenarios/Guild/GuildGrowthProbe.cs)다. Unity 길드 소비자/화면·최종 독립 검증은 후속이며 [서버 계약](domains/server.md#길드와-강화)과 [v20 wire](domains/protocol.md#v20-길드거점개인-강화)를 따른다.
+
 ## 공통 계약
 
 | 바꾸는 대상 | 원본과 함께 확인할 곳 |
@@ -35,5 +37,7 @@
 플레이어 HP·스탯·맵 위치는 현재 실행 중 서버가 소유한다. 입력 큐, 재조정 기록, 이동 중 플래그, 미응답 파티 초대는 임시 상태다. [D0 설계](../01_Phases/goals/2026-09-29-persistence-design/design.md)는 고정 계정/캐릭터 하나의 identity·최초 class·안전 checkpoint를 저장 대상으로 정했다. 재접속은 Town·풀 HP이며 quest/보스 해금은 세션 한정이다. [PlayerSnapshot](../02_Server/GameServer/Maps/PlayerSnapshot.cs) 전체의 DB 저장을 뜻하지 않으며 GameServer 저장·복원 연동은 후속 구현이다.
 
 아이템·재화·revision은 World 틱의 `InventoryRegistry`가 연결 수명 동안 메모리로 소유한다. 실제 입장 뒤 등록하고 맵 이동의 소속 공백에서도 유지하며, 종료 시 등록과 상태를 지우고 재접속은 빈 상태로 시작한다. DB 저장은 구현하지 않았다. 입력·보상·종료 경계는 [서버 경제 계약](domains/server.md#경제-상태와-연결-수명), 패킷은 [v17 경제 계약](domains/protocol.md#v17-경제-패킷)에서 확인한다.
+
+무기 강화도 같은 Inventory 접속 수명을 따르며 맵 이동·리스폰에 보존되고 재접속은0단계다. 기본 길드 회원·시드 기록과 공동 금고·거점은 GuildRegistry의 프로세스 수명이고, 접속 종료는 동일 owner의 online만 해제한다. 두 경제 상태 모두 DB에 저장하지 않는다.
 
 함수별 디버깅 출발점은 [ENTRY_POINTS](conventions/ENTRY_POINTS.md), 과거 변경 이유는 [영역별 기록](archive/INDEX.md)에서 찾는다.

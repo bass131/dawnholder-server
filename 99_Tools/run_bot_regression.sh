@@ -5,4 +5,5 @@ exec bash "$(dirname -- "${BASH_SOURCE[0]}")/sync-wsl.sh" bot \
   MultiAccountLoginSmoke MultiRosterSmoke EmergencyCombatSmoke BossStageClearSmoke BossFightSmoke \
   HpSyncSmoke RemoteAttackSmoke WhiffSwingSmoke RangedHitSmoke FreezeSmoke \
   ThunderboltAoeSmoke RangedWhiffSmoke DashSmoke TeleportSmoke EnemyAiSmoke \
-  MapTransition M2BasicMovement
+  MapTransition M2BasicMovement \
+  PartyQuest InventorySmoke DungeonClearSmoke BossGate GuildGrowthSmoke

@@ -59,7 +59,7 @@ internal sealed class MeleeAction : IGameAction
         // AABB precision hitbox — miss면 데미지 스킵.
         if (!attackBox.Intersects(target!.Hitbox)) return true;
 
-        int damage = Formulas.ComputeDamage(attacker.Stats, target.Stats, CombatConstants.BaseDamage);
+        int damage = map.ComputePlayerDamage(attacker, target.Stats);
 
         if (attacker.Stats.Class == CharacterClass.Mage)
         {
