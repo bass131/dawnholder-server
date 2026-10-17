@@ -1,6 +1,6 @@
 # 노트북 SQL Express 시연 DB 도구
 
-상태: 실제 실행·Cleanup·인증서 제거 완료 보고 및 원시 확인. 독립 문서·증거 실사 조건부 통과를 수신하고 조건인 D-1~D-3 정오표 보충을 완료했다. 메인 최종 원문 대조·PR 준비 단계다. 제품 head dfa7c09b, 새 제품 강검증을 발행한 것은 아니며 PR2 생성·병합은 미완료다.
+상태: PR247 병합·Gardener 정산·종료 기록 v3 문서 실사 통과. 새 사용자 결정과 정산 기록은 v3 이후 추가했으며 메인 R-2 대조 대상이다. 종료 기록 PR 병합·최종 종료 점검은 미완료다.
 
 ## 진척 단계
 
@@ -12,10 +12,39 @@
 - [x] PR246 병합
 - [x] 노트북 실제 실행
 - [x] 실증 기록 독립 검증
-- [>] 실증 PR 준비·병합
-- [ ] 종료 점검
+- [x] PR247 병합
+- [>] Gardener·종료 기록·종료 점검
 
 ## 적용 중인 사용자 결정
+
+### 종료 점검 사용자 결정 5건 — 메인 전달 msg_c43d17b37431
+
+메인 pane에 Enter 제출된 사용자 원문이며 이 Core pane의 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) Core 리드 Astra medium 시범 - 이번 목표로 끝내고 Sol xhigh로 되돌릴지 → B 계속 · 2) 작업 방식 개선 - 이어지는 관리자 단계 두 개를 조건부로 한 번에 승인받을지 → A 채택 · 3) 작업 방식 개선 - 관리자 명령을 처음부터 메인 창에서 사용자가 실행하고 UAC 창 확인 안내를 붙일지 → A 채택 · 4) 작업 방식 개선 - 관리자 명령을 「!」 없는 줄로 주고 사용자가 「!」를 먼저 치게 할지 → C 코멘트 「붙혀줘도 괜찮을거같은데」 · 5) 작업 방식 개선 - 보호 자원 전후 비교 도구가 구간별 기대값을 받게 고칠 후보로 올릴지 → A 백로그
+
+메인 해석·적용 범위:
+- Core 리드 Astra medium 시범은 다음 Core 목표에도 계속한다. 이번 목표 종료 뒤 R-8 새 리드도 gpt-6-astra medium이며 다음 목표 종료 점검에서 재평가한다. 현재 런타임의 관측과 문서 기본 배정을 구분한다.
+- 같은 목표 안에서 사용자 승인이 필요한 단계 둘이 이어질 때 선행 성공 조건을 승인 글에 적어 한 번 승인받는다. 뒤 단계는 메인이 앞 단계 성공을 원시로 확인한 뒤에만 실행한다. 목표 전체 포괄 승인·PR 병합 승인에는 적용하지 않는다. 메인이 이 결정부터 적용 중이며 Rules 정본 반영은 BACKLOG 후속이다.
+- 관리자(UAC) 명령은 처음부터 사용자가 메인 창에서 직접 실행한다. 승인 글에 「UAC 창이 안 보이면 작업 표시줄을 본다」, 「안 뜨면 다시 돌리지 말고 멈춘 뒤 알린다」를 넣는다. 실패 원인은 미확정이다. 비전면 프로세스 요청 표시 방식이라는 메인 추정은 원인 확정이 아니며 원인 조사는 후속 후보다. Rules 정본 반영 후보를 등록한다.
+- 「!」 없는 줄을 강제하는 규칙은 채택하지 않는다. 사용자 코멘트 「붙혀줘도 괜찮을거같은데」를 기록하며 해당 반복 규칙 후보는 내린다. 과거 붙여넣기 실패 관측은 보존한다.
+- 전후 비교 도구의 추가·제거·변화 없음 기대를 구간별 인자로 받는 일은 BACKLOG 후보로 등록한다. 구현·착수 승인은 아니다.
+
+### 시연 우선 재정렬과 다음 리허설 범위 승인 — 메인 전달
+
+메인 `msg_0a74577cc569`(2026-10-17T12:16:20Z)와 `msg_f0c846bdcf5c`(12:19:55Z)가 메인 pane Enter 제출 사용자 결정을 전달했다. 이 pane의 직접 사용자 입력으로 격상하지 않는다. 원문은 `.backups/verification/2026-10-16-laptop-sql-express/demo-priority-decision-inbox-20261017.json`과 `rehearsal-scope-decision-inbox-20261017.json`에 보존한다.
+
+> 대시보드 결정 응답: 1) 10-28 시연 준비 - 길드 순환과 지금 있는 한 판 흐름의 실화면 리허설에 힘을 몰지 → A 시연 우선 재정렬
+
+> 대시보드 결정 응답: 1) 계획 검토 - Core 노트북 한 판 흐름 실화면 리허설 → A 승인 (초안 msg_0a74577cc569)
+
+메인 적용 범위: World·Content 길드를 우선하고 Rules는 현재 수정 단위 뒤 10-28 이후로 멈춘다. Core는 이 종료 기록 PR·병합 승인·종료 점검을 마친 뒤, 메인이 R-8에 따라 새 Core 리드(Astra medium 시범 계속)·새 Run으로 다음 목표를 연다. 현재 리드는 리허설 준비를 시작하지 않는다. 승인본은 `C:/Dev/DawnHolder_Dashboard/plans/core-demo-rehearsal-scope-20261017.md`이며 서버와 클라이언트 둘로 접속→마을·파티→던전→보스→보상→저장·재접속을 녹화하고 화면 결함을 기록하는 범위다. Unity 자원은 메인이 배정하며 Content 다음은 준비된 리허설, 아니면 Art 순서다. 새 실행의 DB 재준비·관리자 승인 등은 승인본의 자원과 사용자 손 절을 따른다.
+
+### 우편함 확인과 다음 행동 분리 — 메인 운영 판단
+
+메인 `msg_a99e1cc6047b`(2026-10-17T12:20:56Z)는 Rules·World 작업자의 같은 실수 두 건을 근거로 Rules 정본 반영 전 운영 판단을 전달했다. 사용자 결정으로 격상하지 않는다. 원문은 `.backups/verification/2026-10-16-laptop-sql-express/closeout-pass-and-mailbox-policy-inbox.json`이다. 새 작업자·검증자 계약에 다음 문장을 넣고 진행 중인 작업자에게는 다음 지시 때 붙인다. 이 요청만으로 중단·새 세션을 만들지 않는다.
+
+> 우편함 check·inbox의 반환은 그 결과만 받는 별도 도구 호출로 읽고 해석한 뒤에 다음 행동을 시작한다. check와 실행 명령을 한 셸 호출이나 한 batch로 묶지 않는다.
 
 ### 노트북 PR2 실행 주체 — 메인 전달 msg_60f74e4e5818
 
@@ -141,6 +170,15 @@
 실행자는 직전 hash 일치 후 1→2→3 각 1회, 실패 중단·원시 보존, 단계별 결과를 run과 메인에 보낸다. 단계2 UAC 직전 collect-protection-baseline.ps1 SHA256을 메인에게 알리고 메인은 launch 기록 CollectorSha256과 대조한다(launcher 자체 기대hash 관문 없음). 단계3 WSL 직전도 메인에게 알린다. 단계4 승인안은 단계3 결과와 함께 준비할 수 있으나 실제 실행은 별도 사용자 승인 뒤다. 현재 새 단계 결과는 미수신이다.
 
 ## 재개 지점
+### 재개 — 종료 기록 PR과 메인 대조
+
+다음 첫 일은 종료 기록 PR의 정확 head·CI와 아래 판정 원문을 메인이 R-2 대조하고 사용자에게 해당 head의 병합 승인을 받는 것이다. PR 번호·정확 head·CI는 PR 생성 뒤 메인 전달 및 근거 폴더 `closeout-pr-receipt.json`에 기록한다. 이 문서는 PR 생성 전 정산 시점이며 병합·최종 종료를 완료로 주장하지 않는다.
+
+근거 폴더는 `.backups/verification/2026-10-16-laptop-sql-express/`다. 독립 문서 실사는 v1 차단(#1~#7) → v2 차단(#8) → v3 통과이며 수정은 2회차다. 최종 원문 `closeout-verification-context-report-v3.md`와 고정 입력 `closeout-input-hashes-v3.json`을 보존한다. #1 후보 행 삭제와 #8 과거 빈 줄 삭제의 메모/실제 불일치는 각각 메인 `msg_09a47d61d35a`·`msg_fada7db657b2`로 알렸고 실제 복원·신규 독립 검증으로 해소했다. #7 과거 시계 누락은 소급하지 않았다. 검증자 정산·종료 원시는 `closeout-verification-release-v3.json`·`closeout-verification-close-v3.json`이다.
+
+v3 통과 후 사용자 결정 2건·메인 운영 판단 1건·상태 정산을 추가했다. 이 추가분은 v3 판정 범위 밖이며 `closeout-goal-fixed-v3.md` 대비 `closeout-post-v3.diff`로 메인이 별도 대조한다. 제품·시험·BACKLOG·CURRENT는 v3 이후 변경하지 않았다. 비차단 관찰 O-7은 원문에 남겨 차기 판단으로 넘긴다. 종료 PR → 메인 R-2 → 사용자 정확 head 병합 승인 → 종료 점검 → R-8 순서이며 새 목표는 새 리드에게 인계한다.
+
+아래 Cleanup 등의 ‘최신/현재’ 표현은 이전 시점의 이력이다.
 
 ### 최신 결정 — Cleanup 승인·인증서 제거 조건부 승인
 
@@ -604,3 +642,30 @@ G-1 원천은 메인 pane Claude Code 대화 기록과 msg_4c6494ea1fec 본문�
 ### PR 준비와 리드 시범 관측
 메인 msg_21104cba52c2는 PR 본문을 수용하고 회고 보충→goal 정산 commit→push→PR 생성을 지시했다. 병합은 메인 전용이며 각 PR의 정확 head에 대한 사용자 명시 승인 전 실행하지 않는다. 제품/시험 bytes는 dfa7c09b의 검증값을 유지하고 이번 커밋은 goal 정산만 담는다.
 Astra medium 리드 관측: 외부 구현·독립 검증·실행 주체 분리와 불일치 보고를 수행했다. 리드의 초기 출력 위치안 교정, 수집 출력 스트림 충돌, DS-1 format 완료 전 턴 종료의 진행 공백, consumer_fenced 뒤 우편함 전환 지연이 있었다. 최종 보고 오류3건은 독립 검증에서 추가 검출됐으며 리드/메인 검토가 이를 대신하지 못했다. 모델별 동일조건 시간·토큰·비용 비교는 미측정이다. 실증/독립감사 시간은 리드 모델 속도로 환산하지 않는다. 상세 자료는 .backups/verification/2026-10-16-laptop-sql-express/astra-medium-trial-observations.md이며 시범 유지·개선 후보 채택·병합 여부는 메인이 사용자에게 함께 묻는다.
+
+## PR247 병합과 재개 — 메인 msg_57eca6475e79
+PR247 - 노트북 SQL Express 호환성 수정 및 실증 기록은 head 0c7f05dba0d8c464be31fdf77ba3679e7508b212에 대한 메인 pane 사용자 승인 뒤 메인이 병합했다. 리드는 GitHub 조회로 MERGED, merge commit 63aab6bacfb851deabe05b67995a0ae8705ab744, mergedAt 2026-10-17T10:23:48Z를 확인했다. 리드는 병합하지 않았다.
+메인 전달 경위: 첫 승인은 노트북의 메인 checkout 표식 부재로 막혔고 사용자가 표식을 직접 만든 뒤, 기존 승인이 기록되지 않아 새 승인 줄 제출을 받아 성공했다. 메인 checkout의 남은 0바이트 index.lock도 메인이 git 프로세스 부재 확인 뒤 정리했다고 전달했다. 이 리드가 해당 조작을 수행하거나 독립 실사한 것은 아니다.
+사용자 일시정지/재개 원문은 메인 전달이다: 「일단 결정대기 저렇게 냅둬두고 작업 다 끝났으면 리드급들 정리 다 해주고 재개 시점 정리해놔줘」, 「OK, 이어서 마무리해보자」. 이전 pane은 메인이 04:00:03Z 닫았고 같은 대화를 Astra medium으로 재개했다. 재개 기동·화면 원시는 `.backups/verification/2026-10-16-laptop-sql-express/main-lead-resume-create-20261017.json`과 `main-lead-resume-screen4-20261017.json`에 보존한다. 실제 backend 모델 unknown.
+종료 기록 branch는 최신 main 63aab6b 기준 docs/laptop-sql-express-closeout-20261017. 다음은 신규 Opus Gardener→결과 포함 종료 기록 PR 하나→메인 R-2→사용자 해당 PR 병합 승인→종료 점검→R-8이다. 이 메시지 시점(10:25:59Z)에 답 없던 5건은 Core 리드 Astra medium 시범 종료, 조건부 동시 승인, 관리자 명령의 메인 창 실행, ! 없는 명령 줄, 비교 도구의 구간별 기대값 BACKLOG다. 제안·관측은 결정이 아니다. 메인이 결정 원문을 전달하기 전 종료 기록 PR을 생성하지 않는다. 다음 goal을 시작하지 않는다.
+## 종료 Gardener 결과와 남은 절차
+신규 Gardener(지정 claude-opus-5-5 xhigh, 최초 화면 Opus 5.5 xhigh 관측, 기존 terminal 연결 launch 모델값 null, backend 실제 모델 unknown) task_2801803b94c9/ctx_ddb0f4d71c7c 완료 msg_e630bf1f8ded. 원문 `.backups/verification/2026-10-16-laptop-sql-express/gardener-context-report.md` SHA256 **3C8F66163CF9EC9505A4E23E35C1871ED0F075B512F1116A0F357903858EF4EB**. 읽기 전용 점검이며 제품 시험·CI·SQL 재실행이 아니다. 최초 보고명은 memo-first hook에 거부돼 쓰기0, 메인 msg_0279dbea2d92 확인으로 한 파일 안의 맥락메모/결과를 허용하는 이름으로 보충했다. 원계약·보충·거부 이력을 보존한다. 메인은 question 필터 누락으로 질문을 약15분 늦게 봤다고 밝혔고 이후 대기에 question을 포함한다고 했다. 원인과 조치는 메인 전달이다.
+
+1. **데이터베이스 오프라인 시험 실행기 등록 드리프트:** 보고는 현재22개 suite 중12개가 수기 목록에 없고 두 goal 연속 발생했다고 관측했다. CI4개 통과는 이 suite들의 실행 통과가 아니다. 우선 목록/이유 있는 제외 목록의 드리프트 검사, suite별 인자 지원, 기준선 실패 분류·runner OS 결정 후 CI 연결 순서를 제안한다. 원시의 기준선 실패 원인·전체 실행 비용은 미확인이다.
+2. **PowerShell builder 멤버 대입 반복:** 제품·시험·Git 밖 harness 세 곳에서 같은 원인3회를 확인했다. AST warning과 양성/음성 fixture, 임의 경로 자기점검을 제안한다. 기존 powershell-dotnet-boundary-checklist에 연결할 근거이며 채택/정본 검사 구현은 아니다.
+
+두 Gardener 후보는 사용자 채택 전 제안으로 이 goal에 보존하고 메인에 전달한다. 미답5건을 고정 입력으로 점검한 보고이므로 이후 사용자 결정을 반영한 판정으로 표현하지 않는다. 사용자 결정에 따라 등록하는 Rules 정본·비교도구 후보와 구분한다. 기존 laptop-sql-express-demo-tool 후보의 최초 6필드는 BACKLOG 원래 행에 보존하고 상태만 이 goal로 승격한 링크로 바꾼다. 진행 결과는 이 goal이 소유한다.
+Gardener 정산·동일 pane 종료 근거는 `.backups/verification/2026-10-16-laptop-sql-express/gardener-release-v1.json`·`gardener-close-v1.json`과 위 Gardener 원문이다. release는 retained/external_terminal, close는 ptyKilled=true이며 재사용하지 않는다.
+
+### 리드 시범 측정과 한계
+시범 자료는 `.backups/verification/2026-10-16-laptop-sql-express/astra-medium-trial-observations.md`다. 메인 원시 `.backups/verification/2026-10-16-laptop-sql-express/main-lead-token-survey-20261017.out`의 rollout 01a143f1-57a6-7530-8b80-72ec7c081049 행을 리드가 직접 읽었다. 2026-10-16T09:03:08.684Z~2026-10-17T03:34:04.029Z, 18.5시간·호출1065·입력150.3M·캐시148.1M·출력0.3M이다. 캐시98.5%는 메인 msg_c43d17b37431의 집계값이며 이 출력의 반올림 M값으로 정밀 비율을 다시 계산하지 않는다. 경과18.5시간은 대기 포함 기간이고 순수 작업시간이 아니다. 이후 재개/Gardener를 포함한 최종 누적값도 아니다. 메인은 Sol rollout0건이라 비교 불가라고 보고했다. 다른 프로젝트/xhigh 세션을 이 리드 사용량에 합치지 않는다. 모델별 성능·비용 우열이나 절감률은 판단할 근거가 없다.
+
+남은 절차: 변경 문서 독립 실사→결과 포함 종료 기록 PR 하나→메인 R-2→사용자 정확 head 병합 승인→종료 점검→R-8. 다음 목표는 자동 시작하지 않는다.
+
+## 다음 계획 후보
+
+- BACKLOG `conditional-admin-approval-canon`: 채택된 조건부 승인 방식의 Rules 정본 반영 후보.
+- BACKLOG `main-pane-uac-canon`: 채택된 메인 창 실행·UAC 안내의 Rules 정본 반영 후보.
+- BACKLOG `protected-baseline-interval-expectations`: 사용자 결정으로 등록한 구간별 기대값 후보.
+
+Gardener의 두 제안은 위 「종료 Gardener 결과와 남은 절차」에 보존한 채 사용자 채택을 기다리며, 신규 후보 채택·구현으로 표현하지 않는다.
