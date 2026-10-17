@@ -434,6 +434,8 @@ namespace Dawnholder.Client.Tests
             Assert.IsNull(failedRequests.LastResult, "R7 no result, in particular no Success, is shown");
             Assert.IsFalse(failedRequests.CanUse(ItemId.CoinPouch), "R7 the closed connection offers nothing");
 
+            LogAssert.Expect(LogType.Error, "Entry fixture LocalPlayerMovement: Destroy may not be called from edit mode! " +
+                "Use DestroyImmediate instead.\nDestroying an object in edit mode destroys it permanently");
             NetworkService.ResetGlobalSessionMirrors();
             _views.Dispose();
             _fixtures.Remove(_views);
@@ -619,6 +621,7 @@ namespace Dawnholder.Client.Tests
             _session.Publish();
             SessionTestTools.Handshake(_session, _queue);
             _views = Track(new EntryBindingFixture(_session));
+            _views.Admit(_queue, _sockets);
         }
     }
 }

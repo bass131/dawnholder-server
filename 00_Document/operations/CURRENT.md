@@ -2,7 +2,7 @@
 
 상태·결정·남은 일은 각 goal의 재개 안내에서 확인한다. 아직 병합되지 않은 goal은 아래 해당 worktree에서 읽는다. 다른 worktree의 로컬 기록이 이 checkout에도 있다고 가정하지 않는다.
 
-- Core: [실제 SQL 설치·저장소 통합](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `feat/persistence-engine-judgment-20261006`
+- Core: [노트북 SQL Express 시연 DB 도구](../../01_Phases/goals/2026-10-16-laptop-sql-express/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `feat/laptop-sql-express-20261016`
 
 - <a id="content-worktree"></a>Content: [길드 현황·거점 성장·대장간 화면](../../01_Phases/goals/2026-10-15-guild-client-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `plan/content-guild-ui-20261015`
 

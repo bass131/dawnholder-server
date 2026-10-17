@@ -550,6 +550,7 @@ namespace Dawnholder.Client.Tests
             session.Publish();
             SessionTestTools.Handshake(session, _queue);
             EntryBindingFixture views = Track(new EntryBindingFixture(session));
+            views.Admit(_queue, sockets);
             return (session, sockets, views);
         }
 

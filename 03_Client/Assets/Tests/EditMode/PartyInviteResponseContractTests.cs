@@ -75,6 +75,7 @@ namespace Dawnholder.Client.Tests
         internal void Ready()
         {
             SessionTestTools.Handshake(Session, Queue);
+            Views.Admit(Queue, Sockets);
             Views.Begin();
             int readyFrom = Delayed.Count;
             Views.Ready();

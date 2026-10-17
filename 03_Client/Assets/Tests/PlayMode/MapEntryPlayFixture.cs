@@ -93,6 +93,19 @@ namespace Dawnholder.Client.Tests.PlayMode
                         Send(new S_HandshakeResult { ok = true, serverVersion = ProtocolVersion.Current, reason = "" }.Write());
                     else if (_scriptedServer && id == PacketID.C_Login)
                         Send(new S_LoginResult { result = (byte)LoginResult.Accepted }.Write());
+                    else if (_scriptedServer && id == PacketID.C_CharacterSelect)
+                    {
+                        // Same as the server's memory path: CharacterSelectHandler keeps Knight/Mage only, then
+                        // GameSession.SubmitCharacterSelect/ApplyAdmission load that class before any EnterMap.
+                        var select = new C_CharacterSelect();
+                        select.Read(new ArraySegment<byte>(frame));
+                        if (select.characterClass == (byte)CharacterClass.Knight ||
+                            select.characterClass == (byte)CharacterClass.Mage)
+                        {
+                            Send(new S_CharacterLoadResult { result = (byte)CharacterLoadStatus.Success,
+                                characterClass = select.characterClass }.Write());
+                        }
+                    }
                     else if (!_scriptedServer && id == PacketID.S_HandshakeResult)
                     {
                         var handshake = new S_HandshakeResult();
