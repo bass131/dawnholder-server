@@ -444,7 +444,7 @@ Assert-Throws -Name 'JSON rows: truncated array rejected by the parser' -Pattern
     -Action { ConvertFrom-DatabaseJsonRows -Json '[{"Version":1}' }
 
 # ---- Known-answer source identity, fixed outside PowerShell (Node crypto, verifier evidence).
-# Expected values do not come from product or TestSupport code: CRLF->LF, UTF-8 source, UTF-16LE definition.
+# Expected values do not come from product or TestSupport code: UTF-8 source, explicit UTF-16LE stored text.
 $knownPath = Join-Path $script:SuiteRoot 'known-answer.sql'
 $knownText = "CREATE PROCEDURE dh.Probe`r`nAS SELECT N'" + [char]0xAC00 + [char]0x00E9 + "';`r`n"
 [IO.File]::WriteAllText($knownPath, $knownText, (New-Object Text.UTF8Encoding($false)))
@@ -453,13 +453,65 @@ $knownSource = '8CE8896144B87C9159CD5623A3F672B4216D0BEA5D4C9356F4571A8C07C8F1FA
 $knownDefinition = 'D12E32D985BB1C8D43033D21925825793DC724C2527E40509795ADE2433338E9'
 Assert-Equal -Name 'known answer: product source checksum' -Expected $knownSource `
     -Actual (Get-MigrationHash -Sql $knownSql)
+$knownStored = ConvertTo-ExpectedModuleDefinition -Sql $knownSql
+Assert-Equal -Name 'known answer: CREATE PROCEDURE input stays unchanged' -Expected $knownSql -Actual $knownStored
 Assert-Equal -Name 'known answer: product definition checksum' -Expected $knownDefinition `
-    -Actual (Get-ModuleDefinitionHash -Sql $knownSql)
-Assert-Equal -Name 'known answer: product definition bytes' -Expected 86 -Actual ($knownSql.Length * 2)
+    -Actual (Get-ModuleDefinitionHash -Sql $knownStored)
+Assert-Equal -Name 'known answer: product definition bytes' -Expected 86 `
+    -Actual ([Text.Encoding]::Unicode.GetByteCount($knownStored))
 $knownValues = Get-ExpectedModuleValues -Path $knownPath
 Assert-True -Name 'known answer: test recomputation helper agrees with the fixed values' -Condition (
     $knownValues.SourceChecksum -ceq $knownSource -and $knownValues.DefinitionChecksum -ceq $knownDefinition -and
     $knownValues.DefinitionBytes -eq 86)
+
+# Node crypto hashes literal expected text; the body occurrence must survive the leading header conversion.
+$knownCases = @(
+    @{
+        Name = 'header'
+        Text = "CREATE OR ALTER PROCEDURE dh.Probe`r`nAS SELECT N'" + [char]0xAC00 + [char]0x00E9 + "';`r`n"
+        Definition = "CREATE   PROCEDURE dh.Probe`nAS SELECT N'" + [char]0xAC00 + [char]0x00E9 + "';`n"
+        SourceChecksum = '9809B40CBA623552A177164BE02B797EB8BF4B6A567B4CD165671C0D792C4EEB'
+        DefinitionChecksum = '182F9E0AF130CC7D3FDE00A80C62D925A57E43505721CA58EDE5037BA26E0034'
+        DefinitionBytes = 90
+    },
+    @{
+        Name = 'embedded'
+        Text = "CREATE OR ALTER PROCEDURE dh.Probe`r`nAS SELECT N'CREATE OR ALTER preserved';`r`n"
+        Definition = "CREATE   PROCEDURE dh.Probe`nAS SELECT N'CREATE OR ALTER preserved';`n"
+        SourceChecksum = '6373A396DA36DA77A503D74E0FA17F93F6DC9E9DC8569D2FD09A52311C6C2ED8'
+        DefinitionChecksum = 'CB89D8675BBC3F17D3E1EC3FD3B0EE5AAB8DD78FD62C366E85EA5D903BE09A59'
+        DefinitionBytes = 136
+    }
+)
+foreach ($case in $knownCases) {
+    $path = Join-Path $script:SuiteRoot ('known-answer-' + $case.Name + '.sql')
+    [IO.File]::WriteAllText($path, $case.Text, (New-Object Text.UTF8Encoding($false)))
+    $sql = Get-MigrationText -Path $path
+    $definition = ConvertTo-ExpectedModuleDefinition -Sql $sql
+    Assert-Equal -Name ("known answer $($case.Name): exact stored text") `
+        -Expected $case.Definition -Actual $definition
+    Assert-Equal -Name ("known answer $($case.Name): source checksum") `
+        -Expected $case.SourceChecksum -Actual (Get-MigrationHash -Sql $sql)
+    Assert-Equal -Name ("known answer $($case.Name): definition checksum") `
+        -Expected $case.DefinitionChecksum -Actual (Get-ModuleDefinitionHash -Sql $definition)
+    Assert-Equal -Name ("known answer $($case.Name): definition bytes") `
+        -Expected $case.DefinitionBytes -Actual ([Text.Encoding]::Unicode.GetByteCount($definition))
+    $values = Get-ExpectedModuleValues -Path $path
+    Assert-True -Name ("known answer $($case.Name): fixture helper matches fixed Node values") -Condition (
+        $values.SourceChecksum -ceq $case.SourceChecksum -and
+        $values.DefinitionChecksum -ceq $case.DefinitionChecksum -and $values.DefinitionBytes -eq $case.DefinitionBytes)
+}
+
+foreach ($case in @(
+        @{ Name = 'empty'; Text = '' },
+        @{ Name = 'lowercase'; Text = 'create or alter PROCEDURE dh.Probe' },
+        @{ Name = 'leading space'; Text = ' CREATE OR ALTER PROCEDURE dh.Probe' },
+        @{ Name = 'incomplete prefix'; Text = 'CREATE OR ALTER' },
+        @{ Name = 'body only'; Text = "SELECT N'CREATE OR ALTER preserved';" }
+    )) {
+    Assert-Equal -Name ("header conversion leaves $($case.Name) unchanged") -Expected $case.Text `
+        -Actual (ConvertTo-ExpectedModuleDefinition -Sql $case.Text)
+}
 
 $dbNull = Get-ThrownMessage -Action { ConvertFrom-DatabaseJsonRows -Json ([DBNull]::Value) }
 Add-TestResult -Name 'JSON rows: DBNull scalar (engine form for an empty scalar FOR JSON subquery is unverified)' -Outcome OBSERVED `

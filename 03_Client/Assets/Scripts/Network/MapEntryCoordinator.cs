@@ -11,18 +11,20 @@ namespace Dawnholder.Client.Network
         readonly Action<int, int> _applyHp;
         readonly Action<Exception> _failed;
         readonly Action<MapEntryCoordinator> _finishBindings;
+        readonly Func<bool> _hasAuthority;
         bool _sceneReady;
         bool _playerReady;
         bool _registriesReady;
         bool _committing;
 
         public MapEntryCoordinator(Action<MapEntryCoordinator> commit, Action<int, int> applyHp,
-            Action<Exception> failed, Action<MapEntryCoordinator> finishBindings = null)
+            Action<Exception> failed, Action<MapEntryCoordinator> finishBindings = null, Func<bool> hasAuthority = null)
         {
             _commit = commit ?? throw new ArgumentNullException(nameof(commit));
             _applyHp = applyHp ?? throw new ArgumentNullException(nameof(applyHp));
             _failed = failed ?? throw new ArgumentNullException(nameof(failed));
             _finishBindings = finishBindings;
+            _hasAuthority = hasAuthority ?? (() => true);
         }
 
         // Completion observers see Ready, after HP and roster binding have finished.
@@ -97,7 +99,7 @@ namespace Dawnholder.Client.Network
 
         void TryCommit()
         {
-            if (State != MapEntryState.Entering || _committing || !_sceneReady) return;
+            if (State != MapEntryState.Entering || _committing || !_sceneReady || !_hasAuthority()) return;
             if (RequiresPlayer && (!_playerReady || !_registriesReady || !HasHp)) return;
             _committing = true;
             try

@@ -64,11 +64,14 @@ namespace Dawnholder.Client.UI
             ResolveSkillSlots();
         }
 
+        void OnEnable() => ClassLoadout.AuthorityChanged += ResolveSkillSlots;
+        void OnDisable() => ClassLoadout.AuthorityChanged -= ResolveSkillSlots;
+
         // 선택 클래스 → Q/E 스킬 결정. ClientSkillCatalog.SkillKeyMap이 단일 진실.
         void ResolveSkillSlots()
         {
-            CharacterClass myClass = ClassLoadout.SessionSelectedClass
-                ?? (CharacterClass)ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
+            if (!ClassLoadout.ServerClass.HasValue) return;
+            CharacterClass myClass = (CharacterClass)ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
 
             if (ClientSkillCatalog.SkillKeyMap.TryGetValue(myClass, out (SkillId q, SkillId e) qe))
             {
@@ -83,11 +86,8 @@ namespace Dawnholder.Client.UI
             }
 
             // None 슬롯(Knight E)은 즉시 숨김 — GameObject 비활성으로 레이아웃에서도 제거.
-            if (_eSkill == SkillId.None)
-            {
-                if (_eCooldownImage != null) _eCooldownImage.gameObject.SetActive(false);
-                if (_eCooldownText != null) _eCooldownText.gameObject.SetActive(false);
-            }
+            if (_eCooldownImage != null) _eCooldownImage.gameObject.SetActive(_eSkill != SkillId.None);
+            if (_eCooldownText != null) _eCooldownText.gameObject.SetActive(_eSkill != SkillId.None);
 
             // 아이콘 적용 — _iconSet 미할당이면 sprite null → enabled false(빈 칸).
             ApplyIcon(_qIconImage, _qSkill);

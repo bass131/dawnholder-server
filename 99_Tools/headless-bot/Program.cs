@@ -2,6 +2,7 @@ using System.Net;
 using Dawnholder.Client.Net;
 using Dawnholder.Tools.HeadlessBot;
 using Dawnholder.Tools.HeadlessBot.Scenarios;
+using Dawnholder.Tools.HeadlessBot.Scenarios.Persistence;
 
 // 봇 콘솔 entry. 인자 파싱 → 시나리오 분기 → 결과 출력 + exit code.
 //
@@ -28,6 +29,8 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 string host = "127.0.0.1";
 int port = 7777;
 string scenarioName = "smoke";
+string persistenceAccount = "";
+string persistencePhase = "";
 
 for (int i = 0; i < args.Length - 1; i++)
 {
@@ -36,11 +39,27 @@ for (int i = 0; i < args.Length - 1; i++)
         case "--host": host = args[i + 1]; break;
         case "--port": port = int.Parse(args[i + 1]); break;
         case "--scenario": scenarioName = args[i + 1]; break;
+        case "--account": persistenceAccount = args[i + 1]; break;
+        case "--phase": persistencePhase = args[i + 1]; break;
     }
 }
 
 Console.WriteLine($"=== HeadlessBot ===");
 Console.WriteLine($"target: {host}:{port}  scenario: {scenarioName}");
+
+if (string.Equals(scenarioName, "PersistenceReconnect", StringComparison.OrdinalIgnoreCase))
+{
+    var result = await PersistenceReconnectScenario.Run(host, port, persistenceAccount);
+    Console.WriteLine($"[Bot] PersistenceReconnect: success={result.Success} reason={result.Reason}");
+    return result.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "PersistenceRestart", StringComparison.OrdinalIgnoreCase))
+{
+    var result = await PersistenceRestartScenario.Run(host, port, persistenceAccount, persistencePhase);
+    Console.WriteLine($"[Bot] PersistenceRestart: success={result.Success} reason={result.Reason}");
+    return result.Success ? 0 : 1;
+}
 
 if (string.Equals(scenarioName, "MultiAccountLoginSmoke", StringComparison.OrdinalIgnoreCase))
 {

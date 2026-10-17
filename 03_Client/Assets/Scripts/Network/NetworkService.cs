@@ -51,7 +51,7 @@ namespace Dawnholder.Client.Network
             Instance = this;
             var connector = new Connector();
             _lifetime = new ClientConnectionLifetime(connector.BeginConnect,
-                MainThreadDispatcher.Enqueue, current => new UnityClientSession(current), ResetSessionMirrors);
+                MainThreadDispatcher.Enqueue, CreateSession, ResetSessionMirrors);
             _lifetime.LoginRejected += HandleLoginRejected;
         }
 
@@ -62,7 +62,7 @@ namespace Dawnholder.Client.Network
 
             int classValue = characterClassOverride != ClassPrefsInvalid
                 ? characterClassOverride
-                : ClassLoadout.GetSelectedClassValue(ClassPrefsInvalid);
+                : ClassLoadout.GetMenuSelectedClassValue(ClassPrefsInvalid);
             if (!IsValidClassValue(classValue))
             {
                 Debug.LogWarning("[NetworkService] 캐릭터 선택값이 없어 MainMenu로 복귀합니다.");
@@ -89,8 +89,29 @@ namespace Dawnholder.Client.Network
             var endPoint = new IPEndPoint(ip, _serverPort);
             _reportedError = null;
             _accumSec = 0f;
+            ClassLoadout.ResetServerClass();
             if (_lifetime.Connect(endPoint, (byte)classValue, accountName))
+            {
+                MainMenuNotice.Set("Loading character...");
                 Debug.Log($"[NetworkService] Connect 시도 → {endPoint} (class={classValue})");
+            }
+        }
+
+        IClientConnectionSession CreateSession(Func<bool> current)
+        {
+            var session = new UnityClientSession(current);
+            session.CharacterLoadRejected += HandleCharacterLoadRejected;
+            return session;
+        }
+
+        void HandleCharacterLoadRejected(CharacterLoadStatus status)
+        {
+            MainMenuNotice.Set(status == CharacterLoadStatus.Busy
+                ? "Character busy. Try reconnecting shortly."
+                : status == CharacterLoadStatus.RecoveryRequired
+                    ? "Character recovery required."
+                    : "Could not load saved character.");
+            ReturnToMainMenu();
         }
 
         public void Disconnect() => _lifetime?.Disconnect();
@@ -112,6 +133,7 @@ namespace Dawnholder.Client.Network
         // 서버의 상태는 변경하지 않는다. 끝난 연결의 client mirror만 비운다.
         public static void ResetGlobalSessionMirrors()
         {
+            ClassLoadout.ResetServerClass();
             var errors = new List<Exception>();
             void Reset(Action reset)
             {
@@ -123,7 +145,14 @@ namespace Dawnholder.Client.Network
             var inventory = InventoryState.Instance;
             var dungeonReward = DungeonClearRewardState.Instance;
             var inventoryRequests = UnityClientSession.Instance?.Inventory;
-            Reset(() => LocalPlayerMovement.Instance?.SuspendForMapEntry());
+            Reset(() =>
+            {
+                var player = LocalPlayerMovement.Instance;
+                if (player == null) return;
+                player.SuspendForMapEntry();
+                // A new authority result must create visuals/prediction for that connection's class.
+                Destroy(player.gameObject);
+            });
             Reset(() => party?.ResetSessionValues());
             Reset(() => quest?.ResetSessionValues());
             Reset(() => inventory?.ResetSessionValues());

@@ -102,11 +102,13 @@ function Read-ModuleBundle([string]$DatabaseRoot) {
                 Sql = $sql
             }
         } else {
+            $definition = ConvertTo-ExpectedModuleDefinition -Sql $sql
             if ($known.Count -ne 1 -or $entry.ObjectName -cne ('dh.' + $known[0].Name) -or
                 $entry.Kind -cne $known[0].Kind -or $seen.ContainsKey($entry.ObjectName) -or
-                $entry.DefinitionBytes -isnot [int] -or $entry.DefinitionBytes -ne $sql.Length * 2 -or
+                $entry.DefinitionBytes -isnot [int] -or
+                $entry.DefinitionBytes -ne [Text.Encoding]::Unicode.GetByteCount($definition) -or
                 $entry.DefinitionChecksum -cnotmatch '^[0-9A-F]{64}$' -or
-                (Get-ModuleDefinitionHash -Sql $sql) -cne $entry.DefinitionChecksum) {
+                (Get-ModuleDefinitionHash -Sql $definition) -cne $entry.DefinitionChecksum) {
                 throw "Module object/kind/expected definition mismatch: $($entry.Path)."
             }
             $ddlKind = if ($entry.Kind -ceq 'FN') { 'FUNCTION' } else { 'PROCEDURE' }

@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net;
 using Dawnholder.Server.GameServer.Loop;
+using Dawnholder.Server.GameServer.Persistence;
 using Dawnholder.Server.GameServer.Sessions;
 using Dawnholder.Server.Network;
 
@@ -18,6 +19,7 @@ public sealed class ServerHost : IDisposable
     bool _worldStarted;
     bool _stopped;
     int _stopping;
+    Task? _acceptStop;
 
     public ServerHost(GameWorld world, IPEndPoint endPoint)
     {
@@ -42,7 +44,7 @@ public sealed class ServerHost : IDisposable
             }
             catch (Exception startError)
             {
-                try { StopCore(TimeSpan.FromSeconds(2)); }
+                try { StopCore(PersistenceDeadline.FromBudget(TimeProvider.System, TimeSpan.FromSeconds(2))); }
                 catch (Exception stopError) { throw new AggregateException(startError, stopError); }
                 throw;
             }
@@ -53,7 +55,11 @@ public sealed class ServerHost : IDisposable
     {
         if (_world.Scheduler.IsTickThread)
             throw new InvalidOperationException("ServerHost.Stop은 틱 밖에서 호출해야 합니다.");
-        lock (_gate) StopCore(timeout ?? TimeSpan.FromSeconds(2));
+        PersistenceDeadline deadline = PersistenceDeadline.FromBudget(TimeProvider.System, timeout ?? TimeSpan.FromSeconds(2));
+        if (!Monitor.TryEnter(_gate, deadline.GetRemaining()))
+            throw new TimeoutException("서버 수명 전환이 아직 완료되지 않았습니다.");
+        try { StopCore(deadline); }
+        finally { Monitor.Exit(_gate); }
     }
 
     public void Dispose() => Stop();
@@ -74,12 +80,18 @@ public sealed class ServerHost : IDisposable
         _sessions.TryRemove(session, out _);
     }
 
-    void StopCore(TimeSpan timeout)
+    void StopCore(PersistenceDeadline deadline)
     {
         if (_stopped) return;
         Volatile.Write(ref _stopping, 1);
         Exception? acceptFailure = null;
-        try { _listener.Stop(timeout); }
+        // Listener.Stop has its own internal waits. Bound the tracked accept-stop task by this one host deadline.
+        _acceptStop ??= Task.Run(() => _listener.Stop(deadline.GetRemaining()));
+        try
+        {
+            if (!_acceptStop.Wait(deadline.GetRemaining()))
+                throw new TimeoutException("접속 수신 종료가 아직 완료되지 않았습니다.");
+        }
         catch (AggregateException ex) when (_listener.Completion.IsCompleted)
         {
             acceptFailure = ex;
@@ -97,12 +109,14 @@ public sealed class ServerHost : IDisposable
             if (acceptFailure != null) errors.Add(acceptFailure);
             throw new AggregateException("연결 해제에 실패했습니다.", errors);
         }
-        if (!Task.WhenAll(sessions.Select(session => session.DisconnectCompleted)).Wait(timeout))
+        if (!Task.WhenAll(sessions.Select(session => session.DisconnectCompleted)).Wait(deadline.GetRemaining()))
             throw new TimeoutException("연결 해제가 아직 완료되지 않았습니다.");
 
-        if (_worldStarted && !_world.FlushSessionClosuresAsync().Wait(timeout))
+        if (_worldStarted && !_world.FlushSessionClosuresAsync().Wait(deadline.GetRemaining()))
             throw new TimeoutException("월드의 세션 해제가 아직 완료되지 않았습니다.");
-        _world.Stop(timeout);
+        if (_worldStarted && !_world.FlushPersistenceClosuresAsync(deadline).Wait(deadline.GetRemaining()))
+            throw new TimeoutException("영속성 종료의 확정이 아직 완료되지 않았습니다.");
+        _world.Stop(deadline.GetRemaining());
         _worldStarted = false;
         _stopped = true;
         if (acceptFailure != null)

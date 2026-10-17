@@ -18,6 +18,7 @@ internal sealed class CharacterSelectHandler : IPacketHandler
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
+        if (buffer.Count != 5) return;
         if (!session.IsLoggedIn)
         {
             Console.WriteLine("[Trust] CharacterSelect before login — dropped");
@@ -44,10 +45,6 @@ internal sealed class CharacterSelectHandler : IPacketHandler
         }
 
         // 통과: 서버가 stats 박음 (헌법 #1).
-        session.SetCharacterClass(pkt.characterClass);
-
-        // handshake + class 선택 양쪽 충족 시에만 EnterGameWorld() 실행 (idempotent).
-        // 클라가 C_CharacterSelect 없이 다른 입력을 보내도 _enteredWorld=false라 월드 진입 안 됨.
-        session.EnterGameWorldIfReady();
+        session.SubmitCharacterSelect(pkt.characterClass);
     }
 }

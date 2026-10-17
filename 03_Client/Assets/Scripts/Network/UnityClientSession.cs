@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using Dawnholder.Client.Combat;
+using Dawnholder.Client.Bootstrap;
+using Dawnholder.Client.Network.CharacterLoad;
 using Dawnholder.Client.Audio;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.UI;
@@ -44,9 +46,12 @@ namespace Dawnholder.Client.Network
         readonly Action<Action, float> _postDelayed;
         int _closed;
         bool _cleaned;
+        bool _characterSelectSent;
         public bool IsClosed => Volatile.Read(ref _closed) != 0 || IsDisconnected;
         bool CanApply => !IsClosed && _isCurrent();
         public MapEntryCoordinator Entry { get; }
+        public CharacterLoadAuthority CharacterLoad { get; } = new CharacterLoadAuthority();
+        public event Action<CharacterLoadStatus> CharacterLoadRejected;
         public InventoryRequestController Inventory { get; }
         // Client presentation, owned by this connection: InventoryPanel changes it on I input.
         // New sessions start closed; map entries keep it, and Cleanup unpublishes the finished session.
@@ -56,7 +61,7 @@ namespace Dawnholder.Client.Network
         SceneTransition _sceneLoader;
         long _sceneRequestId;
         HudController _hud;
-        public bool CanSendGameplay => CanApply && HandshakeOk && Entry.IsGameplayReady;
+        public bool CanSendGameplay => CanApply && HandshakeOk && CharacterLoad.IsSuccess && Entry.IsGameplayReady;
         public bool CanControlPlayer(LocalPlayerMovement player) => CanSendGameplay && _entryPlayer == player;
         public bool IsCurrentEntry(long epoch) => CanApply && Entry.IsCurrent(epoch);
         public event Action Closed;
@@ -100,6 +105,7 @@ namespace Dawnholder.Client.Network
             {
                 { PacketID.S_HandshakeResult,   new HandshakeResultHandler() },
                 { PacketID.S_LoginResult,       new LoginResultHandler() },
+                { PacketID.S_CharacterLoadResult, new CharacterLoadResultHandler() },
                 { PacketID.S_Pong,              new PongHandler() },
                 { PacketID.S_EnterMap,          new EnterMapHandler() },
                 { PacketID.S_Snapshot,          new SnapshotHandler() },
@@ -141,7 +147,7 @@ namespace Dawnholder.Client.Network
             _post = post ?? MainThreadDispatcher.Enqueue;
             _postDelayed = postDelayed ?? MainThreadDispatcher.EnqueueDelayed;
             Entry = new MapEntryCoordinator(CommitEntry, ApplyEntryHp, FailEntry,
-                entry => { if (entry.RequiresPlayer) RosterBuffer.Drain(); });
+                entry => { if (entry.RequiresPlayer) RosterBuffer.Drain(); }, () => CharacterLoad.IsSuccess);
             RosterBuffer = new RosterTransitionBuffer(() => CanApply);
             // Response time and simulated transmission are independent execution boundaries.
             Inventory = new InventoryRequestController(this, postInventoryTimeout);
@@ -170,7 +176,8 @@ namespace Dawnholder.Client.Network
 
         public void SendCharacterSelect(byte characterClass)
         {
-            if (!CanApply || !HandshakeOk) return;
+            if (!CanApply || !HandshakeOk || _characterSelectSent || characterClass > (byte)CharacterClass.Mage) return;
+            _characterSelectSent = true;
             Send(new C_CharacterSelect { characterClass = characterClass }.Write());
         }
 
@@ -198,7 +205,7 @@ namespace Dawnholder.Client.Network
 
         public bool BeginMapEntry(byte mapId, float x, float y, bool initial = false)
         {
-            if (!CanApply) return false;
+            if (!CanApply || !CharacterLoad.IsSuccess) return false;
             string sceneName = SceneRouter.MapIdToSceneName(mapId);
             if (string.IsNullOrEmpty(sceneName))
             {
@@ -323,9 +330,12 @@ namespace Dawnholder.Client.Network
             _cleaned = true;
             Interlocked.Exchange(ref _closed, 1);
             HandshakeOk = false;
+            _characterSelectSent = false;
             LocalEntityId = null;
             LastReceivedServerTick = 0;
             Entry.Close();
+            CharacterLoad.Close();
+            CharacterLoadRejected = null;
             Entry.Ready -= OnEntryReady;
             Inventory.Dispose();
             if (_sceneLoader != null && _sceneRequestId != 0) _sceneLoader.CancelRequest(_sceneRequestId);
@@ -437,7 +447,21 @@ namespace Dawnholder.Client.Network
         internal void RaiseHandshakeOk() => OnHandshakeOkEvent?.Invoke();
         internal void RaiseLoginResult(LoginResult result) => LoginResultReceived?.Invoke(result);
 
-        internal void SetLocalEntityId(int entityId) => LocalEntityId = entityId;
+        internal void SetLocalEntityId(int entityId)
+        {
+            if (CanApply && CharacterLoad.IsSuccess) LocalEntityId = entityId;
+        }
+
+        internal void ApplyCharacterLoad(CharacterLoadStatus status, byte characterClass)
+        {
+            if (!CanApply || !HandshakeOk || !_characterSelectSent || !CharacterLoad.TryApply(status, characterClass)) return;
+            if (status == CharacterLoadStatus.Success)
+            {
+                MainMenuNotice.Set(null);
+                ClassLoadout.ApplyServerClass((CharacterClass)characterClass);
+            }
+            else CharacterLoadRejected?.Invoke(status);
+        }
 
         internal void SetLastReceivedServerTick(int tick) => LastReceivedServerTick = tick;
 

@@ -16,9 +16,19 @@ function Get-MigrationHash {
     }
 }
 
+function ConvertTo-ExpectedModuleDefinition {
+    param([string]$Sql)
+    # SQL Server 17.0.5005.3 stores CREATE OR ALTER with three spaces after CREATE.
+    # A different engine storage form must fail the definition check before metadata is written.
+    if ($Sql.StartsWith('CREATE OR ALTER ', [StringComparison]::Ordinal)) {
+        return 'CREATE   ' + $Sql.Substring(16)
+    }
+    return $Sql
+}
+
 function Get-ModuleDefinitionHash {
     param([string]$Sql)
-    # Reviewed source, UTF-16LE without BOM. Never derive the expected hash from the database.
+    # Expected engine definition text, UTF-16LE without BOM. Never derive the expected hash from the database.
     $sha = [Security.Cryptography.SHA256]::Create()
     try {
         return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::Unicode.GetBytes($Sql)))).Replace('-', '')
@@ -285,8 +295,9 @@ function Test-ModuleHashConsumers {
             $activeFile = [string]$entry.Path
             $sql = Get-MigrationText -Path (Join-Path $DatabaseRoot $activeFile)
             $sourceHash = Get-MigrationHash -Sql $sql
-            $definitionHash = Get-ModuleDefinitionHash -Sql $sql
-            $definitionBytes = [Text.Encoding]::Unicode.GetByteCount($sql)
+            $definition = ConvertTo-ExpectedModuleDefinition -Sql $sql
+            $definitionHash = Get-ModuleDefinitionHash -Sql $definition
+            $definitionBytes = [Text.Encoding]::Unicode.GetByteCount($definition)
             $values[$entry.Path] = [pscustomobject]@{
                 SourceChecksum = $sourceHash
                 DefinitionChecksum = $definitionHash

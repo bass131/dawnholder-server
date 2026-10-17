@@ -10,6 +10,8 @@ using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Maps.Transitions;
 using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Entities;
+using Dawnholder.Server.GameServer.Persistence;
+using Dawnholder.Server.GameServer.Persistence.Admission;
 using Dawnholder.Server.Network;
 using Shared.GameData;
 using Shared.Protocol;
@@ -29,6 +31,11 @@ namespace Dawnholder.Server.GameServer.Sessions;
 public class GameSession : PacketSession
 {
     readonly GameWorld? _world;
+    readonly CharacterAdmissionServices? _persistence;
+    CharacterAdmissionLifetime? _admissionLifetime;
+    int _selectionSubmitted;
+    int _admissionState;
+    long _admissionGeneration;
     readonly TaskCompletionSource _disconnectCompleted = new(TaskCreationOptions.RunContinuationsAsynchronously);
     int _disconnectStarted;
 
@@ -75,9 +82,15 @@ public class GameSession : PacketSession
     // 수신 흐름의 진입 요청 발행 gate. 실제 등록은 맵 틱이 소유한다.
     bool _worldEntryRequested;
 
-    public GameSession(GameWorld? world = null) => _world = world ?? GameWorld.Instance;
+    public GameSession(GameWorld? world = null, CharacterAdmissionServices? persistence = null)
+    {
+        _world = world ?? GameWorld.Instance;
+        _persistence = persistence ?? _world?.Persistence;
+    }
 
     internal event Action<GameSession>? ConnectionClosed;
+
+    internal CharacterAdmissionState AdmissionState => (CharacterAdmissionState)Volatile.Read(ref _admissionState);
     internal Task DisconnectCompleted => _disconnectCompleted.Task;
     internal int EntityId => _entityId;
     internal bool IsLoggedIn => Volatile.Read(ref _loginState) == 2;
@@ -116,6 +129,8 @@ public class GameSession : PacketSession
     public override void OnDisconnected(EndPoint endPoint)
     {
         if (Interlocked.Exchange(ref _closing, 1) == 1) return;
+        Interlocked.Increment(ref _admissionGeneration);
+        Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Closed);
         CompleteInventoryRequest();
         Console.WriteLine($"[GameSession] OnDisconnected from {endPoint}");
         RequestWorldClose();
@@ -468,6 +483,48 @@ public class GameSession : PacketSession
 
     internal void CompleteInventoryRequest() => Interlocked.Exchange(ref _inventoryRequestPending, 0);
 
+    internal void SubmitCharacterSelect(byte intendedClass)
+    {
+        if (IsClosing || !IsLoggedIn || HasSelectedClass ||
+            Interlocked.CompareExchange(ref _selectionSubmitted, 1, 0) != 0)
+        {
+            return;
+        }
+        GameMap? map = GetMap() ?? _world?.Map;
+        if (map is null) return;
+        long generation = Volatile.Read(ref _admissionGeneration);
+        map.EnqueueJob(() =>
+        {
+            if (IsClosing || generation != Volatile.Read(ref _admissionGeneration)) return;
+            Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Loading);
+            CharacterClass menuClass = (CharacterClass)intendedClass;
+            if (_persistence is null || _account is not AccountIdentity account ||
+                !_persistence.IsPersistent(account.AccountId))
+            {
+                ApplyAdmission(generation, new(CharacterLoadStatus.Success, menuClass));
+                return;
+            }
+            Vector2 town = (_world?.Map ?? map).PlayerSpawnPosition;
+            SafeDefaults defaults = new(town.X, town.Y, PlayerStats.Knight().MaxHp, PlayerStats.Mage().MaxHp);
+            _admissionLifetime = _persistence.CreateLifetime(menuClass, defaults);
+            _ = ReceiveAdmissionAsync(_admissionLifetime, generation, map);
+        });
+    }
+
+    internal void CapturePersistenceClose()
+    {
+        Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Closed);
+        if (_admissionLifetime is null || _persistence is null) return;
+        SafeCheckpoint? projection = null;
+        if (_stats is not null && _world is not null)
+        {
+            Vector2 town = _world.Map.PlayerSpawnPosition;
+            projection = new SafeCheckpoint(_stats.Class, town.X, town.Y, _stats.MaxHp);
+        }
+        _persistence.CaptureClose(_admissionLifetime, projection);
+        _world?.RetainPersistenceCloseOwner(_persistence);
+    }
+
 #if DEBUG
     // [시연 디버그 치트] C_CheatCommand 처리. 유일 호출자=CheatCommandHandler(둘 다 #if DEBUG).
     //   Release에는 부재(치트 사슬 빌드타임 봉합, 헌법 #3 / SN-02).
@@ -495,6 +552,7 @@ public class GameSession : PacketSession
     {
         _account = account;
         Volatile.Write(ref _loginState, 2);
+        Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Selecting);
         Send(new S_LoginResult { result = (byte)LoginResult.Accepted }.Write());
     }
 
@@ -529,6 +587,7 @@ public class GameSession : PacketSession
     {
         if (IsClosing || !_handshakeCompleted || !HasSelectedClass || _worldEntryRequested) return;
         _worldEntryRequested = true;
+        Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Entering);
         EnterGameWorld();
     }
 
@@ -568,6 +627,7 @@ public class GameSession : PacketSession
             PlayerEntity entity = map.AddPlayer(self, spawnPos, self._stats);
             self._entityId = entity.EntityId;
             self.SetCurrentMap(map);
+            Volatile.Write(ref self._admissionState, (int)CharacterAdmissionState.Active);
 
             // Economy admission follows the actual player owner, before sends can fail/close.
             // World close cleanup ends this registration; portal moves keep the same lifetime.
@@ -624,6 +684,33 @@ public class GameSession : PacketSession
 
     // 종료 대상을 소켓 스레드의 순간적인 맵 조회로 결정하지 않는다.
     protected virtual void RequestWorldClose() => _world?.RequestSessionClose(this);
+
+    async Task ReceiveAdmissionAsync(CharacterAdmissionLifetime lifetime, long generation, GameMap admissionMap)
+    {
+        CharacterAdmissionResult result = await lifetime.Completion.ConfigureAwait(false);
+        // Completion does not mutate session/map state on the repository thread.
+        if (_world is not null) _world.EnqueueAdmissionResult(() => ApplyAdmission(generation, result));
+        else admissionMap.EnqueueJob(() => ApplyAdmission(generation, result));
+    }
+
+    void ApplyAdmission(long generation, CharacterAdmissionResult result)
+    {
+        if (IsClosing || generation != Volatile.Read(ref _admissionGeneration) ||
+            AdmissionState != CharacterAdmissionState.Loading)
+        {
+            return;
+        }
+        if (result.Status != CharacterLoadStatus.Success || result.LoadedClass is not CharacterClass loaded)
+        {
+            Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Rejected);
+            Send(new S_CharacterLoadResult { result = (byte)result.Status, characterClass = byte.MaxValue }.Write());
+            return;
+        }
+        Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Resolved);
+        SetCharacterClass((byte)loaded);
+        Send(new S_CharacterLoadResult { result = (byte)CharacterLoadStatus.Success, characterClass = (byte)loaded }.Write());
+        EnterGameWorldIfReady();
+    }
 
     void SubmitEconomyRequest(Action<InventoryRegistry, int> enqueue)
     {
