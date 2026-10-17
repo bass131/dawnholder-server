@@ -2,7 +2,7 @@
 
 상태: **신규 Opus의 보상 창 강 독립 검증은 통과했다(제품 결함 0, EditMode 87/87·PlayMode 12/12, 두 실행 exit 0). 리드는 판정 전문·실제 diff·XML·관문·종료 원시를 대조하고 검증자를 정산·종료했다. 이 판정은 표시 조립·import·배치·입력 상태·씬 수명의 기술 판정이며 실화면 PNG·미관 통과는 아니다. 기존 인벤토리·NPC·고친 파티 창의 현재 1920 사용자 통과, 파티 T-2 강 독립 PASS, C9 main 통합·05 강 PASS·06 조건부 통과 기록은 유지한다. 보상 창 실제 전후·최소 화면, Party HUD VIS-05와 UI 창 PR은 남아 있다.**
 
-**다음 첫 일:** 메인 msg_d8863c625f99(2026-10-17T19:43:15Z)의 승인 범위 계속 지시에 따라 신규 Sol xhigh 한 세션에서 #ART-RWC-V03 경로 동치 판정만 새 사본으로 수리한다. 기존 V03 failed·430입력과 이미지 독립 PASS를 보존하며, 오프라인 동일경로/다른경로·기존 관문 대조와 고정 입력 실사 뒤 compile-only 약6분을 메인에 요청한다. 실제 성공 뒤 current 약35분·before 약35분은 각각 새 자원배정으로 잇는다. csc0/Unity 총3회 중 사용1·잔여2, 현재·before·1280/Party HUD VIS-05/UI 창 PR은 미완이다. 준비 근거는 ui-reward-window-retry3-launch/, 실행 전 별도 mailbox 해석과 새 실제 창이 필수다.
+**다음 첫 일:** 신규 Sol xhigh의 #ART-RWC-V03 경로 동치 수리와 오프라인 대조를 실사한 뒤 메인 msg_287721c435e6의 새 창에서 outer→wrapper→실제 Editor csc를 각1회 실행했다. actual cwd 포함21+15관문·330입력 통과, csc exit0/timedOutfalse·종료잔여0이며 V01 이름충돌의 실제 Editor분기 컴파일 해소를 확인했다. 메인 반환은 msg_34b971c12dcc다. 다음은 같은 검증자의 current manifest 고정/실사 뒤 새 main current35분 창을 요청하고, 실제 성공 뒤 before35분을 별도 배정으로 잇는다. Unity 총3중사용1·잔여2, 현재·before·1280/Party HUD VIS-05/UI 창 PR·미관/실서버DB/CI는 미완이다. 기존529 실행입력·HEAD1f16668f/goal1bb 사본은 보존하며 후행 goal/head 관리변경은 새 current 인계에 명시한다. 원문·실사는 ui-reward-window-retry3/compile-result-supplement-v1.md와 인접 launch/actual-csc-result-audit-v1.json이다.
 
 **병렬 콘셉트:** 사용자 A 화풍의 8장 제작과 신규 Astra 독립 기술 PASS·정산·정확 종료를 마쳤다. 메인은 msg_d8863c625f99로 판정 앞부분과 8장 SHA의 직접 대조를 확인했다. 실제1672×941·호출8/10·남은2회 피드백 전 사용0이며, 사용자 미관 최종승인·제품 구현·실제 게임 캡처와 구분한다. 최신 원문/원시는 아래 「화면 콘셉트 8장 — 신규 Astra 독립 기술검토 PASS」와 screen-concepts-review-retry-launch/에 있다.
 
