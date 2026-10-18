@@ -6,11 +6,13 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: 전송217GREEN·Unity 비화면1단계253GREEN 완료.** 신규 Astra가 helper3개와 명시 메뉴 Lifetime 분기를 구현했고 같은253이름에서227요구RED가통과로바뀌며기존26통과를유지했다. 다음은 Core/Content의 최신 인계 대조와 서버 adapter·수명 선행 준비다. Core 실제 저장 연결·서버 입장·2단계 Unity session/handler54→48·전체 독립 강 판정은 남아 있다. 원본Plugins는아직v21이며이번에는새Shared22를검증snapshot에만넣었으므로원본Unity의새메뉴코드통합배포·양쪽DLL준비완료를뜻하지않는다.
+**상태: 전송217GREEN·Unity 비화면1단계253GREEN·원본Shared22 배포 완료.** 신규 Astra가 시험에 사용한 동일 DLL을 원본 Plugins에 배포하고 기존 DLL·meta·고정 소스 보존을 확인했다. Content 공용2파일의 실제 쓰기 종료와 기준/diff도 인계받았다. 다음은 실제 Unity session과 서버 adapter의 선행 시험·연결 준비다. Core 실제 저장 연결·서버 입장·2단계 Unity session/handler54→48·전체 독립 강 판정은 남아 있다. 이번 DLL 복사는 새 원본Unity 실행이나 양쪽 전체 통합 검증을 뜻하지 않는다.
 
 ## 재개 지점
 
-**다음 첫 일:** Core API v2/host·최종검증/DB 인계와 Content 공용2파일의 실제 종료·기준/diff 인계를 대조하고 서버 adapter·수명 선행 계약을 고정한다. 두 파트에 최신상태를 문의했으며 미검증 Core 제품복사0·공용2파일/handler3개 쓰기0을 유지한다. 원본Shared22 배포는 승인 goal의 DLL 범위에서 별도 정확 계약·백업/해시와 실행 소유를 고정하고 실제2단계 Unity/서버 통합으로 잇는다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)·[Unity 소비 v1](unity-consumer-contract-v1.md)은 그대로다.
+**다음 첫 일:** 인계받은 공용2파일 기준과 기존 [Unity 소비 v1](unity-consumer-contract-v1.md)의 2단계 요구로 실제 session 선행시험 계약을 고정한다. Content `msg_2917dc56748f`의 쓰기종료11:17:53Z·두 현물hash/diff를 직접 대조했다. NetworkService는 World와 같고 UnityClientSession에는 현재 World에 없는 Guild 의존성이 있어 Content PR2 결과/의존성과 함께 통합하며 두 파일만 조기복사하지 않는다. 준비 근거는 `approval-01/unity-session-pretest-01/`이다. Core `msg_30784f9d1681`은 API v2 불변·DB Apply exit1·실DB/최종강/통합 인계 전을 재확인했다. 고정 API 기반 서버 선행 준비는 이어가되 미검증 Core 제품복사0을 유지한다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 그대로다.
+
+- **원본 DLL 배포 정산:** 신규 Astra xhigh Task `task_e4378aa46242`/Dispatch `ctx_7264952668f1`, 원문 `approval-01/dll-deployment-01/report.md` SHA256 `1C77A1B18728DC9B1E39076FA8A4D3918F6DEEABF9DD84CBEADCFAB10A290151`을 직접 읽고 실제 PS7 진입1회 exit0·제품 DLL1binary diff를 대조했다. 원본Shared.dll은 P1 시험에 사용한 동일113664bytes/SHA256 `B8B2828E27A1A1667A2B5F703A2C7A97822F70FC47EF974C9F3694DCB5A4ECD3`이며 구본은 단일백업했다. 리드 현물 대조에서 고정159파일drift0, meta1122→1122/변화0이다. 보고 UTC 서식 교정은 원본·원시와 구분했고 제품/실행 재시도0이다. completed/release·정확pane종료·리드생존/reclaimable0, 생존7신호/max198초/초과0을 확인했다. 자체배포 완료이며 새빌드·Unity·WSL·DB·실제54→48·최종독립강/CI는 미실행이다. 상세는 같은 근거 `lead-settlement.md`다.
 
 - 후속 소비 계약은 [Unity 비화면 소비 v1](unity-consumer-contract-v1.md)이다.1단계 pure client/reader/Lifetime 최소 분기와2단계 실제 공용2파일/handler→48 연결을 구분해 선행 시험을 작성한다. Core `msg_45b43bc4ff25`/`msg_7d13fd6f7b61`은 API v2/host 미커밋·최종 독립강/인계0 유지와 DB Apply exit1·SQL Stopped/복구 준비를 보고했다. 환경 완료로 해석하지 않는다. Content `msg_f256203ca943`의 PR251 병합041bea25/PR2 착수·공용2파일 소유 유지도 대조했다. 최신 origin/main을 fetch해 실제041bea25와 신규 변경 경로를 확인했으며 이 계약의 PDL/버전/Lifetime/기존LifetimeTests와 중첩0이다. 현 World checkpoint dcf906a0은 유지하고 통합 전 최신main/Content/Core 인계는 다시 반영한다.
 - Unity 첫 시험 세션은 공식22088자 계약 대신 JSON draft에 CODE 부록 꼬리345자만 보여 전체제출을 확인하지 못했다. 메인 `msg_c40beb9591b3` 판단으로 Enter0·abandon/fence·정확pane종료했고 고정입력drift0/신규시험부재를 확인했다. 도구한계이며 확정실패/모델격상으로 세지 않는다. 리드가 LF제거exactsuffix를 기계결과읽기전에 보고한 오류는 실제false 원문 확인 뒤 `msg_054938d10286`으로 즉시정정했다. 원시와정산은 `approval-01/unity-pretest-01/lead-abandon-settlement.md`에보존했고 동일계약/모델의신규세션으로다시발행한다. 새검사도구/반복규칙은만들지않는다.
@@ -215,7 +217,7 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
 
 ## 보류와 남은 우려
 
-전송217GREEN과 Unity 비화면1단계253GREEN은 완료했다. Core 실제DB/최종통합·강판정과 Content 공용2파일 직렬인계, 원본Shared22/양쪽배포·실제session54→48/입장이 남는다. 원본Plugins21과새코드의새Shared타입참조는 통합배포 전 제약이며검증snapshot의GREEN으로숨기지않는다. 후속중량실행은새READY/실행창이필요하고 현재단계GREEN은C7전체·C1~C9의독립강판정을대신하지않는다.
+전송217GREEN·Unity 비화면1단계253GREEN과 원본Shared22 배포는 완료했다. Content 공용2파일은 실제 쓰기종료·정확기준/diff를 인계받았지만 Guild 의존성과 함께 통합해야 한다. Core 실제DB/최종통합·강판정과 실제session54→48/입장·양쪽 전체 소비자 검증이 남는다. 후속 중량 실행은 새 READY/실행창이 필요하고 현재 단계 GREEN과 DLL 배포 자체점검은 C7전체·C1~C9의 독립 강 판정을 대신하지 않는다.
 
 TRX helper와 봇 등록/회귀 목록 드리프트는 앞 목표 Gardener의 미채택 후보이며 새로 채택하지 않는다. 기존 BACKLOG와의 통합 판단은 메인에게 남긴다. 범위 밖 후보 장부나 운영 규칙 정비를 이번 초안에서 늘리지 않는다.
 
