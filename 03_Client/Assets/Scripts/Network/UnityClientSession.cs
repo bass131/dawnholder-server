@@ -7,12 +7,14 @@ using System.Threading;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Network.CharacterLoad;
+using Dawnholder.Client.Network.CharacterMenu;
 using Dawnholder.Client.Audio;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.UI;
 using Dawnholder.Client.Net;
 using Dawnholder.Client.State;
 using Dawnholder.Client.Network.Handlers;
+using Dawnholder.Client.Network.Handlers.CharacterMenu;
 using Dawnholder.Client.Network.Handlers.Combat;
 using Dawnholder.Client.Network.Handlers.Inventory;
 using Dawnholder.Client.Network.Handlers.Party;
@@ -47,12 +49,14 @@ namespace Dawnholder.Client.Network
         int _closed;
         bool _cleaned;
         bool _characterSelectSent;
+        bool _loginAccepted;
         public bool IsClosed => Volatile.Read(ref _closed) != 0 || IsDisconnected;
         bool CanApply => !IsClosed && _isCurrent();
         public MapEntryCoordinator Entry { get; }
         public CharacterLoadAuthority CharacterLoad { get; } = new CharacterLoadAuthority();
         public event Action<CharacterLoadStatus> CharacterLoadRejected;
         public InventoryRequestController Inventory { get; }
+        public CharacterMenuClient CharacterMenu { get; private set; }
         // Client presentation, owned by this connection: InventoryPanel changes it on I input.
         // New sessions start closed; map entries keep it, and Cleanup unpublishes the finished session.
         internal bool IsInventoryPanelOpen { get; set; }
@@ -106,6 +110,9 @@ namespace Dawnholder.Client.Network
                 { PacketID.S_HandshakeResult,   new HandshakeResultHandler() },
                 { PacketID.S_LoginResult,       new LoginResultHandler() },
                 { PacketID.S_CharacterLoadResult, new CharacterLoadResultHandler() },
+                { PacketID.S_CharacterListResult, new CharacterListResultHandler() },
+                { PacketID.S_CharacterCreateResult, new CharacterCreateResultHandler() },
+                { PacketID.S_CharacterSelectResult, new CharacterSelectResultHandler() },
                 { PacketID.S_Pong,              new PongHandler() },
                 { PacketID.S_EnterMap,          new EnterMapHandler() },
                 { PacketID.S_Snapshot,          new SnapshotHandler() },
@@ -176,9 +183,42 @@ namespace Dawnholder.Client.Network
 
         public void SendCharacterSelect(byte characterClass)
         {
-            if (!CanApply || !HandshakeOk || _characterSelectSent || characterClass > (byte)CharacterClass.Mage) return;
+            if (!CanApply || !HandshakeOk || CharacterMenu != null || _characterSelectSent ||
+                characterClass > (byte)CharacterClass.Mage) return;
             _characterSelectSent = true;
             Send(new C_CharacterSelect { characterClass = characterClass }.Write());
+        }
+
+        internal bool BeginCharacterMenu()
+        {
+            if (!CanApply || !HandshakeOk || !_loginAccepted || _characterSelectSent || CharacterMenu != null)
+                return false;
+            CharacterMenu = new CharacterMenuClient(CanUseCharacterMenu, Send, Disconnect, AcceptMenuSelection);
+            return true;
+        }
+
+        bool CanUseCharacterMenu() => CanApply && HandshakeOk && _loginAccepted && CharacterMenu != null;
+
+        void AcceptMenuSelection(string selectedCharacterIdD)
+        {
+            // The client already matched canonical ID/request/kind. Only 48 owns class authority and entry.
+            if (CanUseCharacterMenu()) _characterSelectSent = true;
+        }
+
+        internal void ReceiveCharacterMenuResult(ArraySegment<byte> buffer, PacketID expectedId)
+        {
+            // Decode borrowed bytes now; both reply application and malformed close use the current main gate.
+            if (!CharacterMenuReplyReader.TryRead(buffer, out CharacterMenuReply reply) ||
+                reply.PacketId != (ushort)expectedId)
+            {
+                EnqueueApply(() =>
+                {
+                    Debug.LogWarning($"[Unity] Invalid {expectedId} — disconnecting.");
+                    Disconnect();
+                });
+                return;
+            }
+            EnqueueApply(() => CharacterMenu?.TryReceive(reply));
         }
 
         /// <summary>Check at execution time: queued work may outlive its connection.</summary>
@@ -331,6 +371,9 @@ namespace Dawnholder.Client.Network
             Interlocked.Exchange(ref _closed, 1);
             HandshakeOk = false;
             _characterSelectSent = false;
+            _loginAccepted = false;
+            CharacterMenu?.Dispose();
+            CharacterMenu = null;
             LocalEntityId = null;
             LastReceivedServerTick = 0;
             Entry.Close();
@@ -445,7 +488,12 @@ namespace Dawnholder.Client.Network
 
         // C# event는 선언 클래스만 raise 가능(CS0070)이라 외부 핸들러는 이 메서드를 통해 호출.
         internal void RaiseHandshakeOk() => OnHandshakeOkEvent?.Invoke();
-        internal void RaiseLoginResult(LoginResult result) => LoginResultReceived?.Invoke(result);
+        internal void RaiseLoginResult(LoginResult result)
+        {
+            // Do not retain an early Accepted for a later handshake; rejection delivery keeps its existing path.
+            if (CanApply && HandshakeOk && result == LoginResult.Accepted) _loginAccepted = true;
+            LoginResultReceived?.Invoke(result);
+        }
 
         internal void SetLocalEntityId(int entityId)
         {
