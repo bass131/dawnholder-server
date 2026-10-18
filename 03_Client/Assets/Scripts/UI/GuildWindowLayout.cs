@@ -5,11 +5,11 @@ using UnityEngine.UI;
 
 namespace Dawnholder.Client.UI
 {
-    /// <summary>Only the two guild windows' fallback layout. Owns geometry and visibility, never display state.</summary>
+    /// <summary>Guild window geometry and visibility; artwork belongs to UiWindowAppearance.</summary>
     internal sealed class GuildWindowLayout
     {
         const float Width = 440f;
-        const float Height = 492f;
+        const float Height = 566f;
         readonly RectTransform _canvasRect;
         readonly RectTransform _panel;
         readonly CanvasGroup _group;
@@ -29,17 +29,17 @@ namespace Dawnholder.Client.UI
             _canvasRect = (RectTransform)root.transform;
             // Use the same project font/global Korean fallback as InventoryPanelView.
             _font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
-            _panel = Rect(panelName, root.transform, new Vector2(Width, Height), Vector2.zero);
+            _panel = UiWindowAppearance.CreatePanel(panelName, root.transform, raycastTarget: true).rectTransform;
+            Place(_panel, new Vector2(Width, Height), Vector2.zero);
             _panel.anchorMin = _panel.anchorMax = new Vector2(right ? 0.75f : 0.25f, 0.5f);
             _panel.pivot = new Vector2(0.5f, 0.5f);
-            var background = _panel.gameObject.AddComponent<Image>();
-            background.color = new Color(0.06f, 0.07f, 0.10f, 0.96f);
-            background.raycastTarget = false;
-            TMP_Text heading = Label("Title", 12f, 40f);
+            Place(UiWindowAppearance.CreateHeader("Header", _panel).rectTransform,
+                new Vector2(304f, 40f), new Vector2(12f, -10f));
+            TMP_Text heading = Label("Title", 12f, 40f, width: 290f);
             heading.text = title;
             heading.fontStyle = FontStyles.Bold;
             heading.color = new Color(1f, 0.90f, 0.35f);
-            SetVisibility(false, false);
+            SetVisibility(false);
             Resize();
         }
 
@@ -50,22 +50,27 @@ namespace Dawnholder.Client.UI
 
         internal Button ActionButton(string name, string caption)
         {
-            RectTransform rect = Rect(name, _panel, new Vector2(240f, 52f), new Vector2(100f, -424f));
-            var image = rect.gameObject.AddComponent<Image>();
-            image.color = new Color(0.20f, 0.35f, 0.48f, 1f);
-            var button = rect.gameObject.AddComponent<Button>();
-            button.targetGraphic = image;
-            TMP_Text label = Text("Label", rect, rect.sizeDelta, Vector2.zero);
-            label.alignment = TextAlignmentOptions.Center;
-            label.text = caption;
-            return button;
+            return Button(name, caption, new Vector2(240f, 52f), new Vector2(100f, -500f));
         }
 
-        internal void SetVisibility(bool visible, bool interactive)
+        internal Button CloseButton() => Button("Close", "닫기", new Vector2(100f, 40f), new Vector2(324f, -10f));
+
+        internal Button RefreshButton() => Button("Refresh", "새로고침", new Vector2(130f, 40f), new Vector2(294f, -452f));
+
+        internal void Inset(float top, float height)
+        {
+            RectTransform rect = UiWindowAppearance.CreateInset("Inset", _panel).rectTransform;
+            Place(rect, new Vector2(416f, height), new Vector2(12f, -top));
+            rect.SetSiblingIndex(1);
+        }
+
+        internal void SetVisibility(bool visible)
         {
             _group.alpha = visible ? 1f : 0f;
-            _group.interactable = visible && interactive;
-            _group.blocksRaycasts = visible && interactive;
+            // Unavailable/pending windows still shield gameplay clicks and allow closing.
+            // Purchase and refresh buttons have their own current-state gate.
+            _group.interactable = visible;
+            _group.blocksRaycasts = visible;
         }
 
         internal void Resize()
@@ -118,16 +123,50 @@ namespace Dawnholder.Client.UI
             return text;
         }
 
+        Button Button(string name, string caption, Vector2 size, Vector2 position)
+        {
+            Button button = UiWindowAppearance.CreateButton(name, _panel);
+            RectTransform rect = (RectTransform)button.transform;
+            Place(rect, size, position);
+            TMP_Text label = Text("Label", rect, size, Vector2.zero);
+            label.alignment = TextAlignmentOptions.Center;
+            label.text = caption;
+            return button;
+        }
+
+        internal static Button Entrance(Transform parent, string name, string caption, Vector2 position)
+        {
+            Button button = UiWindowAppearance.CreateButton(name, parent);
+            var rect = (RectTransform)button.transform;
+            Place(rect, new Vector2(144f, 44f), position);
+            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
+            rect.pivot = new Vector2(1f, 0f);
+            RectTransform labelRect = Rect("Label", rect, rect.sizeDelta, Vector2.zero);
+            var label = labelRect.gameObject.AddComponent<TextMeshProUGUI>();
+            label.font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+            label.fontSize = 21f;
+            label.alignment = TextAlignmentOptions.Center;
+            label.richText = false;
+            label.raycastTarget = false;
+            label.text = caption;
+            return button;
+        }
+
         static RectTransform Rect(string name, Transform parent, Vector2 size, Vector2 position)
         {
             var child = new GameObject(name, typeof(RectTransform));
             child.transform.SetParent(parent, worldPositionStays: false);
             var rect = (RectTransform)child.transform;
+            Place(rect, size, position);
+            return rect;
+        }
+
+        static void Place(RectTransform rect, Vector2 size, Vector2 position)
+        {
             rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
             rect.pivot = new Vector2(0f, 1f);
             rect.sizeDelta = size;
             rect.anchoredPosition = position;
-            return rect;
         }
     }
 }

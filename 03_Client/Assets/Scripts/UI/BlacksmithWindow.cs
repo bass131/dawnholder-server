@@ -24,9 +24,16 @@ namespace Dawnholder.Client.UI
         TMP_Text _status = null!;
         TMP_Text _result = null!;
         Button _enhance = null!;
+        Button _close = null!;
+        Button _refresh = null!;
+        TMP_Text _balance = null!;
+        string? _connectionStatus;
+        string? _connectionResult;
+        bool _refreshAllowed;
 
         public bool IsOpen { get; private set; }
         public event Action? EnhanceRequested;
+        public event Action? RefreshRequested;
 
         public static BlacksmithWindow BuildRuntime(Transform parent)
         {
@@ -66,6 +73,15 @@ namespace Dawnholder.Client.UI
             Render();
         }
 
+        internal void SetConnectionStatus(string? status, string? result, bool refreshAllowed, string balance)
+        {
+            _connectionStatus = status;
+            _connectionResult = result;
+            _refreshAllowed = refreshAllowed;
+            _balance.text = balance;
+            Render();
+        }
+
         void OnEnable()
         {
             Subscribe();
@@ -84,7 +100,10 @@ namespace Dawnholder.Client.UI
             Unsubscribe();
             _source = null;
             if (_enhance != null) _enhance.onClick.RemoveListener(RequestEnhance);
+            if (_close != null) _close.onClick.RemoveListener(Close);
+            if (_refresh != null) _refresh.onClick.RemoveListener(RequestRefresh);
             EnhanceRequested = null;
+            RefreshRequested = null;
         }
 
         void LateUpdate() => _layout?.Resize();
@@ -115,6 +134,14 @@ namespace Dawnholder.Client.UI
             if (CanRequest()) EnhanceRequested?.Invoke();
         }
 
+        void Close() => SetOpen(false);
+
+        void RequestRefresh()
+        {
+            if (!_destroyed && isActiveAndEnabled && IsOpen && _refreshAllowed)
+                RefreshRequested?.Invoke();
+        }
+
         void Render()
         {
             if (_layout == null || _destroyed) return;
@@ -131,8 +158,11 @@ namespace Dawnholder.Client.UI
             _status.text = display == null ? "서버 동기화 대기 중" : display.EnhancePending
                 ? "무기 강화 처리 중" : GuildWindowLayout.AvailabilityText(display.Enhance);
             _result.text = display != null ? GuildWindowLayout.ResultText(display.EnhanceResult) : string.Empty;
+            if (_connectionStatus != null) _status.text = _connectionStatus;
+            if (_connectionResult != null) _result.text = _connectionResult;
             _enhance.interactable = CanRequest();
-            _layout.SetVisibility(isActiveAndEnabled && IsOpen, _inputAllowed);
+            _refresh.interactable = _refreshAllowed;
+            _layout.SetVisibility(isActiveAndEnabled && IsOpen);
         }
 
         static string ClassText(CharacterClass characterClass)
@@ -148,6 +178,11 @@ namespace Dawnholder.Client.UI
         void BuildView()
         {
             _layout = new GuildWindowLayout(gameObject, "Blacksmith", "대장간", right: true);
+            _layout.Inset(104f, 194f);
+            _close = _layout.CloseButton();
+            _close.onClick.AddListener(Close);
+            _refresh = _layout.RefreshButton();
+            _refresh.onClick.AddListener(RequestRefresh);
             _characterClass = _layout.Label("CharacterClass", 58f, 48f);
             _level = _layout.Label("EnhanceLevel", 106f, 48f);
             _bonus = _layout.Label("AttackBonus", 154f, 48f);
@@ -155,6 +190,12 @@ namespace Dawnholder.Client.UI
             _material = _layout.Label("MaterialCost", 250f, 48f);
             _status = _layout.Label("ActionStatus", 298f, 48f);
             _result = _layout.Label("ActionResult", 346f, 48f);
+            _balance = _layout.Label("PersonalBalance", 394f, 48f);
+            _balance.text = "보유 골드 · 재료 확인 중";
+            _balance.fontSizeMax = 18f;
+            TMP_Text lifetime = _layout.Label("LifetimeNotice", 442f, 52f, width: 270f);
+            lifetime.fontSizeMax = 17f;
+            lifetime.text = "개인 강화는 현재 접속 동안 유지됩니다.";
             _enhance = _layout.ActionButton("Enhance", "무기 강화");
             _enhance.onClick.AddListener(RequestEnhance);
             Render();

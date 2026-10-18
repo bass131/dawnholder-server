@@ -1,10 +1,20 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **PR251 병합 완료·PR2 네트워크 자체검증 및 UI 선행 RED 수집 완료, 실제 UI 연결 구현 준비.** 네트워크 자체 289PASS와 별도로 UI 선행 실제13건은 창 미생성 요구RED8·기존control5PASS다. 실제 화면·Art 성장 호출·실서버 두 계정·PR2 신규 독립 검증은 남았다. C1~C10과 두 제품 PR 경계, 과거 실패와 M01의 원시는 유지한다.
+상태: **PR251 병합 완료·PR2 네트워크 자체289PASS 및 실제 UI 연결 자체13PASS, 남은 실화면·Art 효과·실서버 검증 준비.** 선행 창 미생성 요구RED8은 연결 구현 후 같은8개 모두 뒤 요구 단정까지 통과했고 기존control5도 통과했다. 실제 세 해상도·Town/E 보존·Art 성장 호출·실서버 두 계정·PR2 신규 독립 검증은 남았다. C1~C10과 두 제품 PR 경계, 과거 실패와 M01의 원시는 유지한다.
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 외부 Astra xhigh가 같은 PR2의 현재 연결→표시 조합·길드 G/런타임 버튼·Town 대장간 진입과 병합된 Art252 조각 소비를 구현한다. 공용 Session/NetworkService와 Art 파일은 읽기만 하며, 성장 효과 API는 Art에 현재 정본을 확인하고 미정이면 임의로 만들지 않는다. 구현자는 제품만 쓰고 선행 시험은 보존한다. 근거는 E/`pr2-server-integration-20261018/impl-ui/`, 새 snapshot은 `gcv2/m`으로 고정한다. 과거 창·before·Library·실패 snapshot/lock을 재사용하거나 삭제하지 않는다. 신규 실행은 READY·새 Main 창 뒤이며 Main `msg_27038c351ab6`에 따라 기존 `-perfTestResults <새근거>/runs/play/performance-results.json`을 더한 정확14argv를 사용한다. C1~C10과 범위는 유지하고 PR2 전체 완성 뒤 신규 독립 세션이 검증하며 각 실행 창 앞의 추가 독립 통과 단계는 두지 않는다.
+**다음 첫 일:** 닫힌 UI 구현의 로컬 checkpoint와 근거를 Main·World에 전달하고 같은 PR2의 실제709×399·802×451·1920×1080 화면/중첩과 Town 근접·E/스킬·입력 gate 보존을 새 외부 세션 계약으로 이어간다. 공용 Session/NetworkService와 Art 파일은 읽기만 하며 C9 효과는 Art의 실제 정본/API 인계 뒤 연결한다. Art `msg_0b35aaf40cdb`(15:19:14Z)까지 효과 main PR/commit/API는 미정이고 임시 API·대역 효과는 만들지 않는다. 실서버 두 계정·CI/DB 범위와 최종 PR2 신규 독립 판정도 남았다. 현 작업자·`gcv2/m`·이전 before/Library/창은 재사용하지 않는다. 새 실행은 새 입력·READY·Main 자원 창 뒤에만 수행하며 기존 `-perfTestResults` 두 인자를 유지한다. C1~C10과 범위는 유지하고 PR2 전체 완성 뒤 신규 독립 세션이 검증하며 각 실행 창 앞의 추가 독립 통과 단계는 두지 않는다.
+
+### 10-18 실제 UI 연결 구현 자체검증 정산
+
+신규 Astra xhigh `task_7c41cedb49aa`/`ctx_2ba7fb5c4946`가 기존4cs·신규3cs/3meta(+609/-23)에 실제 bootstrap 창 생성, 현재 연결/인벤토리 표시 구독, G/길드 버튼과 Town 근접 대장간 버튼, 기존 Art252 조각을 연결했다. 시험은 수정하지 않았다. 실제 PlayMode13건은 새8PASS·기존control5PASS·실패/skip/inconclusive0이며 선행과 같은13이름 차이0이다. 새8개는 첫 창 단정을 넘어 실제44 표시·45/46 wire·47+44 pending·36/44 개인판 보존·미준비/종료·새 연결/옛 callback 차단까지 통과했다. 실제 세 해상도/전체 중첩·Town E/스킬 플레이·Art 효과·실서버 두 계정·최종 독립 통과로 확대하지 않는다.
+
+리드는 최종 report SHA `3778B7E5FFBD153CCE2B590A908816C68B343D5BDD1DEC06843F718C248E8F31` 전체와 writing-closed `9D2BDBB7...`, 58근거+10제품의 bytes/hash 전부를 직접 대조했다. source2241/고정21차이0, 기존2235 중 허용4cs 외2231 보존·신규6개만 확인했다. succeeded 정산·공식 release·정확 pane 종료를 마쳤고 재사용하지 않는다. 원문은 E/`pr2-server-integration-20261018/impl-ui/report.md`·`writing-closed.json`, 상위 `lead-ui-implementation-settlement-audit.json`이다. 실행 당시 goal5125 원bytes는 `ui-implementation-executed-goal-5125.md`에 먼저 보존했다.
+
+새 Main 창의 실제 root1은14:50:54Z~14:59:28Z/514.057초/exit0/timeoutfalse/retry0, Unity6000.6.4f1/정확14argv였다. 작업자는 파일Prefs10차이0/GVS원부재·ownroot0/관측자식10개 중 live0/UnityHub0·kill0을 기록했고 prewarm19192는 현재부재만 관측해 역사birth는 unknown이다. 리드는 바뀐 기존 Registry Binary6개만 immediate current==after 대조 뒤 before로 복귀해15:03:13Z 기존137전체차이0을 확인하고15:04:11Z 전체창을 반환했다. 이후 live 자원 관측0이다. 실제 performance JSON은 생성되지 않았고 승인 XML 외 default 결과 파일 조회/삭제/복귀0이며 기계 전체 자동쓰기 감사를 주장하지 않는다.
+
+공식15신호·3회신의 기존 생존 helper는 최대311초·300초 초과2개307/311초, 공식대기685/64/137초 제외를 기록했다. raw/input/provenance/result는 `lead-ui-implementation-liveness-*`에 있으며 helper 변경0이다. 취소된 첫 launch의 자동 preamble 공백 한 글자 불일치는 원시 보존·정산 뒤 Main 지시에 따른 신규 Task로 재기동했고 실제 제품 실패와 합산하지 않는다. 이번 정상 launch는 turnStart 관측·Enter/retransmit0, 요청/화면 gpt-6-astra xhigh·backend unknown, 제품 확정 실패0이다. 신규 Town88행의 deprecated enum/overload 두 symbol(로그4줄)은 다음 독립 검토에 전달할 유지보수 관찰로 남기며 실행 뒤 직접 수정하지 않았다.
 
 ### 10-18 UI 연결 선행 RED 수집 정산
 
