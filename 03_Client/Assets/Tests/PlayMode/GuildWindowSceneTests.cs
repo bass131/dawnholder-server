@@ -256,7 +256,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             string name = label.name;
             if (!ScreenUiProbe.IsShown(label)) { yield return name + " is not drawn"; yield break; }
             label.ForceMeshUpdate();
-            string written = label.GetParsedText();
+            string written = label.text;
             if (string.IsNullOrWhiteSpace(written)) { yield return name + " is empty"; yield break; }
             if (label.isTextOverflowing) yield return $"{name} '{written}' is cut off";
             string laidOut = new string(label.textInfo.characterInfo
