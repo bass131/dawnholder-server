@@ -6,11 +6,16 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: 전송 정의5파일 구현·실제 패킷217건 GREEN.** 신규 Astra가 PDL49..54·공개byte enum2개·ProtocolVersion22를 구현하고 기존 생성기로 GenPackets를 재생성했다. 같은 시험에서 이전49통과/168신규RED가217통과/실패0/skip0으로 바뀌었고 기존48 보존을 확인했다. 새 enum/필드/codec·길이 assertion도 도달·통과했다. 다음은 정확 소유가 확정된 Unity 비화면 소비의 선행 시험과 Core 최종 인계 대조다. Core 실제 저장 연결·서버 입장·양쪽DLL/Unity·전체 강 판정은 남아 있다. 승인 기록은 commit `2bf22066`이며 제품 wire는22/54개지만 통합 배포하지 않았다.
+**상태: 전송 정의217GREEN·Unity 소비 선행 시험253건의 최초 RED 완료.** 신규 Astra가 wire49..54/v22를 구현한 뒤 같은 패킷217건이 통과했다. Unity 선행 시험은 기존 Lifetime26건 통과·신규227건의 타입/이벤트 부재 assertion RED·skip0을 실제 관측했다. 다음은 신규 Astra xhigh의 1단계 비화면 client/reader와 명시 메뉴 Lifetime 분기 구현이다. Core 실제 저장 연결·서버 입장·양쪽DLL·2단계 Unity 통합·전체 강 판정은 남아 있다. 승인 기록은 commit `2bf22066`이며 제품 wire는22/54개지만 통합 배포하지 않았다.
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 Sol xhigh 시험 작성자에게 소유 확정된 Unity 비화면 메뉴 소비·명시 메뉴 접속의 선행 시험을 맡긴다. Core adapter는 공개 접점의 최종 통합 인계를 재확인하고 승인된 대역 계약 준비를 이어간다. 공용 Unity2파일은 Content PR2 실제 종료·기준 인계 전 쓰지 않는다. Unity 시험/양쪽DLL 갱신은 정확 READY와 새 독점 실행 창으로 수행한다. 전체 C1~C9·PR 경계와 고정 [전송 계약 v1](packet-contract-v1.md)·[Core 소비 접점 v1](core-consumer-contract-v1.md)은 그대로다.
+**다음 첫 일:** 선행 작성자를 정산·종료한 뒤 신규 Astra xhigh에게 [Unity 소비 계약 v1](unity-consumer-contract-v1.md)의 1단계 helper3파일·각meta/폴더meta와 ClientConnectionLifetime 최소 분기를 맡긴다. 시험은 읽기 전용이며 같은253건 GREEN은 새 READY/독점 창에서 관측한다. Core adapter는 최종 통합 인계를 재확인하며 공용 Unity2파일·handler3개/48 연결은 Content PR2 실제 종료·기준 인계 뒤 2단계로 남긴다. 전체 C1~C9·PR 경계와 고정 [전송 계약 v1](packet-contract-v1.md)·[Core 소비 접점 v1](core-consumer-contract-v1.md)은 그대로다.
+
+- 후속 소비 계약은 [Unity 비화면 소비 v1](unity-consumer-contract-v1.md)이다.1단계 pure client/reader/Lifetime 최소 분기와2단계 실제 공용2파일/handler→48 연결을 구분해 선행 시험을 작성한다. Core `msg_45b43bc4ff25`/`msg_7d13fd6f7b61`은 API v2/host 미커밋·최종 독립강/인계0 유지와 DB Apply exit1·SQL Stopped/복구 준비를 보고했다. 환경 완료로 해석하지 않는다. Content `msg_f256203ca943`의 PR251 병합041bea25/PR2 착수·공용2파일 소유 유지도 대조했다. 최신 origin/main을 fetch해 실제041bea25와 신규 변경 경로를 확인했으며 이 계약의 PDL/버전/Lifetime/기존LifetimeTests와 중첩0이다. 현 World checkpoint dcf906a0은 유지하고 통합 전 최신main/Content/Core 인계는 다시 반영한다.
+- Unity 첫 시험 세션은 공식22088자 계약 대신 JSON draft에 CODE 부록 꼬리345자만 보여 전체제출을 확인하지 못했다. 메인 `msg_c40beb9591b3` 판단으로 Enter0·abandon/fence·정확pane종료했고 고정입력drift0/신규시험부재를 확인했다. 도구한계이며 확정실패/모델격상으로 세지 않는다. 리드가 LF제거exactsuffix를 기계결과읽기전에 보고한 오류는 실제false 원문 확인 뒤 `msg_054938d10286`으로 즉시정정했다. 원시와정산은 `approval-01/unity-pretest-01/lead-abandon-settlement.md`에보존했고 동일계약/모델의신규세션으로다시발행한다. 새검사도구/반복규칙은만들지않는다.
+
+- **Unity 선행 작성·실제 RED 정산:** Task `task_fdeff68e69e6`/Dispatch `ctx_7410f00e785e`, 원문 `approval-01/unity-pretest-02/report.md` SHA256 `5E56C67B8E2B6028C76F3E764D82E58D6D47E43C02B30E8E72F27C12F1BD025F`. 허용 시험5파일만 작성했고 메인 `msg_3b169e7b1d1e` 창에서09:35:42~09:45:39Z Unity6000.6.4f1/TF1.8.0을1회 실행했다. XML253=26P/227요구RED/0skip, 부재4그룹은 client48/reader161/reply1/Lifetime event17이며 이후 semantic assertion은 미도달이다. 원본2086파일·고정47입력 불변, 이전 Lifetime26케이스 통과다. prefs7 Binary 변화는 보존·공식ask 후 메인 `msg_c8887e153cb3`가 정확복귀를 승인했고137전체 차이0·Unity/Hub0을09:49:53Z 확인해 메인 `msg_5918f221b7fb`로 창을 반환했다. 완료 Dispatch 정산·정확pane종료·리드생존을 확인했다. suite Child집계32를 setup으로 잘못 명명한 분석과 빈 pipeline의 delta파일 부재는 원시/정정에 구분했고 시험·harness를 바꾸지 않았다. 신호 초과5구간/질문대기2건은 같은 근거 `liveness-result.json`과 `lead-settlement.md`에 한 줄 정산하며 제품 확정실패로 세지 않는다. 전체 강·Shared22양쪽배포·서버DB·2단계handler/48·플레이/Player/CI 통과가 아니다.
 
 - 전송 구현 정산: Task `task_3ae4e9a31fdb`/Dispatch `ctx_0f0348dd8a48`, 최종 원문 `approval-01/packet-implementation-01/report.md` SHA256 `F402D911BAB03EC1DB32BE5D1AE92189F6C05D92D467F75BB078C5A8A1658283`. 메인 `msg_1e9c1a8d8980` 창에서 실제08:20:39~08:22:29Z A/B/G/C/D0, 기존 generator→허용GenPackets1파일복사→동일필터217P/0F/0skip을 수행했다. 리드가 원TRX/이전행 전수 연결로49P유지·168RED→P를 확인했다. 보호720/백업723/고정30불변·복원0·D 잔존검사/lock 반환을 대조하고 메인 `msg_d25f596a6aa5`로 창을 반환했다. G빌드0경고/0오류·C빌드50경고/0오류이며50경고 기존여부는 미분류다. 완료 세션 정산·실제 pane 종료, 리드 생존을 확인했다. 패킷 green은 전체 강·실DB·서버 실제 입장·Unity/UI·양쪽DLL배포 통과가 아니다.
 
@@ -186,8 +191,8 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
 - [x] 범위 초안
 - [x] 범위 승인
 - [x] 서버 계약
-- [>] 선행 시험 — 패킷 실제 RED 완료, 서버/Unity 후속 선행 시험 남음
-- [>] 클라이언트 계약 — 정확 선행 소유 확정, 공용2파일 인계 대기
+- [x] 전송·소비 선행시험 — 패킷/Unity 최초 RED 완료, 서버 adapter 시험은 연결 단계에 남음
+- [x] 클라이언트 계약 — 소비 v1 확정, 공용2파일 실제 인계는 연결 단계에 남음
 - [>] 전송·서버 연결 — 전송 정의5파일·217GREEN 완료, 서버/Unity 소비 남음
 - [ ] 독립 강 검증
 - [ ] 제품 병합
