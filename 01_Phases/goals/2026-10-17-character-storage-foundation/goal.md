@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 수정 SQL LocalDB 독립 검증 및 새 Resume 인계 독립13 통과, 사용자 아침 실행 준비.** 판정 E90E691F…의 유효97/97·기존360PASS·고정72보존을 원시와 대조하고 검증자를 정산했다. 새 준비문은 .backups/verification/2026-10-17-character-storage-foundation/db-source-ready-14/ready.md. 실제 Express/관리자 Resume/서버 저장재접속은 미실행이며15KST만료유지,전체goal미완료.
+**상태: 사용자 관리자 Resume Applied·exit 0 보고 수신, 결과 처리 재개점 확보.** 메인 msg_c086540bbeb2가 전달한 사용자 출력이며 실제 DB 상태의 독립 확인은 아직 없다. 출력 원문·receipt 경로/SHA/mtime은 .backups/verification/2026-10-17-character-storage-foundation/db-source-applied-15/에 보존했다. 독립13의 계약 범위 통과와 실제 환경 결과를 구분하며, 전체goal은 미완료다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -199,12 +199,16 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**현재 갈래: 실행 전 — 사용자 DB 재개 한 줄 결정 대기.** 다음 첫 할 일: 메인의 최신 결정·실행 출력 유무와 현재 시각을 확인하고 아래 세 갈래 중 하나로 이어간다. 노트북 종료 정리 지시는 메인 `msg_fcd131a7a794`이며, 사용자 원문은 “나 돌아왔어, 슬슬 노트북 꺼야돼서 각 파트별로 작업정리하고 재개지점 확보해줘”다. 이 pane 직접 입력으로 격상하지 않는다. 새 작업자·검증자·실행창은 열지 않고 로컬 checkpoint까지만, push하지 않는다.
+**현재 갈래: 결과 처리 — 사용자 Resume Applied·child exit=0 보고 수신.** 메인 msg_c086540bbeb2가 사용자 “실행했어, 결과 기록해주고 마무리해줘”와 출력을 전달했다. 다음 첫 할 일은 보존 출력·receipt와 plan/binding hash 대조, 승인된 읽기 전용 DB 상태 확인(ApplyMigrations·CreateRuntimeLogin 결과), 그 뒤 소비 인계 검증 순서다. 출력의 세 hash는 고정 계획과 일치하지만 receipt 내용·DB 상태는 미확인이다. Applied·exit 0은 사용자 실행 보고이며 독립 통과가 아니다. 동일 Resume 재실행0. 종료 지시 msg_fcd131a7a794에 따라 이번에는 결과 기록·로컬 commit만 하고 DB 조회·새 세션·push는 하지 않는다.
 
-1. **실행 전:** 만료 전이고 메인이 사용자 명시 승인을 전달했는지 확인한다. `.backups/verification/2026-10-17-character-storage-foundation/db-source-ready-14/ready.md`의 정확한 새 명령·hash를 검토해 메인 사용자 실행으로만 진행한다. 승인 없는 에이전트 실행0, 옛06 READY 재사용0.
+1. **실행 전(과거 분기, 현재 선택하지 않음):** 만료 전이고 메인이 사용자 명시 승인을 전달했는지 확인한다. `.backups/verification/2026-10-17-character-storage-foundation/db-source-ready-14/ready.md`의 정확한 새 명령·hash를 검토해 메인 사용자 실행으로만 진행한다. 승인 없는 에이전트 실행0, 옛06 READY 재사용0.
 2. **실행 결과 처리:** 사용자가 종료 전에 실행했다면 메인이 전달한 stdout/stderr/exit·시각을 먼저 보존·직접 대조한다. 성공/실패/불명확을 구분하고 동일 명령을 재실행하지 않는다. 성공 뒤에도 실제 Verify/TLS·서버 저장재접속은 별도 실행범위 확인 후 진행한다. 실패·불명확이면 새 attempt/journal을 보존하고 현재 상태 조사·후속 계획부터 새 계약으로 준비한다.
 3. **만료 뒤 재계획:** 실행 계획 만료는 **2026-10-19T06:00:00Z =15:00 KST**다. 만료했으면 옛 명령 실행·만료 값 변경0. 기존 lifetime/attempt/snapshot과 실제 자원 상태를 보존하고, 승인된 읽기 관측→복구/정리 또는 새 계획의 범위·사용자 승인을 메인과 정한다. 현재 GUID를 과거 소유 근거로 자동 채택하지 않는다.
 
+### 사용자 실행 결과 보존 — 2026-10-19 KST
+- 원문 `db-source-applied-15/user-output.txt` SHA256 `45D5F33BFF2E6FF004E3B100C04B042FAAC99CBECDC4B31B304622263DFF4C30`. 메인 전달 출력 `Resume/Applied`, `child exit=0`; ownership `1A1AF5F255A7CEAF1FD2F97A0E1D36488C35A1F96FFD8458CFD0F99C3205D855`, execution `8217F86FC5E663CA6178E0E0510D8AD88BD1512056EA41AAD2706185A70822B6`, binding `FFC1FE12CAB927EB561537F71D5755F9159A234B3E80BC9D90A4CB8296296CC2`로 기존 고정 값과 일치한다.
+- private receipt 6개 경로·SHA·크기·mtime은 `db-source-applied-15/private-receipt-hashes.json`에 보존했다. 내용 열람0. 새 resume/initial과 lifecycle/resources의 mtime은 2026-10-18T22:36:46.1408032Z~22:36:50.9901439Z이며 실행 시작·종료 시각 자체는 아니다. snapshot과 옛 attempt는 기존 시각/해시다.
+- 종료 전 DB 조회·Resume 재실행·Verify·새 세션0. 서버 저장재접속과 소비 인계는 미확인이다. 만료 뒤에는 Verify/Cleanup도 옛 계획을 무조건 실행하지 않고 현재 지침과 승인 범위를 재확인한다.
 ### 마지막 완료와 고정 근거
 - 구현12 `task_27ae3fae2cb6/ctx_fe6fd0e9af02`, 독립13 `task_7316b268e8da/ctx_4ad77c109950` 쓰기 종료·정산·정확 pane 종료 완료. 독립13 계약 범위 강 통과: 유효97/97·entry 대역104호출·기존360PASS/0FAIL/6OBSERVED·입력72불변. 실제 Express/SQL/admin/서버저장재접속 미실행이며 전체goal 통과가 아니다.
 - 판정 원문 `.backups/verification/2026-10-17-character-storage-foundation/db-source-review-13/reviewer/report.md` SHA256 `E90E691FEE328EE3C03C209565B45C60D190C7D6433666E642C8015372901B55`; 실행 준비 `db-source-ready-14/ready.md` SHA256 `8EF494400F95277D72043D13E67A4F4F640834DFC4C3BD0FC19F30D82847CBFA`(같은 근거 루트).
@@ -216,7 +220,7 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 - 열린 미정산 Task/Dispatch **0**(종료 실사 `shutdown-workers.json`). 완료 세션 재사용0; 재개 후 필요한 구현/검증은 현재 지침에 따라 신규 세션으로 연다. 이 Run `run_1b758e0cc722`와 과거 handle은 실행 권한으로 재사용하지 말고 현재 runtime/배치를 다시 확인한다.
 - branch `feat/character-storage-foundation-20261017`, checkpoint 전 기준 HEAD `f6bf03fcf8067ec837ec8ccec944990f91c225a4`. 종료 checkpoint HEAD/상태는 근거 `shutdown-summary.json`과 Git 로그가 정본이며 이 문서 안에 자기 commit hash를 재귀 기입하지 않는다. 로컬 commit만, push0. `.backups`는 Git 제외 로컬 근거이므로 다른 머신 이행 전 별도 보존/전달을 판단해야 한다.
 - 이번 밤 **사용자 위임에 따른 메인 결정과 msg ID 기록 완료**: `msg_d2315f2aecbc` 취침 위임·LocalDB 한정 실행, `msg_a35ecf1fc8eb` row/table timeout2000 고정·applock 인자 유지, `msg_9d0c715a6601` 빈 오타 파일 사건 후 범위 내 계속. 각 원문·영향은 이 goal의 적용 결정과 근거에 유지한다.
-- 결정 대기: 현황판 `core-db-resume` 사용자 실행 여부, 실행 뒤 실제환경 확인/저장재접속, 다른 머신에서 이어갈지·push 여부는 메인 별도 전달 대기. 이전 Corrected(과거 GUID 미기록)·옛09819cd 정리는 별도 승인·소유 근거 필요.
+- 결정 대기: 사용자 실행 보고는 수신 완료(msg_c086540bbeb2). 실행 뒤 실제환경 확인/저장재접속, 다른 머신에서 이어갈지·push 여부는 메인 별도 전달 대기. 이전 Corrected(과거 GUID 미기록)·옛09819cd 정리는 별도 승인·소유 근거 필요.
 - `C:/Dev/DawnHolder_Project/.backups/verification/2026-17-character-storage-foundation/unused-placeholder` 빈 오타 파일은 **삭제하지 않고 그대로 보존**한다(이번 종료 지시). 과거 삭제 정책 차단 기록도 보존하며 우회하지 않는다. 근거 폴더 삭제0, SQL 서비스/LocalDB 인스턴스 종료0.
 - 이 리드 Codex 세션 ID `01a14a0d-e7a8-7a62-9976-a0b78f4f4e70`(환경변수 관측). 자기 작업용 잔여 프로세스0 관측과 한계는 shutdown-summary에 기록하며 리드·Orca·공유 서비스까지0으로 표현하지 않는다.
 ## 선행 시험 1차 정산 — 2026-10-18 KST
