@@ -6,13 +6,13 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: Unity 실제session 연결·동일313개 GREEN.** 신규 Astra의 공용2파일·메뉴 결과handler3개와meta 연결 뒤, 별도 Sol이 시험 MenuFacadeProbe의 실제 Awake/OnDestroy 수명 준비 F1만 수정했다. 새 Unity1회에서 기존309통과를 보존하고 네fixture실패가 모두 통과했다. 전송217GREEN·Shared22 배포는 유지하며 Core 실제 저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
+**상태: Unity 실제session313 GREEN·Core 독립 서버 요청 선행시험 발행 준비.** Main 위임 결정으로 Core 인계를 기다리지 않고 실제 메뉴 요청 경계와 World 요청 수명 시험을 먼저 작성한다. 전송217GREEN·Shared22 배포는 유지하며 Core 실제 저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
 
 ## 재개 지점
 
-**다음 첫 일:** Core의 실제 검증·소비 타입/소유 경계 인계를 확인해 서버 adapter 선행 시험 계약을 고정한다. 인계 전에는 `approval-01/server-implementation-draft-01/server-pretest-context-v0.3.md`·`core-handoff-state-v0.3.md`와 전송/대역 요구 준비만 이어가며 미검증 Core 제품을 복사하지 않는다. Core `msg_9a67ac701811`(14:47:46Z)은 API v2 hash 불변·DB 운영 재개 경로 신규 강 검증 진행을 보고했지만 실DB 저장/재접속·전체 통합 인계는 미완료다. 관리자 재개는10-19 오전 별도 승인 예정이며 World 실행 권한이 아니다. Content `msg_139c3c8fe0e3`의 UI checkpoint451cbf4a·공용2 추가쓰기예약0과 기존 World 선구현→완성PR2 Guild보존 직렬통합 합의를 유지한다. network 당시289/UI 현재13은 각각 자체 근거이며 full PR2 검증 인계가 아니다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 그대로다.
+**다음 첫 일:** [서버 요청 경계·수명 v1](server-request-contract-v1.md)의 Core 독립 첫 묶음을 신규 외부 Sol xhigh에게 발행한다. 실제 GameSession/HandlerRegistry의 frame·계정/상태·Legacy 안내와 World 단일 pending/high-water/닫힘·원 deadline 보존을 시험3파일 안에 작성하고 정적 READY를 받는다. 실제 compile/RED는 새 Main WSL 실행창 뒤다. 이어 구현과 Catalog 공개 문서 기반의 더 좁은 응답 대역 묶음을 준비하며 Core 인계 부재만으로 다시 대기하지 않는다. 미검증 Core 복사·대체 Core namespace 타입·DB/host owner 재구현은0이다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 유지한다.
 
-Core 제한 인계 문의 `msg_89667aa993a5`(16:59:36Z)를 보냈다. 실제 DB 최종완료와 구분해 소비 타입·주입 접점의 검증된 고정 checkpoint/쓰기종료를 다음 자연스러운 정산 때 제공할 수 있는지 확인 중이다. 기존 Core 작업 중단·새 검증/SQL 실행·미검증 코드 복사를 요청하지 않았으며, 같은 문의를 반복하지 않고 회신에 따라 계약 준비를 잇는다.
+Core `msg_80f596e64e30`(17:01:21Z)은 검증된 제한 checkpoint 없음·API v2/HEAD 불변·Program/ServerHost/Admission 소유/예약 유지와 LocalDB 전체적용/후속 독립검증 뒤 인계를 보고했다. 이 인계는 실제 bridge/저장 통합의 전제이며 Core 독립 시험 발행의 전제가 아니다. 문의 `msg_89667aa993a5`는 해소됐고 원문은 근거 `approval-01/mail-notification-overnight-02.json`이다. Content `msg_139c3c8fe0e3`의451cbf4a UI 정산·공용2 추가예약0과 World 선구현→완성PR2 Guild보존 직렬통합 합의도 유지한다. network289/UI13의 각 자체 근거를 full PR2 인계로 해석하지 않는다.
 
 실제2단계 선행 작성 Task `task_d60dec8ebf76`/Dispatch `ctx_fe2fe54b151c`와 제품 연결·F1 시험 수정 세션은 모두 종료·정산했다. 추가38사례와 기존253/권위22 회귀는 동일313 필터에서 모두 통과했다. Core48 제품 파일·화면 변경은 포함하지 않았다. PR 전 전체 독립 강은 신규 외부 세션 한 번으로 별도 수행한다.
 
@@ -61,6 +61,12 @@ Core 제한 인계 문의 `msg_89667aa993a5`(16:59:36Z)를 보냈다. 실제 DB 
 메인 `msg_02a8258a3fc2`(2026-10-18T16:57:21Z)가 전달한 사용자 원문(메인 pane Enter 제출,10-19 02:0x KST)은 「나 잘테니까, 이후 작업 판단을 메인 세션의 판단과 내 세컨드 브레인 정보로 이어서 진행해줘 / 전적으로 신뢰할게」다. 이 pane의 직접 사용자 입력으로 격상하지 않는다. 아침까지 범위·계획·우선순위 판단은 기존 결정과 속도·가역성·가장 싼 환경의 검증 기준에 따라 메인에게 status로 올리고 사용자 결정 대기로 멈추지 않는다. 이후 개별 판단은 **사용자 위임에 따른 메인 결정 + 이 원천 메시지 ID와 해당 결정 ID**로 기록한다.
 
 관리자/UAC·SQL Express 서비스/인증/로그인/방화벽 변경·PR 병합 승인 줄·전역설정·되돌릴 수 없는 삭제는 위임 밖이다. 이 일들은 아침에 바로 실행할 수 있는 명령·근거를 준비해 메인에 전달하며 직접 수행하지 않는다. GUI Unity는 메인 실행창 배정대로 진행하되 새 배정 없는 실행은 없다. 현재 World에는 사용자 판단 대기 안건이 없고, Core의 실제 검증·소비 타입/쓰기종료 인계 전제는 유지한다. Core의 별도 LocalDB 계획을 World의 실행/복사 허가나 실DB 통과로 해석하지 않는다. 원문은 근거 `approval-01/mail-notification-latest-01.json`이다.
+
+### 사용자 위임에 따른 메인 결정 — Core 독립 서버 선행시험 지금 발행
+
+메인 `msg_4dc4f7f5bdd5`(2026-10-18T17:04:26Z)는 위임 원문 `msg_02a8258a3fc2`에 따라 사용자 A 승인안의 「Core가 실제 DB 검증을 하는 동안 패킷 형식과 대역 시험을 먼저 준비」를 적용해 Core 인계 대기를 해제했다. Core 공개 API v2 문서만으로 고정할 수 있는 World 시험을 지금 발행하며, 실제 Core 타입은 인계 뒤 좁은 이음에서 연결한다. 미검증 Core 코드 복사0·번호 예약/재사용 금지·서버/Unity 양쪽 검증·대역과 실제 저장/재접속의 구분은 유지한다. 원문은 근거 `approval-01/mail-notification-overnight-03.json`이다.
+
+전송49..54/v22는 기존 예약 절차와 Core/Content 예약0 대조를 마쳤고 제품217GREEN·Unity313GREEN까지 진행했다. 새 번호/프로토콜 변경 없이 첫 묶음은 [서버 요청 경계·수명 v1](server-request-contract-v1.md)로 좁힌다. 실제 GameSession 요청 경계/Legacy 안내와 Core 없이 존재할 수 있는 World 요청 수명을 먼저 작성·RED·구현하며 Stored bridge/선택·Unknown/실제 입장·길드 전체 요구는 후속 묶음에 유지한다. Main 본문의 Opus 표기는 현재 사용자 임시 모델 결정과 이전 정정 `msg_239b72df7331`을 따라 **신규 Sol xhigh**로 적용하며 메인에 알린다. 새 사용자 승인 대기나 추가 독립 검증을 이 단계에 만들지 않는다.
 
 ### 동결까지 기능 산출물 우선
 
