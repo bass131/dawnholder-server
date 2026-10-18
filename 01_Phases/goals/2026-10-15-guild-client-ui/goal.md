@@ -1,10 +1,28 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **PR251 — PR1 화면·수명·입력 fixture 범위 강 독립 검증 통과·CI와 병합 대기.** 신규 Sol 독립 세션에서 A1의 정확 예정 실패를 확인한 뒤 승인된 시험 한 문장만 전이했고 A2 24/24·Edit 61/61·N 3/3을 통과했다. 목표 해상도의 실제 Overlay와 사용자 파일 반환을 확인했다. M01은 과거 차단 판정을 보존한 알려진 도구 한계이며 수정 통과로 바꾸지 않는다. PR1 병합·전체 goal 완료는 아직 아니며 서버 연결·실제 게임·두 계정은 PR2다.
+상태: **PR251 병합 완료·PR2 네트워크 자체검증 완료, UI/Town 연결 준비.** 네트워크 구현의 실제 8fixture 289건이 모두 통과했고, 선행과 같은 247건은 54PASS/193RED에서 247PASS로 전환했다. 화면·Art 성장 호출·실서버 두 계정·PR2 신규 독립 검증은 남았다. C1~C10과 두 제품 PR 경계, 첫 fixture 컴파일 실패와 M01의 과거 판정·원시는 유지한다.
 
 ## 재개 지점
 
-**다음 첫 일:** [PR251](https://github.com/bass131/dawnholder-server/pull/251)의 최종 diff·head·CI와 E/`pr1-fast-window-20261018/worker/verdict.md`를 메인에 전달해 R-2 원천 표본 대조와 사용자 병합 승인을 준비한다. 독립 검증 입력 goal 원문은 같은 폴더의 `pr1-independent-input-goal.md`에 보존했다. 실제 장부 Play4/4·Edit1/1·외부csc2/3·의미진단1/3·dummy3/3이며 실행 창은 반환했다. 추가 Unity·도구 보강 없이 승인 대기를 구분한다. PR2는 선행 서버·Art의 실제 main과 API를 다시 고정한 뒤 별도 계약으로 진행한다.
+**다음 첫 일:** 네트워크 checkpoint를 보존하고 직접 확인한 Art PR252의 main `db0169350dfe54ba6ed247684caae4e498e24c72`를 통합해, 같은 PR2의 실제 상태→표시 모델·길드 G/런타임 버튼·Town 대장간 진입과 병합된 Art 조각 소비를 새 외부 계약으로 연결한다. 기존 bootstrap/NPC/입력 경계를 먼저 확인한다. 공용 Session/NetworkService는 쓰기 종료·정확 hash/diff 인계를 마쳤으므로 후속 Content 작업은 두 파일을 읽기만 한다. Art 성장 효과 API는 아직 미정이며 임의로 만들지 않는다. 작성 뒤 새 READY·Main 창에서 실제 실행하고, PR2 전체를 신규 독립 세션이 검증한다. 각 실행 창 앞의 추가 독립 통과 단계는 두지 않는다.
+
+### PR251 병합과 PR2 착수
+
+메인 `msg_30b551ff8770`(2026-10-18T08:32:52Z)은 사용자 원문 「병합 승인: PR251 head ba323b8c2e587e70ba012a7a8777db36c5c30637」과 메인의 병합 관문 수행을 전달했다. 이 pane 직접 사용자 입력으로 격상하지 않는다. 원격 직접 조회도 mergedAt08:32:05Z·merge commit `041bea2538f2c14805f39a846a86cc197ca15d84`로 일치했다. 메인의 PR2 즉시 착수 지시에 따라 같은 commit의 최신 main에서 `feat/content-guild-client-integration-20261018`을 만들었다. 수신·맥락·기준은 E/`pr2-server-integration-20261018/main-start-original.json`·`lead-context.md`에 있다.
+
+최종 main의 길드43..47 형식은 v20 기능 계약을 따르되 전체 현재 프로토콜은 코드·기존 호환 시험이 확인하는 **v21**이다. World의 미래49..54/v22를 미리 소비하거나 생성/DLL을 따로 갱신하지 않는다. 공용 `UnityClientSession.cs`·`NetworkService.cs`는 Content PR2 실제 쓰기 종료·기준/diff 인계 뒤 World 순서를 유지한다. Art의 조각/성장 API와 실제 main은 리드끼리 확인하며 미병합 API를 임의 확정하지 않는다.
+
+**PR2 첫 선행 실행 정산(10-18):** 승인 root1은 새 fixture의 namespace 누락2곳·현재 NUnit에 없는 Assert.Multiple2곳으로 컴파일 실패했고 XML이 없어 요구 RED/control은 미실행이다. 자식 프로세스 오분류는 원시 보존·일회 실사로 정정했으며 도구를 보강하지 않았다. Unity/실제 관측 자기 자식0·prefs10개와 원본source2118 차이0을 확인해09:29:55Z 반환했다. 작성자는 오류 부분만 수정해 미실행 hash를 분리하고 failed/쓰기종료 뒤 정확 pane을 닫았다. 상세는 E/`pr2-server-integration-20261018/tdd/report.md`·`tdd-lead-settlement-audit.json`·`lead-window-return-review.json`이다. 저장 생존 신호의 기존 helper 집계는 최대389초/초과3개이며 공식 질문·답변을 포함한 원시를 `tdd-liveness-final-*`에 보존했다. 절차 한계는 기록 후 계속하고 제품 확정 실패로 세지 않는다. 이전 goal B06 bytes는 `tdd-executed-goal-B06.md`에 보존했다.
+
+**선행 RED 확인 완료(10-18):** 신규 읽기 전용 선행 세션은6fixture 실제247case에서 신규190·전이3의 미구현 `UnityClientSession.Guild` assertion RED193건과 wire6·연결수명26·48권위22의 control54건 통과를 남겼다. 깊은 packet/pending/성장/6초 단정과 전이3건의 뒤 보존 단정은 미진입이다. source2118/고정입력·파일prefs 차이0, root1/retry0이며 리드가 Main 지시에 따라 Registry Binary6개를 조건부 원형 복귀하고137값 차이0을 확인해 전체 창을 반환했다. 뒤늦게 발견한 prewarm PID는 리드의10:09:45Z 현재부재 실사를 별도로 연결하고 과거 종료시각으로 소급하지 않았다. 보고·51소유파일hash·원XML을 대조하고 succeeded/쓰기종료·정확 pane 종료했다. 실제 공식17신호의 기존 helper 집계는 최대223초/초과0이며, 작성자가 기록한 heartbeat만의301/331초 간격과 구분한다. 원시는 E/`pr2-server-integration-20261018/tdd-red-confirm/`의 report·lead-settlement-audit·lead-liveness-final-*와 상위 lead-red-confirm-window-return·lead-editorprefs-final-verification·lead-late-prewarm-pid-observation에 있다. 이전 goal8DC bytes는 `tdd-red-executed-goal-8DC.md`에 보존했다. 구현 배정은 Astra xhigh 1회차(신호1·2·3·4), 제품 확정 실패0이다.
+
+### 10-18 네트워크 구현 정산과 화면 연결 인계
+
+신규 Astra xhigh `task_0aabaa4b60c4`/`ctx_36f257f3074d`가 기존2cs·신규6cs/7meta에44/47 수신·43/45/46 요청·36 개인판 통지·연결 소유 상관/정리를 구현했다. 실제8fixture 289/289PASS이며 선행과 동일한247case 이름 차이0·247PASS, 추가 인벤토리42PASS다. 실제6초 pending 유지 원출력도 확인했다. source2131·고정23입력·시험 차이0, 구현자 시험 수정0이다. 최종 report SHA `52BD1B215DAC3964375958FAFCFB21BFAF31CC555CBE20F0B64D28CF19962BF6`, writing-closed `98717C4BB6B1793286918DA6059328BD25F5A2859FE5A5C89EF7F05C1F787375`와70소유파일을 전수 대조하고 succeeded·정확 pane 종료로 정산했다. backend actual은 unknown, 제품 확정 실패0이다. 근거는 E/`pr2-server-integration-20261018/impl-network/`와 상위 `lead-network-settlement-audit.json`·`lead-network-case-comparison.json`이다.
+
+root1은 exit0/timeoutfalse/retry0으로 끝났고 파일Preferences10개 차이0/GVS원부재를 유지했다. 리드가 새 Registry before137 중 바뀐 기존 Binary6개만 조건부 원bytes복귀하여 최종137 이름·종류·데이터/키존재 차이0과Unity/Hub0을 확인하고 Main `msg_1f4d00acb92a`에11:17:06Z 기준 전체 창을 반환했다. 이후 자원 추가관측0이다. 추가 prewarm31884는 작업자의11:12:39Z 현재부재만 관측했고 역사birth 미관측 한계를 보존했다. 공식15신호의300초 초과는3개(636/304/318초), 최대636초이며 공식ask 대기433/58초는 별도다. 기존 helper의 원시·exit1을 `lead-network-liveness-*`에 보존하고 최신 산출물우선 지시대로 절차 한계는 기록 후 계속한다. 추가 도구·감시·검사 보강은 하지 않는다.
+
+공용2파일은 실제 종료·현물 hash·기준/diff로 World에 `msg_2917dc56748f` 인계했고 World `msg_7a51c22ee227`이 직접 일치를 확인했다. Session 마지막 쓰기10:32:31.9767473Z/최종D41E2589…, NetworkService 불변F2EE4BBA…다. World는 미병합 Guild 부품이 없으므로 두 파일만 단독 복사하지 않고 자기 후속 의존 기준을 따로 고정한다. 후속 Content UI는 두 파일 read-only이며 재취득은 리드끼리 조율한다. 원문은 `world-common-files-handoff.json`·`.diff`와 `mail-before-network-terminal-close.json`이다. 네트워크 자체통과를 UI/Art/실서버·두 계정·PR2 독립통과로 확대하지 않는다. 이번 실행 당시 goal CAF 원bytes는 `impl-network-executed-goal-CAF.md`에 보존했다.
 
 구 입력 source2108과 문서/계약/시험/harness의 차이0을 대조하고 131파일을 E/`pr1-size-transaction-20261018/old-r2-archive/`에 보존했다. inventory SHA256 `D159FB21868790E1971DEEFD9403676D41A229CE026EA2476F908D64D3378B71`, 갱신 전 goal SHA256 `F7BB75B58107E589B4115D8244B4F4A1F6C775D8E079D539E264112901F85887`의 사본은 `bytes/0098.bin`이다. 새 문서/계약 입력을 다시 고정하며 과거 v6-r2의 물리 goal hash를 조용히 바꾸거나 과거 실행을 새 입력의 실행으로 쓰지 않는다.
 
@@ -170,7 +188,7 @@ Art가 쓰는 기존 네 창·`NpcDialogPanel`·공유 표시 helper는 읽기�
 
 **조율 상태:** World 회신 `msg_eb40e9c81882`와 Art 회신 `msg_7b814c0a312b`를 현재 Run coordinator handle과 각각 대조했다. 원시는 E/`mail-after-draft.json`·`mail-before-main-report.json`이다. 두 상대 모두 전송 뒤 화면에서 busy를 확인해 추가 터미널 입력을 하지 않았다.
 
-**Art 현재 계약:** 같은 client assembly의 `Dawnholder.Client.UI.UiWindowAppearance`(internal)가 `CreatePanel`·`CreateInset`·`CreateHeader`·`CreateButton`(Default/Accept/Decline)·`CreateDivider`를 제공한다. skin은 `Resources.Load<UiWindowSkin>("UI/Components/UiWindowSkin")`, 자산은 `Assets/Resources/UI/Components/UiWindowSkin.asset`, 조각은 `Assets/Art/UI/Components/`다. B1 월넛/가죽+금·수락 녹색/거절 적색을 재사용한다. 이는 미병합 branch의 현재 관측 계약이며 UI 창 PR 실제 main에서 최종 이름/입력을 다시 고정한다. UI 창 PR은 아직 없고10-18은 계획일뿐이다. 효과 컴포넌트/호출 API는 아직 없으므로 메서드·매개변수·실패/중복재생/취소·수명은 효과 단계 전에 리드끼리 고정한다. Art는 표시, Content는 서버 상태/호출 시점을 소유한다.
+**Art 현재 계약:** PR252는10-18T10:09:01Z에 main `db0169350dfe54ba6ed247684caae4e498e24c72`로 병합됐고 리드가 GH·원격main을 직접 확인했다(같은 근거 폴더 `art252-main-direct-verification.json`·`art252-main-remote-ref.txt`). 그 고정commit의 같은 client assembly `Dawnholder.Client.UI.UiWindowAppearance`(internal)는 `CreatePanel`·`CreateEmphasisPanel`·`CreateInset`·`CreateHeader`·`CreateButton`(Default/Accept/Decline)·`CreateDivider`와 기존 표시 적용 helper를 제공한다. skin은 `Resources.Load<UiWindowSkin>("UI/Components/UiWindowSkin")`, 자산은 `Assets/Resources/UI/Components/UiWindowSkin.asset`, 조각은 `Assets/Art/UI/Components/`다. B1 월넛/가죽+금·수락 녹색/거절 적색을 재사용하며 호출자가 geometry·글자·callback·창 수명을 소유한다. 성장/강화 효과 컴포넌트·호출 API와 해당 PR main은 아직 확인되지 않았다. 메서드·입력·실패/중복재생/취소·수명은 효과 단계 전에 리드끼리 고정하고 실제 병합 뒤 소비한다. Art는 표시, Content는 서버 상태/호출 시점을 소유한다.
 
 ## 검증과 역할
 
@@ -193,8 +211,8 @@ Art가 쓰는 기존 네 창·`NpcDialogPanel`·공유 표시 helper는 읽기�
 - [x] 범위 승인
 - [x] 계약 고정
 - [x] 창 구조 검증
-- [>] PR251 병합
-- [ ] 서버 연결 검증
+- [x] PR251 병합
+- [>] 서버 연결 검증
 - [ ] 두 화면 확인
 - [ ] 연결 화면 병합
 - [ ] 목표 종료 점검
