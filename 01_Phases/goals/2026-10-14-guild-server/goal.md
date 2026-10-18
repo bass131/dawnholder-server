@@ -2,6 +2,19 @@
 
 ## 재개 지점
 
+### 2026-10-18 — 제품 PR249 병합·종료 기록과 Gardener
+
+**현재 다음 첫 일:** `docs/guild-server-closeout-20261018`의 종료 기록 PR·CI·별도 사용자 승인/메인 병합을 확인하고 최종 종료 점검·R-8로 잇는다. 최신 main `f6bf03fcf8067ec837ec8ccec944990f91c225a4` 기준 로컬 결과 기록·읽기 전용 Gardener·신규 Sol xhigh 독립 문서 실사와 리드 정산은 완료했다. 제품 PR 병합은 완료됐으며 종료 기록 PR 병합·메인/사용자 최종 종료 점검·R-8은 아직이다. 캐릭터 선택 패킷 goal은 자동 착수하지 않는다.
+
+- **병합과 사용자 승인:** 메인 `msg_783227d00ff6`(2026-10-17T18:20:31Z)은 메인 pane 제출 사용자 원문 「병합 승인: PR249 head 256372f32968b45c558cec46cc89eb45c9ffc6b8」 뒤 메인이 PR249를 병합했다고 전달했다. 이 pane의 직접 사용자 입력으로 격상하지 않는다. GitHub 관측도 head `256372f32968b45c558cec46cc89eb45c9ffc6b8`·병합 commit `f6bf03fcf8067ec837ec8ccec944990f91c225a4`·mergedAt `2026-10-17T18:19:04Z`(10-18 03:19:04 KST)와 일치한다. CI는 architecture-tests/test·code-rules/check·dotnet-tests/test·module-boundaries/check 4개 모두 SUCCESS다.
+- **제품 결과와 보존:** G1~G8의 서버 순환은 완료했다. 두 계정의 가입 시드5씩·개인 클리어50골드/재료1/주머니1 보존·금고10→30·거점1→2/대장간·강화0→1/공격+5와 상대0, 중복/동시/종료·개인/공동 수명, protocol21/ID1..48·권위 직업 결과48 선행을 검증했다. 종료 작업은 제품/시험/PDL/DLL/설정 변경 없이 기록만 한다.
+- **검증과 정확한 한계:** B whole1642행=1637 Passed/0 Failed/기존5 NotExecuted·새 독립8P, C 원본22봇 실제22성공, D Editor6000.6.4f1 실제493P/0F/0skip·새2P다. D는 격리 snapshot `03_Client/ProjectSettings/ProjectSettings.asset` 597행 `Standalone: SENTIS_ANALYTICS_ENABLED;APP_UI_EDITOR_ONLY` → `Standalone: APP_UI_EDITOR_ONLY` 한 줄 차이로 wrapper exit1/complete 없음이며 원본은 불변이다. 사용자 원문과 `msg_e951138f3f3a`에 따른 **「ENV-D01 한 줄 차이를 명시한 조건부 통과」**를 유지한다. 검증자 원래 strong/deferred와 worker_done failed는 고치지 않으며 원본 define 조건 동일 통과·정확 writer 호출/분기는 미입증이다.
+- **미실행·남은 위험:** 실 DB·Player build·UI 플레이·두 클라이언트 실화면 리허설은 미실행이다. 경고50은 기존/신규 귀속 unknown이다. 제품 확정 회귀0을 전 시연/UI/영속 저장 완료로 확대하지 않는다. 기존 OPS-V01·옛 전체 index 동등성 미증명의 정산도 보존한다. Content 독점 실행 창 동안 이번 종료 작업의 중량 실행은0이며 마지막 World 종료 관측을 현재 호스트 전체 자원0으로 확대하지 않는다.
+- **Gardener와 반환 처리:** 신규 `claude-opus-5-5`(화면 Opus5.5 xhigh/ClaudeCode2.1.302, backend unknown)의 Task `task_4b4d245146b5`/Dispatch `ctx_4eca52978d4f`가 점검을 완료했다. [Gardener 원문](gardener.md)(SHA256 `38CC94036F3472D84694E3448446B1A5577B1BA80287DBC8FB4EFE50575CAD95`)은 지정 한 파일에서 bytes 그대로 이관했다. 최대2후보는 **1 - 봇 등록과 회귀 목록 드리프트 검사**, **2 - TRX 결과 집계 정본 helper**이며 제안만 받았다. 채택·BACKLOG 등록·검사 구현은 없다. GR-01 진척 단계와 GR-02 현재 코드 위치를 이 기록에서 바로잡았다. 고정 입력28 drift0, 신호9/heartbeat8·최대196초·초과0을 대조하고 정확 pane을 종료해 리드 생존을 확인했다.
+- **경고 부분 귀속:** 빌드 요약50과 고유 위치46은 다른 집계다. Gardener와 리드의 원시 대조에서 신규 `GuildRegistry.cs`의 IDE0011 138·225·328행, SA1201 375행 **고유4위치**를 확인했다. 기존 「동결 뒤 정리」1·5·6의 비차단 건이며 코드·억제 설정은 고치지 않았다. 요약50 전체의 신규/기존 분해와 고유46 대비 차이4의 원인은 미확인으로 남긴다.
+- **종료 문서 독립 판정:** 신규 `[World 검증자]` Sol xhigh의 Task `task_de4272fa5925`/Dispatch `ctx_018ae33635b5`가 **grade=document-audit / overall=pass / 신규 문서 결함0**으로 정산됐다. 원문은 `closeout-01/doc-review-01/verdict.md`(SHA256 `ACFFA3AD616CD778378DEEE39538C66BADC878ECFE4E0455B66ACA77678E1828`)와 report다. 검증 당시3문서/현재고정35·추가74·보충14 및 자기파일21의 hash drift0을 리드도 대조했다(목록 간 중복 포함). 최초 원문 추출기 실패는 보존하고 공식 ask/reply 뒤 다음 절 anchor 경계만 새 v2로 보정해 관련6절 일치를 확인했다. 제품 재실행은0이다. 신호7/heartbeat4·최대203초·초과0, 공식 질문 대기265초를 별도로 집계했고 정확 완료 pane을 닫아 리드 생존을 확인했다. 이 판정 뒤의 goal 갱신은 종료 상태·판정 연결만 하는 리드 기록이며 고정본은 `closeout-01/final-pr-01/goal-frozen-at-doc-pass.md`에 보존한다.
+- **근거와 다음 인계:** `.backups/verification/2026-10-14-guild-server/laptop-resume-20261017/closeout-01/`의 context·main-decision-originals·pr249-merge-observation·entry-facts가 원천이다. 원래 독립 판정은 같은 재개 폴더 `strong-review-01/verdict.md`, 조건부 수락은 `lead-pr-01/lead-conditional-settlement.md`다. Gardener 후보2개는 제안만 기록했고 채택·구현은 별도 사용자 판단이다. BACKLOG/규칙은 변경하지 않았다. 보존할 다음 목표 자료는 `character-packet-draft-01/packet-contract-v0.2.md`(SHA256 `59DBADCB27EB32551E3D435AB0F7B8587E65D95CAEC1EB447339D6F00FA7AED5`)와 Core API v1/v2 후보 조율이다. 번호49..54/protocol22는 미승인·미예약 초안이며 새 리드의 범위 초안 때만 잇는다.
+
 ### 2026-10-18 — ENV-D01 한 줄 차이 조건부 수락·제품 PR 준비
 
 **현재 다음 첫 일:** [PR249 - 길드 금고·거점 성장·무기 강화 서버](https://github.com/bass131/dawnholder-server/pull/249)의 CI 결과와 메인의 원문 대조·사용자 병합 승인을 확인한다. 메인 `msg_e951138f3f3a`가 전달한 사용자 선택 A에 따라 검증은 **「ENV-D01 한 줄 차이를 명시한 조건부 통과」**로 리드 정산했다. 검증한 bytes 그대로 main merge의 index 충돌9개를 해소하고 통합 commit·담당 branch push·제품 PR 생성을 마쳤다. 제품/시험 추가 수정·중량 재실행은 없으며 메인 외 병합은 금지다. G1~G8·수치·수명·PR 경계는 유지하고 다음 goal은 시작하지 않는다.
@@ -236,9 +249,9 @@
 - [x] 입장 회귀 수정
 - [x] 기초 재검증
 - [x] 클리어 연결
-- [>] 독립·봇 검증
-- [ ] 제품 병합
-- [ ] 종료 점검·기록
+- [x] 독립·봇 검증 — ENV-D01 한 줄 차이를 명시한 조건부 통과
+- [x] 제품 병합 — PR249 병합
+- [>] 종료 점검·기록 — Gardener·독립 문서 실사 완료·종료 기록 PR 별도 승인/병합 대기
 
 PR 번호가 생기면 해당 병합 단계에 실제 `PR번호 병합`을 적는다. Content 화면 PR의 상태는 상대 goal에서 관리하고 이 문서에는 의존성만 연결한다.
 
@@ -531,7 +544,7 @@ Content 서버 PR 병합 전에는 이 연결을 구현하지 않는다. 고정 
 
 동작에 영향 없는 지적은 번호·원문/위치·근거·처리 상태를 남긴다. 미실행 동작 검증이나 실제 결함은 이 목록으로 숨기지 않는다.
 
-- **1 - GuildRegistry 중괄호 스타일 경고 정리:** 기존99 실제빌드의 `GuildRegistry.cs:124/211` IDE0011 두건. `if`에중괄호추가를요청하는스타일경고이며99/99·오류0과구분한다. 사용자 시연우선 기준으로현재제품차단/제품수정0·동결뒤정리예정. 원문은 M/`test-03/process/stdout.bin`과 `lead-test-result-source-review.json` warnings에보존했다. 기존5경고는이번신규경고로집계하지않는다.
+- **1 - GuildRegistry 중괄호 스타일 경고 정리:** 기존99 실제빌드의 `GuildRegistry.cs:124/211` IDE0011 두건이며, 현재 통합 코드/독립 빌드의 대응 위치는 `GuildRegistry.cs:138/225`다(GR-02 위치 보충). `if`에중괄호추가를요청하는스타일경고이며99/99·오류0과구분한다. 사용자 시연우선 기준으로현재제품차단/제품수정0·동결뒤정리예정. 원문은 M/`test-03/process/stdout.bin`과 `lead-test-result-source-review.json` warnings에보존했다. 기존5경고는이번신규경고로집계하지않는다.
 
 동결 뒤 정리 추가(현재 차단 아님). 아래 Q는 E/`q1-tests-01`이다.
 
@@ -588,6 +601,13 @@ Content 서버 PR 병합 전에는 이 연결을 구현하지 않는다. 고정 
 DB 저장·맵형 거점·추가 강화 단계는 포함하지 않는다. 이 승인과 각 PR의 병합 승인은 별개다.
 
 ## 현재 결과와 남은 위험
+
+- **완료한 제품:** PR249가 사용자 정확 head 승인 뒤 메인에 의해 병합됐다. 기본 길드·공동 금고·거점/강화·클리어 원자 연결·공격 반영과 protocol21/ID1..48·기존 직업 로딩 경계를 통합했다. 최종 head·병합/CI 원천과 승인 원문은 최신 재개 지점에 있다.
+- **검증:** 강 독립 B whole1637P/0F/기존5 NotExecuted·C 원본22봇 성공·D493P를 근거로 한다. D는 ENV-D01 snapshot 한 줄 차이를 사용자가 한정 수락한 조건부 통과이며 원문 deferred는 보존한다. 실 DB·Player build·UI 플레이·두 클라이언트 리허설은 미실행이다.
+- **현재 종료 단계:** Gardener 후보2개를 제안 상태로 보존하고 비차단 문서 반환2개를 반영했다. 독립 문서 실사는 통과했고 종료 기록 PR의 별도 승인/병합과 메인/사용자 최종 종료 점검·R-8이 남는다. Gardener 제안·문서 정산을 새 검사/정책 구현이나 다음 goal 착수로 확대하지 않는다.
+- **남은 비차단 경계:** 공동 상태는 서버 재시작, 개인 경제/강화는 재접속 때 초기화된다. STYLE/가독성 정리는 동결 뒤 목록을 유지한다. 공동 revision 고갈/준비 실패 때 보상창 복귀, 두 클라이언트 UI·표현·저장 검증은 이번 서버/봇 성공으로 보증하지 않는다. 새 제품 확정 차단 결함은 보고되지 않았다.
+
+### 착수 당시 결과·자원 조율(이력)
 
 - 진입·새 branch·Run·사전 메모·요구 원천·번호/열린 branch 대조 뒤 v1/A 승인을 반영했다. 기술 계약 v0·불변식 I1~I10·미발행 선행 시험 계약 `E/tdd-base-contract-v0.md`를 작성했다. 관련 규칙 원문8절과 입력 경로29개를 `E/prepare-tdd-inputs.ps1`로 추출/기계 확인했고 결과는 `E/tdd-inputs-v0.json`(exit0)이다. 이는 문서 준비이며 구현/작업자/독립 검증/서버/봇/Unity/DB/새 PR/commit/push는 수행하지 않았다.
 - Content의 열린 서버 branch와 회신을 대조해 재클리어·양쪽 정산 책임·UI 표시 필드를 반영했다. v0 요청 `msg_211134afe227`의 회신 `msg_e09e88a8eab0`을 반영해 v1로 고정했고 `msg_819884e53401`로 알렸다. Content 변경을 가져오거나 금고 연결을 선행 구현하지 않았다.
