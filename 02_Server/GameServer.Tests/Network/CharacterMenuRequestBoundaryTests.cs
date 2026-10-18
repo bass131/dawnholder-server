@@ -240,9 +240,16 @@ public sealed class CharacterMenuRequestBoundaryTests
         byte[] guildBefore = Assert.Single(session.Packets.Where(packet => Id(packet) == 44));
         GuildSnapshot before = GuildWire.ReadSnapshot(guildBefore);
         session.Clear();
+        // A request-free tick observes the normal snapshots before separating only ID 6 below.
+        fixture.Tick();
+        byte[][] snapshotsWithoutRequest = session.Packets.ToArray();
+        Assert.NotEmpty(snapshotsWithoutRequest);
+        Assert.All(snapshotsWithoutRequest, packet => Assert.Equal((ushort)6, Id(packet)));
+        session.Clear();
         session.OnRecvPacket(Request(id, 2));
         fixture.Tick();
-        Assert.Equal(Failure(id, 2, 3), Assert.Single(session.Packets));
+        Assert.Equal(snapshotsWithoutRequest.Length, session.Packets.Count(packet => Id(packet) == 6));
+        Assert.Equal(Failure(id, 2, 3), Assert.Single(session.Packets.Where(packet => Id(packet) != 6)));
         Assert.Same(player, fixture.PlayerOf(session));
         Assert.Equal((CharacterClass)selectedClass, player.Stats.Class);
         session.Clear();
