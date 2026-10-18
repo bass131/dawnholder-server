@@ -4,8 +4,15 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 사용자 위임 메인 결정 `msg_653b6620556d` 3항에 따라 이번 자원 중단 결과를 메인에 보고하고 두 클라이언트 후속 방식(Editor+Player 빌드 등)을 다시 정한다. 단일 a와 WSL만으로 commit 여유0.85GiB였으므로 같은 두Editor 계획의 반복이나 관문 완화로 진행하지 않는다. 실행 창은 이미 반환됐으며 이번 Task/두 snapshot·Library/before/서버 clone을 재사용하지 않는다. 후속은 정확 입력·실제 UI/정상서버 경로·원시/자원·정상반환을 새 계약/READY·새 메인 배정창에 고정한다. C9는 Main `msg_53ff002bde60`에 따른 아침 사용자 결정 전 API/소유·수명·병합commit이 미정이고 임시API·전투효과 대체0, UI.unity/HUD3 Content쓰기예약0이다. F03 메인 원문/조건·미측정을 최종 신규 독립 검증자에게 넘긴다. 이번 부분 실행을 최종PR2 통과나 merge_ready로 쓰지 않으며 C1~C10·두 제품PR·최종 신규 독립/개별 병합승인 경계는 유지한다.
+**다음 첫 일:** 사용자 위임 메인 결정 `msg_4f4e871c0115`에 따라 Editor a+Windows Player b를1순위로 정적 설계하고 Windows dotnet 서버 대안을 비교한다. 오늘은 Player 빌드와 단독 실행의 실제 commit 감소를 새 짧은 Main 배정창에서 재는 데까지만 진행한다. private bytes 추정으로 관문을 대신하지 않고, Town/전투와메뉴의측정한계를구분한다. 제품시험용진입점이필요하면범위를먼저Main에올린다. 결합실행은오늘진행하지않으며 C9주인/범위는아침사용자결정이다. pagefile/전역설정·관리자변경0, 이전 Task·snapshot/Library/before/창재사용0, 정확새입력/정상반환·새외부세션/READY·새창을고정한다. 기존failed정산/4f43f38d local checkpoint/push0과 C1~C10·두PR·최종신규독립/개별병합승인 경계는유지한다.
 
+### 10-19 Player 단독 commit 실측 준비 결정
+
+**사용자 위임에 따른 메인 결정 `msg_4f4e871c0115`(2026-10-18T21:28:23Z)**: Editor a+Windows Player b를1순위로 정적 준비하고 b의 실제 화면/자동입력 경로를 먼저 설계한다. 제품에 시험전용진입점이 필요하면 범위를먼저 Main에올린다. WSL대신 Windows dotnet 서버도 READY에서 비교하지만 다른파트 Windowsdotnet0 관문 때문에 독점창에서만 실행할수있다. 먼저 Player 빌드/단독 실행의 commit 감소를 짧은별도창에서실측하고, 그숫자로 Editor약10.4GiB+Player+서버가동시하한6/4를만족할때만결합창을요청한다. 숫자가맞지않으면중단보고하며 pagefile확대는Main위임밖/아침사용자결정후보다.
+
+메인의유휴관측(commit한도33.92GiB·여유13.14GiB/물리15.77GiB,다른세션commit약20.8GiB·WSL약3.6GiB)은Main보고만이며Content실측으로격상하지않는다. 오늘밤은정적준비와Player실측창까지만이고 결합실행/C9통합은0이다. 기존failed정산과local4f43f38d/push0는인정됐으며아침보고7번에묶는다. 전체원문은 D/qa-player-memory/`main-decision.md`·json에보존한다. 신규작업은현재goal의부분검증준비이며C1~C10/제품PR경계·DB제외·개별병합승인변경0이다.
+
+**사용자 위임에 따른 메인 결정 `msg_24f545aea18c`(21:34:40Z)**: 새snapshot Assets/PlayerMemoryProbe에만 별도 probe(N/player-probe의cs/asmdef/meta)와 고유PlayerPrefs 격리를 허용한다. 원checkout/branch/commit에probe0이며원diff0을확인한다. sameSID HKCU Software/DefaultCompany/DawnholderContentMemoryProbe와LocalLow/DefaultCompany/DawnholderContentMemoryProbe의fresh부재를창전에확인못하면실행0이다. 기존실사용03_Client·전역/라이선스접근0, 빌드Editor의EditorPrefs만기존Binary규칙이다. batchEditor빌드의commit감소/시간과PlayerMenu단독commit감소를별도로재며각시점WSLVM실행여부/vmmemWSL private도남긴다. Player는120초Application.Quit(0), 미종료시READY의자기PID정리만/재시도0이다. 반환에「Menu 단독 수치는 Town·전투 peak가 아님」을그대로쓰며결합6/4통과를주장하지않는다. Windows서버는「SDK 설치 필요」대안으로만남기고오늘SDK설치/rollForward변경0이다. 신규외부Opus READY뒤Main이짧은Unity창을배정한다. 전체원문은 N/main-scope-decision.md에보존한다.
 ### 10-19 C9 전 실서버 시도의 자원 중단·반환 정산
 
 신규 Opus `task_9bfa1b4a81bb`/`ctx_bff14657c7be`는 새4시험 파일만 쓰고 정확1dfcff9e head의 서버714파일 동일·새WSL clone·Debug0Error·메모리 모드(pid1363/startticks6976)와 첫GUI Editor a를 실행했다. a는20:59:26.0983590Z 시작/588.2777545초/exit2/timeoutfalse/root1/retry0이며 실제로그인 Knight HP150/150·Town 준비점21:08:34.7103164Z에 도달했다. 초기 guild Membership rev1·금고5·레벨1·회원1/온라인1은 한계정 관측이며 두계정 요구값과 비교하지 않는다. C# 오류0행·Explicit 정확case선택실행1/Failed1/skip0·PNG0/관측JSON2, F8/34발신0이다. a 실패는 기존partnerabort에 따른 환경중단이며 제품PASS/제품확정실패0이다. 두계정·보스/39·40보상·금고/거점경합·강화/피해차이·C9는 미실행이다.
@@ -143,7 +150,7 @@ H03의 실제 두 name 인자 오분류는 제품 확정 실패·독립 NOT PASS
 
 기록 시각: **2026-10-15T07:20:33Z**(`date -u` 실제 출력, E/`pr1-impl/wrapup-date-u.txt`). **열린 Task·Dispatch 없음, 작업자 pane 0**이며 리드 pane만 메인의 마감을 기다린다.
 
-**다음 첫 일:** 사용자 위임 메인 결정 `msg_653b6620556d` 3항에 따라 이번 자원 중단 결과를 메인에 보고하고 두 클라이언트 후속 방식(Editor+Player 빌드 등)을 다시 정한다. 단일 a와 WSL만으로 commit 여유0.85GiB였으므로 같은 두Editor 계획의 반복이나 관문 완화로 진행하지 않는다. 실행 창은 이미 반환됐으며 이번 Task/두 snapshot·Library/before/서버 clone을 재사용하지 않는다. 후속은 정확 입력·실제 UI/정상서버 경로·원시/자원·정상반환을 새 계약/READY·새 메인 배정창에 고정한다. C9는 Main `msg_53ff002bde60`에 따른 아침 사용자 결정 전 API/소유·수명·병합commit이 미정이고 임시API·전투효과 대체0, UI.unity/HUD3 Content쓰기예약0이다. F03 메인 원문/조건·미측정을 최종 신규 독립 검증자에게 넘긴다. 이번 부분 실행을 최종PR2 통과나 merge_ready로 쓰지 않으며 C1~C10·두 제품PR·최종 신규 독립/개별 병합승인 경계는 유지한다.
+**다음 첫 일:** 사용자 위임 메인 결정 `msg_4f4e871c0115`에 따라 Editor a+Windows Player b를1순위로 정적 설계하고 Windows dotnet 서버 대안을 비교한다. 오늘은 Player 빌드와 단독 실행의 실제 commit 감소를 새 짧은 Main 배정창에서 재는 데까지만 진행한다. private bytes 추정으로 관문을 대신하지 않고, Town/전투와메뉴의측정한계를구분한다. 제품시험용진입점이필요하면범위를먼저Main에올린다. 결합실행은오늘진행하지않으며 C9주인/범위는아침사용자결정이다. pagefile/전역설정·관리자변경0, 이전 Task·snapshot/Library/before/창재사용0, 정확새입력/정상반환·새외부세션/READY·새창을고정한다. 기존failed정산/4f43f38d local checkpoint/push0과 C1~C10·두PR·최종신규독립/개별병합승인 경계는유지한다.
 
 자기 snapshot `E/pr1-impl/unity-project/Temp/UnityLockfile`의 빈 lock은 삭제하지 않고 보존했다. 새 계약의 fresh 소유·PID/birth·입력·경로·배타 open 관문으로 이 단일 lock의 복구 여부를 판단한 뒤, 수정된 하네스와 새 manifest를 고정해 남은 EditMode/PlayMode를 수행한다. 구현자 실제 EditMode 1회가 이미 사용됐으며 모드당 최대 3회 경계를 유지한다. 메모리 기준을 완화하거나 사용자 프로세스를 건드리지 않는다. 자체 결과 뒤 신규 Opus 강 검증이 필요하다.
 
