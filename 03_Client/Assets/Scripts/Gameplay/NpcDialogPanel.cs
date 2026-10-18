@@ -1,4 +1,5 @@
 #nullable enable
+using Dawnholder.Client.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -18,8 +19,6 @@ namespace Dawnholder.Client.Gameplay
     [DisallowMultipleComponent]
     public class NpcDialogPanel : MonoBehaviour
     {
-        const string BgSpritePath = "UI/Menu_Button";
-
         static NpcDialogPanel? _instance;
 
         public static NpcDialogPanel? Instance => _instance;
@@ -133,28 +132,14 @@ namespace Dawnholder.Client.Gameplay
 
             // 대화창 — 화면 하단 중앙.
             // 영호 Phase 05 조정 지점: anchoredPosition / sizeDelta.
-            GameObject panelGo = new GameObject("DialogPanel");
-            panelGo.transform.SetParent(root.transform, worldPositionStays: false);
-            RectTransform panelRt = panelGo.AddComponent<RectTransform>();
+            Image panelImg = UiWindowAppearance.CreatePanel("DialogPanel", root.transform, dialog: true, raycastTarget: true);
+            GameObject panelGo = panelImg.gameObject;
+            RectTransform panelRt = panelImg.rectTransform;
             panelRt.anchorMin        = new Vector2(0.5f, 0f);
             panelRt.anchorMax        = new Vector2(0.5f, 0f);
             panelRt.pivot            = new Vector2(0.5f, 0f);
             panelRt.anchoredPosition = new Vector2(0f, 40f);
             panelRt.sizeDelta        = new Vector2(700f, 160f);
-
-            Image panelImg = panelGo.AddComponent<Image>();
-            Sprite? bgSprite = Resources.Load<Sprite>(BgSpritePath);
-            if (bgSprite != null)
-            {
-                panelImg.sprite                  = bgSprite;
-                panelImg.type                    = Image.Type.Sliced;
-                panelImg.pixelsPerUnitMultiplier = 3f;
-                panelImg.color                   = Color.white;
-            }
-            else
-            {
-                panelImg.color = new Color(0f, 0f, 0f, 0.75f);
-            }
 
             // 초상화 Image — 패널 좌측.
             // 영호 Phase 05 조정 지점: 초상화 크기(sizeDelta) / 위치.
@@ -169,6 +154,7 @@ namespace Dawnholder.Client.Gameplay
 
             Image portraitImg = portraitGo.AddComponent<Image>();
             portraitImg.preserveAspect = true;
+            UiWindowAppearance.AddPortraitFrame(portraitRt);
             portraitGo.SetActive(false);   // sprite 주입 전까지 숨김
 
             // TMP 폰트 로드 — 전역 폴백으로 한글 처리.

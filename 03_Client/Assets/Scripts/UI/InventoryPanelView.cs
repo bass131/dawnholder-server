@@ -41,12 +41,12 @@ namespace Dawnholder.Client.UI
 
             // LiberationSans uses the project's TMP global Pretendard fallback for Korean catalog names.
             var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
-            _panel = Rect("Inventory", root.transform, new Vector2(Width, Height), Vector2.zero);
+            _panel = UiWindowAppearance.CreatePanel("Inventory", root.transform).rectTransform;
+            Place(_panel, new Vector2(Width, Height), Vector2.zero);
             _panel.anchorMin = _panel.anchorMax = new Vector2(0.5f, 1f);
             _panel.pivot = new Vector2(0.5f, 1f);
-            var background = _panel.gameObject.AddComponent<Image>();
-            background.color = new Color(0.06f, 0.07f, 0.10f, 0.88f);
-            background.raycastTarget = false;
+            Place(UiWindowAppearance.CreateHeader("Header", _panel).rectTransform,
+                new Vector2(398f, 44f), new Vector2(12f, -10f));
 
             // TMP's Korean fallback has taller line metrics than the Latin font; reserve the full line height.
             TMP_Text title = Label("Title", _panel, new Vector2(150f, 44f), new Vector2(12f, -10f), font);
@@ -67,15 +67,15 @@ namespace Dawnholder.Client.UI
                 int slot = i;
                 float x = 12f + (i % 2) * 269f;
                 float y = -134f - (i / 2) * 43f;
-                RectTransform row = Rect("Slot" + (i + 1), _panel, new Vector2(257f, 35f), new Vector2(x, y));
-                var rowBackground = row.gameObject.AddComponent<Image>();
-                rowBackground.color = new Color(1f, 1f, 1f, 0.06f);
-                rowBackground.raycastTarget = false;
+                RectTransform row = UiWindowAppearance.CreateInset("Slot" + (i + 1), _panel).rectTransform;
+                Place(row, new Vector2(257f, 35f), new Vector2(x, y));
                 _slotLabels[i] = Label("Item", row, new Vector2(193f, 35f), new Vector2(6f, 0f), font);
                 _slotLabels[i].fontSize = 18f;
                 _useButtons[i] = Button("Use", row, new Vector2(50f, 35f), new Vector2(203f, 0f), "사용", font);
                 _useButtons[i].onClick.AddListener(() => useSlot(slot));
             }
+            Place(UiWindowAppearance.CreateDivider("Divider", _panel).rectTransform,
+                new Vector2(510f, 6f), new Vector2(20f, -300f));
             _result = Label("UseResult", _panel, new Vector2(526f, 42f), new Vector2(12f, -306f), font);
             _result.fontSize = 17f;
             Resize();
@@ -166,11 +166,16 @@ namespace Dawnholder.Client.UI
             var child = new GameObject(name, typeof(RectTransform));
             child.transform.SetParent(parent, worldPositionStays: false);
             var rect = (RectTransform)child.transform;
+            Place(rect, size, position);
+            return rect;
+        }
+
+        static void Place(RectTransform rect, Vector2 size, Vector2 position)
+        {
             rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
             rect.pivot = new Vector2(0f, 1f);
             rect.sizeDelta = size;
             rect.anchoredPosition = position;
-            return rect;
         }
 
         static TMP_Text Label(string name, Transform parent, Vector2 size, Vector2 position, TMP_FontAsset? font)
@@ -190,11 +195,9 @@ namespace Dawnholder.Client.UI
         static Button Button(string name, Transform parent, Vector2 size, Vector2 position,
             string caption, TMP_FontAsset? font)
         {
-            RectTransform rect = Rect(name, parent, size, position);
-            var image = rect.gameObject.AddComponent<Image>();
-            image.color = new Color(0.20f, 0.35f, 0.48f, 1f);
-            var button = rect.gameObject.AddComponent<Button>();
-            button.targetGraphic = image;
+            Button button = UiWindowAppearance.CreateButton(name, parent);
+            var rect = (RectTransform)button.transform;
+            Place(rect, size, position);
             TMP_Text label = Label("Label", rect, size, Vector2.zero, font);
             label.text = caption;
             label.fontSize = 16f;
