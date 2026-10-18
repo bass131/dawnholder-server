@@ -246,7 +246,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         {
             Begin("reward");
             NoteRewardWindowSource();
-            yield return SelectPrimarySize();
+            yield return SelectPrimarySize(approvedRewardSizes: true);
             yield return ReadySyncedTown();
             yield return MoveFixtureMouseOffScreen();
             bool shownBeforeResult = RewardWindowShown();
@@ -589,13 +589,15 @@ namespace Dawnholder.Client.Tests.PlayMode
             Note("graphics device", $"{SystemInfo.graphicsDeviceType} / {SystemInfo.graphicsDeviceName}");
         }
 
-        IEnumerator SelectPrimarySize()
+        IEnumerator SelectPrimarySize(bool approvedRewardSizes = false)
         {
 #if UNITY_EDITOR
             _gameView = GameViewTargetSize.Find(out string missing);
+            if (approvedRewardSizes && _gameView == null) throw new InvalidOperationException("Approved reward capture requires Game view: " + missing);
             if (_gameView == null) Note("game view", "not found: " + missing);
             else
             {
+                if (approvedRewardSizes) _gameView.EnableApprovedSizes();
                 Note("game view before", _gameView.Describe());
                 Note("game view built-in sizes", _gameView.ListBuiltIn());
                 Note("game view select primary", _gameView.TrySelect(PrimaryWidth, PrimaryHeight));
@@ -1141,8 +1143,8 @@ namespace Dawnholder.Client.Tests.PlayMode
     }
 
 #if UNITY_EDITOR
-    // The Editor Game view's fixed size, picked only from the built-in list of the current platform group: adding a
-    // custom size (PlayModeWindow.SetCustomRenderingResolution) would write the user's GameViewSizes preferences.
+    // Ordinary captures use built-ins. Only the reward capture opens a runner-authorized in-memory size scope.
+    // GameView selection and temporary list ownership are restored separately; neither path saves preferences.
     // The first selection is remembered and put back by Restore. GameView members are internal Editor API.
     internal sealed class GameViewTargetSize
     {
@@ -1152,6 +1154,8 @@ namespace Dawnholder.Client.Tests.PlayMode
         readonly object _group;
         readonly int _original;
         bool _changed;
+        GameViewSizeScope _scope;
+        int _lastSelection;
 
         GameViewTargetSize(EditorWindow view, PropertyInfo selected, object group)
         {
@@ -1159,6 +1163,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             _selected = selected;
             _group = group;
             _original = (int)selected.GetValue(view);
+            _lastSelection = _original;
         }
 
         // Null with the reason when there is no Game view to size, e.g. under -batchmode.
@@ -1184,6 +1189,15 @@ namespace Dawnholder.Client.Tests.PlayMode
             return new GameViewTargetSize(view, gameViewType.GetProperty("selectedSizeIndex", Any), group);
         }
 
+        internal void EnableApprovedSizes()
+        {
+            if (_scope != null) throw new InvalidOperationException("Game view size scope already active");
+            MethodInfo callback = _view.GetType().GetMethod("SizeSelectionCallback", Any, null, new[] { typeof(int), typeof(object) }, null);
+            if (callback == null || callback.ReturnType != typeof(void) || _selected.PropertyType != typeof(int) || !_selected.CanWrite)
+                throw new InvalidOperationException("Game view selection API differs");
+            _scope = GameViewSizeScope.Open(_group);
+        }
+
         internal string Describe() =>
             $"selected {_selected.GetValue(_view)} ({Text((int)_selected.GetValue(_view))}), original {_original} ({Text(_original)}), changed {_changed}";
 
@@ -1192,26 +1206,48 @@ namespace Dawnholder.Client.Tests.PlayMode
         // "selected <index> <text> via <path>" or "absent: <reason>"; never adds a size.
         internal string TrySelect(int width, int height)
         {
-            for (int i = 0; i < BuiltInCount; i++)
+            _scope?.AssertOwned();
+            AssertSelectionOwned();
+            bool scopedMinimum = _scope != null && ((width == 709 && height == 399)
+                || (width == 802 && height == 451) || (width == 1280 && height == 720));
+            int count = scopedMinimum ? (int)_group.GetType().GetMethod("GetTotalCount", Any).Invoke(_group, null) : BuiltInCount;
+            for (int i = 0; i < count; i++)
             {
                 object size = Size(i);
+                if (_scope != null && width == 1920 && height == 1080 && (string)Read(size, "baseText") != "Full HD") continue;
                 if (Read(size, "sizeType").ToString() != "FixedResolution") continue;
                 if ((int)Read(size, "width") != width || (int)Read(size, "height") != height) continue;
                 return $"selected {i} {Text(i)} via {Select(i)}";
             }
-            return $"absent: no built-in fixed {width}x{height} in the current group, and a custom size would change user preferences";
+            return _scope == null
+                ? $"absent: no built-in fixed {width}x{height} in the current group, and a custom size would change user preferences"
+                : $"absent: no approved fixed {width}x{height} in the scoped current group";
         }
 
         internal string Restore()
         {
-            if (!_changed) return "not changed";
-            string path = Select(_original);
-            return $"restored {_original} ({Text(_original)}) via {path}; now {_selected.GetValue(_view)}";
+            try
+            {
+                _scope?.AssertOwned();
+                AssertSelectionOwned();
+                if (!_changed) return "not changed";
+                string path = Select(_original);
+                if (_scope != null && (int)_selected.GetValue(_view) != _original)
+                    throw new InvalidOperationException("Game view original selection was not restored");
+                if (_scope != null) _changed = false;
+                return $"restored {_original} ({Text(_original)}) via {path}; now {_selected.GetValue(_view)}";
+            }
+            finally
+            {
+                _scope?.Dispose();
+                _scope = null;
+            }
         }
 
         string Select(int index)
         {
             _changed = true;
+            _lastSelection = index;
             // The size menu's own callback also refits the view; fall back to the property when it is missing.
             MethodInfo callback = _view.GetType().GetMethods(Any)
                 .FirstOrDefault(method => method.Name == "SizeSelectionCallback" && method.GetParameters().Length == 2);
@@ -1224,6 +1260,12 @@ namespace Dawnholder.Client.Tests.PlayMode
             _selected.SetValue(_view, index);
             _view.Repaint();
             return "selectedSizeIndex";
+        }
+
+        void AssertSelectionOwned()
+        {
+            if (_scope != null && (int)_selected.GetValue(_view) != _lastSelection)
+                throw new InvalidOperationException("Game view selection changed outside the capture scope");
         }
 
         int BuiltInCount => (int)_group.GetType().GetMethod("GetBuiltinCount", Any).Invoke(_group, null);
