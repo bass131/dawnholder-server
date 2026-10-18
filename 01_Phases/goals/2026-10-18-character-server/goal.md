@@ -6,11 +6,13 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: Unity 실제session313 GREEN·Core 독립 서버 요청 선행시험 발행 준비.** Main 위임 결정으로 Core 인계를 기다리지 않고 실제 메뉴 요청 경계와 World 요청 수명 시험을 먼저 작성한다. 전송217GREEN·Shared22 배포는 유지하며 Core 실제 저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
+**상태: Unity 실제session313 GREEN·Core 독립 서버 요청 선행시험316=229P/87요구RED·제품 구현 준비.** Main 위임 결정으로 Core 인계를 기다리지 않고 실제 메뉴 요청 경계와 World 요청 수명 시험을 작성·실행했다. 전송217GREEN·Shared22 배포는 유지하며 Core 실제 저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
 
 ## 재개 지점
 
-**다음 첫 일:** [서버 요청 경계·수명 v1](server-request-contract-v1.md)의 Core 독립 첫 묶음을 신규 외부 Sol xhigh에게 발행한다. 실제 GameSession/HandlerRegistry의 frame·계정/상태·Legacy 안내와 World 단일 pending/high-water/닫힘·원 deadline 보존을 시험3파일 안에 작성하고 정적 READY를 받는다. 실제 compile/RED는 새 Main WSL 실행창 뒤다. 이어 구현과 Catalog 공개 문서 기반의 더 좁은 응답 대역 묶음을 준비하며 Core 인계 부재만으로 다시 대기하지 않는다. 미검증 Core 복사·대체 Core namespace 타입·DB/host owner 재구현은0이다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 유지한다.
+**다음 첫 일:** [서버 요청 경계·수명 v1](server-request-contract-v1.md)의 제품 구현을 신규 외부 Astra xhigh에게 발행한다(입력 경계·시간/수명·다파일 신호1/2/3/4). 실제 GameSession/HandlerRegistry의 frame·계정/상태·Legacy 안내와 World 단일 pending/high-water/닫힘·원 deadline 보존을 구현하되 선행시험3파일·기존회귀·전송/프로토콜·Core/Unity는 동결한다. 정적 READY 뒤 새 Main WSL 창에서 같은 필터를1회 실행한다. 이어 Catalog 공개 문서 기반의 더 좁은 응답 대역 묶음을 준비하며 Core 인계 부재만으로 다시 대기하지 않는다. 미검증 Core 복사·대체 Core namespace 타입·DB/host owner 재구현은0이다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 유지한다.
+
+- **서버 요청 선행시험 정산:** 신규 Sol xhigh Task `task_d416fa466675`/Dispatch `ctx_a9c41920f0c9`는 시험3파일+825/-0·실제316=229P/87F/0skip을 완료했다. 원문 `approval-01/server-request-pretest-01/report.md` SHA256 `B98BA50386C4575B8616DD3A657834715D4C0EEBD4FBD31CA38589EBAF737487`를 직접 읽고 TRX316개 이름/결과·87실패 message/stack과 분류 차이0을 대조했다. 기존224회귀 전부P·신규5P, 등록부재63/World 수명 타입부재24의 뒤 semantic은 미도달이다. Main `msg_330fc47b3163` 안에서 caller17:52:31~17:54:54Z A0/B0/C1/D0·rawexit1, restore/build/test각1회/재시도·kill0이다. 원본728·준비767 drift0와 runtime0/동일lock 반환을 먼저 확인해 `msg_185772dc6f8d`로 창을 반환했다. completed/release·동일pane종료·리드생존/reclaimable0, 신호9/max407초·초과3구간/질문대기1건은 같은 근거 `lead-settlement.md`에 남겼다. 자체 선행 RED이며 제품GREEN·Stored/실DB·전체독립강 통과가 아니다.
 
 Core `msg_80f596e64e30`(17:01:21Z)은 검증된 제한 checkpoint 없음·API v2/HEAD 불변·Program/ServerHost/Admission 소유/예약 유지와 LocalDB 전체적용/후속 독립검증 뒤 인계를 보고했다. 이 인계는 실제 bridge/저장 통합의 전제이며 Core 독립 시험 발행의 전제가 아니다. 문의 `msg_89667aa993a5`는 해소됐고 원문은 근거 `approval-01/mail-notification-overnight-02.json`이다. Content `msg_139c3c8fe0e3`의451cbf4a UI 정산·공용2 추가예약0과 World 선구현→완성PR2 Guild보존 직렬통합 합의도 유지한다. network289/UI13의 각 자체 근거를 full PR2 인계로 해석하지 않는다.
 
