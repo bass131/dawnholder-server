@@ -51,45 +51,9 @@ internal sealed class CharacterMenuSession
 
     static void SendFailure(GameSession session, uint requestId, PacketID requestPacketId, CharacterMenuResult result)
     {
-        // Empty fields are explicit: generated writers require non-null strings. These
-        // packets never represent a successful list/create/select and never register a player.
-        IPacket reply = requestPacketId switch
-        {
-            PacketID.C_CharacterListRequest => new S_CharacterListResult
-            {
-                requestId = requestId,
-                result = (byte)result,
-                invalidField = (byte)CharacterMenuInvalidField.None,
-                occupiedMask = 0,
-                slot1CharacterIdD = string.Empty,
-                slot1Name = string.Empty,
-                slot1ClassId = 0,
-                slot2CharacterIdD = string.Empty,
-                slot2Name = string.Empty,
-                slot2ClassId = 0,
-                slot3CharacterIdD = string.Empty,
-                slot3Name = string.Empty,
-                slot3ClassId = 0,
-            },
-            PacketID.C_CharacterCreateRequest => new S_CharacterCreateResult
-            {
-                requestId = requestId,
-                result = (byte)result,
-                invalidField = (byte)CharacterMenuInvalidField.None,
-                slot = 0,
-                characterIdD = string.Empty,
-                name = string.Empty,
-                classId = 0,
-            },
-            PacketID.C_CharacterSelectRequest => new S_CharacterSelectResult
-            {
-                requestId = requestId,
-                result = (byte)result,
-                invalidField = (byte)CharacterMenuInvalidField.None,
-                selectedCharacterIdD = string.Empty,
-            },
-            _ => throw new InvalidOperationException("A menu ticket must identify a menu request."),
-        };
+        // The factory owns empty failure fields; this World-owned lifetime still owns sending.
+        IPacket reply = CharacterMenuReplyFactory.Failure(
+            requestId, requestPacketId, result, CharacterMenuInvalidField.None);
         ArraySegment<byte> payload = reply.Write();
         if (!session.IsClosing) session.Send(payload);
     }
