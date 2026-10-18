@@ -1,10 +1,20 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **PR251 병합 완료·PR2 GUI 실제19건은16PASS/3캡처쓰기 Error.** 접근성 컴파일 차단은 해소됐고 원PNG33개·Town/E/Q와 기존13건의 실제 통과를 수집했다. 세 해상도 시나리오는 출력경로260자 예외로 후반 보상 확인40·닫힌 창 월드 조작이 미도달이다. 실패 작업자 정산·종료와 전체창 반환을 마쳤으며 같은19건의 좁은 산출물경로 교정을 준비한다. F03 일시 퀘스트 배너 가림은 메인 조건부 판단으로 C8 밖 안정화 후속에 둔다. Art 성장 호출·실서버 두 계정·PR2 신규 독립 검증과 C1~C10·두 제품 PR 경계는 유지한다.
+상태: **PR251 병합 완료·PR2 GUI 실제19/19PASS와 원PNG37개·출력80개 수집 완료.** F02 경로 차단은 좁은 directory 교정으로 해소됐고 세 해상도 모두 보상 확인40·두 창 닫기·raycast0·월드 공격 복귀까지 도달했다. 수집 작업자 정산·종료와 전체창 반환을 마쳤다. F03 일시 배너 가림의 메인 조건부 C8 밖 판단은 유지하며, Art C9 성장 호출·실서버 두 계정·CI/DB·신규 전체 PR2 독립 판정은 남았다. C1~C10·두 제품 PR 경계와 과거 원시는 보존한다.
 
 ## 재개 지점
 
-**다음 첫 일:** 같은 작업의 신규 외부 `gpt-6-astra` high가 F02의 산출물파일 경로만 짧게 교정한다. 기존6 시나리오·정확19 fullname·단정·공개표시 관측과13 control은 유지하고, 실제709×399·802×451·1920×1080의 보상 확인40 및 닫힌 창 월드 조작까지 완주한다. 제품·AssemblyInfo/IVT·공용 Session/NetworkService·Art·다른시험은 읽기만 한다. 닫힌 Task·`gcv2/o`와 이전 snapshot/lock/Library/before/창을 재사용하지 않고 새 입력·READY·Main 다음창으로만 실행한다. F03의 메인 원문·조건 확인은 `qa-ui-gameplay-access-fix/lead-f03-main-decision.md`로 최종 독립 검증자에게 넘기며 sorting/우선목록을 바꾸지 않는다. C9 효과 API는 Art `msg_31026855ae0e`까지 미정이다. UI.unity/HUD3 controller의 Content 쓰기 예약은0, Art 후속 실제 main은 새 입력으로 직렬 통합한다. 실서버 두 계정·CI/DB·최종 PR2 신규 독립 판정과 C1~C10·두 PR 경계는 유지한다.
+**다음 첫 일:** Art 리드와 C9의 실제 성장 효과 API·main PR/commit·호출 수명/중복·실패·취소 계약과 파일 소유를 확인한다. 현재 마지막 Art `msg_31026855ae0e`까지 API는 미정이므로 임시 효과/API를 만들지 않는다. UI.unity/HUD3 controller의 Content 쓰기 예약은0이며 Art의 실제 main은 확인된 새 입력으로 직렬 통합한 뒤 같은 goal의 신규 외부 구현·독립 검증을 발행한다. 실서버 두 계정의 실행 전제/서버·DB/자원 창은 메인·기술 소유자와 조율하고 관리자/UAC·SQL서비스/인증·방화벽을 직접 바꾸지 않는다. F03의 메인 원문·조건 근거는 `qa-ui-gameplay-access-fix/lead-f03-main-decision.md`로 최종 신규 독립 검증자에게 넘긴다. 닫힌 작업자·새p와 이전 snapshot/Library/before/창은 재사용하지 않는다. 전체 PR2 신규 독립 판정과 C1~C10·두 PR 경계는 유지한다.
+
+### 10-18 산출물경로 교정과 GUI 완주 정산
+
+동일 작업의 신규 Astra high `task_86876e24095b`/`ctx_873ea8dca6c2`가 기존 `GuildGameplayWindowTestTools.Recorder`의 directory만 +12/-1로 교정했다. 원caseName·정확19 fullname·capture stage·단정·입력·wire·cleanup과 나머지2244 source/meta·고정28은 보존했다. 요청·최초명령·화면은 gpt-6-astra high, backend actual unknown이다. report SHA `D4EBBDA29ACAF1CEA29BB2FE5525CDD9B575ED3ECC29CEE6B445F1481198B206`, writing-closed `6D70F6DE2FA61672B4A7BD0E3F54B1103ECE14748E87FC9C59FAEFD5A4286880`, owned manifest `30BF180879348ED7D4755935D32AD5B04CD4A11F66A3EBF7B7D86B92279E148D`와157현물 길이/hash/UTCmtime·source2245·실행2cs·3ps1을 직접 대조하고 succeeded·정확 pane 종료/reclaimable0으로 정산했다. 전체 PR2 최종 독립 판정은 아니다.
+
+새p/GUI Normal/13argv/root1/retry0은18:23:25.7907107~18:33:30.9865401Z,605.2005483초/exit0/timeoutfalse다. 원XML `43A62AC70869F697D92F32F52E5D04956A8701939C174DF761954A908172D3C5`는 신규6+기존13=19PASS/실패·skip·inconclusive0, 이름집합 차이0이다. 원PNG37(709×399=9/802×451=19/1920×1080=9)+captureJSON37+summary6=80개가 계획과 정확히 같고 예정·실제 최장경로218자다. 작업자는 원본37개를 전수 판독했고 리드는 세 크기의 보상+인벤토리/닫힌 월드 원본6장을 읽었다. 세 해상도 모두 확인40 Wait 통과→보상숨김→두창닫기/raycast0→world attacks0→1(45=1/46=1)과 마지막 캡처까지 도달해 F02 수집 차단을 해소했다. 별도 raw C40 숫자 출력은 없으므로 실제 Wait/후속원시/성공을 근거로 하며 수기 측정 로그를 채우지 않는다. 이전260자 OS/Mono 원인 세부는 재현 미실행 추론 그대로다.
+
+고정 worker return1회18:33:51.8171498~18:33:59.1353918Z 뒤 ownroot0/own관측자식live0/미분류PPID0/UnityHub0·filePrefs10 차이0/GVS원부재·복귀분기0였다. 관측자식은9absent와1PID재사용foreign-current이며 소유주장/kill0, prewarm33308은 반환시점 부재만 관측/역사birth unknown이다. 리드는 이번 fresh Registry before만 사용해 기존 Binary5를 전체/즉시guard 후 exact복귀해137전체차이0을 확인하고 Main `msg_a28da38b4fae`에 전체창18:35:35.9301968Z 반환을 보고했다. 이후 live관측0이다. PackageCache의 com.unity.2d.tooling SpriteAtlasIssueReport 장경로 DirectoryNotFoundException8행은 환경진단으로 보존하며 capture F02/시험실패·고유결함8개로 합산하지 않는다. import 전체 정상이나 HUD 전체 가독성 통과를 주장하지 않는다.
+
+근거는 E/`pr2-server-integration-20261018/qa-ui-gameplay-path-fix/`의 report·lead-settlement-audit·lead-static-results-audit·lead-window-return와 원시다. 기존 liveness helper는12신호+공식답변2에서 정적 원본 판독/보고 중311초 초과2개(18:34:10→18:39:21→18:44:32Z), 공식대기507/99초 제외를 기록했다. 추가감사·도구수리 없이 원시를 보존한다. 실행 goalD1ED bytes는 `executed-goal-D1ED.md`, 실행2cs는 `runs/executed-tests/`에 있다. F03의 이번 가림 원본·메인 조건부 판단/코드 조건과 O01 유지됩/니다. 줄바꿈은 보존한다. C9/실서버 두 계정/DB/CI·현재 조합의 최종 신규 독립 검증을 이번19PASS로 대체하지 않는다.
 
 ### 10-18 접근성 교정 GUI 수집 정산
 

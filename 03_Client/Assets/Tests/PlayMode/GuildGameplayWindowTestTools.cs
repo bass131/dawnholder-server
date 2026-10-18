@@ -110,7 +110,18 @@ namespace Dawnholder.Client.Tests.PlayMode
                 _height = height;
                 string root = Environment.GetEnvironmentVariable("DAWNHOLDER_GUILD_VERIFY_CAPTURE_DIR");
                 Assert.IsFalse(string.IsNullOrWhiteSpace(root), "runner supplies the owned capture directory");
-                _directory = Path.Combine(root, name);
+                // Keep case identity in observations while keeping capture paths short.
+                string directoryName = name switch
+                {
+                    nameof(GuildGameplayWindowTests.SceneOverlay709_NormalUpperAndPriorityWindows) => "s709",
+                    nameof(GuildGameplayWindowTests.SceneOverlay802_NormalUpperAndPriorityWindows) => "s802",
+                    nameof(GuildGameplayWindowTests.SceneOverlay1920_NormalUpperAndPriorityWindows) => "s1920",
+                    nameof(GuildGameplayWindowTests.TownTrigger_LocalRemotePointerAndExistingE_QSkills) => "town",
+                    nameof(GuildGameplayWindowTests.EntryGates_BeforeReadyAndDeathNoPurchases) => "gates",
+                    nameof(GuildGameplayWindowTests.MenuTransitionAndOutsideTown_NoPurchases) => "menu",
+                    _ => name
+                };
+                _directory = Path.Combine(root, directoryName);
                 Directory.CreateDirectory(_directory);
                 TMP_Text.OnMissingCharacter += Missing;
                 Event("start", "finite loopback; virtual input; actual bootstrap; no production server");
