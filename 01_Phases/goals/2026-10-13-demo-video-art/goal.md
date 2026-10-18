@@ -1,12 +1,14 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **[252 - 공통 UI 조각 반입과 창 적용](https://github.com/bass131/dawnholder-server/pull/252) PR을 생성했다. 사용자 A로①PartyHUD VIS-05②인벤토리/NPC/파티창 실제전후·최소는HUD PR10-20완료조건으로이관한미완항목이다. 신규독립실사는새제품결함관측0·보상current/before기술근거를확인했으며원판정범위/한계는보존했다. 정확head CI와발행원시는 `ui-pr-publication/`에연결하고미관은병합승인요청때PNG4와함께사용자확인한다. 예전4판정원문미이관·재판정안함,전체goal/병합완료아님을유지한다.**
+상태: **UI 창 PR252는 메인이 사용자 정확head 승인 뒤2026-10-18T10:09:01Z 병합했다(main db0169350dfe54ba6ed247684caae4e498e24c72). 보상 미관 수용은 메인이 결정항목 효과에 따라 전달한 것으로 기록한다. 최신main 새브랜치 `feat/demo-video-art-hud-20261018`에서 HUD PR을 준비한다. 대상그림5장의기존GUID/meta·atlas크기·코드/배치/씬을보존하고,이관①PartyHUD VIS-05②인벤토리/NPC/파티창실제전후·최소를이PR에서확인한다. 새Unity/그림변경은아직0,전체goal완료아니다.**
 
-**다음 첫 일:** PR252의정확head CI결과·독립원문·PNG4와발행원시를메인에전달하고메인의원천대조/사용자미관·병합승인을기다린다. CI원시와최종head40자는 `ui-pr-publication/`에서확인한다. 승인전병합/auto-merge0·추가Unity/작업자0,이관①②는HUD PR미완완료조건으로유지한다. 제품/시험은독립검토d981af64이후불변이며이후커밋은goal관리기록뿐이다.
+**다음 첫 일:** 신규 외부 Astra xhigh가 기존capture fixture의사본을보완해HUD baseline/이전3창의실제1920·1280 캡처를준비한다. HUD원그림5장과metadata를먼저보존하고격리snapshot/정확argv/예상시간·prefs백업이READY면새Main창을요청한다. 같은B1조각을쓰는그림준비는Git밖에서만하며원PNG5장적용은baseline캡처종료뒤다. 이후신규current캡처와PR전독립1회로①②/그림의현재·이전을함께판정한다. 범위와순서는 [HUD PR 실행 범위](hud-pr-scope.md), 원시는 `hud-pr-start/`와후속계약폴더다. 새감시/검사도구·생성호출·제품코드/씬변경0이다.
 
 **병렬 콘셉트:** 사용자 A 화풍의 8장 제작과 신규 Astra 독립 기술 PASS·정산·정확 종료를 마쳤다. 메인은 msg_d8863c625f99로 판정 앞부분과 8장 SHA의 직접 대조를 확인했다. 실제1672×941·호출8/10·남은2회 피드백 전 사용0이며, 사용자 미관 최종승인·제품 구현·실제 게임 캡처와 구분한다. 최신 원문/원시는 아래 「화면 콘셉트 8장 — 신규 Astra 독립 기술검토 PASS」와 screen-concepts-review-retry-launch/에 있다.
 
 ## 재개 지점
+
+- **252 - UI 병합 확인·HUD 후속 착수:** 메인 `msg_3ed580c79335`의승인원문 「병합 승인: PR252 head 4ce8a4c339cd24d82ade786ec073daa5e13157ae」를전달받고 GitHub MERGED/merge db0169350dfe54ba6ed247684caae4e498e24c72·origin/main동일을직접확인했다. 메인은결정항목문구에따라보상미관도수용으로보았다고전달했으며별도직접미관원문을만들지않는다. 리드/Codex병합0,최신main에서새HUD브랜치를만들었고기존Minimap/설정bytes불일치0이다. Content에UI API실제main반영을통지했고성장효과API미정은유지했다.
 
 - **252 - UI 창 PR 생성:** 사용자A반영후일반push로최초head `88be65669cbc676fd1fc817f4a1fc8080cce4f09`를올리고같은05·06경계의ready PR252를열었다. 이전최종독립판정과제품source를보존한goal관리후속이며,최종head/CI는Git밖 `ui-pr-publication/` receipt에서고정한다. 미이관/미완·①②HUD이관과보상미관후행을본문에적었고SENTIS/Minimap은PRdiff제외·추가Unity/병합0이다.
 
@@ -216,6 +218,7 @@
 |---|---|---|---|
 | 시범 PR | 문서 실사: 문서만 바뀐다 | 비교 글·결과 기록은 리드(보고서 자료는 리드 작성), 시범 그림 생성은 신규 `gpt-6.1-sol` max | 신규 Astra |
 | UI 창 PR | 강: 다섯 파일의 코드와 실제 화면, 제품+시험 50줄 이상 예상 | 그림은 신규 Sol, 적용 코드는 신규 `gpt-6-astra` xhigh(배정 신호 4: 배치 판단이 남은 다파일 화면 변경) | 신규 `claude-opus-5-5`(Astra 구현) |
+| HUD PR | 강: 5개 atlas의직렬화/표시보존과실제GUI·메모리크기/프로세스·prefs수명 | 신규 Astra xhigh(그림조립4, 캡처준비2·3·4) | 신규 독립세션1명, 임시모델배정과 실제창원시/최종diff 함께실사 |
 | 효과 PR | 강: 새 셰이더와 효과 코드, 50줄 이상 예상 | 그림은 신규 Sol, 셰이더·효과는 신규 Astra(신호 4) | 신규 `claude-opus-5-5` |
 | 발판·지형 PR | 그림·`.meta`만 바꾸면 약, 씬 참조를 바꾸면 강. 애매하면 강 | 그림은 신규 Sol, 씬 참조 교체는 범위 결정 때 배정 | 등급에 따름 |
 | 종료 기록 PR | 문서 실사 | 리드 | 신규 Astra |
