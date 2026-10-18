@@ -19,6 +19,16 @@ internal sealed class CharacterAdmissionLifetime
     SafeCheckpoint? _baseline;
     Task? _close;
 
+    CharacterAdmissionLifetime(TimeProvider timeProvider)
+    {
+        _identity = null!;
+        _owner = null!;
+        _repository = null!;
+        _defaults = null!;
+        _timeProvider = timeProvider;
+        _admission = Task.FromResult(new CharacterAdmissionResult(CharacterLoadStatus.Unavailable));
+    }
+
     internal CharacterAdmissionLifetime(PersistenceIdentity identity, ICharacterRepository repository,
         TimeProvider timeProvider, int queueCapacity, CharacterClass intendedClass, SafeDefaults defaults)
     {
@@ -33,6 +43,8 @@ internal sealed class CharacterAdmissionLifetime
     }
 
     internal Task<CharacterAdmissionResult> Completion => _admission;
+
+    internal static CharacterAdmissionLifetime Rejected(TimeProvider timeProvider) => new(timeProvider);
 
     async Task<CharacterAdmissionResult> LoadAsync()
     {
@@ -87,6 +99,7 @@ internal sealed class CharacterAdmissionLifetime
         {
             if (_close is not null) return _close;
             _closing = true;
+            if (_owner is null) return _close = Task.CompletedTask;
             PersistenceDeadline deadline = PersistenceDeadline.FromBudget(_timeProvider, TimeSpan.FromSeconds(2));
             SafeCheckpoint? changed = projection is not null && !projection.Equals(_baseline) ? projection : null;
             Task<PersistenceCloseResult> ownerClose = _owner.CloseAsync(

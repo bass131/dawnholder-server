@@ -837,7 +837,12 @@ Test-StepRefusedBeforeChange -Name 'LC-17 observed WSL range 0.0.0.0/0' -Code 'W
 
 # ==== LC-18 a failing adapter operation leaves a recoverable, unsuccessful state ============================
 # The forced failure text carries a secret-shaped sentinel, as a provider error with a connection string might.
+$applyFailureCodes = @{
+    SetTcpPort = 'WINDOWS_SQL_APPLY_FAILED_SET_TCP_PORT'
+    CreateDatabase = 'WINDOWS_SQL_APPLY_FAILED_CREATE_DATABASE'
+}
 foreach ($failing in @('SetTcpPort', 'CreateDatabase')) {
+    $expectedFailureCode = $applyFailureCodes[$failing]
     $failed = Invoke-StepCase -PlanName 'Approved' -Step 'Apply' -Responses (New-FreshResponses) `
         -FailOperation $failing -FailMessage ('provider failure; Password=' + $secretSentinel)
     $failIndex = Get-FirstIndex -Operations $failed.Operations -Name $failing
@@ -852,8 +857,8 @@ foreach ($failing in @('SetTcpPort', 'CreateDatabase')) {
     $injected = $failIndex -ge 0
     $failedDetail = Get-CaseDetail -Case $failed
 
-    Assert-True -Name ('LC-18 failure at {0}: Apply throws exactly WINDOWS_SQL_APPLY_FAILED' -f $failing) `
-        -Condition ($injected -and $failed.Error -ceq 'WINDOWS_SQL_APPLY_FAILED') -Detail $failedDetail
+    Assert-True -Name ('LC-18 failure at {0}: Apply throws exactly {1}' -f $failing, $expectedFailureCode) `
+        -Condition ($injected -and $failed.Error -ceq $expectedFailureCode) -Detail $failedDetail
     Assert-True -Name ('LC-18 failure at {0}: only lifecycle state writes follow the failed operation' -f $failing) `
         -Condition ($injected -and $nonRecordAfter.Count -eq 0 -and $afterFailure.Count -ge 1) -Detail $failedDetail
     Assert-True -Name ('LC-18 failure at {0}: no cleanup, restore or removal runs on its own' -f $failing) `
@@ -882,7 +887,7 @@ foreach ($failing in @('SetTcpPort', 'CreateDatabase')) {
     'state, request or environment'
     $sentinelAbsent = Test-SentinelAbsent -Case $failed
     Assert-True -Name ($sentinelName -f $failing) `
-        -Condition ($injected -and $failed.Error -ceq 'WINDOWS_SQL_APPLY_FAILED' -and $sentinelAbsent) `
+        -Condition ($injected -and $failed.Error -ceq $expectedFailureCode -and $sentinelAbsent) `
         -Detail $failedDetail
 }
 

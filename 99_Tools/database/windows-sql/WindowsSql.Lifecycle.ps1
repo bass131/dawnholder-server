@@ -1,4 +1,18 @@
 # Only this boundary invokes the adapter. Provider streams and exception text never become public results.
+function Get-WindowsSqlMigrationFailureCode {
+    param([Exception]$Exception)
+    $pattern = '^WINDOWS_SQL_APPLY_FAILED_APPLY_MIGRATIONS_' +
+        '(OWNED_DATABASE|BEGIN_TRANSACTION|LOCK|MIGRATION_00[1-5]|HISTORY_00[1-5]|' +
+        'MODULES|CATALOG|COMMIT|ROLLBACK|TRANSACTION_DISPOSE|CONNECTION_DISPOSE)_SQL_(UNKNOWN|N?[0-9]{1,10})\z'
+    $current = $Exception
+    while ($null -ne $current) {
+        $code = $current.Data['WindowsSqlMigrationFailureCode']
+        if ($code -is [string] -and $code -cmatch $pattern) { return $code }
+        $current = $current.InnerException
+    }
+    return $null
+}
+
 function Invoke-WindowsSqlOperation {
     param($Adapter, [string]$Operation, $Request, [string]$FailureCode = 'WINDOWS_SQL_ADAPTER_FAILED')
     try {
@@ -14,7 +28,33 @@ function Invoke-WindowsSqlOperation {
         }
         return , $values[0]
     }
-    catch { throw $FailureCode }
+    catch {
+        if ($FailureCode -ceq 'WINDOWS_SQL_APPLY_FAILED' -and $Operation -ceq 'ApplyMigrations') {
+            $migrationCode = Get-WindowsSqlMigrationFailureCode -Exception $_.Exception
+            if ($null -ne $migrationCode) {
+                # Forward only the whitelisted marker, never Message or the original exception chain.
+                $failure = [InvalidOperationException]::new($migrationCode)
+                $failure.Data['WindowsSqlMigrationFailureCode'] = $migrationCode
+                throw $failure
+            }
+        }
+        if ($FailureCode -ceq 'WINDOWS_SQL_APPLY_FAILED') {
+            # Before a snapshot exists there is no failure journal; expose only fixed operation names.
+            $FailureCode = switch -CaseSensitive ($Operation) {
+                'ReadMachineIdentity' { 'WINDOWS_SQL_APPLY_FAILED_READ_MACHINE_IDENTITY' }
+                'ReadInstanceIdentity' { 'WINDOWS_SQL_APPLY_FAILED_READ_INSTANCE_IDENTITY' }
+                'ReadInstanceConfiguration' { 'WINDOWS_SQL_APPLY_FAILED_READ_INSTANCE_CONFIGURATION' }
+                'ReadPortOwner' { 'WINDOWS_SQL_APPLY_FAILED_READ_PORT_OWNER' }
+                'ReadNetworkMode' { 'WINDOWS_SQL_APPLY_FAILED_READ_NETWORK_MODE' }
+                'ReadTargetDatabase' { 'WINDOWS_SQL_APPLY_FAILED_READ_TARGET_DATABASE' }
+                'ReadTargetLogin' { 'WINDOWS_SQL_APPLY_FAILED_READ_TARGET_LOGIN' }
+                'ReadLifecycleState' { 'WINDOWS_SQL_APPLY_FAILED_READ_LIFECYCLE_STATE' }
+                'SaveConfigurationSnapshot' { 'WINDOWS_SQL_APPLY_FAILED_SAVE_CONFIGURATION_SNAPSHOT' }
+                default { 'WINDOWS_SQL_APPLY_FAILED' }
+            }
+        }
+        throw $FailureCode
+    }
 }
 
 function New-WindowsSqlRequest {
@@ -170,13 +210,30 @@ function Invoke-WindowsSqlApply {
     }
     catch {
         # A refusal before the first snapshot must not itself create the first write as a failure journal.
-        if ($null -eq $snapshot) { throw 'WINDOWS_SQL_APPLY_FAILED' }
+        if ($null -eq $snapshot) { throw 'WINDOWS_SQL_APPLY_FAILED_SAVE_CONFIGURATION_SNAPSHOT' }
+        # Use the locally tracked operation, never provider text, including when the failure journal cannot persist.
+        $failureCode = switch -CaseSensitive ($operation) {
+            'SetMixedAuthentication' { 'WINDOWS_SQL_APPLY_FAILED_SET_MIXED_AUTHENTICATION' }
+            'SetTcpPort' { 'WINDOWS_SQL_APPLY_FAILED_SET_TCP_PORT' }
+            'SetServerCertificate' { 'WINDOWS_SQL_APPLY_FAILED_SET_SERVER_CERTIFICATE' }
+            'RestartService' { 'WINDOWS_SQL_APPLY_FAILED_RESTART_SERVICE' }
+            'AddFirewallRule' { 'WINDOWS_SQL_APPLY_FAILED_ADD_FIREWALL_RULE' }
+            'CreateDatabase' { 'WINDOWS_SQL_APPLY_FAILED_CREATE_DATABASE' }
+            'ApplyMigrations' { 'WINDOWS_SQL_APPLY_FAILED_APPLY_MIGRATIONS' }
+            'CreateRuntimeLogin' { 'WINDOWS_SQL_APPLY_FAILED_CREATE_RUNTIME_LOGIN' }
+            'WriteLifecycleState' { 'WINDOWS_SQL_APPLY_FAILED_WRITE_LIFECYCLE_STATE' }
+            default { 'WINDOWS_SQL_APPLY_FAILED' }
+        }
+        if ($operation -ceq 'ApplyMigrations') {
+            $migrationCode = Get-WindowsSqlMigrationFailureCode -Exception $_.Exception
+            if ($null -ne $migrationCode) { $failureCode = $migrationCode }
+        }
         # Failure never becomes rollback or success, even if journaling also fails.
         $failed = New-WindowsSqlState @stateArguments -Status 'Failed' -Snapshot $snapshot `
             -Completed $completed.ToArray() -FailedOperation $operation -PendingOperation $pending -FirewallRule $rule
         try { Write-WindowsSqlState -Adapter $Adapter -State $failed -FailureCode 'WINDOWS_SQL_APPLY_FAILED' }
-        catch { }
-        throw 'WINDOWS_SQL_APPLY_FAILED'
+        catch { throw ($failureCode + '_WRITE_FAILURE_JOURNAL') }
+        throw $failureCode
     }
 }
 

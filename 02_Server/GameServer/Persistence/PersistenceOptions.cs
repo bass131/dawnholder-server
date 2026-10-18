@@ -6,12 +6,23 @@ namespace Dawnholder.Server.GameServer.Persistence;
 /// <summary>공개 설정과 고정 보안/예산 계약. 자격증명은 이 값에 포함하지 않는다.</summary>
 public sealed class PersistenceOptions
 {
-    [JsonConstructor]
     public PersistenceOptions(
         string persistedAccountName, string database, string serverEndpoint,
-        byte slotId, Guid accountId, Guid characterId)
+        byte slotId, Guid accountId, Guid characterId) : this(database, serverEndpoint)
     {
         PersistenceAccountSelector selector = new(persistedAccountName, accountId);
+        BoundIdentity = new PersistenceIdentity(slotId, accountId, characterId);
+        PersistedAccountName = selector.NormalizedAccountName;
+    }
+
+    [JsonConstructor]
+    public PersistenceOptions(int profileVersion, string database, string serverEndpoint) : this(database, serverEndpoint)
+    {
+        if (profileVersion != 2) throw new ArgumentException("A version 2 catalog profile is required.", nameof(profileVersion));
+    }
+
+    PersistenceOptions(string database, string serverEndpoint)
+    {
         if (string.IsNullOrWhiteSpace(database) || database.Length > 128 ||
             database != database.Trim() || database.Any(char.IsControl))
             throw new ArgumentException("An explicit database name is required.", nameof(database));
@@ -24,20 +35,20 @@ public sealed class PersistenceOptions
             !int.TryParse(serverEndpoint.AsSpan(separator + 1), NumberStyles.None,
                 CultureInfo.InvariantCulture, out int port) || port is < 1 or > 65535)
             throw new ArgumentException("An explicit TCP endpoint and port are required.", nameof(serverEndpoint));
-        Identity = new PersistenceIdentity(slotId, accountId, characterId);
-        PersistedAccountName = selector.NormalizedAccountName;
         Database = database;
         ServerEndpoint = serverEndpoint;
     }
 
-    public string PersistedAccountName { get; }
+    public int ProfileVersion => 2;
+    public string PersistedAccountName { get; } = string.Empty;
     public string Database { get; }
     public string ServerEndpoint { get; }
     public byte SlotId => Identity.SlotId;
     public Guid AccountId => Identity.AccountId;
     public Guid CharacterId => Identity.CharacterId;
     [JsonIgnore]
-    public PersistenceIdentity Identity { get; }
+    public PersistenceIdentity Identity => BoundIdentity ?? throw new InvalidOperationException("Catalog profiles have no fixed character.");
+    internal PersistenceIdentity? BoundIdentity { get; }
     public int ConnectTimeoutSeconds => 5;
     public int CommandTimeoutSeconds => 5;
     public int LockTimeoutMilliseconds => 2000;

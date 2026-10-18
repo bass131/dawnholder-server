@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using System.Net;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Persistence;
+using Dawnholder.Server.GameServer.Persistence.Admission;
+using Dawnholder.Server.GameServer.Persistence.Catalog;
 using Dawnholder.Server.GameServer.Sessions;
 using Dawnholder.Server.Network;
 
@@ -14,6 +16,7 @@ public sealed class ServerHost : IDisposable
     readonly GameWorld _world;
     readonly Listener _listener = new();
     readonly IPEndPoint _endPoint;
+    readonly CharacterAdmissionServices? _persistence;
     readonly ConcurrentDictionary<GameSession, byte> _sessions = new();
     bool _started;
     bool _worldStarted;
@@ -25,9 +28,12 @@ public sealed class ServerHost : IDisposable
     {
         _world = world ?? throw new ArgumentNullException(nameof(world));
         _endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
+        _persistence = world.Persistence;
     }
 
     public EndPoint? LocalEndPoint => _listener.LocalEndPoint;
+    public CharacterStorageMode StorageMode => _persistence?.Mode ?? CharacterStorageMode.Legacy;
+    public CharacterCatalogService? CharacterCatalog => _persistence?.Catalog;
 
     public void Start()
     {
@@ -35,6 +41,10 @@ public sealed class ServerHost : IDisposable
         {
             if (_started || _stopped || _stopping != 0)
                 throw new InvalidOperationException("ServerHost는 한 번만 시작할 수 있습니다.");
+            if (!ReferenceEquals(_persistence, _world.Persistence))
+                throw new InvalidOperationException("Storage configuration changed after host construction.");
+            if (StorageMode == CharacterStorageMode.Stored && CharacterCatalog is null)
+                throw new InvalidOperationException("Stored mode requires a character catalog before host startup.");
             _started = true;
             try
             {
@@ -116,6 +126,8 @@ public sealed class ServerHost : IDisposable
             throw new TimeoutException("월드의 세션 해제가 아직 완료되지 않았습니다.");
         if (_worldStarted && !_world.FlushPersistenceClosuresAsync(deadline).Wait(deadline.GetRemaining()))
             throw new TimeoutException("영속성 종료의 확정이 아직 완료되지 않았습니다.");
+        if (_persistence is not null && !_persistence.FlushClosuresAsync(deadline).Wait(deadline.GetRemaining()))
+            throw new TimeoutException("Catalog shutdown remains incomplete.");
         _world.Stop(deadline.GetRemaining());
         _worldStarted = false;
         _stopped = true;

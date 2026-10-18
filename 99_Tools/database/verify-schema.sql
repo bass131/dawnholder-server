@@ -14,6 +14,35 @@ DECLARE @columns TABLE
     IsNullable bit
 );
 INSERT @columns VALUES
+    ('Account', 'NormalizedName', 'varchar', 16, 0, 0),
+    ('Character', 'Slot', 'tinyint', 1, 0, 0),
+    ('Character', 'Name', 'nvarchar', 24, 0, 0),
+    ('Character', 'NameKey', 'nvarchar', 24, 0, 0),
+    ('CharacterOperation', 'CharacterId', 'uniqueidentifier', 16, 0, 0),
+    ('CharacterCreateOperation', 'OperationId', 'uniqueidentifier', 16, 0, 0),
+    ('CharacterCreateOperation', 'AccountId', 'uniqueidentifier', 16, 0, 0),
+    ('CharacterCreateOperation', 'Payload', 'varbinary', 512, 0, 0),
+    ('CharacterCreateOperation', 'ResultCode', 'varchar', 32, 0, 0),
+    ('CharacterCreateOperation', 'CharacterId', 'uniqueidentifier', 16, 0, 1),
+    ('CharacterCreateOperation', 'RecordedUtc', 'datetime2', 7, 3, 0),
+    ('CharacterWallet', 'CharacterId', 'uniqueidentifier', 16, 0, 0),
+    ('CharacterWallet', 'Gold', 'int', 4, 0, 0),
+    ('CharacterWallet', 'Revision', 'bigint', 8, 0, 0),
+    ('CharacterWallet', 'Version', 'timestamp', 8, 0, 0),
+    ('CharacterWeapon', 'CharacterId', 'uniqueidentifier', 16, 0, 0),
+    ('CharacterWeapon', 'Level', 'tinyint', 1, 0, 0),
+    ('CharacterWeapon', 'Revision', 'bigint', 8, 0, 0),
+    ('CharacterWeapon', 'Version', 'timestamp', 8, 0, 0),
+    ('Guild', 'GuildId', 'bigint', 8, 0, 0),
+    ('Guild', 'Name', 'nvarchar', 64, 0, 0),
+    ('Guild', 'StrongholdLevel', 'tinyint', 1, 0, 0),
+    ('Guild', 'Treasury', 'int', 4, 0, 0),
+    ('Guild', 'Revision', 'bigint', 8, 0, 0),
+    ('Guild', 'Version', 'timestamp', 8, 0, 0),
+    ('GuildMember', 'AccountId', 'uniqueidentifier', 16, 0, 0),
+    ('GuildMember', 'GuildId', 'bigint', 8, 0, 0),
+    ('GuildMember', 'JoinedUtc', 'datetime2', 7, 3, 0),
+    ('GuildMember', 'JoinSeedGranted', 'bit', 1, 0, 0),
     ('SchemaVersion', 'Version', 'int', 4, 0, 0),
     ('SchemaVersion', 'Name', 'nvarchar', 256, 0, 0),
     ('SchemaVersion', 'Checksum', 'char', 64, 0, 0),
@@ -77,7 +106,7 @@ IF EXISTS (
     AND c.is_identity = 0 AND c.is_computed = 0
     AND c.is_sparse = 0 AND c.generated_always_type = 0
 ) OR (SELECT COUNT(*) FROM sys.columns c JOIN sys.tables t ON t.object_id = c.object_id
-    WHERE t.schema_id = SCHEMA_ID('dh')) <> 44
+    WHERE t.schema_id = SCHEMA_ID('dh')) <> (SELECT COUNT(*) FROM @columns)
     THROW 51001, 'Column/type/nullability drift detected.', 1;
 DECLARE @indexes TABLE
 (
@@ -89,14 +118,20 @@ DECLARE @indexes TABLE
     IndexType tinyint
 );
 INSERT @indexes VALUES
+    ('Account', 'UQ_Account_NormalizedName', 'NormalizedName', 1, 0, 2),
+    ('Character', 'UQ_Character_NameKey', 'NameKey', 1, 0, 2),
+    ('CharacterCreateOperation', 'PK_CharacterCreateOperation', 'OperationId', 1, 1, 1),
+    ('CharacterWallet', 'PK_CharacterWallet', 'CharacterId', 1, 1, 1),
+    ('CharacterWeapon', 'PK_CharacterWeapon', 'CharacterId', 1, 1, 1),
+    ('Guild', 'PK_Guild', 'GuildId', 1, 1, 1),
+    ('GuildMember', 'PK_GuildMember', 'AccountId', 1, 1, 1),
     ('SchemaVersion', 'PK_SchemaVersion', 'Version', 1, 1, 1),
     ('SchemaVersion', 'UQ_SchemaVersion_Name', 'Name', 1, 0, 2),
     ('Account', 'PK_Account', 'AccountId', 1, 1, 1),
     ('Character', 'PK_Character', 'CharacterId', 1, 1, 1),
     ('Character', 'IX_Character_AccountId', 'AccountId', 0, 0, 2),
     ('CharacterProgress', 'PK_CharacterProgress', 'CharacterId', 1, 1, 1),
-    ('CharacterAuthority', 'PK_CharacterAuthority', 'SlotId', 1, 1, 1),
-    ('CharacterAuthority', 'UQ_CharacterAuthority_CharacterId', 'CharacterId', 1, 0, 2),
+    ('CharacterAuthority', 'PK_CharacterAuthority', 'CharacterId', 1, 1, 1),
     ('CharacterOperation', 'PK_CharacterOperation', 'OperationId', 1, 1, 1),
     ('ModuleRelease', 'PK_ModuleRelease', 'Version', 1, 1, 1),
     ('ModuleDefinition', 'PK_ModuleDefinition', 'ObjectName', 1, 1, 1);
@@ -116,8 +151,23 @@ IF EXISTS (
     AND i.ignore_dup_key = 0 AND ic.key_ordinal = 1 AND ic.is_descending_key = 0
     AND (SELECT COUNT(*) FROM sys.index_columns x WHERE x.object_id = i.object_id AND x.index_id = i.index_id) = 1
 ) OR (SELECT COUNT(*) FROM sys.indexes i JOIN sys.tables t ON t.object_id = i.object_id
-    WHERE t.schema_id = SCHEMA_ID('dh') AND i.index_id > 0) <> 11
+    WHERE t.schema_id = SCHEMA_ID('dh') AND i.index_id > 0) <> (SELECT COUNT(*) + 1 FROM @indexes)
     THROW 51002, 'Primary/unique/FK lookup index drift detected.', 1;
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes i WHERE i.object_id = OBJECT_ID('dh.Character')
+    AND i.name = 'UQ_Character_AccountSlot' AND i.is_unique = 1 AND i.type = 2
+    AND i.is_disabled = 0 AND i.has_filter = 0 AND i.ignore_dup_key = 0 AND i.is_hypothetical = 0
+    AND (SELECT COUNT(*) FROM sys.index_columns c WHERE c.object_id = i.object_id AND c.index_id = i.index_id) = 2
+    AND EXISTS(SELECT 1 FROM sys.index_columns c WHERE c.object_id = i.object_id AND c.index_id = i.index_id
+        AND c.key_ordinal = 1 AND c.is_descending_key = 0 AND COL_NAME(c.object_id, c.column_id) = 'AccountId')
+    AND EXISTS(SELECT 1 FROM sys.index_columns c WHERE c.object_id = i.object_id AND c.index_id = i.index_id
+        AND c.key_ordinal = 2 AND c.is_descending_key = 0 AND COL_NAME(c.object_id, c.column_id) = 'Slot'))
+    THROW 51002, 'Account slot uniqueness drift detected.', 1;
+IF EXISTS(SELECT 1 FROM sys.columns c WHERE
+    ((c.object_id = OBJECT_ID('dh.Account') AND c.name = 'NormalizedName') OR
+    (c.object_id = OBJECT_ID('dh.Character') AND c.name IN ('Name', 'NameKey')))
+    AND c.collation_name <> 'Latin1_General_100_BIN2')
+    THROW 51001, 'Catalog name collation drift detected.', 1;
 DECLARE @foreignKeys TABLE
 (
     Name sysname,
@@ -127,9 +177,14 @@ DECLARE @foreignKeys TABLE
     RefColumn sysname
 );
 INSERT @foreignKeys VALUES
+    ('FK_CharacterAuthority_Character', 'CharacterAuthority', 'CharacterId', 'Character', 'CharacterId'),
+    ('FK_CharacterWallet_Character', 'CharacterWallet', 'CharacterId', 'Character', 'CharacterId'),
+    ('FK_CharacterWeapon_Character', 'CharacterWeapon', 'CharacterId', 'Character', 'CharacterId'),
+    ('FK_GuildMember_Account', 'GuildMember', 'AccountId', 'Account', 'AccountId'),
+    ('FK_GuildMember_Guild', 'GuildMember', 'GuildId', 'Guild', 'GuildId'),
     ('FK_Character_Account', 'Character', 'AccountId', 'Account', 'AccountId'),
     ('FK_CharacterProgress_Character', 'CharacterProgress', 'CharacterId', 'Character', 'CharacterId'),
-    ('FK_CharacterOperation_Authority', 'CharacterOperation', 'SlotId', 'CharacterAuthority', 'SlotId');
+    ('FK_CharacterOperation_Authority', 'CharacterOperation', 'CharacterId', 'CharacterAuthority', 'CharacterId');
 IF EXISTS (
     SELECT * FROM @foreignKeys
     EXCEPT
@@ -142,7 +197,7 @@ IF EXISTS (
     AND fk.delete_referential_action = 0 AND fk.update_referential_action = 0
     AND OBJECT_SCHEMA_NAME(fk.referenced_object_id) = 'dh'
 ) OR (SELECT COUNT(*) FROM sys.foreign_key_columns fc JOIN sys.foreign_keys fk ON fk.object_id = fc.constraint_object_id
-    WHERE fk.schema_id = SCHEMA_ID('dh')) <> 3
+    WHERE fk.schema_id = SCHEMA_ID('dh')) <> (SELECT COUNT(*) FROM @foreignKeys)
     THROW 51003, 'Foreign key drift detected.', 1;
 -- Compare SQL Server's stored expression text as well as names/ownership.
 -- Deliberately fail closed even for a manually rewritten equivalent expression.
@@ -173,7 +228,7 @@ IF EXISTS (
 ) OR (SELECT COUNT(*) FROM sys.check_constraints WHERE schema_id = SCHEMA_ID('dh')
     AND parent_object_id IN (
         OBJECT_ID('dh.SchemaVersion'), OBJECT_ID('dh.Account'),
-        OBJECT_ID('dh.Character'), OBJECT_ID('dh.CharacterProgress'))) <> 4
+        OBJECT_ID('dh.Character'), OBJECT_ID('dh.CharacterProgress'))) <> 7
     THROW 51004, 'Check expression, ownership or trust drift detected.', 1;
 DECLARE @defaults TABLE
 (
@@ -198,7 +253,7 @@ IF EXISTS (
     FROM sys.default_constraints WHERE schema_id = SCHEMA_ID('dh')
 ) OR (SELECT COUNT(*) FROM sys.default_constraints WHERE schema_id = SCHEMA_ID('dh')) <> 5
     THROW 51005, 'Default expression or ownership drift detected.', 1;
-IF (SELECT COUNT(*) FROM sys.tables WHERE schema_id = SCHEMA_ID('dh')) <> 8
+IF (SELECT COUNT(*) FROM sys.tables WHERE schema_id = SCHEMA_ID('dh')) <> 13
     OR EXISTS (SELECT name FROM sys.tables WHERE schema_id = SCHEMA_ID('dh')
     EXCEPT SELECT TableName FROM @columns)
     THROW 51006, 'Unexpected dh table catalog.', 1;
@@ -219,14 +274,29 @@ DECLARE @persistenceChecks TABLE
 );
 -- Fixed Owner/Outcome expectations use reduced parentheses; remaining grouping and AND-before-OR keep the CHECK logic.
 INSERT @persistenceChecks VALUES
-    ('CK_CharacterAuthority_Slot', 'CharacterAuthority', 'SlotId', N'([SlotId]=(1))'),
+    ('CK_Account_Name', 'Account', 'NormalizedName', N'(datalength([NormalizedName])>=(3)ANDdatalength([NormalizedName])<=(16)ANDNOT[NormalizedName]like''%[^a-z0-9_]%'' )'),
+    ('CK_Character_Slot', 'Character', 'Slot', N'([Slot]>=(1)AND[Slot]<=(3))'),
+    ('CK_Character_Name', 'Character', NULL, N'(datalength([Name])>=(4)ANDdatalength([Name])<=(24)ANDNOT[Name]likeN''%[^가-힣A-Za-z0-9]%''ANDdatalength([NameKey])=datalength([Name])AND[NameKey]=(upper([Name]))COLLATELatin1_General_100_BIN2)'),
+    ('CK_CharacterCreateOperation_Id', 'CharacterCreateOperation', 'OperationId', N'([OperationId]<>''00000000-0000-0000-0000-000000000000'')'),
+    ('CK_CharacterCreateOperation_Payload', 'CharacterCreateOperation', 'Payload', N'(datalength([Payload])>=(1)ANDdatalength([Payload])<=(512))'),
+    ('CK_CharacterCreateOperation_Result', 'CharacterCreateOperation', NULL, N'([ResultCode]=''Created''AND[CharacterId]ISNOTNULLOR([ResultCode]=''CancelledBeforeDispatch''OR[ResultCode]=''NameTaken''OR[ResultCode]=''SlotOccupied''OR[ResultCode]=''SlotsFull'')AND[CharacterId]ISNULL)'),
+    ('CK_CharacterWallet_Gold', 'CharacterWallet', 'Gold', N'([Gold]>=(0)AND[Gold]<=(1000000000))'),
+    ('CK_CharacterWallet_Revision', 'CharacterWallet', 'Revision', N'([Revision]>=(0)AND[Revision]<=(4294967295.))'),
+    ('CK_CharacterWeapon_Level', 'CharacterWeapon', 'Level', N'([Level]>=(0)AND[Level]<=(1))'),
+    ('CK_CharacterWeapon_Revision', 'CharacterWeapon', 'Revision', N'([Revision]>=(0)AND[Revision]<=(4294967295.))'),
+    ('CK_Guild_Id', 'Guild', 'GuildId', N'([GuildId]>=(1)AND[GuildId]<=(4294967295.))'),
+    ('CK_Guild_Name', 'Guild', 'Name', N'(datalength([Name])>=(2)ANDdatalength([Name])<=(64))'),
+    ('CK_Guild_Stronghold', 'Guild', 'StrongholdLevel', N'([StrongholdLevel]>=(1)AND[StrongholdLevel]<=(2))'),
+    ('CK_Guild_Treasury', 'Guild', 'Treasury', N'([Treasury]>=(0)AND[Treasury]<=(1000000000))'),
+    ('CK_Guild_Revision', 'Guild', 'Revision', N'([Revision]>=(0)AND[Revision]<=(4294967295.))'),
+    ('CK_CharacterAuthority_Slot', 'CharacterAuthority', 'SlotId', N'([SlotId]>=(1)AND[SlotId]<=(3))'),
     ('CK_CharacterAuthority_Account', 'CharacterAuthority', 'AccountId', N'([AccountId]<>''00000000-0000-0000-0000-000000000000'')'),
     ('CK_CharacterAuthority_Character', 'CharacterAuthority', 'CharacterId', N'([CharacterId]<>''00000000-0000-0000-0000-000000000000'')'),
     ('CK_CharacterAuthority_Fence', 'CharacterAuthority', 'Fence', N'([Fence]>=(0))'),
     ('CK_CharacterAuthority_Sequence', 'CharacterAuthority', 'LastSequence', N'([LastSequence]>=(0))'),
     ('CK_CharacterAuthority_Owner', 'CharacterAuthority', NULL, N'([OWNERKIND]=(0)AND[OWNERID]ISNULLAND[LASTSEQUENCE]=(0)OR([OWNERKIND]=(1)OR[OWNERKIND]=(2))AND[OWNERID]ISNOTNULLAND[OWNERID]<>''00000000-0000-0000-0000-000000000000''AND[FENCE]>(0))'),
     ('CK_CharacterOperation_Id', 'CharacterOperation', 'OperationId', N'([OperationId]<>''00000000-0000-0000-0000-000000000000'')'),
-    ('CK_CharacterOperation_Slot', 'CharacterOperation', 'SlotId', N'([SlotId]=(1))'),
+    ('CK_CharacterOperation_Slot', 'CharacterOperation', 'SlotId', N'([SlotId]>=(1)AND[SlotId]<=(3))'),
     ('CK_CharacterOperation_Kind', 'CharacterOperation', 'Kind', N'([Kind]=(1)OR[Kind]=(2)OR[Kind]=(3)OR[Kind]=(4)OR[Kind]=(5))'),
     ('CK_CharacterOperation_PayloadVersion', 'CharacterOperation', 'PayloadVersion', N'([PayloadVersion]=(1))'),
     ('CK_CharacterOperation_Payload', 'CharacterOperation', 'Payload', N'(datalength([Payload])>=(1)ANDdatalength([Payload])<=(512))'),
@@ -236,17 +306,16 @@ IF EXISTS (
     SELECT Name,
         TableName,
         ColumnName,
-        UPPER(Definition) COLLATE Latin1_General_100_BIN2 FROM @persistenceChecks
+        UPPER(REPLACE(Definition, N' ', N'')) COLLATE Latin1_General_100_BIN2 FROM @persistenceChecks
     EXCEPT
     SELECT name,
         OBJECT_NAME(parent_object_id),
         COL_NAME(parent_object_id, parent_column_id),
         UPPER(REPLACE(REPLACE(REPLACE(REPLACE(definition, N' ', N''), NCHAR(9), N''), NCHAR(10), N''), NCHAR(13), N''))
     COLLATE Latin1_General_100_BIN2
-    FROM sys.check_constraints WHERE parent_object_id IN
-    (OBJECT_ID('dh.CharacterAuthority'), OBJECT_ID('dh.CharacterOperation'))
+    FROM sys.check_constraints WHERE schema_id = SCHEMA_ID('dh')
     AND is_disabled = 0 AND is_not_trusted = 0 AND is_not_for_replication = 0
-) OR (SELECT COUNT(*) FROM sys.check_constraints WHERE schema_id = SCHEMA_ID('dh')) <> 17
+) OR (SELECT COUNT(*) FROM sys.check_constraints WHERE schema_id = SCHEMA_ID('dh')) <> (SELECT COUNT(*) + 4 FROM @persistenceChecks)
     THROW 51007, 'Persistence CHECK expression, ownership or trust drift.', 1;
 -- SHA-256 of the exact LF-normalized UTF-16 module source, including signature and defaults.
 -- Reviewed current source expectations; database observations never become the expected values.
@@ -259,42 +328,46 @@ DECLARE @modules TABLE
     SourceChecksum char(64)
 );
 INSERT @modules VALUES
-    ('PersistencePayloadV1', 'FN', 9244, 0x9CADFF315B86B6729A55EA84134DEFF9A4BE84D60F04616D7921D104049ADFCF,
-        'D074787D4B18C9E1AF95A0F8EE1E61B4FFFF97CE21DBAD3A8F6A48695A107926'),
-    ('LockAndReadAuthority', 'P', 2590, 0x8242B7A41472E62207E52D19EC7BFF9DD75A5E6A02176B27F50DB103E5E8C2E3,
-        'FCC77C1B391B06346E5B0C1B617188EDB87B89172CF565AB9ABB30FBF60C6F94'),
-    ('AssertPersistenceContract', 'P', 1510, 0x8618ED5138CC78088CA9F5455857EEBC96D9AEF0733320D2896A8E37EA66E49B,
-        'E25B3C75A2D96398AA0DDDCE2C80A5D8B0D6828F7C5499A3ECB0A151036E4B00'),
-    ('ReadOperationReceipt', 'P', 2786, 0x114FC78594296DFCE073FFFF76BDB0FE2C0D6BCB57E8A8A7C9E04B21E8FC93E9,
-        '56DC8B6C845A991162E4EF60B48E14C33924432388B6579B166A0FDC81696193'),
-    ('ReadCharacterState', 'P', 3410, 0x5AB37EF70DBC25ABB7C0912CE6CEC653C92C8A36B0306D6B7FBAEB0B13732BC8,
-        '8A095DC941685F616EF01D1B3948EB6C516A18F121A815CC5A3F21C6D4AD31DE'),
+    ('AccountIdentity', 'FN', 1944, 0xBA3135B3D5232F8BA1A4B746207C7AB06B01ABB2A40A38E2EF015F841E256799,
+        '3E1887366CF940F6C4EDAD6AAE638C2B8CABE87C710F7A2EB3FB757AD3AB9ABE'),
+    ('PersistencePayloadV1', 'FN', 9340, 0xA41AFD7B1BA8CD22899EF55C1E18809A2530111D87734E94C519996E1041ED6D,
+        'CDDAC82BCF0E0CEDA6671D892E8E021294FCE27A658A5A7C7D739052A899F75C'),
+    ('LockAndReadAuthority', 'P', 3860, 0xD24D9E52CB970E40FCC658AA25314F3C4B169E32FE68A926936734CFA6FD78DB,
+        'CB9E73472EE83CAEFB7E8C04D4A2AA57FC97B67954FA7E1EFCC30B637BA655E4'),
+    ('AssertPersistenceContract', 'P', 1696, 0x7D624C534B5565E0AF268525DE5715DB509019FCF48FA91D84C4675C1F20A4EB,
+        '0212DDADC10AD6F1E18711D447ACF61870B8EA9A72F7591D82F90D5FA755F0D7'),
+    ('ReadOperationReceipt', 'P', 3992, 0x7300B60508A1B0632D76AE8BF24423E5F667FA26DE304BA62DA3A43161DA6617,
+        'B22F4AA84C2F90C93A7EAC47E0027B73F18E05AF9037E75C47F03C369574926D'),
+    ('ReadCharacterState', 'P', 3582, 0x7989DF09A8974AC5064B2747DAE60E579E3E7EA42FCAAAC11FEE7FAD2EC6C3FF,
+        'FF5B33284B5D70F28FDC5181604AED9379483B612E40D4320D031DACC275FECD'),
     ('SerializeProgress', 'P', 1252, 0x676FBD88E4D5C31B5FB43756500F29A9AA919DBD1C48DEEFDC76A52D44B5104E,
         'DF7C1012C9F34299E52387527013BFA37D7435B6F975CE0D4F9F364710723FB7'),
-    ('SerializePersistenceSnapshot', 'P', 3558, 0x8815AEEB80EA9DC5D7880C9601009FC0378CAD04B86E32E5D95C703EA6B450DB,
-        '134F5AA1ADC199FCBBFFE9AAE85B399EC23CC33259DCBC31030061B5C4366B0A'),
-    ('RecordOperationReceipt', 'P', 1668, 0x7C6BCBB72DA631C6D886D63E314B13D7D57ECFAED9B021854B65521C573959F9,
-        'AAFB8C190266AAED7F55750A7BB4CDE179013DDB03DFAE6F59C036AC45648B25'),
-    ('EmitPersistenceResult', 'P', 4336, 0x7119564DD7A4EAF0C807882D0C0AFA2246E4D59B1C12CF500EB383199DDAB35B,
-        'ABB087091CD097FA59241362AA97A4B5D6A7427E92E98253FD9AF52F9450F691'),
-    ('ReadAdmission', 'P', 12058, 0x3AF7CABB2E0E9E1CC53BA9603EBEF03C3A7591F92C6BE00887219B25206452C6,
-        '75A5EEBF685669B4F94FEE4654039F6F9918B0C34F58D5848088CA82F2893439'),
-    ('AcquireAndLoad', 'P', 30838, 0x221320C4905E7E1611534643B7BD8C21DDD4265F8EED78DE5474FDFB41957F19,
-        '432C596B4870625564B0462791985A4C1330102CBC4F8A6A69B4607DE7A768F6'),
-    ('WriteSafeCheckpoint', 'P', 32538, 0x3D8F0426B00A77F3CE5C6ADA900408466B623632EBBA8C6FB2416A2206E432C4,
-        'AE1EAEFEC64AA790D4B324C902D051F9ED6BFB0726D46A43DA4BD9217DE85812'),
-    ('ReleaseRuntime', 'P', 24850, 0x9E3AE08E03878799FCB7B08E7357C0D0D80C095E2E69C68C556E2D23DBAB3BCB,
-        '4ADC8C4840ABFA894A984411522E8F3B23F66A579941EF8AA213F4BE21036DB1'),
-    ('ResolveRuntimeOperation', 'P', 19528, 0x48F69F237C16A7C2AF3025492BCB7F226329948B34017105E9C17ED9D1E59593,
-        '55DDBDB6D3C617A98400E79B327EFD75AE21F0F4ED440C8499C974789ADA8B20'),
-    ('InspectRecovery', 'P', 15554, 0x1B8A4B7ABB93BD9B3F4CC9BAC1B2D8F53A6FE9C00D6791D26542E6EE6D20AAFF,
-        'C12617844F4D913174A694518A8CB7439677E1D50A9029DE5A76F5BCA03D1937'),
-    ('RecoverAndLoad', 'P', 25730, 0x08D35AA6000141EEEC90AFD7767CC26E1ECAC45196F9E0C448B94B2388CA1854,
-        'EAC2DBBF54464B25FBF6EC9E95A5463D6C61D1FB778FFD3DC2A6A0A74DE1DD46'),
-    ('ReleaseRecovery', 'P', 24860, 0x615C07188FC77D916E97945717C8C7D5DCEAAB718AFB37715B094C57B3B97D6B,
-        '06CC80FB31A554C3F9DE4B08C8EFD39AB136F420DB0BC4E2E9C9AF6EEBC01A66'),
-    ('ResolveRecoveryOperation', 'P', 19426, 0xD451A0CEABB880E5CF358A847E3E2EFF163C54DE3DD1F8C5ADDA5FF583B98C9B,
-        '1F97F00BF04157CFEBA9E46467883586DE27CBFE4526E11077BDDA416E02DFFF');
+    ('SerializePersistenceSnapshot', 'P', 3604, 0x89E7B6403D6E374588ED34862D3ACCAB21A7E051800A6481C99281EBB5A334C8,
+        '01B80E130153068ED5A94520030D4738664AA65A23998504E0D17A20E57EA1EE'),
+    ('RecordOperationReceipt', 'P', 1870, 0x5650406F63E517FD30363F31D9C79906B4E666FE1D8F380C6610F97F6A241F7A,
+        '785F4D5667114DAD07AD7F05116EC9981D47252BE85EDDE303F3F2111A33DEB3'),
+    ('EmitPersistenceResult', 'P', 4382, 0x64610AD460257942BF1BB04977F1D1B2FBE5360BB54508032FE0116339D3F6CE,
+        'A363EF895950A116914D68CA01459B5668546183AC0A1241F7951671B17F9FFB'),
+    ('ReadAdmission', 'P', 12600, 0x661076CE69A2E046DB08D36F6683354DEC49A513E1A636B2CECBF5333D27C913,
+        'D9A8DB1FE2CD7E18BD1369410CBBFBBEE975C827FA7B3698FF3B64EE717FA026'),
+    ('AcquireAndLoad', 'P', 29200, 0x025B85942466177E02BE216C3123DDE4ADAEB3B0D2F2E173EFF44A2148E3B99F,
+        'F0175D4581C503714F6D2BF3C4AD0FAD4444E6288D76AB79F1ED6541C58A95F4'),
+    ('WriteSafeCheckpoint', 'P', 33452, 0x9D2A0F166D5695CEE143790D437897989E47937BAA8345B4F45CF42DA5C41C20,
+        'A4100492A28935952DDAC7CECA35BCE53E6D75721613782FC1E0D9E6224A6444'),
+    ('ReleaseRuntime', 'P', 25764, 0xD79E38EFB235C29248F34450343966D9C6B3C5A680CAB0FED47FE9BBE595A71E,
+        '31289D821B9ED346314F70DE4453121D0106D025C55FEF4A4AF9EC1827819A2D'),
+    ('ResolveRuntimeOperation', 'P', 20326, 0xBF6F599266026EA1352E62504044D2CD8B57CF8588A5BF463C7346D76F5754A5,
+        '595773C5A12A9430A597B3821325239B849BFEC2AA9049706EB75CB0FDBE6C5F'),
+    ('InspectRecovery', 'P', 16096, 0x7CD7C090CB137D149BC29365B3AEE0F07BF9D164BFA0CC1B8E6703FB57C9B2F8,
+        '5F4065E641C85E0D4B20CEA37F8553754C9A2DE8946DA7E53D224E8B569A89C2'),
+    ('RecoverAndLoad', 'P', 26644, 0x01E2E6F7C841C6EFBC0C050F0B1DAB691834A79737290F3FF61C3C25B2103C77,
+        '3C23CA48C1D8E7F3F7FC876C22A9AB7498B10E8E689B1AF4EE63AFDC07C9E966'),
+    ('ReleaseRecovery', 'P', 25774, 0xD5F162FF9B8120BE9B061CE977947459186246B486A7490CD5856BB6A587692E,
+        'AA09B609E65F997BA8721A7911BB6FE9E2054F0ABC5501A6FA9145F5059364B5'),
+    ('ResolveRecoveryOperation', 'P', 20224, 0xCCC26CCFAA3B9FBAEB8F27592BA3630B74EB7BC93B561E0D875152421B9039A7,
+        '506B682B008A2E4BA6332FF091FD5BBB78AF0A77B54A8662FA1F0AAA829D85F7'),
+    ('CharacterCatalog', 'P', 21438, 0x9738B24C904B437EDB97D569599143E0A0F78B283612962CEC564491B4256EC6,
+        '4F1CD5BFFDB6F90BD84B8369B789A26F65C1D31DD98D19B80BE95BE2C1B3D198');
 -- Binary equality keeps object type codes exact when the catalog and database type collations differ.
 IF EXISTS (
     SELECT Name,
@@ -311,7 +384,7 @@ IF EXISTS (
     AND sm.uses_ansi_nulls = 1 AND sm.uses_quoted_identifier = 1
     AND ((o.type = 'FN' AND sm.is_schema_bound = 1) OR o.type = 'P')
 ) OR (SELECT COUNT(*) FROM sys.objects WHERE schema_id = SCHEMA_ID('dh')
-    AND type IN ('P', 'FN', 'IF', 'TF', 'FS', 'FT', 'PC')) <> 18
+    AND type IN ('P', 'FN', 'IF', 'TF', 'FS', 'FT', 'PC')) <> 20
     THROW 51008, 'Persistence module/signature/body drift.', 1;
 -- Current registration must contain reviewed expectations, not hashes adopted from sys.sql_modules.
 IF EXISTS (
@@ -320,7 +393,7 @@ IF EXISTS (
     EXCEPT
     SELECT ObjectName, Kind, SourceChecksum COLLATE Latin1_General_100_BIN2,
         DefinitionBytes, DefinitionChecksum COLLATE Latin1_General_100_BIN2 FROM dh.ModuleDefinition
-) OR (SELECT COUNT(*) FROM dh.ModuleDefinition) <> 18
+) OR (SELECT COUNT(*) FROM dh.ModuleDefinition) <> 20
     THROW 51008, 'Reviewed module registration drift.', 1;
 DECLARE @grants TABLE
 (
@@ -328,6 +401,7 @@ DECLARE @grants TABLE
     ProcedureName sysname
 );
 INSERT @grants VALUES
+    ('dh_runtime', 'CharacterCatalog'),
     ('dh_runtime', 'ReadAdmission'),
     ('dh_runtime', 'AcquireAndLoad'),
     ('dh_runtime', 'WriteSafeCheckpoint'),
@@ -351,7 +425,7 @@ IF EXISTS (
     WHERE dp.class = 1 AND dp.minor_id = 0 AND dp.permission_name = 'EXECUTE' AND dp.state = 'G'
     AND o.schema_id = SCHEMA_ID('dh') AND o.type = 'P'
 ) OR (SELECT COUNT(*) FROM sys.database_permissions
-    WHERE grantee_principal_id IN (DATABASE_PRINCIPAL_ID('dh_runtime'), DATABASE_PRINCIPAL_ID('dh_recovery'))) <> 9
+    WHERE grantee_principal_id IN (DATABASE_PRINCIPAL_ID('dh_runtime'), DATABASE_PRINCIPAL_ID('dh_recovery'))) <> 10
     THROW 51009, 'Individual execute-only grant drift.', 1;
 -- A role nested into any other role could inherit direct DML or cross-role execution.
 IF EXISTS (SELECT 1 FROM sys.database_role_members
@@ -398,13 +472,14 @@ INSERT @migrations VALUES
     (1, '001_initial.sql', 'F28502BB1A8D683A66F596F15BA9EEC779E5110BAD8ADDAEE03E393F26E54FCC'),
     (2, '002_persistence_metadata.sql', '867F8CC52350029EE15E753EC9134DDB7F7FAD91D5A9383D0F2209EAAD2C3599'),
     (3, '003_module_metadata.sql', 'A4F271547EC0E2E700413F51D8281A361D8654D383996E73F9476E4540A40F9B'),
-    (4, '004_module_release.sql', '2B9480C378AFBFFD7FA09E45BC2C416977D70B3BFD5436D5DDD3A1C24CB207B0');
+    (4, '004_module_release.sql', '2B9480C378AFBFFD7FA09E45BC2C416977D70B3BFD5436D5DDD3A1C24CB207B0'),
+    (5, '005_character_catalog.sql', '49C22F5E8DFA77C72835B0E810334455EB15B38C5434FB0E039B086FEFD60114');
 IF EXISTS (SELECT * FROM @migrations EXCEPT SELECT Version, Name, Checksum FROM dh.SchemaVersion)
-    OR (SELECT COUNT(*) FROM dh.SchemaVersion) <> 4
+    OR (SELECT COUNT(*) FROM dh.SchemaVersion) <> 5
     THROW 51010, 'Migration name/checksum/version catalog drift.', 1;
 -- The release declaration is checked after the runner has recorded its schema migration row.
-IF (SELECT COUNT(*) FROM dh.ModuleRelease) <> 1
+IF (SELECT COUNT(*) FROM dh.ModuleRelease) <> 2
     OR NOT EXISTS (SELECT 1 FROM dh.ModuleRelease r JOIN dh.SchemaVersion s ON s.Version = r.Version
-        WHERE r.Version = 4 AND r.ManifestChecksum COLLATE Latin1_General_100_BIN2 =
-            'C529392B46BB0F02D7A863201D74B9CC60187842365B1DBDCF8953CEE714A731')
+        WHERE r.Version = 5 AND r.ManifestChecksum COLLATE Latin1_General_100_BIN2 =
+            'AC6D31EA3C28C21FD01D150F2828BD9AA9FCAF8384FEB9B9B2A171F4E718A571')
     THROW 51010, 'Module release declaration drift.', 1;

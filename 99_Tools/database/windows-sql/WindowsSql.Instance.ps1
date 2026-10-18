@@ -142,8 +142,71 @@ function Get-WindowsSqlService {
     return $service
 }
 
+function Read-WindowsSqlPortRanges {
+    param(
+        [ValidateSet('ipv4', 'ipv6')][string]$AddressFamily,
+        [ValidateSet('excludedportrange', 'dynamicport')][string]$RangeKind
+    )
+    $protocol = if ($RangeKind -ceq 'excludedportrange') { 'protocol=tcp' } else { 'tcp' }
+    try {
+        $output = Invoke-WindowsSqlChild -FileName 'C:\Windows\System32\netsh.exe' `
+            -Arguments @('int', $AddressFamily, 'show', $RangeKind, $protocol) -TimeoutSeconds 15
+    }
+    catch { throw 'WINDOWS_SQL_PORT_OBSERVATION_FAILED' }
+    if ($output -isnot [string] -or [string]::IsNullOrWhiteSpace($output)) {
+        throw 'WINDOWS_SQL_PORT_OBSERVATION_FAILED'
+    }
+    $lines = @($output -split '\r?\n' | ForEach-Object { $_.Trim() } | Where-Object { $_.Length -gt 0 })
+    if ($RangeKind -ceq 'excludedportrange') {
+        # netsh emits two headings, a two-column separator, start/end rows (optional *), then a * - footnote.
+        # Only this complete table is accepted; an empty/malformed response cannot mean no exclusions.
+        if ($lines.Count -lt 4 -or $lines[2] -cnotmatch '^-+\s+-+$' -or
+            $lines[-1] -cnotmatch '^\*\s+-\s+\S.*$') {
+            throw 'WINDOWS_SQL_PORT_OBSERVATION_FAILED'
+        }
+        $ranges = [Collections.Generic.List[object]]::new()
+        for ($index = 3; $index -lt $lines.Count - 1; $index++) {
+            if ($lines[$index] -cnotmatch '^([0-9]{1,5})\s+([0-9]{1,5})(?:\s+\*)?$') {
+                throw 'WINDOWS_SQL_PORT_OBSERVATION_FAILED'
+            }
+            $start = [int]$Matches[1]
+            $end = [int]$Matches[2]
+            if ($start -lt 1 -or $end -lt $start -or $end -gt 65535) {
+                throw 'WINDOWS_SQL_PORT_OBSERVATION_FAILED'
+            }
+            $ranges.Add([pscustomobject]@{ Start = $start; End = $end })
+        }
+        return $ranges.ToArray()
+    }
+
+    # Dynamic output has a heading, separator, start and count in that order; labels are localized.
+    if ($lines.Count -ne 4 -or $lines[1] -cnotmatch '^-+$' -or
+        $lines[2] -cnotmatch '^[^:0-9]+:\s*([0-9]{1,5})$') {
+        throw 'WINDOWS_SQL_PORT_OBSERVATION_FAILED'
+    }
+    $start = [int]$Matches[1]
+    if ($lines[3] -cnotmatch '^[^:0-9]+:\s*([0-9]{1,5})$') {
+        throw 'WINDOWS_SQL_PORT_OBSERVATION_FAILED'
+    }
+    $count = [int]$Matches[1]
+    $end = $start + $count - 1
+    if ($start -lt 1 -or $count -lt 1 -or $end -gt 65535) {
+        throw 'WINDOWS_SQL_PORT_OBSERVATION_FAILED'
+    }
+    return [pscustomobject]@{ Start = $start; End = $end }
+}
+
 function Read-WindowsSqlPort {
     param($Adapter)
+    $ranges = @(foreach ($family in @('ipv4', 'ipv6')) {
+            Read-WindowsSqlPortRanges -AddressFamily $family -RangeKind excludedportrange
+            Read-WindowsSqlPortRanges -AddressFamily $family -RangeKind dynamicport
+        })
+    foreach ($range in $ranges) {
+        if ($Adapter.Plan.Port -ge $range.Start -and $Adapter.Plan.Port -le $range.End) {
+            throw 'WINDOWS_SQL_PORT_CONFLICT'
+        }
+    }
     $errors = @()
     $listeners = @(Get-NetTCPConnection -State Listen -LocalPort $Adapter.Plan.Port `
             -ErrorAction SilentlyContinue -ErrorVariable errors)

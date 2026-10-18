@@ -8,6 +8,7 @@ internal static class SqlRuntimeParameters
 {
     internal static void Identity(SqlCommand command, PersistenceIdentity identity)
     {
+        Add(command, "@ContractVersion", SqlDbType.Int, SqlPersistenceDeployment.SchemaVersion);
         Add(command, "@SlotId", SqlDbType.Int, (int)identity.SlotId);
         Add(command, "@AccountId", SqlDbType.UniqueIdentifier, identity.AccountId);
         Add(command, "@CharacterId", SqlDbType.UniqueIdentifier, identity.CharacterId);

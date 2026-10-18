@@ -1,4 +1,5 @@
 CREATE OR ALTER PROCEDURE dh.EmitPersistenceResult
+    @SlotId int,
     @status varchar(32),
     @OperationId uniqueidentifier,
     @outcome tinyint,
@@ -43,7 +44,7 @@ BEGIN
         CONVERT(int, 1) AS PayloadVersion,
         CONVERT(int, 1) AS SnapshotVersion,
         @migrationManifest AS MigrationManifest,
-        CONVERT(int, 1) AS CurrentSlotId,
+        CONVERT(int, @SlotId) AS CurrentSlotId,
         @boundAccount AS CurrentAccountId,
         @boundCharacter AS CurrentCharacterId,
         @currentOwnerKind AS CurrentOwnerKind,

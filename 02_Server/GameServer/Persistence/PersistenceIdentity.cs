@@ -5,8 +5,8 @@ public sealed class PersistenceIdentity : IEquatable<PersistenceIdentity>
 {
     public PersistenceIdentity(byte slotId, Guid accountId, Guid characterId)
     {
-        if (slotId != 1)
-            throw new ArgumentOutOfRangeException(nameof(slotId), "Only slot 1 is supported.");
+        if (slotId is < 1 or > 3)
+            throw new ArgumentOutOfRangeException(nameof(slotId), "Slots are numbered 1 through 3 within an account.");
         PersistenceContractGuard.NonEmpty(accountId, nameof(accountId));
         PersistenceContractGuard.NonEmpty(characterId, nameof(characterId));
         SlotId = slotId;

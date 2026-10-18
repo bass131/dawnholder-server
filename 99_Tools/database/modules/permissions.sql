@@ -1,4 +1,5 @@
 -- Execute-only roles rely on static SQL and the common dbo ownership chain.
+GRANT EXECUTE ON OBJECT::dh.CharacterCatalog TO dh_runtime;
 GRANT EXECUTE ON OBJECT::dh.ReadAdmission TO dh_runtime;
 GRANT EXECUTE ON OBJECT::dh.AcquireAndLoad TO dh_runtime;
 GRANT EXECUTE ON OBJECT::dh.WriteSafeCheckpoint TO dh_runtime;

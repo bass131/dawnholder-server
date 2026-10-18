@@ -477,6 +477,20 @@ function Get-NetFirewallRule {
 function Invoke-WindowsSqlChild {
     param([string]$FileName, [string[]]$Arguments, [string]$InputText = '', [hashtable]$Environment = @{},
         [int]$TimeoutSeconds = 45)
+    # Empty exclusions and the usual high dynamic range leave this fixture's low port available.
+    if ($FileName -ceq 'C:\Windows\System32\netsh.exe') {
+        $command = $Arguments -join ' '
+        if ($TimeoutSeconds -ne 15 -or $command -cnotin @(
+                'int ipv4 show excludedportrange protocol=tcp', 'int ipv6 show excludedportrange protocol=tcp',
+                'int ipv4 show dynamicport tcp', 'int ipv6 show dynamicport tcp')) {
+            Add-WorldViolation -Text 'unexpected netsh arguments'
+            throw 'FAKE_CHILD_UNEXPECTED'
+        }
+        if ($Arguments[3] -ceq 'excludedportrange') {
+            return "TCP exclusions`nStart Port    End Port`n----------    --------`n* - Managed exclusions."
+        }
+        return "TCP dynamic range`n-----------------`nStart Port: 49152`nNumber of Ports: 16384"
+    }
     $a = @($Arguments)
     if ($FileName -ceq 'C:\Windows\System32\wsl.exe' -and $a.Count -eq 5 -and $a[3] -ceq 'wslinfo') {
         return 'mirrored'

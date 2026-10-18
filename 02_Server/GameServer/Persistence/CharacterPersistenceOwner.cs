@@ -69,7 +69,8 @@ public sealed class CharacterPersistenceOwner
         long expectedFence,
         CharacterClass intendedClass,
         SafeDefaults safeDefaults,
-        PersistenceDeadline deadline)
+        PersistenceDeadline deadline,
+        Guid? operationId = null)
     {
         lock (_gate)
         {
@@ -78,7 +79,9 @@ public sealed class CharacterPersistenceOwner
                 return new(status);
             if (_acquireSubmitted || expectedFence < 0 || !Enum.IsDefined(intendedClass) || safeDefaults is null)
                 return new(PersistenceSubmitStatus.Invalid);
-            AcquireAndLoadRequest request = new(_identity, Guid.NewGuid(), _runtimeOwnerId, expectedFence, intendedClass, safeDefaults);
+            if (operationId == Guid.Empty) return new(PersistenceSubmitStatus.Invalid);
+            AcquireAndLoadRequest request = new(_identity, operationId ?? Guid.NewGuid(), _runtimeOwnerId,
+                expectedFence, intendedClass, safeDefaults);
             _acquireSubmitted = true;
             return Enqueue(new PersistenceWorkItem(request, deadline));
         }
