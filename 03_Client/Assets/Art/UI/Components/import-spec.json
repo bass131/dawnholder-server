@@ -1,0 +1,1159 @@
+{
+  "schema": 1,
+  "title": "Brown B1 walnut / pale gold modular UI production kit",
+  "source": {
+    "repositoryRelativeSpec": ".backups/verification/2026-10-13-demo-video-art/ui-kit-b1-ring-fix/package/kit/kit-spec.json",
+    "sha256": "5986771c0a75c9cefaeeedc097a06462a92ddc036596914a055f3d5ac5f18d91",
+    "fileBase": "sprite.file is relative to the approved source kit; sprite.assetFile is relative to this folder",
+    "productionHistorySha256": "770dbea89d441e6eea274517123ed53f971c393ec8476f40a0805affaabf4e16",
+    "provenanceSha256": "3cde16e8290a97d988281d3e4a123a7120d662654a739c919153ad876909231e",
+    "originalProductionProvenanceSha256": "e67ce051fd8a2a4687176add56b66269736303f66de22c02ebecf5dd25b9e2f7",
+    "referenceProvenanceSha256": "b2d79916572f5304681f902f81d76242fda2abeff6dc962db237c7c07624d134"
+  },
+  "units": {
+    "pixelDensity": 2,
+    "pixelsPerUnit": 200,
+    "borderOrder": "L R T B",
+    "insetOrder": "L R T B",
+    "borderUnit": "PNG pixels; Unity Vector4 is (L,B,R,T), without division by density",
+    "contentInsetUnit": "PNG pixels; divide by density for logical UI layout",
+    "uiSizeUnit": "logical UI units at Canvas referencePixelsPerUnit=100 and scale=1",
+    "valuesPolicy": "Contract values copied from approved spec; no new Unity measurements are claimed"
+  },
+  "importer": {
+    "textureType": "Sprite (2D and UI)",
+    "spriteMode": "Single",
+    "spriteMeshType": "FullRect",
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "pixelsPerUnit": 200,
+    "mipmaps": false,
+    "sRGB": true,
+    "alphaIsTransparency": true,
+    "filterMode": "Bilinear",
+    "wrapMode": "Clamp",
+    "npotScale": "None",
+    "maxTextureSize": 2048,
+    "textureCompression": "Uncompressed",
+    "isReadable": false,
+    "platformOverrides": []
+  },
+  "usage": {
+    "slicedCount": 23,
+    "simpleCount": 10,
+    "dividerHeightUi": 6,
+    "imagePropertiesAreImporterSettings": false,
+    "note": "Image.type, preserveAspect, RectTransform, Canvas and contentInset are layout contracts"
+  },
+  "provenance": {
+    "reference": {
+      "purpose": "Approved style A reference",
+      "tool": "Codex built-in image_gen.imagegen",
+      "modelNameExposed": false,
+      "model": "unknown",
+      "generationStartUtc": "Tue Oct 13 06:11:39 UTC 2026",
+      "generationEndUtc": "Tue Oct 13 06:12:00 UTC 2026",
+      "referenceImages": [],
+      "originalPath": "C:\\Users\\bass1\\.codex\\generated_images\\01a133d4-ec6a-74d3-9e33-492058b8a84c\\exec-0b6c49c5-26f6-468e-bdbd-608cdcd9c7cc.png",
+      "originalSha256": "beeb3c79232ffafc6a1d7e04aa537b09891b22a5c71e2357857f245321ca9a69",
+      "sourceKitFile": "gen/selected-A-reference.png",
+      "copySha256": "beeb3c79232ffafc6a1d7e04aa537b09891b22a5c71e2357857f245321ca9a69",
+      "pixelSize": [
+        1536,
+        1024
+      ]
+    },
+    "originalImageSources": [
+      {
+        "purpose": "surface",
+        "tool": "built-in image_gen.imagegen only",
+        "model": "unknown",
+        "modelNameExposed": false,
+        "generationStartUtc": "2026-10-13T13:54:51Z",
+        "generationEndUtc": "2026-10-13T13:56:16Z",
+        "referenceImages": [
+          {
+            "file": "gen/selected-A-reference.png",
+            "role": "approved A source, style and material only",
+            "sha256": "beeb3c79232ffafc6a1d7e04aa537b09891b22a5c71e2357857f245321ca9a69"
+          }
+        ],
+        "originalPath": "C:\\Users\\bass1\\.codex\\generated_images\\01a13584-869a-70a2-9d50-af56a5086ca0\\exec-869b8242-0c33-4351-8fc0-779da4485e81.png",
+        "originalSha256": "89494cb83812d46becaddeae88e5d756f06d968a091ad494c7ade20ebb5f9751",
+        "sourceKitFile": "gen/surface-source.png",
+        "copySha256": "89494cb83812d46becaddeae88e5d756f06d968a091ad494c7ade20ebb5f9751",
+        "pixelSize": [
+          1254,
+          1254
+        ]
+      },
+      {
+        "purpose": "corner",
+        "tool": "built-in image_gen.imagegen",
+        "model": "unknown",
+        "modelNameExposed": false,
+        "generationStartUtc": "2026-10-13T13:56:16Z",
+        "generationEndUtc": "2026-10-13T13:57:33Z",
+        "referenceImages": [
+          {
+            "file": "gen/selected-A-reference.png",
+            "role": "approved A style reference / edit source",
+            "sha256": "beeb3c79232ffafc6a1d7e04aa537b09891b22a5c71e2357857f245321ca9a69"
+          }
+        ],
+        "originalPath": "C:\\Users\\bass1\\.codex\\generated_images\\01a13584-869a-70a2-9d50-af56a5086ca0\\exec-6838634d-2d5f-4a4e-be7c-9826a134f469.png",
+        "originalSha256": "ccc1841adc4340926088ddd8e1562fcd83d5f9da5f85880eee10c2f0c09f9122",
+        "sourceKitFile": "gen/corner-source.png",
+        "copySha256": "ccc1841adc4340926088ddd8e1562fcd83d5f9da5f85880eee10c2f0c09f9122",
+        "pixelSize": [
+          1302,
+          1208
+        ]
+      },
+      {
+        "purpose": "ring",
+        "tool": "built-in image_gen.imagegen",
+        "model": "unknown",
+        "modelNameExposed": false,
+        "generationStartUtc": "2026-10-13T13:57:33Z",
+        "generationEndUtc": "2026-10-13T13:59:00Z",
+        "referenceImages": [
+          {
+            "file": "gen/selected-A-reference.png",
+            "role": "approved A style reference / edit source",
+            "sha256": "beeb3c79232ffafc6a1d7e04aa537b09891b22a5c71e2357857f245321ca9a69"
+          }
+        ],
+        "originalPath": "C:\\Users\\bass1\\.codex\\generated_images\\01a13584-869a-70a2-9d50-af56a5086ca0\\exec-244b411b-f14d-4f9c-84b5-4da0577a2747.png",
+        "originalSha256": "905801e1daa7f4a06affd7d542f98ca42eb76c726d4521d22b0fb71a59d4121c",
+        "sourceKitFile": "gen/ring-source.png",
+        "copySha256": "905801e1daa7f4a06affd7d542f98ca42eb76c726d4521d22b0fb71a59d4121c",
+        "pixelSize": [
+          1254,
+          1254
+        ]
+      },
+      {
+        "purpose": "header-end",
+        "tool": "built-in image_gen.imagegen",
+        "model": "unknown",
+        "modelNameExposed": false,
+        "generationStartUtc": "2026-10-13T13:59:01Z",
+        "generationEndUtc": "2026-10-13T14:00:11Z",
+        "referenceImages": [
+          {
+            "file": "gen/selected-A-reference.png",
+            "role": "approved A style reference / edit source",
+            "sha256": "beeb3c79232ffafc6a1d7e04aa537b09891b22a5c71e2357857f245321ca9a69"
+          }
+        ],
+        "originalPath": "C:\\Users\\bass1\\.codex\\generated_images\\01a13584-869a-70a2-9d50-af56a5086ca0\\exec-0ba8337c-a2de-478d-bfe0-63ff1acdd090.png",
+        "originalSha256": "d615a62b320c30907fe5376a9965359da941151c48259c7e4f0eb6afdc9dd153",
+        "sourceKitFile": "gen/header-end-source.png",
+        "copySha256": "d615a62b320c30907fe5376a9965359da941151c48259c7e4f0eb6afdc9dd153",
+        "pixelSize": [
+          2172,
+          724
+        ]
+      }
+    ],
+    "originalGenerationCalls": 4,
+    "importGenerationCalls": 0,
+    "transformation": "Approved B1 walnut/leather surface conversion; final IconBase ring recomposition retained unchanged",
+    "preserved": "All final PNG bytes, alpha, gold decoration, Accept green / Decline red states, D5 navy ornament center"
+  },
+  "sprites": [
+    {
+      "name": "Panel_Default",
+      "kind": "Panel",
+      "file": "sprites/Panel_Default.png",
+      "pixelSize": [
+        512,
+        384
+      ],
+      "uiSize": [
+        256,
+        192
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "contentInsetLRTB": {
+        "L": 32,
+        "R": 32,
+        "T": 32,
+        "B": 32
+      },
+      "sha256": "0e91be5fc7d15467fc9cf1b2c98fe621a4dacc255fc6f107cd81f96158a3e167",
+      "assetFile": "Panel_Default.png"
+    },
+    {
+      "name": "Panel_Emphasis",
+      "kind": "Panel",
+      "file": "sprites/Panel_Emphasis.png",
+      "pixelSize": [
+        512,
+        384
+      ],
+      "uiSize": [
+        256,
+        192
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "contentInsetLRTB": {
+        "L": 32,
+        "R": 32,
+        "T": 32,
+        "B": 32
+      },
+      "sha256": "42f83c6196753ca98e9827a4c3bbb7702f4f5305cafea65882cdb598ed2faeb2",
+      "assetFile": "Panel_Emphasis.png"
+    },
+    {
+      "name": "Panel_Dialog",
+      "kind": "Panel",
+      "file": "sprites/Panel_Dialog.png",
+      "pixelSize": [
+        512,
+        384
+      ],
+      "uiSize": [
+        256,
+        192
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "contentInsetLRTB": {
+        "L": 32,
+        "R": 32,
+        "T": 32,
+        "B": 32
+      },
+      "sha256": "4fd7d75d21370e5cde20af3ab5bbc0c172ac414f7b83969afff9218c7aa36a5b",
+      "assetFile": "Panel_Dialog.png"
+    },
+    {
+      "name": "Inset_Default",
+      "kind": "Inset",
+      "file": "sprites/Inset_Default.png",
+      "pixelSize": [
+        192,
+        128
+      ],
+      "uiSize": [
+        96,
+        64
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 12,
+        "R": 12,
+        "T": 12,
+        "B": 12
+      },
+      "contentInsetLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "sha256": "e6c0507eb16efd633011b73eb10ef743b100f27630e47998f3e040686ad02220",
+      "assetFile": "Inset_Default.png"
+    },
+    {
+      "name": "Inset_Selected",
+      "kind": "Inset",
+      "file": "sprites/Inset_Selected.png",
+      "pixelSize": [
+        192,
+        128
+      ],
+      "uiSize": [
+        96,
+        64
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 12,
+        "R": 12,
+        "T": 12,
+        "B": 12
+      },
+      "contentInsetLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "sha256": "1a662ed0208c587c5cbfcdf8fbb8f50b5ef3710a6893d17290eff2133091d086",
+      "assetFile": "Inset_Selected.png"
+    },
+    {
+      "name": "Inset_Disabled",
+      "kind": "Inset",
+      "file": "sprites/Inset_Disabled.png",
+      "pixelSize": [
+        192,
+        128
+      ],
+      "uiSize": [
+        96,
+        64
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 12,
+        "R": 12,
+        "T": 12,
+        "B": 12
+      },
+      "contentInsetLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "sha256": "483b0e0110b8cc6c85b575a7a01e10612ae957564c10284dd95a88a1f69d3422",
+      "assetFile": "Inset_Disabled.png"
+    },
+    {
+      "name": "Header",
+      "kind": "Header",
+      "file": "sprites/Header.png",
+      "pixelSize": [
+        384,
+        80
+      ],
+      "uiSize": [
+        192,
+        40
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 20,
+        "R": 20,
+        "T": 20,
+        "B": 20
+      },
+      "sha256": "b102ddcb312d5471b7117a9dab26ab74a5e10091332ba04f16578192a9894cb8",
+      "assetFile": "Header.png"
+    },
+    {
+      "name": "Button_Default_Normal",
+      "kind": "Button",
+      "file": "sprites/Button_Default_Normal.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "7d8ae7d641ad793d54bc5f0774151311b02cb979024920d7f9f24b3c26ccc49e",
+      "assetFile": "Button_Default_Normal.png"
+    },
+    {
+      "name": "Button_Default_Highlighted",
+      "kind": "Button",
+      "file": "sprites/Button_Default_Highlighted.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "f8a4cd66fc34106ac6bbf0965f189fe3411dae622fb10a6d9b707397cb5e8b9d",
+      "assetFile": "Button_Default_Highlighted.png"
+    },
+    {
+      "name": "Button_Default_Pressed",
+      "kind": "Button",
+      "file": "sprites/Button_Default_Pressed.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "b44e54008bb82e5902835d9c47fecc1fc1390c30e48a0280e226ff96350daceb",
+      "assetFile": "Button_Default_Pressed.png"
+    },
+    {
+      "name": "Button_Default_Disabled",
+      "kind": "Button",
+      "file": "sprites/Button_Default_Disabled.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "950daa52e17f70bcf360093950f1a1478e4c425db48fc2b8dfac704c3cd334e5",
+      "assetFile": "Button_Default_Disabled.png"
+    },
+    {
+      "name": "Button_Accept_Normal",
+      "kind": "Button",
+      "file": "sprites/Button_Accept_Normal.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "337b52d28762a586832a08a7dbcf907f8a50bdf8aa23a89bbe730c1544258de8",
+      "assetFile": "Button_Accept_Normal.png"
+    },
+    {
+      "name": "Button_Accept_Highlighted",
+      "kind": "Button",
+      "file": "sprites/Button_Accept_Highlighted.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "c504ce98c7558038b2e0d3f1bd0dc5e7c27c8427a63e4e52687ef80fd4d393c9",
+      "assetFile": "Button_Accept_Highlighted.png"
+    },
+    {
+      "name": "Button_Accept_Pressed",
+      "kind": "Button",
+      "file": "sprites/Button_Accept_Pressed.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "6c62b138f3b631754425d9e68b81b0f8e07b8c22b4b8d4fe1ed227c59e994cf3",
+      "assetFile": "Button_Accept_Pressed.png"
+    },
+    {
+      "name": "Button_Accept_Disabled",
+      "kind": "Button",
+      "file": "sprites/Button_Accept_Disabled.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "dac87078c460d1165cc20d15a978ab76671821946e4e69af12339197b0848f3d",
+      "assetFile": "Button_Accept_Disabled.png"
+    },
+    {
+      "name": "Button_Decline_Normal",
+      "kind": "Button",
+      "file": "sprites/Button_Decline_Normal.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "2e5fcc9a904249bfadda2f44601b547c2c5ce19d09b2b3952cbea42b087b51e1",
+      "assetFile": "Button_Decline_Normal.png"
+    },
+    {
+      "name": "Button_Decline_Highlighted",
+      "kind": "Button",
+      "file": "sprites/Button_Decline_Highlighted.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "0b749782b7a1648125a6b7533aec2fe19fd2a8d8cba8b2371fffe7a1e6a66a14",
+      "assetFile": "Button_Decline_Highlighted.png"
+    },
+    {
+      "name": "Button_Decline_Pressed",
+      "kind": "Button",
+      "file": "sprites/Button_Decline_Pressed.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "9af23d9fa9709bf3a3f01041efc0f02a2b2174119cd773fb75460f6c125f9f2e",
+      "assetFile": "Button_Decline_Pressed.png"
+    },
+    {
+      "name": "Button_Decline_Disabled",
+      "kind": "Button",
+      "file": "sprites/Button_Decline_Disabled.png",
+      "pixelSize": [
+        256,
+        96
+      ],
+      "uiSize": [
+        128,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 24,
+        "R": 24,
+        "T": 24,
+        "B": 24
+      },
+      "sha256": "9d5976a53705d414659c2e54a645d2d30f996d8197a2e550dfbeaa52efd98e2c",
+      "assetFile": "Button_Decline_Disabled.png"
+    },
+    {
+      "name": "ItemSlot_Empty",
+      "kind": "ItemSlot",
+      "file": "sprites/ItemSlot_Empty.png",
+      "pixelSize": [
+        128,
+        128
+      ],
+      "uiSize": [
+        64,
+        64
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 20,
+        "R": 20,
+        "T": 20,
+        "B": 20
+      },
+      "sha256": "55de5d67d500ab866e63ee71fe2616818f2293c75e626ffa53b7cc61ffec3a93",
+      "assetFile": "ItemSlot_Empty.png"
+    },
+    {
+      "name": "ItemSlot_Filled",
+      "kind": "ItemSlot",
+      "file": "sprites/ItemSlot_Filled.png",
+      "pixelSize": [
+        128,
+        128
+      ],
+      "uiSize": [
+        64,
+        64
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 20,
+        "R": 20,
+        "T": 20,
+        "B": 20
+      },
+      "sha256": "7576eb3e85ecec6739a3910350050ce8f86b4c55dab0333d360e59baba59c131",
+      "assetFile": "ItemSlot_Filled.png"
+    },
+    {
+      "name": "ItemSlot_Selected",
+      "kind": "ItemSlot",
+      "file": "sprites/ItemSlot_Selected.png",
+      "pixelSize": [
+        128,
+        128
+      ],
+      "uiSize": [
+        64,
+        64
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 16,
+        "B": 16
+      },
+      "contentInsetLRTB": {
+        "L": 20,
+        "R": 20,
+        "T": 20,
+        "B": 20
+      },
+      "sha256": "20e4fca9f37f43029d827e31ff1737600e23cc30a7bcb8f6e85eb582f87269b5",
+      "assetFile": "ItemSlot_Selected.png"
+    },
+    {
+      "name": "IconBase_64",
+      "kind": "IconBase",
+      "file": "sprites/IconBase_64.png",
+      "pixelSize": [
+        128,
+        128
+      ],
+      "uiSize": [
+        64,
+        64
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Simple / PreserveAspect",
+      "borderLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "contentInsetLRTB": {
+        "L": 21.76,
+        "R": 21.76,
+        "T": 21.76,
+        "B": 21.76
+      },
+      "sha256": "c915019f32255a40be3c2f1f505d72f51877250085d8e5182a3811a0867e7796",
+      "assetFile": "IconBase_64.png"
+    },
+    {
+      "name": "IconBase_96",
+      "kind": "IconBase",
+      "file": "sprites/IconBase_96.png",
+      "pixelSize": [
+        192,
+        192
+      ],
+      "uiSize": [
+        96,
+        96
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Simple / PreserveAspect",
+      "borderLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "contentInsetLRTB": {
+        "L": 32.64,
+        "R": 32.64,
+        "T": 32.64,
+        "B": 32.64
+      },
+      "sha256": "4371a658716d7cb91553ed01416ed1119ef1b1a4f8c1d9ab94a638db29003c04",
+      "assetFile": "IconBase_96.png"
+    },
+    {
+      "name": "CircleButton_Normal",
+      "kind": "CircleButton",
+      "file": "sprites/CircleButton_Normal.png",
+      "pixelSize": [
+        128,
+        128
+      ],
+      "uiSize": [
+        64,
+        64
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Simple / PreserveAspect",
+      "borderLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "contentInsetLRTB": {
+        "L": 20,
+        "R": 20,
+        "T": 20,
+        "B": 20
+      },
+      "sha256": "8a4e5bdea51d9773b16298a97f18ae5a4388f51d037d8b6cc017d9ddac42ce1d",
+      "assetFile": "CircleButton_Normal.png"
+    },
+    {
+      "name": "CircleButton_Highlighted",
+      "kind": "CircleButton",
+      "file": "sprites/CircleButton_Highlighted.png",
+      "pixelSize": [
+        128,
+        128
+      ],
+      "uiSize": [
+        64,
+        64
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Simple / PreserveAspect",
+      "borderLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "contentInsetLRTB": {
+        "L": 20,
+        "R": 20,
+        "T": 20,
+        "B": 20
+      },
+      "sha256": "97aa2d7026557821216a8f36a7a4d75fbcf29f56a4a4afa448cec73485b2545f",
+      "assetFile": "CircleButton_Highlighted.png"
+    },
+    {
+      "name": "CircleButton_Pressed",
+      "kind": "CircleButton",
+      "file": "sprites/CircleButton_Pressed.png",
+      "pixelSize": [
+        128,
+        128
+      ],
+      "uiSize": [
+        64,
+        64
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Simple / PreserveAspect",
+      "borderLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "contentInsetLRTB": {
+        "L": 20,
+        "R": 20,
+        "T": 20,
+        "B": 20
+      },
+      "sha256": "41e458ffe6bf9aedb5f2a246614597a43c50b1b39165f9bdc8bf892b5638d8ec",
+      "assetFile": "CircleButton_Pressed.png"
+    },
+    {
+      "name": "CircleButton_Disabled",
+      "kind": "CircleButton",
+      "file": "sprites/CircleButton_Disabled.png",
+      "pixelSize": [
+        128,
+        128
+      ],
+      "uiSize": [
+        64,
+        64
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Simple / PreserveAspect",
+      "borderLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "contentInsetLRTB": {
+        "L": 20,
+        "R": 20,
+        "T": 20,
+        "B": 20
+      },
+      "sha256": "7199ba862ebaa451f29748ae5124f38fbc49bbe4791470b717f06a5449ae4d9c",
+      "assetFile": "CircleButton_Disabled.png"
+    },
+    {
+      "name": "NumberBadge",
+      "kind": "NumberBadge",
+      "file": "sprites/NumberBadge.png",
+      "pixelSize": [
+        96,
+        96
+      ],
+      "uiSize": [
+        48,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Simple / PreserveAspect",
+      "borderLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "contentInsetLRTB": {
+        "L": 18,
+        "R": 18,
+        "T": 18,
+        "B": 18
+      },
+      "sha256": "fc01fb893835e3a9d6bb17efd246e24d7f75e035be4f637fe4315e549b201a5e",
+      "assetFile": "NumberBadge.png"
+    },
+    {
+      "name": "PortraitFrame_128",
+      "kind": "PortraitFrame",
+      "file": "sprites/PortraitFrame_128.png",
+      "pixelSize": [
+        256,
+        256
+      ],
+      "uiSize": [
+        128,
+        128
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Simple / PreserveAspect",
+      "borderLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "contentInsetLRTB": {
+        "L": 34,
+        "R": 34,
+        "T": 34,
+        "B": 34
+      },
+      "sha256": "9b60f36a348cfd88a62508bcfa0f426a39591b2e3c23ecb4d2bf1582db23870a",
+      "assetFile": "PortraitFrame_128.png"
+    },
+    {
+      "name": "Divider_Horizontal",
+      "kind": "Divider",
+      "file": "sprites/Divider_Horizontal.png",
+      "pixelSize": [
+        256,
+        12
+      ],
+      "uiSize": [
+        128,
+        6
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Sliced horizontal only / height fixed 6 UI",
+      "borderLRTB": {
+        "L": 16,
+        "R": 16,
+        "T": 0,
+        "B": 0
+      },
+      "contentInsetLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "sha256": "c81aed6fd72542080814a87c2189df9d39523ef4b59b67b5fc466a0e6a11d8b9",
+      "assetFile": "Divider_Horizontal.png"
+    },
+    {
+      "name": "Ornament_Corner",
+      "kind": "Corner",
+      "file": "sprites/Ornament_Corner.png",
+      "pixelSize": [
+        96,
+        96
+      ],
+      "uiSize": [
+        48,
+        48
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Simple / PreserveAspect / MirrorXY",
+      "borderLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "contentInsetLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "sha256": "1ec4f967578031ff41ed3faffc52987ab494db32f613a40ca94abb8984598ec8",
+      "assetFile": "Ornament_Corner.png"
+    },
+    {
+      "name": "Ornament_HeaderEnd",
+      "kind": "HeaderEnd",
+      "file": "sprites/Ornament_HeaderEnd.png",
+      "pixelSize": [
+        192,
+        64
+      ],
+      "uiSize": [
+        96,
+        32
+      ],
+      "pixelsPerUnit": 200,
+      "pixelDensity": 2,
+      "mode": "Simple / PreserveAspect / MirrorX",
+      "borderLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "contentInsetLRTB": {
+        "L": 0,
+        "R": 0,
+        "T": 0,
+        "B": 0
+      },
+      "sha256": "c7814044846e55506f45308ef63ee50fa7dd488600fd9900c0b9b1734f841ebc",
+      "assetFile": "Ornament_HeaderEnd.png"
+    }
+  ]
+}

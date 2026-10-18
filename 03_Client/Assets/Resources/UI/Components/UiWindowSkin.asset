@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 955018ccd9f750ac0882b830a8544e2c, type: 3}
+  m_Name: UiWindowSkin
+  m_EditorClassIdentifier: Dawnholder.Client::Dawnholder.Client.UI.UiWindowSkin
+  _panelPrefab: {fileID: 114000, guid: 8052a591cd1fda1e2ae5b53ff42eda78, type: 3}
+  _headerPrefab: {fileID: 114000, guid: 5470df5701dcd91ba1f8ebadfec0edb1, type: 3}
+  _buttonPrefab: {fileID: 114001, guid: 8ee9b685ca8f1a14b978b0e2fc08c24e, type: 3}
+  _insetPrefab: {fileID: 114000, guid: 74e96bd6480e224f43101ef5f56029cb, type: 3}
+  _portraitPrefab: {fileID: 114000, guid: 86fad0ca8a358a7dd09f21d45022d057, type: 3}
+  _dialogPanel: {fileID: 21300000, guid: 40bd7251781d4d92a9fb572a4b350bc2, type: 3}
+  _emphasisPanel: {fileID: 21300000, guid: 7dec580f6ab94568af987e047f5a2c36, type: 3}
+  _divider: {fileID: 21300000, guid: 66a1c6ad27d746138fffd6631bc59c56, type: 3}
+  _acceptNormal: {fileID: 21300000, guid: 304984e555104bf5b7d8648af717c165, type: 3}
+  _acceptStates:
+    m_HighlightedSprite: {fileID: 21300000, guid: ce276490b85b4f7fa5f674b0f2546e87, type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 0525c0bba70a41ad8bf71baebe25bc9f, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: ce276490b85b4f7fa5f674b0f2546e87, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: 296d9f9387434c4cbc07115da1352309, type: 3}
+  _declineNormal: {fileID: 21300000, guid: 2b776157d2a945229c5cb20bac70bcff, type: 3}
+  _declineStates:
+    m_HighlightedSprite: {fileID: 21300000, guid: 1e8a01af6d0f46128d05c89866f20cd4, type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 3e4ac54569094f8a9050a567ab5df3d8, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: 1e8a01af6d0f46128d05c89866f20cd4, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: ef2f8625204c492190b2d4c58a0121a1, type: 3}

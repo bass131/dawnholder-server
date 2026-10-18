@@ -11,7 +11,12 @@ using Shared.GameData;
 using Shared.Protocol;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.TestTools;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Dawnholder.Client.Tests.PlayMode
 {
@@ -32,6 +37,22 @@ namespace Dawnholder.Client.Tests.PlayMode
         const string ConfirmLabel = "확인";
         const string CurrencyCapPhrase = "골드가 상한";
         const string InventoryFullPhrase = "가방이 가득 차";
+
+        // Art 06 verification: approved pieces the reward window may show, name → .meta GUID (Art/UI/Components,
+        // import-spec.json). uGUI is reached by type name and reflection, as ScreenUiProbe does.
+        static readonly Dictionary<string, string> ApprovedGuids = new Dictionary<string, string>
+        {
+            ["Panel_Emphasis"] = "7dec580f6ab94568af987e047f5a2c36",
+            ["Header"] = "1371d63dc50f40ebae0726a4d60203b5",
+            ["Inset_Default"] = "baf557470603430e83015dc40371610a",
+            ["Inset_Selected"] = "e2c7e2ef02fc41d38527480b1023601b",
+            ["Inset_Disabled"] = "dd85577f51e84c7188a5a8d8a3b03517",
+            ["Button_Accept_Normal"] = "304984e555104bf5b7d8648af717c165",
+            ["Button_Accept_Highlighted"] = "ce276490b85b4f7fa5f674b0f2546e87",
+            ["Button_Accept_Pressed"] = "0525c0bba70a41ad8bf71baebe25bc9f",
+            ["Button_Accept_Disabled"] = "296d9f9387434c4cbc07115da1352309",
+        };
+        static readonly Type ImageType = Type.GetType("UnityEngine.UI.Image, UnityEngine.UI");
 
         MapEntryPlayFixture _fixture;
         int _hpMarker;
@@ -203,6 +224,58 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.IsEmpty(ScreenUiProbe.ShownTexts("9753"), "P7 the reward text is not shown after the connection ends");
         }
 
+        // Art 06 independent verification (verifies task_f7615fd3886f) in the real Town window. Requirement sources:
+        // ui-window-application-scope.md 「제품 쓰기 경계」 (reward background, title, rows and 「확인」 use approved pieces),
+        // 「보존 계약」 (decorations take no raycast; normal/highlighted/pressed/disabled are approved sprites) and goal
+        // 「적용 중인 사용자 결정」 reward window user A (the title band and row backdrops lie behind the kept text).
+        // The real pointer hovers, presses and releases 「확인」; only the release sends the one confirm.
+        [UnityTest]
+        public IEnumerator TownWindowArt_ShowsTheApprovedPieces_PassesThePointerOverItsTexts_AndShowsAcceptStatesUnderThePointer()
+        {
+            yield return EnterReadyTown();
+            bool opened = false;
+            yield return OpenSuccessWindow(3579, met => opened = met);
+            Assert.IsTrue(opened, "precondition: a valid success result opens the window");
+            yield return ScreenUiProbe.WaitForEventSystem();
+            yield return _fixture.Frames(2);
+            Component button = ConfirmButtons().Single();
+            Transform canvas = button.GetComponentInParent<Canvas>().rootCanvas.transform;
+            HashSet<GameObject> window = ScreenUiProbe.GroupBelowCanvas(button);
+            string[] shownPieces = ShownImages(canvas).Select(image => PieceFamily(ImageSprite(image, "sprite"))).ToArray();
+            // Title, summary and the three rows (the third is empty here); the caption belongs to the button itself.
+            TMP_Text[] windowTexts = canvas.GetComponentsInChildren<TMP_Text>().Where(text => !text.transform.IsChildOf(button.transform)).ToArray();
+            TMP_Text title = windowTexts.Single(text => text.text == "던전 클리어");
+            string[] textSpotHits = windowTexts.Select(text => ScreenUiProbe.ScreenPoint(text))
+                .SelectMany(ScreenUiProbe.RaycastHits).Where(window.Contains).Select(hit => hit.name).ToArray();
+            Vector2 onButton = ScreenUiProbe.ScreenPoint(button);
+            bool buttonTakesRaycast = ScreenUiProbe.RaycastHits(onButton).Any(window.Contains);
+
+            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, ScreenUiProbe.ScreenPoint(title));
+            string normal = PieceName(ShownButtonSprite(button));
+            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, onButton);
+            string highlighted = PieceName(ShownButtonSprite(button));
+            InputSystem.QueueStateEvent(_fixture.Mouse, new MouseState { position = onButton }.WithButton(MouseButton.Left));
+            yield return _fixture.Frames(2);
+            string pressed = PieceName(ShownButtonSprite(button));
+            int confirmsWhileHeld = Confirms().Count;
+            InputSystem.QueueStateEvent(_fixture.Mouse, new MouseState { position = onButton });
+            yield return ScreenUiProbe.WaitUntil(() => Confirms().Count > 0, OpenSeconds, _ => { });
+            yield return _fixture.Frames(5);
+            Debug.Log($"[reward art verify] pieces [{string.Join(", ", shownPieces)}], window hits over texts [{string.Join(", ", textSpotHits)}], " +
+                $"states normal={normal} highlighted={highlighted} pressed={pressed}, confirms held={confirmsWhileHeld} after={Confirms().Count}");
+
+            Assert.IsTrue(buttonTakesRaycast, "control: the open window takes the raycast at its 「확인」 button");
+            CollectionAssert.AreEquivalent(new[] { "Panel_Emphasis", "Header", "Inset_*", "Inset_*", "Inset_*", "Button_Accept_Normal" }, shownPieces,
+                "scope reward window: the shown window draws Panel_Emphasis, one title Header, three row Inset_* and the Accept button only");
+            Assert.IsEmpty(textSpotHits, "scope 「장식은 raycastTarget=false」: the title, summary and rows with their backdrops pass the pointer");
+            Assert.AreEqual("Button_Accept_Normal", normal, "scope: 「확인」 away from the pointer shows the approved normal sprite");
+            Assert.AreEqual("Button_Accept_Highlighted", highlighted, "scope: the pointer over 「확인」 shows the approved highlighted sprite");
+            Assert.AreEqual("Button_Accept_Pressed", pressed, "scope: the held press shows the approved pressed sprite");
+            Assert.AreEqual(0, confirmsWhileHeld, "P7 holding the press sends nothing yet");
+            Assert.AreEqual(1, Confirms().Count, "P7 the release sends C_DungeonClearConfirm exactly once");
+            Assert.AreEqual(0, ConfirmButtons().Length, "P7 「확인」 closes the window");
+        }
+
         IEnumerator RejectionShowsOnlyItsReason(byte result, string reason, int sentGold, int itemId, string itemName)
         {
             yield return EnterReadyTown();
@@ -242,6 +315,42 @@ namespace Dawnholder.Client.Tests.PlayMode
         }
 
         static Component[] ConfirmButtons() => ScreenUiProbe.ShownButtons(ConfirmLabel);
+
+        static Component[] ShownImages(Transform canvas)
+        {
+            Assert.IsNotNull(ImageType, "fixture: uGUI type UnityEngine.UI.Image");
+            return canvas.GetComponentsInChildren<Component>().Where(component => component != null &&
+                component.GetType() == ImageType && ScreenUiProbe.IsShown(component)).ToArray();
+        }
+
+        // "sprite" is the Image's own sprite; "overrideSprite" reads what it draws now (a button state's sprite).
+        static Sprite ImageSprite(Component image, string property) => (Sprite)image.GetType().GetProperty(property).GetValue(image);
+
+        static Sprite ShownButtonSprite(Component button)
+        {
+            var graphic = (Component)button.GetType().GetProperty("targetGraphic").GetValue(button);
+            return graphic != null ? ImageSprite(graphic, "overrideSprite") : null;
+        }
+
+        // The approved name when the sprite is the asset behind that name's GUID; otherwise what it is.
+        static string PieceName(Sprite sprite)
+        {
+            if (sprite == null) return "nothing";
+#if UNITY_EDITOR
+            string guid = AssetDatabase.TryGetGUIDAndLocalFileIdentifier(sprite, out string found, out long _) ? found : null;
+            bool approved = ApprovedGuids.TryGetValue(sprite.name, out string expected) && expected == guid;
+            return approved ? sprite.name : $"non-approved '{sprite.name}' (GUID {guid ?? "none"})";
+#else
+            return sprite.name;
+#endif
+        }
+
+        // Any Inset_* piece is an approved row backdrop.
+        static string PieceFamily(Sprite sprite)
+        {
+            string name = PieceName(sprite);
+            return name.StartsWith("Inset_", StringComparison.Ordinal) ? "Inset_*" : name;
+        }
 
         // The texts drawn on the window's canvas.
         static TMP_Text[] WindowTexts(Component confirmButton) =>
