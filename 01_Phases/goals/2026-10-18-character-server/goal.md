@@ -6,11 +6,29 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: Unity 실제session313 GREEN·서버 요청/응답 조립407 GREEN·Core 오류 매핑 선행시험 준비.** 순수 응답 조립기와 기존 실패 송신 재사용을 구현해 기존316개와 신규91개가 같은 필터에서 모두 통과했다. 전송217GREEN·Shared22 배포는 유지하며 실제 Core bridge·저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
+**상태: 노트북 종료 전 정리·재개 대기.** 마지막 실행 완료는 Unity 실제session313 GREEN·서버 요청/응답 조립407 GREEN이다. Core 오류 매핑 신규 시험2파일328줄은 정적 READY까지만 작성했으며 컴파일·시험 발견수·RED/PASS는 미관측이다. 전송217GREEN·Shared22 배포는 유지하며 실제 Core bridge·저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 Sol xhigh에게 [Core 오류 의미 매핑 선행시험 계약](../../../.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-pretest-01/task-spec-v1.0.md)의 신규 시험2파일을 발행한다. 미래 World mapper는 실제 Core CatalogStatus/InvalidField 두 enum을 받는 typed API이며, 시험 helper만 공개 이름으로 실제 타입을 늦게 찾아 호출한다. 가짜 Core enum/namespace·제품 string/object/reflection facade를 만들지 않고 타입 부재 RED와 뒤 의미 미도달을 구분한다. 기존407개·Unity313개를 보존하고 실제 실행은 새 Main 창 뒤다. 직접 오류/사용자 필드·두 선택불가의 동일 외부 표현·Unknown12를 먼저 고정하며 NotApplied.Rejection·생성/선택 수명·실제 bridge는 후속이다. 실제 Core 타입을 소비하는 제품 구현은 검증된 인계·hash·소유 조율 뒤 수행한다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 유지한다.
+**다음 첫 일: 새 창 요청(READY 재실사 후).** 아래 고정 READY와 시험2파일을 새 세션에서 재실사하고, 메인에게 새 30분 실행 창·start/deadline/lastEntry·Unity 수/owner를 요청한다. 새 외부 Task/Dispatch와 현재 HEAD에 맞는 버전 고정 실행 보충·config/manifest를 받아 남은 A→B→C→D를 진행한다. 옛 Task·창·lastEntry를 재사용하지 않는다. 현재는 사용자 종료 지시로 새 실행·작업자·검증자 기동을 멈췄고 push하지 않는다.
+
+- **종료 원천과 Task 처리:** Main `msg_f67c2b23de92`(2026-10-18T22:32:57Z)가 사용자 귀환·노트북 종료 전 정리 지시를 전달했다. 오늘 WSL 창은 배정하지 않는다. `task_fb7b455f8af8`/`ctx_f2ce01b6eb0d`는 정적 READY만 완료한 상태에서 `msg_d5072c0251ad`로 정리 지시를 받아 전체쓰기를22:35:43Z에 종료했고 `msg_9d00cfdb53c0`으로 failed 정산했다. 이는 실행 미완료의 사용자 종료 사유이며 제품결함·독립NOTPASS·확정실패가 아니다. release 뒤 정확 identity/완료 idle을 확인해 해당 pane만 닫았다. 열린 World 작업 Task는 없으며 재개 때 새 Task를 만든다.
+- **마지막 완료와 보존:** 실행 완료 제품은 `fc2b2302b241e77c46d8422f46d5528f7cafc01f`의 응답 조립/기존요청407P·0F·0skip이며 아래 CI 정산 원문/TRX를 따른다. 현재 두 신규 시험은 +328/-0·제품/기존시험변경0의 미실행 선행 체크포인트로 로컬 commit한다. 준비543/558·원본742 보존을 확인한 기존 실사는 그대로 보존했고 종료 직전 승인13/두시험 hash도 차이0이었다. 이번 정리 commit으로 goal/CURRENT·HEAD·Git status 기준이 바뀌므로 옛 준비파일을 그대로 실행하지 않고 새 버전 입력을 만든다. 옛 원문/SHA/.backups는 수정·삭제하지 않는다.
+- **사용자·메인 대기:** 이어갈 머신·근거 이관/원격 전송 여부는 메인 별도 안내를 기다리며 push0이다. 실행 창/시각·lastEntry는 재개 때 새로 받는다. 실제 Core 소비 인계·소유 조율과 전체 PR 독립 강은 남아 있으며 대역 준비를 실제 저장/입장 통과로 해석하지 않는다. 다른 머신이면 Git 제외 `.backups` 근거도 별도로 보존·이관해야 한다.
+- **이번 밤 결정 기록:** 사용자 위임 원천 `msg_02a8258a3fc2`, Core 독립 선행 `msg_4dc4f7f5bdd5`, R5 한정 복구 `msg_645c6d8ebd9f`, Snapshot 관찰 보완 `msg_1c4aa90c0a9e`, 응답 조립 실행 창 `msg_3d910fa5eadd`는 이 goal의 적용 결정/단계 정산과 원문에 기록했다. 오류 매핑 창의 Content 우선 대기 `msg_fcc93dae7dd4`/`msg_56558bbe7ced`는 아래 근거의 mail-notification-03/04.json에 보존했다. 이번 사용자 종료 전달 `msg_f67c2b23de92`는 mail-notification-05.json과 이 재개점에 추가했다.
+
+근거 E는 `.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-pretest-01/`다. 최종 로컬 HEAD/상태·세션 ID·프로세스 확인은 E의 `lead-shutdown-final-state.json`에서 확인한다.
+
+| 고정 산출물 | SHA256 |
+|---|---|
+| `ready-plan-v1.md` | `B29EE62735808D873BA789C8BA105F5CCE77BD3A3D4872C36F3974257B850AA5` |
+| `prepared-inputs-v1.json` (558개) | `B2C501B6BF2EBB549577F98FBC5F40FF74D2244E092E7D65EFC2CFD8F7775D21` |
+| `task-spec-v1.0.md` | `B0E99F097846221B994D982D99F7751C0E1DE878BB56B296EB21944F2E78FF55` |
+| `manifest-v1.json` (543개) | `1B037DC15C92ED20E8EBCAF310C1F8919568695E346C31A7B53516089C141112` |
+| `shutdown-report.md` | `50225AA070C9D34353DD459CC270CBD402AC7EC6A6D679AC97B593199B799DAA` |
+| `shutdown-metadata.json` (승인13·시험2 SHA 포함) | `2234D6CC92C68DA99BFD5F88548F4A03C6685178E8C2C55CC2EC3D0139F19E0F` |
+
+보존한 [오류 의미 매핑 시험 계약](../../../.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-pretest-01/task-spec-v1.0.md)은 실제 Core CatalogStatus/InvalidField 두 enum의 typed API를 시험 helper에서만 늦게 바인딩한다. 가짜 Core enum/namespace·제품 string/object/reflection facade는 만들지 않는다. 직접 오류/사용자 필드·두 선택불가의 동일 외부 표현·Unknown12를 먼저 고정하며 NotApplied.Rejection·생성/선택 수명·실제 bridge는 후속이다. 실제 Core 타입 제품 구현은 검증된 인계 뒤다. 재개 시 Core API v2·최신 main/Content 소유 변화를 대조하고 전체 C1~C9·[전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)·PR 경계를 유지한다.
 
 Core 최신 회신 `msg_9ffeac1a66ca`(21:30:11Z)은 새 소비 checkpoint/최종인계 없음·API v2/HEAD/공개signature·host 소유 불변을 재확인했다. 보고된 SQL5 LocalDB·Resume PS2 독립 대역97/97·기존360PASS는 서버저장API 소비 인계가 아니며 실제 Express/관리자 Resume/서버 저장재접속은 미실행이다. 리드는 이 별도 검증을 재실행하거나 World 통합 통과로 세지 않았다. 원문은 `approval-01/catalog-response-implementation-01/mail-notification-05.json`이며 Core 인계 대기 없이 공개 계약 기반 선행시험을 이어간다.
 
