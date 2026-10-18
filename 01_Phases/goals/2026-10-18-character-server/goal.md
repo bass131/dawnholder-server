@@ -6,11 +6,13 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: Unity 실제session313 GREEN·서버 요청316 GREEN·Catalog 응답 조립 선행시험 준비.** 실제 메뉴 요청 경계·World 수명과 Snapshot 관찰 보완을 마쳤다. 같은316명에서 기존310P를 보존하고 메인 분류b의6건도 응답전체byte·player/class/Guild 후속 단정까지 통과했다. 전송217GREEN·Shared22 배포는 유지하며 Core 실제 저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
+**상태: Unity 실제session313 GREEN·서버 요청316 GREEN·응답 조립 선행407=316P/91RED·제품 구현 준비.** 실제 메뉴 요청 경계·World 수명과 Snapshot 관찰 보완을 마쳤고 응답 조립기의 신규91개 요구를 고정했다. 신규91개는 제품 타입 부재로 뒤 의미 단정이 미도달이다. 전송217GREEN·Shared22 배포는 유지하며 Core 실제 저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
 
 ## 재개 지점
 
-**다음 첫 일:** 메인 `msg_4dc4f7f5bdd5`의 승인 범위에서 신규 Sol xhigh 선행 작성자에게 World 응답 조립 경계의 좁은 시험을 발행한다. 목록0/1/3·슬롯순서/잘못된 목록 거부·생성/선택 성공 형식·실패빈필드의 literal byte와 입력 보존을 고정한다. Core 공개 문서의 값을 시험 대역에서 소비하되 실제 Core 타입을 대체하거나 미검증 제품을 복사하지 않는다. 실제 Core bridge·상태/Unknown/선택입장은 후속으로 남기며 Core 인계 부재만으로 대기하지 않는다. 제품/기존시험·전송/프로토콜·Core/Unity는 이번 선행 작성에서 동결한다. 실행은 정적 READY 뒤 새 Main WSL 창에서 기존316과 새 좁은 필터를 한 번 검증한다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 유지한다.
+**다음 첫 일:** 신규 Astra xhigh에게 World 순수 응답 조립기 제품을 발행한다. 신규 `Sessions/CharacterMenuReplyFactory.cs`의 고정4API와 기존 `CharacterMenuSession.cs`의 `SendFailure` 최소 재사용만 허용하고 모든 시험/Shared/PDL/Core/Unity는 동결한다. 입력·손상 결과의 wire 경계와 서버→클라이언트 프로토콜 조립이므로 라우팅 신호1/3이다. 선행91개의 literal byte·목록0/1/3·전체손상거부·성공/실패빈필드·입력보존 요구를 구현하고 새 Main 창의 같은407명 필터1회로 검사한다. Core 공개4필드를 값으로 소비하며 미검증 제품 복사·대체 Core namespace·DB/host owner 구현0이다. 실제 Core bridge·상태/Unknown/선택입장은 후속이고 Core 인계 부재만으로 대기하지 않는다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 유지한다.
+
+- **응답 조립 선행시험 정산:** 신규 Sol xhigh Task `task_d819e71aa834`/Dispatch `ctx_6fb00f94b4fa`, 신규시험2파일+513/-0·제품/기존시험0이다. 원문 `approval-01/catalog-response-pretest-01/report.md` SHA256 `E400F8E3EEB979B85A3B089FCE2981599C1CB2763C3630D2574340D3ECC73A89`과 실제diff/준수·407명/91개 실패message·stack을 직접 읽고792artifact hash차이0·작성자 전수분류 차이0을 확인했다. TRX SHA256 `E1991647A6042D606097DDAD9EF62F4256CDFED0A459258A9014A21838AFAB87`, 407=기존316P/신규91제품부재RED/skip0이며 뒤 API/byte/오류거부 단정은 미도달이다. Main `msg_57bdb7d3f26a` 창의 caller20:18:25~20:20:57Z 원exit1/A0B0C1D0·backup739/restore-build-test각1회·retry/kill0·build57warning/0error다. 원본739/준비817·runtime/동일lock/자원 반환을 먼저 대조해 `msg_33f9b372765e`로 창을 반환했다. succeeded/전체쓰기종료·release/정확pane종료·리드생존/reclaimable0, 신호13/max188초/초과0·질문대기269초다. R5 복구·작성자의check누락1건/집계교정과 리드 콘솔그룹표시 정정은 같은 근거 `lead-settlement-context.md`에 보존하며 제품확정실패/독립NOTPASS로 세지 않는다.
 
 - **Snapshot 관찰 보완 정산:** 신규 Sol xhigh Task `task_5d22c932756a`/Dispatch `ctx_509981ae316c`, 시험1파일+8/-1·제품변경0이다. 원문 `approval-01/server-request-fixture-fix-01/report.md` SHA256 `8742D9141EEBB581B78CA13D4B1E0F23C9A6F0CB301D4B7DEB5F14C4B0F897AB`과 실제diff/준수·6행표를 직접 읽고88산출물hash차이0·동일316 fullname/결과를 대조했다. TRX SHA256 `DB248C609940B3BC37D176C43205AAFC12D11A56EA65F31E221E445C4E645C2E`, 316P/0F/0skip·기존310P/최초229P/224회귀 보존·6F→6P다. 요청없는 실제tick의 ID6 NotEmpty/개수 인과대조와 !=6 전체Single/byte·player/class/Guild 단정을 유지했다. Main `msg_84a56fb1136e` 창에서 caller19:32:52~19:35:21Z 원exit0/A0B0C0D0·backup737/restore-build-test각1회·retry/kill0, 원본737/준비800 보존·동일lock/runtime/자원을 먼저 대조해 `msg_11f21f9bd20f`로 반환했다. succeeded/쓰기종료·release/정확pane종료·리드생존/reclaimable0, 신호7/max285초/초과0·질문대기270초다. 빌드57warning/0error이며 신규 xUnit2031(시험252)은 후속 독립 검증 입력으로 남긴다. 자체 선행 시험 결과이며 Stored/실DB·전체독립강 통과가 아니다.
 
@@ -79,6 +81,12 @@ Core `msg_80f596e64e30`(17:01:21Z)은 검증된 제한 checkpoint 없음·API v2
 메인 `msg_1c4aa90c0a9e`(2026-10-18T19:07:49Z)는 사용자 위임 `msg_02a8258a3fc2`에 따라6건을 **(b) fixture/관찰 입력 누락**으로 분류했다. 실제 active메뉴 응답과 원래맵tick의Snapshot6이 함께 잡혀 전체Packets Single에서 실패했으며 정상snapshot을 제품에서 억제하지 않는다. 현재writer정산 뒤 신규Sol xhigh가 시험1파일만 보완한다.
 
 조건은 정확ID6만 분리·Single와 예상외패킷 거부 유지, 요청없는tick대조 또는 실제Snapshot/원상태대조의 **인과 단정 하나**, 응답전체byte/class/player/Guild 단정 보존·다음실행의 실제도달,6건 원실패 이름/message·분류b·변경줄 표의 다음계약/전체독립입력 포함이다. 새Main창·같은명령1회에서 검사하고 새제품결함은 번호로 반환한다. 원문은 `approval-01/server-request-fixture-fix-01/main-decision-original.json`에 보존했다. 이 결정은 선행시험 보완이며 제품전체/독립강 통과가 아니다.
+
+### 사용자 위임에 따른 메인 결정 — 현재 inline draft의 Enter 1회 복구
+
+메인 `msg_645c6d8ebd9f`(2026-10-18T19:55:02Z)는 사용자 위임에 따라 현재 `task_d819e71aa834`/`ctx_6fb00f94b4fa`의 placeholder 없는555자 inline draft에 텍스트 없는 Enter1회와 사후 제출 전문 대조를 허용했다. 사전에는 줄바꿈만 복원해 공식payload 끝부분과 대조하고, 사후 전문 불일치/식별불가는 정적중지 status와 경로·SHA만의 짧은 주입으로 정식계약을 다시 읽게 하는 조건이다. 다른 세션의 R5 예외로 확대하지 않는다.
+
+실전송Enter1 뒤 draft소멸/Working을 관측했고 실제Codex rollout의 user 제출을 식별했다. 공식6205자/제출6198자는7LF 차이이며 나머지 문자·공백은 일치하지만 ordinalfalse를 보존했다. 조건대로 중지 `msg_52637d300fab`/짧은pointer `msg_5eade9a1a9a3`를 보냈고 작성자는 쓰기0에서 정식계약 전문·SHA 재대조 `msg_66011af0c388` 뒤 재개했다. 당시 goal은516고정입력에 포함돼 원문을 먼저 `approval-01/catalog-response-pretest-01/main-inline-recovery-original.json`에 보존하고 전체쓰기종료 뒤 이 기록을 반영했다. 초반 잘못 붙인 wait-submit 옵션은 CLI local validation에서 전송0으로 거절됐으며 실제 Enter1과 구분했다. 미래 기술적 강제·공용 규칙 정비 완료를 뜻하지 않는다.
 
 ### 동결까지 기능 산출물 우선
 
