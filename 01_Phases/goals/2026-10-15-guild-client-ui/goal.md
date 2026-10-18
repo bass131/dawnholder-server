@@ -1,11 +1,49 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **PR251 병합 완료·PR2 GUI 실제19/19PASS와 원PNG37개·출력80개 수집 완료.** F02 경로 차단은 좁은 directory 교정으로 해소됐고 세 해상도 모두 보상 확인40·두 창 닫기·raycast0·월드 공격 복귀까지 도달했다. 수집 작업자 정산·종료와 전체창 반환을 마쳤다. F03 일시 배너 가림의 메인 조건부 C8 밖 판단은 유지하며, Art C9 성장 호출·실서버 두 계정·CI/DB·신규 전체 PR2 독립 판정은 남았다. C1~C10·두 제품 PR 경계와 과거 원시는 보존한다.
+상태: **PR251 병합·PR2 fixture GUI19/19PASS/PNG37 보존, C9 전 실서버 시도는 자원 중단으로 두 계정 미완료다.** 신규 Opus는 정확 head의 WSL 서버와 실제 a 로그인·Town 진입까지 실행했으나 b 실측 관문이 미달해 b0·a partner abort Failed1/skip0·PNG0으로 정상 반환했다. 작업자 failed 정산·정확 pane 종료와 전체창21:12:20Z 반환/HKCU137값 차이0을 확인했다. F03의 메인 조건부 C8 밖 판단은 유지한다. 두 클라이언트 후속 방식·실제 두 계정/보스/구매/강화·Art C9·CI·신규 전체PR2 독립 판정은 남았고 DB 저장/재접속 복원은 이번 범위 밖이다. C1~C10·두 제품PR·개별 병합승인 경계와 과거 원시는 보존한다.
 
 ## 재개 지점
 
-**다음 첫 일:** Art 리드와 C9의 실제 성장 효과 API·main PR/commit·호출 수명/중복·실패·취소 계약과 파일 소유를 확인한다. 현재 마지막 Art `msg_31026855ae0e`까지 API는 미정이므로 임시 효과/API를 만들지 않는다. UI.unity/HUD3 controller의 Content 쓰기 예약은0이며 Art의 실제 main은 확인된 새 입력으로 직렬 통합한 뒤 같은 goal의 신규 외부 구현·독립 검증을 발행한다. 실서버 두 계정의 실행 전제/서버·DB/자원 창은 메인·기술 소유자와 조율하고 관리자/UAC·SQL서비스/인증·방화벽을 직접 바꾸지 않는다. F03의 메인 원문·조건 근거는 `qa-ui-gameplay-access-fix/lead-f03-main-decision.md`로 최종 신규 독립 검증자에게 넘긴다. 닫힌 작업자·새p와 이전 snapshot/Library/before/창은 재사용하지 않는다. 전체 PR2 신규 독립 판정과 C1~C10·두 PR 경계는 유지한다.
+**다음 첫 일:** 사용자 위임 메인 결정 `msg_653b6620556d` 3항에 따라 이번 자원 중단 결과를 메인에 보고하고 두 클라이언트 후속 방식(Editor+Player 빌드 등)을 다시 정한다. 단일 a와 WSL만으로 commit 여유0.85GiB였으므로 같은 두Editor 계획의 반복이나 관문 완화로 진행하지 않는다. 실행 창은 이미 반환됐으며 이번 Task/두 snapshot·Library/before/서버 clone을 재사용하지 않는다. 후속은 정확 입력·실제 UI/정상서버 경로·원시/자원·정상반환을 새 계약/READY·새 메인 배정창에 고정한다. C9는 Main `msg_53ff002bde60`에 따른 아침 사용자 결정 전 API/소유·수명·병합commit이 미정이고 임시API·전투효과 대체0, UI.unity/HUD3 Content쓰기예약0이다. F03 메인 원문/조건·미측정을 최종 신규 독립 검증자에게 넘긴다. 이번 부분 실행을 최종PR2 통과나 merge_ready로 쓰지 않으며 C1~C10·두 제품PR·최종 신규 독립/개별 병합승인 경계는 유지한다.
 
+### 10-19 C9 전 실서버 시도의 자원 중단·반환 정산
+
+신규 Opus `task_9bfa1b4a81bb`/`ctx_bff14657c7be`는 새4시험 파일만 쓰고 정확1dfcff9e head의 서버714파일 동일·새WSL clone·Debug0Error·메모리 모드(pid1363/startticks6976)와 첫GUI Editor a를 실행했다. a는20:59:26.0983590Z 시작/588.2777545초/exit2/timeoutfalse/root1/retry0이며 실제로그인 Knight HP150/150·Town 준비점21:08:34.7103164Z에 도달했다. 초기 guild Membership rev1·금고5·레벨1·회원1/온라인1은 한계정 관측이며 두계정 요구값과 비교하지 않는다. C# 오류0행·Explicit 정확case선택실행1/Failed1/skip0·PNG0/관측JSON2, F8/34발신0이다. a 실패는 기존partnerabort에 따른 환경중단이며 제품PASS/제품확정실패0이다. 두계정·보스/39·40보상·금고/거점경합·강화/피해차이·C9는 미실행이다.
+
+Main653b/c709 보충 뒤 gate-b21:08:42.8769681Z 실제 M=3590918144B, 물리5962465280B/commit909373440B는 요구10033369088B/7885885440B에 미달했다. role/run/PID/birth·시작마감은 일치했지만 b를 시작하지 않고 parentabort21:08:43.25Z→a Teardown/정상종료→return1회21:09:51.05~21:10:28.56Z로 갔다. 동시6/4 guard는 b0으로 미발동이다. 서버는 exact6976 확인/FIFO개행 뒤21:09:54.325Z 종료·WSL/Windows7777빈값/helperExit0, root·관측자식10·wrapper absent/kill0·파일Prefs10 차이·추가·복원0/GVS원부재 유지·source2249/서버714/고정23 차이0이다. loggedprewarm23076은 반환시점absence만 관측했고 역사birth는unknown이다.
+
+리드는 같은창freshbeforeC512/afterC3AC에서 기존samekindBinary6개만 전체current==after+즉시pervalueguard뒤 exact복귀해137전체차이0(final6988AB79)을 확인했다. 전체창은21:12:20.0126267Z 반환하고 Main `msg_235f8c67c5c4`에 보고했으며 이후live관측0이다. 종료시 물리16393166848B/commit13119361024B·C116491522048B, WindowsUnityHub/서버/7777·미분류rootchild0이었다. WSL전역설정·shutdown·cache drop/VBCS/서비스/방화벽·권한변경0이다.
+
+최종 report SHA `508CF44A6561ECABFB3EF0B98452D3E5D9E8D26043B27B9F77B04E33F313EDCF`, owned `2F78DE24F7B4AC62A0A118CEEC3A5D73607CF2EB7B05060FE7C39E0D04BAD723`, writing-closed `3784720A9A5EC5A658CDD732C7D58C0F88CAA73A2FFBC297FE151F5EE3709A15`와221현물(새source4+lane217)의 길이/hash/UTCmtime를 직접 대조해 차이0이었다. formal worker_done `msg_b886b5f4e467` failed를 확인하고 release retained(external_terminal) 뒤 정확pane만 닫아ptyKilled=true/reclaimable0으로 정산했다. 실행goal61E0 bytes는 `executed-goal-61E0.md`에 보존한다. 원시와 리드 보충은 D/qa-live-server-pre-c9의 report·lead-settlement.md·lead-settlement-audit.json·lead-runtime-results-audit.json·lead-window-return.json이다.
+
+기존 생존helper는49신호/공식답신4·raw초과8/max483초/actual exit1을 반환했다(원시·도구수정/재실행0). 같은UTC ask 뒤HB 때문에 questionWaits가[]인 출력 그대로를 보존한다. raw321초(20:54:29→20:59:50) 중 공식ask a3b9의20:54:29→20:58:54 대기265초가 겹쳐 대기 제외 활동은56초이며, 나머지7초과구간과 구분한다. report의 작성UTC placeholder·추가위임0 표현은 정확시각/외부Orca0·내부readonly2로 리드정산문에 보충하고 최종원문은 다시쓰지 않았다. PackageCache DirectoryNotFoundException8행·전체Exception54행은 미분석환경진단이며 제품결함8개/전체import정상으로 해석하지 않는다. Recorder의 finite-loopback 고정문구는 GameView sink 재사용에 따른 문구이며 실제 Prepare(true)/7777·서버login 원시와 구분한다.
+### 10-19 동일 실행 창의 실측 메모리 관문과 시작 마감 보충
+
+**사용자 위임에 따른 메인 결정 `msg_653b6620556d`(2026-10-18T20:43:03Z)**: 첫 Editor a는 물리 여유10GiB·commit 여유8GiB(C 여유40GiB)에서 시작한다. b는 a의 실제 준비점 이후 정확 PID/birth의 private bytes M을 재고, 같은 시점의 물리 여유≥M+6GiB·commit 여유≥M+4GiB일 때만 시작한다. 현재 좁은 계획은 실제 a/01-town marker를 준비점으로 사용하며 단순 2분 경과를 안정으로 대신하지 않는다. 조건 미달이면 b0과 실제 부족 수치를 보존하고 a 단독 원시로 정상 반환한다. 두 root 동시 물리6GiB/commit4GiB 미만 10초 간격3회 중단·각 root1/재시도0·GUI2400초/반환600초는 유지한다. VBCSCompiler 조작·WSL 설정/캐시 drop/shutdown·서비스·외부 프로세스 종료0이며 실행 방식 전환은 이 결정에 포함하지 않는다.
+
+**사용자 위임에 따른 메인 결정 `msg_c709cf7c6da5`(20:52:27Z)**: 같은 독점 창에서 a/b 두 root의 시작 마감만21:10:00Z로 연장한다. 전체 deadline22:00Z는 그대로이고 실제 중단 시각은 min(a 시작+2400초, deadline−600초)다. 마감까지 b 관문을 넘지 못하면 b를 시작하지 않고 기존 rendezvous의 parent abort로 정상 Teardown·반환하며 b case0/XML 미실행을 PASS나 제품 확정 실패로 바꾸지 않는다.
+
+이 보충 직전 실제 수행은 preparation20:34:28.85~20:35:44Z/exit0, 새 a/b snapshot 각각2249파일/Library 복사0·source 보호차이0·filePrefs10 백업/GVS원부재다. 새 WSL clone은714파일 차이0·Debug build 오류0이며20:37:25Z 서버 PID1363/startticks6976·argv2(서버 인자0, 메모리 모드)·0.0.0.0:7777 READY를 관측했다. GUI 실행은 새 binding 발행 전0이며 C# 실제 컴파일·두 계정·실화면 결과는 아직 없다. 자원은 서버 후 첫 관문14/12를 충족하지 못해 새 메인 결정으로 재계획했으며, 메인 측 WSL 메모리 원인 추정과 Content 실제 수치를 구분한다.
+
+기존 실행 goal4032와 binding74FB bytes는 D/qa-live-server-pre-c9/`executed-goal-4032.md`·`main-window-binding-v1-before-dynamic.json`에 보존한다. 새 plan6FED/원 ready3926·계약 v1.3/time1·같은 창 fresh Registry beforeC512와 goal-only override를 새 binding으로 연결한다. C1~C10·C9 아침 사용자 결정·최종 신규 독립 판정·PR별 사용자 병합 승인 경계는 유지한다.
+### 10-19 노트북 WSL 경로·퀘스트 관문과 내부 조사 해석 정정
+
+**사용자 위임에 따른 메인 결정 `msg_70d77a899d35`(2026-10-18T19:41:38Z)**: 메인이19:41Z 기본WSL배포판에서 직접 관측한 사용자user/uid1000·HOME `/home/user`·SDK `/home/user/.dotnet/dotnet`, `10.0.301 [/home/user/.dotnet/sdk]`를 사용한다. 새clone은 `/home/user/.cache/dawnholder/workspaces/content-guild-live-prec9-1dfcff9e`로 고정한다. 기존 `/home/bass1`는 데스크톱 기준이므로 노트북 계획에서 정정한다. World 폴더와 이름 중복/기존clone소유·실제배포판/SDK/7777·자원은 Content의 실제 창 진입 관문에서 확인하며 Main 관측을 Content 실행 증거로 쓰지 않는다.
+
+기존 Debug F8 경로 `C_CheatCommand(34), cheatType=0`를 두 보스 진입 전에 파티leader가 각1회·총최대2회만 쓸 수 있다. 기존 Debug/AllowCheats 게이트가 그대로 열릴 때만 쓰며 DebugConfig/제품 수정이 필요하면 정상 퀘스트로 간다. 사용 시각·계정·34 발신횟수·서버응답을 원시로 남기고 다른 cheatType/2회초과0이다. 보스 피해·사망·개인보상·공동금고·구매·강화는 정상실서버 그대로다. 사용 시 결과/goal에 **「정상 퀘스트 수행은 미검증(F8 관문 사용)」**으로 명시한다. 현재는 허용 결정만 반영했고 F8/34·Unity/서버 실제실행0이다. 최종PR2에서 이 공백을 다루는 범위는 C9 통합 뒤 리드가 다시 정한다.
+
+**리드 해석 정정 첫 발생 — Main `msg_e414b6edfc6f`(19:11:46Z)**: 리드가 worker의 내부 Explore 읽기조사2개를 일반작업자 추가위임 금지에 포함해 중단 요청했다. Main은 해당 금지는 외부Orca 재위임이며 내부readonly조사·요약은 허용된다고 정정했다. 내부조사의 파일쓰기/Unity·WSL·dotnet·서버/Prefs·Registry 접근0, 작업자 본인의 원문 위치 직접확인, 독립검증·실행근거 대체0의3조건을 따른다. 리드는 중단해석을 철회하고 보충v1.1로 원문을 전달했다. worker는 Client조사완료·Server조사중단/WriteEdit0·파일읽기명령만/본인·조사 승인밖쓰기실행0을 보고했고, v1.1 SHA직접확인·적용을 `msg_7793fa58774a`로 회신했다. 이것은 리드해석정정이며 제품확정실패/새반복규칙으로 만들지 않는다. 자체보고를 내부조사 전체transcript 독립실사로 과장하지 않는다.
+
+원문은 D/qa-live-server-pre-c9/`mail-prerequisites-wait-01.json`·`mail-boundary-review-04.json`, 보충v1.1/다음v1.2에 보존한다. 현재Task 초기시험작성 입력goal48A7 bytes는 `executed-goal-48A7.md`에 그대로 남기고 새문서hash/기준v2를 남은준비·READY·실행에 명시발행한다. C1~C10/제품·시험소유/두PR/최종신규독립·개별병합승인은 바꾸지 않는다.
+### 10-19 C9 전 실서버 두 계정 1차 확인 결정
+
+**사용자 위임에 따른 메인 결정 msg_f87a59d8fb9f(2026-10-18T18:51:39Z)**: 현재 실행 기준 head를 READY에서40자로 고정하고 해당 GameServer를 WSL 새 격리 clone에서 빌드·메모리 모드로 실행한다. 원본빌드/DLL배포·역복사0, DB/SQL Express/LocalDB/서비스/인증/방화벽 변경0이다. 접속127.0.0.1:7777만 시험하며 코드상 loopback 바인딩 미지원·0.0.0.0 고정 사실을 READY에 명시한다. 실제 사용자 자격증명 없는 시험계정 둘의 정상 로그인/생성 경로를 사용한다.
+
+리드는 두 Editor와 Editor+Player의 자원·시간·Prefs/Registry를 비교하고 선택/정확 argv·순서·현재 입력hash·물리6GiB/commit4GiB에 Unity둘 여유를 더한 관문을 READY에 고정한다. Unity둘+WSL서버는 메인 배정 단일 독점창에서만 실행한다. 공유 HKCU 키는 전체창 fresh before/after·현재값 guard로 두Editor 종료 뒤 복귀한다. Art HUD의 사용자 승인 병합 뒤 제공될 C9를 기다리지 않고 장면3/6/7/8의 무관 부분을 먼저 확인하며, C9 의존 부분은 정확히 나눠 추후 다시 확인한다. 결과 제목은 「C9 전 조합의 실서버 확인」으로만 기록하고 최종PR2 판정으로 쓰지 않는다.
+
+Art msg_dab1e395b080(18:50:48Z)은 현 Art HEAD68340c90의 검색 관측에 한정해 성장API/심볼 미정·미구현/독립검증·병합PR 없음, 소유/수명/실패·중복·취소 계약 미고정임을 회신했다. initial/Query/reconnect/중복0·새shared1→2 또는 일치Enhance47+44 1회 요구를 다음 연결 입력으로 보존한다. Main `msg_53ff002bde60`은 C9 주인·범위의 두 파트 공백을 아침 사용자 결정으로 올리고 두 리드에게 같은 원문을 전달하기로 했다. 그전 재질의/임시효과 API/공용파일 소유 약속0이며 Content는 C9 밖 일을 계속한다. 임시API·전투효과 대체·4~7 확대를 하지 않는다.
+
+전체 원문은 E/pr2-server-integration-20261018/qa-ui-gameplay-path-fix/mail-next-dependencies-01.json와 같은 D/qa-live-server-pre-c9/main-and-art-decisions.md에 보존한다. 메인 전달 결정을 이 pane 사용자 직접 입력이나 DB/전역변경/병합 권한으로 격상하지 않는다. 신규 외부 검증 계약·READY 준비를 이어가며 실제 서버/Unity는 아직 미실행이다.
 ### 10-18 산출물경로 교정과 GUI 완주 정산
 
 동일 작업의 신규 Astra high `task_86876e24095b`/`ctx_873ea8dca6c2`가 기존 `GuildGameplayWindowTestTools.Recorder`의 directory만 +12/-1로 교정했다. 원caseName·정확19 fullname·capture stage·단정·입력·wire·cleanup과 나머지2244 source/meta·고정28은 보존했다. 요청·최초명령·화면은 gpt-6-astra high, backend actual unknown이다. report SHA `D4EBBDA29ACAF1CEA29BB2FE5525CDD9B575ED3ECC29CEE6B445F1481198B206`, writing-closed `6D70F6DE2FA61672B4A7BD0E3F54B1103ECE14748E87FC9C59FAEFD5A4286880`, owned manifest `30BF180879348ED7D4755935D32AD5B04CD4A11F66A3EBF7B7D86B92279E148D`와157현물 길이/hash/UTCmtime·source2245·실행2cs·3ps1을 직접 대조하고 succeeded·정확 pane 종료/reclaimable0으로 정산했다. 전체 PR2 최종 독립 판정은 아니다.
@@ -105,7 +143,7 @@ H03의 실제 두 name 인자 오분류는 제품 확정 실패·독립 NOT PASS
 
 기록 시각: **2026-10-15T07:20:33Z**(`date -u` 실제 출력, E/`pr1-impl/wrapup-date-u.txt`). **열린 Task·Dispatch 없음, 작업자 pane 0**이며 리드 pane만 메인의 마감을 기다린다.
 
-**다음 첫 일:** 최신 지침·현재 branch와 중간 산출물을 확인하고 신규 Astra 세션에 H03 미실행 초안의 검토·보완과 남은 자체 검증을 새 계약으로 맡긴다. E/`pr1-impl/report.md`의 「활성 하네스와 미실행 초안」부터 읽는다. `proposed-H03/`는 활성 하네스에 반영하지 않은 초안으로, 근거 출력 경로·이미 없는 lock의 no-op·삭제 직전 배타 open 재확인·Prepare label 범위가 v4와 아직 맞지 않는다. 완성된 복구 도구로 사용하지 않는다.
+**다음 첫 일:** 사용자 위임 메인 결정 `msg_653b6620556d` 3항에 따라 이번 자원 중단 결과를 메인에 보고하고 두 클라이언트 후속 방식(Editor+Player 빌드 등)을 다시 정한다. 단일 a와 WSL만으로 commit 여유0.85GiB였으므로 같은 두Editor 계획의 반복이나 관문 완화로 진행하지 않는다. 실행 창은 이미 반환됐으며 이번 Task/두 snapshot·Library/before/서버 clone을 재사용하지 않는다. 후속은 정확 입력·실제 UI/정상서버 경로·원시/자원·정상반환을 새 계약/READY·새 메인 배정창에 고정한다. C9는 Main `msg_53ff002bde60`에 따른 아침 사용자 결정 전 API/소유·수명·병합commit이 미정이고 임시API·전투효과 대체0, UI.unity/HUD3 Content쓰기예약0이다. F03 메인 원문/조건·미측정을 최종 신규 독립 검증자에게 넘긴다. 이번 부분 실행을 최종PR2 통과나 merge_ready로 쓰지 않으며 C1~C10·두 제품PR·최종 신규 독립/개별 병합승인 경계는 유지한다.
 
 자기 snapshot `E/pr1-impl/unity-project/Temp/UnityLockfile`의 빈 lock은 삭제하지 않고 보존했다. 새 계약의 fresh 소유·PID/birth·입력·경로·배타 open 관문으로 이 단일 lock의 복구 여부를 판단한 뒤, 수정된 하네스와 새 manifest를 고정해 남은 EditMode/PlayMode를 수행한다. 구현자 실제 EditMode 1회가 이미 사용됐으며 모드당 최대 3회 경계를 유지한다. 메모리 기준을 완화하거나 사용자 프로세스를 건드리지 않는다. 자체 결과 뒤 신규 Opus 강 검증이 필요하다.
 
