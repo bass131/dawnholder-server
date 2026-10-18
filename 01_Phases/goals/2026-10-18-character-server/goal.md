@@ -6,11 +6,13 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: Unity 실제session313 GREEN·서버 요청/응답 조립407 GREEN·Core 소비 대역 준비.** 순수 응답 조립기와 기존 실패 송신 재사용을 구현해 기존316개와 신규91개가 같은 필터에서 모두 통과했다. 전송217GREEN·Shared22 배포는 유지하며 실제 Core bridge·저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
+**상태: Unity 실제session313 GREEN·서버 요청/응답 조립407 GREEN·Core 오류 매핑 선행시험 준비.** 순수 응답 조립기와 기존 실패 송신 재사용을 구현해 기존316개와 신규91개가 같은 필터에서 모두 통과했다. 전송217GREEN·Shared22 배포는 유지하며 실제 Core bridge·저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
 
 ## 재개 지점
 
-**다음 첫 일:** Core 공개 API v2의 의미별 결과·생성 Unknown·선택 수명과 상관을 소비하는 World 대역 시험 계약을 준비한다. 기존 응답 조립407개/요청 수명과 Unity313개를 보존하고, 실제 Core bridge·host 연결은 검증된 인계·타입/hash·소유 조율 뒤 수행한다. 인계 전에도 공개 계약으로 고정할 수 있는 World 대역 준비는 계속하며 미검증 Core 제품 복사·대체 Core namespace·DB/host owner 구현0이다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 유지한다. 현재 구현자는 종료했으므로 후속 시험·구현은 새 외부 세션에 발행한다.
+**다음 첫 일:** 신규 Sol xhigh에게 [Core 오류 의미 매핑 선행시험 계약](../../../.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-pretest-01/task-spec-v1.0.md)의 신규 시험2파일을 발행한다. 미래 World mapper는 실제 Core CatalogStatus/InvalidField 두 enum을 받는 typed API이며, 시험 helper만 공개 이름으로 실제 타입을 늦게 찾아 호출한다. 가짜 Core enum/namespace·제품 string/object/reflection facade를 만들지 않고 타입 부재 RED와 뒤 의미 미도달을 구분한다. 기존407개·Unity313개를 보존하고 실제 실행은 새 Main 창 뒤다. 직접 오류/사용자 필드·두 선택불가의 동일 외부 표현·Unknown12를 먼저 고정하며 NotApplied.Rejection·생성/선택 수명·실제 bridge는 후속이다. 실제 Core 타입을 소비하는 제품 구현은 검증된 인계·hash·소유 조율 뒤 수행한다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 유지한다.
+
+Core 최신 회신 `msg_9ffeac1a66ca`(21:30:11Z)은 새 소비 checkpoint/최종인계 없음·API v2/HEAD/공개signature·host 소유 불변을 재확인했다. 보고된 SQL5 LocalDB·Resume PS2 독립 대역97/97·기존360PASS는 서버저장API 소비 인계가 아니며 실제 Express/관리자 Resume/서버 저장재접속은 미실행이다. 리드는 이 별도 검증을 재실행하거나 World 통합 통과로 세지 않았다. 원문은 `approval-01/catalog-response-implementation-01/mail-notification-05.json`이며 Core 인계 대기 없이 공개 계약 기반 선행시험을 이어간다.
 
 - **응답 조립 제품 정산:** Astra xhigh Task `task_c4d748307ef8`/Dispatch `ctx_acfc9eb141f7`, 제품 신규1/기존1 +180/-39·시험변경0이다. 원문 `approval-01/catalog-response-implementation-01/report.md` SHA256 `4EB639272F12ADC6BE23E7D1759608FB9830E0ECE367447177EBCBD1EEA838F1`과 실제diff/준수·원시를 직접 읽고841산출물 hash차이0·작성자407행 전후 결과/message·stack 분류 차이0을 확인했다. TRX SHA256 `65336F156D37F642C21E8DFC88A2F8955FFF2F8616D924CE775D61B6562E8AC3`, 동일407P/0F/0skip·기존316 보존/신규91 타입부재RED→의미/byte 단정P·이름 누락/추가0이다. Main `msg_3d910fa5eadd` 창의 caller21:16:10~21:18:23Z/133.035초·원exit0/A0B0C0D0·backup740/restore-build-test각1회/retry·kill0/build57warning·0error다. D runtime0/Unity0/동일lock·원본740/준비834 보존을 먼저 대조해 `msg_77d419e0d130`로 TRX분석전 반환했다. succeeded/전체쓰기종료·release/정확pane종료·리드생존/reclaimable0이다. 신호7/max1994초·초과1/질문대기1900초는 Main `msg_c3029b3391ac`의 Content 독점창 대기와 연결되며 R5 Enter0이다. 절차상 콘솔표시/분류명령 교정과 미실행 한계는 같은 근거 `lead-settlement-context.md`에 보존했다. 실제 Core/DB/Stored/54→48·입장·전체독립강 통과가 아니다.
 
