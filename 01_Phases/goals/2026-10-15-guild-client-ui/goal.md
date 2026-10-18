@@ -1,10 +1,22 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **PR251 병합 완료·PR2 네트워크 자체289PASS 및 실제 UI 연결 자체13PASS, 남은 실화면·Art 효과·실서버 검증 준비.** 선행 창 미생성 요구RED8은 연결 구현 후 같은8개 모두 뒤 요구 단정까지 통과했고 기존control5도 통과했다. 실제 세 해상도·Town/E 보존·Art 성장 호출·실서버 두 계정·PR2 신규 독립 검증은 남았다. C1~C10과 두 제품 PR 경계, 과거 실패와 M01의 원시는 유지한다.
+상태: **PR251 병합 완료·PR2 네트워크 자체289PASS 및 UI 자체13PASS, 실제 화면 수집은 새 시험의 접근성 컴파일 차단으로 미실행.** 실패 작업자 정산·종료와 창 반환을 마쳤으며 신규 Astra high의 좁은 시험 교정·재수집을 준비한다. 실제 세 해상도·Town/E 보존·Art 성장 호출·실서버 두 계정·PR2 신규 독립 검증은 남았다. C1~C10과 두 제품 PR 경계, 과거 실패와 M01의 원시는 유지한다.
 
 ## 재개 지점
 
-**다음 첫 일:** 닫힌 UI 구현의 로컬 checkpoint와 근거를 Main·World에 전달하고 같은 PR2의 실제709×399·802×451·1920×1080 화면/중첩과 Town 근접·E/스킬·입력 gate 보존을 새 외부 세션 계약으로 이어간다. 공용 Session/NetworkService와 Art 파일은 읽기만 하며 C9 효과는 Art의 실제 정본/API 인계 뒤 연결한다. Art `msg_0b35aaf40cdb`(15:19:14Z)까지 효과 main PR/commit/API는 미정이고 임시 API·대역 효과는 만들지 않는다. 실서버 두 계정·CI/DB 범위와 최종 PR2 신규 독립 판정도 남았다. 현 작업자·`gcv2/m`·이전 before/Library/창은 재사용하지 않는다. 새 실행은 새 입력·READY·Main 자원 창 뒤에만 수행하며 기존 `-perfTestResults` 두 인자를 유지한다. C1~C10과 범위는 유지하고 PR2 전체 완성 뒤 신규 독립 세션이 검증하며 각 실행 창 앞의 추가 독립 통과 단계는 두지 않는다.
+**다음 첫 일:** 신규 외부 `gpt-6-astra` high가 같은 PR2의 새6개 화면/Town 시험에서 internal 접근6곳만 공개 관측 경로·기존 PlayMode probe를 재사용해 교정하고 실제709×399·802×451·1920×1080 화면/중첩·Town 근접/E 대화·Knight Q 대시·Ready/HP/메뉴/전환 gate를 재수집한다. 제품 AssemblyInfo/IVT·공용 Session/NetworkService·Art·기존13시험은 읽기만 한다. 새 계약에는 Main `msg_be2ca50c2114` 원문과 참조 멤버 접근성/IVT 대상 확인을 붙인다. 닫힌 실패 Task·`gcv2/n`·남은 lock/Library·옛 before/창은 재사용하지 않고 새 입력·READY·Main 창으로만 실행한다. C9 효과 API는 Art `msg_31026855ae0e`까지 미정이며 임시 API/효과를 만들지 않는다. UI.unity/HUD3 controller의 Content 쓰기 예약은0, Art 후속의 실제 main은 새 입력으로 직렬 통합한다. 실서버 두 계정·CI/DB·최종 PR2 신규 독립 판정은 남고 C1~C10·두 PR 경계는 유지한다.
+
+### 10-18 실제 화면 수집의 시험 접근성 차단 정산
+
+신규 Sol xhigh `task_121b04a9d702`/`ctx_0d7949922b82`는 새2cs/2meta에 화면3·Town/Ready/메뉴·전환3의6개 시험을 쓰고 기존13을 함께 계획했다. GUI root1은 새 시험의 internal 멤버 직접 접근6위치에서 CS1061이 각3회/총18로그줄 발생해 safe_mode에 들어갔다. **실제case0/XML0/원본PNG0, 새6·기존13 모두 미실행**이며 제품 회귀·요구RED·제품 확정 실패로 세지 않는다. 실행한 시험4파일은 `qa-ui-gameplay/runs/executed-tests/`에 같은 bytes로 보존했다.
+
+Main `msg_be2ca50c2114`가 직접 읽은 원인은 UnityClientSession.IsInventoryPanelOpen와 DungeonClearRewardState.HasPendingFor가 internal이고 제품 AssemblyInfo의 InternalsVisibleTo가 EditMode만 가리키는 점이다. PlayMode 접근 경계를 놓친 **UI-GAMEPLAY-F01(b 시험 API/high·차단)의 첫 발생**으로 기록한다. 다음은 제품 공개범위/IVT를 늘리는 대신 공개 표시·버튼·wire 및 기존 PlayMode 관측을 재사용한다. READY에서 참조 멤버의 접근성, internal이면 IVT 대상 어셈블리 포함 여부를 직접 확인하되 새 전역 규칙·검사기는 만들지 않는다.
+
+리드는 최종 report SHA `996E96636DD2D15C9D3976AAA9C6E940EE5DF0BE412EDAE7615D03B91F177A34` 전체·writing-closed `4B007D78...`·83소유파일의 bytes/hash와 source2245/고정19 차이0, 기존2241 보존/신규4개만을 대조했다. failed 정산·공식 release·정확 pane 종료를 마쳤고 reclaimable0이며 재사용하지 않는다. 원문은 E/`pr2-server-integration-20261018/qa-ui-gameplay/`의 report·lead-settlement-audit·worker-closed, 실행 당시 goal59EE 원bytes는 `executed-goal-59EE.md`다. 리드 집계의 dictionary grouping 오류 초안은 보존 후 원로그를 PSCustomObject로 다시 묶어6위치/18줄로 정정했으며 실행·제품 변경은0이다.
+
+root는16:03:54Z~16:17:22Z/808.943초/exit-1/timeoutfalse였다. safe_mode 뒤 공식 보충으로 직전PID20744/birthTicks639279362340457370를 확인해 자기 root Kill(false)1회만 수행했고 child/tree/foreign kill0이다. 별도 stop receipt의 exitCode null은 원execute의 -1과 구분한다. 작업자는16:18:31Z ownroot0/관측자식10개 중live0/미분류PPID0/UnityHub0·filePrefs10차이0/GVS원부재·source/fixed차이0을 반환했고 복귀 분기는 미실행이다. 리드는 기존Registry Binary3개만 조건부 원형복귀해16:20:22Z 최종137 이름/kind/data 차이0을 확인하고16:20:53Z 전체창을 반환했다. source lockfalse/실패n locktrue를 보존했으며 이후 live 관측0이다.
+
+공식17신호·4회신의 기존 생존 helper는 최대465초·300초 초과423/465초2개, 공식대기421/75/268/167초 제외를 기록했다(`lead-liveness-*`). 이미 answered였는데 승인대기로 보고한 status는 원문/회신·실제stop 연결을 보존해 정정했고 정확한 최초 답변 읽기UTC는 unknown이다. coordinator의 escalation 형식 거부는 원시 보존 뒤 status로 재발행했으며 앞으로 status를 쓴다. 사용자 `msg_e0ebcfcf3db5`에 따라 실제 접근성 누락으로 필수 화면 진입 전체가 막힌 신호를 근거로 **같은 작업의 다음 신규 세션만 Astra high로 격상**하며 Main `msg_97045c4236af`에 보고했다. 현재 모델 변경·제품 확정 실패3회 집계와는 구분한다.
 
 ### 10-18 실제 UI 연결 구현 자체검증 정산
 
