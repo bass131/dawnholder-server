@@ -6,15 +6,21 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: 사용자 A 승인 완료·계약 고정 중.** 메인 `msg_fb6c227d3b39`가 초안 v0.1의 범위·완료조건·PR 경계와 지금 병행 착수 승인을 전달했다. Core 결과 전에는 계약·대역 시험을 준비하고 실제 저장 연결·최종 검증은 Core 결과 뒤에 한다. 신규 선행/독립 모델은 Sol xhigh로 확인됐다. Unity 정확 파일 소유·패킷 예약을 고정하기 전 해당 계약을 발행하지 않으며, 중량 실행 창은 아직 없다.
+**상태: 전송 정의5파일 구현·실제 패킷217건 GREEN.** 신규 Astra가 PDL49..54·공개byte enum2개·ProtocolVersion22를 구현하고 기존 생성기로 GenPackets를 재생성했다. 같은 시험에서 이전49통과/168신규RED가217통과/실패0/skip0으로 바뀌었고 기존48 보존을 확인했다. 새 enum/필드/codec·길이 assertion도 도달·통과했다. 다음은 정확 소유가 확정된 Unity 비화면 소비의 선행 시험과 Core 최종 인계 대조다. Core 실제 저장 연결·서버 입장·양쪽DLL/Unity·전체 강 판정은 남아 있다. 승인 기록은 commit `2bf22066`이며 제품 wire는22/54개지만 통합 배포하지 않았다.
 
 ## 재개 지점
 
-**다음 첫 일:** 승인 기록을 commit하고 Core의 공개 소비 접점·Content의 Unity 파일 소유·패킷 예약을 대조해 버전/hash를 가진 계약을 고정한다. Unity 소유 미합의 구간과 중량 실행은 보류하고, 영향 없는 서버/wire 대역 선행 시험 준비를 이어간다.
+**다음 첫 일:** 신규 Sol xhigh 시험 작성자에게 소유 확정된 Unity 비화면 메뉴 소비·명시 메뉴 접속의 선행 시험을 맡긴다. Core adapter는 공개 접점의 최종 통합 인계를 재확인하고 승인된 대역 계약 준비를 이어간다. 공용 Unity2파일은 Content PR2 실제 종료·기준 인계 전 쓰지 않는다. Unity 시험/양쪽DLL 갱신은 정확 READY와 새 독점 실행 창으로 수행한다. 전체 C1~C9·PR 경계와 고정 [전송 계약 v1](packet-contract-v1.md)·[Core 소비 접점 v1](core-consumer-contract-v1.md)은 그대로다.
+
+- 전송 구현 정산: Task `task_3ae4e9a31fdb`/Dispatch `ctx_0f0348dd8a48`, 최종 원문 `approval-01/packet-implementation-01/report.md` SHA256 `F402D911BAB03EC1DB32BE5D1AE92189F6C05D92D467F75BB078C5A8A1658283`. 메인 `msg_1e9c1a8d8980` 창에서 실제08:20:39~08:22:29Z A/B/G/C/D0, 기존 generator→허용GenPackets1파일복사→동일필터217P/0F/0skip을 수행했다. 리드가 원TRX/이전행 전수 연결로49P유지·168RED→P를 확인했다. 보호720/백업723/고정30불변·복원0·D 잔존검사/lock 반환을 대조하고 메인 `msg_d25f596a6aa5`로 창을 반환했다. G빌드0경고/0오류·C빌드50경고/0오류이며50경고 기존여부는 미분류다. 완료 세션 정산·실제 pane 종료, 리드 생존을 확인했다. 패킷 green은 전체 강·실DB·서버 실제 입장·Unity/UI·양쪽DLL배포 통과가 아니다.
+
+- 실제 RED 정산: Task `task_1c9662d93c45`/Dispatch `ctx_b89364be768b`, 최종 원문 `approval-01/compile-red-02/report.md` SHA256 `025FF95D0D4E3B567ABB297A8F5EA1E89CD8BF01838503881D599F4041991C3F`. A0/B0/C1/D0, 보호723불변·복원0, WSL 잔존검사/lock 반환을 실사했다. 신규 요구168은 protocol22부재1/공개enum부재1/ID49..54부재166이며168개 별도 제품 결함으로 세지 않는다. SDK10.0.301/빌드50warnings·0errors를 실제 관측했으나 warnings의 기존 여부 전수 분석은 하지 않았다. 완료 세션 정산·실제 pane 종료, 리드 생존을 확인했다. 메인 `msg_9b7aca39f10a`로 실행창을 반환했으므로 다음 실행은 새 창이 필요하다. 이전 고정 goal은 같은 근거 `goal-frozen-at-settlement.md`에 보존했다.
+
+- 첫 실행 준비 정산: Task `task_5befbf9b9e27`/Dispatch `ctx_233962009f0f`, 실패 원문 `approval-01/compile-red-01/report.md`(SHA256 `F47C3FB8A68772B7B7C79C2F5A3D6F186676F91E582F2EC946084B54A67F4FF6`)와 `lead-settlement.md`. 결함은 기본 JSON 파서의 DateTime을 문자열 파싱해 KST로 재해석한 승인 시각32400초 차이다. 저장 harness/WSL/dotnet/compile/RED 실행0, 고정 입력·산출·source hash drift0, 실제 pane 종료 완료다. 메인은 신규 세션 수정·READY 보류와 자동 모델 격상/제품 확정 실패 집계 없음에 동의했다. 당시 goal 원본은 같은 근거 `goal-frozen-at-settlement.md`에 보존했다.
 
 - 사용자 선택은 **A — 이 범위로 지금 병행 착수**다. 승인 당시 goal 172줄과 메인 정리본은 근거 `approval-01/inputs/`에 같은 bytes로 보존했다. 기존 이름·슬롯·직업 정책과 C1~C9·PR 경계는 바꾸지 않았다.
 - 현재 작업 branch와 기준 main은 `.backups/verification/2026-10-18-character-server/entry-git.json`, 세션·Run·메시지 원시는 같은 근거 폴더에 있다. 이전 길드 goal의 Run·Task·Dispatch는 재사용하지 않는다.
-- Core는 API v2의 미커밋 구현·독립 정적 회귀를 보고했고 실제 DB·저장재접속·강 판정은 남아 있다. Content의 Unity 소비자 소유권은 회신 대기다. API 문서·정적 회귀를 실제 DB/최종 통합 완료로 해석하지 않는다.
+- Core는 API v2 미커밋 구현의 공개 선언을 재확인했으며 실제 DB·저장재접속·강 판정은 남아 있다. Content는 Unity 공유 파일의 길드 PR2 중첩과 전체 쓰기 종료 미정을 회신했다. API 문서·정적 회귀를 실제 DB/최종 통합 완료로 해석하지 않는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -29,6 +35,22 @@ Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확�
 - **착수 조건:** Unity 최소 수신 소유와 정확 파일은 Content 쓰기 종료·합의 뒤 계약 전 고정, 49..54/v22는 최신 main/타 파트 예약 대조 뒤 고정, Core 미검증 코드 복사0, 중량 실행은 메인 「실행 창 시작」 뒤다. 범위 승인만으로 이 조건을 생략하지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 동결까지 기능 산출물 우선
+
+메인 `msg_5c3dc59360f6`(2026-10-18T07:00:22Z)이 전달한 사용자 원문(메인 창 직접 입력,16:00 KST)은 「목표까지 일단 빠르게 빠르게 작업물 쳐내고 이후에 안정성 찾아가는거로 진행하자, 일단 좀 윤곽이 보여야 어떤걸 고쳐야 할지 보일 것 같아」다. 메인 전달이며 이 pane의 직접 입력으로 격상하지 않는다.
+
+메인 적용 기준은10-28까지 보이는 기능 산출물 우선, 감시·검사·운영도구 보강과 부가 경계 방어는 안정화 후보로 남김, 실제 제품/사용자 파일 손상 없는 도구 결함은 한계를 기록하고 진행이다. 사용자 파일은 실행 전 백업과 전후 존재/hash 대조·변경 시 복원/보고로 보호한다. 절차 위반은 기록하고 같은 세션에서 계속하며 승인 밖 쓰기/실행이 실제 발생할 때만 세션 교체한다. 독립 검증은 PR 전 한 번 유지하고 창마다 별도로 추가하지 않는다. 범위 안 판단은 리드가 하며 메인에는 사용자 결정·실행 창·완료조건 변경만 올린다. 수정3회 초과 체크포인트는 알림이며 작업 중단이 아니다. READY는 Task/Dispatch·정확 argv·예상 시간·백업 위치로 짧게 보낸다. 병합 승인·비밀정보/관리자/UAC/SQL서비스/방화벽·전역설정·동시쓰기·미실행 보고 경계는 유지한다.
+
+World는 UTC를 좁게 고치고 실제 관문 오프라인 확인만 한다. 새 감시/검사 helper를 만들지 않으며 compile/RED 뒤 서버 구현을 바로 잇는다. 첫 실행자 종료는 이 결정 전 정산이므로 되돌려 재사용하지 않는다. 다음 발행부터 이 기준을 적용한다.
+
+### WSL 병행 실행과 Unity 최소 소비 소유
+
+메인 `msg_ccd4007ebfec`(07:17:23Z)이 전달한 사용자16:17 KST 결정은 「대시보드 결정 응답: 1) World 서버 시험 - Content Unity 실행 중에도 WSL 시험을 같이 돌리도록 시험 시작 조건 한 줄을 좁힐지 → A 조건 좁혀서 지금 같이 돌리기」다. Win32_Process 단일 snapshot에서 Unity.exe 본체와 직접 부모가 그 Unity.exe인 dotnet.exe만 차단 대상에서 제외했다. 나머지 Windows/Linux 대상과 자원6/4/40GiB·실행시간 관문은 유지했다. 실제 RED는 이 승인 창 안에서 끝났고 반환했다. 이 결정은 Unity 실행 중복 허가가 아니다.
+
+Content `msg_e6e7c1e46014`·Core `msg_e715a95fb09f`와 메인 `msg_165321b60e07`(07:46:53Z)로 [정확 소유 제안 v0.1](../../../.backups/verification/2026-10-18-character-server/approval-01/server-implementation-draft-01/unity-consumer-ownership-proposal-v0.1.md)(SHA256 `A15881D4523A9715B7B8D78F791BD6A9A2E2591C5F8752A5A9BA8F25DE7E7C59`)의 선행 파일만 World 자기 checkout 쓰기를 허용했다. 신규 Network/CharacterMenu의 Client/Reply/ReplyReader3개, Handlers/CharacterMenu의 List/Create/Select 결과 handler3개·각 meta/두 폴더 meta, 신규 EditMode CharacterMenuClientTests/CharacterMenuPacketContractTests와 meta, 기존 ClientConnectionLifetime.cs/동명Tests.cs의 명시 메뉴·legacy 보존 최소 분기다. 경로 접두는 모두 `03_Client/Assets/`이며 세부 경로는 제안 원문을 따른다. 기존 meta/GUID는 보존한다.
+
+공용 UnityClientSession.cs·NetworkService.cs는 Content PR2 실제 쓰기 종료·기준/diff 인계 뒤 World가 갱신 기준에서 최소 접점을 잇는다. Core48 authority/handler와 모든 화면/폼/버튼·Content checkout/실행 snapshot은 제외한다. Core는 현재 연결/generation의 pending과 맞는54성공만 기존48선택 문맥을 열고54→48/main-thread 순서·연결당 첫48권위·class는48만 적용·입장 전 gameplay금지를 보존하는 의미에 동의했다. 구현 통과나 Core 통합 완료는 아니다. Unity 컴파일/EditMode는 별도 독점 창으로 요청한다. 메인은 승인 범위 안 리드 소유 합의는 리드끼리 확정하고 결과만 보고하도록 확인했다.
 
 ### 신규 선행 시험·독립 검증의 임시 모델
 
@@ -69,7 +91,7 @@ Content가 보존한 메인 전달 전문 `msg_623c6ff92c9b`(2026-10-17T14:41:45
 | World/Core 접점 | `Loop/GameWorld.cs`, `Program.cs`의 소비·주입 부분 | Core가 전달한 host mode/catalog/admission 접점을 받는 최소 변경만. Core는 Program/ServerHost/RuntimeStartup/AdmissionServices/Lifetime을 소유한다. Core 쓰기 종료·통합 뒤 소비하며 동시 쓰기 금지. |
 | World 공유 계약 | `99_Tools/PacketGenerator/PDL.xml`, `98_Shared/Protocol/Generated/GenPackets.cs`, `ProtocolVersion.cs`, 같은 책임의 신규 공개 결과 enum | PDL에서 재생성한다. 생성기 자체 개선은 제외한다. 현재 generator는 manager 생성 생략이 기본이므로 존재하지 않는 manager를 추가하지 않는다. |
 | World 시험 | `02_Server/GameServer.Tests/`의 패킷·세션·입장 회귀, `99_Tools/headless-bot/`의 좁은 메뉴 시나리오·등록 | 선행 시험/독립 검증자와 제품 구현자 소유권을 분리한다. 관련 기존 실패를 전수 분류한다. |
-| Content 조율 | Unity `Network/UnityClientSession.cs`, 세션 결과 소비·상관값 경계, 관련 EditMode 시험 | **확정 소유권 미정**. 화면은 Content 소유다. wire 소비자 변경을 맡길 파트·파일을 조율 후 메인과 승인 기준에 반영하며 미합의 파일을 World가 쓰지 않는다. |
+| Content 조율 | 위 정확 소유 제안의 Unity 메뉴 소비6파일·시험2파일·meta 및 ClientConnectionLifetime 최소 분기 | 한정 쓰기 확정. 공용 UnityClientSession.cs·NetworkService.cs는 Content PR2 종료/기준 인계 뒤 직렬 연결하며 Core48파일·화면은 제외한다. |
 | DLL·양쪽 빌드 | `98_Shared/Shared.csproj`, `04_ClientNet/`의 현 빌드 경로, Unity `Assets/Plugins/Shared/`·`ClientNet/` 산출물 | 프로젝트 설정을 바꾸는 뜻이 아니다. 실제 재생성/복사와 양쪽 해시·소비자 버전을 확인한다. 기존 `.meta`·GUID·직렬화 값을 보존한다. |
 | 리드 문서 | 이 goal, 승인 뒤 고정할 패킷 계약, `CURRENT.md`의 World 줄, 관련 기능·서버·protocol 계약 | 현재는 goal 초안과 CURRENT 자기 줄만 쓴다. 실제 계약 변화와 함께 필요한 현재 문서만 갱신한다. |
 
@@ -107,9 +129,9 @@ Content가 보존한 메인 전달 전문 `msg_623c6ff92c9b`(2026-10-17T14:41:45
 | 51/52 | `C_CharacterCreateRequest` / `S_CharacterCreateResult` | slot·rawName·class와 Core가 만든 summary |
 | 53/54 | `C_CharacterSelectRequest` / `S_CharacterSelectResult` | CharacterId 선택과 선택 결과. 직업 입력 없음 |
 
-**49..54와 차기 protocol22는 제안값·미승인·미예약이다.** 최신 main·타 파트 예약을 다시 대조하고 사용자 범위 승인 뒤 계약으로 고정한다. 충돌하면 기존 ID를 재사용하지 않고 메인과 조정한다. 기존 ID/필드 불변, equality handshake 유지, 서버·봇·Unity/DLL을 같은 wire로 맞춘다.
+초안의 **49..54와 차기 protocol22는 승인 후 재대조를 거쳐 이 목표에 배정했다.** 최신 origin/main은 여전히21/48개이며 메인 `msg_239b72df7331`의 6개 checkout 관측, Core `msg_66dc4898461f`와 Content `msg_85481145274c`의 사용/예약0을 확인했다. 필드/번호/결과/FQN은 [전송 계약 v1](packet-contract-v1.md)에 고정했다. 제품은 아직21/48개이며 문서로 생성·배포되지 않았다. 새 충돌은 재사용하지 않고 새 계약으로 조정한다. 기존 ID/필드·equality handshake와 양쪽 소비자 검증은 보존한다.
 
-- 보존 패킷 초안은 이전 근거 `character-packet-draft-01/packet-contract-v0.2.md`다. hash는 이번 `input-manifest.json`에 실제 파일에서 계산해 보존한다. 정확 필드·길이·결과값은 승인 후 추적 패킷 계약으로 고정하며 현재 파일을 조용히 바꾸지 않는다.
+- 보존 패킷 초안은 이전 근거 `character-packet-draft-01/packet-contract-v0.2.md`다. hash는 이번 `input-manifest.json`에 실제 파일에서 계산해 보존했다. 현재 계약은 별도 v1이며 과거 초안을 고치지 않았다. 고정 입력 목록과 hash는 `approval-01/packet-pretest-01/contract-input-manifest-v1.json`에 둔다.
 - 전송 제안: 4바이트 header·숫자 explicit LE·UInt16 **바이트** 길이+UTF-16LE string, ID는 non-empty GUID D문자열, 목록은 고정3칸이다. 큰 문자열 할당/업무 호출 전에 구조·상한을 검사한다. 새로운 wire enum은 Core ordinal cast 대신 의미로 매핑한다.
 - 서버의 계정/operation/session/generation/owner/fence/SQL은 wire에 싣지 않는다. NotFound/NotOwned는 외부 선택불가로 통합하고, 서버가 만든 계정·OperationId 입력 오류는 내부 진단을 보존한 IntegrityFailure로 구분한다.
 - requestId는 nonzero·연결 내 재사용 금지, uint 끝에서 wrap하지 않고 새 연결을 사용한다. 화면의 `(연결, 종류, requestId)` 상관 처리 구현은 Content와 고정한다.
@@ -120,8 +142,8 @@ Content가 보존한 메인 전달 전문 `msg_623c6ff92c9b`(2026-10-17T14:41:45
 
 | 담당 | 필요한 인계 | 현재 상태/World 행동 |
 |---|---|---|
-| Core | API v1+v2의 의미·버전/hash, mode/catalog/admission 주입 타입, host 미결 생성/close 소유, 새 profile preflight, 실제 DB/독립 판정·PR 기준 | `msg_6e76b2e31572` 질의 → `msg_46c17f907970` 회신. v2 hash 동일, 미커밋 구현·정적 회귀 보고. 실제 SQL/저장재접속/강 판정·schema5 카드/관리자 승인·main 통합 대조는 남았다. |
-| Content | 신규 UI 목표 시점, Unity wire 소비자/상관값 경계 소유, 새 패킷 제안 이견·번호 예약 여부 | `msg_2b05a5289e20`로 문의했다. 현재 길드 UI/실행을 중단하거나 새 화면 착수를 지시하지 않는다. 미합의 쓰기와 UI 완료조건 확대를 하지 않는다. |
+| Core | API v1+v2의 의미·버전/hash, mode/catalog/admission 주입 타입, host 미결 생성/close 소유, 새 profile preflight, 실제 DB/독립 판정·PR 기준 | `msg_66dc4898461f`로 v2 hash·의미 불변, 실제 공개 선언·소유 경계·예약0을 재확인했다. [소비 접점 v1](core-consumer-contract-v1.md)에 연결했다. 실제 SQL/저장재접속/강 판정·main 인계는 남았다. |
+| Content | 신규 UI 목표 시점, Unity wire 소비자/상관값 경계 소유, 새 패킷 제안 이견·번호 예약 여부 | `msg_85481145274c`: v0.2 추가 변경 요구/예약0, 비화면 책임 의견 일치. UnityClientSession/NetworkService는 현재 쓰지 않지만 길드 PR2에도 필요해 소유 이전 아님. 전체 종료/한정 이전은 미정. 기존48 입장 파일은 Core/메인 배정도 필요하다. |
 | 메인 | 사용자 범위·착수 승인, 두 파트의 공유 파일 경계, 중량 실행 창, R-7 시범 해당 여부 | A 승인 완료. R-7 미적용 확정. 공유 실행 큐는 전달 기준 Art → Content → Core DB. World의 새 실행 창은 아직 없다. |
 
 Core main 통합 전에는 고정 API 대역으로 패킷/수명 요구를 준비할 수 있다. 제품 branch에 Core 미검증 변경을 복사해 독자 저장 구현을 만들지 않는다. 최종 통합 때는 승인된 Core 결과와 최신 main에서 새 기준·충돌·실행 계약을 고정한다.
@@ -163,9 +185,10 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
 
 - [x] 범위 초안
 - [x] 범위 승인
-- [>] 계약 확정
-- [ ] 선행 시험
-- [ ] 전송·서버 연결
+- [x] 서버 계약
+- [>] 선행 시험 — 패킷 실제 RED 완료, 서버/Unity 후속 선행 시험 남음
+- [>] 클라이언트 계약 — 정확 선행 소유 확정, 공용2파일 인계 대기
+- [>] 전송·서버 연결 — 전송 정의5파일·217GREEN 완료, 서버/Unity 소비 남음
 - [ ] 독립 강 검증
 - [ ] 제품 병합
 - [ ] 종료 기록
@@ -177,9 +200,19 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
 - Core/Content에는 준비 상태와 기술 경계만 문의했고, 둘 다 현재 작업 중인 화면을 확인해 터미널 입력을 넣지 않았다. Core 회신으로 실제 준비·host 접점·미실행을 구분했고 Content는 회신 대기다. 작업자·검증자0, 제품/시험/PDL/DLL 변경0, 중량 실행0이다.
 - 이 초안 자체점검은 내용·로컬 원천·현재 Git/PDL의 정적 대조다. 독립 문서 통과·코드/DB 검증·목표 완료를 뜻하지 않는다. 승인된 산출물의 독립 세션 절차는 생략하지 않는다.
 - 사용자 A 승인 뒤 원본 입력을 동결하고 승인 원문·R-7 미적용·임시 모델 원문과 진척 단계를 반영했다. 승인 기록 commit과 실제 준수·자기 쓰기 감사는 근거 `approval-01/`에 둔다. Content 회신의 합의 방향은 근거 `coordination-note-01.md`이며 Unity 파일 쓰기 배정은 아직 없다.
+- 승인 기록 commit `2bf2206621d31ee3675af1ee74b67348abe46d90`은 goal/CURRENT 두 파일만 포함하며 제품 diff0이다. 이어 서버 전송·Core 소비 접점을 각각 v1 문서로 작성하고 패킷 시험 작성 계약을 발행했다. 계약 고정과 작성 완료는 문서 실사·강 검증 통과를 뜻하지 않는다.
+- 메인 `msg_0b519c7ab848`(2026-10-18T05:49:03Z)은 Unity 소유 관문이 Unity 쓰기/소비자 동작을 정하는 계약에만 적용된다고 확인했다. 준비된 패킷 시험 **작성만**의 발행을 허용하며 실제 compile/RED는 실행 창 뒤 별도 계약으로 둔다. 원문은 근거 `approval-01/inbox-next-04.json`이다. 기존 v1 spec을 보존하고 권한 확인만 반영한 새 발행 버전/입력 manifest를 만든다. 전체 목표의 C1~C9·강 판정/PR 경계는 바꾸지 않는다.
+- **패킷 시험 작성 결과:** 신규 외부 Sol xhigh가 `CharacterMenuPacketContractTests.cs`와 `CharacterMenuPacketFixtures.cs`를 작성했다. 기존1..48 보존·새6패킷/공개enum·독립 byte/offset fixture를 요구로 검사하며 새 타입 부재는 reflection assertion으로 남긴다. 코드/보고·실제 diff·입력/출력 해시를 리드가 정적으로 대조하고 `worker_done succeeded`를 **작성 준비 완료만**으로 정산했다. 실제 실행·독립 판정은 미수행이다. 원문과 Task/Dispatch·수치/해시는 근거 `approval-01/packet-pretest-01/report.md`, `lead-post-settlement-audit.json`, `lead-settlement.md`에 있다.
+- **정산·종료:** 완료 Dispatch를 release한 뒤 외부 pane 유지 반환을 구분하고 정확 작성자 pane만 닫았다. 리드 생존·현재 worktree에 리드 pane만 남음·reclaimable0을 확인했다. 생존 신호 helper의 초과 구간은 이유 미기록으로 정산 원시에 남겼으며 질문 대기와 분리했다. 신호 초과만을 이유로 추가 대화 감사를 만들지 않았다. 제품 확정 실패와 섞지 않는다.
+- **CONTRACT-PS01(첫 발생):** 리드가 근거/harness 작성을 허용하면서 PowerShell 언어절 제외 이유를 쓰기0으로 적어 실제 일회성 정적 점검 script 작성/실행과 차이가 생겼다. 작성자의 자진 공식 질문 뒤 메인 `msg_dd0cf0173e26`에 보고하고 실행 원본·원시를 동결했다. 정산 보충1.2에 관련 규칙 원문 전체를 제공했지만 사전 누락을 소급 준수로 만들지 않았다. 후속 메모에 가독성 지적·미검토를 남겼고 script는 공용도구로 채택/재사용하지 않는다. 교정은 이번 리드 계약의 원문 선택·제외 설명 층에서 처리했다. 공용 검사 구현은 승인 범위 밖이며 첫 발생 기록이므로 새 반복 규칙을 만들지 않았다.
 
 ## 보류와 남은 우려
 
-현재 보류는 Core 실제 DB/최종 강 판정·Content 최소 wire 소유·실행 창이다. Core 준비 없이 실제 DB·종료 소유를 확인할 수 없고, Unity 소비자 없는 버전 변경은 통합을 차단한다. 이 두 가지는 제품 완료조건에 직접 영향을 준다. 범위 승인과 임시 모델 확인은 완료됐으며 영향 없는 서버/wire 계약·대역 시험 준비는 진행한다.
+전송 정의 구현·실제 패킷217GREEN은 완료했고 승인된 Unity 선행 소유에서 다음 소비 시험을 준비한다. 후속 중량 실행은 새 READY/실행 창이 필요하다. Core 실제 DB/최종 통합·강 판정과 Content 공용2파일 직렬 인계는 남아 있다. Core 준비 없이 실제 DB·종료 소유를 확인할 수 없고 Unity 소비자 없는 버전 변경은 통합을 차단한다. 패킷 단계의 green은 C7 전체·C1~C9의 강 판정을 대신하지 않는다.
 
 TRX helper와 봇 등록/회귀 목록 드리프트는 앞 목표 Gardener의 미채택 후보이며 새로 채택하지 않는다. 기존 BACKLOG와의 통합 판단은 메인에게 남긴다. 범위 밖 후보 장부나 운영 규칙 정비를 이번 초안에서 늘리지 않는다.
+
+
+## 안정화 후보
+
+- 10-28 뒤: 감시·검사·운영 도구의 공통화/보강, receipt 자동 검사와 기능 완료조건을 막지 않는 부가 경계 사례 방어. 지금은 알려진 한계로 기록하고 기능 산출물을 잇는다(msg_5c3dc59360f6).
