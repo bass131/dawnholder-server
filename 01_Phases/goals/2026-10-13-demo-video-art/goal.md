@@ -1,12 +1,15 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **보상 current3·before1 모두 실제1920/1280 PNG와 지정 PlayMode1건 Passed·목록/선택·Unity/prefs 반환을 확보했다. before 작업자는 성공 정산·종료했으며, current 작업자의 캡처 후 범위 밖 빈 파일 쓰기 failed는 그대로 구분한다. 기존 보상 강 독립 PASS(Edit87/Play12)와 인벤토리·NPC·파티 현재1920 사용자 통과·파티T-2/05강/06조건부 판정은 유지한다. Unity 예산4/4·추가실행0, 마지막 실행 뒤 승인된 SENTIS 한 줄을 복원했다. PR 전 신규 독립 검증·사용자 미관·Party HUD VIS-05·UI 창 PR/CI는 남아 있다.**
+상태: **신규 최종 독립 실사·정산·정확 세션 종료를 마쳤다. 새 제품 결함 관측0, 보상 current/before 실제1920/1280·정상반환과 기존독립87+12의 현재source 연결을 확인했다. 전체 UI PR 무조건 기술통과는 미검토가 남아 보류다. 예전4판정은 메인723 결정대로 원문미이관·이번재판정안함이며, Party HUD VIS-05·다른창 실제전후/최소·미관·CI는 미완 유지한다. ①②를 HUD PR로 옮길지에 대한 사용자 A/B 답변을 기다리며 현재범위/Unity예산4/4는 불변이다.**
 
-**다음 첫 일:** 마지막 캡처 정산과 설정 처리 뒤 신규 외부 독립 검증자 한 명이 최종 UI diff와 current/before 실제 XML·PNG·목록/선택·프로세스/prefs/source 원시를 함께 실사한다(메인 msg_cc4772aff47e). 이전 Sol 캡처 OBS02 관측에 따른 같은 작업의 신규 Astra high 임시 배정을 유지한다. 새 감시기·검사 도구·하네스 수리/재검증·추가Unity는 하지 않는다. 사용자 미관과 VIS-05를 임의 면제하지 않고 남은 실제 근거를 구분해 메인에 보고한다. 05·06 같은 UI 창 PR 경계와 정확 head/CI·사용자 병합승인 조건을 유지한다. 신규 검증 준비와 마지막 캡처 정산은 reward-before-simple-launch/에서 이어간다.
+**다음 첫 일:** 메인 `msg_5cc7ebf70c75`의 사용자 A/B 결정 원문을 기다린다. A는 Party HUD VIS-05와 인벤토리·NPC·파티창 전후/최소를 HUD PR(10-20) 완료조건으로 이동한 뒤 독립판정의 범위와 대조해 UI 창 PR을 준비하는 안, B는 현 PR에서 실제확인을 마치는 안이다. 답변 전 경계변경·새작업자·추가Unity0이다. B 사전추정은 current/동적HUD1창+격리before1창, 각최대40분/실제합20~40분이며 관측된 결함수정 뒤 추가실행은 별도다. 최종원문 `ui-pr-final-review/verdict.md`와정산 `ui-pr-final-review-launch/settled-verdict-root-read-audit-v1.json`, PR초안은같은launch에서이어간다. 미관은사용자판단·CI는PR후정확head단계이며 병합은별도승인이다.
 
 **병렬 콘셉트:** 사용자 A 화풍의 8장 제작과 신규 Astra 독립 기술 PASS·정산·정확 종료를 마쳤다. 메인은 msg_d8863c625f99로 판정 앞부분과 8장 SHA의 직접 대조를 확인했다. 실제1672×941·호출8/10·남은2회 피드백 전 사용0이며, 사용자 미관 최종승인·제품 구현·실제 게임 캡처와 구분한다. 최신 원문/원시는 아래 「화면 콘셉트 8장 — 신규 Astra 독립 기술검토 PASS」와 screen-concepts-review-retry-launch/에 있다.
 
 ## 재개 지점
+
+- **PR 전 신규 독립 실사 정산:** 신규 Astra high `task_aae023a34cf6/ctx_e90c215ebf24`의 `msg_c91ec9f3d050` succeeded는 할당 실사/보고 완료이며 전체 UI PR PASS가 아니다. `ui-pr-final-review/verdict.md` SHA256 `28524029915387b0213eaf06cbf726d3b638846933f619eebbcce510e90ae54c`를 전문 읽고 실제원시·context/자기12파일/고정229hash차이0을 대조했다. 전체변경111=client107+문서4이며 리드/검증자초기client111표현은정정·공개했다. 새제품결함관측0·보상current/before PNG4/XML1+1·기존87+12와정상반환근거는확인, timeout/changedprefs/owner-loss 실패분기는미실행이다. release retained/external→같은incarnation idle→정확paneclose/ptyKilledtrue·reclaimable[] 뒤 W13파일동결(SHA `0759febb16052c423a6a291bb261f7ec58795232cceb86c72214a8259aa30151`)했다. 생존9신호/최대332초·초과2구간323/332초는원시실사/판정정리중발신지연으로기록하고상세원인추가감사0이다. 원문·계산/진단정정과한계를보존하며재사용0이다.
+- **메인 운영판단·사용자 범위결정 대기:** `msg_723b7e41e4ba`와보충1판에따라 예전 import/application/세창capture/파티재검증4판정은 「예전 판정 원문 미이관·이번 실사에서 재판정 안 함」으로기록한다. 원문부재자체를PASS/FAIL로만들지않는메인판단이며사용자직접입력/전체완료조건면제가아니다. `msg_5cc7ebf70c75`의①PartyHUD VIS-05②다른3창실제전후/최소를 HUD PR로이동할지A/B는사용자답전미결이다. ①②미완을그대로두고신규세션/실행0을유지한다. 원문은launch의 `main-legacy-evidence-disposition-original-v1.json`·`main-remaining-conditions-pending-original-v1.json`, 범위한정PR초안은같은곳에있다.
 
 - **before1 성공 정산·마지막 Unity 반환:** Main `msg_08e420acdb85`의08:32~09:12Z 마지막 창/공식reply `msg_1841e574a1e3`로 현재 게임소스+역사 보상창 한 파일의 격리 snapshot을 한 번 실행했다. Unity PID416/birth639279093907059131,08:36:30.7059130Z→08:46:16.8464856Z exit0/timeoutfalse,관측자손111·정확잔여0·Unity0/lockfalse다. 지정PlayMode1case Passed와 실제PNG1920/1280을 직접 보았고 네 그룹 목록/원선택1·cleanup·exactprefs전후부재/반환을 대조했다. root2181/snapshot2181 tracked hash차이0·S1동일/새ENV-D01발생0이다. coldimport PackageCache 경로 예외18관련행은 알려진 한계이며 전체Editor무오류로 보고하지 않는다. Main창반환 `msg_e64143cd8b17`/원PNG경로 `msg_d722ecbc5f96`를 전달했다.
 - 최종 `msg_752017308a33` succeeded, `reward-before-simple/capture-report.md` SHA256 `21063592b544a03f81dc5e1ca4b97be35ae9637a3ba2ba7a98366177e5f35c40`를 전문 읽고 원시와 대조했다. release retained/external→동일incarnation idle→정확paneclose(ptyKilledtrue)/reclaimable[] 뒤 W65파일을 동결했다. 원문·두PNG해시·scope/source·종료/prefs와 정산은 `reward-before-simple-launch/capture-closure-root-read-audit-v1.json` 및 인접freeze에 있다. 실제생존14신호의308초 한 구간은 초기읽기/단회복제준비 중8초지연, 공식ask08:21:28~08:35:34의동일ID timeout재개 대기는별도제외로 원문/helper결과를 보존한다. 새도구수리0이다. 총4/사용4·추가Unity/재시도0, 독립/미관/전체goal PASS는 아니다.
@@ -281,6 +284,8 @@
 - **현재 goal 종료 뒤 정리하고 중지**(메인 `msg_be31d296f750`, 발신2026-10-14T14:46:39Z). 사용자 원문(메인 pane Enter 제출 **2026-10-14T14:44:08Z/23:44 KST**, 메인 `msg_07473ca8308f`의 시각 정정 적용): 「그리고 영속성 부분은 너가 더 전문가니까 Goal 초안 작성하고 진행까지 계속 진행해줘, Core쪽 진도를 좀 빠르게 뺴보자 / 나머지 세션은 Taste에 민감한 부분이니까 그 파트들은 목표 끝나면 마무리하고 정리하는 식으로하자」. Art pane 직접 입력으로 격상하지 않는다. 현재 Art goal은 시연 우선 기준과 승인 범위 안에서 끝까지 진행한다. 종료점(PR head 보고·병합 대기 포함)에 종료 점검/goal 기록 정리 뒤 멈추고 다음 goal 초안·새 작업자를 열지 않는다. 다음 일은 아침에 사용자가 정한다. 중지 보고는 PR 번호/정확head·동결 뒤 정리 목록·아침 판단 한두 줄이며 Unity 순서/Core WSL 우선은 유지한다. 원시 settings-side-effect-and-stop-after-goal.json·world-release-and-user-time-correction.json.
 
 ## 안정화 후보
+
+- **최종실사 O1 - 메모리 scope 실패정리 수명:** permit만료/owner소실 때 Dispose의 소유검사가 정리를 막을 수 있는 경로는 이번 정상창에서 미실행이다. 실제손상관측0·새도구/시험수리0, 동결뒤정책/fixture 확인 후보로만 둔다.
 
 - **before snapshot cold import 경로 예외:** 실제 reward 시험/두 frame은 성공했으나 PackageCache의 긴 USS/UXML import 예외18관련행이 남았다. 원인 미확정·전역경로설정/도구수리/재실행0, 동결 뒤 원인 확인 후보다.
 
