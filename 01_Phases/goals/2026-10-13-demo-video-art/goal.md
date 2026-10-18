@@ -1,12 +1,14 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **UI 창 PR252는 메인이 사용자 정확head 승인 뒤2026-10-18T10:09:01Z 병합했다(main db0169350dfe54ba6ed247684caae4e498e24c72). 보상 미관 수용은 메인이 결정항목 효과에 따라 전달한 것으로 기록한다. 최신main 새브랜치 `feat/demo-video-art-hud-20261018`에서 HUD PR을 준비한다. 대상그림5장의기존GUID/meta·atlas크기·코드/배치/씬을보존하고,이관①PartyHUD VIS-05②인벤토리/NPC/파티창실제전후·최소를이PR에서확인한다. 새Unity/그림변경은아직0,전체goal완료아니다.**
+상태: **UI 창 PR252는 main에 병합됐다. HUD baseline 단회 촬영은 임시 fixture의 Unity API 오류(HUD-BEFORE-F01)로 PNG0/XML부재·미완이며, 자원 원형 반환과 실패 작업자 정산·정확 종료를 마쳤다. 현재 HEAD의 HUD5 PNG/meta·제품 코드/씬은 보존했다. 두 관측 API 호출의 좁은 수정과 새 격리 snapshot·READY 준비를 신규 외부 Astra xhigh에 맡길 예정이며, 실제 재촬영은 별도 Main 실행창 뒤다. 전체 goal 완료가 아니다.**
 
-**다음 첫 일:** 신규 외부 Astra xhigh가 기존capture fixture의사본을보완해HUD baseline/이전3창의실제1920·1280 캡처를준비한다. HUD원그림5장과metadata를먼저보존하고격리snapshot/정확argv/예상시간·prefs백업이READY면새Main창을요청한다. 같은B1조각을쓰는그림준비는Git밖에서만하며원PNG5장적용은baseline캡처종료뒤다. 이후신규current캡처와PR전독립1회로①②/그림의현재·이전을함께판정한다. 범위와순서는 [HUD PR 실행 범위](hud-pr-scope.md), 원시는 `hud-pr-start/`와후속계약폴더다. 새감시/검사도구·생성호출·제품코드/씬변경0이다.
+**다음 첫 일:** 신규 외부 Astra xhigh에 닫힌 실패 fixture의 두 GetInstanceID 관측 호출 수정과 같은 baseline 재준비를 할당한다. 원 case/단언·실제 진입·GameViewScope/meta·원 HUD5는 보존하고 새 W/T만 쓴다. 새 READY의 정확 argv/예상시간·단순 prefs 보호와 리드 한정 Registry 보호를 Main의 새 창에 연결한다. 기존 단회1과 격리0byte lock/원시를 보존하며 옛 창 재실행·새 감시/검사도구·root 제품 수정0이다. baseline 실제 성공·작업자 종료 뒤 그림 적용/current 캡처/PR전 신규 독립1회를 잇는다.
 
 **병렬 콘셉트:** 사용자 A 화풍의 8장 제작과 신규 Astra 독립 기술 PASS·정산·정확 종료를 마쳤다. 메인은 msg_d8863c625f99로 판정 앞부분과 8장 SHA의 직접 대조를 확인했다. 실제1672×941·호출8/10·남은2회 피드백 전 사용0이며, 사용자 미관 최종승인·제품 구현·실제 게임 캡처와 구분한다. 최신 원문/원시는 아래 「화면 콘셉트 8장 — 신규 Astra 독립 기술검토 PASS」와 screen-concepts-review-retry-launch/에 있다.
 
 ## 재개 지점
+
+- **HUD baseline 미완·실패 정산:** task_70f172d47929/ctx_e38fdbde0109는 새 Main 단회 창에서 실행했으나 임시 fixture 두 GetInstanceID 호출의 CS0619로 Safe Mode에 머물러 PNG0/XML부재다. 리드도 사전 실사에서 놓쳤으며 제품 회귀/네 case 실패로 집계하지 않는다. 정확 자기 Unity 조기 종료·자손잔여0·exactprefs 원형 유지·Registry137 원형 대조 뒤 창을 반환했고, failed 원문을 전문 대조해 release/동일성·idle/정확paneclose·W67파일동결을 마쳤다. 신규 세션의 좁은 수리·새 READY가 다음이며 실제 실행은 새 Main 창 전0이다. 근거는 `hud-before-capture-launch/settled-failure-root-read-audit-v1.json`, `HUD-BEFORE-F01-lead-audit-v1.json`, `worker-evidence-freeze-after-close-v1.json`, `lead-window-return-observation-v1.json`이다. Registry 복귀 뒤 기록 저장 오타는 쓰기 재시도 없이 read-only137 대조로 원형을 확인했고 개별쓰기journal 미보존 한계를 공개했다. 생존14신호/최대267초·초과0은 실제 공식reply를 보완한 `liveness-result-v2.json` 기준이며 최초 입력 누락 결과도 보존했다.
 
 - **252 - UI 병합 확인·HUD 후속 착수:** 메인 `msg_3ed580c79335`의승인원문 「병합 승인: PR252 head 4ce8a4c339cd24d82ade786ec073daa5e13157ae」를전달받고 GitHub MERGED/merge db0169350dfe54ba6ed247684caae4e498e24c72·origin/main동일을직접확인했다. 메인은결정항목문구에따라보상미관도수용으로보았다고전달했으며별도직접미관원문을만들지않는다. 리드/Codex병합0,최신main에서새HUD브랜치를만들었고기존Minimap/설정bytes불일치0이다. Content에UI API실제main반영을통지했고성장효과API미정은유지했다.
 
@@ -340,8 +342,9 @@
 - [x] 범위 승인
 - [x] 비교 글·무료 시범
 - [x] PR233 병합(시범 PR)
-- [>] UI 창 구현·검증
-- [ ] UI 창 PR 병합
+- [x] UI 창 구현·검증
+- [x] PR252 병합
+- [>] HUD 그림·화면 확인
 - [ ] 성장 효과 구현·검증
 - [ ] 효과 PR 병합
 - [ ] 발판·지형 PR 병합
