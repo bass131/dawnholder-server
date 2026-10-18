@@ -1013,8 +1013,11 @@ namespace Dawnholder.Client.Tests
                 _object = new GameObject("character menu facade contract");
                 try
                 {
+                    // Keep the component inactive so EditMode cannot also deliver automatic lifecycle callbacks.
+                    _object.SetActive(false);
                     Service = _object.AddComponent<NetworkService>();
                     FieldInfo field = typeof(NetworkService).GetField("_lifetime", InstanceMembers);
+                    if (field.GetValue(Service) == null) SessionTestTools.Call(Service, "Awake");
                     var original = (ClientConnectionLifetime)field.GetValue(Service);
                     Action<IClientConnectionSession> subscription = MenuSubscription(original);
                     Assert.IsNotNull(subscription, "actual Awake must subscribe CharacterMenuLoginAccepted");
@@ -1036,13 +1039,7 @@ namespace Dawnholder.Client.Tests
                 }
                 catch
                 {
-                    UnityEngine.Object.DestroyImmediate(_object);
-                    Owner?.Dispose();
-                    foreach (TestSocketPair sockets in Sockets) sockets.Dispose();
-                    AccountLoadout.SessionAccountName = _previousAccount;
-                    ClassLoadout.SessionSelectedClass = _previousIntent;
-                    MainMenuNotice.TryTake(out _);
-                    MainMenuNotice.Set(_previousNotice);
+                    Dispose();
                     throw;
                 }
             }
@@ -1073,20 +1070,37 @@ namespace Dawnholder.Client.Tests
             {
                 if (_destroyed) return;
                 _destroyed = true;
-                UnityEngine.Object.DestroyImmediate(_object);
-                Queue.Drain();
+                try
+                {
+                    // This never-active component needs the real product teardown before its Unity object is removed.
+                    if (Service != null) SessionTestTools.Call(Service, "OnDestroy");
+                }
+                finally
+                {
+                    UnityEngine.Object.DestroyImmediate(_object);
+                    Queue.Drain();
+                }
             }
             public void Dispose()
             {
-                DestroyService();
-                Owner?.Dispose();
-                Queue.Drain();
-                foreach (TestSocketPair sockets in Sockets) sockets.Dispose();
-                AccountLoadout.SessionAccountName = _previousAccount;
-                ClassLoadout.ResetServerClass();
-                ClassLoadout.SessionSelectedClass = _previousIntent;
-                MainMenuNotice.TryTake(out _);
-                MainMenuNotice.Set(_previousNotice);
+                try { DestroyService(); }
+                finally
+                {
+                    try
+                    {
+                        Owner?.Dispose();
+                        Queue.Drain();
+                    }
+                    finally
+                    {
+                        foreach (TestSocketPair sockets in Sockets) sockets.Dispose();
+                        AccountLoadout.SessionAccountName = _previousAccount;
+                        ClassLoadout.ResetServerClass();
+                        ClassLoadout.SessionSelectedClass = _previousIntent;
+                        MainMenuNotice.TryTake(out _);
+                        MainMenuNotice.Set(_previousNotice);
+                    }
+                }
             }
         }
 

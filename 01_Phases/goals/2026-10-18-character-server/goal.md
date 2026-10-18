@@ -6,13 +6,16 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: Unity 실제session 연결 작성·313개 중309통과/4fixture차단.** 신규 Astra가 공용2파일·메뉴 결과handler3개와meta를 연결했다. 기존275와 신규session33/facadeAPI1은 통과했고, facade4개는 시험의 생명주기 초기화 누락으로 기능 단정에 도달하지 못했다. 전체GREEN은 보류이며 다음은 이 fixture만 수정한 새 실행이다. 전송217GREEN·Shared22 배포는 유지하고 Core 실제 저장·서버 입장·Content/Guild 통합·전체 독립 강 판정은 남아 있다.
+**상태: Unity 실제session 연결·동일313개 GREEN.** 신규 Astra의 공용2파일·메뉴 결과handler3개와meta 연결 뒤, 별도 Sol이 시험 MenuFacadeProbe의 실제 Awake/OnDestroy 수명 준비 F1만 수정했다. 새 Unity1회에서 기존309통과를 보존하고 네fixture실패가 모두 통과했다. 전송217GREEN·Shared22 배포는 유지하며 Core 실제 저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 시험 작성 Sol xhigh에게 `CharacterMenuClientTests.cs`의 MenuFacadeProbe 생명주기 준비 F1만 수정하도록 발행한다. 제품9·요구·모든 단정/313이름·meta는 보존하고 실제 제품 Awake/OnDestroy 진입을 fixture에서 마련한 뒤 같은4fixture 필터를 새 Main창에서 실행한다. 초안은 `approval-01/unity-session-fixture-fix-01/`이다. Content `msg_1f27f57e0e62`의 공용2 후속쓰기예약0·World 선구현/완성PR2 Guild보존 직렬통합 합의를 유지하며 미인계15파일·공용2 조기복사0이다. Core `msg_30784f9d1681` 기준 API v2 불변·DB Apply exit1·실DB/최종강/통합 인계 전이고, 서버 초안은 `approval-01/server-implementation-draft-01/server-adapter-requirements-v0.2.md`다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 그대로다.
+**다음 첫 일:** Core의 실제 검증·소비 타입/소유 경계 인계를 확인해 서버 adapter 선행 시험 계약을 고정한다. 인계 전에는 `approval-01/server-implementation-draft-01/server-pretest-context-v0.3.md`·`core-handoff-state-v0.3.md`와 전송/대역 요구 준비만 이어가며 미검증 Core 제품을 복사하지 않는다. Core `msg_9a67ac701811`(14:47:46Z)은 API v2 hash 불변·DB 운영 재개 경로 신규 강 검증 진행을 보고했지만 실DB 저장/재접속·전체 통합 인계는 미완료다. 관리자 재개는10-19 오전 별도 승인 예정이며 World 실행 권한이 아니다. Content `msg_139c3c8fe0e3`의 UI checkpoint451cbf4a·공용2 추가쓰기예약0과 기존 World 선구현→완성PR2 Guild보존 직렬통합 합의를 유지한다. network 당시289/UI 현재13은 각각 자체 근거이며 full PR2 검증 인계가 아니다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 그대로다.
 
-실제2단계 선행 작성 Task `task_d60dec8ebf76`/Dispatch `ctx_fe2fe54b151c`는 종료·정산했다. 기존 메뉴client 시험 한 파일에 추가한38사례와 기존253/권위22 회귀의 동일 필터 GREEN을 구현 뒤 새 실행창에서 확인해야 한다. Core48 제품 파일·화면 변경은 포함하지 않는다. PR 전 전체 독립 강은 신규 외부 세션 한 번으로 별도 수행한다.
+실제2단계 선행 작성 Task `task_d60dec8ebf76`/Dispatch `ctx_fe2fe54b151c`와 제품 연결·F1 시험 수정 세션은 모두 종료·정산했다. 추가38사례와 기존253/권위22 회귀는 동일313 필터에서 모두 통과했다. Core48 제품 파일·화면 변경은 포함하지 않았다. PR 전 전체 독립 강은 신규 외부 세션 한 번으로 별도 수행한다.
+
+- **F1 시험 수명 수정 정산:** 신규 Sol xhigh Task `task_34d29eeac61b`/Dispatch `ctx_624eee3a3e3b`, 원문 `approval-01/unity-session-fixture-fix-01/report.md` SHA256 `4DEECA62201D6519243CA3F4C34102156325514D2AAECDF7540436F395806A32`와 실제 준수·diff를 직접 읽었다. 시험 한 파일의 MenuFacadeProbe만 +32/-18이고 제품9·모든 단정/입력·313이름·meta를 보존했다. Main `msg_6ba0ffe52769` 창의 PS/Unity 각1회 rawexit0·XML313P/0F/0skip, 기존309 회귀0·F1 네실패→P를 원시 전수 비교했다. XML SHA256은 `16352E2A033148571689D90DFA9F8851F4B15DB969A5127EBDE21F3F9CD73B3E`다. 원본2100/meta1126·Prefs137 전체차이0·프로세스0을 먼저 확인해 Main `msg_1ddd9765f3b0`로 창을 반환했다. succeeded/release·정확pane종료·리드생존/reclaimable0이며 재사용0이다. 생존 초과1구간1259초는 승인 실행창 대기·턴 종료 지시에 따른 대기였고, 공식 질문 대기2건과 구분했다. 상세는 같은 근거 `lead-settlement.md`다. 실제 서버/DB·전체 독립 강·Content 통합·플레이/CI 통과로 확대하지 않는다.
+- **Unity 자동 사용자 캐시 정산 결정:** Main `msg_5e2263130930`(15:25:21Z)은 정확15argv 실행의 LocalLow/Unity/Caches/GiCache 자동 갱신을 통상 실행 부작용으로 분류해 현물을 보존하고 실패/범위위반으로 세지 않은313GREEN 정산을 지시했다. 디렉터리는 실행 전 존재했지만 before 내용/hash·이번 변경량은 unknown이며 외부cache 불변을 주장하지 않는다. 직접 수정/삭제/복원/재실행0, 추가감사·도구·전역설정·경로변경0이다. 원문은 같은 근거 `runtime-sideeffects-observation.json`·`lead-gi-cache-log-observation.json`·`settlement-supplement-v1.2.md`다. 다음 READY에 「Unity 사용자 캐시(LocalLow/Unity/Caches 아래 GiCache 등) 자동 갱신 — 관측만, 보존」을 포함한다. 성능JSON은 부재이며 성능측정 성공을 뜻하지 않는다.
 
 - **실제session 구현 정산:** Astra xhigh Task `task_a30c77e4802e`/Dispatch `ctx_071275baff63`, 원문 `approval-01/unity-session-implementation-01/report.md` SHA256 `1A990BB326B7F096389094F50F70BC5CC3FF27B5A1F9D810BBBBBC5E11A7062A`를 직접 읽고 제품9diff/실제Unity1회·XML313=309P/4F/skip0를 대조했다. 신규34가 통과로 바뀌었고 기존275/이름·결과는 보존됐다. F1 네실패는 fixture의 original Lifetime null→reflection TargetException이며 facade본문 미도달로 전체GREEN미충족 outcome failed 정산했다. 제품확정실패/독립NOTPASS 집계는0이다. Prefs137 전체차이0·원본2100/meta1126 보존/프로세스0을 먼저 확인해 Main `msg_e13c10e12ba9`로 창을 반환했다. failed/release·동일pane종료·리드생존/reclaimable0을 확인했다. 성능JSON 부재/과거기본LocalLow자동출력의 beforeunknown 한계·생존초과332초1구간은 같은 근거 `lead-settlement.md`에 남겼으며 성능측정 성공·전체통과는 주장하지 않는다.
 
@@ -203,7 +206,7 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
 - [x] 서버 계약
 - [x] 전송·소비 선행시험 — 패킷/Unity 최초 RED 완료, 서버 adapter 시험은 연결 단계에 남음
 - [x] 클라이언트 계약 — 소비 v1 확정, 공용2파일 실제 인계는 연결 단계에 남음
-- [>] 전송·서버 연결 — 전송 정의5파일·217GREEN 완료, 서버/Unity 소비 남음
+- [>] 전송·서버 연결 — 전송217·Unity 실제session313 GREEN, 서버/Core·Content 통합 남음
 - [ ] 독립 강 검증
 - [ ] 제품 병합
 - [ ] 종료 기록
@@ -223,7 +226,7 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
 
 ## 보류와 남은 우려
 
-전송217GREEN·Unity 비화면1단계253GREEN과 원본Shared22 배포는 완료했다. Content 공용2파일은 실제 쓰기종료·정확기준/diff를 인계받았지만 Guild 의존성과 함께 통합해야 한다. Core 실제DB/최종통합·강판정과 실제session54→48/입장·양쪽 전체 소비자 검증이 남는다. 후속 중량 실행은 새 READY/실행창이 필요하고 현재 단계 GREEN과 DLL 배포 자체점검은 C7전체·C1~C9의 독립 강 판정을 대신하지 않는다.
+전송217GREEN·Unity 실제session313GREEN과 원본Shared22 배포는 완료했다. World 자기 기준의 공용2파일·최소handler 연결은 끝났고 Content 완성PR2의 Guild 의존성과 함께 직렬통합해야 한다. Core 실제DB/최종통합·강판정과 실제 서버54→48/입장·양쪽 전체 소비자 검증이 남는다. 후속 중량 실행은 사용자 캐시 자동 갱신의 관측·보존을 포함한 새 READY/실행창이 필요하고 현재 단계 GREEN과 DLL 배포 자체점검은 C7전체·C1~C9의 독립 강 판정을 대신하지 않는다.
 
 TRX helper와 봇 등록/회귀 목록 드리프트는 앞 목표 Gardener의 미채택 후보이며 새로 채택하지 않는다. 기존 BACKLOG와의 통합 판단은 메인에게 남긴다. 범위 밖 후보 장부나 운영 규칙 정비를 이번 초안에서 늘리지 않는다.
 
