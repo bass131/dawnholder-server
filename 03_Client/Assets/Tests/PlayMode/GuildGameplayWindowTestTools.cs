@@ -22,6 +22,18 @@ namespace Dawnholder.Client.Tests.PlayMode
     // transport/input cleanup; this file owns capture data and the temporary GameView item.
     internal static class GuildGameplayWindowTestTools
     {
+        // PlayMode has no product IVT. Observe the published CanvasGroup as the existing
+        // inventory/reward screen probes do; never substitute hidden state for a shown UI.
+        internal static bool InventoryShown() => InventoryPanel.Instance != null &&
+            ScreenUiProbe.IsShown(InventoryPanel.Instance) && InventoryPanelProbe.Group.alpha > 0f;
+
+        internal static bool RewardShown()
+        {
+            DungeonClearRewardWindow window = DungeonClearRewardWindow.Instance;
+            CanvasGroup group = window == null ? null : window.GetComponent<CanvasGroup>();
+            return group != null && group.alpha > 0f && ScreenUiProbe.IsShown(window);
+        }
+
         internal static IEnumerator KeyFrame(MapEntryPlayFixture fixture, Key key)
         {
             fixture.Keys(key);
@@ -160,10 +172,9 @@ namespace Dawnholder.Client.Tests.PlayMode
                         camera = Camera.main == null ? null : Camera.main.name,
                         hud = HudController.Instance == null ? null : HudController.Instance.name,
                         canSend = fixture.Session != null && fixture.Session.CanSendGameplay,
-                        inventoryOpen = fixture.Session != null && fixture.Session.IsInventoryPanelOpen,
+                        inventoryOpen = InventoryShown(),
                         npcOpen = NpcDialogPanel.IsShown,
-                        rewardPending = fixture.Session != null && DungeonClearRewardState.Instance != null &&
-                            DungeonClearRewardState.Instance.HasPendingFor(fixture.Session),
+                        rewardShown = RewardShown(),
                         attacks = fixture.Peer.Count(PacketID.C_Attack), stronghold = fixture.Peer.Count(PacketID.C_StrongholdUpgrade),
                         enhance = fixture.Peer.Count(PacketID.C_WeaponEnhance), missingGlyphEvents = _missing.ToArray()
                     };
@@ -290,7 +301,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 public string utc, scene, camera, hud, mainView;
                 public int frame, screenWidth, screenHeight, requestedWidth, requestedHeight, pngWidth, pngHeight, attacks, stronghold, enhance;
                 public uint renderingWidth, renderingHeight;
-                public bool canSend, inventoryOpen, npcOpen, rewardPending;
+                public bool canSend, inventoryOpen, npcOpen, rewardShown;
                 public string[] missingGlyphEvents;
                 public TextData[] texts;
                 public ArtData[] art;

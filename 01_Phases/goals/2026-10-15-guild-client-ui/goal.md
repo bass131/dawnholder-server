@@ -1,10 +1,20 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **PR251 병합 완료·PR2 네트워크 자체289PASS 및 UI 자체13PASS, 실제 화면 수집은 새 시험의 접근성 컴파일 차단으로 미실행.** 실패 작업자 정산·종료와 창 반환을 마쳤으며 신규 Astra high의 좁은 시험 교정·재수집을 준비한다. 실제 세 해상도·Town/E 보존·Art 성장 호출·실서버 두 계정·PR2 신규 독립 검증은 남았다. C1~C10과 두 제품 PR 경계, 과거 실패와 M01의 원시는 유지한다.
+상태: **PR251 병합 완료·PR2 GUI 실제19건은16PASS/3캡처쓰기 Error.** 접근성 컴파일 차단은 해소됐고 원PNG33개·Town/E/Q와 기존13건의 실제 통과를 수집했다. 세 해상도 시나리오는 출력경로260자 예외로 후반 보상 확인40·닫힌 창 월드 조작이 미도달이다. 실패 작업자 정산·종료와 전체창 반환을 마쳤으며 같은19건의 좁은 산출물경로 교정을 준비한다. F03 일시 퀘스트 배너 가림은 메인 조건부 판단으로 C8 밖 안정화 후속에 둔다. Art 성장 호출·실서버 두 계정·PR2 신규 독립 검증과 C1~C10·두 제품 PR 경계는 유지한다.
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 외부 `gpt-6-astra` high가 같은 PR2의 새6개 화면/Town 시험에서 internal 접근6곳만 공개 관측 경로·기존 PlayMode probe를 재사용해 교정하고 실제709×399·802×451·1920×1080 화면/중첩·Town 근접/E 대화·Knight Q 대시·Ready/HP/메뉴/전환 gate를 재수집한다. 제품 AssemblyInfo/IVT·공용 Session/NetworkService·Art·기존13시험은 읽기만 한다. 새 계약에는 Main `msg_be2ca50c2114` 원문과 참조 멤버 접근성/IVT 대상 확인을 붙인다. 닫힌 실패 Task·`gcv2/n`·남은 lock/Library·옛 before/창은 재사용하지 않고 새 입력·READY·Main 창으로만 실행한다. C9 효과 API는 Art `msg_31026855ae0e`까지 미정이며 임시 API/효과를 만들지 않는다. UI.unity/HUD3 controller의 Content 쓰기 예약은0, Art 후속의 실제 main은 새 입력으로 직렬 통합한다. 실서버 두 계정·CI/DB·최종 PR2 신규 독립 판정은 남고 C1~C10·두 PR 경계는 유지한다.
+**다음 첫 일:** 같은 작업의 신규 외부 `gpt-6-astra` high가 F02의 산출물파일 경로만 짧게 교정한다. 기존6 시나리오·정확19 fullname·단정·공개표시 관측과13 control은 유지하고, 실제709×399·802×451·1920×1080의 보상 확인40 및 닫힌 창 월드 조작까지 완주한다. 제품·AssemblyInfo/IVT·공용 Session/NetworkService·Art·다른시험은 읽기만 한다. 닫힌 Task·`gcv2/o`와 이전 snapshot/lock/Library/before/창을 재사용하지 않고 새 입력·READY·Main 다음창으로만 실행한다. F03의 메인 원문·조건 확인은 `qa-ui-gameplay-access-fix/lead-f03-main-decision.md`로 최종 독립 검증자에게 넘기며 sorting/우선목록을 바꾸지 않는다. C9 효과 API는 Art `msg_31026855ae0e`까지 미정이다. UI.unity/HUD3 controller의 Content 쓰기 예약은0, Art 후속 실제 main은 새 입력으로 직렬 통합한다. 실서버 두 계정·CI/DB·최종 PR2 신규 독립 판정과 C1~C10·두 PR 경계는 유지한다.
+
+### 10-18 접근성 교정 GUI 수집 정산
+
+신규 Astra high `task_0fcb00b97662`/`ctx_cb1052ab5c70`는 Main `msg_e0ebcfcf3db5`의 같은 작업 격상으로 허용2cs만 +19/-9 교정했다. 요청·최초명령·화면은 gpt-6-astra high, backend actual unknown이다. 공개 Inventory/Reward CanvasGroup과 같은 PlayMode probe로 internal 직접참조6곳을 대체했고 실제 컴파일 오류0/정확19case 진입으로 F01 접근 경계 해소를 확인했다. 제품/IVT/다른2243 source·meta/고정24 차이0, 실행한2cs와 최종bytes도 일치했다. report SHA `F184197814EA1EDAD84928215A7C6F6575F1D91ED6392FA027010A4003E4FCAA`, writing-closed `B03998C6509131405722B1257F44820C585EE3059BBA3760997741982334E5A1`와154소유파일 hash·길이·mtime를 직접 대조하고 failed·정확 pane 종료로 정산했다.
+
+실제 GUI Normal/13argv/새o/root1/retry0은622.2142222초/exit2/timeoutfalse다. XML `DF2F7E026EEF0923EF8A5DEBBBFFF237BE30FD743D6ED984D414710FFA48A2D9`의 기존13은13PASS, 신규6은Town/E/Q·입장 gate·메뉴전환3PASS와해상도3 Error다. 원PNG33개(709×399=8/802×451=18/1920×1080=7)를 작업자가 전수 판독했고 리드는 normal/upper 세크기6장과 priority/Town3장·F03 원본을 직접 읽었다. 세 화면은 실제39보상 우선닫힘까지 도달했으나 `Recorder.Write`의260자 PNG/JSON 경로 쓰기 예외(F02, b fixture/출력경계)로 확인40/보상소비후숨김/닫힌창 world-attack은 미도달이다. 긴 경로 한계는 원시 정황에 따른 추론이며 별도 OS/Mono 재현은 미실행이다. 도달 Check1403/false0·missing0을 전체 시나리오 통과로 확대하지 않는다. 제품 확정 실패 집계0을 유지하며 F01과 다른 번호의 F02를 같은 결함 재실패로 합산하지 않는다.
+
+작업자 반환17:12:04Z는 ownroot0/관측자식10 live0/미분류PPID0/UnityHub0·filePrefs10 diff0/GVS원부재 유지·복귀분기미실행이다. 리드는 이번 fresh Registry before의 기존 Binary5만 전체/즉시guard 뒤 exact복귀하여137전체차이0을 확인하고 Main `msg_82c968401736`에 전체창17:13:51.9819131Z 반환을 보고했다. 이후 live관측0이다. 기존 생존 helper는13신호+공식답변2개에서 최대301초/초과1개(root실행 중17:01:31→17:06:32Z, 정확 송신지연 원인 미확인), 공식대기329/80초 제외를 기록했다. 추가감사·도구수리 없이 원시를 보존한다.
+
+근거는 E/`pr2-server-integration-20261018/qa-ui-gameplay-access-fix/`의 report·lead-settlement-audit·lead-static-results-audit·lead-window-return·lead-liveness-*다. 리드의 초기 fullname 그룹 형태/UTC 소수초 변환 분석 오류는 초기무효JSON과 정정 근거를 보존했고 source/runtime는 바꾸지 않았다. 실행 당시 goal242B5604 원bytes는 `executed-goal-242B.md`, 시험2cs는 `runs/executed-tests/`에 보존했다. 이번16PASS는 과거 네트워크289/제품UI13 자체통과나 전체PR2 신규 독립 통과와 구분한다.
 
 ### 10-18 실제 화면 수집의 시험 접근성 차단 정산
 
@@ -146,6 +156,14 @@ Main `msg_88584137e7c3`(2026-10-18T07:00:22Z)이 전달한 사용자 원문: 「
 
 병합 사용자 승인 줄·비밀정보 보호·관리자/UAC/SQL서비스/방화벽 별도 승인·전역 설정 불변·같은 파일 동시쓰기 금지·미실행을 통과로 보고하지 않는 기준은 유지한다. 이 최신 운영 방향을 신규/남은 계약의 충돌 범위에 우선 적용하며 기능 C1~C10과 PR1/PR2 완료조건을 임의로 축소하지 않는다.
 
+### 취침 중 판단 위임과 F03 일시 연출 적용 결정
+
+Main `msg_82f7a755b751`(2026-10-18T16:57:22Z)이 전달한 사용자 원문은 「나 잘테니까, 이후 작업 판단을 메인 세션의 판단과 내 세컨드 브레인 정보로 이어서 진행해줘 / 전적으로 신뢰할게」다. 아침까지 범위·계획·우선순위 판단을 메인이 기존 사용자 결정과 성향에 따라 맡고 리드는 status로 올린다. 이 pane의 사용자 직접 입력으로 격상하지 않는다. 관리자/UAC·SQL Express 서비스/인증/로그인/방화벽·PR 병합 승인 줄·전역 설정·비가역 삭제는 위임 밖이며 명령과 근거 준비만 한다. 원문은 `qa-ui-gameplay-access-fix/lead-pending-night-delegation.md`에 있다.
+
+**사용자 위임에 따른 메인 결정 + `msg_50e1443ae82b`:** F03은 「일시 연출 겹침 · C8 밖 · 안정화 후속 후보」로 조건부 허용한다. `outside-town.png`의 QUEST AVAILABLE 배너가 길드 정보 위쪽을 실제 가린 관측은 유지한다. 이번 C8의 기존 팝업은 인벤토리·NPC 대화·보상 같은 지속 창이며 맵 진입 일시 퀘스트 배너는 PR2에서 고치지 않는다. 마을 밖 길드 창은 읽기 전용이고 sorting 변경의 회귀 위험·추가 실행 비용을 고려한 속도 우선 판단이다. sorting/우선창 목록을 바꾸지 않으며 아침 사용자 보고에서 되돌릴 수 있게 남긴다.
+
+조건은 코드 읽기로 확인했다. `QuestAlert.PlayRoutine`은0.28+0.95+0.34=1.57 scaled game seconds 뒤 alpha0/콜백으로 끝나며 `QuestIntroSequencer`가 객체를 Destroy한다. pause로 벽시계가 늘 수 있고 실제 종료 프레임/시간은 미측정이다. CanvasGroup interactable/blocksRaycasts=false, Flash/Banner raycastTarget=false라 배너 자체 입력 가로채기와 종료 후 blocker 잔류가 없다. 실제 후속 클릭을 실행했다고 보고하지 않는다. 조건이 무효로 드러나면 C8 결함으로 돌리는 메인 원문·코드 hash·확인 한계 전체는 `qa-ui-gameplay-access-fix/lead-f03-main-decision.md`(SHA `6E9FE6648BE73FBCFE428175255DA0691A538C6A3A10F39707D62172FD9EEB5D`)에 있으며 최종 신규 독립 검증 계약에 원문으로 넘긴다. 이 결정은 F02 수집 차단을 통과시키지 않는다.
+
 ### 10-18 메모리 도구 구현·독립 검증 정산
 
 재시작 구현 `task_8ba55856bc52`는 쓰기 종료·정산·정확 pane 종료했다. 신규 Sol `task_81afea5c7625`는 저장 독립 entry를 실행해 실제 scratch 파일 감시10건 및 합성 반환 검사5건에서11통과/4실패를 남기고 M01(high/blocking)을 반환했다. 빈 목록·그룹 누락·자기추가 잔존·음수 선택 receipt의 정상 수락은 합성 validator 재현이며 실제 Unity/native 실패 관측이 아니다. 판정 원문 E/`pr1-size-transaction-restart-20261018/verify/verdict.md`, 소유·입력·생존 정산은 같은 폴더의 `lead-sol-m01-owned-audit.json`·`lead-after-m01-final-inputs.stdout.json`·`sol-m01-liveness-result.json`에 있다. 검증자는 failed 쓰기 종료 후 정산·정확 pane 종료했으며 재사용하지 않는다.
@@ -167,6 +185,7 @@ World의 승인된 비화면 CharacterMenu 선행 정확 파일은 리드 소유
 ## 안정화 후보
 
 - M01: 반환 receipt의 전체 그룹/목록·유효 선택·자기추가 제거 증거 완전성 보강 — 동결 뒤, 현재는 알려진 한계와 단순 백업 보호로 진행.
+- F03: 일시 퀘스트 배너 표시 중 길드 정보 우선 처리 또는 배너 raycast 해제 검토 — 사용자 위임에 따른 메인 결정 `msg_50e1443ae82b`의 조건부 C8 밖 후속. 현재 배너는 이미 raycastfalse이므로 실제 남는 관찰은 일시 가림 정책이다. 원본과 조건 근거를 보존하며 새 goal은 자동 착수하지 않는다.
 - 우편함 check 결합과 PS5.1 모듈 경로 교정은 기존 사용자 결정의 동결 뒤 Rules 작업으로 유지하며 현재 도구를 새로 만들지 않는다.
 
 ## 범위

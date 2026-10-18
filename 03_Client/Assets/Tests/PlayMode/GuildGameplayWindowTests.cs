@@ -296,7 +296,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             _record.Check(Label(guild, "GuildName") == "가나다라마바사아자차카타파하길드", "16-code-unit literal remains exact");
 
             yield return KeyFrame(_fixture, Key.I);
-            _record.Check(_fixture.Session.IsInventoryPanelOpen && !guild.IsOpen && !smith.IsOpen,
+            _record.Check(InventoryShown() && !guild.IsOpen && !smith.IsOpen,
                 "actual I inventory priority closes product windows");
             yield return _record.Capture(_fixture, "inventory-priority");
             int inventoryQueries = _fixture.Peer.Count(PacketID.C_InventoryRequest);
@@ -316,8 +316,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return OpenBoth();
             _fixture.Peer.Send(new S_DungeonClearResult { result = 0, currency = 50,
                 reward0ItemId = 1, reward0Count = 1, reward1ItemId = 2, reward1Count = 1 }.Write());
-            yield return MapEntryPlayFixture.Wait(() => DungeonClearRewardState.Instance != null &&
-                DungeonClearRewardState.Instance.HasPendingFor(_fixture.Session), "actual39 reward state", 5);
+            yield return MapEntryPlayFixture.Wait(RewardShown, "actual39 reward window shown", 5);
             yield return _fixture.Frames(5);
             _record.Check(!guild.IsOpen && !smith.IsOpen, "server39 reward priority closes product windows");
             yield return KeyFrame(_fixture, Key.I);
@@ -326,8 +325,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _record.Click(_fixture, confirm, "existing reward confirm40");
             yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_DungeonClearConfirm) == 1,
                 "existing reward confirmation still reachable", 5);
-            _record.Check(!DungeonClearRewardState.Instance.HasPendingFor(_fixture.Session), "confirmation consumes only pending reward");
-            if (_fixture.Session.IsInventoryPanelOpen) yield return KeyFrame(_fixture, Key.I);
+            _record.Check(!RewardShown(), "confirmation consumes the reward and hides its window");
+            if (InventoryShown()) yield return KeyFrame(_fixture, Key.I);
             yield return OpenBoth();
             Vector2 closedPoint = ScreenUiProbe.ScreenPoint(Button(guild, "LevelUp"));
             yield return _record.Click(_fixture, Button(smith, "Close"), "smith close after other windows");
