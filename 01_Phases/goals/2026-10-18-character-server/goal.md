@@ -6,14 +6,16 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: 전송 정의217GREEN·Unity 소비 선행 시험253건의 최초 RED 완료.** 신규 Astra가 wire49..54/v22를 구현한 뒤 같은 패킷217건이 통과했다. Unity 선행 시험은 기존 Lifetime26건 통과·신규227건의 타입/이벤트 부재 assertion RED·skip0을 실제 관측했다. 다음은 신규 Astra xhigh의 1단계 비화면 client/reader와 명시 메뉴 Lifetime 분기 구현이다. Core 실제 저장 연결·서버 입장·양쪽DLL·2단계 Unity 통합·전체 강 판정은 남아 있다. 승인 기록은 commit `2bf22066`이며 제품 wire는22/54개지만 통합 배포하지 않았다.
+**상태: 전송217GREEN·Unity 비화면1단계253GREEN 완료.** 신규 Astra가 helper3개와 명시 메뉴 Lifetime 분기를 구현했고 같은253이름에서227요구RED가통과로바뀌며기존26통과를유지했다. 다음은 Core/Content의 최신 인계 대조와 서버 adapter·수명 선행 준비다. Core 실제 저장 연결·서버 입장·2단계 Unity session/handler54→48·전체 독립 강 판정은 남아 있다. 원본Plugins는아직v21이며이번에는새Shared22를검증snapshot에만넣었으므로원본Unity의새메뉴코드통합배포·양쪽DLL준비완료를뜻하지않는다.
 
 ## 재개 지점
 
-**다음 첫 일:** 선행 작성자를 정산·종료한 뒤 신규 Astra xhigh에게 [Unity 소비 계약 v1](unity-consumer-contract-v1.md)의 1단계 helper3파일·각meta/폴더meta와 ClientConnectionLifetime 최소 분기를 맡긴다. 시험은 읽기 전용이며 같은253건 GREEN은 새 READY/독점 창에서 관측한다. Core adapter는 최종 통합 인계를 재확인하며 공용 Unity2파일·handler3개/48 연결은 Content PR2 실제 종료·기준 인계 뒤 2단계로 남긴다. 전체 C1~C9·PR 경계와 고정 [전송 계약 v1](packet-contract-v1.md)·[Core 소비 접점 v1](core-consumer-contract-v1.md)은 그대로다.
+**다음 첫 일:** Core API v2/host·최종검증/DB 인계와 Content 공용2파일의 실제 종료·기준/diff 인계를 대조하고 서버 adapter·수명 선행 계약을 고정한다. 두 파트에 최신상태를 문의했으며 미검증 Core 제품복사0·공용2파일/handler3개 쓰기0을 유지한다. 원본Shared22 배포는 승인 goal의 DLL 범위에서 별도 정확 계약·백업/해시와 실행 소유를 고정하고 실제2단계 Unity/서버 통합으로 잇는다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)·[Unity 소비 v1](unity-consumer-contract-v1.md)은 그대로다.
 
 - 후속 소비 계약은 [Unity 비화면 소비 v1](unity-consumer-contract-v1.md)이다.1단계 pure client/reader/Lifetime 최소 분기와2단계 실제 공용2파일/handler→48 연결을 구분해 선행 시험을 작성한다. Core `msg_45b43bc4ff25`/`msg_7d13fd6f7b61`은 API v2/host 미커밋·최종 독립강/인계0 유지와 DB Apply exit1·SQL Stopped/복구 준비를 보고했다. 환경 완료로 해석하지 않는다. Content `msg_f256203ca943`의 PR251 병합041bea25/PR2 착수·공용2파일 소유 유지도 대조했다. 최신 origin/main을 fetch해 실제041bea25와 신규 변경 경로를 확인했으며 이 계약의 PDL/버전/Lifetime/기존LifetimeTests와 중첩0이다. 현 World checkpoint dcf906a0은 유지하고 통합 전 최신main/Content/Core 인계는 다시 반영한다.
 - Unity 첫 시험 세션은 공식22088자 계약 대신 JSON draft에 CODE 부록 꼬리345자만 보여 전체제출을 확인하지 못했다. 메인 `msg_c40beb9591b3` 판단으로 Enter0·abandon/fence·정확pane종료했고 고정입력drift0/신규시험부재를 확인했다. 도구한계이며 확정실패/모델격상으로 세지 않는다. 리드가 LF제거exactsuffix를 기계결과읽기전에 보고한 오류는 실제false 원문 확인 뒤 `msg_054938d10286`으로 즉시정정했다. 원시와정산은 `approval-01/unity-pretest-01/lead-abandon-settlement.md`에보존했고 동일계약/모델의신규세션으로다시발행한다. 새검사도구/반복규칙은만들지않는다.
+
+- **Unity1단계 구현 정산:** 신규 Astra xhigh Task `task_3c45b744b364`/Dispatch `ctx_42bc4c8c5618`, 최종 원문 `approval-01/unity-implementation-01/report.md`와 `actual-compliance.md`를 직접 읽고 허용8제품파일·같은253 XML의227RED→P/기존26P유지·원본2093/시험/Plugins 보존을 대조했다. Shared 격리빌드·Unity최초1회·양쪽잔존/lock/prefs137복귀 뒤 메인 `msg_c83e21b8d4ff`로 실행창을 반환했다. H1은 PS capture의 VoidTaskResult 출력으로 원caller만실패한 결함이며 공개·원시보존·메인 사전승인 후두[void]억제/완료build-sync-backup반복0의남은caller로끝냈다. Windows SDK존재를확인없이전제한리드계약은정확WSL SDK로준비보충하고메인에정정했다. 제품확정실패/새검사도구0, 구현자완료·정확pane종료·리드생존을확인했다. 생존초과4구간·질문대기3건, package/licensing/종료로그미확정·일회근거script설정분리한계는 같은 근거 `lead-settlement.md`에 보존했다. 원본Shared21·실제session/handler48/서버DB·양쪽배포·플레이/Player/CI·전체독립강은남는다.
 
 - **Unity 선행 작성·실제 RED 정산:** Task `task_fdeff68e69e6`/Dispatch `ctx_7410f00e785e`, 원문 `approval-01/unity-pretest-02/report.md` SHA256 `5E56C67B8E2B6028C76F3E764D82E58D6D47E43C02B30E8E72F27C12F1BD025F`. 허용 시험5파일만 작성했고 메인 `msg_3b169e7b1d1e` 창에서09:35:42~09:45:39Z Unity6000.6.4f1/TF1.8.0을1회 실행했다. XML253=26P/227요구RED/0skip, 부재4그룹은 client48/reader161/reply1/Lifetime event17이며 이후 semantic assertion은 미도달이다. 원본2086파일·고정47입력 불변, 이전 Lifetime26케이스 통과다. prefs7 Binary 변화는 보존·공식ask 후 메인 `msg_c8887e153cb3`가 정확복귀를 승인했고137전체 차이0·Unity/Hub0을09:49:53Z 확인해 메인 `msg_5918f221b7fb`로 창을 반환했다. 완료 Dispatch 정산·정확pane종료·리드생존을 확인했다. suite Child집계32를 setup으로 잘못 명명한 분석과 빈 pipeline의 delta파일 부재는 원시/정정에 구분했고 시험·harness를 바꾸지 않았다. 신호 초과5구간/질문대기2건은 같은 근거 `liveness-result.json`과 `lead-settlement.md`에 한 줄 정산하며 제품 확정실패로 세지 않는다. 전체 강·Shared22양쪽배포·서버DB·2단계handler/48·플레이/Player/CI 통과가 아니다.
 
@@ -213,7 +215,7 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
 
 ## 보류와 남은 우려
 
-전송 정의 구현·실제 패킷217GREEN은 완료했고 승인된 Unity 선행 소유에서 다음 소비 시험을 준비한다. 후속 중량 실행은 새 READY/실행 창이 필요하다. Core 실제 DB/최종 통합·강 판정과 Content 공용2파일 직렬 인계는 남아 있다. Core 준비 없이 실제 DB·종료 소유를 확인할 수 없고 Unity 소비자 없는 버전 변경은 통합을 차단한다. 패킷 단계의 green은 C7 전체·C1~C9의 강 판정을 대신하지 않는다.
+전송217GREEN과 Unity 비화면1단계253GREEN은 완료했다. Core 실제DB/최종통합·강판정과 Content 공용2파일 직렬인계, 원본Shared22/양쪽배포·실제session54→48/입장이 남는다. 원본Plugins21과새코드의새Shared타입참조는 통합배포 전 제약이며검증snapshot의GREEN으로숨기지않는다. 후속중량실행은새READY/실행창이필요하고 현재단계GREEN은C7전체·C1~C9의독립강판정을대신하지않는다.
 
 TRX helper와 봇 등록/회귀 목록 드리프트는 앞 목표 Gardener의 미채택 후보이며 새로 채택하지 않는다. 기존 BACKLOG와의 통합 판단은 메인에게 남긴다. 범위 밖 후보 장부나 운영 규칙 정비를 이번 초안에서 늘리지 않는다.
 
