@@ -1,12 +1,14 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **UI 창 PR252는 main에 병합됐다. HUD baseline 단회 촬영은 임시 fixture의 Unity API 오류(HUD-BEFORE-F01)로 PNG0/XML부재·미완이며, 자원 원형 반환과 실패 작업자 정산·정확 종료를 마쳤다. 현재 HEAD의 HUD5 PNG/meta·제품 코드/씬은 보존했다. 두 관측 API 호출의 좁은 수정과 새 격리 snapshot·READY 준비를 신규 외부 Astra xhigh에 맡길 예정이며, 실제 재촬영은 별도 Main 실행창 뒤다. 전체 goal 완료가 아니다.**
+상태: **UI 창 PR252는 main에 병합됐다. HUD baseline은 임시 fixture의 두 관측 API 수리 뒤 새 승인 창에서 실제 PNG8장·XML4 Passed를 확보했고, 환경 반환·작업자 정산·정확 종료를 마쳤다. HUD5 원그림/meta·제품 코드/씬은 아직 보존 중이다. 다음은 승인 B1 조각으로 HUD5 그림 적용이며, current 캡처·신규 독립 강실사·사용자 미관은 후행이다. 전체 goal 완료가 아니다.**
 
-**다음 첫 일:** 신규 외부 Astra xhigh에 닫힌 실패 fixture의 두 GetInstanceID 관측 호출 수정과 같은 baseline 재준비를 할당한다. 원 case/단언·실제 진입·GameViewScope/meta·원 HUD5는 보존하고 새 W/T만 쓴다. 새 READY의 정확 argv/예상시간·단순 prefs 보호와 리드 한정 Registry 보호를 Main의 새 창에 연결한다. 기존 단회1과 격리0byte lock/원시를 보존하며 옛 창 재실행·새 감시/검사도구·root 제품 수정0이다. baseline 실제 성공·작업자 종료 뒤 그림 적용/current 캡처/PR전 신규 독립1회를 잇는다.
+**다음 첫 일:** 신규 외부 Astra xhigh에게 승인 B1 조각33을 재사용한 HUD5 PNG 조립·적용과 출처만 맡긴다. 기존 canvas/atlas·meta 전체·GUID/ID·실제 구멍/geometry·코드/씬/입력을 보존하고 새 생성·새 장식·레이아웃 변경0이다. 적용 작업자 정산·종료 뒤 신규 current 작업자가 같은 진입/데이터·두 해상도를 새 READY/Main 창에서 촬영하고, PR 전 신규 독립1명이 최종 diff와 before/current 원시를 함께 강실사한다.
 
 **병렬 콘셉트:** 사용자 A 화풍의 8장 제작과 신규 Astra 독립 기술 PASS·정산·정확 종료를 마쳤다. 메인은 msg_d8863c625f99로 판정 앞부분과 8장 SHA의 직접 대조를 확인했다. 실제1672×941·호출8/10·남은2회 피드백 전 사용0이며, 사용자 미관 최종승인·제품 구현·실제 게임 캡처와 구분한다. 최신 원문/원시는 아래 「화면 콘셉트 8장 — 신규 Astra 독립 기술검토 PASS」와 screen-concepts-review-retry-launch/에 있다.
 
 ## 재개 지점
+
+- **HUD baseline 확보·정산 완료:** 신규 Astra xhigh의 좁은 두 관측 API 수리와 새 격리 snapshot에서 Main 승인 단회 GUI 실행으로 실제 네 case가 Passed, HUD/인벤토리/NPC/파티초대의 1920×1080·1280×720 원PNG8장을 얻었다. HUD 실제 party wire 표시·탈퇴와 같은 raycaster의 positive2→탈퇴0 hit, 네 scope 그룹·선택·cleanup 복귀를 원시에서 확인했다. 정상 exit0·정확잔여0·exactprefs 원형, 리드 한정 Registry 기존 Binary6 복귀/137 전체diff0 뒤 Main 창을 반환했다. 보고 전문·104근거/70입력·root/snapshot 각2215파일 실제 hash 대조 불일치0 후 release/동일성·idle/정확paneclose·W105파일 동결을 마쳤다. 원문 `hud-before-capture-retry/capture-report.md`, 대조·동결·환경 반환은 `hud-before-capture-retry-launch/`에 있다. snapshot 설정의 ENV-D01 허용 한줄 자동변경과 PackageCache/pipe·Unity 자동캐시 한계를 보존하며 전체 Editor 무오류·독립/미관 PASS로 쓰지 않는다. 생존12신호/최대293초·초과0·공식질문538초 제외는 `liveness-result-v2.json` 기준이며 질문 발신주소 필터 누락을 고친 v1/v2도 남겼다. 후행 그림 적용은 새 Astra xhigh(다파일 조합 판단 신호4), 강은 current 실제 캡처와 PR 전 신규 Opus 독립실사로 잇고 R7 한정시범은 비해당이다.
 
 - **HUD baseline 미완·실패 정산:** task_70f172d47929/ctx_e38fdbde0109는 새 Main 단회 창에서 실행했으나 임시 fixture 두 GetInstanceID 호출의 CS0619로 Safe Mode에 머물러 PNG0/XML부재다. 리드도 사전 실사에서 놓쳤으며 제품 회귀/네 case 실패로 집계하지 않는다. 정확 자기 Unity 조기 종료·자손잔여0·exactprefs 원형 유지·Registry137 원형 대조 뒤 창을 반환했고, failed 원문을 전문 대조해 release/동일성·idle/정확paneclose·W67파일동결을 마쳤다. 신규 세션의 좁은 수리·새 READY가 다음이며 실제 실행은 새 Main 창 전0이다. 근거는 `hud-before-capture-launch/settled-failure-root-read-audit-v1.json`, `HUD-BEFORE-F01-lead-audit-v1.json`, `worker-evidence-freeze-after-close-v1.json`, `lead-window-return-observation-v1.json`이다. Registry 복귀 뒤 기록 저장 오타는 쓰기 재시도 없이 read-only137 대조로 원형을 확인했고 개별쓰기journal 미보존 한계를 공개했다. 생존14신호/최대267초·초과0은 실제 공식reply를 보완한 `liveness-result-v2.json` 기준이며 최초 입력 누락 결과도 보존했다.
 
