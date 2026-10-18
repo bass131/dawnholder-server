@@ -10,7 +10,7 @@ Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확�
 
 ## 재개 지점
 
-**다음 첫 일:** Content PR2의 검증 결과/의존성 인계 상태를 맞추고, 기존 [Unity 소비 v1](unity-consumer-contract-v1.md)·[session 연결 v1](unity-session-contract-v1.md)과 신규38 요구 RED를 실제 session/facade/50·52·54 handler 구현 계약으로 잇는다. Content `msg_2917dc56748f`의 쓰기종료11:17:53Z·두 현물hash/diff를 직접 대조했다. NetworkService는 World와 같고 UnityClientSession에는 현재 World에 없는 Guild 의존성이 있어 검증된 PR2 결과/의존성과 함께 기준을 갱신하며 공용2파일만 조기복사하지 않는다. Core `msg_30784f9d1681` 기준 API v2 불변·DB Apply exit1·실DB/최종강/통합 인계 전이다. 서버 선행 요구/맥락 초안은 `approval-01/server-implementation-draft-01/server-adapter-requirements-v0.2.md`이며 미검증 Core 제품복사0을 유지한다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 그대로다.
+**다음 첫 일:** 현재 World 기준에서 [Unity 소비 v1](unity-consumer-contract-v1.md)·[session 연결 v1](unity-session-contract-v1.md)과 신규38 요구 RED를 실제 session/facade/50·52·54 handler 구현 계약으로 잇는다. Content `msg_1f27f57e0e62`는 공용2 현물hash 불변·후속쓰기예약0을 재확인하고, World 자기 기준에서 먼저 구현한 뒤 완성PR2/Guild 변화를 보존하며 직렬 통합하는 데 동의했다. PR2 전체 인계는 아직이며 현재 World에 없는 Guild 의존성15파일·공용2만 조기복사하지 않는다. 구현 준비는 `approval-01/unity-session-implementation-01/`이다. Core `msg_30784f9d1681` 기준 API v2 불변·DB Apply exit1·실DB/최종강/통합 인계 전이다. 서버 선행 요구/맥락 초안은 `approval-01/server-implementation-draft-01/server-adapter-requirements-v0.2.md`이며 미검증 Core 제품복사0을 유지한다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 그대로다.
 
 실제2단계 선행 작성 Task `task_d60dec8ebf76`/Dispatch `ctx_fe2fe54b151c`는 종료·정산했다. 기존 메뉴client 시험 한 파일에 추가한38사례와 기존253/권위22 회귀의 동일 필터 GREEN을 구현 뒤 새 실행창에서 확인해야 한다. Core48 제품 파일·화면 변경은 포함하지 않는다. PR 전 전체 독립 강은 신규 외부 세션 한 번으로 별도 수행한다.
 
