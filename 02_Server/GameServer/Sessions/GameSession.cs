@@ -32,6 +32,7 @@ namespace Dawnholder.Server.GameServer.Sessions;
 public class GameSession : PacketSession
 {
     readonly GameWorld? _world;
+    readonly CharacterMenuSession _characterMenu = new();
     readonly CharacterAdmissionServices? _persistence;
     CharacterAdmissionLifetime? _admissionLifetime;
     int _selectionSubmitted;
@@ -97,6 +98,8 @@ public class GameSession : PacketSession
     internal int EntityId => _entityId;
     internal bool IsLoggedIn => Volatile.Read(ref _loginState) == 2;
     internal AccountIdentity? Account => IsLoggedIn ? _account : null;
+    internal bool CanUseCharacterMenu => IsLoggedIn && !HasSelectedClass &&
+        AdmissionState == CharacterAdmissionState.Selecting && Volatile.Read(ref _selectionSubmitted) == 0;
 
     // GameMap.BroadcastToAll에서 closing 중인 세션 skip 판별용 internal getter.
     // broadcast 발신은 tick thread에서만 호출되므로 Volatile.Read로 memory barrier 보장.
@@ -205,6 +208,18 @@ public class GameSession : PacketSession
         => !IsClosing && _handshakeCompleted && Interlocked.CompareExchange(ref _loginState, 1, 0) == 0;
 
     internal void SubmitLogin(string normalizedName) => _world?.Accounts.EnqueueLogin(this, normalizedName);
+
+    internal void SubmitCharacterMenuRequest(uint requestId, PacketID requestPacketId)
+    {
+        if (IsClosing || _world is null) return;
+        bool wasSelecting = CanUseCharacterMenu;
+        PersistenceDeadline deadline = PersistenceDeadline.FromBudget(TimeProvider.System, TimeSpan.FromSeconds(5));
+        // Socket callbacks only submit immutable values. This existing World queue and
+        // CapturePersistenceClose serialize every menu lifetime operation on the tick.
+        // The current adapter is explicitly Legacy-only, independent of old admission persistence.
+        _world.EnqueueAdmissionResult(() =>
+            _characterMenu.HandleLegacyRequest(this, requestId, requestPacketId, deadline, wasSelecting));
+    }
 
     internal void RejectLogin(LoginResult result)
     {
@@ -530,6 +545,9 @@ public class GameSession : PacketSession
 
     internal void CapturePersistenceClose()
     {
+        // World close draining runs before queued menu work. The socket's IsClosing flag
+        // already suppresses late work/sends until this owner permanently closes the lifetime.
+        _characterMenu.Close();
         Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Closed);
         if (_admissionLifetime is null || _persistence is null) return;
         SafeCheckpoint? projection = null;

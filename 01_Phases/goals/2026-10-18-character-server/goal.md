@@ -6,11 +6,13 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: Unity 실제session313 GREEN·Core 독립 서버 요청 선행시험316=229P/87요구RED·제품 구현 준비.** Main 위임 결정으로 Core 인계를 기다리지 않고 실제 메뉴 요청 경계와 World 요청 수명 시험을 작성·실행했다. 전송217GREEN·Shared22 배포는 유지하며 Core 실제 저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
+**상태: Unity 실제session313 GREEN·서버 요청 제품 구현316=310P/6F·시험 관찰 보완 준비.** 실제 메뉴 요청 경계·World 수명을 구현했고 메인이 남은6건을 정상Snapshot6 동반에 따른 관찰입력누락으로 분류했다. 전송217GREEN·Shared22 배포는 유지하며 Core 실제 저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
 
 ## 재개 지점
 
-**다음 첫 일:** [서버 요청 경계·수명 v1](server-request-contract-v1.md)의 제품 구현을 신규 외부 Astra xhigh에게 발행한다(입력 경계·시간/수명·다파일 신호1/2/3/4). 실제 GameSession/HandlerRegistry의 frame·계정/상태·Legacy 안내와 World 단일 pending/high-water/닫힘·원 deadline 보존을 구현하되 선행시험3파일·기존회귀·전송/프로토콜·Core/Unity는 동결한다. 정적 READY 뒤 새 Main WSL 창에서 같은 필터를1회 실행한다. 이어 Catalog 공개 문서 기반의 더 좁은 응답 대역 묶음을 준비하며 Core 인계 부재만으로 다시 대기하지 않는다. 미검증 Core 복사·대체 Core namespace 타입·DB/host owner 재구현은0이다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 유지한다.
+**다음 첫 일:** 메인 `msg_1c4aa90c0a9e` 조건대로 신규 Sol xhigh 선행 작성자에게 `CharacterMenuRequestBoundaryTests.cs` 한 파일의 Snapshot 관찰 보완을 발행한다. 정확ID6만 분리하고 Single/예상외송신 거부·응답전체byte/class/player/Guild 단정은 유지하며 정상tick의 인과대조와6행 실패표를 추가한다. 제품11/다른시험·전송/프로토콜·Core/Unity는 동결한다. 정적 READY 뒤 새 Main WSL 창의 같은316명 필터1회에서 뒤 미도달 단정까지 검사한다. 이어 Catalog 공개 문서 기반의 더 좁은 응답 대역 묶음을 준비하며 Core 인계 부재만으로 다시 대기하지 않는다. 미검증 Core 복사·대체 Core namespace 타입·DB/host owner 재구현은0이다. 전체 C1~C9·PR 경계와 [전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)은 유지한다.
+
+- **서버 요청 제품 구현 정산:** Astra xhigh Task `task_870cb2cac067`/Dispatch `ctx_20655312d485`, 기존2/신규9제품+345/-0·시험변경0이다. 원문 `approval-01/server-request-implementation-01/report.md` SHA256 `20AFF2E14947A78AD3EC90103B4814AF620D5A3A9B9D40FA16453D5B5DA62467`과 실제diff/준수·원시를 읽고148산출물hash차이0·전후316명/결과·전체실패message/stack분류차이0을 대조했다. 현재310P/6F/0skip, 기존229P유지/81RED해소/6RED잔여이며 뒤Active응답/class/player/Guild 단정은 미도달이다. outcome failed를 보존했고 독립 제품 확정실패로 세지 않는다. 원caller PATHEXT누락exit2와 복구outer UTC재해석의 미시작을 구분해 원시를 보존했다. 새Main `msg_037148ecd578`의 실제복구19:00:40~19:03:01Z A0/B0/C1/D0·backup737/restore-build-test각최초1회·자동retry/kill0, D runtime0/동일lock·737원본/812보존을 먼저 확인해 `msg_2690b6fabd05`로 창을 반환했다. failed/settled·release/동일pane종료·리드생존/reclaimable0, 신호17/max475초·초과3구간/질문대기3건과 리드ACK지연교정은 같은 근거 `lead-settlement.md`에 남겼다.
 
 - **서버 요청 선행시험 정산:** 신규 Sol xhigh Task `task_d416fa466675`/Dispatch `ctx_a9c41920f0c9`는 시험3파일+825/-0·실제316=229P/87F/0skip을 완료했다. 원문 `approval-01/server-request-pretest-01/report.md` SHA256 `B98BA50386C4575B8616DD3A657834715D4C0EEBD4FBD31CA38589EBAF737487`를 직접 읽고 TRX316개 이름/결과·87실패 message/stack과 분류 차이0을 대조했다. 기존224회귀 전부P·신규5P, 등록부재63/World 수명 타입부재24의 뒤 semantic은 미도달이다. Main `msg_330fc47b3163` 안에서 caller17:52:31~17:54:54Z A0/B0/C1/D0·rawexit1, restore/build/test각1회/재시도·kill0이다. 원본728·준비767 drift0와 runtime0/동일lock 반환을 먼저 확인해 `msg_185772dc6f8d`로 창을 반환했다. completed/release·동일pane종료·리드생존/reclaimable0, 신호9/max407초·초과3구간/질문대기1건은 같은 근거 `lead-settlement.md`에 남겼다. 자체 선행 RED이며 제품GREEN·Stored/실DB·전체독립강 통과가 아니다.
 
@@ -69,6 +71,12 @@ Core `msg_80f596e64e30`(17:01:21Z)은 검증된 제한 checkpoint 없음·API v2
 메인 `msg_4dc4f7f5bdd5`(2026-10-18T17:04:26Z)는 위임 원문 `msg_02a8258a3fc2`에 따라 사용자 A 승인안의 「Core가 실제 DB 검증을 하는 동안 패킷 형식과 대역 시험을 먼저 준비」를 적용해 Core 인계 대기를 해제했다. Core 공개 API v2 문서만으로 고정할 수 있는 World 시험을 지금 발행하며, 실제 Core 타입은 인계 뒤 좁은 이음에서 연결한다. 미검증 Core 코드 복사0·번호 예약/재사용 금지·서버/Unity 양쪽 검증·대역과 실제 저장/재접속의 구분은 유지한다. 원문은 근거 `approval-01/mail-notification-overnight-03.json`이다.
 
 전송49..54/v22는 기존 예약 절차와 Core/Content 예약0 대조를 마쳤고 제품217GREEN·Unity313GREEN까지 진행했다. 새 번호/프로토콜 변경 없이 첫 묶음은 [서버 요청 경계·수명 v1](server-request-contract-v1.md)로 좁힌다. 실제 GameSession 요청 경계/Legacy 안내와 Core 없이 존재할 수 있는 World 요청 수명을 먼저 작성·RED·구현하며 Stored bridge/선택·Unknown/실제 입장·길드 전체 요구는 후속 묶음에 유지한다. Main 본문의 Opus 표기는 현재 사용자 임시 모델 결정과 이전 정정 `msg_239b72df7331`을 따라 **신규 Sol xhigh**로 적용하며 메인에 알린다. 새 사용자 승인 대기나 추가 독립 검증을 이 단계에 만들지 않는다.
+
+### 사용자 위임에 따른 메인 결정 — 정상 Snapshot 동반 시험 보완
+
+메인 `msg_1c4aa90c0a9e`(2026-10-18T19:07:49Z)는 사용자 위임 `msg_02a8258a3fc2`에 따라6건을 **(b) fixture/관찰 입력 누락**으로 분류했다. 실제 active메뉴 응답과 원래맵tick의Snapshot6이 함께 잡혀 전체Packets Single에서 실패했으며 정상snapshot을 제품에서 억제하지 않는다. 현재writer정산 뒤 신규Sol xhigh가 시험1파일만 보완한다.
+
+조건은 정확ID6만 분리·Single와 예상외패킷 거부 유지, 요청없는tick대조 또는 실제Snapshot/원상태대조의 **인과 단정 하나**, 응답전체byte/class/player/Guild 단정 보존·다음실행의 실제도달,6건 원실패 이름/message·분류b·변경줄 표의 다음계약/전체독립입력 포함이다. 새Main창·같은명령1회에서 검사하고 새제품결함은 번호로 반환한다. 원문은 `approval-01/server-request-fixture-fix-01/main-decision-original.json`에 보존했다. 이 결정은 선행시험 보완이며 제품전체/독립강 통과가 아니다.
 
 ### 동결까지 기능 산출물 우선
 
