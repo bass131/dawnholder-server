@@ -1,10 +1,19 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **PR251 병합·PR2 fixture GUI19/19PASS/PNG37 보존, C9 전 실서버 시도는 자원 중단으로 두 계정 미완료다.** 신규 Opus는 정확 head의 WSL 서버와 실제 a 로그인·Town 진입까지 실행했으나 b 실측 관문이 미달해 b0·a partner abort Failed1/skip0·PNG0으로 정상 반환했다. 작업자 failed 정산·정확 pane 종료와 전체창21:12:20Z 반환/HKCU137값 차이0을 확인했다. F03의 메인 조건부 C8 밖 판단은 유지한다. 두 클라이언트 후속 방식·실제 두 계정/보스/구매/강화·Art C9·CI·신규 전체PR2 독립 판정은 남았고 DB 저장/재접속 복원은 이번 범위 밖이다. C1~C10·두 제품PR·개별 병합승인 경계와 과거 원시는 보존한다.
+상태: **노트북 종료를 위한 중간 보존이다. PR251 병합·fixture GUI19/19PASS 근거는 보존했고, 최신 Player 측정은 하네스 결함으로 미획득이다.** 배치 Unity root1만 승인 방식으로 정리하고 Player0·재시도0, 파일 Prefs·Registry·전용 namespace·원본 입력 차이0으로22:31:05Z 전체창을 반환했다. 현재 Opus의 worker_done failed·소유 원문 대조·정확 pane 종료 정산을 마쳤고 열린 Task·Dispatch·작업자 pane은0이다. 사용자 종료 지시로 새 작업자·검증자·실행은 열지 않는다. C9·실제 두 계정/보스/구매/강화·CI·신규 전체 PR2 독립 판정·개별 병합승인은 남았으며 goal 완료가 아니다.
 
 ## 재개 지점
 
-**다음 첫 일:** 사용자 위임 메인 결정 `msg_4f4e871c0115`에 따라 Editor a+Windows Player b를1순위로 정적 설계하고 Windows dotnet 서버 대안을 비교한다. 오늘은 Player 빌드와 단독 실행의 실제 commit 감소를 새 짧은 Main 배정창에서 재는 데까지만 진행한다. private bytes 추정으로 관문을 대신하지 않고, Town/전투와메뉴의측정한계를구분한다. 제품시험용진입점이필요하면범위를먼저Main에올린다. 결합실행은오늘진행하지않으며 C9주인/범위는아침사용자결정이다. pagefile/전역설정·관리자변경0, 이전 Task·snapshot/Library/before/창재사용0, 정확새입력/정상반환·새외부세션/READY·새창을고정한다. 기존failed정산/4f43f38d local checkpoint/push0과 C1~C10·두PR·최종신규독립/개별병합승인 경계는유지한다.
+**다음 첫 일:** 재개 기기의 최신 메인 배치와 이 근거 폴더 도착을 확인하고, 신규 외부 작업자에게 측정 하네스의 배열 결함 두 건·같은 계열 사용처 점검과 실행 없는 의미 검사를 맡겨 새 READY를 만든다.
+
+- **마지막 완료 단계:** Player 준비2254파일 일치 → 배치 빌드 root1 중 하네스 ownTree 배열 변환 오류/exit1 → 정확 PID17128·birth22:18:39.9674470Z만 CloseMainWindow/30초 grace/Kill(false) → return-only v2 exit0 → 리드 전체창22:31:05.0430321Z 반환이다. Player 실행0·PNG0·계획 commit 실측0이며 「하네스 결함으로 측정 미획득」이다. Menu 단독 수치는 Town·전투 peak가 아님.
+- **Task 처리:** `task_b468fb07bafb` / `ctx_ece5a7d66596`, Opus5.5 xhigh/backend unknown은 쓰기 종료22:34:14.546Z·formal `msg_15314dd2bb85` outcome failed다. 소유124파일·snapshot47850파일 전수 길이/hash/mtime 대조를 마쳤고 정확inc의 pane만닫아ptyKilled=true/reclaimable0, 열린Task·Dispatch·작업자pane0이다. 과거 Task·handle·snapshot/Library/before/실행창을 재개 권한이나 새 입력으로 재사용하지 않는다.
+- **고정 입력·근거:** 실행 HEAD `a14151dcb3a45c20994a690cf4ab825173e64038`, 당시 goal SHA256 `513C383E941476E810FB121CE2893C4DDE4390E1CEA15FE1A6151EBE5A1F4086`은 N/lead-executed-goal-513C.md에 보존한다. N은 `.backups/verification/2026-10-15-guild-client-ui/pr2-server-integration-20261018/qa-player-memory`다. source-ready `59BB7DAB9A87AA9A97737E75B271D17DFEB45D8BA9FF8B946E1A0DC7F2ED6632`, 실행 plan v1 `7DFB9AE51225CA6CFCEC69AEAC3227A40207FA3329979E152E4D7A05B04650FC`와 scripts v1은 N/runs/static/return-recovery-v1에 보존한다. return-only plan v2 `08E845FEFA2ABBAC3D745E3EFA98C86D9226C4F3461D46B0E43CEBD941689EDA`/return script `66E0C831E4DD1A9F4B0C23B31280903975D19CB8536770D0BF20D8B62BC29576`는 별도 실행이다.
+- **최종 원문:** N/report.md SHA256 `FFA003CCF9A46305A1FF0515A8EA49752329DA023C56345328D04D7183CDB1D6`, owned-artifacts.json `32B61878AF3971CEAD35407C6C59DFE91CF14F2F5A773968AB88247B0578FF28`, writing-closed.json SHA256 `5D3FCFF8F6C0B1B88419EBF221FF21EA4416B1A5418D6C190FFC5649099B462E`와 현물 대조·생존 원시는 N/lead-settlement-audit.json·lead-settlement-resolution-audit.json·lead-liveness-result.json·lead-settlement.md에 둔다. worker_done의 「남은 리드 반환」 표현과 별개로 실제 전체창 반환은 N/lead-window-return.json SHA256 `990E05F49C9A852DCC637ECDD6ABBF65CC14E0DC18B5E5D3E8A9FBC6588105A8`에 확정돼 있다.
+- **복귀·보존:** 파일 Prefs10 차이/추가/복귀0·GVS 원부재, source2249/server714/fixed26·원 status0이다. EditorPrefs 기존 Binary3만 전체current/즉시guard 뒤 복귀해137전값차이0(최종 SHA174D43B9CD17D0BC281C29B79C0F1B142CA4BF8D2CF5A147C7C97145F93EE527). 고유HKCU 생성0·LocalLow의 이번 fresh 빈 폴더1만 메타 보존/guard/비재귀 삭제해 양쪽 부재다. 기존03_Client 접근0. gcm1/p의 Library/Temp락/Logs/UserSettings·근거124파일·snapshot manifest47850파일은 삭제하지 않고 보존하며 gcm1/o는 원래 미생성이다.
+- **재개 전 판단:** 실제 새 근거 출력2개가230초과(231/232)이고 Unity 생성 Library는 최장277·TEMP는322자여서 기존 원본10개만238까지 허용한 예외로 새 실행을 통과시킬 수 없다. 다음 READY는 짧은 snapshot/TEMP/근거 경로와 생성 경로 제한 적용 범위를 메인과 확정해야 하며 조용한 완화0이다. 현재 common의 ownTree 표본 결함은 원문 그대로이고 return의 빈 배열 결합 한 곳만 고쳤다. 새로운 제품 결함·메모리 결론이나 3회 확정실패로 집계하지 않는다.
+- **결정 대기:** Art C9 주인·범위는 사용자 결정 대기(현황판 `c9-growth-effect-owner`). 결합 실행/C9 통합0, Windows 서버는 「SDK 설치 필요」 대안만이며 SDK/rollForward/pagefile/전역·관리자 변경0이다. 다음 측정은 Main이 World 창 반환·재개 기기·새 READY를 확인해 새 단일 독점창을 배정한 뒤다. PR2 생성/병합·push는 진행하지 않았고, push는 사용자의 재개 머신 결정 뒤 메인의 별도 지시를 기다린다.
+- **이번 밤 결정 기록:** 사용자 위임 메인 `msg_4f4e871c0115`, `msg_24f545aea18c`, `msg_5e3ef9f587d0`, `msg_b7fde795ac46`을 아래에 기록했다. 종료 지시 `msg_0f9934f301f9`가 새 작업자 준비를 오늘 중지하며 후속 수정은 재개 후 새 세션이다. 고정 원문·실제 수행·미실행을 구분하고 C1~C10·DB 제외·두 제품PR·개별 병합승인 경계는 유지한다.
 
 ### 10-19 Player 단독 commit 실측 준비 결정
 
@@ -13,6 +22,17 @@
 메인의유휴관측(commit한도33.92GiB·여유13.14GiB/물리15.77GiB,다른세션commit약20.8GiB·WSL약3.6GiB)은Main보고만이며Content실측으로격상하지않는다. 오늘밤은정적준비와Player실측창까지만이고 결합실행/C9통합은0이다. 기존failed정산과local4f43f38d/push0는인정됐으며아침보고7번에묶는다. 전체원문은 D/qa-player-memory/`main-decision.md`·json에보존한다. 신규작업은현재goal의부분검증준비이며C1~C10/제품PR경계·DB제외·개별병합승인변경0이다.
 
 **사용자 위임에 따른 메인 결정 `msg_24f545aea18c`(21:34:40Z)**: 새snapshot Assets/PlayerMemoryProbe에만 별도 probe(N/player-probe의cs/asmdef/meta)와 고유PlayerPrefs 격리를 허용한다. 원checkout/branch/commit에probe0이며원diff0을확인한다. sameSID HKCU Software/DefaultCompany/DawnholderContentMemoryProbe와LocalLow/DefaultCompany/DawnholderContentMemoryProbe의fresh부재를창전에확인못하면실행0이다. 기존실사용03_Client·전역/라이선스접근0, 빌드Editor의EditorPrefs만기존Binary규칙이다. batchEditor빌드의commit감소/시간과PlayerMenu단독commit감소를별도로재며각시점WSLVM실행여부/vmmemWSL private도남긴다. Player는120초Application.Quit(0), 미종료시READY의자기PID정리만/재시도0이다. 반환에「Menu 단독 수치는 Town·전투 peak가 아님」을그대로쓰며결합6/4통과를주장하지않는다. Windows서버는「SDK 설치 필요」대안으로만남기고오늘SDK설치/rollForward변경0이다. 신규외부Opus READY뒤Main이짧은Unity창을배정한다. 전체원문은 N/main-scope-decision.md에보존한다.
+
+### 10-19 Player 측정 창·반환 전용 복구와 노트북 종료
+
+**사용자 위임에 따른 메인 결정 `msg_5e3ef9f587d0`(22:10:13Z)**: 기존 원본 복사10개만 최장238자를 허용하고 새 출력230이하를 유지한다. Unity·Player·Prefs·Windows dotnet 독점22:15~23:15Z, prepare/build/player 시작마감22:27/22:32/23:02, 다른 WSL창 미배정이다. 배치빌드 시작14/12/C40GiB·실행중4/2, Player 시작8/6/C40·실행중6/4의10초3회 관문, root각1/재시도0·상한1800/180초·반환600초를 고정했다. batch의4/2는 단독 관문이며 결합6/4 완화가 아니다. 원문 N/main-window-decision-v1.md/json이다.
+
+**첫 발생과 실제 결과:** prepare는 계획2254파일과 일치했지만 build의 Get-ResourceSample이 `, @()`로 감싼 ownTree 배열을 파이프에 넘겨 다음 표본의 int변환에서 실패했다. 실행중 표본1개 뒤 guard/cap 감시가 사라져22:20:11~45Z 승인 순서대로 자기root1만 중단했고 자식/외부kill·재시도0이다. 반환 식의 빈 배열을1로 세는 둘째 결함은 return.ps1의 결과 변수 대입/결합 한 곳만 고쳐 v1원문·diff·v2hash를 보존하고 반환을 완료했다. 단일 commit 두 판독을 계획 측정으로 쓰지 않으며 제품/메모리 판정0이다. 관련 소유/실제 diff/실행 원시는 N/lead-harness-fault-audit.json·lead-return-ready-audit-v2.json·runs에 있다. 경로 초과와 생존 helper 원시는 정산문에 따로 남기며 새 반복 규칙·운영 도구를 만들지 않는다.
+
+**사용자 위임에 따른 메인 결정 `msg_b7fde795ac46`(22:24:04Z)**: 현재창은 반환에 필요한 배열 계산 수정과 return-only v2만 허용하고 새root·snapshot·재측정0, deadline23:15를 유지한다. 전체창 반환 뒤 World WSL 시험창을 먼저 배정하고 Content는 새 작업자로 배열 결함2건·같은 계열 검색·정적/단위 확인·새 READY를 준비한다. 새 측정은 World 반환 뒤 새창에서만 한다. 원문 N/main-returnonly-decision-v2.md/json이다.
+
+**사용자 종료 지시를 전달한 메인 `msg_0f9934f301f9`(22:32:58Z)**: 노트북 종료 때문에 오늘 새창·새작업자·새검증자0, 현재 Opus의 failed 원문/해시 정산·pane 종료까지만 한다. 재개 지점을 갱신하고 로컬commit/push0으로 보존하며 .backups는 삭제하지 않는다. 따라서 배열수정 새작업자는 오늘 열지 않고 다음 첫 할 일로 넘긴다. C9는 c9-growth-effect-owner 사용자 결정 대기다. 원문 N/main-shutdown-decision.md/json이다.
+
 ### 10-19 C9 전 실서버 시도의 자원 중단·반환 정산
 
 신규 Opus `task_9bfa1b4a81bb`/`ctx_bff14657c7be`는 새4시험 파일만 쓰고 정확1dfcff9e head의 서버714파일 동일·새WSL clone·Debug0Error·메모리 모드(pid1363/startticks6976)와 첫GUI Editor a를 실행했다. a는20:59:26.0983590Z 시작/588.2777545초/exit2/timeoutfalse/root1/retry0이며 실제로그인 Knight HP150/150·Town 준비점21:08:34.7103164Z에 도달했다. 초기 guild Membership rev1·금고5·레벨1·회원1/온라인1은 한계정 관측이며 두계정 요구값과 비교하지 않는다. C# 오류0행·Explicit 정확case선택실행1/Failed1/skip0·PNG0/관측JSON2, F8/34발신0이다. a 실패는 기존partnerabort에 따른 환경중단이며 제품PASS/제품확정실패0이다. 두계정·보스/39·40보상·금고/거점경합·강화/피해차이·C9는 미실행이다.
