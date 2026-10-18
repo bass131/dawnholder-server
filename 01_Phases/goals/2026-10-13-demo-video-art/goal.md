@@ -2,11 +2,14 @@
 
 상태: **신규 Opus의 보상 창 강 독립 검증은 통과했다(제품 결함 0, EditMode 87/87·PlayMode 12/12, 두 실행 exit 0). 리드는 판정 전문·실제 diff·XML·관문·종료 원시를 대조하고 검증자를 정산·종료했다. 이 판정은 표시 조립·import·배치·입력 상태·씬 수명의 기술 판정이며 실화면 PNG·미관 통과는 아니다. 기존 인벤토리·NPC·고친 파티 창의 현재 1920 사용자 통과, 파티 T-2 강 독립 PASS, C9 main 통합·05 강 PASS·06 조건부 통과 기록은 유지한다. 보상 창 실제 전후·최소 화면, Party HUD VIS-05와 UI 창 PR은 남아 있다.**
 
-**다음 첫 일:** ART-GV-01의 guard/runner 좁은 수정 납품을 인수·정산·종료했다. 다른 신규 Astra high 독립 재검증1회를 진행한다. 다시 차단되면 메인 판정 전 추가 검증0이다. 수정자의34lifecycle/준비40·Node31종료는 자체점검이며 실제C#/Unity/prefs·current/before는 미실행이다. 새 검증자는 독립 시험/실사 뒤 고정계획·READY를 보내고 메인의 최대40분 새 직렬창을 기다린다. 총4중사용2/current1→성공·반환 뒤 별도before1·fresh파일/메모리/선택반환·마지막Unity뒤설정한줄복원은 유지한다. 최신 재검증 준비는 gameview-observation-recheck-launch/, 수정 원문은 gameview-observation-fix/implementation-report.md다. 기존미관/VIS-05/UI PR·실서버DB/CI미완은 유지한다.
+**다음 첫 일:** 메인 `msg_cc4772aff47e`가 전달한 사용자 산출물 우선 방향을 적용해, 감시 도구 수정·추가 재검증 없이 보상 창 current3의 1280/1920 실제 캡처를 준비한다. 한 회 강 재검증은 ART-GV-01 누락 거부 해소·ART-GV-02 정상 파일 자가 이벤트 차단의 NOT PASS로 정산·종료했다. 두 도구 항목은 알려진 한계로 남기고 실행 중 파일 감시는 뺀다. 실행 전 백업·전후 존재/hash 비교·차이 시 백업 복귀와 보고를 사용한다. 신규 외부 실행 작업자의 Task·Dispatch/정확 argv/예상 시간/백업 위치로 Main 실행 창 READY를 보내고, 창 실행 원시와 diff의 독립 검증은 PR 전에 한 번 받는다. 총4/사용2/current1→성공·반환 뒤 별도before1, 마지막Unity뒤설정한줄복원·두자동M의커밋제외는 유지한다. 최신 준비는 `reward-capture-simple-launch/`다. 미관/VIS-05/UI PR·실서버DB/CI미완은 유지한다.
 
 **병렬 콘셉트:** 사용자 A 화풍의 8장 제작과 신규 Astra 독립 기술 PASS·정산·정확 종료를 마쳤다. 메인은 msg_d8863c625f99로 판정 앞부분과 8장 SHA의 직접 대조를 확인했다. 실제1672×941·호출8/10·남은2회 피드백 전 사용0이며, 사용자 미관 최종승인·제품 구현·실제 게임 캡처와 구분한다. 최신 원문/원시는 아래 「화면 콘셉트 8장 — 신규 Astra 독립 기술검토 PASS」와 screen-concepts-review-retry-launch/에 있다.
 
 ## 재개 지점
+
+- **한 회 재검증 정산·산출물 우선으로 전환:** `msg_6cb92ea42f32` failed, `gameview-observation-recheck/verdict.md` SHA `d0f81df252dc8f140e44a847acc40a39e2c9a34fea49b64ab6f5fc5d78e74f0e`를 전문 대조했다. 새 ART-GV-02는 기존 guard 첫 읽기의 atime/change 자가 이벤트로 정상 파일을 거부하는 중간 차단이며, 실제 Unity/사용자 파일 손상으로 확대하지 않는다. 원 ART-GV-01 누락 거부는 별도 최근시각 대조에서 해소 확인했다. 오래된시각 동일입력29행 중10실패를 보존하고 별도최근시각29/29·준비51/51과 합산하지 않았다. 입력377/index1311/수정1307/원793/이전검증551 hash차이0, 자기Node75기록/72PID/잔여0, 실제Unity0이다. release→동일incarnationidle→정확paneclose/reclaimable0 뒤 검증근거1315를 동결했다. 원시와 하네스·파생요약·초기추론 정정은 그대로 보존한다. `gameview-observation-recheck-launch/final-verdict-root-read-audit-v1.json`·`verification-evidence-freeze-after-close-v1.json`이 근거다. 완료까지 실제9신호/최대259초/300초초과0이다.
+- **알려진 한계와 적용 단계:** 메인 `msg_cc4772aff47e`의 새 운영 판단은 위 판정을 고쳐 PASS로 만들지 않고 다음 실행 계약부터 적용한다. ART-GV-01/02 감시·완료 도구의 수정/추가재검증은 하지 않는다. 실행 중 파일 감시와 복잡한 receipt 관문을 후행 실행에서 제외하고, 정확 대상의 실행 전 백업·전후 존재/hash 대조·변화 시 원상복귀/보고만 수행한다. GameViewSizes 부재는 창 직전에 새로 확인한다. 기존 메모리 전용 크기/선택 반환·실제 Town/Overlay/Screen/PNG 단언은 보존하고, PR 전 신규 독립 검증은 diff와 실제 창 원시를 함께 본다. 이전 계약/판정/원시는 당시 기준의 역사 기록이다.
 
 - **ART-GV-01 좁은 수정 인수 — 한 회 재검증 전:** 수정자 `msg_55dd4b1cf972` succeeded와 보고전문 SHA `d28ec4618aedbd80a5b9a97facf35af99f3b438e83e824663dca3e7e69909458`·실제guard/runner +89/-28을 대조했다. 추적제품0/C#·meta/두자동M불변이며 기동미시도/실제기동·필수prelaunch/running/afterexit완료를 나눴다. 원missing2의 같은기대는 거부로 바뀌었고 실제자기Node fast-exit는running0/exit40을 기록했다. 입력355/index1303/읽기전용336 hash차이0, release·동일incarnationidle·정확paneclose/reclaimable0 후 W1307동결을 마쳤다. 근거 `gameview-observation-fix-launch/correction-closure-root-read-audit-v1.json`·`worker-evidence-freeze-after-close-v1.json`, 후행원문 `gameview-observation-fix/execution-handoff-v2.md`다. 독립강PASS/실제Unity승인으로 쓰지 않는다.
 - 첫lifecycle34행은7개fixture의자발exit/중단조회경합으로종료수명근거가불완전했다. 원AssertionError/측정미확정·v1을보존해메인에공개하고하네스만보강·새raw재실행했다. 리드는원7개old/new hash·새workErrornull/실제exit/정확stop1을대조했다. 최종34행/Node31종료잔여0·준비40은자체점검이다. 마지막git감사의LF/CRLF차이도공식ask693e/답f25c와원실패/Node동일비교를보존했고HEAD/두M/355hash관문완화0이다. 독립확정실패추가로집계하지않는다.
@@ -210,6 +213,8 @@
 
 ## 적용 중인 사용자 결정
 
+- **동결까지 산출물 먼저·안정화는 뒤**(메인 `msg_cc4772aff47e`, 2026-10-18T07:00:21Z; 메인 창 직접 입력 16:00 KST의 전달). 사용자 원문: 「목표까지 일단 빠르게 빠르게 작업물 쳐내고 이후에 안정성 찾아가는거로 진행하자, 일단 좀 윤곽이 보여야 어떤걸 고쳐야 할지 보일 것 같아」. 이 pane 직접 사용자 입력으로 격상하지 않는다. 메인 적용 기준은 10-28 동결까지 시연 기능 우선, 감시·검사 도구 새 작성/수정과 경계 방어는 안정화 후보 한 줄, 실제 사용자 파일 보호는 백업 하나와 전후 존재/hash 비교·변화 시 복귀/보고다. 절차 위반은 기록하고 계속하며 승인 밖 실제 쓰기·실행 때만 세션 교체한다. 독립 검증은 유지하되 실행 창마다 앞서 받지 않고 PR 전 한 번 diff+실행 원시를 함께 본다. 범위 안은 리드가 진행하고 메인에는 사용자 결정/실행 창/완료조건 변경만 올린다. READY는 Task·Dispatch/정확 argv/예상 시간/백업 위치로 줄이고 자원·같은파일 충돌이 없으면 파트 실행 창 병행을 허용한다. 병합 사용자 승인·비밀 정보 읽기 금지·관리자/UAC/SQL서비스/방화벽 별도승인·전역설정 불변·같은파일 동시쓰기 금지·미실행 통과 금지는 유지한다. Art는 ART-GV-01/02 도구수정 없이 현재 판정 정산 후 단순 보호로 1280 재확인 창을 요청한다. 총4/사용2·SENTIS줄/MinimapRT의 PR전 경계는 그대로다. 원문 `reward-capture-simple-launch/main-output-priority-original-v1.json`.
+
 - **설정 한 줄 PR 전 복원 확정·신규 계약 운영 문구**(메인 `msg_b50a5c19823a`, 2026-10-18T04:45:10Z). 메인 pane 제출 사용자 원문: 「대시보드 결정 응답: 1) Art 설정 파일 - Unity가 자동으로 지운 분석 기호 한 줄을 PR 전에 원래대로 되돌릴지 → A PR 전에 그 줄만 되돌리기 · 4) 운영 도구 - Windows PowerShell 5.1 자식 실행이 모듈 경로 함정에 걸리는 일을 막는 공용 helper를 언제 만들지 → A 동결 뒤 Rules 후보로」. 추가 원문 「대시보드 결정 응답: 2) Rules 보류 브랜치 - 노트북에만 있는 커밋을 지금 원격 브랜치에 올려 둘지 → A 지금 원격 브랜치에 올리기」와 「대시보드 결정 응답: 1) 운영 규칙 - 작업자가 우편함 확인을 다른 명령과 한 번에 묶는 일을 막는 교정을 언제 할지 → A 동결 뒤 Rules 첫 작업으로」도 같은 원문에 보존한다. Art 효과는 앞서 기록한 2e57a2e7의 설정 처리 확정이다. 마지막 Unity 실행(before) 뒤 PR 준비 때 `03_Client/ProjectSettings/ProjectSettings.asset` 597행만 HEAD의 `Standalone: SENTIS_ANALYTICS_ENABLED;APP_UI_EDITOR_ONLY`로 복원하고 `MinimapRT.renderTexture`의 자동 M과 함께 커밋에서 뺀다. Unity 실행 사이에는 복원하지 않는다. 다른 차이가 생기면 덮어쓰지 않고 메인에 보고한다.
 - **위 메시지의 즉시 운영 적용**(메인 지시와 사용자 결정 구분): 지금부터 새 작업자·검증자 계약에 「우편함 check·inbox의 반환은 그 결과만 받는 별도 도구 호출로 읽고 해석한 뒤에 다음 행동을 시작한다. check와 실행 명령을 한 셸 호출이나 한 batch로 묶지 않는다.」와 「PowerShell 7 안에서 Windows PowerShell 5.1(powershell.exe)을 자식으로 띄울 때는 띄우기 직전 그 자식의 환경에서만 PSModulePath를 지운다. 현재 세션·사용자·시스템 환경 변수는 바꾸지 않는다.」를 넣는다. 이미 발행한 계약을 고치려고 진행 작업자를 멈추지 않는다. 현재 GameView 구현 계약은 아직 미발행이므로 두 문장을 포함한 새 최종본을 발행한다. 공용 helper·Rules 원격 push·도구 정본 수정은 Art 범위 밖이다. 원문 `gameview-size-transaction-launch/main-settings-operating-user-decisions-original-v1.json`; 전달을 이 pane 직접 사용자 입력으로 격상하지 않는다.
 
@@ -267,6 +272,11 @@
 - **사용자 밤사이 감독·Core 우선 지시**(메인 `msg_687aa38999f1`, 2026-10-14T14:38:35Z). 사용자 원문(메인 pane Enter 제출 23:4x KST): 「우편함 처리와 리드 감독을 나 자는사이에 계속 처리해줘, 목표는 마일스톤 작업을 향해 작업하는거야 / 특히 Core쪽 진전이 별로 안돼서 그 부분을 우선적으로 지시해줘」. 메인 전달이며 Art pane 직접 입력으로 격상하지 않는다. 같은 메시지의 메인 운영 판단(새 사용자 결정 아님): Core WSL dotnet 빌드·시험은 자체 직전 물리여유6GiB 이상이면 Art→World→Content Unity 순서를 기다리지 않고 병행하며, WSL끼리 겹치면 Core가 먼저이고 리드끼리 한 줄로 알린다. Unity 순서와 Art 현재 범위는 그대로다. 원시 core-priority-and-unity-actual-start.json, 관련 리드/메인 실제시작 통지에 함께 알렸다.
 
 - **현재 goal 종료 뒤 정리하고 중지**(메인 `msg_be31d296f750`, 발신2026-10-14T14:46:39Z). 사용자 원문(메인 pane Enter 제출 **2026-10-14T14:44:08Z/23:44 KST**, 메인 `msg_07473ca8308f`의 시각 정정 적용): 「그리고 영속성 부분은 너가 더 전문가니까 Goal 초안 작성하고 진행까지 계속 진행해줘, Core쪽 진도를 좀 빠르게 뺴보자 / 나머지 세션은 Taste에 민감한 부분이니까 그 파트들은 목표 끝나면 마무리하고 정리하는 식으로하자」. Art pane 직접 입력으로 격상하지 않는다. 현재 Art goal은 시연 우선 기준과 승인 범위 안에서 끝까지 진행한다. 종료점(PR head 보고·병합 대기 포함)에 종료 점검/goal 기록 정리 뒤 멈추고 다음 goal 초안·새 작업자를 열지 않는다. 다음 일은 아침에 사용자가 정한다. 중지 보고는 PR 번호/정확head·동결 뒤 정리 목록·아침 판단 한두 줄이며 Unity 순서/Core WSL 우선은 유지한다. 원시 settings-side-effect-and-stop-after-goal.json·world-release-and-user-time-correction.json.
+
+## 안정화 후보
+
+- **ART-GV-01 - 감시 도구 관측 완료 경계:** 좁은 누락 거부 수정/독립 확인과 이전 실패 원시는 보존하며, 추가 도구 보강·재검증은 동결 뒤 판단한다(메인 `msg_cc4772aff47e`).
+- **ART-GV-02 - 감시 도구 첫 읽기 자가 이벤트:** 오래된 atime 파일의 정상 차단 재현을 알려진 한계로 남기고, 감시기 수정·새 검사 하네스는 동결 뒤 판단한다(같은 메인 결정).
 
 ## 동결 뒤 정리
 
