@@ -1,16 +1,16 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **10-21 같은 노트북·같은 Content 대화로 재개했다.** 기존 Player 측정은 하네스 결함으로 미획득/전체창 반환·실패 정산·pane 종료를 마쳤다. 새 Run 세대2를 연결했고 짧은 경로 설계는 메인 기술 동의를 받았다. checkout 밖 쓰기 공간은 사용자 결정 대기이며 미발행 계약 초안만 작성했다. 새 root·작업자·실행0이다. C9는 사용자 결정으로 Art가 최대한 높은 품질의 새 효과를 제작하고 Content는 연결 지점만 조율한다. C1~C10·실제 두 계정/보스/구매/강화·CI·최종 PR2 독립 판정·개별 병합승인 경계는 유지되며 goal 완료가 아니다.
+상태: **10-21 같은 노트북·같은 Content 대화로 재개했다.** 기존 Player 측정은 하네스 결함으로 미획득/전체창 반환·실패 정산·pane 종료를 마쳤다. 새 Run 세대2를 연결했고 짧은 경로 설계의 기술 동의에 이어 checkout 밖 작업 공간의 사용자 허용을 받았다. 신규 Sol max의 하네스 수정·순수 검사·READY 계약을 준비한다. 실제 Unity/Player 실행은 새 Main 창 전0이다. C9는 사용자 결정으로 Art가 최대한 높은 품질의 새 효과를 제작하고 Content는 연결 지점만 조율한다. C1~C10·실제 두 계정/보스/구매/강화·CI·최종 PR2 독립 판정·개별 병합승인 경계는 유지되며 goal 완료가 아니다.
 
 ## 재개 지점
 
-**다음 첫 일:** 현황판 `content-short-path-root`의 사용자 답 원문을 메인이 전달하면 허용 공간·최신 입력·경로·페이싱을 재고정하고 `resume-20261021/contract-short-path-draft-v1.md`를 발행 버전으로 만든다. 현재 `C:/dh/content/probe`·230자 유지안은 기술 동의만 받은 상태다. 공간 승인이 오기 전 root 생성·계약 발행·작업자 기동·실행0을 유지하며, 승인 뒤 신규 Sol max 하나에 하네스 배열2건·같은계열·짧은경로·순수의미검사와 새 READY까지 한 계약으로 맡긴다.
+**다음 첫 일:** Main `msg_abf585f75e2d`의 사용자 허용에 따라 생성 직전 `C:/dh/content/probe` 부재를 재확인하고 있으면 손대지 않고 반환한다. 없으면 정적 준비용 e·w만 준비하고 최신 입력/경로를 고정한 공식 계약으로 신규 외부 Sol max 하나에 배열2건·같은계열·짧은경로·순수의미검사와 새 READY까지 맡긴다. 쓰기 종료·정산 뒤 신규 Opus가 독립 검증한다. 실제 창은 그 뒤 시작·마감·lastEntry·Unity수로 요청한다.
 
 - Main 재진입 msg_3fffe63cd7b6에 따라 run_5ff5a7b7de60을 consumer_generation2에 연결했다. 현재주소·incarnation·receipt는 `.backups/verification/2026-10-15-guild-client-ui/resume-20261021/`(E21)에 둔다. 옛 handle/Task/Dispatch/실행창은 권한이 아니며 현재 활성 작업자0이다.
 - 같은 노트북이라 근거 이관은 불필요다. fetch 성공: origin/main db0169350dfe54ba6ed247684caae4e498e24c72, 진입 HEAD af2ee62cd3fff1607a0a7e0a080f59612f8ed071의 앞10/뒤0, 받을 commit0이다. 직전 종료 재개 블록 전체는 E21/goal-before-resume.md와 af2ee62c에 보존했다.
 - 마지막 실행은 qa-player-memory의 prepare2254 일치 → build root1 중 배열 오류/guard소실 → 승인 owned 정리 → return-only v2/전체창22:31:05Z 반환 → worker_done failed/정확pane종료다. 원문 report FFA003CC·owned32B61878·closed5D3FCFF8, `lead-settlement.md`·`lead-settlement-resolution-audit.json`·`lead-window-return.json`에 전수대조/복귀/한계가 있다. Player0·PNG0·계획 commit 측정0, 제품/메모리 결론0이며 「Menu 단독 수치는 Town·전투 peak가 아님」을 유지한다.
 - 경로안은 과거47,850 manifest의 tail에 새prefix를 붙인 정적 계산이다. Library277→214/TEMP322→173/근거232→91이며 새root 생성0이다. 기존238 예외는 원본10개 한정이라 늘리지 않고 원본/새output/Unity생성/TEMP 전체230 기준을 제안한다. 미래 생성 최대를 보장하지 않고 새 READY·관문으로 확인한다.
-- 새 구현자는 Sol max, 셸/시간/수명/런타임 경계 하네스 독립 검증은 별도 Opus로 배정한다. 정확 사용자 결정 원문은 아래에 있고 AGENTS/ORCA/스킬 사본과 충돌하면 이 결정이 우선한다. 작업자 계약 발행 전 외부 root 쓰기의 사용자 결정, 실제 Unity/Player/WSL/dotnet 전 Main 단일 창(시작·마감·lastEntry·Unity수) 배정이 필요하다. 최종 READY·반환 보고·판정 근거 색인 원문은 G 아래에도 SHA256과 함께 복사하며 R은 goal 종료까지 보존한다. 우편함 wait/sleep/반복조회는 열지 않는다.
+- 새 구현자는 Sol max, 셸/시간/수명/런타임 경계 하네스 독립 검증은 별도 Opus로 배정한다. 정확 사용자 결정 원문은 아래에 있고 AGENTS/ORCA/스킬 사본과 충돌하면 이 결정이 우선한다. 외부 root 쓰기는 사용자 허용을 받았고 실제 Unity/Player/WSL/dotnet 전 Main 단일 창(시작·마감·lastEntry·Unity수) 배정은 여전히 필요하다. 최종 READY·반환 보고·판정 근거 색인 원문은 G 아래에도 SHA256과 함께 복사하며 R은 goal 종료까지 보존한다. 우편함 wait/sleep/반복조회는 열지 않는다.
 - C9 주인은 더 이상 사용자 결정 대기가 아니다(Main msg_e4fdf3c4111b). Art가 새 효과를 최대한 높은 품질로 제작한다. Content는 서버확정 GrowthConfirmed의 kind·실제 State·세션/화면수명·화면 위치/자리표시를 Art Run6ae742140ce9와 조율하고 효과를 직접 만들지 않는다. 실제 Art API/자산/병합 기준은 아직 없으며 C9 PASS0이다.
 
 ## 적용 중인 사용자 결정
@@ -84,6 +84,12 @@ Main msg_3fffe63cd7b6의 보고: 같은 노트북, 최신 origin/main은 PR252�
 메인 운영 판단 `msg_8c57b9c96d5f`(2026-10-21T08:08:50Z): 메인이 설계/투영 원문을 읽고 Library214·근거91·TEMP173 계산과230상한·238예외 비확대·전역설정0에 기술 동의했다. 다만 `C:/dh/content/probe`는 현재 goal 「건드릴 곳」 밖이며 사용자 위임이 없어 현황판 `content-short-path-root`로 올렸다. 이 메시지는 새 공간의 사용자 승인이 아니다. 답 전까지 root 생성·작업자 기동·실행0, 근거 폴더의 계약 초안 작성만 허용했다. 원문은 E21/`main-short-path-technical-decision.md`·json, 초안·입력 실사는 E21/`contract-short-path-draft-v1.md`·`contract-draft-inputs.json`·`contract-draft-check.json`이다. 미래 worker cwd/신규 output 부모 확인은 아직 미완료라 발행 전에 다시 한다.
 
 승인 후 적용할 메인 조건은 두 가지다. 최종 반환 raw 중 판정에 쓰는 READY·반환 보고·판정 근거 색인 원문은 기존 G 아래에도 SHA256과 함께 복사하고 R/e만으로 보존 완료를 주장하지 않는다. R은 goal 종료까지 삭제·정리하지 않으며 종료 때 메인이 사용자에게 정리 여부를 묻는다. 원문/사본 색인은 E21/`short-path-final/`에 둘 계획이며 아직 해당 반환 원문/복사 실행은 없다. C9 기술 조율은 계속 허용되지만 Art 계획/API/고정 commit과 실제 효과 재생은 미완료다.
+
+### 10-21 짧은 작업 폴더 사용자 허용
+
+출처 Main `msg_abf585f75e2d`(2026-10-21T08:11:05Z), 사용자 원문(메인 pane Enter 제출, 2026-10-21 KST, 현황판 결정 응답): 「대시보드 결정 응답: 1) Content 측정 도구 - 저장소 밖 짧은 작업 폴더 C:dhcontentprobe 허용 → A 허용」. Main은 원문의 역슬래시가 현황판 입력에서 빠졌으며 설계의 `R=C:/dh/content/probe`와 같은 경로라고 설명했다. 원문과 설명은 E21/`main-short-path-user-approval.md`·json에 구분해 보존한다. 위 기술동의 당시의 사용자 결정 대기는 이 원문으로 해소됐다.
+
+허용 공간은 설계의 R 및 p·o·e·t/b·t/p·w뿐이며 다른 위치·junction·subst·긴 경로 정책·전역설정0이다. 생성 직전 R이 이미 있으면 손대지 않고 반환한다. 신규 Sol max 한 명의 하네스 배열2건·동계열·짧은경로·순수 검사·새 READY → 신규 Opus 독립 검증 → Main 새 실행 창 요청 순서다. 원문 G 아래 SHA256 복사와 R goal 종료까지 보존·삭제정리0 조건은 함께 유지한다. 공간 허용을 Unity/Player/WSL/dotnet 실행 창으로 확대하지 않는다.
 
 ### 10-19 Player 단독 commit 실측 준비 결정
 
@@ -354,6 +360,7 @@ World의 승인된 비화면 CharacterMenu 선행 정확 파일은 리드 소유
 | 클라이언트 상태·요청·수신 | `Scripts/State/`, `Scripts/Network/`의 새 길드 상태/요청 제어·`Handlers/Guild/`. `UnityClientSession.cs`·`NetworkService.cs`는 연결 등록/cleanup에 필요한 좁은 연결만, `InventorySnapshotHandler.cs` 등은 최신 개인 revision 합치기에 필요한 최소 통지만 후보로 둔다. |
 | 게임플레이 진입 | `Scripts/Combat/CombatBootstrap.cs`와 새 Town 대장간 상호작용 표시 컴포넌트. 기존 대장장이 인스턴스에 런타임 표시를 붙이는 안으로 prefab 파일 쓰기를 피한다. 길드 창은 런타임 버튼과 G 열기/닫기를 제안한다. |
 | 시험·문서 | `03_Client/Assets/Tests/EditMode/`·`PlayMode/`의 신규 요구/회귀 시험과 필요한 기존 fixture. `00_Document/domains/client.md`·`FEATURE_MAP.md`의 길드 소비자 계약, CURRENT의 Content 한 줄, 본 goal. 새 Unity 파일의 `.meta`를 포함한다. |
+| Player 측정 하네스 한정 공간 | 사용자 허용 `msg_abf585f75e2d`의 `C:/dh/content/probe` 및 p·o·e·t/b·t/p·w만. 정적 준비는 e·w, snapshot/빌드/child TEMP는 새 Main 실행 창에서만 쓴다. 판정 원문은 기존 G 아래에도 SHA256과 함께 복사하고 R은 goal 종료까지 삭제·정리하지 않는다. |
 
 Art가 쓰는 기존 네 창·`NpcDialogPanel`·공유 표시 helper는 읽기만 한다. 꼭 같은 파일이 필요해지면 기존 쓰기 종료와 범위 안 소유 이전을 리드끼리 확정한 뒤 계약에 넣는다. World의 DLL 사본은 서버 PR main에 포함된 정본을 소비하며 Content가 별도 생성/복사하지 않는다.
 
