@@ -7,14 +7,6 @@ public sealed record RequestContext(Guid SessionInstanceId, long Generation);
 public sealed record CharacterSummary(Guid CharacterId, byte Slot, string Name, CharacterClass Class);
 
 public enum CharacterStorageMode { Legacy, Stored }
-public enum InvalidField { None, Account, CharacterId, Slot, Name, Class, OperationId, Request }
-public enum CatalogStatus
-{
-    Prepared, Listed, Created, Selected, Applied, NotApplied, StillUnknown,
-    InvalidInput, OperationConflict, SlotOccupied, SlotsFull, NameTaken,
-    CharacterNotFound, NotOwned, RequestInProgress, InvalidState, Busy, RecoveryRequired,
-    CancelledBeforeDispatch, Unavailable, SchemaMismatch, IntegrityFailure, OutcomeUnknown
-}
 
 public sealed record CreatePreparationResult(
     CatalogStatus Status, CreateDescriptor? Descriptor = null, InvalidField InvalidField = InvalidField.None);
