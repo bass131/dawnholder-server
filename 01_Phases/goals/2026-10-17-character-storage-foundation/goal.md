@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 실제 DB metadata 독립18과 실제 SQL 인증·서버 기동/정상 종료 독립19의 계약 범위 통과.** migration5/module20/catalog/runtime principal 메타데이터와 실제 SQL preflight→Listening→Server stopped/exit0·잔여0을 확인했다. 서버측 TLS 값·실제 catalog DB/API·저장재접속·소비 인계·전체 강 판정은 아직 보류다. 별도 시험 probe는 소스/오프라인23과 승인 카드24의 경로·metadata 독립25 대조를 마쳤다. 메인 msg_07661e52fb19로 정확 Apply action/hash의 사용자 승인을 받았다. 실행26 READY 감사·보충 고정 뒤 공유창 배정 대기이며 login/grant·자격 생성0이다.
+**상태: 실제 DB metadata 독립18과 실제 SQL 인증·서버 기동/정상 종료 독립19의 계약 범위 통과.** migration5/module20/catalog/runtime principal 메타데이터와 실제 SQL preflight→Listening→Server stopped/exit0·잔여0을 확인했다. 서버측 TLS 값·실제 catalog DB/API·저장재접속·소비 인계·전체 강 판정은 아직 보류다. 별도 시험 probe는 소스/오프라인23과 승인 카드24의 경로·metadata 독립25 대조를 마쳤다. 메인 msg_07661e52fb19로 정확 Apply action/hash의 사용자 승인을 받았다. 실행26 READY 감사·보충 뒤 공유창을 배정받아 B/C를 공식 회신했다. 실제 실행 결과는 아직 미수신이다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -272,11 +272,11 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**현재 갈래: 실행검증26 READY 감사와 B/C 보충 b-v1을 고정했고 메인 창 배정을 요청했다.** 공식 READY 질문 `msg_46959ff5bd0d`의 delivery는 ACK했으나 B 승인 reply는 아직 보내지 않았다. 메인 창 요청 `msg_cbc4e7970d9e`(2026-10-21T15:05:48Z)는 20분/lastEntry=end−10분/Unity0·DB 단독소유, 전달 여유 3분 이상과 B1 child 진입 start+2분 이내 조건이다. 새 배정 전 Apply/SQL·PS5.1·SQLCMD0, 사용자 승인1회는 미사용이다.
+**현재 갈래: 메인 창 배정과 물리 window를 고정해 실행검증26에 B/C를 공식 회신했다.** 배정 `msg_9840f10f8488`은 2026-10-21T15:12:00Z~15:32:00Z/lastEntry15:22:00Z/Unity0·DB 단독소유이고 B1 child는15:14:00Z 이내다. 공식 질문 `msg_46959ff5bd0d`에 reply `msg_ad19af98733f`(15:10:35Z)로 window11키 path/hash·보충 b-v1을 전달해 answered를 확인했다. 배정 delivery09/빈heartbeat 처리·ACK 완료. 아직 실제 실행 결과는 미수신이며 실제 Apply 횟수·DB 상태를 추정하지 않는다.
 
 정확 승인 문서는 물리 C:/Dev/DawnHolder_Project/.backups/verification/2026-10-17-character-storage-foundation/catalog-probe-22/worker/approval-apply-draft.json, Apply SHA256 0B14323BEA91CC03C649C3965C42A09A2ABB772461F9D1FB2EFF3F37163B2D63/만료2026-10-22T12:45:38Z=10-22 21:45:38 KST다. 카드24 SHA F5C64927D1AB5F7A080A66819C9C9E3E6CB784047B4B9EDB7D5EB2F65D40755E/factsADD30F29FE3DD4BC860EC52BB8DC029DED4A4888C7631DB6B557C9613772EFB2와 제품source는 불변이다. 한 번 Apply만 승인됐고 같은명령 재시도·Remove·다른대상/권한/DB는 승인0이다.
 
-다음 첫 행동은 현재 메인의 배정 메시지 출처·start/end/lastEntry를 대조해 물리 `catalog-probe-apply-26/window-v1.json` 정확11키와 hash를 고정하고, 공식 질문에 window path/hash·메인 배정 msgID·보충 b-v1 path/hash를 reply하는 것이다. 보충 `catalog-probe-apply-26/lead-supplement-b-v1.md` SHA256 `47EC4B54A8C0B9BF5F59BDE5F4B6A599B76F9AE96FA3182A3E724C91AA8BC18B`, 입력표 SHA256 `935BF4B13CA715E6745E986117D24C75483CE9902ACBC0C08972E34D66BC535A`다. 새 창/공식 reply 뒤에만 고정 제품 Apply1회→귀속·출력완전성 확인→같은 probe/DB readonly1회이며 실패/Unknown/불완전이면 B2·재시도·Remove0이다. B 종료 status를 받아 판정문보다 먼저 창을 반환한다. 실제 DPAPI복호화·probe인증·실DB/API·저장재접속/전체goal은 미실행이다.
+다음 첫 행동은 검증자 B 종료 status의 실제 UTC·원시/정확PID-birth 잔여·probe세션0·입력보존을 읽고 판정문보다 먼저 메인에 「창 반환」을 보내는 것이다. 실패/Unknown/부분출력은 B2·재시도·Remove0으로 보존하며 세션 상태 미관측은 미확인으로 반환한다. 고정 물리 `catalog-probe-apply-26/window-v1.json` SHA256 `ABB74EC14ED55C4C3F914C929508403425D8D7CAFF234CCC3835219F0C5DD64F`는 정확11키·조상reparse0이다. 보충 `catalog-probe-apply-26/lead-supplement-b-v1.md` SHA256 `47EC4B54A8C0B9BF5F59BDE5F4B6A599B76F9AE96FA3182A3E724C91AA8BC18B`, 입력표 SHA256 `935BF4B13CA715E6745E986117D24C75483CE9902ACBC0C08972E34D66BC535A`다. 새 창/공식 reply 뒤에만 고정 제품 Apply1회→귀속·출력완전성 확인→같은 probe/DB readonly1회이며 실패/Unknown/불완전이면 B2·재시도·Remove0이다. B 종료 status를 받아 판정문보다 먼저 창을 반환한다. 실제 DPAPI복호화·probe인증·실DB/API·저장재접속/전체goal은 미실행이다.
 
 READY 감사 원시는 `catalog-probe-apply-26/`에 둔다. 최종 launcher909행/SQL248행·입력표·두 Preflight 관문·현재13고정 입력을 대조했고 최종 Preflight exit0/의도한 DryRunNotAuthorized 하나·child/SQL/marker0·18개 전후일치다. 계약 Preflight1회와 실제2회 차이 D26-P1 및 첫 launcher bytes 미보존으로 변경4건/관문 불변을 독립 diff로 확정하지 못한 한계를 메인 요청에 보고했다. O26-T1은 drain 뒤 별도 WaitForExit까지 합한 보수적 B1총420초/B2총120초로 계산해 B1 진입을 강화했다. 소스/Preflight 추가 변경0, launcher Applied/Verified 요약만으로 강 통과하지 않으며 원시완전성·정확PID/birth 잔여0·입력18보존·receipt/5journal 귀속·ACL·SQL30그룹 실제 대조를 C 필수로 보충했다. D26-P1을 소급해 계약준수로 바꾸거나 제품 확정실패로 세지 않는다.
 
