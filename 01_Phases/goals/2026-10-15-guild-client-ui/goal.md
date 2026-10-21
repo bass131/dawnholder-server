@@ -1,10 +1,12 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **재개 지점 기록·종료 준비.** 실제 Unity win64 빌드와 Menu Player 120초 실행을 마쳤고 첫 실제 메뉴 PNG 2장을 확보했다. 실행 창은 2026-10-21T18:24:46Z 환경 확인 뒤 Main에 먼저 반환했다. 작업자 정산·종료 완료, 활성 작업자0/현재 실행 권한0이다. 실서버·두 계정의 길드 화면과 PR2 최종 검증은 남았다.
+상태: **다음 Content 90분 창 대기·리드 유지.** Main msg_be838bb41b7c가 Art 반환 뒤(빠르면2026-10-21T19:21Z 전후) 요청 범위 그대로90분을 예고했다. 실제 시작은 Main이 자원을 확인한 뒤 별도 한 통으로 알린다. 현재 리드 pane은 유지하며 작업자0/현재 실행 권한0, 우편함 반복조회0이다. 앞 Menu 빌드·PNG2장·창 반환과 작업자 종료는 완료됐고 실서버·두 계정 길드 화면/PR2 최종 검증은 남았다.
 
 ## 재개 지점
 
-**다음 첫 일:** Main이 새 실행 창을 배정하면 같은 Run의 새 대화 리드가 현재 goal/재개 근거부터 읽고, 같은 PR 작업자 한 명으로 일반 Player 빌드→메모리 모드 실서버와 두 Player의 길드 화면 확인·필요한 제품 수정·자체 확인을 잇는다. 지금 Probe.exe는 Menu 120초 자동 종료이므로 길드 플레이용으로 재사용하지 않는다. 기존 snapshot의 probe define만 제외한 일반 빌드를 쓰며 새 하네스·도구 수리·중간 독립 검증은 만들지 않는다. 서버 명령 후보는 DEVELOPMENT의 `wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh run`(인자 없는 메모리 모드, DB·비밀 변경0), 클라이언트는 일반 Player 두 창/802×451이다. 실행 전 실제 SDK·메모리 모드·7777 소유·자원은 새 배정 창에서 확인한다. 새 창 전 native 실행0이며 PR 직전 신규 Opus1회·CI·사용자 정확 head 병합승인은 남긴다.
+**다음 첫 일:** Main의 실제 시작 메시지를 받으면 현재 리드가 새 작업자 한 명으로 같은 PR 범위를 잇는다. 기존 snapshot에서 probe define만 뺀 일반 Player 빌드→`wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh run` 메모리 모드 서버→Player 두 창/802×451·서로 다른 계정의 길드 확인·범위 안 수정·자체 확인 순서다. 실행 전 실제 SDK·메모리 모드·7777 소유·자원은 새 배정 창에서 확인한다. 서버 시작 직후와 두 Player가 뜬 뒤 각각 물리·commit 여유를 기록하고 첫 길드 화면은 경로와 함께 즉시 Main에 보낸다. 현재 Probe.exe는 Menu120초 자동 종료라 게임용으로 쓰지 않는다. DB·SQL·비밀 변경/새 하네스·도구 수리·중간 독립 검증0이며 PR 직전 신규 Opus1회·CI·사용자 정확 head 병합승인은 남긴다.
+
+- **20 - 다음 실서버 창 예고·현재 리드 유지.** Main msg_be838bb41b7c(2026-10-21T18:44:52Z, 원문 E21/main-next-content-window-queue.md·수신/현 identity JSON)가 msg_ae88976f5751 요청안을 그대로 승인했다. 현재 Art18:41~19:21Z 사용 뒤 Content90분이며 조기 반환시 당겨진다. 자원 확인 뒤 Main의 별도 시작 메시지가 실제 권한이고 지금은 실행/새 worker0이다. 40분 안쪽 대기이므로 현재 리드 pane을 유지하며 이전 종료 준비·새 대화 리드 계획은 이 구간에서 대체한다. 시작 메시지 뒤 새 작업자 한 명, 서버 시작 직후·두 Player 시작 뒤 물리/commit 두 관측, 첫 길드 실화면 즉시 보고를 적용한다. 범위/완료조건은 그대로이며 DB·SQL·비밀 변경0, 새 하네스·도구 수리·중간 검증0이다. ACK 뒤 우편함 반복조회·wait/sleep 없이 빈 prompt로 턴을 끝낸다.
 
 - **19 - 실제 메뉴 실행 완료·창 반환.** 신규 Sol max task_707a3c7087ce/ctx_f96de74b83ee는 기존 source2249+probe5의 snapshot으로 원 Unity win64 빌드(753.318초/exit0)→MainMenu probe120.005초·Player129.929초/exit0을 마쳤다. 첫 실제 PNG는10-22 03:22:26KST 생성됐고 30/90초 원본2장은 `C:/dh/content/probe/e/r3/screens/native-simple/menu-only-1/`에 있다. 리드도 타이틀·START GAME/QUIT·계정/주소 입력을 이미지로 확인했다. AI 이미지 확인이며 사람 관찰0·서버 접속0·길드/전투 확인0이다. 첫 화면은 msg_7ddc6667d920, 창 반환은 msg_814c588afed5로 Main에 먼저 보냈다.
 - 약10초 간격 실제 표본은 build71/Menu13·baseline3이다. root private 표본 최대는 build3.560GiB/Menu0.897GiB, 물리 여유 최저9.276/18.984GiB·commit 여유 최저6.006/16.816GiB다. Menu 전 committed 중앙값 대비 실행 표본 최대 증가는1.142GiB이며 Windows 전체 활동을 포함한다. 연속 peak·Player만의 증가량·Editor 대비 절감·Town/전투·두 클라이언트 결합 peak로 해석하지 않는다. build root private에는 자동 자식이 빠진다. 자동 Unity compiler/import/shader 자식은 별도 실행과 구분했고 독립 dotnet/WSL/SQL/서버/DB변경·수동kill0이다.
