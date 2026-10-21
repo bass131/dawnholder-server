@@ -6,7 +6,7 @@
 
 - <a id="content-worktree"></a>Content: [길드 현황·거점 성장·대장간 화면](../../01_Phases/goals/2026-10-15-guild-client-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `plan/content-guild-ui-20261015`
 
-- World: [캐릭터 목록·생성·선택 서버 처리](../../01_Phases/goals/2026-10-18-character-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `feat/character-server-20261018` · 2026-10-22 실제SQL/TCP1건 통과·Content 최소 소스 통합 완료(미컴파일) · Main 배치 Core 분류 수리 인계 대기/작업자 종료·리드 종료 준비, 회귀는 PR 직전 신규 Opus 창에 합침
+- World: [캐릭터 목록·생성·선택 서버 처리](../../01_Phases/goals/2026-10-18-character-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `feat/character-server-20261018` · 2026-10-22 실제SQL/TCP1건 통과·Content 최소 소스 통합 완료(미컴파일) · Core 고정수리 도착/시험 소비 범위 조율·작업자 종료·새 리드 재개 준비, 회귀는 PR 직전 신규 Opus 창에 합침
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 
