@@ -2,11 +2,12 @@
 
 상태: **재구성 A 승인·효과 PR 선행시험 준비. 사용자 원문/범위는 local commit83163ed0에 기록했고 PR253은 사용자 결정으로 CLOSED(2026-10-21T09:22:57Z)다. 새 효과 branch feat/demo-video-art-growth-effects-20261021을 최신 main db016935에서 만들고 관리 문서만 이관했다. 다음은 신규 Opus 선행시험 계약/기동이며 Main 창 전 Unity0, 제품/새 독립 PASS·효과 실화면0이다. 전체 goal 완료가 아니다.**
 
-**다음 첫 일:** 새 효과 branch에서 선행시험 계약과 고정 입력·관련 원문/실행 관문을 기계 확인한 뒤 신규 Opus를 연다. 작성자는 먼저 시험/실행 계획을 준비해 READY를 보고하고, Main이 start·deadline·lastEntry·Unity 수를 배정한 후 같은 계약의 실패 실행을 한다. PR253은 종료했고 branch 삭제·push·force0, local79b8/83163은 push하지 않는다.
+**다음 첫 일:** 신규 Opus는 선행시험과 고정 READY 파일 작성만 수행하고 정산·종료한다. READY에서 길이·lastEntry·Unity 수를 Main에 요청한다. 대기열이거나 실행 말고 남은 일이 없으면 리드도 재개 지점 local commit/goal SHA를 보고하고 턴을 끝내며 Main이 pane을 닫는다. 창이 열리면 같은 Run을 인수한 새 리드/새 실행자가 고정 파일·SHA로 재개한다. PR253 CLOSED/옛 branch push0, 창 전 Unity0이다.
 
 **병렬 콘셉트:** 사용자 A 화풍의 8장 제작과 신규 Astra 독립 기술 PASS·정산·정확 종료를 마쳤다. 메인은 msg_d8863c625f99로 판정 앞부분과 8장 SHA의 직접 대조를 확인했다. 실제1672×941·호출8/10·남은2회 피드백 전 사용0이며, 사용자 미관 최종승인·제품 구현·실제 게임 캡처와 구분한다. 최신 원문/원시는 아래 「화면 콘셉트 8장 — 신규 Astra 독립 기술검토 PASS」와 screen-concepts-review-retry-launch/에 있다.
 
 ## 재개 지점
+- **실행 창 대기 수명 — 최신 Main msg_0770ef4adc4d:** 작성/계약 같은 창 밖 일은 계속하되 대기열 또는 실행만 남으면 READY 파일·SHA로 작성자를 정산/종료한다. 대기 heartbeat/check--wait/상태 메일0이다. 리드는 길이/lastEntry/Unity수·창 뒤 첫 일을 goal에 적고 local commit+SHA 보고 뒤 턴 종료, pane은 Main이 idle 확인 후 닫는다. 창을 배정받은 새 리드가 같은 Run을 인수하고 새 실행자에게 파일 기준으로 전달한다. 현재 v1 계약은 미발행이며 이 결정을 반영한 v2 준비 계약으로 대체한다.
 - **현재 마지막 완료 — 승인 기록·PR253 종료·새 branch:** 승인 local commit `83163ed08b7abfaed857d2db17675984690e9b5d`(goal+승인 초안), PR253 https://github.com/bass131/dawnholder-server/pull/253 CLOSED/원head d2b7aa78 유지·대체 코멘트 완료다. 새 효과 branch `feat/demo-video-art-growth-effects-20261021`은 origin/main db016935에서 시작했고 옛 HUD 제품 commit을 가져오지 않았다. `.backups/verification/2026-10-13-demo-video-art/growth-effect-pr/`에 local commit/close/new-branch 영수증을 보존했다.
 - **다음 작업 — 신규 선행시험:** 현재 쓰기 작업자0이다. 새 Opus 계약을 발행해 제품 없이도 컴파일되는 요구 시험과 READY 계획을 먼저 만들고, Main이 배정하는 전용 창에서 의미 있는 요구 실패를 관측한다. 제품 stub/이미지생성·Content hook·Unity 선행 실행0이다. 관리 기록의 과거 현재시제는 아래 당시 기록으로 읽는다.
 - **현재 재개 — A 승인·효과 착수:** Main msg_797518bb20bb(2026-10-21T09:16:06Z)의 사용자 원문/선택지·배정 전문을 아래 적용 중 결정과 `growth-effect-pr/main-A-approval-original-v1.json`에 보존했다. 계획 초안 SHA9c05e357…5e4c는 그대로 승인 기준이다. PR253 대체 종료와 새 범위 승인 뒤 Main이 효과를 지금 세 번째 트랙으로 배정했으므로 이전 두 트랙/PR253 병합 선행 금지는 이 범위에서 대체된다.
@@ -231,6 +232,33 @@
 ## 승인된 후속 표시 PR - 체력·직업, 스킬키, 지명·재화
 
 ### 적용 중인 사용자 결정
+
+### 2026-10-21 — 실행 창 대기 세션 종료·새 세션 재개
+
+출처: Main msg_0770ef4adc4d(2026-10-21T09:18:16Z), 원 JSON은 growth-effect-pr/inbox-before-pretest-launch-v1.json, 읽기본은 main-window-wait-decision-v1.md. 아래 전달 원문이 기존 중간 교체 금지/같은 session READY 조건보다 실행 창 대기 범위에서 우선한다. 작성 중인 작업을 끊는 권한은 아니다.
+
+```text
+[메인 Claude] 사용자 결정: 실행 창을 기다리는 동안에는 세션을 닫고, 창이 열리면 재개 지점으로 다시 연다
+사용자 원문(메인 pane Enter 제출, 2026-10-21 18:1x KST):
+「그리고 만약에 한 파트에서 이미 서버를 쓰고 있으면 다른 대기 파트에서 계속 리드나 작업자들이 우편확인 하는게 아니라 재개 지점 작성하고 세션을 종료하는 식으로 간다음 다시 열어서 재개하는 식으로 가자
+
+토큰 낭비가 심해」
+
+메인 적용 방식(Rules 정본 반영 전까지 이 메시지가 기준이다):
+1. 언제: 실행 창(Windows dotnet·WSL·Unity·SQL)을 요청했는데 메인이 「대기열」로 답했을 때. 또는 다른 파트가 창을 쓰는 동안 자기 파트에 실행 말고 남은 일이 없을 때.
+2. 작업자·검증자: READY와 고정 입력을 파일·SHA로 남기고 정산·종료한다. 창을 기다리며 check --wait·heartbeat·반복 조회로 세션을 살려 두지 않는다. 창이 열리면 리드가 새 실행자를 연다. 그래서 READY·승인 파일은 「같은 작업자·같은 incarnation」이 아니라 고정 파일·SHA로 실행할 수 있게 써라. 이미 같은 세션 조건이 박힌 READY는 다음 계약부터 고친다.
+3. 리드: goal 「재개 지점」에 기다리는 창 요청(READY 경로·SHA, 필요한 길이·lastEntry·Unity 수, 창이 열리면 할 첫 일)을 쓰고 local commit한다. 그다음 메인에 「재개 지점 기록·종료 준비」 status(goal SHA·commit 포함)를 보내고 턴을 끝낸다. pane은 메인이 idle을 확인하고 닫는다.
+4. 다시 열기: 창이 비면 메인이 그 파트 리드를 새 세션(같은 대화 이어 붙이기 아님)으로 열고 같은 Run을 run-use로 인수하게 한다. 진입 메시지에 창 배정을 함께 넣는다. 리드는 goal 재개 지점부터 읽는다.
+5. 하지 않는 것: 지금 작업 중인 작업자를 이 결정으로 중간에 끊지 않는다. 창을 기다리는 동안 상태 확인 메일을 서로 주고받지 않는다. 계획·계약 작성처럼 창이 필요 없는 일은 계속한다.
+6. 기록: goal 「적용 중인 사용자 결정」에 원문과 이 메시지 ID를 기록하라. ORCA R-8의 「목표 중간에 문맥을 비우려 수동 교체하지 않는다」는 실행 창 대기에 한해 이 사용자 결정이 우선한다.
+
+지금 파트별 적용:
+- Core: 보정 SQL 창(09:20Z~09:30Z)을 쓰는 중이라 해당 없음. 창을 반환한 뒤 다음 실행 창이 또 필요하면 이 방식으로 기다린다.
+- World: 새 시험 컴파일 결함 수정 READY가 나왔을 때 창이 차 있으면 이 방식으로 닫는다.
+- Content: 측정 도구 수정 작업자는 작업 중이라 계속한다. 그 뒤 Unity 창을 기다리게 되면 이 방식으로 닫는다.
+- Art: 효과 PR 계약·선행 시험 작성은 계속한다. Unity 창을 기다리게 되면 이 방식으로 닫는다.
+```
+
 
 ### 2026-10-21 — 재구성 A 승인·효과 즉시 착수 배정
 
