@@ -6,11 +6,11 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: 2026-10-21 재진입·최신 main 수신과 실행 입력 재준비 중.** 마지막 실행 완료는 Unity 실제session313 GREEN·서버 요청/응답 조립407 GREEN이다. Core 오류 매핑 신규 시험2파일328줄은 정적 READY까지만 작성했으며 컴파일·시험 발견수·RED/PASS는 미관측이다. 전송217GREEN·Shared22 배포는 유지하며 실제 Core bridge·저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
+**상태: 2026-10-21 main 수신·READY 재실사 완료, 새 실행 입력 준비 중.** 마지막 실행 완료는 Unity 실제session313 GREEN·서버 요청/응답 조립407 GREEN이다. Core 오류 매핑 신규 시험2파일328줄은 정적 READY까지만 작성했으며 컴파일·시험 발견수·RED/PASS는 미관측이다. 전송217GREEN·Shared22 배포는 유지하며 실제 Core bridge·저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
 
 ## 재개 지점
 
-**다음 첫 일: 최신 main 수신 → READY 재실사·새 입력 → 새 30분 WSL 창 요청.** 현재 메인 `msg_14ff7b5796bd`로 같은 노트북·같은 대화 재개를 전달받았다. 현재 Run을 새 terminal에 재연결하고 사용자 결정 전문을 아래에 기록했다. 현재 HEAD에 맞는 새 Task/Dispatch·실행 보충·config/manifest를 준비하며 옛 READY·Task·창·lastEntry는 재사용하지 않는다. 새 실행 창 승인 전 WSL/dotnet/Unity/SQL을 시작하지 않는다. 이 아래 종료 기록은 10-19 아침 정리 당시의 역사다.
+**다음 첫 일: 새 외부 선행시험 Task의 실행 입력 고정 → 메인 새 30분 WSL 창 요청.** 현재 메인 `msg_14ff7b5796bd`로 같은 노트북·같은 대화 재개를 전달받았고 새 Run 세대에 연결했다. 최신 main `db0169350dfe54ba6ed247684caae4e498e24c72`를 자기 feature branch에 충돌 없이 수신했다(수신 commit `891cdf100334184427b58b7f300eb840c864e8fc`, 수신 전 main 뒤123·규칙파일변경0). 고정 READY 승인13·시험2·source/Plugins742의 SHA 차이0, 옛 readonly543/prepared558 중 goal1건만 종료·재진입 기록으로 달라졌으며 옛 고정 원문은 보존했다. 세부·표시 집계 교정은 `resume-2026-10-21-01/ready-reaudit.json`과 `ready-reaudit-correction.json`에 있다. 현재 HEAD와 새 Task/Dispatch에 맞는 config/manifest를 만들며 옛 Task·창·lastEntry를 재사용하지 않는다. 현재 신규시험 compile/발견수/RED/PASS/skip/TRX는 미관측이고 새 창 승인 전 WSL/dotnet/Unity/SQL을 시작하지 않는다. 이 아래 종료 기록은 10-19 아침 정리 당시의 역사다.
 
 - **종료 원천과 Task 처리:** Main `msg_f67c2b23de92`(2026-10-18T22:32:57Z)가 사용자 귀환·노트북 종료 전 정리 지시를 전달했다. 오늘 WSL 창은 배정하지 않는다. `task_fb7b455f8af8`/`ctx_f2ce01b6eb0d`는 정적 READY만 완료한 상태에서 `msg_d5072c0251ad`로 정리 지시를 받아 전체쓰기를22:35:43Z에 종료했고 `msg_9d00cfdb53c0`으로 failed 정산했다. 이는 실행 미완료의 사용자 종료 사유이며 제품결함·독립NOTPASS·확정실패가 아니다. release 뒤 정확 identity/완료 idle을 확인해 해당 pane만 닫았다. 열린 World 작업 Task는 없으며 재개 때 새 Task를 만든다.
 - **마지막 완료와 보존:** 실행 완료 제품은 `fc2b2302b241e77c46d8422f46d5528f7cafc01f`의 응답 조립/기존요청407P·0F·0skip이며 아래 CI 정산 원문/TRX를 따른다. 현재 두 신규 시험은 +328/-0·제품/기존시험변경0의 미실행 선행 체크포인트로 로컬 commit한다. 준비543/558·원본742 보존을 확인한 기존 실사는 그대로 보존했고 종료 직전 승인13/두시험 hash도 차이0이었다. 이번 정리 commit으로 goal/CURRENT·HEAD·Git status 기준이 바뀌므로 옛 준비파일을 그대로 실행하지 않고 새 버전 입력을 만든다. 옛 원문/SHA/.backups는 수정·삭제하지 않는다.
