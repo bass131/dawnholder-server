@@ -1,10 +1,10 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **재개 지점 기록·종료 준비.** D1·D2 한정 독립 강검증은 통과했고 수정자·검증자는 정산·종료했다. Main이 Content Unity60분을 대기열로 안내했다(msg_ebb6d76b8d27). 실제 Unity·Player·두 계정 화면/메모리는 미실행·미확인이다. 10-28 경량 경로·실화면 우선, 제품 완료조건·PR 직전 신규 Opus1회·사용자 개별 병합승인과 C9 별도 후속 PR을 유지한다.
+상태: **Content Unity 실행 창 배정·리드 유지.** Main msg_57348e59be4f가2026-10-21T17:56:00Z~18:56:00Z의60분/Unity1을시작승인했다. 신규Sol max한명이현재PR범위의실행/자체확인을잇는다. dotnet·WSL·SQL·서버·DB변경0,새하네스/도구수리0이다. D1·D2한정독립통과와실제제품·메모리미측정상태는구분한다.
 
 ## 재개 지점
 
-**다음 첫 일:** Main의 실제「시작」배정을 받은 뒤에만 Content Unity1·60분을 실행한다. 대기 순서는 Art 반환 → (사용자 승인돼 있으면) World 실서버/DB20분 → Content이며, World 미승인이면 Art 다음이 Content다. 현재 시작승인0/슬롯시각미정이다. Main이 idle 리드를 닫으면 새 대화 리드가 같은 Run을 run-use로 인수해 이 지점부터 읽고 실제 시작 메시지/권한 범위를 대조한다. 첫 행동은 현재 잔여 Unity와 물리/commit/C:여유 확인, 사용자 허용 R의 기존 snapshot/probe 준비 → 원 Unity batch win64 build → MenuPlayer120초(cap180) → 메모리·환경변경 확인/반환이다. 도구 수리·READY재발행·새창JSON/hash/lastEntry세부묶음0, 기본명령의단순감독실행방식은Main이승인했다. 사람이본메모리와명령출력측정은반드시분리하고관측불가는미측정으로남긴다. 새작업자한명이같은PR범위의구현/실행/자체확인/필요수정을잇고PR직전신규Opus1회만한다. 대기중새작업자·우편wait/반복조회/heartbeat0,자기pane종료는Main이한다.
+**다음 첫 일:** 신규Sol max작업자한명으로기존snapshot/probe준비→원Unity win64빌드→MenuPlayer120초→환경확인/반환을17:56Z~18:56Z배정창에서실행한다. 원Unity/probe감독명령방식은Main승인됐고리드pane은닫지않는다. 실제시작직전Unity잔여/물리14GiB·commit12GiB·C40GiB를확인한다(Main17:53:43Z관측은20.19/18.04/89.9GiB·대상프로세스0/WSL0이며현재값으로가장하지않음). 첫메뉴나길드실화면은즉시경로와함께Main에알리고,빌드30분초과시그시점한줄보고,끝나면정산보다「창반환」을먼저보낸다. 사람관찰값과명령출력은구분하며실제서버·두계정완료는이Menu측정과별개다. 같은PR구현/자체확인·필요제품수정은한작업자가이어가고PR직전신규Opus1회,추가도구루프·중간검증은0이다.
 
 - **18 - Content Unity 창 대기열·재개 기록.** Main msg_ebb6d76b8d27(2026-10-21T17:42:16Z, E21/main-content-unity-queue.md·message.json·current-identity.json)은 현재Art가Unity를사용하며첫실화면확보뒤시험묶음을마치면반환한다고알렸다. Art반환후World사용자승인이있으면20분(+교대여유약5분)뒤Content,없으면Content가즉시다음이다. 이는실제시작/자원관측이아니다. Main의「시작」한통을받을때까지실행0이며원Unity/probe감독실행방식은경량경로대로승인했다. 사람관찰과명령출력수치를분리한다.
 - 기다리는요청은msg_99a4fc22372b(60분/Unity1), READY C:/dh/content/probe/e/r3/source-ready.json SHA6A80B5DC5552C6EEF8879DFE807F182C544EABB63D39C89895DE9D899BBE4C7D와G/d1-d2-final20사본/E21/d1-d2-final-preservation-index.json이다. 요청명령/예상시간/자원은E21/main-content-unity-window-request.md에있다. 시작여유물리14GiB/commit12GiB/C40GiB는요청기준이며실제미관측이다. 최신경량결정에따라lastEntry세부/창JSONhash를새로고정하지않는다. 기존wrapper를수리하거나관문을더만들지않고기존Unity/probe명령으로감독실행한다. 이번측정창은dotnet/WSL/SQL/서버기동·DB변경을포함하지않는다.
