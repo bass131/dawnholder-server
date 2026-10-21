@@ -6,7 +6,7 @@
 
 - <a id="content-worktree"></a>Content: [던전 클리어·보상과 눈에 띄는 결함 둘](../../01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `docs/content-dungeon-clear-closeout-20261015`
 
-- World: [캐릭터 목록·생성·선택 서버 처리](../../01_Phases/goals/2026-10-18-character-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `feat/character-server-20261018` · 노트북 종료 정리·재개 대기·기존407 GREEN/오류 매핑 READY 미실행
+- World: [캐릭터 목록·생성·선택 서버 처리](../../01_Phases/goals/2026-10-18-character-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `feat/character-server-20261018` · 2026-10-21 재진입·main 수신/새 실행 입력 준비·기존407 GREEN/오류 매핑 미실행
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 
