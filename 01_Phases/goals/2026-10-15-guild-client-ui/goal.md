@@ -1,10 +1,12 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **PR2 최종 신규Opus 강검증 NOT PASS, 기존 시험2건의 요구 충돌과 Registry 복귀의 Main 판단 대기.** 이번 Edit352 중350PASS(독립3 포함)·기존2FAIL, Play19/19PASS다. 실행 자원은 반환했고 검증자도 정산·종료했다. 두 계정의 파티·보스 클리어 보상·금고30·거점2/2·대장간 해금, 같은 Golem16/기본Melee 피해20→25와 B개인강화0/보너스0, 강화 요청 수신1은 기존 실제 관측이다. C4 실제 두 요청 경합/거부 화면, C5 A단계0→1·실제 골드20/재료1 소비 표시, C8 남은 입력/팝업·세 해상도와 정상 퀘스트 끝까지 경로는 **리허설 확인(10-24~25, 알려진 미확인)**이다. CI/PR은 아직0이며 전체 PR2 PASS가 아니다.
+상태: **최종 신규Opus의 NOT PASS 결함1을 메인 범위 판정에 따라 한정 시험 수리·새 Opus 재검증으로 처리한다.** 원 실행은 Edit352 중350PASS(독립3 포함)·기존2FAIL, Play19/19PASS다. 실행 자원/Registry137값 원형 복귀와 검증자 정산·종료를 마쳤다. 두 계정의 파티·보스 클리어 보상·금고30·거점2/2·대장간 해금, 같은 Golem16/기본Melee 피해20→25와 B개인강화0/보너스0, 강화 요청 수신1은 기존 실제 관측이다. C4 실제 두 요청 경합/거부 화면, C5 A단계0→1·실제 골드20/재료1 소비 표시, C8 남은 입력/팝업·세 해상도와 정상 퀘스트 끝까지 경로는 **리허설 확인(10-24~25, 알려진 미확인)**이다. 수리 후 독립 통과·CI·PR은 아직0이며 전체 PR2 PASS가 아니다.
 
 ## 재개 지점
 
-**다음 첫 일:** Main에 올린 결함1(열린 창 차폐의 현재 C8 대 PR1 req5 배경 통과 시험) 요구 해석과 이번 창의 기존 Registry Binary7개 한정 원형 복귀 확인을 처리한다. 답 전 기존 시험/제품 수정·추가 실행0이다. 추천은 현재 C8 차폐 유지·req5 대체 기록 뒤 새 작업자가 해당 시험만 수정하고 새 Opus가 같은 명령으로 검증하는 것이다. 종료한 검증자는 재사용하지 않는다. 원 판정/실행/정산은 G/pr2-final-review의 verdict.md·verdict.json·report.md·lead-settlement.md·lead-settlement-audit.json·lead-resource-return-check.json이다. 최신main은 merge687da090으로 통합했고, F8 잔여0/리허설 미확인·C9/하우징 별도PR·사용자 정확head 승인과 메인 병합을 유지한다. CI/PR·현재 실행/새 작업자0이다.
+**다음 첫 일:** Main msg_57a8c9b53832의 범위 판정으로 새 Sol max 한 명에게 GuildWindowLifecycleTests의 두 case 단정 수리만 맡긴다. 닫힌 창 raycast 차단 없음의 단정과 제품/기타시험은 보존한다. 쓰기 종료 뒤 새 Opus 한 명에게 같은 EditMode 명령의 재검증을 맡기되 Unity 실행은 Main 새 창 시작 통지 전0이다. 현재 순서는 World compile→Art HUD RED 뒤며 창 요청은 세 줄로 보낸다. 원 NOT PASS/정산은 G/pr2-final-review, 복귀 영수증은 lead-editorprefs-restore-receipt.json(137값 before 차이0·승인7 Binary만 쓰기)이다. 종료한 검증자는 재사용하지 않는다. F8 잔여0/리허설 미확인·C9/하우징 별도PR·사용자 정확head 승인과 메인 병합을 유지한다.
+
+- **32 - 결함1 메인 범위 판정·Registry 정확 복귀.** Main msg_57a8c9b53832는 사용자 결정이 아닌 메인 범위 판정으로 현재 C8의 열린 창 차폐를 유지하고 PR1 req5의 열린 배경 통과 단정을 대체하도록 했다. 완료조건은 바꾸지 않는다. 새 작업자 한 명의 해당 두 case 수리→새 Opus 같은 EditMode 명령 재검증을 승인했으며 제품 쓰기0/닫힌 창 단정 보존/실패 분류·이전/새 단정·요구 출처 기록을 적용한다. 리드는 이번 fresh137값 전체==after와 각 쓰기 직전 current==after를 통과해 지정 Binary7개만 before bytes로 복귀했다. 최종137값 before 차이0·추가/삭제/다른키/값 쓰기0이며 Main msg_73031897cede로 영수증 경로를 보고했다. 원문은 G/pr2-final-review/mail-post-verdict-01.json·registry-restore-context.md·lead-editorprefs-restore-receipt.json이다.
 
 - **31 - 최종 독립 검증 실패·실행 자원 반환·정산.** Main msg_2262992288fc의90분 창에서 신규 Opus task_158e85d0eb87/ctx_50096fc1ffd3가 Edit352/350PASS/2FAIL·Play19/19PASS를 실행하고23:35Z 자원을 반환했다. 결함1은 PR2 열린 패널 raycast와 PR1 배경 통과 시험2건의 요구 기록 충돌이며, 현재 원 판정은(d)미확정·차단이다. 구현자는 UI task_7c41cedb49aa, 귀속에는 리드 계약/goal의 req5 대체 기록 누락도 포함된다. 신규 독립3건은 경쟁·서버 거부·최신36 보존을 실제 소켓으로 검증했고 기존 시험 수정/제품 쓰기0이다. formal failed/쓰기종료 원문·56파일hash·원본2275 전후차이0·원XML 수를 리드가 대조했으며 release/정확pane종료·reclaimable0을 확인했다. 이번 NOT PASS 한 회차를 중복 집계하지 않는다. 현재 새 수정0이며 세부는 G/pr2-final-review/lead-settlement.md에 있다.
 - 리드는 현재 관련 프로세스/7777잔여0을 확인하고 Main에 「창 반환」msg_d8fb22919245를 보냈다. 파일 Preferences10/원본 보존과 달리 Registry는 이번 fresh137값 중 기존 Binary7개 차이가 남아 복귀 확인을 요청했으며 쓰기0이다. 설정 반환 완료로 확대하지 않는다. 요구 판정 요청은 msg_2237c33f38cd다. 질문23:14 발행/23:38:46 첫 수신으로 기존 검증자가 답 없이 원시험을 유지한 점과 생존 신호367·454초 초과2구간을 원시에 보존했다. 질문 전달 지연·신호 지연의 구체 원인은 미확정이고 새 반복 규칙은 만들지 않는다. 비차단 관찰 O1~O4는 원 판정에 남기며 자동 수정/범위 확대하지 않는다.
@@ -78,6 +80,10 @@
 - 12 - 하네스 독립 강검증: G/`qa-short-path/verdict.md`·`verdict.json`과 E21/`lead-verifier-settlement.md`·audit 원문을 보존했다. A~C는 통과이나 C 실제 entry는 예상 HEAD/goal 차이2건을 exit1로 거부했으며 D 준비 완료가 아니다. #1~#5·#7은 낮음/비차단 후속, #6은 중간/다음 D 전 필수다. W-1~W-7과 검증 scratch 보존을 다음 계약에 반영한다. 필수 판정·시험 원시는 대조됐고 manifest상 런타임 TEMP 출력1 부재는 별도 정산에 남겼다. 저장 신호16개의 helper는 max483초/초과6구간이며 수신 원시 범위·실제 lastHeartbeat 차이를 구분했다. 검증자는 정산·정확 pane 종료/재사용0이다.
 
 ## 적용 중인 사용자 결정
+
+### 10-22 결함1에 대한 메인 범위 판정
+
+Main msg_57a8c9b53832(2026-10-21T23:45:16Z), 원문 G/pr2-final-review/mail-post-verdict-01.json. **사용자 결정이 아닌 메인 범위 판정**이며 사용자가 다르게 판단하면 되돌린다. 「PR1 req5의 열린 창 배경 통과는 PR2 C8의 열린 창 차폐로 대체(메인 범위 판정, msg_57a8c9b53832)」한다. C8의 사용자 승인 완료조건은 변경하지 않는다. 원 NOT PASS의(d)미확정은 당시 판정으로 보존하고 이번 수리 계약부터 두 기존 실패를(a)옛 세부 단정으로 처리한다. 두 case의 이전/새 단정·요구 출처·동일 명령 전후 수와 원시를 기록하고 닫힌 창 raycast 차단 없음의 단정은 그대로 둔다. 새 작업자 한 명 뒤 새 Opus 한 명의 독립 재검증이며 기존 종료 세션을 재사용하지 않는다. 실제 Unity 실행은 Main 새 시작 통지를 따른다. 늦은 공식 질문의 원인 미확정·당시 B 처리는 그대로 유효하다.
 
 ### 10-22 남은 실화면은 리허설로·PR2 직전 검증 진행
 
