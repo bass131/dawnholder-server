@@ -1,3 +1,4 @@
+using Dawnholder.Server.GameServer.Persistence;
 using Microsoft.Data.SqlClient;
 using Shared.Protocol;
 using static Dawnholder.Server.GameServer.Tests.Persistence.CharacterCatalog.CatalogDatabase;
@@ -17,6 +18,64 @@ namespace Dawnholder.Server.GameServer.Tests.Persistence.CharacterCatalog;
 [Collection(CatalogDatabase.Collection)]
 public sealed class CharacterSelectDatabaseTests
 {
+    [CatalogDatabaseFact]
+    public async Task CreateListSelect_CloseSavesCheckpoint_ThenReconnectReadsStoredValues()
+    {
+        object alice;
+        SummaryView created;
+        using (CatalogDatabase db = Open())
+        {
+            (alice, _) = db.NewAccount();
+            CatalogUnderTest catalog = db.NewCatalog();
+            created = await Created(catalog, alice, 2, db.NewName("save"), CharacterClass.Mage);
+            Assert.Equal(created, Assert.Single(await Listed(catalog, alice)));
+
+            (CatalogOutcome selected, AdmissionHandleView handle) = await Select(catalog, alice, created.CharacterId);
+            try
+            {
+                Assert.Equal("Selected", selected.Status);
+                Assert.Equal(created, selected.Character);
+            }
+            finally
+            {
+                await handle.Close(new SafeCheckpoint(CharacterClass.Mage, 7.25f, -2.5f, 123))
+                    .WaitAsync(StoreCallRecorder.Limit);
+            }
+        }
+
+        // The first fixture has disposed its pool. Read the committed projection before a new acquire can affect it.
+        using CatalogDatabase reconnected = Open();
+        await using (SqlConnection connection = reconnected.OpenRawConnection())
+        {
+            await using SqlCommand command = new(
+                "SELECT MapId, PositionX, PositionY, Hp, MaxHp, BossUnlocked " +
+                "FROM dh.CharacterProgress WHERE CharacterId = @character;", connection);
+            command.Parameters.AddWithValue("@character", created.CharacterId);
+            await using SqlDataReader row = await command.ExecuteReaderAsync();
+            Assert.True(await row.ReadAsync());
+            Assert.Equal((byte)0, row.GetByte(0));
+            Assert.Equal(7.25f, row.GetFloat(1));
+            Assert.Equal(-2.5f, row.GetFloat(2));
+            Assert.Equal(123, row.GetInt32(3));
+            Assert.Equal(123, row.GetInt32(4));
+            Assert.False(row.GetBoolean(5));
+            Assert.False(await row.ReadAsync());
+        }
+
+        CatalogUnderTest after = reconnected.NewCatalog();
+        Assert.Equal(created, Assert.Single(await Listed(after, alice)));
+        (CatalogOutcome again, AdmissionHandleView next) = await Select(after, alice, created.CharacterId);
+        try
+        {
+            Assert.Equal("Selected", again.Status);
+            Assert.Equal(created, again.Character);
+        }
+        finally
+        {
+            await next.Close(null).WaitAsync(StoreCallRecorder.Limit);
+        }
+    }
+
     [CatalogDatabaseFact]
     public async Task Select_OwnCharacter_LoadsTheStoredSummaryAndClass()
     {

@@ -9,9 +9,8 @@ using Shared.Protocol;
 namespace Dawnholder.Server.GameServer.Tests.Persistence.CharacterCatalog;
 
 /// <summary>
-/// Runs a database-tier test only when an approved run supplies <see cref="CatalogDatabase.InputVariable"/>; otherwise
-/// the test is reported as skipped, never as passed. The variable names a nonsecret run-input file of the execution
-/// plan; secrets never travel in environment variables.
+/// Runs a database-tier test only when a local run supplies <see cref="CatalogDatabase.InputVariable"/>; otherwise
+/// the test is reported as skipped, never as passed. The variable names a public localWindows input file.
 /// </summary>
 public sealed class CatalogDatabaseFactAttribute : FactAttribute
 {
@@ -31,9 +30,9 @@ public sealed class CatalogDatabaseCollection
 }
 
 /// <summary>
-/// API v2 SQL composition over an explicitly approved release-5 fixture. Without the input, tests are skipped;
-/// incompatible input fails before SQL. Runtime and probe credentials arrive over a bounded local named pipe,
-/// never from an environment variable, a command argument or a logged connection string.
+/// API v2 SQL composition over an explicit localWindows release-5 fixture. Without the input, tests are skipped;
+/// incompatible input fails before SQL. Both repository and probe connections use the Windows process identity;
+/// this does not verify the runtime SQL login or its least-privilege grants.
 /// Accounts and names are unique per run: the account ID is derived with the product's existing UUIDv5 resolver as
 /// an input, the same way World derives it after login (its values are pinned by AccountIdResolverTests); no expected
 /// value is computed from it.
@@ -60,14 +59,14 @@ sealed class CatalogDatabase : IDisposable
     public static CatalogDatabase Open()
     {
         string? path = Environment.GetEnvironmentVariable(InputVariable);
-        Assert.False(string.IsNullOrWhiteSpace(path), "An approved release-5 fixture manifest is required.");
+        Assert.False(string.IsNullOrWhiteSpace(path), "An explicit localWindows fixture input is required.");
         CatalogDatabaseInput input = CatalogDatabaseInput.Read(path!);
         try
         {
-            SqlCharacterCatalogRepository repository = new(input.Options, input.Runtime.CreateConnection);
+            SqlCharacterCatalogRepository repository = new(input.Options, input.CreateConnection);
             bool compatible = repository.PreflightAsync(FullBudget(), CancellationToken.None)
                 .WaitAsync(CallBudget).GetAwaiter().GetResult();
-            Assert.True(compatible, "The approved fixture failed the actual catalog schema/module preflight.");
+            Assert.True(compatible, "The local fixture failed the actual catalog schema/module preflight.");
             return new CatalogDatabase(input);
         }
         catch
@@ -81,19 +80,19 @@ sealed class CatalogDatabase : IDisposable
     public CatalogUnderTest NewCatalog()
     {
         return new(new CharacterCatalogService(
-            new SqlCharacterCatalogRepository(_input.Options, _input.Runtime.CreateConnection),
-            new SqlCharacterRepository(_input.Options, _input.Runtime.CreateConnection),
+            new SqlCharacterCatalogRepository(_input.Options, _input.CreateConnection),
+            new SqlCharacterRepository(_input.Options, _input.CreateConnection),
             PersistenceTestValues.Defaults(), TimeProvider.System));
     }
 
     /// <summary>
     /// An open connection for the probes the requirements name (dh.Account rows and locks, the old global Slot.1
     /// applock, other sessions' requests and transactions). It needs read and table-lock rights on dh.Account and
-    /// VIEW SERVER STATE, which the runtime principal may not have.
+    /// VIEW SERVER STATE on the Windows identity; these are not runtime-principal permission checks.
     /// </summary>
     public SqlConnection OpenRawConnection()
     {
-        SqlConnection connection = _input.Probe.CreateConnection();
+        SqlConnection connection = _input.CreateConnection();
         try
         {
             connection.OpenAsync().WaitAsync(CallBudget).GetAwaiter().GetResult();
