@@ -1,10 +1,17 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **후속75분 창 시작 승인·신규 작업자 발행 준비.** Main msg_550e90f9551f가20:59:31Z~22:14Z를 시작했다. 기존 일반 Player 재사용·새 Unity빌드0·메모리 서버1/Player2로 C5/C4잔여/C8을 잇는다. 이전 두계정 보상·정상 거점 성장 실화면/반환은 보존하며 전체 PR2 PASS는 아니다. 사용자 플레이 종료 통보 또는22:04Z 중 먼저 오는 때 정리,22:14Z 반환이다.
+상태: **두 Player 후속 실행·자원 반환·작업자 정산 완료, PR2 필수 확인 잔여.** 같은 Golem16/기본Melee 피해20→25와 B개인강화0/보너스0, 두 거점2/해금을 확인했다. A단계·실제소비 UI, 실제 두 구매요청 경합/거부, 남은 C8·최종 신규Opus/CI는 미확인이다. 전체 PR2 PASS가 아니며 새 실행창·검증자는 없다.
 
 ## 재개 지점
 
-**다음 첫 일:** 이번 창의 새 외부 Sol max 한 명이 보존된 Guild.exe의 원본/산출물 입력 동일 확인 후 실제 메모리 서버·두 Player를 준비한다. 빌드0·SQL0·새하네스/도구수리0, C5 강화/같은대상 기본공격 전후·C4 경합/부족 거부·C8 입력/목표해상도를 확인한다. 준비됨 한 통에 새 A/B 실제 위치와 한 단계 한 줄 사람 조작을 적고, 사람 시작 전 작업자 입력0을 확정한다. 사용자 종료 알림 또는22:04Z부터 정리하고22:14Z까지 창 반환을 먼저 보낸다. World에 소유 인계한 공유2파일/의존6/Inventory접점은 재조율 전 readonly다. PR 직전 신규 Opus1회·CI·정확head승인, 하우징/C9별도후속은 유지한다.
+**다음 첫 일:** Main에 남은 C4실제경합/거부·C5 A단계/실소비 표시·C8 입력/해상도 보완 창을 배정받는다. 완료조건 축소0, F8 총2회 소진/잔여0이며 정상 퀘스트 수행은 미검증이다. 최신main 반영은 PR 직전 신규Opus1회·CI 전에 수행하고, 정확head 사용자 승인·메인 병합을 유지한다. 현재 작업자는 정산·종료돼 재사용하지 않으며 새 실행/검증자를 미리 열지 않는다. World 공유2/의존6/Inventory접점은 재조율 전 readonly, 하우징·C9는 PR2 뒤 별도 후속이다. 근거는 G/live-player-followup(YF)의 report.md·lead-essential-settlement.json·lead-main-pr2-followup-settlement.md다.
+
+- **29 - 성장 효과 main 반영 통지·소비 연결 분리 유지.** Main msg_d2de7fced417이 전달한 사용자 원문(메인10-22 06:55KST Enter)은 「병합 승인: PR254 head 2f2e1a179a3ccba0471453239271a31b4bef68e7」이다. 메인이 병합 관문으로 병합했고 mergedAt10-21T21:55:59Z/merge71976dab58c4a842642288685aec84afdeb6daab을 전달했다. 리드도 fetch로 같은 origin/main을 확인했다. 현재 브랜치는 당시 main뒤6이며 incoming26경로 중 양쪽 변경은 CURRENT의 서로 다른 Content/Art줄뿐이었다. 아직 branch통합/효과 소비/새실행은0이며 최신main은 PR직전검증 전에 반영한다. 효과 소비는 PR2와 별도PR, 하우징도 승인된 별도PR 순서를 보존한다. 원문은 E21/main-art-effect-pr254-merged.md, 조회는 YF/lead-main-update-readonly.json이다.
+- **28 - World 최소 Guild 원천 소비 쓰기 종료.** World msg_4df11d4cb8c7의 실제 쓰기종료21:10:28.379Z와 World기준c30b2df7+미커밋 source를 리드가 대조했다. 합의한13원천 파일의 SHA와 공유2/Inventory 최종blob을 확인했으며 World기준 diff는 Session+20/-3·Inventory+1·NetworkService0이다. 마지막0을 Content원천과 같은 bytes라는 뜻으로 확대하지 않는다. compile·Unity·새회귀·DB·독립PASS는 미실행이며 현재 Content Player/Sharedv21에는 World22를 복사하지 않았다. 정적 종료 회신 msg_b42663fa2aec과 YF/lead-world-integration-writing-ended.json·lead-world-client-integration.patch가 근거다.
+- **27 - 후속 두 계정 실제 피해·개인 보존·반환 정산.** 신규 Sol max task_147306d64254/ctx_d6676b63ddf4(backend unknown)는 기존 일반 Player를 재사용하고 새 Unity빌드/제품수정/DB0으로 메모리 서버와 두 계정을 실행했다. 초기 두 길드·양쪽 금고0/거점2/해금·B대장간의 강화0/1·공격보너스0·보유골드70/재료2 화면을 리드가 직접 봤다. 같은 살아있는 Golem16/attacker1/Melee의 실제 클라이언트 피해20→25·잔여HP40→15/60을 양쪽 로그로 확인했다. 죽은15의 Melee20/Dash20/Melee20은 기준에서 제외했다. C5전체통과는 아니며 A단계0→1·실제골드20/재료1 소비 UI는 가려져 미확인이다. B의 다음비용 표시는 A의 소비 증거가 아니다.
+- 실제 서버수신은 조회43=4·거점45=1·강화46=1·클리어확인40=2다. 정상구매1회 성공만 확인됐고 실제 두 요청 경합/서버거부는 미확인이다. 현재 요청client802×451/PNG window820×498을 구분하며 다른709×399·1920×1080과 남은 포인터/닫힘·메뉴·전환·미준비/우선창 검증은 미실행이다. 이번 보상창·금고30·순간피해숫자 PNG는 미캡처이며 boss-first 파일명은 실제 Town복귀 화면이라고 정정해 보존했다. 이번 B F8발신/서버수신1회와 이전1회를 합쳐 총2회/잔여0, 정상 퀘스트 수행은 미검증이다. 새 독립검증·CI·DB통과로 확대하지 않는다.
+- 사용자 원문(메인21:31:24Z Enter) 「대시보드 결정 응답: 1) Content 게임 창 준비됨 — 지금 플레이 시작(서버가 처음 상태라 20~30분) → A 지금 시작」 뒤 메인이 단계 「완료」·「기준」·「피해 완료」를 중계했다. 21:46:31Z 원문 「아 실수로 골렘 죽였네」 뒤 새16 기준을 확보했고, 마지막8의21:52:41Z 「완료」를 Main msg_8248b50b8c86이 전체 플레이 종료로 명시했다. 단계 완료를 전체종료로 혼동하지 않았다. 준비됨 전부터 작업자 키/마우스/전경복원0이었고 정리21:54:04.311~21:54:27.707Z/반환21:55:49.387Z 뒤 Main에 「창 반환」을 먼저 보냈다. 소유Player2/helper/server·7777잔여0·강제kill0·공용WSL종료0, 원본2249/Preferences10/설정/exe 보존이며 반환 뒤 공유live 재조회0이다. 원문은 E21/main-followup-user-started.md·main-followup-dead-golem-excluded.md·main-followup-baseline-stage-done.md·main-followup-enhance-stage-done.md·main-followup-damage-stage-done.md·main-followup-user-finished-cleanup.md에 있다.
+- 실제쓰기종료22:03:29.032Z/formal done msg_18d8479dde6e failed는 필수미확인에 따른 Task미완료이며 제품결함 확정실패가 아니다. 필수17·report/context SHA·원시153쌍/PNG52 차이0, 저장205메모리표본 재계산도 일치했다. 연속peak/전구간heartbeat 엄밀준수는 판정하지 않았다. release retained/external 뒤 completion ACK0·동일inc idle/빈입력을 확인해 정확pane종료/ptyKilled=true·reclaimable0으로 정산했다. 실행당시 goal97DB 원bytes는 YF/executed-goal-97DB.md, 결과/한계/메모는 YF/report.md·context.md·writing-ended.json·lead-essential-settlement.json·lead-measurement-recalculation.json·lead-terminal-close.json이다. 새 실행창/작업자·검증자는 없고 이후는 Main 보완 창 배정과 PR직전 신규Opus/CI다.
 
 - **26 - 사용자 지금 플레이·후속75분 실제 시작.** Main msg_550e90f9551f(20:59:31Z, E21/main-followup75-start.md) 사용자 원문(메인05:59KST Enter): 「대시보드 결정 응답: 1) Content 강화·구매 겹침 확인용 직접 플레이 10~15분 — 언제 할지 → A 지금 함(창 바로 시작)」. 창은2026-10-21T20:59:31Z~22:14Z이며 Main 직전관측 대상Unity/dotnet/WSL/7777=0·물리20.2GiB는 작업자의 실제 시작 관측을 대신하지 않는다. 기존Guild.exe재사용/입력동일확인, sync-wsl.sh run 서버1·Player2·새Unity빌드0·DB/SQL0이다. 사용자 완료 메인알림 또는22:04Z 중 먼저 오는 쪽에서 정리,22:14Z「창 반환」을 보낸다. 준비됨은 실제 두창 준비/입력0 뒤 위치·방향·버튼·횟수를 한 단계 한 줄로 전달한다. 새 근거는 G/live-player-followup이며 이전Y/Task/원시는 보존한다.
 
@@ -561,7 +568,7 @@ Art가 쓰는 기존 네 창·`NpcDialogPanel`·공유 표시 helper는 읽기�
 - [x] 창 구조 검증
 - [x] PR251 병합
 - [>] 서버 연결 검증
-- [>] 두 화면 확인(길드·보상·거점 확보, 대장간 강화 미실행)
+- [ ] 두 화면 확인
 - [ ] 연결 화면 병합
 - [ ] 성장 효과 연결
 - [ ] 목표 종료 점검
