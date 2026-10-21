@@ -1,10 +1,10 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **10-21 짧은 경로 하네스의 A~C 구현·자체검사와 정산·작업자 종료를 마쳤다.** 신규 Opus 독립 검증은 다음 단계이며 실제 Unity/Player 실행은 새 Main 창 전0이다. 현재 길드 화면 연결 PR은 Art 효과를 기다리지 않고, C9 효과 소비는 Art 효과 PR 병합 뒤 별도 Content 후속 PR로 진행한다. 실행 창만 남아 대기할 때는 재개 지점을 기록·commit하고 세션을 종료하는 새 사용자 결정을 적용한다. 실제 두 계정/보스/구매/강화·CI·PR별 독립 판정·개별 병합승인과 C9 후속 범위는 남아 있으며 goal 완료가 아니다.
+상태: **10-21 짧은 경로 하네스 A~C의 신규 Opus 독립 강검증을 마쳤다.** A36/36·B37case/188단정·C59/59이며 실제 Unity/Player 실행은 새 Main 창 전0이다. 새 실행자 인계 결함 #6과 W-1~W-7은 D 진입 전 다음 계약에서 고쳐야 한다. 현재 길드 화면 연결 PR은 Art 효과를 기다리지 않고, C9 효과 소비는 Art 효과 PR 병합 뒤 별도 Content 후속 PR로 진행한다. 실행 창만 남아 대기하면 재개 지점 기록·commit 뒤 세션을 종료한다. 실제 두 계정/보스/구매/강화·CI·PR별 독립 판정·개별 병합승인과 C9 후속 범위는 남아 있으며 goal 완료가 아니다.
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 외부 Opus가 하네스 여섯 사본·실제 diff·자체검사 원시를 강 등급으로 독립 검증한다. 실제 정적 진입은 격리된 대역/근거 공간에서 확인하며 Unity/Player/WSL/dotnet/SQL 실행은 하지 않는다. 생산자 READY의 고정 파일·SHA와 후속 새 실행자의 live 권한을 구분하고, 새 실행자 인계는 최신 사용자 결정에 맞춰 다음 계약에서 검증한다. 독립 검증 뒤 Main에 새 단일 창의 길이·시작/마감·lastEntry·Unity수1을 요청한다. 대기열이면 아래 창 대기 종료 절차를 적용한다.
+**다음 첫 일:** 신규 외부 Sol max에게 독립 판정 #6/W-1~W-7의 새 실행자 인계 수정만 위임하고, 쓰기 종료 뒤 새 Opus가 강 등급으로 독립 검증한다. 닫힌 생산자 provenance와 실행 binding/heartbeat를 분리하고 고정 READY·SHA를 새 실행자에게 넘기며 HEAD·goal의 문서 변경 한정 관문을 유지한다. 옛 사본·판정은 보존하고 새 사본·새 출력에서 진행한다. 실제 Unity/Player/WSL/dotnet/SQL은 하지 않는다. 이 수정·독립 검증 뒤 Main에 새 단일 창의 길이·시작/마감·lastEntry·Unity수1을 요청한다. 대기열이면 아래 창 대기 종료 절차를 적용한다.
 
 - Main 재진입 msg_3fffe63cd7b6에 따라 run_5ff5a7b7de60을 consumer_generation2에 연결했다. 현재주소·incarnation·receipt는 `.backups/verification/2026-10-15-guild-client-ui/resume-20261021/`(E21)에 둔다. 옛 handle/Task/Dispatch/실행창은 권한이 아니며 현재 활성 작업자0이다.
 - 같은 노트북이라 근거 이관은 불필요다. fetch 성공: origin/main db0169350dfe54ba6ed247684caae4e498e24c72, 진입 HEAD af2ee62cd3fff1607a0a7e0a080f59612f8ed071의 앞10/뒤0, 받을 commit0이다. 직전 종료 재개 블록 전체는 E21/goal-before-resume.md와 af2ee62c에 보존했다.
@@ -15,6 +15,7 @@
 - 새 하네스 완료 원문은 `C:/dh/content/probe/e/report.md`(904076FF8077B675DD07276AC0F972759482A8DD1896044512EC8DC8DC773B43), READY는 같은 폴더 `source-ready.json`(691B5B99ED12E0453DF2C2A700AAA79BD1A5AB1CBBC24F53DD2BDBC7C8F3284D)이다. 생산 기준은 HEAD7f70/goal13BE이며 이 현재 기록 변경을 소급하지 않는다. 여섯 사본·자체 순수30/0·AST7 오류0·정적 READY exit0은 독립 PASS가 아니다. 현재 고정 plan은 종료된 생산자 ID를 포함하므로 새 실행창의 권한으로 사용하지 않는다.
 - 같은 goal G/`short-path-final/`에 READY·plan·index·report·owned/closed 및 raw106개를 SHA 대조해 복사했다(최장197). E21/`short-path-final-preservation-index.json`·`lead-worker-settlement.md`·`lead-worker-settlement-audit.json`이 원/사본·정산 근거다. 99항목의 hash/bytes/mtime 일치와 종료를 확인했으며 리드 파일1개 과포함은 정산문에서 구분했다. helper는 신호3·공식질문대기208초 제외·08:38:54→09:18:48의2394초 초과/exit1을 반환했다. capacity와 정적 작업 중 생존 신호 공백을 기록하며 제품 확정 실패나 실행 통과로 세지 않는다.
 - 현재 PR2는 효과 비대기/placeholder·임시 글자0이다(Main msg_08f61b506994). C9는 Art 효과 main 병합 뒤 별도 후속 PR의 미완료 조건으로 남긴다. 지금 UI/서버 화면과 두 계정 검증은 승인된 현재 범위대로 진행한다.
+- 12 - 하네스 독립 강검증: G/`qa-short-path/verdict.md`·`verdict.json`과 E21/`lead-verifier-settlement.md`·audit 원문을 보존했다. A~C는 통과이나 C 실제 entry는 예상 HEAD/goal 차이2건을 exit1로 거부했으며 D 준비 완료가 아니다. #1~#5·#7은 낮음/비차단 후속, #6은 중간/다음 D 전 필수다. W-1~W-7과 검증 scratch 보존을 다음 계약에 반영한다. 필수 판정·시험 원시는 대조됐고 manifest상 런타임 TEMP 출력1 부재는 별도 정산에 남겼다. 저장 신호16개의 helper는 max483초/초과6구간이며 수신 원시 범위·실제 lastHeartbeat 차이를 구분했다. 검증자는 정산·정확 pane 종료/재사용0이다.
 
 ## 적용 중인 사용자 결정
 
