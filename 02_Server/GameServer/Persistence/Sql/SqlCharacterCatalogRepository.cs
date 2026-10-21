@@ -125,7 +125,10 @@ public sealed class SqlCharacterCatalogRepository : ICharacterCatalogRepository
         {
             try
             {
-                if (row[5] is not string json || json.Length > 4096) throw new InvalidDataException("Invalid catalog list.");
+                // The SQL scalar FOR JSON subquery returns NULL for an account with no characters.
+                string json = row[5] is DBNull ? "[]" : row[5] as string
+                    ?? throw new InvalidDataException("Invalid catalog list.");
+                if (json.Length > 4096) throw new InvalidDataException("Invalid catalog list.");
                 using JsonDocument document = JsonDocument.Parse(json);
                 if (document.RootElement.ValueKind != JsonValueKind.Array || document.RootElement.GetArrayLength() > 3)
                     throw new InvalidDataException("Invalid catalog count.");
