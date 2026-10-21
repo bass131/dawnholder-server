@@ -168,27 +168,45 @@ namespace Dawnholder.Client.UI
             group.blocksRaycasts = false;
 
             // ── 중앙 패널 ──────────────────────────────────────────
-            GameObject panel = new GameObject("Panel");
-            panel.transform.SetParent(root.transform, worldPositionStays: false);
-            RectTransform panelRt = panel.AddComponent<RectTransform>();
+            Image panelImg = UiWindowAppearance.CreatePanel("Panel", root.transform, raycastTarget: true);
+            GameObject panel = panelImg.gameObject;
+            RectTransform panelRt = panelImg.rectTransform;
             panelRt.anchorMin = new Vector2(0.5f, 0.5f);
             panelRt.anchorMax = new Vector2(0.5f, 0.5f);
             panelRt.pivot     = new Vector2(0.5f, 0.5f);
             panelRt.anchoredPosition = Vector2.zero;
             panelRt.sizeDelta = new Vector2(400f, 180f);
 
-            Image panelImg = panel.AddComponent<Image>();
-            panelImg.color = new Color(0f, 0f, 0f, 0.85f); // 반투명 검정 배경
+            RectTransform headerRt = UiWindowAppearance.CreateHeader("Header", panel.transform).rectTransform;
+            headerRt.anchorMin = new Vector2(0f, 1f);
+            headerRt.anchorMax = new Vector2(1f, 1f);
+            headerRt.offsetMin = new Vector2(10f, -50f);
+            headerRt.offsetMax = new Vector2(-10f, -10f);
+
+            GameObject titleGo = new GameObject("Title");
+            titleGo.transform.SetParent(headerRt, worldPositionStays: false);
+            RectTransform titleRt = titleGo.AddComponent<RectTransform>();
+            titleRt.anchorMin = Vector2.zero;
+            titleRt.anchorMax = Vector2.one;
+            titleRt.offsetMin = Vector2.zero;
+            titleRt.offsetMax = Vector2.zero;
+
+            TMP_Text titleTmp = titleGo.AddComponent<TextMeshProUGUI>();
+            titleTmp.text      = "파티 초대";
+            titleTmp.fontSize  = 28f;
+            titleTmp.alignment = TextAlignmentOptions.Center;
+            titleTmp.color     = Color.white;
+            titleTmp.fontStyle = FontStyles.Bold;
 
             // ── 초대 텍스트 ──────────────────────────────────────────
             GameObject textGo = new GameObject("InviteText");
             textGo.transform.SetParent(panel.transform, worldPositionStays: false);
             RectTransform textRt = textGo.AddComponent<RectTransform>();
-            textRt.anchorMin = new Vector2(0f, 0.5f);
-            textRt.anchorMax = new Vector2(1f, 1f);
+            textRt.anchorMin = Vector2.zero;
+            textRt.anchorMax = Vector2.one;
             textRt.pivot     = new Vector2(0.5f, 0.5f);
-            textRt.offsetMin = new Vector2(10f, 0f);
-            textRt.offsetMax = new Vector2(-10f, -10f);
+            textRt.offsetMin = new Vector2(20f, 64f);
+            textRt.offsetMax = new Vector2(-20f, -64f);
 
             TMP_Text tmp = textGo.AddComponent<TextMeshProUGUI>();
             tmp.text      = "파티 초대";
@@ -206,15 +224,19 @@ namespace Dawnholder.Client.UI
                     "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
             }
 #endif
-            if (font != null) tmp.font = font;
+            if (font != null)
+            {
+                titleTmp.font = font;
+                tmp.font = font;
+            }
 
             // ── Accept 버튼 ──────────────────────────────────────────
             GameObject acceptGo = BuildButton(panel.transform, "AcceptButton", "수락",
-                new Vector2(-70f, -50f), new Color(0.2f, 0.7f, 0.2f, 1f), font);
+                new Vector2(-70f, 36f), UiWindowAppearance.ButtonStyle.Accept, font);
 
             // ── Reject 버튼 ──────────────────────────────────────────
             GameObject rejectGo = BuildButton(panel.transform, "RejectButton", "거절",
-                new Vector2(70f, -50f), new Color(0.8f, 0.2f, 0.2f, 1f), font);
+                new Vector2(70f, 36f), UiWindowAppearance.ButtonStyle.Decline, font);
 
             // ── PartyInvitePopup 컴포넌트 ──────────────────────────
             PartyInvitePopup popup = root.AddComponent<PartyInvitePopup>();
@@ -236,26 +258,16 @@ namespace Dawnholder.Client.UI
 
         // Accept/Reject 공통 버튼 빌더.
         static GameObject BuildButton(Transform parent, string name, string label,
-            Vector2 anchoredPos, Color bgColor, TMP_FontAsset? font)
+            Vector2 anchoredPos, UiWindowAppearance.ButtonStyle style, TMP_FontAsset? font)
         {
-            GameObject go = new GameObject(name);
-            go.transform.SetParent(parent, worldPositionStays: false);
-            RectTransform rt = go.AddComponent<RectTransform>();
+            Button btn = UiWindowAppearance.CreateButton(name, parent, style);
+            GameObject go = btn.gameObject;
+            RectTransform rt = (RectTransform)go.transform;
             rt.anchorMin       = new Vector2(0.5f, 0f);
             rt.anchorMax       = new Vector2(0.5f, 0f);
             rt.pivot           = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = anchoredPos;
             rt.sizeDelta       = new Vector2(120f, 40f);
-
-            Image img = go.AddComponent<Image>();
-            img.color = bgColor;
-
-            Button btn = go.AddComponent<Button>();
-            // 클릭 시 살짝 어두워지는 Color Tint (Unity 기본 Transition).
-            ColorBlock cb = btn.colors;
-            cb.highlightedColor = new Color(bgColor.r + 0.1f, bgColor.g + 0.1f, bgColor.b + 0.1f, 1f);
-            cb.pressedColor     = new Color(bgColor.r - 0.2f, bgColor.g - 0.2f, bgColor.b - 0.2f, 1f);
-            btn.colors = cb;
 
             // 버튼 레이블 텍스트.
             GameObject labelGo = new GameObject("Label");

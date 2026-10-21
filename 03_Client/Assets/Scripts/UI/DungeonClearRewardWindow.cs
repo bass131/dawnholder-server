@@ -193,13 +193,14 @@ namespace Dawnholder.Client.UI
             SetVisibility(false);
 
             var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
-            _panel = Rect("Rewards", transform, new Vector2(Width, Height), Vector2.zero);
+            _panel = UiWindowAppearance.CreateEmphasisPanel("Rewards", transform).rectTransform;
+            Place(_panel, new Vector2(Width, Height), Vector2.zero);
             _panel.anchorMin = _panel.anchorMax = new Vector2(0.5f, 0.5f);
             _panel.pivot = new Vector2(0.5f, 0.5f);
-            var background = _panel.gameObject.AddComponent<Image>();
-            background.color = new Color(0.06f, 0.07f, 0.10f, 0.95f);
-            background.raycastTarget = false;
 
+            // Backdrops share the existing text areas; the text geometry stays independent of artwork insets.
+            Place(UiWindowAppearance.CreateHeader("Header", _panel).rectTransform,
+                new Vector2(472f, 50f), new Vector2(24f, -14f));
             TMP_Text title = Label("Title", _panel, new Vector2(472f, 50f), new Vector2(24f, -14f), font);
             title.text = "던전 클리어";
             title.fontSize = 30f;
@@ -209,15 +210,15 @@ namespace Dawnholder.Client.UI
             _items = new TMP_Text[DungeonClearRewards.MaxItemKinds];
             for (int i = 0; i < _items.Length; i++)
             {
-                _items[i] = Label("Reward" + i, _panel, new Vector2(472f, 40f),
-                    new Vector2(24f, -146f - i * 42f), font);
+                var rowSize = new Vector2(472f, 40f);
+                var rowPosition = new Vector2(24f, -146f - i * 42f);
+                Place(UiWindowAppearance.CreateInset("RewardInset" + i, _panel).rectTransform, rowSize, rowPosition);
+                _items[i] = Label("Reward" + i, _panel, rowSize, rowPosition, font);
             }
 
-            RectTransform buttonRect = Rect("Confirm", _panel, new Vector2(180f, 54f), new Vector2(170f, -292f));
-            var buttonImage = buttonRect.gameObject.AddComponent<Image>();
-            buttonImage.color = new Color(0.20f, 0.35f, 0.48f, 1f);
-            _confirm = buttonRect.gameObject.AddComponent<Button>();
-            _confirm.targetGraphic = buttonImage;
+            _confirm = UiWindowAppearance.CreateButton("Confirm", _panel, UiWindowAppearance.ButtonStyle.Accept);
+            var buttonRect = (RectTransform)_confirm.transform;
+            Place(buttonRect, new Vector2(180f, 54f), new Vector2(170f, -292f));
             TMP_Text caption = Label("Label", buttonRect, buttonRect.sizeDelta, Vector2.zero, font);
             caption.text = "확인";
             _confirm.onClick.AddListener(Confirm);
@@ -228,11 +229,16 @@ namespace Dawnholder.Client.UI
             var child = new GameObject(name, typeof(RectTransform));
             child.transform.SetParent(parent, worldPositionStays: false);
             var rect = (RectTransform)child.transform;
+            Place(rect, size, position);
+            return rect;
+        }
+
+        static void Place(RectTransform rect, Vector2 size, Vector2 position)
+        {
             rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
             rect.pivot = new Vector2(0f, 1f);
             rect.sizeDelta = size;
             rect.anchoredPosition = position;
-            return rect;
         }
 
         static TMP_Text Label(string name, Transform parent, Vector2 size, Vector2 position, TMP_FontAsset? font)

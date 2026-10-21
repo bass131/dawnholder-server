@@ -4,13 +4,13 @@
 
 - Core: [흐름 전체 DB 표와 캐릭터 저장 연결](../../01_Phases/goals/2026-10-17-character-storage-foundation/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `feat/character-storage-foundation-20261017` · 사용자 빠른 안 승인 · 선행 RED 완료 · API v2·저장 구현 준비
 
-- <a id="content-worktree"></a>Content: [던전 클리어·보상과 눈에 띄는 결함 둘](../../01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `docs/content-dungeon-clear-closeout-20261015`
+- <a id="content-worktree"></a>Content: [길드 현황·거점 성장·대장간 화면](../../01_Phases/goals/2026-10-15-guild-client-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `plan/content-guild-ui-20261015`
 
-- World: [길드 서버 — 클리어 보상에서 거점·무기 성장까지](../../01_Phases/goals/2026-10-14-guild-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `feat/guild-server-20261014`
+- World: [길드 서버 — 클리어 보상에서 거점·무기 성장까지](../../01_Phases/goals/2026-10-14-guild-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `docs/guild-server-closeout-20261018`
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 
-- Art: [10-28 시연 아트 — UI 창·성장 효과·발판 교체](../../01_Phases/goals/2026-10-13-demo-video-art/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active` · `docs/demo-video-art-trial-20261013`
+- Art: [10-28 시연 아트 — UI 창·성장 효과·발판 교체](../../01_Phases/goals/2026-10-13-demo-video-art/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active` · `feat/demo-video-art-ui-20261013`
 
 - Rules: [검증 경량화 정본과 공용 실행 잠금](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/verification-lightening-20261015` · PR243 draft·독립 문서 실사 준비 · [기존 PR2 가드는 동결까지 보류](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점)
 
