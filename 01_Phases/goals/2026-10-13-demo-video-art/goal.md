@@ -1,8 +1,8 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **성장 효과의 최종 독립 기술 검증 통과, 차단 결함 0건, D-1 해소다. 실제 XML 1/7/25 통과·1920/1280 외곽선·보존 근거를 리드가 확인했고 구현자와 검증자는 정산·종료됐다. 실행 창 반환과 ProjectSettings 정확 복원도 완료됐다. 효과 PR254를 열었으며 정확 head의 CI 확인·사용자 병합 승인 대기 단계다. P-1 Editor 프레임 관찰과 미관·미실행 한계를 공개하며 전체 제품 PASS나 goal 완료로 해석하지 않는다. 하우징 전경 두 장은 Main 직접 확인까지 마쳤고 Content 제품 반영은 별도다.**
+상태: **효과 PR254는 사용자 정확 head 승인 뒤 Main이 병합했다. 최종 독립 기술 통과·차단 0·D-1 해소와 실제 XML 1/7/25 통과·CI 네 개 통과를 기록했다. 구현자와 검증자는 정산·종료됐고 자원 반환·ProjectSettings 정확 복원도 끝났다. goal은 계속 진행 중이며 다음은 승인된 HUD 재구성의 후행 준비다. Content 소비 연결·하우징 제품 반영, 발판·지형 범위 판단과 촬영 손질·종료 기록도 남아 있다. P-1과 미관·미실행 한계는 보존한다.**
 
-**다음 첫 일:** [PR254](https://github.com/bass131/dawnholder-server/pull/254)의 최종 head·CI를 대조해 Main에 보고하고 사용자 병합 승인과 Main 실행을 기다린다. 코드·자산·시험은 검증 당시 그대로며 승인된 효과 23파일과 기존 승인 관리 문서 3개가 PR 경계다. 근거는 `growth-effect-pr/final-review-01/verdict.md`, `lead-acceptance.md`와 PR 상태 원시다. 기존 MinimapRT·concept 초안은 제외·보존한다. Content 소비는 병합 뒤 별도 PR이며 새 Unity 실행이나 중간 검증을 열지 않는다. 이 PR의 병합 전 HUD 후행 구현을 시작하지 않는다.
+**다음 첫 일:** 최신 main의 새 `feat/demo-video-art-hud-reconstruction-20261022`에서 승인된 HUD 재구성·표시1~3의 파일 소유와 재사용 자산·수명·완료조건을 새 계약으로 좁힌다. Content의 별도 소비 후속 PR 선행 순서와 실행 자원은 Main 배정에 맞추며, 지금은 병합 결과·남은 범위 기록만 했고 구현 계약 발행·제품 쓰기·새 세션/실행은 없다. 옛 선행시험 v2는 그대로 발행하지 않는다. 기존 MinimapRT·concept 초안과 하우징 전경 패키지를 보존한다. 준비 맥락은 `hud-reconstruction-pr/lead-context.md`, 효과 병합 근거는 `growth-effect-pr/final-review-01/main-pr254-merged.md`다.
 
 **병렬 전경 제작 완료:** 승인 공동안 v3의 같은 구도·글자 없는 레벨1/잠김·레벨2/열림 원PNG 두 장과 출처·배치를 `guild-housing-assets-01/`에 보존하고 제작 세션을 정산했다. Main은 두 원본을 직접 확인하고 Content에 인계를 알린다고 했다. 생산용 호출은 2/3회이며 남은 1회는 쓰지 않는다. 미리보기 제외·709/802/1920 확인·Content 제품 import/meta/UI/Git 단독·PR2 main 뒤 별도 PR·Unity 90분 경계는 v3 그대로다.
 
@@ -14,6 +14,7 @@
 - 완료조건·PR 경계: 이미지1회 제작·실제 원본/사본 경로·SHA256·bytes·크기·구도 확인과 Main 전달을 마쳤다. Main msg_52f6a03326b2의 사용자 「대시보드 결정 응답: 1) 길드 화면 「거점 전경 + 하우징」 콘셉트 디자인 확인 → A 이 방향으로 승인」은 디자인 방향 승인이다. 원문은 `guild-housing-concept-01/design-direction-approval-original.md`, 사본은 같은 폴더 guild-housing-concept-v1.png다. 글자의 「길」 뭉개짐은 게임 글꼴로 새로 쓰며, 제품/독립 PASS와 구분한다. 기존10/10·잔여0, 지금 commit/PR0이다. Art 에셋/해상도·Content 데이터/버튼·보존 접점·PR·시간/10-28 가능·Unity 창을 맞춘 공동안을 한 번 승인받은 뒤 제품 쓰기를 시작한다.
 
 ## 재개 지점
+- **PR254 Main 병합·HUD 후행 준비로 전환:** 현재 Main msg_cb1bb0843892가 정확 head 사용자 승인과 Main 병합을 전달했다. 리드가 GitHub의 MERGED·21:55:59Z·merge commit 71976dab…와 최신 main을 대조하고 그 main에서 HUD 준비 branch를 만들었다. 효과 병합 단계는 완료이며 goal 전체 종료가 아니다. 남은 HUD 재구성/표시1~3·Content 소비/하우징 반영·발판/지형 판단·촬영 손질/종료 기록을 아래 결과에 분리했다. 이번에는 goal/CURRENT 기록만 쓰며 새 구현/실행은 없다.
 - **PR254 열림·정확 head CI 확인:** Main의 잠금 정리 뒤 기본 Git으로 선행 시험 6개와 제품·독립 시험 17개를 커밋·푸시해 [PR254](https://github.com/bass131/dawnholder-server/pull/254)를 열었다. 이 goal의 최종 결과·PR 단계도 같은 branch에 반영한다. 제품·시험 bytes는 검증 뒤 바꾸지 않았고 기존 MinimapRT·concept 초안은 제외했다. 정확 head·CI 상태를 Main에 보고하고 병합은 사용자 승인 뒤 Main만 수행한다. 상세 Git 결과는 `growth-effect-pr/final-review-01/`에 남긴다.
 - **Main 잠금 정리 완료·기본 Git 재개:** 현재 Main msg_e2ab4b83b2b1은 21:23:49Z에 0B 잠금을 삭제했다고 알리고 commit/push·PR 뒤 번호·정확 head·CI 보고를 지시했다. 리드가 잠금 부재와 기본 fetch를 확인했다. 최신 main은 작업 시작 기준과 같고 파일 충돌은 없다. 아래 대기 기록은 당시 상태로 보존하며 기본 Git으로 PR 작업을 잇는다.
 - **외곽선 수정 작업자 최종 정산·종료:** 현재 msg_6dc14068809d의 같은 Task/Dispatch succeeded를 수락했다. 리드가 보고 전문·현재 제품 해시를 대조하고 release 뒤 동일 incarnation·leaf의 완료/빈 prompt를 확인해 정확 terminal만 종료했다. 정산과 source의 credit 관측은 `growth-effect-pr/readability-fix-01/settlement-note.md`다. 구현자와 최종 검증자 모두 종료됐으며 추가 제품 쓰기·실행은 없다. 효과 PR 설명은 준비됐고 Main의 기존 Git 잠금 정리를 기다린다.
@@ -306,7 +307,7 @@
 ### 현재 PR 순서 — A 승인 뒤
 
 1. PR253은 사용자 결정으로 새 콘셉트 재구성 PR에 대체해 종료한다. branch/commit/원시를 삭제하지 않고 이 branch에 push하지 않는다.
-2. 효과 PR은 최신 main의 새 branch에서 전용 표현/자산·시험/API를 제공한다. Main이 지금 세 번째 트랙 착수를 배정했고 Unity는 새 창을 받아 가장 낮은 순위로 실행한다.
+2. 효과 [PR254](https://github.com/bass131/dawnholder-server/pull/254)는 전용 표현/자산·시험/API를 제공했고 사용자 정확 head 승인 뒤 Main 병합을 마쳤다. 실행·독립 판정·CI와 미실행 한계는 결과에 남긴다.
 3. Content의 현재 길드 화면 PR은 효과를 기다리지 않는다. Art 효과 PR 병합 뒤 Content가 별도 소비 후속 PR로 실제 확정 신호/우선창·수명을 연결한다.
 4. HUD 재구성 PR은 효과 PR 뒤 새 main/새 계약으로 시작한다. 발판·지형/종료 기록은 기존 별도 범위를 유지한다. 각 PR 병합에는 별도 사용자 승인이 필요하다.
 
@@ -516,6 +517,10 @@ Main `msg_3d254c772f7a`(2026-10-18T16:16:30Z)는 메인 pane에 Enter로 제출�
 - **실행과 미실행 구분**: 이미지 생성, Unity 가져오기·컴파일·EditMode, 실화면 캡처, Play 모드 녹화, CI를 각각 따로 기록한다. 서버·DB는 이 goal에서 쓰지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 2026-10-22 — PR254 정확 head 병합 승인·Main 병합
+
+Main msg_cb1bb0843892가 메인 pane Enter 제출(06:55 KST)의 사용자 원문 「병합 승인: PR254 head 2f2e1a179a3ccba0471453239271a31b4bef68e7」을 전달했다. Art pane의 사용자 직접 입력으로 격상하지 않는다. Main이 병합 관문의 단독 명령으로 병합했다고 보고했고, 리드도 GitHub의 mergedAt 2026-10-21T21:55:59Z·merge commit 71976dab58c4a842642288685aec84afdeb6daab를 대조했다. 수신 원문은 `growth-effect-pr/final-review-01/main-pr254-merged.md`다. 이 승인은 다른 PR이나 후행의 완료 판정으로 확대하지 않는다.
 
 ### 2026-10-22 — 길드 하우징 공동안v3 착수A
 
@@ -751,12 +756,20 @@ Main의 현황판 관측을 Art가 모든 과거 장면/화면 원시를 재조�
 - [x] PR252 병합
 - [x] 새 재구성 승인
 - [x] 효과 구현·검증
-- [>] PR254 병합
-- [ ] HUD 재구성 PR 병합
+- [x] PR254 병합
+- [>] HUD 재구성 준비
 - [ ] 발판·지형 PR 병합
 - [ ] 촬영 전 손질
 - [ ] 종료 기록 병합
 ## 실제 결과와 미실행
+
+### PR254 병합 뒤 남은 범위
+
+- **완료:** 효과 표현 PR254와 실제 단독 기술 검증·CI·사용자 정확 head 승인/Main 병합. UI 창 PR252·비교 글/무료 시범·콘셉트와 하우징 원PNG 두 장의 제작 성과는 보존한다.
+- **Art 후행:** 승인 콘셉트4·6·7의 개인 상태/확정 HP·직업, 실제 Q/E, 지명·기존 미니맵·진행 안내·재화·파티의 새 HUD와 표시1~3 연결이다. 옛 Party HUD VIS-05·팝업/파티의 실제 전후·최소 화면도 새 HUD에서 확인한다. 새 main/branch·새 계약으로 준비하며 과거 그림 교체 PR253이나 옛 선행시험 v2를 재사용해 완료로 세지 않는다.
+- **Content 소유:** Art API를 실제 확정 신호·현재 session/씬·우선창에 연결하는 별도 소비 PR과, PR2 뒤 하우징 전경을 실제 창에 반영하는 작업이다. 전경 패키지는 그대로 두며 Art가 제품 import/meta/UI를 대신하지 않는다. 효과 단독 통과를 C9 실서버/소비 통과로 세지 않는다.
+- **기존 미완:** 무료 망치질 시트의 Unity 반영은 PR254에 없고 현재 BlackSmith controller의 기본 상태는 기존 Idle clip이다. 이 반영과 발판·지형의 구체 교체 대상·순서, 촬영 손질과 Gardener/종료 기록은 별도 경계로 남긴다. 과거 발판·지형 목표일만으로 세부 범위 승인을 발명하지 않는다.
+- **조건:** HUD가10-26 촬영 전 끝나지 않으면 승인된10-28~11-06 교체 기간으로 넘기는 결정과10-28 기능 동결을 유지한다. 신규 범위/PR 병합 승인을 이미 받은 것으로 확대하지 않으며 P-1·player/실서버/DB 미실행·사용자 최종 미관 한계도 보존한다. goal 전체 완료·R-8 종료 단계가 아니다.
 
 ### 성장 효과 — PR254 최종 기술 검증과 제출
 
