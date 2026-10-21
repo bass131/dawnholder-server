@@ -3,8 +3,9 @@ param([Parameter(Mandatory)][string]$WorkRoot)
 
 # Independent verification of the catalog-test probe source: the real file entry, and the real Invoke-CatalogProbe
 # orchestration with its SQL, host, ACL and credential boundaries replaced in process.
-# - The file entry runs only with refusals that stop before any SQL or private path: a wrong approval hash and a
-#   fixture executor SID that the real host check rejects. Its success path needs the real SQL host; not run here.
+# - The file entry runs only with refusals that stop before any SQL or private path: a wrong approval hash, a
+#   fixture executor SID that the real host check rejects, and an approval reached through a directory junction.
+#   Its success path needs the real SQL host; not run here.
 # - In process, host/ACL/connection/command/credential save/credential hash are recording stand-ins set through
 #   Function:script:, as Set-OfflineStubs does. No-reparse and public-file creation keep the real functions; the
 #   wrappers skip only the private credential folder and inject one receipt failure. Remove-Item is fail-closed and
@@ -160,6 +161,26 @@ Assert-Equal -Name 'File entry: identity refusal reports no SQL start' -Expected
 Assert-Equal -Name 'File entry: identity refusal exits 1' -Expected 1 -Actual $entryExit
 Assert-True -Name 'File entry: identity refusal writes no journal' -Condition (
     -not [IO.File]::Exists($entryPlan.journalPath))
+
+# The same kind of approval, reached through a junction, must stop before its bytes are trusted. Without the
+# no-reparse walk this would fall through to the identity refusal above.
+$linkTarget = New-IndependentEvidence -Name 'reparse-target'
+$linkRoot = Join-Path (New-IndependentEvidence -Name 'reparse-entry') 'link'
+$null = New-Item -ItemType Junction -Path $linkRoot -Value $linkTarget
+$linkPlan = New-IndependentPlan -Evidence $linkTarget
+$linkHash = Save-IndependentJson -Value $linkPlan -Path (Join-Path $linkTarget 'approval.json')
+$global:LASTEXITCODE = 0
+$entryOutput = & $script:ProbeSource -Action Apply -ApprovalPath (Join-Path $linkRoot 'approval.json') `
+    -ExpectedApprovalHash $linkHash
+$entryExit = $LASTEXITCODE
+$entryResult = ConvertFrom-Json -InputObject ($entryOutput -join "`n")
+Assert-Equal -Name 'File entry: approval below a junction is refused' -Expected ReparsePath `
+    -Actual $entryResult.failure.category
+Assert-Equal -Name 'File entry: junction refusal reports no SQL start' -Expected NotStarted `
+    -Actual $entryResult.sqlOutcome
+Assert-Equal -Name 'File entry: junction refusal exits 1' -Expected 1 -Actual $entryExit
+Assert-True -Name 'File entry: junction refusal writes no journal' -Condition (
+    -not [IO.File]::Exists($linkPlan.journalPath))
 
 # 2. Stand-ins for the in-process orchestration.
 function Assert-IndependentHost {
