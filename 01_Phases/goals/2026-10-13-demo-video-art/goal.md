@@ -14,6 +14,7 @@
 - 완료조건·PR 경계: 이미지1회 제작·실제 원본/사본 경로·SHA256·bytes·크기·구도 확인과 Main 전달을 마쳤다. Main msg_52f6a03326b2의 사용자 「대시보드 결정 응답: 1) 길드 화면 「거점 전경 + 하우징」 콘셉트 디자인 확인 → A 이 방향으로 승인」은 디자인 방향 승인이다. 원문은 `guild-housing-concept-01/design-direction-approval-original.md`, 사본은 같은 폴더 guild-housing-concept-v1.png다. 글자의 「길」 뭉개짐은 게임 글꼴로 새로 쓰며, 제품/독립 PASS와 구분한다. 기존10/10·잔여0, 지금 commit/PR0이다. Art 에셋/해상도·Content 데이터/버튼·보존 접점·PR·시간/10-28 가능·Unity 창을 맞춘 공동안을 한 번 승인받은 뒤 제품 쓰기를 시작한다.
 
 ## 재개 지점
+- **후속 아트·애니메이션 계획 초안 완료·종료 준비 재개:** Main msg_88c76e6c8c1a의 글 작업만 이어 art-renewal-animation-followup-plan-draft.md(SHA256 a4e0ac3dc4059ed521159ab79e4b0957be2f00ca6bc82d2bae4fa98f099f6fe7)를 썼다. 현재 실제 에셋/상태·스킬과 설치 AI Assistant2.20.0-pre.2의 GenerateSpritesheet/MCP availability·기본4×4/1024²·견적 경로를 읽고 공식 문서의 형식/비용 설명을 대조했다. 실제 MCP 연결/생성 성공·견적/잔액은 미확인이다. 대상29베이스/51시트와 작은 시연안3베이스/1시트·보정최대1/제안30Credits는 승인 전 계획이다. Art는 원화/표현, 레벨 담당(사용자미정)은 배치·충돌·스폰·포탈 및98_Shared/GameData/Maps 단독 작성자로 제안했다. 조사 메모는 art-renewal-animation-plan/lead-context.md다. 생성/Unity/새작업자0이며 기존 HUD READY·Sol max 첫 단계RED·15분창/별도시작 대기는 바꾸지 않았다. 초안 경로/SHA·예산/담당 결정 요청과 종료 준비를 Main에 보낸 뒤 idle로 끝낸다.
 - **창 대기 정산 완료·종료 준비:** Main msg_0859ae3bf6fb를 적용해 원 작성자 worker_done msg_bd7afbb4cbd9를 작성만 수락했고 READY/report 전문·동일 시험4hash를 대조했다. release retained 뒤 같은 incarnation/leaf의 완료·빈 prompt를 확인해 정확 terminal만 close(ptyKilled=true)했다. READY는 hud-reconstruction-pr/pretest-01/READY.md, SHA256 0a58115e6312d56dd2442d475af0d6589436635c5b85b3d6609c869b8b5cce45, Q1/Q2 확정 보충은 lead-acceptance.md다. 신규 Sol max 첫 단계 실제 RED 경로를 선택했다. 준비 계약은 implementation-01/contract.md(SHA256 d3f03689dc8b89b00e99885a53b6dc6da89c26cbc1d361e2c562fe63044f5108)이며 입력18·새 출력4/부모3의 실제 경로를 대조했다. 필요한 창15분·Content→World→Art·예상00:40Z 전후/시작 미허가, Unity.exe 관측 0 개(2026-10-21T23:19:11.4260511Z)이며 실제 시작 전 Main 재확인이 필요하다. 새 Art 리드가 같은 Run을 인수하고 Main 시작을 받은 뒤 계약의 현재 기준/모델·보호 hash를 확인해 발행한다. 현재 실행0·RED/제품PASS0·새 구현자0이며 창 밖 준비도 끝났다. 기록 local commit 뒤 Main에 종료 준비를 보내고 idle로 둔다.
 - **HUD 시험 작성 종료·실행 창 요청 준비:** msg_3babbd6857e6의23:01:25Z 쓰기 종료를 수신했고 report/context 전문과 실제 시험 소스·4개 hash를 대조했다. 새 EditMode11/PlayMode6은 미실행이며 정적 예상 RED를 실제 실패로 세지 않는다. 공식 질문 msg_ca4b7729fa9f의 명령/15분/Unity1을 Content 창 뒤 Main 새 배정에 연결한다. Q1 직업 한/영 이름 허용·Q2 시험 중 dispatcher 일시 정지/finally 복원은 요구 범위 안이다. 메인 결정 msg_5137ee030ae4의 Art 폴더 상태줄 원문은 아래와 pretest-01/main-statusline-decision.md에 보존한다. 설정 쓰기0·실행0·신규 실행 전담0이다.
 - **Main 재삭제 확인·기본 Git 재개:** Main msg_6bdd6b70be37의23:00:38Z 삭제(0B·10분·git0)를 수신하고 현재 잠금 부재를 확인했다. 재개 기록만 기본 Git으로 커밋한다. Claude 상태줄의 반복 git diff와 잠금 시각이 겹친다는 Main의 추정은 미확정이며, 상태줄/설정은 변경하지 않는다. 재발 시 크기·created/mtime·git.exe 수만 보고한다. 선행시험 작성과 Content 창 뒤 새 HUD 실행 배정 경계는 유지한다.
@@ -525,6 +526,17 @@ Main `msg_3d254c772f7a`(2026-10-18T16:16:30Z)는 메인 pane에 Enter로 제출�
 - **실행과 미실행 구분**: 이미지 생성, Unity 가져오기·컴파일·EditMode, 실화면 캡처, Play 모드 녹화, CI를 각각 따로 기록한다. 서버·DB는 이 goal에서 쓰지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 2026-10-22 — 아트 전면 개선·애니메이션 후속 계획 초안 요청
+
+Main msg_88c76e6c8c1a(2026-10-21T23:23:26Z)가 아래 사용자 원문을 전달했다(10-22 08:1x KST, 메인 채팅). Art pane의 사용자 직접 입력이나 생성·실행 승인으로 격상하지 않는다.
+
+> 「아트쪽에 후속작업 하는김에, 그 후속플랜에 / 기존의 타일맵, 구조물(마을, 전투맵 등), 캐릭터 디자인 업그레이드 / -> 전부 애니메이션까지 포함해서 / 1. 베이스 이미지를 Idle 기준으로 하나 뽑고(Sol로 ImageGen을 먼저 함) / 2. 베이스 이미지 기준으로 각 요소에 필요한 애니메이션 리스트를 먼저 생각함 / 2-1. 캐릭터면 각 스킬과 공격모션, 동작 애니메이션 -> 유니티 AI 애니메이션 시트 생성으로 시도, MCP로 가능할듯 / 최대한 생동감 있는 2D 게임으로 진화 시키고 싶음 / 그리고 맵 레벨디자인이 좀 단조로운데, 그 부분도 다른 파트에 작업시키고 싶네」
+
+메인 지시는 HUD 뒤 후속 계획 초안 한 파일의 글 작업뿐이다. 현재 에셋 경로·실제 상태/스킬, Idle 베이스별 수량, 필요한 환경 동작, 설치 Unity AI/MCP의 2D 시트 경로/형식/비용을 읽기 전용으로 조사하고 10-28 전후·담당 경계·Maps 데이터 작성자를 제안한다. 이미지 생성·Unity AI 생성·Unity 실행·작업자 기동0이며 실행은 사용자 계획 승인 뒤다. 레벨 담당 파트는 사용자 결정 대기다. HUD 재개/Content→World→Art 창 순서는 유지한다.
+
+산출물은 [아트 전면 개선·애니메이션 후속 계획 초안](art-renewal-animation-followup-plan-draft.md)이다. 현재 대상29베이스·51시트(예비 포함 Sol32호출/Unity56작업)는 제안 수량이며 새 예산 승인이나 기존 HUD/하우징 잔여 호출 사용이 아니다. 시연 전에는3베이스·불꽃1시트(보정 포함 최대2), 제안30 Unity Credits 상한부터 검토하고 전체 생산비는 실제 견적 뒤 별도 판단한다. Claude MCP 제작 역할과 레벨/Maps 단독 작성자도 미승인 제안이다.
+
 
 ### 2026-10-22 — Art 폴더에만 잠금 없는 상태줄
 
