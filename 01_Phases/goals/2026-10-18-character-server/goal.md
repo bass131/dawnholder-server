@@ -6,9 +6,21 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: 오류 매핑 시험 최소 보완·정적 READY 완료, 새 실행 창 대기·세션 종료 준비.** 마지막 실행 완료는 Unity 실제session313 GREEN·서버 요청/응답 조립407 GREEN이다. Core 오류 매핑 신규 시험2파일328줄은 정적 READY까지만 작성했으며 컴파일·시험 발견수·RED/PASS는 미관측이다. 전송217GREEN·Shared22 배포는 유지하며 실제 Core bridge·저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
+**상태: 오류 매핑 선행 실행·전수 분류 완료, Core 최종 소비 코드 인계 대기.** 새 실행은 빌드 오류0·경고57, 실제 TRX589=기존407P/신규182제품부재RED/skip0이다. 신규182는 mapper 존재 첫 단정에서 멈춰 Core 의존·서명·의미·wire는 미도달이다. 전송217·Unity 실제session313의 과거 GREEN은 유지하며 실제 Core bridge·저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
 
 ## 재개 지점
+
+**다음 첫 일: Core의 최종 소비 코드 인계·검증 기준과 정확 파일별 쓰기 이전 확인 → 현재 기준 입력 고정 → 신규 Sol max에게 실제 Core enum을 받는 좁은 오류 mapper 구현 계약.** Core `msg_518e1d92bcf6`는 APIv2/소스12개를 읽기 전용으로만 제공했고 최종 소비 가능 코드 인계는 아직 없다고 명시했다. 현재 World에 Core catalog 타입·mapper가 없으므로 미검증 복사나 가짜 Core로 이 선행조건을 우회하지 않는다. 후속은 mapper 한 책임부터 시작하고 서비스 adapter·tick/generation·handle Close·54→48→기존 입장은 별도 좁은 계약으로 잇는다. 이 goal은 진행 중이며 제품/전체 검증 완료나 병합이 아니다.
+
+이번 실행 근거 E는 `.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-pretest-03/`다. 새 세션이 Main `msg_832c4db2b8a5`로 같은 Run `run_90d18490c825`를 현재 handle로 인수한 뒤 새 Opus 실행자에게 제품·시험 readonly의 선행 실행을 발행했다. 현재 Task/Dispatch·모델/화면·고정 SHA와 정산 원시는 E의 `runtime-binding-v1.json`, `lead-worker-start-v1.json`, `lead-settlement-review-v1.json`을 따른다. 이전 handle·Task·창·clone·prepared/approval은 역사이며 다음 실행 권한이 아니다.
+
+- **실제 결과:** 기존 Capture A→B→C→D를 정확1회 실행해 A0/B0/C1/D0·retry/kill0이었다. 빌드 오류0·경고57로 T1/T2 컴파일 결함이 해소됐고, TRX589=407P/182F/skip0을 실제 발견했다. 기준6클래스407의 fullname/결과 누락·추가·변경0, 신규182의 모든 message/첫frame은 `CharacterMenuCatalogFailureMappingTestSupport.cs:25`의 mapper 타입 부재 RED로 일치했다. 뒤 Core 의존·서명·의미·wire 단정은 미관측이며 의미 통과/실패나 실제 회귀로 세지 않는다. 원문 `report.md`·`metadata.json`, 리드 전수 대조 `lead-trx-review-v1.json`과 실행 파일 `lead-review-trx-v1.ps1`에 연결했다.
+- **반환·정산:** D 자원/runtime0·동일lock 재획득·source/Plugins742·backup742·prepared580·승인16 보존을 먼저 읽고 Main `msg_16346dade28d`로 TRX 해석 전 창을 반환했다. 전체쓰기종료·정확 worker_done·보고/감사118 SHA차이0을 대조하고 completed·identity·idle→release(retained/external)→정확pane close(ptyKilled true)·리드 생존을 확인했다. 열린 World 작업자는 없다. 기존 helper의 보통 신호 간격 초과0이며 공식 질문 대기를 별도 분리했다(`lead-liveness-v1.json`). succeeded는 실행·분류 완료만 뜻하고 제품 PASS/전체 강 독립판정이 아니다.
+- **보고 정정:** 작성자의 경고 상세 parser가 대문자 코드만 추출해 xUnit11종을 누락했다. 원문92발생/46종을 전체114발생/57종으로 원시 재집계했고 기준 실행도 같은57종·신규/삭제0, 두 보완 시험 진단0이었다. 원문을 보존하고 `lead-diagnostic-correction-v1.1.json`·`lead-review-diagnostics-v1.1.ps1`에 정정했으며 불일치는 Main `msg_3e42988c378c`로 즉시 보고했다. 빌드 요약57warning/0error와 TRX 결과는 바뀌지 않는다. 이번 첫 관측은 결과/근거 기록으로 남기며 새 공용 규칙·도구를 만들지 않았다. 리드 자체 기록 형식 교정도 `lead-settlement-review-v1.json`에서 원문과 연결했다.
+- **Core 접점:** `msg_dc0e289ccd6d`로 현재 Run/Task·소비 상태를 보냈고 Core 고정 note/manifest SHA와 실제12파일 차이0을 확인했다(`lead-core-fixed-source-review-v1.json`). 최종인계 보류·Program/ServerHost/RuntimeStartup/AdmissionServices/Lifetime Core 소유·World session/menu 책임을 유지한다. `msg_2392c1cdb5cd`로 선행 RED·다음 좁은 계약 순서를 회신했다. 실제 Core API/DB 저장·재접속·실패 수명·새 wire/입장 통합은 남아 있으며 runtime19의 SQL 인증 기동 확인을 전체 Catalog/World 통과로 확대하지 않는다.
+- **다음 경계:** 이번 원본 제품·시험 변경0, DB/7777/Unity/DLL배포/역복사/설치/전역변경0, push/PR/merge0이다. 이후 실행은 현재 HEAD/goal·새 Task·고정 입력·새 Main 창으로 별도 승인하며 이번 approval을 다시 쓰지 않는다. Core 최종인계 전에는 읽기 전용 계약 조율만 진행하고 리드는 우편함 wait/sleep/반복 조회를 열지 않는다.
+
+### 2026-10-21 재실행 전 인계 — 당시 상태
 
 **다음 첫 일: 창이 열리면 메인이 연 새 리드 세션에서 고정 시험 SHA 재확인 → 새 실행자/현재 기준 입력 → A→B→C→D.** Main `msg_80a517f29947`의 사용자 결정에 따라 창을 기다리며 세션을 유지하지 않는다. 현재 시험 보완 작성자는 정산·종료했고 리드는 이 재개점과 사용자 결정 원문을 local commit한 뒤 메인에 종료 준비를 보고하고 턴을 끝낸다. 리드 pane은 메인이 idle을 확인해 닫는다. 다음 진입은 **같은 대화 이어 붙이기가 아닌 새 세션**이며 같은 Run `run_90d18490c825`를 현재 handle로 인수한다. 이 goal은 진행 중이며 완료/병합이 아니다.
 
