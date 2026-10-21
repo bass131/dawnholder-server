@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 사용자 관리자 Resume Applied·exit 0 보고 수신, 결과 처리 재개점 확보.** 메인 msg_c086540bbeb2가 전달한 사용자 출력이며 실제 DB 상태의 독립 확인은 아직 없다. 출력 원문·receipt 경로/SHA/mtime은 .backups/verification/2026-10-17-character-storage-foundation/db-source-applied-15/에 보존했다. 독립13의 계약 범위 통과와 실제 환경 결과를 구분하며, 전체goal은 미완료다.
+**상태: Resume 결과의 읽기 전용 확인은 검증 SQL 결함으로 보류, 새 검증 준비.** 사용자 Applied·exit0 보고와 입력/receipt hash는 보존됐다. 독립17은 master 조회1회가 CONCAT collation 충돌로 실패해 대상DB 조회를 실행하지 않았고, 제품 결함 여부·실제 적용 상태는 미확인이다. 조회문 보정과 신규 Opus·새 실행 창으로 이어간다. 전체goal 미완료.
 
 ## 요구사항 원천과 적용 결정
 
@@ -255,12 +255,16 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**현재 갈래: 결과 처리 — 10-21 재개, 읽기 전용 DB 확인 계획·실행 창 준비.** 메인 msg_a8a0f2becaa7의 동일 목표 재개 지시에 따라 최신 main을 통합했다. 보존 출력과 entry/execution/binding hash는 일치한다. 다음은 신규 Opus의 읽기 전용 ApplyMigrations·CreateRuntimeLogin 상태 확인과 실행 근거 판정, 그 뒤 소비 인계 검증이다. DB 실행은 계획과 메인 창 승인 뒤 진행한다. 사용자 Applied·exit0는 독립 확인 전이며 만료2026-10-19T06:00Z가 지난 옛 Resume/Verify/Cleanup은 재실행하지 않는다. 10-19 종료 때의 새 실행0 지시는 당시 종료 정산 기록으로 보존한다.
+**현재 갈래: 결과 처리 — 새 검증 조회문 보정과 실행 창 준비.** 독립17의 검증 SQL collation 충돌(D17-1)로 master1회 exit1/행0·target0, DB 적용 상태는 미확인이다. 다음은 신규 Opus에서 D17-1/미실행 위험 D17-2를 새 SQL파일에서 보정하고 READY hash를 확인한 뒤 새 메인 창에서 읽기 전용 재관측하는 일이다. 17세션은 정산·종료했다. 범위는 그대로이며 옛 Resume/Verify/Cleanup 재실행0, 비밀읽기0. 현재제품·receipt보존, 소비인계는 실제DB/서버 저장재접속 검증 뒤다.
 
 1. **실행 전(과거 분기, 현재 선택하지 않음):** 만료 전이고 메인이 사용자 명시 승인을 전달했는지 확인한다. `.backups/verification/2026-10-17-character-storage-foundation/db-source-ready-14/ready.md`의 정확한 새 명령·hash를 검토해 메인 사용자 실행으로만 진행한다. 승인 없는 에이전트 실행0, 옛06 READY 재사용0.
 2. **실행 결과 처리:** 사용자가 종료 전에 실행했다면 메인이 전달한 stdout/stderr/exit·시각을 먼저 보존·직접 대조한다. 성공/실패/불명확을 구분하고 동일 명령을 재실행하지 않는다. 성공 뒤에도 실제 Verify/TLS·서버 저장재접속은 별도 실행범위 확인 후 진행한다. 실패·불명확이면 새 attempt/journal을 보존하고 현재 상태 조사·후속 계획부터 새 계약으로 준비한다.
 3. **만료 뒤 재계획:** 실행 계획 만료는 **2026-10-19T06:00:00Z =15:00 KST**다. 만료했으면 옛 명령 실행·만료 값 변경0. 기존 lifetime/attempt/snapshot과 실제 자원 상태를 보존하고, 승인된 읽기 관측→복구/정리 또는 새 계획의 범위·사용자 승인을 메인과 정한다. 현재 GUID를 과거 소유 근거로 자동 채택하지 않는다.
 
+### 10-21 읽기 전용 DB 확인 1차 결과
+- 신규 Opus 독립17은 master1회(08:26:22.901Z~08:26:23.086Z)에서 검증자 SQL의 collation 충돌 Msg451로 exit1·행0, target미실행. D17-1 fixture차단·D17-2 동류 정적위험이며 제품 확정 실패로 세지 않는다. 리드 SQL diff에서도 이 경계를 놓쳤다. 새 공용검사/창밖컴파일은 추가하지 않고 조회문만 다음 신규세션에서 보정한다.
+- 보호입력81/81·receipt6/6 보존, SQLCMD0 관측 후 메인에 창을 즉시 반환했다. 정확17세션 쓰기종료·release·pane종료 완료. 판정 원문 `.backups/verification/2026-10-17-character-storage-foundation/db-state-review-17/reviewer/report.md` SHA256 `21D1440D6D47707A710EC07B336F76B1A9555A3B1EA65A51DEB8EDAD880DC6BF`.
+- 실행·수신·생존 신호 정산과 한계는 같은 근거의 `settlement.md`, `liveness.json`, `reviewer/raw/`에 둔다. DB·TLS·실제 저장·소비 인계는 통과하지 않았다.
 ### 사용자 실행 결과 보존 — 2026-10-19 KST
 - 원문 `db-source-applied-15/user-output.txt` SHA256 `45D5F33BFF2E6FF004E3B100C04B042FAAC99CBECDC4B31B304622263DFF4C30`. 메인 전달 출력 `Resume/Applied`, `child exit=0`; ownership `1A1AF5F255A7CEAF1FD2F97A0E1D36488C35A1F96FFD8458CFD0F99C3205D855`, execution `8217F86FC5E663CA6178E0E0510D8AD88BD1512056EA41AAD2706185A70822B6`, binding `FFC1FE12CAB927EB561537F71D5755F9159A234B3E80BC9D90A4CB8296296CC2`로 기존 고정 값과 일치한다.
 - private receipt 6개 경로·SHA·크기·mtime은 `db-source-applied-15/private-receipt-hashes.json`에 보존했다. 내용 열람0. 새 resume/initial과 lifecycle/resources의 mtime은 2026-10-18T22:36:46.1408032Z~22:36:50.9901439Z이며 실행 시작·종료 시각 자체는 아니다. snapshot과 옛 attempt는 기존 시각/해시다.
