@@ -11,6 +11,9 @@ using Shared.Protocol;
 using TMPro;
 using UnityEngine;
 using UnityEngine.TestTools;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Dawnholder.Client.Tests.PlayMode
 {
@@ -29,6 +32,15 @@ namespace Dawnholder.Client.Tests.PlayMode
         const int ClearConfirmLength = 5;
         const string ConfirmLabel = "확인";
         const float OpenSeconds = 3f;
+
+        // Art 06 verification: the approved Accept states, name → .meta GUID (Art/UI/Components, import-spec.json).
+        static readonly Dictionary<string, string> AcceptGuids = new Dictionary<string, string>
+        {
+            ["Button_Accept_Normal"] = "304984e555104bf5b7d8648af717c165",
+            ["Button_Accept_Highlighted"] = "ce276490b85b4f7fa5f674b0f2546e87",
+            ["Button_Accept_Pressed"] = "0525c0bba70a41ad8bf71baebe25bc9f",
+            ["Button_Accept_Disabled"] = "296d9f9387434c4cbc07115da1352309",
+        };
 
         MapEntryPlayFixture _fixture;
 
@@ -105,6 +117,59 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual(0, Confirms().Count, "nothing confirmed the result on the way to Ending");
         }
 
+        // Art 06 independent verification (verifies task_f7615fd3886f). ui-window-application-scope.md 「보존 계약」: the
+        // disabled state is the approved sprite and the existing interactable decision stays where it is. While the next
+        // map loads, the still shown Town 「확인」 shows the approved disabled sprite through the existing send gate; the
+        // next gameplay scene's window for the kept result shows the approved normal sprite again. Nothing is sent.
+        [UnityTest]
+        public IEnumerator ConfirmWhileTheNextMapLoads_ShowsTheApprovedDisabledSprite_AndTheNextMapShowsTheNormalSpriteAgain()
+        {
+            const int gold = 6428;
+            yield return EnterReadyTown();
+            _fixture.Peer.Send(Wire(ClearResult((byte)InventoryResult.Success, gold, ((int)ItemId.Material, 1))));
+            bool opened = false;
+            yield return ScreenUiProbe.WaitUntil(() => WindowShows(gold), OpenSeconds, met => opened = met);
+            Assert.IsTrue(opened, "precondition: a valid success result opens the Town window");
+            yield return _fixture.Frames(2);
+            Component townButton = ConfirmButtons().Single();
+            string townReady = PieceName(ShownButtonSprite(townButton));
+            bool townInteractable = Interactable(townButton);
+
+            _fixture.Peer.Send(new S_MapTransition { destMapId = 1, spawnX = 2, spawnY = 0 }.Write());
+            yield return MapEntryPlayFixture.Wait(() => !_fixture.Session.CanSendGameplay, "the HuntingGround entry starts", 3);
+            // The window publishes the send gate to its button in LateUpdate, so each later frame is read while shown.
+            var whileLoading = new List<string>();
+            float until = Time.realtimeSinceStartup + 2f;
+            while (Time.realtimeSinceStartup < until)
+            {
+                yield return null;
+                if (townButton == null || !ScreenUiProbe.IsShown(townButton)) break;
+                string shown = PieceName(ShownButtonSprite(townButton));
+                whileLoading.Add($"{shown} interactable={Interactable(townButton)}");
+                if (shown == "Button_Accept_Disabled") break;
+            }
+            yield return MapEntryPlayFixture.Wait(() => _fixture.Session.Entry.MapId == 1 && _fixture.Session.Entry.SceneReady,
+                "HuntingGround scene", 10);
+            _fixture.Hp(41, 100);
+            yield return _fixture.WaitMap(1);
+            bool shownAgain = false;
+            yield return ScreenUiProbe.WaitUntil(() => WindowShows(gold), OpenSeconds, met => shownAgain = met);
+            yield return _fixture.Frames(2);
+            Component[] nextButtons = ConfirmButtons();
+            string nextReady = nextButtons.Length == 1 ? PieceName(ShownButtonSprite(nextButtons[0])) : $"{nextButtons.Length} shown 「확인」 buttons";
+            Debug.Log($"[reward art verify] Town {townReady} interactable={townInteractable}, while loading [{string.Join(", ", whileLoading)}], " +
+                $"HuntingGround shows {gold} {shownAgain} with {nextReady}, confirms {Confirms().Count}");
+
+            Assert.AreEqual("Button_Accept_Normal", townReady, "scope: the ready Town 「확인」 shows the approved normal sprite");
+            Assert.IsTrue(townInteractable, "the ready Town 「확인」 is interactable");
+            Assert.IsNotEmpty(whileLoading, "precondition: the Town window is still shown for a frame after the map entry starts");
+            Assert.AreEqual("Button_Accept_Disabled interactable=False", whileLoading.Last(),
+                "scope: while the connection cannot send gameplay requests the shown 「확인」 is disabled with the approved disabled sprite");
+            Assert.IsTrue(shownAgain, "client.md: the next gameplay scene's window shows the unconfirmed result again");
+            Assert.AreEqual("Button_Accept_Normal", nextReady, "scope: the next map's 「확인」 shows the approved normal sprite again");
+            Assert.AreEqual(0, Confirms().Count, "nothing confirmed the result on the way");
+        }
+
         IEnumerator EnterReadyTown()
         {
             yield return _fixture.EnterScriptedTown();
@@ -113,6 +178,28 @@ namespace Dawnholder.Client.Tests.PlayMode
         }
 
         static Component[] ConfirmButtons() => ScreenUiProbe.ShownButtons(ConfirmLabel);
+
+        // uGUI is reached by reflection, as ScreenUiProbe does; "overrideSprite" reads what the Image draws now.
+        static Sprite ShownButtonSprite(Component button)
+        {
+            var graphic = (Component)button.GetType().GetProperty("targetGraphic").GetValue(button);
+            return graphic != null ? (Sprite)graphic.GetType().GetProperty("overrideSprite").GetValue(graphic) : null;
+        }
+
+        static bool Interactable(Component button) => (bool)button.GetType().GetProperty("interactable").GetValue(button);
+
+        // The approved name when the sprite is the asset behind that name's GUID; otherwise what it is.
+        static string PieceName(Sprite sprite)
+        {
+            if (sprite == null) return "nothing";
+#if UNITY_EDITOR
+            string guid = AssetDatabase.TryGetGUIDAndLocalFileIdentifier(sprite, out string found, out long _) ? found : null;
+            bool approved = AcceptGuids.TryGetValue(sprite.name, out string expected) && expected == guid;
+            return approved ? sprite.name : $"non-approved '{sprite.name}' (GUID {guid ?? "none"})";
+#else
+            return sprite.name;
+#endif
+        }
 
         static bool WindowShows(int gold)
         {

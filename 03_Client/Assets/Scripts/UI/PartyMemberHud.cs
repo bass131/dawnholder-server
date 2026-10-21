@@ -2,6 +2,7 @@
 using Dawnholder.Client.State;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Dawnholder.Client.UI
 {
@@ -24,6 +25,7 @@ namespace Dawnholder.Client.UI
 
         CanvasGroup? _rootGroup;
         bool _subscribed;
+        bool _appearanceInitialized;
 
         // **자기-비활성 함정 회피**: _root는 이 컴포넌트가 붙은 GameObject(Party_Info) 자신이다.
         // 예전엔 Refresh에서 _root.SetActive(false)로 껐는데, 그러면 컴포넌트 자신이 비활성화돼
@@ -40,6 +42,14 @@ namespace Dawnholder.Client.UI
                     cg = _root.AddComponent<CanvasGroup>();
                 _rootGroup = cg;
                 _rootGroup.alpha = 0f; // 바인딩 전 빈 패널 깜빡임 방지
+                if (!_appearanceInitialized)
+                {
+                    if (_root.TryGetComponent<Image>(out var background))
+                        UiWindowAppearance.ApplyPanel(background);
+                    if (_member0Text != null) UiWindowAppearance.AddInsetBehind(_member0Text.rectTransform);
+                    if (_member1Text != null) UiWindowAppearance.AddInsetBehind(_member1Text.rectTransform);
+                    _appearanceInitialized = true;
+                }
             }
         }
 
