@@ -126,10 +126,15 @@ public sealed class CharacterSelectionHandle
             _ = CharacterCatalogService.ObserveAsync(probeTask);
             return new(CatalogStatus.Unavailable, _request);
         }
+        if (probe?.Status is ReadAdmissionStatus.ReadFailed or ReadAdmissionStatus.NotDispatched)
+            return new(CatalogStatus.Unavailable, _request);
         if (probe?.Status != ReadAdmissionStatus.Probe || probe.Admission is not { } admission ||
-            !admission.SchemaCompatible || !admission.BindingMatches || !identity.Equals(admission.ObservedAuthority.Identity))
+            admission.ObservedAuthority is not { } authority)
             return new(CatalogStatus.IntegrityFailure, _request);
-        PersistenceAuthority authority = admission.ObservedAuthority;
+        // API order is structural validation, then schema, then identity; none of these failures publish stored data.
+        if (!admission.SchemaCompatible) return new(CatalogStatus.SchemaMismatch, _request);
+        if (!admission.BindingMatches || !identity.Equals(authority.Identity))
+            return new(CatalogStatus.IntegrityFailure, _request);
         if (authority.OwnerKind == PersistenceOwnerKind.Recovery) return new(CatalogStatus.RecoveryRequired, _request);
         if (authority.OwnerKind == PersistenceOwnerKind.Runtime) return new(CatalogStatus.Busy, _request);
         PersistenceSubmission submission;
