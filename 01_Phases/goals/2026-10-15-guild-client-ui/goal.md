@@ -1,10 +1,17 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **Content 실서버·두 Player 실행 창 배정·새 작업자 발행.** Main msg_8623be69f1b3가2026-10-21T19:11Z~20:41Z의90분을 시작 승인했다. 일반 Player 빌드→메모리 서버→Player2의 길드 실화면·범위 안 수정/자체 확인을 새 작업자 한 명이 잇는다. DB·SQL·비밀 변경/새 하네스·도구 수리·중간 검증0이다. 실제 두 계정·Town/전투·길드/대장간 완료는 아직 미실행이다.
+상태: **두 계정 길드·보상·거점 성장 실화면 확보·창 반환·작업자 종료.** 일반 Player와 메모리 서버로 초기 금고10/거점1, 두 보상50·재료1·재화 주머니1과 금고30, 정상 구매 뒤 두 금고0/거점2/대장간해금을 확인했다. 개인 강화·동일대상 피해, 구매 경합/거부, 나머지 입력/해상도와 PR 직전 독립 검증·CI는 미실행이다. 현재 실행/활성 작업자0이며 전체 PR2 PASS가 아니다.
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 외부 Sol max 한 명에게 현재 PR2 범위와19:11Z~20:41Z 실행을 연결한다. 기존 snapshot에서 probe define만 제외한 일반 Player 빌드→`wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh run` 메모리 서버→802×451 Player 두 창·다른 계정의 길드 확인을 잇는다. 시작 직전 실제 SDK·메모리 모드·7777 소유/자원을 확인하고 서버 직후·두 Player 시작 뒤 각각 물리/commit 여유를 남긴다. 첫 길드 화면 경로는 즉시 Main, 종료/실패는 환경확인 뒤 창 반환부터 보낸다. 같은 작업자가 범위 안 제품수정·자체확인을 계속하며 PR 직전 신규 Opus1회/CI/사용자 정확 head 병합승인은 남긴다.
+**다음 첫 일:** Main의 별도 시작을 받은 뒤 신규 외부 Sol max 한 명이 현재 PR2의 C5·C4 잔여·C8을 이어 확인한다. 기존 일반 Player를 입력 동일 확인 뒤 재사용하고 메모리 서버1/Player2의75분(정리10분 포함), 사람 실제 입력10~15분을 요청했다(msg_9f0fb42067c5). 시작 전 실행/새 worker0이다. 종료 Task는 재사용하지 않는다. World에 두 공유파일 쓰기 종료·기준1484265/diff0을 인계했으므로 재조율 전 해당 파일 쓰기0이다. 자체 확인 뒤 PR 직전 신규 Opus1회·CI·사용자 정확 head 병합승인은 남는다. 승인된 하우징 v3는 PR2 main 통합 뒤 최신main 새 브랜치/별도PR로 시작한다.
+
+- **23 - 일반 Player 두 계정 실화면·정산.** task_d48f974d719d/ctx_8ae485f77a20(신규 Sol max, backend unknown)는 일반 build177.462초/exit0 뒤 메모리 서버와 실제 guildlivea/guildliveb로 진행했다. 두 첫 길드 PNG에서 회원/온라인2·금고10·거점1/2, 사람 플레이 뒤 두 Boss Room 클리어 보상과 A20→70/B10→60, Town 금고30, A 정상 구매1회 뒤 양쪽 금고0/거점2/2/대장간해금을 리드가 직접 봤다. 리더B F8 발신/서버수신 각1건으로 정상 퀘스트 수행은 미검증이다. 별도 boss 처치 상세로그를 리드가 확인한 것은 아니며 BossRoom 진입·클리어 보상/확인·Town 이동 원시와 화면을 근거로 삼는다.
+- C2/C3 핵심·정상 C4의 자체 관측이며 C4 경합/거부/stale·사망/이동 등 변형, C5 강화소비/+5/다른계정/동일공격 피해, C8 다른 해상도·전체 입력/packet 검사는 미실행이다. 요청 client802×451과 PNG window820×498을 구분한다. 새 Edit/PlayMode·DB·CI·독립 PASS는 없고 제품 코드 수정0이다. C9 효과와 승인된 하우징은 별도 후속이다.
+- 정상 정리는20:31:19.122~20:31:39.750Z, 자원/환경 반환 확인은20:33:16.033Z다. 원래 reserve 도달 lowSamples0이므로 메모리 하한3회 사건으로 세지 않는다. Main20:30:52Z의20:36유지/20:46반환 연장은 리드20:31:21Z 발행·작업자 반환 뒤 수신으로 종료와 교차했다. Main은 사용자 이동을 안내하지 않았고 C5 미실행은 사용자 B 선택이 아닌 창 종료 때문이다. 재기동/반환 뒤 공유live조회0이다.
+- 자기 Players·Windows/Linux helper/server 정상exit0/강제kill0·7777잔여0, Preferences10 byte동일/추가누락0·원본2249 hash차이0/Settings동일의 저장 원시를 대조했다. 시스템vmmemWSL/wslhost와 probe HKCU/LocalLow 존재는 구분해 보존했고 값 열람/삭제0이다. 필수17·reportSHA·raw207쌍·Y직접PNG20쌍 차이0이며 raw의 PNG89는 루트21+screens68이다. 화면68 집계를 전체 PNG 수로 확대하지 않는다. 수치는 표본/반환 시점이며 연속·전투 peak가 아니다.
+- 실제 쓰기 종료20:42:56.428Z와 formal done msg_e492f8648756(outcome failed: 남은 범위 미실행, 제품 확정 결함 판정 아님), release·completion ACK0·같은inc idle/빈입력 확인 뒤 정확 pane종료(ptyKilled=true)를 마쳤다. 정산 중5분 heartbeat 누락은 준수로 보고하지 않는다. 원문은 G/live-player(Y)의 report.md·context.md·writing-ended.json·lead-essential-settlement.json·lead-terminal-close.json, 실제 원시는 C:/dh/content/probe/e/l(Z)와 Y/raw에 있다. G=.backups/verification/2026-10-15-guild-client-ui, E21=G/resume-20261021이다.
+- World 인계 msg_c5e72e50367b는 현재 제품기준1484265ed7b260cda91fa28537322b5f6cde47ff의 UnityClientSession.cs·NetworkService.cs HEAD/working blob·SHA 동일/실제diff0과 쓰기 종료를 알렸다. Y/handoff-session-network.json/.diff 및 리드 대조가 근거다. 발송과 World 수신 확인은 구분하며 World의 승인된 자기checkout 순차 소비·Guild 소유/44·47/CanApply/Dispose·session cleanup을 보존한다. 현재 Content v21에 World Shared22를 복사하지 않았다.
 
 - **22 - 실서버·두 Player 창 시작.** Main msg_8623be69f1b3(2026-10-21T19:10:05Z, E21/main-live-player-start.md·수신 JSON·current-identity.json)이19:11~20:41Z를 승인했다. World19:07:11Z 반환 뒤 Main19:09:33Z 관측은 대상/WSL/7777=0·물리19.69/commit17.74/C84.3GiB이며 작업자의 시작 직전 관측을 대신하지 않는다. msg_ae88976f5751 요청 범위 그대로 새 작업자 한 명, 결합 자원 두 관측·첫 길드 화면 즉시 보고·종료시 창 반환 우선을 적용한다. 다음은 Art20분이다. 원본/옛 근거·실측 한계를 보존하고 새 하네스/도구 수리/중간 검증·DB/SQL/비밀 변경0이다.
 
@@ -52,6 +59,25 @@
 - 12 - 하네스 독립 강검증: G/`qa-short-path/verdict.md`·`verdict.json`과 E21/`lead-verifier-settlement.md`·audit 원문을 보존했다. A~C는 통과이나 C 실제 entry는 예상 HEAD/goal 차이2건을 exit1로 거부했으며 D 준비 완료가 아니다. #1~#5·#7은 낮음/비차단 후속, #6은 중간/다음 D 전 필수다. W-1~W-7과 검증 scratch 보존을 다음 계약에 반영한다. 필수 판정·시험 원시는 대조됐고 manifest상 런타임 TEMP 출력1 부재는 별도 정산에 남겼다. 저장 신호16개의 helper는 max483초/초과6구간이며 수신 원시 범위·실제 lastHeartbeat 차이를 구분했다. 검증자는 정산·정확 pane 종료/재사용0이다.
 
 ## 적용 중인 사용자 결정
+
+### 10-22 사람 직접 입력·보스 클리어와 하우징 후속 승인
+
+Main 전달은 사용자 원문과 구분하며 E21 원문을 보존한다. 아래 실행은 이미 반환됐고 과거 창을 다음 실행 권한으로 재사용하지 않는다.
+
+- **직접 키3분 승인**, Main msg_bf96a3b30ab9, E21/main-human-input-A-decision.md(사용자04:52KST 원문): 「대시보드 결정 응답: 1) Content 게임 창에 내가 직접 키 몇 개 눌러 주기(3분) → A 내가 직접 키 입력」. 준비 후19:56:09Z Main이 「했어」를 받았다. B P발신→A 초대팝업·B I인벤토리는 확인했으나 개별 D 시각/선택창/거리는 몰라 확정 귀속하지 않는다.
+- **직접 플레이15~20분 승인**, Main msg_fb2419487033, E21/main-human-extra-play-A.md(사용자05:09KST 원문): 「대시보드 결정 응답: 1) Content 두 계정으로 보스까지 직접 플레이 15~20분 → A 내가 15~20분 더 플레이」. Main msg_501bb234c964가20:16:03Z 「지금 시작」을 알렸고, msg_19724900f1cc는20:19:24Z 사용자 「던전클리어까지 마무리했어」 수신을 전달했다. 기존 조건의 F8 type0/리더 각 보스 전1회·총2회 이내 중 실제B1회를 사용했으며 게이트/설정/코드 변경0이다.
+- **입력 겹침과 한계:** 시작 안내 뒤 작업자 마지막 복원20:16:39.146Z·B새로고침20:17:00.975Z·길드진입20:17:15.283Z가 있었다. 중지 지시 리드20:17:52Z 발행/작업자20:18경 수신 뒤 입력0이다. B인벤토리 닫힘을 사람I/새로고침 성공·C8 통과로 귀속하지 않는다. 파티1/리더2/멤버2·1은 양쪽 로그/HUD로 확인했고 Main msg_8f3264e48b74에 겹침을 함께 보고했다. 완료 통보는 개별 키 시각을 제공하지 않는다.
+- **보상명 정정:** Main msg_6f97c0bf4102의 원본PNG 판독과 ItemCatalog.cs의 CoinPouch 정의에 따라 「재화 주머니 ×1」이다. 앞선 리드/작업자의 「체력주머니」는 오독이며 당시 발송 원문을 보존하고 Y/lead-reward-label-correction-observed.json으로 현재 파생 근거를 정정했다. 첫 사건을 기록하며 새 반복규칙은 만들지 않는다. Main 창 반환 수신·대장간 안내 철회·C5미실행/다음Art창/정산 뒤 World 인계와PR2잔여3줄 지시 원문은 E21/main-return-and-reward-label-correction.md다.
+
+하우징은 현재 PR2의 요구/완료조건을 바꾸지 않는 승인된 별도 후속이다.
+
+1. **사용자 방향**, Main msg_96c6ce164731, E21/main-guild-housing-visual-direction.md: 「음 지금보니까 그냥 Box에 텍스트만 있으니까 많이 밋밋하다, 길드 거점 전경 이미지로 하우징 한다는 느낌으로 만드는게 좋을거같은데, 컨셉 이미지 하나 뽑아보고, 그거 토대로 진행해보자」.
+2. **콘셉트 방향 승인**, Main msg_4369860d71f2, E21/main-guild-housing-design-approved.md: 「대시보드 결정 응답: 1) 길드 화면 「거점 전경 + 하우징」 콘셉트 디자인 확인 → A 이 방향으로 승인」. 콘셉트는 C:/Users/bass1/.codex/generated_images/01a16006-7c8f-75a2-8e77-1f09f8706462/exec-981cabf6-cacf-4594-bef0-636a08e8fffb.png이며 리드도 실제 이미지를 읽었다.
+3. **공동안v3 착수 승인**, Main msg_fd5a51caa10f, E21/main-guild-housing-v3-approved.md: 「대시보드 결정 응답: 1) 길드 하우징 화면 구현안 승인(전경 2장·이미지 생성 3회·새 PR·약 4~5시간) → A 이 안으로 착수」. Main 원문 사용자시각은05:25KST, 메시지 created_at은20:23:35Z로 각각 그대로 보존하며 한 시각으로 보정하지 않는다.
+
+v3 정본은 art-active/.backups/verification/2026-10-13-demo-video-art/guild-housing-concept-01/housing-division-plan-v3.md다. 전경2장(레벨1/레벨2·같은구도·글자없음), 신규 생성총3회(2+보정1), 레벨2 미리보기 제외다. Art는 원PNG/출처/배치·import권장만 인계하며 새meta를 넣지 않고, Content 단일 제품작성자가 import/meta·GUID/UI·서버값 연결·Git을 맡는다. 실제 상태·값/비용/버튼/현재 세대·revision·pending·해금 bool·scene/접속수명을 보존하고 정책/패킷/계산을 바꾸지 않는다. 709×399·802×451·1920×1080 실서버 값 확인과Unity90분 계획, 약4~5시간 추정은 실제 실행/확약과 구분한다.
+
+Content는 PR2 main 통합 뒤 최신main의 새 브랜치에서 하우징 전용PR1개로 시작한다. Art 전경 인계는 Main이 알리고 현재 PR2/효과PR과 분리한다. 병합은 각 PR 사용자 별도 승인을 받으며 현재 goal 기록만으로 제품쓰기를 시작하지 않는다. v1/v2의4에셋/상한5 제안은 최신v3로 대체됐다.
 
 ### 10-22 경량 경로·보이는 동작 우선 사용자 결정 원문
 
@@ -529,7 +555,7 @@ Art가 쓰는 기존 네 창·`NpcDialogPanel`·공유 표시 helper는 읽기�
 - [x] 창 구조 검증
 - [x] PR251 병합
 - [>] 서버 연결 검증
-- [ ] 두 화면 확인
+- [>] 두 화면 확인(길드·보상·거점 확보, 대장간 강화 미실행)
 - [ ] 연결 화면 병합
 - [ ] 성장 효과 연결
 - [ ] 목표 종료 점검
