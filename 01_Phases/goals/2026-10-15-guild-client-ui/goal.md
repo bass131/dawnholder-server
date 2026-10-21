@@ -1,19 +1,83 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **노트북 종료를 위한 중간 보존이다. PR251 병합·fixture GUI19/19PASS 근거는 보존했고, 최신 Player 측정은 하네스 결함으로 미획득이다.** 배치 Unity root1만 승인 방식으로 정리하고 Player0·재시도0, 파일 Prefs·Registry·전용 namespace·원본 입력 차이0으로22:31:05Z 전체창을 반환했다. 현재 Opus의 worker_done failed·소유 원문 대조·정확 pane 종료 정산을 마쳤고 열린 Task·Dispatch·작업자 pane은0이다. 사용자 종료 지시로 새 작업자·검증자·실행은 열지 않는다. C9·실제 두 계정/보스/구매/강화·CI·신규 전체 PR2 독립 판정·개별 병합승인은 남았으며 goal 완료가 아니다.
+상태: **10-21 같은 노트북·같은 Content 대화로 재개했다.** 기존 Player 측정은 하네스 결함으로 미획득/전체창 반환·실패 정산·pane 종료를 마쳤다. 새 Run 세대2를 연결했고 짧은 경로 설계안을 메인 동의 전에 제출한다. 새 작업자·실행0이다. C9는 사용자 결정으로 Art가 최대한 높은 품질의 새 효과를 제작하고 Content는 연결 지점만 조율한다. C1~C10·실제 두 계정/보스/구매/강화·CI·최종 PR2 독립 판정·개별 병합승인 경계는 유지되며 goal 완료가 아니다.
 
 ## 재개 지점
 
-**다음 첫 일:** 재개 기기의 최신 메인 배치와 이 근거 폴더 도착을 확인하고, 신규 외부 작업자에게 측정 하네스의 배열 결함 두 건·같은 계열 사용처 점검과 실행 없는 의미 검사를 맡겨 새 READY를 만든다.
+**다음 첫 일:** `resume-20261021/short-path-design.md`의 root `C:/dh/content/probe`·230자 유지안에 메인 동의를 받은 뒤 신규 Sol max 하나에 하네스 배열2건·같은계열·짧은경로·순수의미검사와 새 READY를 한 계약으로 맡긴다.
 
-- **마지막 완료 단계:** Player 준비2254파일 일치 → 배치 빌드 root1 중 하네스 ownTree 배열 변환 오류/exit1 → 정확 PID17128·birth22:18:39.9674470Z만 CloseMainWindow/30초 grace/Kill(false) → return-only v2 exit0 → 리드 전체창22:31:05.0430321Z 반환이다. Player 실행0·PNG0·계획 commit 실측0이며 「하네스 결함으로 측정 미획득」이다. Menu 단독 수치는 Town·전투 peak가 아님.
-- **Task 처리:** `task_b468fb07bafb` / `ctx_ece5a7d66596`, Opus5.5 xhigh/backend unknown은 쓰기 종료22:34:14.546Z·formal `msg_15314dd2bb85` outcome failed다. 소유124파일·snapshot47850파일 전수 길이/hash/mtime 대조를 마쳤고 정확inc의 pane만닫아ptyKilled=true/reclaimable0, 열린Task·Dispatch·작업자pane0이다. 과거 Task·handle·snapshot/Library/before/실행창을 재개 권한이나 새 입력으로 재사용하지 않는다.
-- **고정 입력·근거:** 실행 HEAD `a14151dcb3a45c20994a690cf4ab825173e64038`, 당시 goal SHA256 `513C383E941476E810FB121CE2893C4DDE4390E1CEA15FE1A6151EBE5A1F4086`은 N/lead-executed-goal-513C.md에 보존한다. N은 `.backups/verification/2026-10-15-guild-client-ui/pr2-server-integration-20261018/qa-player-memory`다. source-ready `59BB7DAB9A87AA9A97737E75B271D17DFEB45D8BA9FF8B946E1A0DC7F2ED6632`, 실행 plan v1 `7DFB9AE51225CA6CFCEC69AEAC3227A40207FA3329979E152E4D7A05B04650FC`와 scripts v1은 N/runs/static/return-recovery-v1에 보존한다. return-only plan v2 `08E845FEFA2ABBAC3D745E3EFA98C86D9226C4F3461D46B0E43CEBD941689EDA`/return script `66E0C831E4DD1A9F4B0C23B31280903975D19CB8536770D0BF20D8B62BC29576`는 별도 실행이다.
-- **최종 원문:** N/report.md SHA256 `FFA003CCF9A46305A1FF0515A8EA49752329DA023C56345328D04D7183CDB1D6`, owned-artifacts.json `32B61878AF3971CEAD35407C6C59DFE91CF14F2F5A773968AB88247B0578FF28`, writing-closed.json SHA256 `5D3FCFF8F6C0B1B88419EBF221FF21EA4416B1A5418D6C190FFC5649099B462E`와 현물 대조·생존 원시는 N/lead-settlement-audit.json·lead-settlement-resolution-audit.json·lead-liveness-result.json·lead-settlement.md에 둔다. worker_done의 「남은 리드 반환」 표현과 별개로 실제 전체창 반환은 N/lead-window-return.json SHA256 `990E05F49C9A852DCC637ECDD6ABBF65CC14E0DC18B5E5D3E8A9FBC6588105A8`에 확정돼 있다.
-- **복귀·보존:** 파일 Prefs10 차이/추가/복귀0·GVS 원부재, source2249/server714/fixed26·원 status0이다. EditorPrefs 기존 Binary3만 전체current/즉시guard 뒤 복귀해137전값차이0(최종 SHA174D43B9CD17D0BC281C29B79C0F1B142CA4BF8D2CF5A147C7C97145F93EE527). 고유HKCU 생성0·LocalLow의 이번 fresh 빈 폴더1만 메타 보존/guard/비재귀 삭제해 양쪽 부재다. 기존03_Client 접근0. gcm1/p의 Library/Temp락/Logs/UserSettings·근거124파일·snapshot manifest47850파일은 삭제하지 않고 보존하며 gcm1/o는 원래 미생성이다.
-- **재개 전 판단:** 실제 새 근거 출력2개가230초과(231/232)이고 Unity 생성 Library는 최장277·TEMP는322자여서 기존 원본10개만238까지 허용한 예외로 새 실행을 통과시킬 수 없다. 다음 READY는 짧은 snapshot/TEMP/근거 경로와 생성 경로 제한 적용 범위를 메인과 확정해야 하며 조용한 완화0이다. 현재 common의 ownTree 표본 결함은 원문 그대로이고 return의 빈 배열 결합 한 곳만 고쳤다. 새로운 제품 결함·메모리 결론이나 3회 확정실패로 집계하지 않는다.
-- **결정 대기:** Art C9 주인·범위는 사용자 결정 대기(현황판 `c9-growth-effect-owner`). 결합 실행/C9 통합0, Windows 서버는 「SDK 설치 필요」 대안만이며 SDK/rollForward/pagefile/전역·관리자 변경0이다. 다음 측정은 Main이 World 창 반환·재개 기기·새 READY를 확인해 새 단일 독점창을 배정한 뒤다. PR2 생성/병합·push는 진행하지 않았고, push는 사용자의 재개 머신 결정 뒤 메인의 별도 지시를 기다린다.
-- **이번 밤 결정 기록:** 사용자 위임 메인 `msg_4f4e871c0115`, `msg_24f545aea18c`, `msg_5e3ef9f587d0`, `msg_b7fde795ac46`을 아래에 기록했다. 종료 지시 `msg_0f9934f301f9`가 새 작업자 준비를 오늘 중지하며 후속 수정은 재개 후 새 세션이다. 고정 원문·실제 수행·미실행을 구분하고 C1~C10·DB 제외·두 제품PR·개별 병합승인 경계는 유지한다.
+- Main 재진입 msg_3fffe63cd7b6에 따라 run_5ff5a7b7de60을 consumer_generation2에 연결했다. 현재주소·incarnation·receipt는 `.backups/verification/2026-10-15-guild-client-ui/resume-20261021/`(E21)에 둔다. 옛 handle/Task/Dispatch/실행창은 권한이 아니며 현재 활성 작업자0이다.
+- 같은 노트북이라 근거 이관은 불필요다. fetch 성공: origin/main db0169350dfe54ba6ed247684caae4e498e24c72, 진입 HEAD af2ee62cd3fff1607a0a7e0a080f59612f8ed071의 앞10/뒤0, 받을 commit0이다. 직전 종료 재개 블록 전체는 E21/goal-before-resume.md와 af2ee62c에 보존했다.
+- 마지막 실행은 qa-player-memory의 prepare2254 일치 → build root1 중 배열 오류/guard소실 → 승인 owned 정리 → return-only v2/전체창22:31:05Z 반환 → worker_done failed/정확pane종료다. 원문 report FFA003CC·owned32B61878·closed5D3FCFF8, `lead-settlement.md`·`lead-settlement-resolution-audit.json`·`lead-window-return.json`에 전수대조/복귀/한계가 있다. Player0·PNG0·계획 commit 측정0, 제품/메모리 결론0이며 「Menu 단독 수치는 Town·전투 peak가 아님」을 유지한다.
+- 경로안은 과거47,850 manifest의 tail에 새prefix를 붙인 정적 계산이다. Library277→214/TEMP322→173/근거232→91이며 새root 생성0이다. 기존238 예외는 원본10개 한정이라 늘리지 않고 원본/새output/Unity생성/TEMP 전체230 기준을 제안한다. 미래 생성 최대를 보장하지 않고 새 READY·관문으로 확인한다.
+- 새 구현자는 Sol max, 셸/시간/수명/런타임 경계 하네스 독립 검증은 별도 Opus로 배정한다. 정확 사용자 결정 원문은 아래에 있고 AGENTS/ORCA/스킬 사본과 충돌하면 이 결정이 우선한다. 작업자 계약 전 경로안 동의, 실제 Unity/Player/WSL/dotnet 전 Main 단일 창(시작·마감·lastEntry·Unity수) 배정이 필요하다. 우편함 wait/sleep/반복조회는 열지 않는다.
+- C9 주인은 더 이상 사용자 결정 대기가 아니다(Main msg_e4fdf3c4111b). Art가 새 효과를 최대한 높은 품질로 제작한다. Content는 서버확정 GrowthConfirmed의 kind·실제 State·세션/화면수명·화면 위치/자리표시를 Art Run6ae742140ce9와 조율하고 효과를 직접 만들지 않는다. 실제 Art API/자산/병합 기준은 아직 없으며 C9 PASS0이다.
+
+## 적용 중인 사용자 결정
+
+### 모델 라우팅·사용량 페이싱 원문
+
+출처: Main msg_3fffe63cd7b6(2026-10-21T07:33:54Z)가 사용자 원문·기존결정을 전달했다. 메인 pane Enter 제출 원문이며 이 리드의 사용자 직접 입력으로 격상하지 않는다. 원본 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-19/routing-decision-entry-block.md`와 E21의 exact 사본을 보존한다. 아래는 원문 전체다. 현재 시각은10-20 20:00KST 뒤라 원문의 Opus 기동 시한 금지는 경과했다. 현재 사용량/배분 사실은 Main 진입 메시지를 따른다.
+
+```markdown
+# 리드 진입 메시지에 넣을 적용 중 사용자 결정 — 모델 라우팅 개선 구성과 사용량 페이싱
+
+이 파일은 메인이 리드 진입 메시지에 그대로 붙이는 전달 초안이다. 정본이 아니다. 정본 반영은 Rules 리드가 맡고, 반영 전까지는 각 리드가 자기 goal의 「적용 중인 사용자 결정」에 이 블록의 원문과 출처를 기록한다.
+
+## 출처
+
+- 사용자 원문(2026-10-19 메인 대화, Enter로 제출된 입력): 「OK A로 진행하되, 지금 워크트리로 규칙이 사본 형식 느낌으로 분산되어있어서 전부 적용하려면 시간이 좀 걸릴꺼 같은데」
+- A의 내용: 현황판 결정 「모델 라우팅 - 개선 구성 적용과 10-25 리셋까지 Codex 크레딧 사용량」의 A 「개선 구성 + 크레딧 절반」. 근거 스크립트 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-19/scripts/update-decision-routing-bundle-1400.cjs`.
+- 선례: Sol xhigh 전환처럼 사용자 결정에 따른 런타임 전환은 정본 병합을 기다리지 않는다. 자기 checkout의 AGENTS·ORCA·스킬 사본이 아래와 다르면 이 블록이 우선한다.
+
+## 라우팅
+
+| 역할 | 모델 · 실행 |
+|---|---|
+| 파트 리드 (Core 포함) | `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh` |
+| 구현자 일반 | `codex --model gpt-6.1-sol -c model_reasoning_effort=max` |
+| 구현자 위험 신호 (셸·보안·입력 경계, 시간·순서·동시성·수명, 런타임·언어 경계) | `codex --model gpt-6.1-sol -c model_reasoning_effort=max` |
+| 구현자 (같은 계약 두 번째 독립 불합격) | `codex --model gpt-6-astra -c model_reasoning_effort=xhigh` |
+| 위험 신호 구현의 독립 검증 | `claude --model claude-opus-5-5 --autocompact 250000` |
+| DB·영속 데이터·프로토콜·공유 DLL·보안 경계 독립 검증 | `claude --model claude-opus-5-5 --autocompact 250000` |
+| 그 밖의 독립 검증 (문서 실사, 약·강 등급, 로컬 DB 설치·기동 도구 카드) | `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh` |
+| 선행 시험 작성, Gardener | `claude --model claude-opus-5-5` (변화 없음) |
+| 확정 실패 3회 뒤 자문, 설계 검토 시범 | `claude-fable-5-1` (변화 없음) |
+
+- 「설계 판단이 남은 새 다파일 기능」 신호와 「애매하면 Astra」 규칙은 쓰지 않는다.
+- Sol 구현을 다른 새 Sol 세션이 검증하는 것을 허용한다. 구현자·검증자 분리, 작업 하나 뒤 종료, 독립 검증 생략 금지, 리드 직접 구현 금지는 그대로다.
+- 로컬 DB 도구 카드: 사용자 실행 카드에서 독립 검증이 놓친 결함이 한 번이라도 나오면 Opus 검증으로 되돌린다.
+- `max`가 첫 기동 화면에 없으면 대체하지 말고 메인에 보고한다. 계약에는 지정 모델·effort와 화면 관측값을 적는다.
+- capacity 예외(Sol 30분 실패 뒤 Astra xhigh 새 세션)와 Claude 첫 화면 처리는 그대로다.
+
+## 사용량 페이싱
+
+- 사용자 원문(2026-10-19 14:1x KST, 위 A의 크레딧 부분을 바꿈): 「크레딧은 최대한 아끼고 싶긴한데, 사용량이 부족하면 어쩔 수 없긴 하네 / Codex 사용량 절감은 최대한 플랜 주간 소모량 기준으로 잡고, 크레딧은 비상 상황에서만 쓰는거로 하ㅏ」
+- Codex는 플랜 주간 한도만 기준으로 나눠 쓴다. 주간 한도를 하루 약 14%p로 나눈다. 크레딧은 비상 상황에서만 쓴다.
+- Codex 주간 한도는 10-19 14:11 기준 95%이고 리셋은 10-25 05:40 KST다. 그 전까지 남은 약 5%(약 1,600 크레딧)를 넘어 쓰면 크레딧이 줄어든다.
+- 사용자 원문(2026-10-19 14:2x KST, 비상 사용 결정): 「음 어찌보면 지금이 그 비상상황같은데 일단 크레딧을 쓰느거로 할까, 대신에 라우팅 측정할때는 주간 사용량 기준으로만 체크하는 식으로 가고」
+- 그래서 10-25 05:40까지는 크레딧을 비상으로 쓴다. 쓰는 속도는 주간 한도 기준과 같게 맞춘다. 하루 약 14%p, 크레딧으로 약 4,600이다(주간 100% ≈ 3만 2천 크레딧, 10-18 측정 환산). 라우팅의 효과는 이 주간 환산 속도로만 판단한다.
+- 상한은 앞서 승인한 18,000 크레딧이다. 쓴 크레딧이 약 16,000에 닿으면 메인이 사용자에게 다시 묻는다.
+- 메인이 사용률을 목표선과 비교해 앞서면 우선순위가 낮은 파트부터 새 작업자 기동 보류를 지시하고, 뒤처지면 재개를 지시한다. 리드는 그 지시를 따른다.
+- 작업자 세션 하나의 크레딧이 크게 늘면(예: Sol max 구현이 세션당 200을 넘음) 리드가 메인에 알린다.
+
+## 리드가 할 일
+
+- 이 블록의 원문과 출처를 자기 goal.md 「적용 중인 사용자 결정」에 기록한다. 자동 압축 뒤에는 goal.md를 다시 읽고 이 결정을 따른다.
+- 작업자·검증자 위임 계약마다 위 표의 지정 모델·effort·실행 명령을 적고, 기동 뒤 화면 관측값을 함께 남긴다. 자기 checkout의 AGENTS·ORCA·스킬 사본과 다르면 이 블록을 따른다. worktree의 규칙 파일은 고치지 않는다.
+- 파트 배분: 동시에 두 트랙까지만 연다. 순서는 Core → World 한 트랙, 그다음 Content, 그다음 Art(PR253 병합 뒤)다. Rules·Management는 10-28 뒤다. 메인이 목표선에 따라 보류·재개를 지시한다.
+- 2026-10-20 20:00 KST 전에는 새 Opus 세션을 열지 않는다. Opus 검증이 필요한 단계(DB·영속 데이터·프로토콜·공유 DLL·보안 경계, 위험 신호 구현)는 그 뒤로 미루고, 그 전에는 Sol로 끝나는 단계만 진행한다.
+```
+
+### 10-21 C9 효과 제작 주인·품질 결정
+
+출처 Main msg_e4fdf3c4111b(2026-10-21T07:36:10Z). 사용자 원문(메인 pane Enter 제출, 2026-10-21 16:3x KST): 「대시보드 결정 응답: 2) 길드 화면 - 길드가 성장할 때 띄우는 효과를 누가 만들지 (Content 글자 표시로 충분 vs Art 효과 새로 제작) → B Art가 효과를 새로 만들기, 최대한 퀄리티 높게」.
+
+효과 제작은 Art가 소유하며 Content는 직접 제작하지 않는다. 트리거 시점·넘길 데이터·화면 위치·자리 표시를 Art와 조율한다. 실제 UI에는 아직 GrowthConfirmed 효과 연결이 없으므로 결정과 구현/검증 완료를 구분한다. 원문·수신 receipt는 E21/main-c9-decision.json·mail-entry-c9.json이다. 아래10-19의 C9 사용자결정대기는 당시 역사이며 현재 주인 결정은 이 원문이 대체한다.
+
+### 10-21 재진입 적용 사실
+
+Main msg_3fffe63cd7b6의 보고: 같은 노트북, 최신 origin/main은 PR252의 db0169350dfe54ba6ed247684caae4e498e24c72, 이후병합0. 리드대화는 같은 Codex세션을 gpt-6.1-sol xhigh로 resume했고 첫화면 GPT-6.1-Sol xhigh는 Main관측/backend unknown이다. Claude주간한도 리셋완료(보고0%/목표12%); Codex쓴크레딧0/예산25800·목표약9565·상한18000/약16000재질문·세션당200초과보고는 Main전달관측/조건이며 리드자체사용량실측으로쓰지않는다. 현재두트랙은 Core→World와Content, Art의 C9조율은 새Main e4fdf 지시이며 과거순서로 차단하지 않는다. 구현자기동은 경로안동의뒤, 우편함은 깨었을때 대기없는check 한묶음처리/ack, wait/sleep/반복조회0이다. main push/merge 금지는 유지한다.
 
 ### 10-19 Player 단독 commit 실측 준비 결정
 
