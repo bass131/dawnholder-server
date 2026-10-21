@@ -6,9 +6,19 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: 실제 SQL+TCP의 생성·선택·마을/길드 입장·새host 재접속 정상1건 통과.** 최신 소스를 빌드하고 실제 Core SQL repository와 ServerHost/TCP로 실행했다. 리드가 원TRX1행/counters·phase0/1 StdOut을 읽어1P/0F/0skip·exit0, 같은 계정/CharacterId의 저장 직업 Mage 재선택을 확인했다. 빌드는75warning/0error이며18:36:39Z에 창을 반환했다. 이전604 자체 시험은 후속 fixture·host 시계 수정 전 결과다. 최신 전체 회귀·Core 예외분류 수리·양쪽DLL/Unity·PR 직전 Opus 검증은 남아 있다.
+**상태: Core 고정 guard 소비 완료·최신 compile 미실행·Content 창 반환 뒤 재개.** 기존 실제 SQL+TCP 정상1건(생성·선택·마을/길드 입장·새host 재접속)의1P/0F/0skip·exit0과 저장 직업 Mage 재선택 근거는 보존한다. 그 빌드는75warning/0error였다. 이후 Content 최소 소스 통합과 Core guard 소비 뒤에는 빌드/시험을 실행하지 못했다. 이전604 자체 시험은 후속 fixture·host 시계 수정 전 결과다. 최신 compile·전체 회귀·별도 Program 재시작/불러오기·양쪽DLL/Unity·PR 직전 Opus 검증이 남아 있다.
 
 ## 재개 지점
+
+**다음 첫 일: Content 실제 반환 뒤 Main이 연 새 World 리드에서 같은 Run을 인수하고, 새 시작 창·새 Sol max 실행자로 기존 WSL build1회를 수행한다.** Main `msg_5c994575a875`의 Content 창은22:49:28Z~2026-10-22T00:19Z이며 그 뒤 배정한다. `msg_2ac340ace025`로 준비포함15분·lastEntry=배정T+12분·최종반환=T+15분의3줄 요청을 보냈고 새시작은 아직없다. 자원은 전용 WSL clone/SDK10.0.301/workspace lock만, Windows dotnet/DB/7777/Unity/원본DLL복사0이다. 실제 새창의 시작/끝/lastEntry로 다시 고정하고 과거창·Task·보충을 권한으로 재사용하지 않는다. 회귀는 사용자A대로 PR직전 Opus에 합친다. 창대기뿐이므로 이 재개점을 local checkpoint한 뒤 종료준비를 보내고 Main이idle확인후 리드pane을 닫는다.
+
+**이번 실제 결과:** Core 고정 guard 제품 한 파일의 bytes·실제 +7/-2와 비대상 53경로 보존을 리드가 대조했다. source Task의 succeeded는 소비·다음 실행 준비 범위다. 그 정산과 compile 창이 겹쳐 새 실행자를 열었으나 준비 중 JS 평가 문법 오류 뒤 직전 관문이 시작 제한을 넘겼다. 빌드와 WSL은 시작하지 않았고 compiler 경고·오류는 미측정이다. 자기 runtime 시작 0·Windows 대상 process 0·7777 listen 0을 직접 읽고 창부터 반환했다. Linux lock 가용성은 미관측이다.
+
+**정산:** compile Task는 미실행 failed이며 제품 확정실패·독립 NOTPASS로 세지 않는다. 두 Task의 원문·쓰기 종료를 대조하고 release→동일 idle pane 종료·리드 생존·작업자 0을 확인했다. 요청/화면은 Sol max, backend는 unknown이다. 기존 54제품/시험 미커밋을 보존하며 새 하네스·규칙·제품 추가 수정은 없다. 전체 goal 완료·독립 PASS·병합이 아니다.
+
+근거는 `.backups/verification/2026-10-18-character-server/approval-01/core-probe-consumption-01/`의 `lead-context.md`, `worker/report.md`, `compile-worker/report.md`, `lead-source-settlement-review.json`, `lead-main-window-returned.json`과 각 close receipt다. 공식 질문 대기·조건부 안내 뒤 재개·생존 신호의 초과 구간과 부분 관측 한계, 리드 정산 답변의 경로 오기 교정도 이 근거에 남겼다.
+
+**Core 시험 소비 판단:** 기존 World literal11/13 시험은 mapper seam이고 이번 Core probe guard에 도달하지 않는다. Core 신규268행 시험은 Core fixture 전이 의존 때문에 World에 복사하지 않고 Core PR에서 검증한다. World PR 직전 신규 Opus는 기존 World session fixture로 실제 Core facade의 typed 읽기실패→11, 유효 schemafalse→13, 구조/binding/identity→14와 acquire/입장 금지를 보완한다. 이 판단에는 Core 답변·리드 재기동이 필수 아니며, 아직 실행·통과로 세지 않는다. O-CAT-REJECT-03 미해결과 기존 전체 완료조건은 유지한다. 아래는 직전 리드의 종료 인계 원문이다.
 
 **Core 고정수리 도착·새 세션 재개 준비: Main이 World를 다시 열면 같은 Run을 인수해 신규 작업자의 고정 제품 소비를 시작한다.** Core `msg_79a655b17a05`가 D-CAT-READ-01/SCHEMA-02의 고정 제품/신규시험 원천을 직접 인계했다. 원문은 `C:/Dev/DawnHolder_Project/.backups/verification/2026-10-17-character-storage-foundation/catalog-error-repair-29/world-source-handoff.md`다. 리드는 실제 두SHA와 World 현재 제품 대비 guard +7/-2를 확인했으나 아직 소비/실행하지 않았다. 제품 수리는 단일 CharacterSelectionHandle.cs 원천으로 확인됐고, 신규 시험 복사는 World에 없는 Core fixture 때문에 별도 소비 범위를 조율 중이다(`msg_0b7d276be9f9`). 시험 전이 의존을 임의로 복사하지 않는다. 현재 리드는 Main `msg_2e86c0b5d2d3`의 종료 준비를 보고한 기존 handle이며 새 세션 진입이 아니다. 작업자 정산·정확pane 종료를 마쳐 열린 World 작업자는 없고 제품/시험54파일 미커밋과 Git 제외 근거를 보존한다. 메인이 계획대로 닫고 새 World 리드를 열어 재개하며, 이 대기는 전체goal 완료/병합이 아니다.
 
