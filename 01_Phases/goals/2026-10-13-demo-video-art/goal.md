@@ -1,12 +1,152 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **[252 - 공통 UI 조각 반입과 창 적용](https://github.com/bass131/dawnholder-server/pull/252) PR을 생성했다. 사용자 A로①PartyHUD VIS-05②인벤토리/NPC/파티창 실제전후·최소는HUD PR10-20완료조건으로이관한미완항목이다. 신규독립실사는새제품결함관측0·보상current/before기술근거를확인했으며원판정범위/한계는보존했다. 정확head CI와발행원시는 `ui-pr-publication/`에연결하고미관은병합승인요청때PNG4와함께사용자확인한다. 예전4판정원문미이관·재판정안함,전체goal/병합완료아님을유지한다.**
+상태: **성장 효과의 최종 독립 기술 검증 통과, 차단 결함 0건, D-1 해소다. 실제 XML 1/7/25 통과·1920/1280 외곽선·보존 근거를 리드가 확인했고 구현자와 검증자는 정산·종료됐다. 실행 창 반환과 ProjectSettings 정확 복원도 완료됐다. 효과 PR254를 열었으며 정확 head의 CI 확인·사용자 병합 승인 대기 단계다. P-1 Editor 프레임 관찰과 미관·미실행 한계를 공개하며 전체 제품 PASS나 goal 완료로 해석하지 않는다. 하우징 전경 두 장은 Main 직접 확인까지 마쳤고 Content 제품 반영은 별도다.**
 
-**다음 첫 일:** PR252의정확head CI결과·독립원문·PNG4와발행원시를메인에전달하고메인의원천대조/사용자미관·병합승인을기다린다. CI원시와최종head40자는 `ui-pr-publication/`에서확인한다. 승인전병합/auto-merge0·추가Unity/작업자0,이관①②는HUD PR미완완료조건으로유지한다. 제품/시험은독립검토d981af64이후불변이며이후커밋은goal관리기록뿐이다.
+**다음 첫 일:** [PR254](https://github.com/bass131/dawnholder-server/pull/254)의 최종 head·CI를 대조해 Main에 보고하고 사용자 병합 승인과 Main 실행을 기다린다. 코드·자산·시험은 검증 당시 그대로며 승인된 효과 23파일과 기존 승인 관리 문서 3개가 PR 경계다. 근거는 `growth-effect-pr/final-review-01/verdict.md`, `lead-acceptance.md`와 PR 상태 원시다. 기존 MinimapRT·concept 초안은 제외·보존한다. Content 소비는 병합 뒤 별도 PR이며 새 Unity 실행이나 중간 검증을 열지 않는다. 이 PR의 병합 전 HUD 후행 구현을 시작하지 않는다.
 
-**병렬 콘셉트:** 사용자 A 화풍의 8장 제작과 신규 Astra 독립 기술 PASS·정산·정확 종료를 마쳤다. 메인은 msg_d8863c625f99로 판정 앞부분과 8장 SHA의 직접 대조를 확인했다. 실제1672×941·호출8/10·남은2회 피드백 전 사용0이며, 사용자 미관 최종승인·제품 구현·실제 게임 캡처와 구분한다. 최신 원문/원시는 아래 「화면 콘셉트 8장 — 신규 Astra 독립 기술검토 PASS」와 screen-concepts-review-retry-launch/에 있다.
+**병렬 전경 제작 완료:** 승인 공동안 v3의 같은 구도·글자 없는 레벨1/잠김·레벨2/열림 원PNG 두 장과 출처·배치를 `guild-housing-assets-01/`에 보존하고 제작 세션을 정산했다. Main은 두 원본을 직접 확인하고 Content에 인계를 알린다고 했다. 생산용 호출은 2/3회이며 남은 1회는 쓰지 않는다. 미리보기 제외·709/802/1920 확인·Content 제품 import/meta/UI/Git 단독·PR2 main 뒤 별도 PR·Unity 90분 경계는 v3 그대로다.
+
+## 길드 거점·하우징 콘셉트 1장 — 최신 병렬 요청
+
+- 원천: Main msg_1f2a612731bd(2026-10-21T19:48:57Z)가 메인 pane 사용자 원문 「음 지금보니까 그냥 Box에 텍스트만 있으니까 많이 밋밋하다, 길드 거점 전경 이미지로 하우징 한다는 느낌으로 만드는게 좋을거같은데, 컨셉 이미지 하나 뽑아보고, 그거 토대로 진행해보자」를 전달했다. 사용자 직접 입력으로 격상하지 않으며 승인된 Art 목표의 추가 시안 범위로 받는다.
+- 만들 것·건드릴 곳: 현재 길드 실화면의 정보와 승인된 A 화풍을 참고한 거점 전경/하우징 느낌의16:9·1920×1080 기준 시안1장. 실제 원본과 `.backups/verification/2026-10-13-demo-video-art/guild-housing-concept-01/` 사본·프롬프트·출처만 쓴다. 레벨1 작은 성채/레벨2 확장·대장간의 잠김/열림은 디자인 제안으로 구분한다.
+- 하지 않을 것: 분담안의 사용자 승인 전 Unity 에셋·제품 코드·기존 이미지 변경, 새로운 하우징 기능/경제 확정, Unity/DB/서버/공유파일 접근, 새 하네스·중간 검증 세션. 효과 D-1의 기존 Opus/Sol 대기·실행창 요청을 대체하지 않는다.
+- 완료조건·PR 경계: 이미지1회 제작·실제 원본/사본 경로·SHA256·bytes·크기·구도 확인과 Main 전달을 마쳤다. Main msg_52f6a03326b2의 사용자 「대시보드 결정 응답: 1) 길드 화면 「거점 전경 + 하우징」 콘셉트 디자인 확인 → A 이 방향으로 승인」은 디자인 방향 승인이다. 원문은 `guild-housing-concept-01/design-direction-approval-original.md`, 사본은 같은 폴더 guild-housing-concept-v1.png다. 글자의 「길」 뭉개짐은 게임 글꼴로 새로 쓰며, 제품/독립 PASS와 구분한다. 기존10/10·잔여0, 지금 commit/PR0이다. Art 에셋/해상도·Content 데이터/버튼·보존 접점·PR·시간/10-28 가능·Unity 창을 맞춘 공동안을 한 번 승인받은 뒤 제품 쓰기를 시작한다.
 
 ## 재개 지점
+- **PR254 열림·정확 head CI 확인:** Main의 잠금 정리 뒤 기본 Git으로 선행 시험 6개와 제품·독립 시험 17개를 커밋·푸시해 [PR254](https://github.com/bass131/dawnholder-server/pull/254)를 열었다. 이 goal의 최종 결과·PR 단계도 같은 branch에 반영한다. 제품·시험 bytes는 검증 뒤 바꾸지 않았고 기존 MinimapRT·concept 초안은 제외했다. 정확 head·CI 상태를 Main에 보고하고 병합은 사용자 승인 뒤 Main만 수행한다. 상세 Git 결과는 `growth-effect-pr/final-review-01/`에 남긴다.
+- **Main 잠금 정리 완료·기본 Git 재개:** 현재 Main msg_e2ab4b83b2b1은 21:23:49Z에 0B 잠금을 삭제했다고 알리고 commit/push·PR 뒤 번호·정확 head·CI 보고를 지시했다. 리드가 잠금 부재와 기본 fetch를 확인했다. 최신 main은 작업 시작 기준과 같고 파일 충돌은 없다. 아래 대기 기록은 당시 상태로 보존하며 기본 Git으로 PR 작업을 잇는다.
+- **외곽선 수정 작업자 최종 정산·종료:** 현재 msg_6dc14068809d의 같은 Task/Dispatch succeeded를 수락했다. 리드가 보고 전문·현재 제품 해시를 대조하고 release 뒤 동일 incarnation·leaf의 완료/빈 prompt를 확인해 정확 terminal만 종료했다. 정산과 source의 credit 관측은 `growth-effect-pr/readability-fix-01/settlement-note.md`다. 구현자와 최종 검증자 모두 종료됐으며 추가 제품 쓰기·실행은 없다. 효과 PR 설명은 준비됐고 Main의 기존 Git 잠금 정리를 기다린다.
+- **PR Git 잠금 정리 대기:** 원격 main은 작업 시작 기준과 같다. 기본 index.lock이 0B·423분·git.exe 0개로 남아 있어 Main에 기존 전용 정리 기준으로 처리하도록 알렸다. 상세 관측은 `final-review-01/main-index-lock-body.md`, 전달 msg_b246391beac5다. stage/commit/push는 아직 없고 잠금 삭제·대체 index 우회는 하지 않는다. 그동안 PR 설명과 승인 파일 구성을 준비한다.
+- **성장 효과 최종 기술 통과·PR 준비:** 현재 검증자의 msg_aba8cdc729ee는 원 구현과 외곽선 수정 두 Task에 대한 기술 통과·차단 0·D-1 해소를 보고했다. 리드가 최종 원문 전체, 실제 XML 1/7/25·명령/exit·두 해상도/글자 crop·현재 25파일 보존을 대조하고 정확 검증 세션을 종료했다. P-1은 Editor 캡처 157프레임 중 15개가 25ms 초과·최대 54.89ms인 비차단 관찰이며 원인·실기 성능은 미확인이다. 반환 뒤 crop helper의 임시 오류 출력 사고도 원문과 `final-review-01/lead-acceptance.md`에 보존했다. player 빌드·실서버/DB·Content adapter·사용자 최종 미관은 통과로 보고하지 않는다. 다음은 효과 PR 준비이며 하우징 제품 인계는 별도다.
+- **Main 두 전경/외곽선 직접확인·Content 인계 알림:** Main msg_53ad80a864f8(20:53:05Z)은 Level2도 직접 열어 같은구도·확장성채/열린대장간·무문자/무UI·v3일치를 확인하고 Content에 인계를 알린다고 했다. Main은 attempt-3의 거점레벨4 한글/숫자 갈색외곽선과20:50:01Z 창반환도 확인했다. 원문은 `guild-housing-assets-01/main-direct-review-confirmation.md`에 보존했다. 남은 생성1회는 쓰지 않고 두며, 최종Opus 판정/crop을 마치면 효과PR 준비상태를 한 일/결과/다음/결정 필요로 보고한다. 새 요청·회신 메일0이며 기존 최종판정 대기를 이어간다.
+- **최신1/7/25 실제통과·창반환/정확설정복원 완료:** 현재 Opus msg_d0d810838caa는 Unity2760/18948/3128의 캡처·Edit·Play각exit0/20:48:57Z 사용종료를 보고했다. 리드가20:49:46Z Unity관련/dotnet0·lock없음·GameView부재·LocalLow95601B/원SHA를 직접 확인하고 Main msg_e8b36627d418(20:50:01Z)로 「창 반환」을 먼저 보냈다.20:50:47Z root ProjectSettings333733a3의 알려진 SENTIS한줄만21030B/원 b04c1808…cf81로 정확 복원해 전/후bytes·restore.json을 attempt-3/raw/lead-settings-restore에 보존했다. 세 XML을 직접 읽어 실제case1/7/25·Passed1/7/25·실패/skip/Inconclusive0을 대조했고 Main msg_c90b682ad6fa로 결과/복원을 보냈다. 같은 Opus msg_f419eaf49d3a에 반환뒤 자기 W 최종판정을 인계했으며 독립 최종verdict/worker_done은 아직이다. 새 Unity/공유파일0·이전오관측/실패보존을 유지한다.
+- **attempt-3 캡처 실제1/1·두 해상도 외곽선 관측:** 현재 검증자 msg_ccb2be8074a6의 첫 emphasis 경로 뒤 리드는1920 shared-emphasis 원본크기와1280 both-emphasis를 직접 열어 거점 레벨4/5 한글·숫자 주위 어두운 갈색 외곽선을 확인했다. Main msg_fdbf9908ef6c로 실제 경로·관측/최종미판정을 즉시 알렸다. msg_10d3e8e485b2는 Unity2760/20:39:25~20:42:59Z exit0과 캡처 종료를 보고했고, 리드가 raw/capture/test-results.xml의 실제case1/Passed1·실패/skip/Inconclusive0을 직접 읽었다. worker는20:44:51Z Unity/dotnet0·GameView부재·LocalLow원복원확인을 보고했고 Edit7→Play25를 이어간다. ProjectSettings의 SENTIS제거 한줄 diff를 직접 읽었으며 마지막사용종료 뒤 리드가 복원할 예정이라 지금 손대지 않는다. crop/1280 독립 판정·최종7/25는 아직이며20:56Z 반환을 유지한다.
+- **전경2장 패키지 실사·정산/정확 종료 완료:** msg_d80753d6be50의 현재 Task/Dispatch와 succeeded를 대조하고 context/completion 전문·placement/provenance, 실제 source 호출2개와 원/사본4파일의 현재 SHA/bytes/PNG IHDR를 읽었다. 두 장1672×941·RGB불투명/각쌍동일이며2/3회·실패/취소/보정0·미사용1이다. release external_terminal 유지 뒤 동일 inc0e822042·leafa6c1b750의 완료/빈prompt를 확인하고 정확 terminal만 close해 ptyKilled=true다. 리드가 ASSET_SOURCE.md를 작성해 `guild-housing-assets-01/`를 전달 패키지로 Main에 알렸다. 상세 source/credit관측·리드 수집 명령 정정은 settlement-note.md/lead-source-observation-v2.json에 남겼다. Main의 Level2 직접보기 뒤 Content 인계 안내를 기다리며 Art 제품/meta쓰기0이다.
+- **attempt-3 GUI 실제 시작 보고 수신:** 같은 Opus msg_2bca363fb43b는20:39:05Z precheck의 Unity/dotnet0·lock없음·settings b04/공유파일원상태·최신제품25616e0c와20:39:14Z 기동직전 단독check0 뒤 GUI20:39Z 시작을 보고했다. 새 launcher는 출력/deadline/주석만 바꾼 기존명령이고 emphasis PNG→7→25를 이어간다. 실제 캡처/XML 결과는 아직 미수신이며20:56Z 반환을 유지한다.
+- **3차 외곽선 창 배정·같은 Opus 재개:** Main msg_6d09d9d141d2(20:36:14Z)는 Content20:33:16Z 반환/Unity·dotnet·WSL0·7777없음·여유19.2GiB 뒤20:56Z까지 Art20분을 배정했다. 같은 Opus terminal/inc5995148a·leaf1ea6367e와 제품25616e0c를 확인하고 msg_aefc8b31df2b로 attempt-3의 새 출력/deadline·기동직전check·캡처우선/7/25·반환우선을 전달했다. 화면은 같은 최종검토의 Orca 자동알림 뒤 재개를 보였으며 실제 Unity 기동/결과는 아직 보고 전이다.
+- **Level2 원본도 확보·두 장 Main 전달:** 현재 제작자 msg_cf95f1081839의 identity를 대조하고 exec-29ba0aaa…png를 리드가 직접 열었다. 같은 원경/마당과 확장 성채·열린 대장간/화로, 무문자/무UI를 확인했다. 실제1672×941·2,903,258B/SHA6bbc6e1e…6ed30이 보고와 일치한다. Level1/2 원본 전체경로/hash/크기를 Main에 보냈으며, Main은 msg_6d09d9d141d2에서 Level1 직접보기를 확인했다. 제작자2/3회 보고/불필요보정0·사본/출처정산 중이고 Main의 Level2 직접보기 뒤 Content 인계 확인을 기다린다. 실제크기는 패키지에 명시하고 제품에 몰래 재가공하지 않는다.
+- **Level1 첫 제품 원PNG 확보·Main 전달:** 현재 제작자 task_0fb01a191f3e/ctx_76260eb49f28의 msg_0625d9a33538을 대조하고 generated_images/01a16025…/exec-d5525460…png를 리드가 직접 열었다. UI/글자/미리보기 없이 같은 성채·마당/빈 부지·닫힌 대장간의 연속 전경을 확인했다. 실제1672×941·2,967,607B/SHA77f9f79d…3837a가 보고와 일치하고 요청1920×1080 차이/무변형을 Main에 전달했다. 제작자는 같은 원본을 local edit 기준으로 Level2를 만들며 현재1/3회 보고다. 원/사본·호출 정산/두장 비교는 후행이고 Main 두장 직접보기 뒤 Content 인계를 유지한다.
+- **제품용 전경2장 신규 작업자 연결 완료:** task_0fb01a191f3e/ctx_76260eb49f28, terminal term_5ed4c833-97df-489f-8fbf-c9dd98ef15f3/inc0e822042·leafa6c1b750를 현 Art 아래 vertical split했다. 최초 명령/첫화면 GPT-6.1-Sol max·Codex0.163.0, 준비 satisfied true·선택창0/backend unknown이다. 계약41391025…2A5F3을 읽는 최초 작업이 ready/input_accepted/turnStart observed·residualResources=[]였다. 실제 첫 화면/receipt는 `guild-housing-assets-01/`에 보존했다. 이미지2장/호출상한3·원PNG/출처/배치만 소유하며 제품/meta/Unity0이다. 첫 원PNG status 뒤 실제 경로/크기/hash·두 장 직접보기/메인 전달을 이어간다. 현재 생산 호출 결과는 아직 보고 전이다.
+- **사용자 공동안v3 착수A·전경2장 지금 제작:** 현재 Main msg_af72d449c2e7(20:23:34Z)가 사용자05:25KST 원문을 전달했다. 아래 「적용 중인 사용자 결정」과 `guild-housing-assets-01/main-v3-start-approval-original.md`에 원문을 남겼다. 신규 외부 이미지 제작자 한 명에 기존 시안에서 UI/글자·미리보기 제거→같은카메라 레벨2 성장 edit의2장/호출최대3을 발행한다. 작업자는 원PNG/출처/배치만 쓰고 meta/제품/Unity0이며, Main의 두 원본 직접보기 뒤 Content 인계를 기다린다. 사전 맥락/입력실존·hash/관련원문 계약41391025…2A5F3을 새 근거 폴더에 썼고 아직 이 생산용 실제호출0이다.
+- **교차 회신 정리·새 요청 없음:** Content msg_55cc29a7846e는 전경2장/상한3·709/802/1920·미리보기 제외를 재확인했다. 그 v2 명칭/Art meta 패키지 문장은 v3 발송과 교차해, Content에 최신v3 하나·Art 원PNG/출처/배치만→제품import/meta/GUID는 Content 단독임을 짧게 정리했다. v3 원문과 Main msg_5b89bff351d2를 유지하고 Main에 추가 버전/요청0이며 사용자 범위 승인 대기다.
+- **최신 공동안v3 Main 전달·사용자 승인 대기:** Content의 v1 추가 검토 msg_32792ff54b75가 v2 발송 뒤 배달돼 현재709×399·802×451·1920×1080 확인·미리보기 제외·Art 원PNG/출처/배치만→Content import/meta/UI 단독을 반영했다. 전경2장/추가생성2+보정1=최대3회·PR/시간/창 제안은 유지하며 v2의 미리보기/Art meta 문구는 채택하지 않는다. 같은 근거 폴더 `housing-division-plan-v3.md`가 사용자에게 제시할 최신안이고 v1/v2는 보존한다. Content msg_6d975230077e·Main msg_5b89bff351d2(20:17:36Z)로 v3 하나만 제시하도록 보완했다. Main 승인 전 제품/추가생성0·기존 효과 외곽선20분 대기를 유지한다.
+- **Content 최소안 채택·공동안v2 Main 전달 완료:** msg_77d1f66e2daa의 현재 Content handle·기준1484265를 대조하고 원초안 전문과 실제 GuildPacketReader.HasValidValues를 읽었다. v21의 level1/잠김·level2/열림 두 조합에 맞춰 전경2장에 상태를 담고 v1의 별도 대장간2장/총5회 제안은 채택하지 않는다. 현재 서버bool·공개API/버튼·null/pending/결과/안내·수명·wire/경제/World공통2파일을 보존한다. Art는 원PNG/meta·출처 패키지, Content는 제품import/UI 단독·Git단독으로 PR2 main통합 뒤 별도 하우징PR1개를 제안했다. `guild-housing-concept-01/housing-division-plan-v2.md`(SHA3E864E7A…C1B28)에 Art45~75분/Content2~3시간+Opus45~60분·총3시간30분~5시간15분/Unity60+30분·10-28 조건부 가능과 PR2보스/키입력 선행조건을 담았다. Content msg_d9a4ad43f5c6로 채택안을 알리고 Main msg_effbf67aa2d7(20:15:30Z)에 한 통으로 전달했다. 신규 imagegen2+보정1=최대3회·공동안의 사용자 승인 전 추가생성/제품0쓰기이며 기존 외곽선20분 대기는 그대로다.
+- **방향A 승인·Content 분담안 조율 중:** Main msg_52f6a03326b2의 방향 승인·게임 글꼴 재작성·제품 쓰기 전 공동안 승인 조건을 원문으로 보존했다. 현재 Content 리드 handle/화면을 확인하고 현재 run_5ff5a7b7de60에 msg_00a724a45cda로 접점·PR2 경계·시간/창 회신을 요청했다. 첫 own-Run 지정 메시지는 recipient_run_mismatch로 발송0이었고 수신 Run으로 정정했다. 리드가 Content GuildWindow/GuildDisplayProjection을 읽어 BlacksmithUnlocked 독립 필드·기존 이벤트/서버 projection·pending/오류/수명 보존을 초안에 반영했다. `housing-division-plan-v1.md`는 Content 회신 전 제안이며 전경2+대장간상태2/보정1의 신규 호출상한5 제안을 포함한다. 아직 공동안 합의·Main 전달·사용자 범위 승인 전, 제품/추가생성0이다.
+- **길드 시안 제작 정산·정확 종료:** msg_7c043d42b8cf/47de7d70feb7의 현재 Task/Dispatch와 쓰기 종료·succeeded를 대조했다. context/completion 전문·provenance/실제 source call1·원/사본 현재 SHA/bytes를 확인해 이미지 제작/전달만 수락했다. release는 external_terminal로 retained였고 동일 inc35cebb34·leaf4d49ecc0의 완료/빈 prompt 확인 뒤 정확 terminal만 close해 ptyKilled=true다. 원시·정산·정확 source의 credit35점 관측과 리드 최초 parser 필드 정정은 `guild-housing-concept-01/settlement-note.md`·`lead-source-observation-v2.json`에 보존했다. 기존 효과 두 작업자는 대기를 유지한다.
+- **길드 하우징 첫 시안 확보·Main 전달:** 현재 task_c5b719caf833/ctx_b46d9b4e418b의 msg_cdeb7dddb3f1을 대조하고 실제 generated_images/01a16006…/exec-981cabf6…png를 리드가 직접 열었다. 노을 속 거점 외관·마당/건축 부지·잠긴 대장간/레벨2 확장 미리보기와 현재 정보/버튼을 확인했다. 실제1672×941·3,164,053B/SHA d2900221…fcb341이며1920×1080과 차이를 숨기거나 변형하지 않았다. Main msg_f8db0e26715b로 즉시 원본/전체SHA와 디자인 확인 요청을 전달했다. 제작자는 W 무변형 사본·출처·자체점검을 정리 중이며 아직 최종 정산 전이다. 사용자 확인 전 제품0쓰기·효과 창 대기는 유지한다.
+- **길드 하우징 단일 이미지 작업자 연결 완료:** 신규 task_c5b719caf833/ctx_b46d9b4e418b, terminal term_4444ae3d-6713-44e4-8611-f442b3f060c1/inc35cebb34·leaf4d49ecc0를 현재 리드 아래 vertical split했다. 최초 명령/첫 화면은 GPT-6.1-Sol max(Codex0.163.0), 준비 satisfied true·선택창0/backend unknown이다. 계약C0D11574…DD93D를 가리킨 최초 작업이 ready/input_accepted/turnStart observed였으며 residualResources=[]이다(`guild-housing-concept-01/launch-receipt.json`). 새 단일 이미지/1회 호출만 소유하며 효과 제품·시험/goal/공유 자원0쓰기다. 생성물 status 뒤 원본·사본 실사와 Main 전달을 이어가며 기존 효과 두 세션의 대기는 유지한다.
+- **길드 하우징 시안 착수:** 실화면 `C:/dh/content/probe/e/l/guild-first-a.png`와 기존5번 길드 콘셉트를 리드가 직접 봤다. 새 단일 이미지 범위로 외부 제작자 한 명을 발행하며 기존 효과 작업자는 재사용하지 않는다. 사전 맥락/입력 경로 실존·hash/원문 계약은 `guild-housing-concept-01/`에 두고, Main msg_248e837c500f에 착수와 잔여1회 배정·약10~15분 목표를 알렸다. 생성은 아직0이며 새 시안 확보 뒤 즉시 전달한다.
+- **D-1 후속 독립 읽기 완료·실행 대기:** 현재 검증자 msg_5284b5fc3085의 from_handle·task_740c3727f279/ctx_558a461c92f4를 대조하고 verdict.md의 「D-1 수정 읽기 검토」 원문을 읽었다. 한 줄 diff/사본 한정 keyword 활성화·TMP keyword 값/한글 fallback 복사 경로의 정적 차단은0이다. 한글 표시·padding/겹침·실제 가독성과 최신25616e0c 제품의 실행은 아직 미확인이며 최종 PASS가 아니다. 새 Main 시작 뒤 attempt-3의 GUI1920/1280→Edit7→Play25를 이어가고 자원 반환 뒤 자기 캡처 crop/판정을 정리한다. 검증자는 반복check/heartbeat 없이 prompt 대기를 확인했으며 별도 회신·새 세션/도구0이다.
+- **최신 대기열·prompt 대기 유지 판단:** Main msg_80c98a4fa564(19:04:29Z)은 World회귀(~19:09Z)→Content90분→Art20분(빠르면20:40Z/10-22 05:40KST), 별도 시작 메시지 전 실행0을 알렸다. 같은 최종 Opus/동일PR Sol의 맥락 재독을 피하도록 최신 읽기 checkpoint 뒤 도구·주기check/heartbeat 없이 prompt 대기로 유지한다. 반복 확인을 지시하지 않고 새 배정만 전달하며, 실제 재확인 화면은 확보 즉시 Main에 보낸다. 별도 회신/새 세션0이다.
+- **2차 checkpoint 확인·20분 자원창 유지:** msg_5abe56ec7a52는 T-1해소/25통과·trace XML 출력 유지·12회 Material19→19/Texture2D44→44·scene sprite0→4→0·fade잔상0을 정리하고 전체 worker_done 없이 같은 최종 검토를 유지했다. 부분 차단은 D-1 한 건이다. 검증자의30분 제안은 Unity약6분+전후/crop약15분을 포함했다. 리드는 msg_1be2318dece0으로 실제 Unity/공유파일 사용을 끝내면 즉시 반환하고 자기 W의 crop/원시·판정 정리는 반환 뒤 이어가도록 해20분 자원창 요청을 유지했다. 아직 새 배정 전 실행0이며 추가 조사/도구·세션0이다.
+- **D-1 한 줄 쓰기 종료·Content 다음20분 요청:** 같은 Sol msg_1c29ba999a6b의 Task/Dispatch를 대조하고 d1-context.md·d1-report.md·d1-actual.diff 전문을 읽었다. shader 원문을 확인해 거점 전용 사본 생성 다음에 EnableKeyword(ShaderUtilities.Keyword_Outline) 한 줄(+1/-0)만 추가했다. 실제 제품SHA25616E0CED5F2AC1DAB6AE44551A1E4F17FEE594529307B56210122D1160E365와 보고가 일치하며 기존값/정리·개인/배치/시험은 불변이다. 원5778 사본·기존report/diff는 보존했다. msg_2f84c9030077로 같은 Opus 읽기 검토를 재개하고 attempt-3 실제 캡처→7→25 후 최종판정을 인계했다. Main msg_15f61f66c3e8에 수정완료/명령·20분·자원 세 줄을 보냈다. 아직 실제 최신제품 실행0·새 배정 전 Unity/공유파일0이다.
+- **Main 직접 미표시 확인·후행 경계:** Main msg_df135cb9502f(18:57:59Z)는 attempt-2 1920의 외곽선 미표시를 직접 확인했다. 같은 PR 안에서 원인을 고쳐 화면부터 재확인하며, 필요하면 어두운 배경판/위치 이동을 선택해도 된다고 했다. 다음 Art는 Content90분(약19:09Z 시작) 뒤이고 수정 종료 후 세 줄 요청이다. 새 승인 질문/다른제품 범위 확대0이며 같은 두 세션을 반복 확인 없는 prompt 대기로 유지한다.
+- **D-1 외곽선 미표시 확인·동일 구현자 수정:** msg_7ac37591e2c9/72e6869036cb의 현재 검증자 Task/Dispatch를 대조했다. 1920 거/4 확대 비교에서 테두리가 없고, 폰트 material keyword가 비어 있으며 Mobile SDF shader가 OUTLINE_ON에서만 그리는 원인을 보고했다. 사본은 Width/Color만 설정했다. D-1은 외곽선 구현task_c5b109950c93 귀속이며 PS G1 D1과 별개다. 「한글·숫자에 외곽선이 보인다」는 이전 관찰을 철회했다. 리드는 msg_24e48adbb0f5로 같은 Sol에게 같은 파일/사본의 keyword 활성화만 수정하도록 했고, msg_6e709112d9e0로 같은 Opus의 제품읽기는 쓰기 종료까지 중단·원시와정정/checkpoint만 정리·전체 worker_done보류를 알렸다. 새 도구/세션/QuestAlert 범위 확대0이다.
+- **2차 실제33/33·반환/복원·Main 정정 보고:** 리드가 attempt-2의 세 XML을 직접 읽어실제1/7/25 모두Passed·실패/skip/Inconclusive0을 확인했다.18:55:09Z Unity/ShaderCompiler/PackageManager/CrashHandler0·GameViewSizes부재·LocalLow95601B/원hash를 대조하고 Main msg_54ff98317c3b로 「창 반환」을 먼저 보냈다.18:57:57Z ProjectSettings의 정확SENTIS한줄만 원bytes21030B/SHA b04c1808…cf81로 복원했고 근거는 `attempt-2/raw/lead-settings-restore/`다. Main msg_2cd1e88e43ea에 T-1해소/33통과와 D-1미표시·검증자오관측철회·동일작업자수정을 즉시 보고했다. 실제 외곽선 가독성/전체 최종PASS0이며 새 배정 전 추가실행0이다.
+- **2차 캡처1/1 보고·대비 향상은 미확정:** 현재 msg_589dbe0f41df는GUI25152/18:44:46~18:47:49Z exit0·XML1/1 Passed, GameViewSizes전후부재·LocalLow95601B/45b575ac…복귀와 EditMode7→PlayMode25 계속을 보고했다. ProjectSettings의 SENTIS 제거 한 줄이 다시 발생했으며 마지막 실행 사용 종료 뒤 리드가 복원한다(지금 미복원). 검증자는 「1차보다 구분이 잘 된다」를 실제 비교 전 썼다고 철회했고, 원/새 영역 비교 뒤 판정한다. 리드의 Main 전달도 실제 글자/효과 표시 확인과 최종판정 대기만 적었으며 상대 개선을 확정하지 않았다. 첫/2차 원시를 보존하고 실제 대비·한글/숫자 외곽선/잔상과7/25 결과는 계속 확인 중이다.
+- **2차 실제 기동·보강 PNG 확보/전달:** 현재 검증자 msg_a0477eed76be는18:44:46Z Unity25152/owner27360의 GUI 캡처 시작을 보고했다. 기동 전check에서 교정 지시를 읽고 ack-11/12의messages0을 확인했으며 새 수신은 단독 호출로 적용했다. 원1차 자료를 보존하고 attempt-2 명령의 출력경로/deadline만 바꿨다. 기존 Services의 sqlservr19368은 Art 소유가 아니며 접근0이다. msg_8aff39619022는18:47:18Z(03:47:18KST) 첫 보강 emphasis PNG를 보고했고, 리드는 attempt-2/captures의1920 shared 및1920/1280 both-emphasis를 직접 열었다. 두 해상도 보강 화면 경로는 Main msg_25d1ca40a929로 즉시 전달했다. 캡처/7/25·fade/누수·전체 판정은 아직 대기이며 최초 PNG 확보를 최종 PASS로 바꾸지 않는다.
+- **같은 Opus 재개 관측·수신 호출 경계 재적용:** 현재 terminal/inc5995148a·branch가 그대로이며 재개 후 Working·우편함 처리를 직접 확인했다. 같은 화면에서 check--ack와 뒤 node/ls가 한 호출에 묶여 있어 msg_b9a87ce58e51로 check/ack 단독 호출·반환 messages 전체 처리와 기동 바로 직전check를 재적용했다. 마지막 ack-11 원문에 메시지가 있으면 먼저 처리하도록 했으며 새 조사/도구/중간 검증·실행 중단 루프 없이 배정된 캡처 우선 실행을 이어간다. 아직2차 PNG/Unity 결과는 보고 전이다.
+- **2차 Art 창 시작 지시 수신·같은 검증자 재개:** Main msg_d6904cc094fa(18:39:54Z, 현재 handle 일치)는 World18:37:24Z 반환/자원 확인 뒤18:41Z~19:21Z의40분을 배정했다. msg_fd1621c5d23f(18:40:55Z)로 현재 Opus Dispatch에 정확 창/attempt-2 새 출력·deadline19:21Z/캡처→7→25·기동 직전check·보강 emphasis PNG 즉시보고·반환 우선을 전달했다. 이전03:53 예상 대기는 이 명시 시작 지시가 대체한다. 아직 실제2차 Unity/새PNG 결과 보고는 없고 Sol 구현자는 피드백 idle을 유지한다.
+- **창 예상 시각 앞당김·시작 메시지 대기 유지:** Main msg_5f40ee46f0ff(18:32:01Z)은 Content18:26Z 반환·World18:33Z~18:53Z/그 뒤 Art40분을 알렸다. 앞의19:16Z 예상은18:53Z(03:53KST) 전후로 대체한다. World 반환 뒤 Main 자원 확인과 별도 Art 「시작」 전까지 두 작업자는 반복 확인 없이 idle·Unity/공유파일 접근0이며 추가 회신0이다.
+- **대기열 변경·토큰 절약 대기:** Main msg_d818fb7f51d9(18:11:09Z)은 Content(~18:56Z)→승인된World20분→Art40분(빠르면19:16Z/04:16KST), 별도 시작 메시지 전 실행0을 알렸다. 두 작업자의 완료 화면/prompt를 직접 확인해 반복 확인 중인 세션이 없으므로, 같은 최종 Opus의 관측 맥락과 동일 PR Sol 피드백 맥락을 보존해 재독 비용을 줄이도록 도구·주기적 우편함 확인 없이 idle로 유지한다(미제출 Orca 안내 draft는 제출하지 않음). 양보 수신 지연은 기동 직전check 재적용으로 충분하다는 Main 판단에 따라 추가 조사/메일0이다.
+- **외곽선 독립 읽기 검토 완료·실행 대기:** 현재 검증자 msg_9f4e32eb9e99(18:07:45Z)는 최신 diff를 독립 재생성해+20/-4/현재hash일치·정적 차단0을 보고했다. 리드는 verdict의 「외곽선 수정 읽기 검토」 원문을 직접 읽었다. 소유/실패·Dispose 정리와 공유 폰트 원본 보존은 정적으로 확인했고, 한국어fallback/외곽선fade는 소스 기반 예상이다. 다음 창에서 실제 두 해상도 글자 가독성/증가한padding의 bounds·잔상0·Material/Texture2D 반복수명·scene unload/DestroyImmediate와 전체7/25를 확인한다. 비차단 이름 관찰R-1·padding관찰R-2를 새 수정/별도 도구로 넓히지 않는다. 현재 두 작업자 idle·새 Main 시작 메시지 대기이며 전체 실행 PASS0이다.
+- **외곽선 구현 쓰기 종료·후행40분 창 요청:** 현재 Sol의 msg_c9f029ea784d(task_c5b109950c93/ctx_91272358809a)를 대조하고 `readability-fix-01/report.md`·context·actual.diff 전문을 읽었다. 제품 Presentation만+20/-4, 거점 전용 private Material 하나/outline0.22·갈색(40,20,0,255)을 추가하고 생성/Build 실패·Dispose 정리를 소유한다. 개인/위치·크기·문구·시간·API/자산은 유지했다. 실제 제품SHA5778c7ba…f3ea5와 T-1 시험3파일159199b8/da3fcf10/4a446906의 현재hash가 보고와 일치했다. actual·컴파일/한국어fallback·fade·material수명/두해상도 가독성은 미실행이다. msg_854ef30fe475로 같은 최종 Opus에게 제품 읽기 검토 재개·추가 verifies c5b109950c93/ctx91272358809a를 인계했다. Main msg_140caaa5778a에 명령/시간/자원 세 줄로40분 재실행 창을 요청했고 새 배정 전 실행0·두 작업자는 worker_done 없이 같은PR 피드백/최종 판정을 기다린다.
+- **T-1 쓰기 종료·1차 checkpoint 실사:** msg_786422f178a2는17:59:45Z 시험3파일/출력8줄만 수정하고 idle한다고 보고했다. 리드는 전체 `final-review-01/raw/t1-fix/diff.txt`와 `verdict.md` checkpoint 전문을 읽었다. 단언·기대·NoUnexpectedReceived·시험 수/meta는 유지하며 다음 실제 컴파일/코루틴 TestContext 출력·8실패 해소는 아직 미확인이다. 현재 부분 판정은 T-1 차단이고 제품 결함 확인0, U-1 글자대비(수정 중)·U-2 짧은 잔광 읽힘·U-3 halo/곡선 공유·F-1 view만 파괴할 때 계층 잔여는 비차단 관찰이다. 관찰을 새 범위/자동 수정으로 넓히지 않는다. 같은 Opus가 다음 창에서 최종 판정하고 전체 worker_done은 보류했다. msg_6db251e34dc7로 다음 결과는 W/attempt-2/raw·captures 등 새 경로에 두고 1차 실패/화면·직접 실행 명령 원시는 보존하도록 알렸다. 현재 Unity/공유파일 접근0·외곽선 구현 종료 및 Main 새 창 대기다.
+- **T-1 실제 helper diff6줄 확인·본문2줄 추가 승인:** msg_832292229ba2의 helper2개 출력 치환6줄 diff를 직접 읽었다. 검증자가 남은 독립 시험 본문 Debug.Log237/333행도 같은 충돌을 일으킬 것으로 지적해 해당 원문/NoUnexpectedReceived 순서를 읽었다. 공식 ask msg_8f4741db4eb8에는 reply msg_5977862d9d60으로 그 **독립 Lifecycle 시험 한 파일의 추적2줄만** 같은 출력 치환을 허용했다. 현재 허용된 T-1은 시험3파일/추적8지점이며 문자열/인자·단언·측정·시험 수/meta·제품은 그대로다. 실제 다음 컴파일/코루틴 TestContext 출력·25건 PASS는 아직 미확인이다. 작업자는수정/부분판정 쓰기 종료 뒤 idle하고 같은 최종 검토를 잇는다.
+- **양보 지시 수신 지연 정정 공개:** 검증자는 직전check17:42:30Z 뒤 PlayMode를17:43:02Z에 시작했고,17:42:58Z 발송된 양보 지시를17:52:55Z에야 읽었다고 공개했다. 발송 기준 새 묶음 시작4초 뒤라는 사실과90분 창 안 실행·17:45:08Z 종료·17:48Z 자원 반환을 구분한다. 원시/기존 결과를 보존하고 다음 실제 기동 바로 직전check만 별도 호출하는 기존 경계를 재적용했다. Main msg_667e5fa44954에 이 경위·T-1/외곽선 진행을 보고했고 별도 조사/도구 수리 루프는 없다.
+- **Sol max 외곽선 보강 연결·같은 PR 작업자 유지:** task_c5b109950c93/ctx_91272358809a, term_85d0fa82-c1b5-439d-b5ca-6641e7698ac0/inc6a885226·leaf079fa638를 현재 Art 아래 신규 split했다. 최초 명령/화면은 GPT-6.1-Sol max·Codex0.163.0/선택창0/backend unknown이다. 계약87823896…4837·최소맥락·입력4개 경로 확인은 `growth-effect-pr/readability-fix-01/`이다. 제품 Presentation 한 파일/글자 대비만 소유하고 시험·API/위치·시간·자산/공유font material·Unity/compile0, 다음 최종 검증 피드백까지 같은 세션을 유지한다. 최초 worker-start는 input_accepted/turn_start_unobserved였고 JSON draft17982자·계약13194자/차4788(관측머리말4787±2)·새pane다른입력0을 대조해 공식 복구의 텍스트 없는 Enter를1회만 보냈다. 이후 draft소멸/Working과 정확 session 원문10행의 현재Dispatch 제출 입력을 대조했다. 자동 머리말4787 뒤 계약은 CRLF/끝개행 정규화로 전문동일, raw문자동일false이며 원본을 보존한다. `draft-submitted-source-check.json`이 근거다. 첫 ReadAllLines는 활성 source 파일 공유 오류로 읽지 못했고 Get-Content 공유 읽기로 대조했으며 새 도구/재주입/추가 Enter0이다.
+- **창 반환 완료·T-1 출력 교정/외곽선 보강:** msg_c0e5e956736a의 실제 PlayMode XML을 읽어25건17통과8실패·skip/Inconclusive0을 확인했다. 실패8개 메시지는 원/독립 시험 helper의 추적 Debug.Log이며 해당 두 출력 지점을 직접 읽었다. 제품 결함 확인0이지만 원5건의 뒤 재수락/수명 단언은 미실행이므로 전체 PASS0이다. 공식 ask msg_12ca63ba61c4에 reply msg_d307ab715959로 같은 Opus에게 **GuildGrowthEffectTestAdapter.cs/GuildGrowthEffectIndependentProbe.cs의 추적 출력만 TestContext.Out.WriteLine으로 변경**하는 소유권을 줬다. 문자열/시간·단언/기대/NoUnexpectedReceived·시험 수/제품/meta 불변, 새 도구0·다음 Main 창 전 실행0, 수정/부분판정 checkpoint 뒤 idle하고 전체 worker_done은 최종 판정까지 보류한다. 기존 실패/미실행은 보존하며 새 중간 검증 세션은 열지 않는다.
+- **실제 자원 반환·설정 복원:** 리드17:48:12Z 직접 관측 Unity/ShaderCompiler/PackageManager/CrashHandler0·GameViewSizes부재·LocalLow95601B/45b575ac…복귀 뒤 Main msg_a3a242c9c7d4로 「창 반환」을 먼저 보냈다. 사용 종료된 ProjectSettings는17:49:39Z에 정확 승인 SENTIS 한 줄만 복원했고 전체 bytes SHA b04c1808…cf81과 일치했다. 전후bytes·계산·readback은 `final-review-01/raw/lead-settings-restore/`다. 이어 Main msg_108cc8655ee7에 실제 결과·미실행·동일검증자 시험 출력 교정·어두운 외곽선 보강 판단을 보고했다. 다음 창 대기는 World→Content→Art이며 지금 Unity/공유파일 접근0이다.
+- **창 양보 지시·가독성 보강 판단:** Main msg_3642abe89cb8(17:42:15Z)이 두 PNG 직접 보기를 확인하고 현재 시험 묶음 하나 뒤 반환을 지시했다. 다음 대기는 World→Content→Art다. msg_5d57248ed3a3(17:42:58Z)로 현재 묶음만 마치고 신규 실행0·실제 종료/공유파일 상태 즉시 보고·최종 검토 checkpoint 후 대기를 전달했다. 직후 받은 검증자 msg_df3d3dc9e2ac(17:42:56Z)은 EditMode17:40:00~17:40:42Z exit0/실제7/7·원3+독립4·skip/Inconclusive/중복0을 보고하며 PlayMode 시작 상태였다. ProjectSettings는 검증자가 복원하지 않기로 확인했다. Main의 거점 레벨5 밝은 배경/캐릭터 겹침은 비차단 관찰이며 리드는 현재 배치를 크게 옮기기보다 어두운 외곽선으로 대비를 보강하는 쪽을 선택한다. 좁은 제품 수정은 구현자, 다음 화면/나머지 최종 판정은 같은 Opus가 맡으며 현재 제품을 읽는 검토는 실행 종료 뒤 잠시 멈추도록 했다. 전체 PASS·복원/반환 완료는 아직 아니다.
+- **캡처 실제1/1 PASS·남은 묶음 실행:** msg_5e4aa403197e의 현재 Task/Dispatch를 대조했고 리드가 `final-review-01/raw/capture/test-results.xml`을 직접 읽어 실제1/1 Passed·실패/skip/Inconclusive0을 확인했다. 검증자는 Unity22672 exit0/17:39:12Z·Unity0, PNG30장/JPEG·timing/cost CSV, GameView 선택1복귀/임시1280제거·prefs전후부재, LocalLow XML 사본 보존 뒤 원95601B/45b575ac…복귀를 보고했다. 실행 부작용인 ProjectSettings의 SENTIS define 제거 한 줄 diff도 직접 읽었다. msg_b17f284d559d로 **마지막 실행/파일 사용 종료 뒤 해당 한 줄 복원은 리드가 처리**하도록 명확히 했고 검증자 직접수동복원0을 알렸다. 지금 EditMode→PlayMode를 이어가며 전체 기술/미관/성능 독립 판정은 아직 대기다. 창/프로세스 종료·공유파일 최종 상태를 받으면 「창 반환」을 결과 보고보다 먼저 보낸다.
+- **첫 실화면 확보·Main 전달:** 현재 검증자 msg_859e44e24c55는17:38:41Z(02:38:41KST) 첫1920 PNG 확보·GUI Unity PID22672/컴파일 오류0을 보고했다. 리드는 `growth-effect-pr/final-review-01/captures/1920x1080-shared-before.png`와 `1920x1080-both-emphasis.png`·`1280x720-both-emphasis.png`를 직접 열었다. 실제 Town/HUD 위에서 거점 레벨5/무기 강화8 두 문양·문구가 다른 영역에 보인다. 첫 화면 경로와 직접 본 효과 두 해상도 경로를 Main msg_c880d40bca5c로 즉시 전달했다. 캡처 묶음 종료·EditMode/PlayMode XML·최종 독립/성능/사용자 미관 판정은 아직 대기이며 fixture loopback의 표현 단독 결과다. Content 소비 신호·실서버/DB 완료로 확대하지 않는다. 양보 지시가 없으면 같은 검증자가 남은 시험을 이어간다.
+- **최종 계약 설명 정정1 — 기존 GameView 입력만 제공:** 신규 검증자 첫 착수 화면이 GameViewSizeScope의 기존 JSON 검사를 보여 줘 리드가 실제100~105/177~202행을 확인했다. 원 계약의 「permit 존재만」은 최상위 fixture에 한한 설명이며 helper의 기존 JSON 입력을 누락한 리드 설명 오류다. 원 계약/주입은 보존하고 msg_dab96eb2a84a로 W/captures/gameview-permit.json·기존 token/현재Task/Dispatch/실제PID+birth/project/target/memory-only/1280/deadline18:58Z 입력만 단순 명령으로 제공하도록 정정했다. 새 관문·hash/manifest·원 helper/제품/시험 수정은 없다. 곧바로 안 되면 수리 루프 없이 가장 짧은 감독/수동 대안을 보고한다. 아직 실제 Unity·실화면 확보 보고는 없다.
+- **실행창 배정·신규 Opus 최종 검증 착수:** Main msg_2b54ea6daa0f(2026-10-21T17:26:38Z, 현재 handle 일치)가 World 반환/자원 확인 뒤 **17:28Z~18:58Z(10-22 02:28~03:58KST)**를 Art에 배정했다. 신규 Opus task_740c3727f279/ctx_558a461c92f4, terminal term_96a30eb3-c141-480d-90e5-d6a3d4553ffc/inc5995148a·leaf1ea6367e를 현재 Art 아래 split해 Opus5.5 xhigh·선택창0·ready/input_accepted/turnStart observed를 확인했다. 계약 `growth-effect-pr/final-review-01/verification-contract.md`와 lead-context/path-preflight에 최소 맥락·관련 규칙 원문·기동 관측을 남겼다. 기존 root03_Client에서 GUI1920/1280 캡처를 먼저 하고 원/독립 EditMode7·PlayMode25를 묶어 직접 실행·XML/화면 확인하는 최종 독립 검증 한 세션이다. G1 도구/새 harness/manifest/window hash0·Unity1순차·DB/실서버/dotnet/WSL0이며 제품/원시험 쓰기0이다. 첫 실화면 확보 즉시 경로와 함께 Main에 보내고, 캡처 뒤 양보 지시가 오면 현재 묶음만 끝내 반환한다. 실제 Unity 결과·화면은 아직 대기이며 실행창 시작 지시가 아래 이전 순서/대기 기록을 대체한다.
+- **창 순서 조정 — World 반환 뒤 별도 시작 메시지 대기:** Main msg_44bca01ac63b(2026-10-21T17:12:48Z, 현재 handle 일치)가 World의 메뉴→마을 후속 WSL15분(17:15Z~17:30Z)을 Art 앞에 배정했다. 이전 Core 다음 순서는 이 지시가 대체한다. Main의 자원 확인·별도 Art 시작 메시지를 기다리며 예상시각17:30Z/02:30KST 경과 자체는 실행 권한이 아니다. 캡처 우선·후행 요청 시 묶음 경계 반환 조건은 그대로다. 추가 회신·중복 요청·세션/Unity/공유파일 접근0이다.
+- **최신 창 순서 — Core 반환 뒤 Art, 별도 시작 메시지 대기:** Main msg_464860213d8a(2026-10-21T17:04:00Z, 현재 handle 일치)는 Core의17:00Z~17:20Z 창 반환 뒤 Art90분을 다음으로 배정할 계획이며 Content는 아직 창 요청 전이라고 알렸다. Main이 자원을 확인해 별도 시작 메시지를 보내기 전 세션/Unity/공유파일 접근0을 유지한다. GUI1920/1280 캡처·직접 보기를 먼저 하고, 이후 Main이 Content/World 요청을 알려 오면 진행 중 시험 묶음 하나만 끝내 반환한다. 종료 시 「창 반환」을 먼저, 이어 한 일/결과/다음/결정 필요와 현재 보이는 것·가장 빠른 결과/KST·막는 것 세 줄 및 캡처 경로를 보낸다. 이 지시가 아래 Content 다음 대기 기록을 대체하며 중복 요청·불필요 회신0이다.
+- **현재 대기 — Content 다음90분 창:** 창 요청 msg_69e499d70e71(2026-10-21T16:58:22Z)을 명령/시간/자원 세 줄로 Main에 보냈다. PS 검토 종료·추가 도구수리0을 함께 알렸으며, 실제 실행/KST 배정은 아직 없다. Main 배정이 오면 신규 Opus 한 명에게 효과 실화면 우선 실행과 남은 시험·최종 독립 판정을 함께 맡긴다. 배정 전 세션·Unity·공유파일 접근을 시작하지 않으며 중복 요청을 보내지 않는다.
+- **G1 PS 검토 정산·실제 화면 우선 창 요청:** worker_done msg_ead64c914df5의 현재 from_handle/task_511ade2925af/ctx_8ad99295e40f와 failed를 대조하고, 직접 읽은 정정 원문 c54fd3a5…ce4f가 실제 파일 SHA와 같음을 확인해 부분 failed를 수락했다. release는 retained/external_terminal/processAction none이었으며 같은 incarnation0ec800db·leaf57aff248의 화면에서 완료·빈 prompt를 확인한 뒤 정확 terminal만 종료했다(ptyKilled=true, reclaimable=[]). 기존 원시·판정·대상과 제품은 보존하고 새 동결/감사/하네스 도구는 만들지 않았다. 다음은 신규 Opus 한 명이 직접 실행·diff/XML/화면 결과를 함께 확인하는 PR 직전 독립 검증이다. 실제 루트03_Client에서 기존 GUI 효과 캡처를 먼저, 이어 원/독립 EditMode와 PlayMode를 묶어 실행할90분 창을 Content 다음으로 요청한다. 첫 효과 화면 목표는 시작후약30분, 현재 실행0/KST미정이며 DB·실서버 연결은 이 효과 표현 단독 범위가 아니다. 이 턴의 읽기 전용 READY argv 출력 첫 명령은 PS parser 오류로 본문 미실행 후 단순 파이프라인으로 바로 읽었고 파일 쓰기/별도 수리0이다.
+- **PS 최종 판정 정정 수신·완료 신호 대기:** msg_bc91bdebe0ac의 현재 Task/Dispatch를 대조하고 수정 판정 `growth-effect-pr/independent-progression-review-01/verdict.md` 전문(213줄, SHA256 c54fd3a51343ed71da4416c60d5c2af42733a3fc3e996606041446cb3c76ce4f)을 직접 읽었다. 부분 failed·하네스 D1/D2이며 제품 독립 PASS가 아니다. 검증자는 마무리/추가확장 중단 지시 두 건을 마지막 check인16:53:03Z에야 받아 첫 지시 뒤 s22/s23·probe를 추가하고 둘째 지시 뒤 기제 probe·제품bytes 대조 도구를 실행했다고 공개했다. 상세 시각/자기 fixture 오류5건/미실행 한계는 원문에 보존한다. D2의 입력·출력은 관측 사실로 남기되 지시 수신 지연과 확장 경위를 분리하며 이를 새 수리·감사 루프의 근거로 삼지 않는다. 추가 시험·수정0 지시를 유지하고 worker_done failed 뒤 해당 검증자를 정산·종료한다. 다음은 Content 뒤 효과 실화면 우선의 Unity 창 요청이다.
+- **D2 suite 검사 누락 수신·추가 도구 수리0:** 현재 검증자 msg_01c8acce99dc(task_511ade2925af/ctx_8ad99295e40f)는 G1 summarize-lane.ps1:163의 `$node.Name`이 XML name 속성을 읽어 실제 형식의 suite 집계 검사가 건너뛰어진다고 보고했다. 리드는 해당 분기·원 report의 run/suite 모순 거절 주장·name-probe-s22.json·s22 new-summary를 직접 읽었다. 실제 선행 XML을 변형한 입력에서 suite passed=14인데 case/run15통과이며 executionIssues=[]·executionValid/progressionEligible/xmlAllPassed=true인 누락을 확인했다. 정상 실제 Unity 통과나 제품 결함으로 바꾸지 않으며, D1의 NUnit 혼합 집계 가정 미확인 한계도 유지한다. 원시는 `growth-effect-pr/independent-progression-review-01/raw/attempt-3/`다. 검증자는 현재 결과의 failed 최종 판정을 정리 중이며 추가 수리·재검토·새 하네스0, 종료 뒤 직접 Unity 명령·XML·실화면으로 전환한다. Content 다음 창 배정 전 실제 실행0이다.
+- **D1 대역 재현 수신·도구 수리 없이 직접 실행 전환:** 현재 검증자 msg_940d0454d40a는 G1의 Test-NodeCounts가 Passed14+Inconclusive1/run result Passed인 합성 NUnit 입력을 result-contradiction으로 거절하고 후행 진입을 막았다고 보고했다. 리드는 해당 입력/header·실제new-summary의 executionValid/progressionEligible=false·원분기83~90행을 읽어 거절 재현을 확인했다. 이 혼합 집계가 정상 NUnit 출력이라는 가정은 검증자도 PLAUSIBLE/원소스미열람으로 적었으므로 입력 적합성과 실제 Unity 제품 회귀는 미확인이다. 원시는 `growth-effect-pr/independent-progression-review-01/inputs/attempt-2/s02-play-inconclusive-nunit/test-results.xml` 및 `raw/attempt-2/`에 있다. 새 경량/실화면 우선 결정에 따라 G1 추가수리·재빌드·새작업자0, 검토자는 진행 중인 명령을 끝내고 기존결과/한계만 최종보고하며 D2 추가후보는 미확정이면 그대로 남긴다. 다음 효과 실행은 이 진행관문 대신 직접 Unity 명령·XML·화면 확인을 사용한다. 제품23/원시험/독립8/옛원시는 보존하며 아직Unity미실행이다.
+- **빠르게 보이는 기반 우선:** Main msg_bedba2a6beef(2026-10-21T16:37:17Z)이 사용자 「빠르게 기반 먼저 만드는거를 목표로 해야돼, 지금 뭐 보여줄게 없어 우리」를 전달했다. 같은 goal에서 실제 보여 줄 결과를 막는 일만 먼저 하고, 완료조건을 줄이려면 Main 결정 요청을 유지한다. 현재 효과 실화면은 없음이다. 현재 PS 검토는 끝내되 다음 창은 효과 실제 화면부터 확보하고 남은 시험을 이어가는 순서로 잡는다. 첫화면 목표는 Art창 시작후약30분/KST배정전미정, 막는것은Content다음Unity창배정이다. 다음 Main보고에 현재실행가능한것/가장빠른결과와KST예상/막는것하나를 덧붙인다. 추가중간도구·문서정리는 실행을 막지 않으면 미룬다.
+- **10-28 경량 경로 사용자 결정 수신:** Main msg_a407bfc46827(2026-10-21T16:33:29Z)이 메인 pane에서 제출된 사용자 원문 세 건과 경량 적용 6항을 전달했다. 「적용 중인 사용자 결정」에 원문·출처를 기록했으며 Rules 정본 반영 전 충돌하는 AGENTS/ORCA/스킬/과거 goal보다 우선한다. 현재 task_511ade2925af/ctx_8ad99295e40f의 PS 검토는 중간에 끊지 않고 끝낸다. 다음은 Content 뒤 남은 Unity 실행/결과 확인을 PR 직전 독립 검증 한 번으로 묶는 간단한 창 요청이다. 관문 결함은 추가 하네스/수리 세션 없이 XML·화면 직접 관찰로 바꿔 알린다. 새 요청은 명령/시간/자원 세 줄, Main 보고는 한 일/결과/다음/결정 필요만 짧게 보낸다. 아래 같은 READY 새결함 결정요청·160분/5개 lane·동결/새세션 분할 계획은 당시 절차이며 새 결정에 충돌하는 부분은 다음 단계에 적용하지 않는다.
+- **신규 Opus G1 독립 PS 검토 연결:** task_511ade2925af/ctx_8ad99295e40f, handle term_16a37481-9703-48c7-9e64-b4261f0076e0/inc0ec800db-72f2-44a2-befd-20531041f214이다. 현재리드아래vertical split/tui-idle·Opus5.5 xhigh/선택창0·최초 --model claude-opus-5-5 --autocompact250000·backend unknown과worker-start ready/input_accepted/turnStart observed를확인했다. 계약75af1ae6…e8de/CODE9절·고정1890입력manifestd843d941…5a9e/직전불일치0/HEAD·정확23동일, 실제verifies는G1구현task6d8268175f1b다. 자기W PS독립시험/합성XML·복귀/실제PS진입·판정만쓰고원harness/READY03e9d941·제품23/원시0쓰기·Unity/compile/공유파일0이다. 새차단결함이면추가수리없이번호로Main결정요청,끝나면정산종료다. 원시/발행/모델/경로는 `growth-effect-pr/independent-progression-review-01/`에있다.
+- **G1 수리 준비 인수·정산/다음 독립 검토:** task_6d8268175f1b/ctx_20f913c5398f의 msg_e49d09edd05d succeeded는구현/대역검사/READY준비뿐이다. report04e32d7e/contextb3fa9175·새함수/builder전체·실제호출자diff/대역원시를읽고 fixed364/READY44/inventory1526불일치0·43/43/동일XML43·원허용→새거절21·lane/HEAD/정확23동일을대조했다. release→동일inc/leaf idle→정확close ptyKilledtrue/reclaimable[]/동결1550개12088540B·SHAf08cc914다. 새READY03e9d941…71cd는생성뒤재빌드0·실제Unity/compile/공유파일0이다. 실제8신호/최대365초/초과1·질문0,정확Solmax77점balance첫/끝/최소36327.383867·관측차감0/예약1000·주간6→7%를기록했다. 다음신규Opus는G1 PS 실제진입의독립대조군/준수만검토하며제품최종/Unity와분리한다. 현160분단일창/분할별도인계범위와양측관리script실패원시는 `growth-effect-pr/g1-settlement-v1.md` 및인접원시에있다. 새결함이면Main결정요청전추가수리0이다.
+- **신규 Sol max G1 수리 연결:** task_6d8268175f1b/ctx_20f913c5398f, handle term_2bd82b64-d835-427e-8baf-cc07a4a22cff/inc03319e51-c63a-42f7-8e59-1319a4044a10이다. 현재 리드/branch의 vertical split·tui-idle·첫화면 GPT-6.1-Sol max/선택창0·worker-start ready/input_accepted/turnStart observed를 확인했다. 최초명령 Solmax와 화면이 근거이고 --terminal launch model null/backend unknown을 실제모델 확인으로 바꾸지 않는다. 원계약11884f91…bce7+최신Main보충0aa40ecc…870d·입력v2 SHA56b76b65…6dce/364개직전불일치0·정확23/HEAD동일을 고정했다. 제품/모든시험/원시0쓰기·자기W G1/회귀·새READY만, 실제Unity/compile/공유파일0·끝나면정산종료다. 준비 근거는 `growth-effect-pr/independent-progression-fix-01/`이며 자동착수/중복주입/모델전환0이다.
+- **Main G1 확인·추가 결함 중단/창 분할:** msg_351e39d8c99b(15:26:36Z)은 G1과 그 회귀만 수리 계속을 확인하고 READY3회 초과 체크포인트를 받았다. 이번 수리 뒤 같은 READY에서 새 결함이 나오면 더 고치기 전에 「결정 요청」으로 멈춘다. Content가10-22 12:00KST 상한으로 준비하는 창과 겹치면 Content 우선/Art Unity최저다. 5Unity·160분은 가능하면2창 이상으로 나누고, 못 나누면 실제 owner/windowSHA·진행 관문/구체 대안과 이유를 READY에 적는다. 필수미검토/설계7관찰은 후행 판정에 남긴다. 아직 신규수리자는 기동 전이므로 원계약/입력v1을 보존하고 `independent-progression-fix-01/main-steering-addon-v2.md`·입력v2를 함께 발행한다. Main 회신불필요라 별도회신0이다.
+- **독립 준비 정산·G1 발견/수리:** task_1867c467a0c6/ctx_fe15cc4b5f22의 worker_done msg_d4f40a3158ca succeeded를 준비범위만 인수했다. 보고888a2054/메모075debf2/case-map302b3d45·실제4C#/5실행harness/READY를 읽고 고정278/READY39/overlay23 불일치0·원GREEN argv/cases동일을 대조했다. release→동일inc/leaf idle→정확close ptyKilledtrue/reclaimable[]/동결97개2865813B·SHA4e6bcdd2다. 리드가 G1(추가/중복/실행오류·skip이 있어도 진행 가능)을 정적으로 발견했고 Main msg_57e28e2d52f9에 보고/코드 차이와 READY3회 체크포인트·새수리 계획을 알렸다. 제품 확정 실패로 세지 않으며 새외부Solmax가 자기 W에서 좁게 수리하고 원본은 고정한다. 현재Unity/compile/시험/실화면/성능0·독립최종판정 보류다. 미검토원계약전문/중복비교·비차단7관찰과 리드 관리script실패/시각오기는 `growth-effect-pr/independent-preparation-01-settlement-v1.md` 및 인접원시에 남겼다. 생존22신호/최대410초/초과2/질문대기0이다.
+- **B1 입력 집합 변화·새 READY 단계 분리:** 현재 준비자 msg_62d03e49dbdc의 보고를 원 prepare-snapshot.ps1 33~35행/현재 untracked23개/원 READY SHA df517156 불변으로 직접 대조했다. 허용 신규 독립시험8개 때문에 기존15개 정확일치 관문은 snapshot 전에 거절한다. 리드는 msg_d27594ddf47a로 자기 W 새 READY의 원15 GREEN 단계(원 argv/expectedCases 보존)→독립8 overlay/독립·두해상도 단계 준비를 확인했다. 원본/HEAD/제품/원시험은 고정하며 새 READY의 정확23경로/hash·단계별 overlay·실제 총수/필요창/lastEntry를 요구한다. 준비 harness 입력조건 변화이며 제품 확정실패로 세지 않는다. 현재 실제실행0, 근거는 `growth-effect-pr/independent-preparation-01/lead-b1-context-and-observation-v1.md`다.
+- **첫 Sol max 계측 검토 회신·추가 기동 보류 해소:** Main msg_620644bdce74(14:06:03Z)은 첫세션0credit차감/예약1000유지·같은예약/계측으로추가Solmax허용을회신했다. 리드가 정확한구현rollout의 token_count48점을직접읽어13:16:24.269~13:47:21.982Z의첫/끝/최소/최대잔액36327.383867동일·주간10080분사용률5%불변·관측차감0을대조했다. last_token_usage합도입력7610378/캐시7357184/출력75400으로Main과같고금액으로바꾸지않는다. 원시 `growth-effect-pr/first-sol-max-credit-observation-v1.json`/Main수신원문 `main-first-sol-max-credit-original-v1.json`이다. 다음세션은같은rollout의rate_limits.credits.balance시간순최솟값과window_minutes10080의used_percent를직접기록하며못읽으면unknown/Main요청이다. 동결구현보고의당시unknown은고치지않는다. Main회신불필요지시대로회신0이며독립준비는계속한다.
+- **신규 Opus 독립 준비 최초 연결:** Task `task_1867c467a0c6`/Dispatch `ctx_fe15cc4b5f22`, handle `term_6428d6ce-22ae-4257-88ab-c2386a50f79a`/incarnation `783469b0-1803-4bf5-bca4-3edf418190eb`다. 같은worktree vertical split·정확경로/tui-idle·첫화면 Opus5.5 xhigh/선택창0을 확인하고 ready/input_accepted/turnStart observed를 받았다. 최초명령 claude-opus-5-5/문맥설정은기존기본상속, backend unknown이다. 계약 `independent-preparation-01/verification-contract-v1.md` SHA2c062931…fd15/고정278입력manifest SHAc4204778…82cb/직전불일치0/대상구현Task826d0b47be93을 고정했다. 제품/원시험/옛harness·READY0쓰기, 신규독립시험prefix/자기근거·실행준비만허용하며 지금Unity/컴파일/독립최종PASS/공유파일접근0·생성0이다. 준비완료면정산종료하고새Main창에새실행자를쓴다. 발행/모델/실제경로 근거는 같은W의launch-command/first-screen/worker-path-preflight/worker-start다.
+- **구현·준비 인수/정산·다음 독립 준비:** 완료 msg_dcae7debc5d2의 실제 Task826d0b47be93/ctx4c55c9734067·succeeded를 구현/준비 범위로 인수했다. report ed7ef412…37e8/context979b9932…8dc0·두C#전체/API/자산원문·atlas를 직접 대조했고 READYdf517156…d3d9의260경로/15overlay 불일치0이다. release→동일inc/leaf idle→정확close ptyKilledtrue/reclaimable[]·74근거동결SHA00a58ba1…531e를 남겼다. 독립준비계약은 `independent-preparation-01/`이며 제품0쓰기·신규시험prefix/자기근거·실행0/끝나면정산종료를 적용한다. 구현GREEN/독립/실화면/성능은미실행이다.
+- **생성·credit·절차 한계:** 정확구현session의R2원천에서 내장imagegen1회/원본·소비SHA6c12e153…c5d7을 확인했다. R2초판은custom input대신arguments만집계해0이었으므로v2로정정·양쪽보존했다. 요청과다른1254²/비균일gutter·halo경계는실화면미검토다. helper실패/문법v2·실행본긴행7과현재자체감사0을구분하고생존8신호/최대419초/초과4/질문대기0을기록했다. 리드의Codex후속메일직후수신화면조회누락도후행ACK확인과구분해Main에공개했다. 첫Solmax creditunknown으로예약1000잔액을재산정하지못해검토요청 msg_aaf502d67c28을보냈고추가Solmax는그판단전0,승인된Opus독립준비는계속한다. 근거는 implementation-01-lead-accepted-audit-v1/r2-source-observation-v2/liveness-result-v1과인접동결이다.
+- **최신 잠금 결정 A·Main 제거:** msg_a13b688e8bcb(13:35:51Z)의 사용자 「조건이 맞으면 메인이 지우고 알림」 원문과 조건3개/메인 전용 권한을 아래 적용 중인 사용자 결정에 기록했다. Main이13:35:27Z 새 art-active 잠금을 제거했다고 전달했으므로 보통Git 사용은 가능하되 현재 구현/READY의 HEADd2fcd708을 보존하려고 commit 시점은 그 준비 종료 뒤로 둔다. 원문/좁은 적용은 `implementation-01/main-stale-lock-conditional-decision-v1.md`다. Art의 직접 삭제/대체index변이0, 기존 계약/고정49입력/시험/실행 경계는 그대로이며 Main 회신0이다. 아래 잠금 판단 대기는 당시 상태다.
+- **Main 후속·잠금 그대로 구현 계속:** msg_c24966b054a3(13:33:51Z)은 새잠금 처리 규칙을 사용자 결정으로 올렸고 그동안 잠금/Git변이 없이 구현을 계속하라고 지시했다. Main도13:32:52Z에 같은0B/mtime와git0을 확인했다고 보고했다. Art는 같은 계약/HEAD의 구현·GREEN준비를 그대로 잇고 회신 불필요 지시대로 Main 회신0이다. 향후 메인 판단 메일 subject에 「결정 요청」/「검토 요청」, 자원창은 「창 요청」/「창 반환」을 넣어 깨움 도구가 식별하도록 한다. 원문은 `implementation-01/main-new-lock-continue-original-v1.json` SHA1feda48b…2172다. 메인 checkout 잠금은 Main이 소유하며 Art가 접근/처리하지 않는다.
+- **구현 중간 보고·다음 행동 유지:** 현재 Task/Dispatch가 일치하는 status msg_dc664ba5d45e(13:33:09Z)는 신규제품9파일·CSharp9구문2/PS3오류0·GUID5충돌0·고정49/원READY35/보존199hash불일치0과 내장imagegen1회/투명atlas1254×1254·소비SHA6c12e153을 보고했다. 이는 구현자 자체관측이며 리드 최종 인수/독립/실제컴파일 PASS가 아니다. HUD용1회 미사용·새Unity/행위/실화면/성능0·credit unknown이며 지금 GREEN harness/READY 준비를 이어간다. 보고/worker_done을 받는 다음 행동을 유지한다. 수신 원문은 `implementation-01/`의 inbox-resume 수신 기록이며 전체수신 배치에서 현재 세identity를 대조했다.
+- **신규 Sol max 구현 최초 연결:** Task `task_826d0b47be93`/Dispatch `ctx_4c55c9734067`, handle `term_68895c15-607e-4f16-8678-cb0f8feaf7bf`/incarnation `7da78a64-e5c9-49d7-89e9-ce45833a00f4`다. 같은worktree vertical split→tui-idle·첫화면 GPT-6.1-Sol max/선택창0→worker-start ready/input_accepted/turnStart observed를 받았다. 최초명령 gpt-6.1-sol/model_reasoning_effort=max, backend unknown이다. `implementation-01/implementation-contract-v1.md` SHA25c22b8f…c300/고정49입력manifest SHA15439369…5923·직전hash불일치0/기준HEADd2fcd708이다. 신규UI/GuildGrowthEffect접두C#·Resources/UI/GuildGrowthEffect전용자산과자기근거/실행준비만 허용하고 기존테스트·제품/Content파일·옛근거/READY·Git변이는0이다. imagegen기본내장도구1호출만/효과현재0·HUD용잔여1회보존, 새Unity/공유파일접근0이다. 발행/모델/경로/기준 원시는 같은W의launch-command/first-screen/worker-path-preflight/worker-start다.
+- **새 잠금 재발·Git만 보류:** baseline6파일의 보통 git add가 index.lock exists로 실패했고 staged[]/HEADd2fcd708/6untracked다. 새잠금은 creation/mtime12:46:31.5974228Z/0B여서 Main이12:30Z 제거한 옛잠금과 다르다.13:06:10Z Git2프로세스(parentOrca9528와자손)를 관측했으나 exe/argvnull·생성주체unknown이다. 리드는 삭제/단독open/우회index변이0, `pretest-baseline-test-commit-blocked-v1.json`과 Main msg_d16f77bb1430에 판단을 올렸고 계약 준비는 계속한다. 앞선 baseline6파일/관리commit 순서의 commit은 미실행이다.
+- **baseline 실행 인수·정산 종료:** 완료 msg_b7417af5d17f의 현재 Task/Dispatch/succeeded와 report 원문 SHA c659c9a0…bd0c/context645d6d6c…b774를 대조했다. XML18개case/이름/실패문구·compiler error0, 원READY35입력/기존W199hash불일치0을 `pretest-execution-01/lead-accepted-execution-audit-v1.json`에 보존했다. release retained/external→같은inc/leaf idle→정확close ptyKilledtrue/reclaimable[]로 끝냈고112개 실행근거343173431B의 동결 SHA202c8b76…2f23을 남겼다. 새API/제품/독립/미관PASS가 아닌 baseline 요구실패 실행 인수다. 다음 신규Sol max가 구현하며 원작성자/실행자를 재사용하지 않는다.
+- **실행자 이탈·생존 정산:** report의 sed읽기5·inline긴PS6·자기영수증helper동일byte재기록2를 Main msg_d52aab2dc8e9에 공개했다. R2 source표본에서 자기 currentDispatch가 있는 provider로그의 sed5/helper재기록2를 대조했고 원시표본을 보존했다. Orca transcript API는 session_not_reported로 unavailable이므로 API 실증으로 바꾸지 않는다. 공식helper 결과8신호/최대427초/초과2(427·339초)/질문대기0이며 상세원인은미측정이다. 원시는 `pretest-execution-01-r2-source-observation-v1.json`·`pretest-execution-01-liveness-result-v1.json`이다. 구현 계약은 파일기반PowerShell·동결원본보존으로 위험을 좁히되 새공용lint/정책 구현을 끼우지 않는다. 소급준수PASS0이며 독립 검증에서 원문·실제diff/준수를 재판정한다.
+- **실제 XML 원천 표본 대조:** 리드가 두 test-results.xml을 직접 파싱해 EditMode3/3 failed·PlayMode15/15 failed, passed0/skip0과18개 동일 assertion `RED unimplemented: product type Dawnholder.Client.UI.GuildGrowthEffectView (api-contract.md)`를 확인했다. `pretest-execution-01/lead-xml-observation-v1.json`에 각 실제 case/메시지를 보존했다. 컴파일 실패/테스트0과 구분되는 baseline 요구 실패 관측이며, 아직 실행자 report/context/worker_done 대조·정산 전이라 제품/독립/실화면 PASS나 전체 인수로 확대하지 않는다. 내용 있는 heartbeat msg_8b1f9373aedc는 창 반환 뒤 report 작성 중이라고 보고했고 현재 추가 실행0이다.
+- **창 조기 반환 완료·판정 전:** 실행자 반환 msg_8e94e269d0f0(12:49:36Z), 마지막 wrapper12:47:07Z 종료다. prepare1회exit0→EditMode1회exit2→PlayMode1회exit2/재시도0이며 두 unity-exit의 exited true/timedOut false/failure null/residual[]/unityRemaining[]/projectLock false를 대조했다. 관측자손114/23은 근거로 남았다. 두 lane returned.json restored true, GameViewSizes.asset 부재·기본 TestResults.xml95601B/SHA45b575ac…9ef 복귀를 리드12:52:04Z 직접 대조했고 지정Unity/build 대상0도 확인했다. Main 반환 status msg_b2a71b38a1da(12:52:24Z), 근거 `pretest-execution-01/lead-window-return-observation-v1.json`이다. snapshot/Library는 남기고 삭제0, 이후 공유파일/Unity 재접근0이며 지금 결과 XML/보고/정산이 다음이다. 아래 준비/창 대기 현재시제는 당시 기록이다.
+- **잠금 사용자 결정 A 후속 — Main 직접 제거:** Main msg_2a8985353516(12:30:41Z)이 메인 pane 제출 사용자 「Art 작업 폴더의 낡은 Git 잠금 파일 지우기 → A 메인이 지운다」와 직접 제거 사실을 전달했다. Main은12:30:08Z의 정확 admin index.lock0bytes/mtime불변·상주git0 확인 뒤 그 파일 하나를 rm으로 지웠고 HEADd2fcd708/branch/내용staged불변을 확인했다고 보고했다. Art 직접 관측으로 바꾸지 않으며 전사는 `pretest-execution-01/main-index-lock-decision-transcription-v1.md`다. 보통 Git 사용 가능 안내를 받았지만 READY 실행 중 HEAD는 고정하므로 지금 add/commit0이며 별도index/checkpoint ref도 근거로 보존한다. 실행자에게 원계약 불변/작업범위불변의 후속 사실만 전달한다. 이 메일은 별도 회신 불필요 지시여서 Main 회신0이다. 아래 잠금 존재·판단 대기는 당시 기록이다.
+- **새 실행자 최초 연결 완료:** 신규 Opus 실행 Task `task_df9293f126fd`/Dispatch `ctx_301c665530b7`, handle `term_703a4406-e1d0-4fba-bda3-f464894fbe1f`/incarnation `e59c5667-57bc-4b0a-9969-bbb4704babae`다. 리드 아래 vertical split·정확 art-active/branch·tui-idle·첫 화면 Opus5.5 xhigh/선택창0을 확인했고 최초 명령 autocompact250000·backend unknown을 기록했다. worker-start는 ready/input_accepted/turnStart observed이며 복구 Enter/중복 주입0이다. 근거는 `pretest-execution-01/launch-command-v1.json`, `first-screen-v1.json`, `terminal-before-bind-v1.json`, `worker-start-v1.json`이며 새 실행자는 같은 폴더의 고정 계약을 읽고 창 시작12:35Z 전 준비만 한다. 실제 실행/RED/제품/독립 PASS와 구분한다.
+- **현재 창 배정·새 실행 계약:** Main msg_eb58ed808a20(12:13:45Z)이12:35Z~14:05Z/prepare12:50·Edit12:55·Play13:40/Unity1·총2·retry0과 정확 공유2파일 소유를 배정했다. 대기 종료 정책은 지금 적용하지 않고 이 리드 pane이 새 Opus 실행자를 연다. 원문/언어·접근 경계·CODE9절 전문·실행 순서와 반환 조건은 `growth-effect-pr/pretest-execution-01/execution-contract-v1.md` SHA256 `6e330fe94fda4af8489ea0765210eaf95ff3ddf0c70474340dcd95d55a084831`이다.12:21:48Z lead-path-preflight-v1.json에서35입력/199동결 불일치0·시험6untracked·W/run과snapshot부재를 확인했다. Main 자원 수치는 실행자 신선 관문을 대신하지 않는다. 기본 잠금은 Main 사용자 판단 대기이며 삭제/다른API 우회0, 실제branch/d2HEAD를 유지한다. 아래 창 대기 현재시제는 배정 전 기록이다.
+- **잠금 관측과 남은 한계:** 정확 admin 경로 C:/Dev/DawnHolder_Project/.git/worktrees/art-active/index.lock은 09:46Z부터0bytes, Git 프로세스0으로 관측했으나 삭제 포함 명령이 정책 거부돼 제거/삭제백업/단독 open도 미실행이다. 파일 생성 주체는unknown이다. 원시 resume-index-lock-observation-v1.json을 남겼다. 새 실행은 checkpoint ref로 branch를 바꾸지 않고 기존 효과 branch/HEAD에서 시작하며, 미래 제품 commit 전 기본 index 제약을 해결할 판단이 필요하다.
+- **창 요청·종료 준비 — 다음 재개 첫 일:** 원 READY `growth-effect-pr/pretest/harness/ready.json` SHA256 `4f9e1c00a107f0ddb286f9a9d2292109941b0989d4472c0ca054347e2cc5b2b8`, 보고 `pretest/report.md` SHA256 `6ce0215a1945f38de6b8d22d108901890ca4bb2881fa1df2b4697e8378e57149`다. 85분 이상/동시1·총2Unity회, prepare·EditMode·PlayMode lastEntry는 각각마감75·70·25분 전이다. Main 배정 전 실행0이다. 대기열이면 이 기록과 local commit/goal SHA를 Main에 보고하고 턴을 끝내며 pane은 Main이 idle 뒤 닫는다. 창을 배정받은 새 리드는 같은 Run을 새로 인수하고 새 Opus 실행자를 열며 기존 작성자/현재리드 세션을 재사용하지 않는다.
+- **goal checkpoint와 READY 보존:** 기본 index.lock 때문에 ordinary add가 막혔고, 삭제 포함 exec는 자동검토 blocked by policy로 실행 전 거부됐다. lock은 그대로 두고 E의 별도 GIT_INDEX_FILE로 goal만 commit-tree한 새 로컬 ref `checkpoint/art-growth-window-20261021`에 보존한다. 실제 commit/goal SHA·대상 tree는 `growth-effect-pr/pretest-resume-checkpoint-commit-v1.json`이다. 제품 branch/HEAD d2fcd708·기본 index와6untracked test를 유지하므로 원 READY4f9e를 그대로 사용하며 추가 READY/head 설정 복사0이다. 향후 기본 Git 작업에는 잠금 제약이 남고, 삭제를 다른 API/세션으로 우회하지 않는다.
+- **정산 완료·미실행/규칙 한계:** Opus 준비 Task는 writing-complete만 인수했고 release→같은inc/leaf idle→정확close ptyKilledtrue, W199파일 동결 `pretest-worker-evidence-freeze-v1.json`(SHA950e7dc7…ccf)/reclaimable0/Art pane본인만을 확인했다. 3 EditMode+15 PlayMode는 예상 case이며 실제 compile/RED/독립/C9화면0이다. 개인 효과가 작은 영역/단계·반복/입력 관측은 승인 계획에 근거한 시험 설계, null parent는 명확거절(ArgumentNullException 또는 null/no-root) 두 형태를 허용한다. 상세는 api-contract.md/case-map.md다.
+- **Main에 남긴 우려:** 원계약 밖 새 CJS builder는 PS로 정정했지만 node37/파일쓰기4·perl1·prefs폴더 메타조회1·일회성PS긴행5의 역사는 남는다. 최종화면의 「허용 밖 쓰기0」은 상세보고의 언어위반과 맞지 않아 받아들이지 않으며 Main에 원시와 함께 전달한다. READY7판/수정3회 초과 체크포인트와 독립 확정 실패0은 별도다. 저장신호23/최대800초/초과12 raw(공식질문432초 중복을 보고계산으로 빼면11구간), 세부원인은 미측정이며 pretest-liveness-accounting-v1.json에 둔다.
+- **현재 마지막 조치 — 준비 Q1 답변/정정 진행:** 신규 Opus의 긴 snapshot 경로 질문에 A 보충 pretest-contract-v2-q1-snapshot-addon.md(SHA6ef89bbc…772c)/공식 답 msg_7e1934114b4a로 답했다. snapshot/Library 계획만 기존 지정 TEMP의 정확 .backups/tmp/artfx-tdd/s/03_Client로 옮기며 실행0을 유지한다. W의 새 JS READY builder는 원 계약 범위와 달라 원본·옛 READY 보존 뒤 PowerShell 정정을 반환했고 Main msg_29162bf73e98에 즉시 보고했다. 준비 draft6판은 수정3회 초과 체크포인트로 알렸으며 독립 제품 실패0과 구분한다. 다음은 작성자의 새 READY/실제 감사·보고 인수/정산이고 아직 작성 Task를 종료하지 않는다.
+- **현재 마지막 완료 — 신규 Opus 작성 착수:** 효과 준비 계약v2(SHA dd99053e…1764)와 입력20개를 실제 신규 pane cwd에서 확인한 뒤 worker-start의 ready/input_accepted/turn_started observed를 받았다. 신규 Opus5.5 xhigh 화면·최초 autocompact250000 명령, backend unknown이며 Task/Dispatch·handle/incarnation·전문은 growth-effect-pr/pretest-worker-start-v2.json과 pretest-worker-cwd-path-preflight-v2.json에 있다. v1은 미발행으로 보존, 창 대기 종료 정책을 v2에 반영했다. 작성자는 제품 없이도 compile되는 시험·harness·READY만 쓰고 종료한다. 현재 새 실행/이미지0이며 작성 중인 작업자를 대기 정책으로 중간 종료하지 않는다.
+- **실행 창 대기 수명 — 최신 Main msg_0770ef4adc4d:** 작성/계약 같은 창 밖 일은 계속하되 대기열 또는 실행만 남으면 READY 파일·SHA로 작성자를 정산/종료한다. 대기 heartbeat/check--wait/상태 메일0이다. 리드는 길이/lastEntry/Unity수·창 뒤 첫 일을 goal에 적고 local commit+SHA 보고 뒤 턴 종료, pane은 Main이 idle 확인 후 닫는다. 창을 배정받은 새 리드가 같은 Run을 인수하고 새 실행자에게 파일 기준으로 전달한다. 현재 v1 계약은 미발행이며 이 결정을 반영한 v2 준비 계약으로 대체한다.
+- **현재 마지막 완료 — 승인 기록·PR253 종료·새 branch:** 승인 local commit `83163ed08b7abfaed857d2db17675984690e9b5d`(goal+승인 초안), PR253 https://github.com/bass131/dawnholder-server/pull/253 CLOSED/원head d2b7aa78 유지·대체 코멘트 완료다. 새 효과 branch `feat/demo-video-art-growth-effects-20261021`은 origin/main db016935에서 시작했고 옛 HUD 제품 commit을 가져오지 않았다. `.backups/verification/2026-10-13-demo-video-art/growth-effect-pr/`에 local commit/close/new-branch 영수증을 보존했다.
+- **다음 작업 — 신규 선행시험:** 현재 쓰기 작업자0이다. 새 Opus 계약을 발행해 제품 없이도 컴파일되는 요구 시험과 READY 계획을 먼저 만들고, Main이 배정하는 전용 창에서 의미 있는 요구 실패를 관측한다. 제품 stub/이미지생성·Content hook·Unity 선행 실행0이다. 관리 기록의 과거 현재시제는 아래 당시 기록으로 읽는다.
+- **현재 재개 — A 승인·효과 착수:** Main msg_797518bb20bb(2026-10-21T09:16:06Z)의 사용자 원문/선택지·배정 전문을 아래 적용 중 결정과 `growth-effect-pr/main-A-approval-original-v1.json`에 보존했다. 계획 초안 SHA9c05e357…5e4c는 그대로 승인 기준이다. PR253 대체 종료와 새 범위 승인 뒤 Main이 효과를 지금 세 번째 트랙으로 배정했으므로 이전 두 트랙/PR253 병합 선행 금지는 이 범위에서 대체된다.
+- **현재 첫 행동·경계:** goal local commit→PR253 대체 종료→최신 main 새 효과 branch→신규 Opus 선행시험 계약/기동 순서다. Content 현재 길드 화면 PR은 기다리지 않고, 효과 소비는 Art 효과 PR 병합 뒤 Content 별도 후속 PR이다. Unity는 World WSL→Core SQL10분→Content Unity→Art 순서와 새 Main 배정 시각만 권한이다. 예약1000/첫 Sol max 실측 재산정·세션200 초과 보고를 적용한다. R7은 Main이 이번 효과 PR을 시범 비지정했다. 근거·사전 맥락은 `growth-effect-pr/`이며 제품 쓰기/새 PASS로 보고하지 않는다.
+- **아래 계획 검토 대기는 승인 전 기록:** A 승인 뒤 다음 행동은 위 효과 PR 착수다. 기존 초안/원시와 당시 제한은 역사로 보존한다.
+- **현재 재개 — 2026-10-21 계획 작성:** 같은 노트북의 같은 대화에서 Main이 재개했다. 현재 Art terminal `term_6ba9a7a6-ca19-4baf-8b1a-491f0eab7f21`, Run `run_6ae742140ce9` consumer_generation2이며 이전 handle/Task는 실행 권한으로 재사용하지 않는다. 별도 머신·근거 이관은 이번 재개에 필요 없다. 사용자 원문2건과 모델·사용량 결정 전문은 아래 「적용 중인 사용자 결정」에 보존했다. C9의 Art 제작 결정은 과거 주인 미정 상태를 대체하되 실제 API/제품/가시성 완료를 뜻하지 않는다.
+- **마지막 완료·다음 행동:** 8장 원PNG를 직접 보고 manifest hash와 대조했으며 Content의 성장 확정 신호/State·창 수명을 좁게 실사해 [새 초안](concept-reconstruction-plan-draft.md)에 범위·폐기/보존·PR253 선택·C9·결정·단계/실행/사용량을 작성했다. 리드 자체 점검이며 새 독립 판정0이다. 다음은 Main의 사용자 계획 검토이고, 답 전 작업자/검증자·생성·Unity·제품/시험 쓰기0이다. 전역 두 실행 트랙과 Core→World·Content 우선순위 아래 Art를 세 번째로 열지 않는다.
+- **PR253·보존·capacity:** 원격 PR253 OPEN/head `d2b7aa78e67c35da35a7b2e58c5736c808c7313d`/CI4 SUCCESS를 이번에도 읽기로 확인했다. local HEAD `79b8b1a978a8bb53bf0fcf9c0ccebb476ddf0821`은 종료 관리1commit이 앞서고 push하지 않는다. 추천 대체안은 사용자 결정 전 PR 종료나 「병합 뒤 착수」 조건 변경 권한이 아니다. 기존 v4·pretest v2 DO NOT DISPATCH·제품/원시·과거 PASS를 보존한다. Main이 본 capacity 중단은 msg_3c8c47b909a9에 따라 같은 Sol xhigh로 이어 작성했으며 실행 중 모델 변경/대체 기동0이다. 근거는 `.backups/verification/2026-10-13-demo-video-art/concept-reconstruction-plan/`에 둔다.
+- **아래 종료·병합 전/뒤 기록은 당시 상태:** 2026-10-19의 정산·동결 원문은 보존한다. 현재 다음 행동은 위 새 계획 검토이며, 옛 머신 이관/C9 주인 미정/자동 후속 착수 문구로 현재 결정을 덮어쓰지 않는다.
+- **종료 정리 원천·마지막 완료 — 2026-10-19 KST:** 메인 msg_9277bfbf34d8는 사용자 제출 원문 「나 돌아왔어, 슬슬 노트북 꺼야돼서 각 파트별로 작업정리하고 재개지점 확보해줘」를 전달했다. 새 실행 창/작업자/검증자0, 근거 삭제0, 자기 브랜치의 로컬 관리 commit만 하고 추가 push하지 않는다. 마지막 완료는 HUD 강 독립 PASS(실 GUI3P/0F·PNG4·제품 결함 확정0)와 PR253 원격 head `d2b7aa78e67c35da35a7b2e58c5736c808c7313d`의 CI4 SUCCESS다. `shutdown-pr253-head-ci-v1.json`과 같은 run ID의 `publication-head-runs-v1.json`을 연결했다. CI 감시는 20:46:25Z exit0으로 종료했다. 로컬 종료 commit은 이 원격 head보다 앞서며 최종40자 SHA는 같은 근거 폴더의 `shutdown-final-handoff-v1.json`에 둔다. 기존 push는 종료 지시 전에 d2b7aa78까지 했고 그 뒤 push0이다.
+- **PR253 병합 전 — 다음 첫 행동:** 재개 머신·로컬 전용 정리 commit·Git 제외 근거의 인계부터 확인하고 GitHub의 PR253 head/CI를 다시 대조한다. 메인이 최종 판정 원문/R-2 표본과 실제 PNG를 확인하고 사용자에게 화면을 전달한다. 사용자 화면 확인·`병합 승인: PR253 head d2b7aa78e67c35da35a7b2e58c5736c808c7313d`의 실제 제출 전에는 메인도 병합하지 않는다. head가 바뀌면 이 과거 CI/승인 문자열을 재사용하지 않는다. Art/Codex 병합·자동 병합0, 후속1~3 제품/시험 구현·Unity0이다. 최종 판정/PNG/R-2는 `hud-final-review-retry-01/verdict.md`와 인접 launch의 `lead-accepted-settlement-v1.md`, 실행 원시는 W/raw·screens에 있다.
+- **PR253 병합 뒤 — 다음 첫 행동:** 실제 MERGED/merge SHA와 최신 main을 새로 확인하고 승인된 표시1~3만의 새 branch·별도 PR 경계를 준비한다. 선행시험 계약 초안 `.backups/verification/2026-10-13-demo-video-art/concept-alignment-followup-scope/pretest-contract-draft-v2.md`(10533B/SHA256 `7d1543d513e357a7218669d91ac1b85aeafc732add8ca15efd2e9c1138f9a7d1`, **DO NOT DISPATCH**)를 최신 main의 경로·규칙 원문·입력으로 다시 고정한다. Core13/13·World10/13 대조는 과거 관측이며 session/NetworkService/lifetime 3파일 차이와 실제 API를 재확인한다. 새 세션에서 신규 Opus 선행시험→지정 구현자→별도 신규 독립 검증 순서를 발행하며 지금 자동 착수하지 않는다. 4미니맵/5가방NPC·6새기능·7장식은 승인1~3에 섞지 않는다.
+- **열린 Task·수명·보존:** 현재 실행 중 Task/Dispatch는0이다. 최신 `task_ab96264c4394/ctx_074e1c9f8306`(Opus), `task_71595bf71cd3/ctx_90fdbb23fa59`(R1), `task_bef4c3a23315/ctx_854611e6e731`(옛 보류 판정)은 정산·정확 pane 종료·동결 완료이고 재사용하지 않는다. 역사 worker-list26건은 succeeded16/failed9/실행전 abandoned1이며 nextargv0다. abandoned task99b8/ctxe488은 Main msg_2ed69ec859d1의 정확 종료 역사 기록이고 활성으로 세지 않는다. `shutdown-owned-process-observation-v1.json`에서 GUI145 identity·wrapper·해당 Task 경로·CI감시의 Art owned 실행0/lockfalse를 확인했으며 리드/Orca host·타 파트는 제외다. Registry 재접근/kill0, `.backups` 근거는 보존한다. 다음 구현·검증은 모두 새 세션이다.
+- **결정 대기·밤 위임 기록·이관:** PR253 화면 확인/각 PR 정확 head 병합 승인, C9 성장 효과 API 주인·범위(Main msg_78792efaf76b), 재개 머신과 로컬 commit/근거 인계 방식은 사용자·메인 판단 대기다. 밤의 사용자 취침 위임 전달 msg_43ac927c5dc7와 그에 따른 메인 R1 결정 msg_f686da8a9a94·Q1 보충 msg_83dfcb784237는 아래 기존 원문/결과 기록에 남아 있고 사용자 직접 입력으로 격상하지 않는다. 후속1~3 승인은 msg_3d254c772f7a/범위 일치 msg_9ce8429d2fa8로 유지한다. 남는 미커밋2파일은 rawHEAD동일 `MinimapRT.renderTexture` M(7123af77…f85f)과 HUD PR 밖 승인 준비 문서 `concept-alignment-plan-draft.md` ??(185d9b0c…38ab)이며 수정·stage하지 않는다. `.backups`와 이 초안은 Git pull만으로 다른 머신에 이관되지 않는다. 리드 Codex 세션 ID는 환경 CODEX_SESSION_ID/THREAD_ID가 같은 `01a14988-024f-7300-9ef4-5d27ed13693a`다.
+- **253 - HUD 텍스처 교체 PR 발행:** [PR253](https://github.com/bass131/dawnholder-server/pull/253)을 main 대상으로 발행했다. 제품 PNG5+출처2, CURRENT·goal·hud-pr-scope 관리 기록의 같은 경계이며 후속 표시1~3/효과/지형은 포함하지 않는다. 검증 완료 뒤 관리 기록만 커밋했고 제품 bytes는 검증 HEAD와 같다. 최종 head와 CI는 `hud-final-review-retry-01-launch/publication-*` 영수증에 고정해 메인에 전달한다. 미관 승인·전체 goal 완료·병합으로 보고하지 않는다. 최초 git add는 과거 15:37Z의 빈 index.lock에 막혔다. 살아 있는 git 프로세스0·같은 정확 경로/시각/0bytes·exclusive open과 백업을 확인한 뒤 해당 worktree lock 파일 하나만 제거하고 재개했으며 전역 변경/타 pane 조작0이다. 같은 폴더의 `publication-stale-index-lock-removal-v1.json`에 보존했다.
+- **HUD 강 독립 PASS·정확 종료 — 2026-10-19 KST:** 신규 Opus task_ab96264c4394/ctx_074e1c9f8306의 쓰기 종료 msg_e78a340bfd8e·worker_done msg_92e9e119b76e를 실제 원문·diff·실행 기록과 대조해 인수했다. `hud-final-review-retry-01/verdict.md`(32382B/SHA b07e604a8bbfcd48ac4ffad8264f7d0f3e303ed4127d134ab0141e9cb2831289)는 이번 계약의 강 PASS다. R1은 정적·대역·실 OS 자기 자식으로 독립 확인했고 full GUI의 경합 분기 진입 여부는 관측 불가로 분리했다. T1은 rect⊇UV⊇원 PNG alpha 포함 관계, T2는 Unity fake-null 선별을 교정해 실제 GUI 3P/0F·실 PNG4를 확인했다. 제품 결함 확정0이며 U1은 기존 disabled/비활성/런타임 색 점으로 분류했다. 원시·판정·맥락·closure와 규칙 실제 준수 위치를 읽었고 자기408/음성2/입력300 bytes·hash 불일치0·root2217 drift0·snapshot ENV-D01 정확1을 대조했다. release retained/external→동일inc/leaf idle→정확close/ptyKilledtrue 뒤 W422파일을 동결했다(`hud-final-review-retry-01-freeze-v1.json`, SHA80ca226a95d0ac2e8ab3282365e3e0da78c1598f314338c4d9c1d943b54ea364). worker-list retained26/hasMorefalse/reclaimablecategory0/nextargv0이며 stale missing_status를 실제 종료 증거와 구분한다.
+- **단회 자원 반환·판정 한계:** 새 Main msg_8a164cbca344 창에서 wrapper·Unity exit0/timeoutfalse, owned identity 잔여0/lockfalse·exactprefs 원형 부재와 runner after/returned 기록을 확인했다. 리드 전용 Registry 기존 Binary6개만 복귀해 전체137 typed값 beforeDiff0 후 msg_8fc3f18fe41c로 창을 반환했다. 반환 뒤 추가 Unity/Registry 접근0이다. 원 PNG4장은 리드도 원본으로 직접 보았고 미관 승인은 후행이다. O-1 시험 기록 문구·O-2 runner 주석·O-3 비활성 dialogue_template 참조의 미조사 원인은 비차단 관찰이며 제품 회귀로 확정하지 않는다. 성능 파일 부재·실서버/DB·정확 최종head CI·사용자 미관/병합은 미실행이다. 생존 신호 최대360초·초과351/360초 두 구간은 독립 검사 준비와 실행 종료/관측 중 발신 지연으로 원시 helper 결과와 한 줄 정산에 남겼고 세부 원인은 미측정이다. 상세는 `hud-final-review-retry-01-launch/lead-accepted-settlement-v1.md`다. 고정 goal318773B/0e396c2b…ae5b는 같은 폴더의 `goal-before-independent-pass-settlement-v1.md`에 보존했으며 이 관리 갱신을 옛 manifest와 동일하다고 쓰지 않는다.
+- **R1 구현 인수·정확 종료 — 2026-10-19 KST:** 새 Astra task_71595bf71cd3/ctx_90fdbb23fa59의 worker_done msg_c4e0e08ecc6a를 구현/자기검사 완료로 인수했다. 승인된 명시ExpectedIdentity와finally전달2구간외동일·대역26P1F→27P0F/실OS6P1F→7P0F·자기49/입력38/역사15 hash불일치0·자식잔여0이다. 보고6a959dcc…986d/context9190a9a1…3eac/runnerc4118a8b…3539/closure87177dee…201e 원문은 hud-review-runner-r1/이다. release retained/external_terminal 뒤 동일inc/leaf·idle·정확close ptyKilledtrue, W50파일동결515eea515e66290fe05ae92008a2b3e5091f90aa0c261ecc2ffde998c948e4e9와worker-list25/hasMorefalse/reclaimablecategory0를확인했다. missing_status는실제close증거와구분한다. 원시의초기요약null/추출설명문구오기는보고에서정정하고원문보존했다. 독립/HUD PASS·전체wrapper/Unity/prefs·Registry복귀검사는미실행이며새Opus의실제진입이남는다. 근거는 hud-review-runner-r1-launch/lead-settlement-audit-v1.json과 accepted-settlement-v1.json이다.
+- **C9 범위 공백 — 메인 msg_78792efaf76b:** 성장 효과 API 주인·범위는 아침 사용자 결정으로 올린다. Art는 HUD R1 후행 독립 재검증·승인 후속1~3 준비를 계속하며 임시 효과API/공용파일 소유 약속·파트 간 반복질문을 만들지 않는다. Content19PASS/실서버준비는Art PASS로합산하지않는다. 같은 원문 전달을 기다리고 새 착수/완료일을 약속하지 않는다. 원문은 concept-alignment-followup-scope/main-C9-owner-morning-decision-original-v1.json이다.
+- **사용자 위임에 따른 메인 결정 — Q1 msg_83dfcb784237:** 같은 R1/현재 Astra(task_71595bf71cd3)의 계약 정합성 보충으로 승인됐다. 새 runner 한 파일에서 Get-Identity의 선택 ExpectedIdentity 대조와 finally residual 한 호출 전달의 두 구간만 허용한다. 조건2 birth는 이전 CIM createdUtc와 직전 CIM CreationDate 동일성으로 확인하며 native birth를 낮은 정밀도로 바꾸거나 서로 비교하지 않는다. 기대 identity/필드 부재·불일치·PID재사용/다른 createdUtc·접근거부/다른오류는 오류를 유지하고 PID재사용 거부 대역을 자기검사에 포함한다. 원본/제품/공유도구·kill/prefs/Registry·다른 호출부는 보존한다. source0 안전지점과 옛 입력30 일치 후 계약/manifest2판을 고정하고 전문 읽기 확인 뒤 공식Q1 답으로 진행한다. 원문은 `hud-review-runner-r1-launch/main-Q1-approval-original-v1.json`이다. 최신 World WSL 창18:44~19:14Z 반환 뒤 Art 새창을 배정하며 Unity0/후속1~3 병합전 구현0은 유지한다. 이전 msg_f686의 한구간/birth 문구는 이 보충으로 읽고 아침 메인 위임결정 보고에 묶는다.
+- **사용자 위임에 따른 메인 결정 — msg_f686da8a9a94:** 취침 위임 원문 msg_43ac927c5dc7에 따라 R1 새 임시 runner 사본 한 파일만 수리 승인. 신규 Astra xhigh(수명경합 신호2)→정산·종료→신규 Opus의 R1 독립실사/T1·T2 교정·새창 단회 순서다. 조건은현지화메시지가아닌오류ID/예외형식, 직전CIM의같은PID·birth·exe확인된not-found만종료분류, 실제OS자기자식관측포함, 원C/V읽기전용·새사본diff한구간/hash보존이다. 미확인identity/접근거부/다른오류는그대로오류이며보호·kill·prefs/Registry/공유도구·제품변경0이다. 원계약14행수리금지는이번새사본한파일에만풀며다른범위로확장하지않는다. Content창18:16~18:56Z 반환뒤재검증창을배정하고R1작성중Unity0·후속1~3병합전구현/Unity0을유지한다. 원승인은 `hud-review-runner-r1-launch/main-r1-approval-original-v1.json`이다. 아침사용자보고에서뒤집을수있는메인위임결정이며사용자직접입력·병합승인으로격상하지않는다.
+- **HUD 강 독립 보류·정산 — 2026-10-19 KST:** 원판정 `hud-final-review/verdict.md`는31558bytes/SHA e78196d3fd207be510f1c6ee75cac2fb5950f34ef57f2c4324c5d87df8217851, 메모74b1ab43…68cc/closure2a0a544a…f30a다. Task완료는검증정산완료이며제품PASS가아니다. 정적59/59·음성대조2벌·실제Town/UI PartyHUD 두해상도는PASS, 실XML은1P/2F·PNG2/hud-art0·perf없음이다. T1/T2는필수독립시험미완을차단하고R1은runner정리경합/U1은예외Image 객체미확정이다. 확정제품결함0을모든경로정상확인으로쓰지않는다. 원문전문/518자기·252입력·root2217 hash0불일치, snapshot은승인ENV-D01한줄만확인했다. release external_terminal retained→동일inc/leaf/tui-idle→정확close/ptyKilledtrue, worker-list24행/hasMorefalse/reclaimable0, V530파일동결e66da93cd9cabf376995bcc3af10fcdc176186c8049157126ea28955f6ce7df6다. 외부행의missing_status와실제close증거를구분한다. 감사·종료·원시·다음계약은 `hud-final-review-launch/`에있다.
+- **단회·환경 반환과 원문 한계:** Main msg_4bf170cf7067 창17:18~18:03Z/허가msg_54c30940597d 뒤Unity17728/부모24196을17:21:02Z에1회기동했다. wrapper는finally에서끝난PID26004조회경합으로exit1, Unity OS exitcode와runner unity-exit/prefs after·returned는미기록이며Editor.log code2는자기보고다. 작업자·리드fresh관측으로프로세스/자식0·lockfalse·exactprefs부재(before도부재)를확인하고Registry기존Binary6만복귀/nonBinary쓰기0/전체137 beforeDiff0 뒤Main msg_5f8f5e0cb6e9로17:38:44Z 창을반환했다. 가짜runner기록을만들지않았다. T1/T2교정·재실행은현재Task에서0이며새세션으로만진행한다. 원closure runStart필드의반환msg ID오기는리드감사에실시작msg_7e235ad1a714/unity-start.json을별도로연결하고원문을보존했다.
+- **관리 기록의 기준:** 종료Task252입력의goal311158bytes/SHA1a6cf3db…ff28은쓰기전 `hud-final-review-launch/goal-before-hud-settlement-v1.md`에보존했다. 이단락은검증자종료뒤의관리갱신이므로옛manifest를현재goal과동일하다고보고하지않는다. HEAD68340/client/제품은불변이다. 제품구현확정실패와T1/T2시험결함을합산하지않았고확정실패3회/Advisor조건은발동하지않았다.
+- **후속 준비·취침 위임:** 승인1~3은Main msg_3d254c772f7a/범위일치msg_9ce8429d2fa8대로유지한다. `concept-alignment-followup-scope/pretest-contract-draft-v2.md`(SHA7d1543d5…a7d1)는DO NOT DISPATCH 초안이다. Core/World회신과13소스를대조해Core13/13동일·World10/13동일/session·NetworkService·lifetime3파일차이를기록했다. 같은연결의맵전환은직업/재화유지·HPentry재확정이며최신main에서발행전재확인한다. Main msg_43ac927c5dc7는사용자취침원문의전달이며아침까지범위/계획/우선순위판단은메인에올리고결정msg ID를기록한다. 사용자직접입력으로격상하지않고병합승인줄/UAC/SQL·전역설정/비가역삭제제외는유지한다.
+- **리드 첫발생 교정:** Core/World 수신확인2건에 --from lead를literal로써출처불일치가생겼고현재Art terminal로각1회대체했다(msg_d27deb8e98b9/msg_b0dd64fc698f, Main원인보고msg_ec0d0af30e1a). 추가지시/제품영향0이며기존발신규칙을적용했다. 리드시각preflight의Local/UTC비교는Registry접근전중단뒤DateTimeOffset으로, restore-plan-v1의빈배열비교false는쓰기전v2 원소대조로교정했다. 원시·개별쓰기journal/실제137복귀를보존했고새반복규칙을추가하지않는다. 후속상세는 `goal-settlement-and-retest-precontext-v1.md`와리드감사에있다.
+
+- **최종 초안 문서 인계·후속 승인 메타 이관:** 현재 Opus task_bef4c3a23315/ctx_854611e6e731의 단계A document-verdict.md는22110bytes/SHA1bc5048e3cbc8ee676bc749182cbf0e210b17399399efbab1c71bf7cbf10843b·문서범위PASS/차단0이다. 리드가150행전체/실제PS7원시/고정247hash불일치0을대조해Main msg_9ac23288850d로최종초안185d9b0c…38ab와전달했다. #13(7번행승인주체)·V4-O1(원천msg본문표시)은비차단으로함께전달했고Main은사용자에게후보도사용자범위승인뒤메인이시점/담당을정한다고설명했다. 문서원문은동결, 현재HUD강판정/작업전체worker_done은후행이다. 검증자context의단계A실제준수연결SHA56ace74a…810b1도16:27:34Z보고뒤직접읽었다. 사용자1~3승인을goal에기록하기위해리드가16:18:24Z안전지점msg_27bddf2fdc85를보냈으나검증자는16:27Z처음읽기전16:24~25Z에READY준비일부(snapshot2217·Node--check/runner/fixture)를진행한순서이탈을공개했다. goal/manifest v1불변·Unity0·plan/READY/공식ask미작성으로확인돼제품실패로세지않고메인에알린다. 16:27:34Z metadata-checkpoint-ready msg_8b21ddb72a9e로검사0/원goal·manifest SHA일치를확인한뒤goal관리만작업트리갱신·manifest보충2판으로인계한다. HEAD68340/client tree·처음준비한같은Task snapshot은그대로이며새복제/제품수정0이다. 원goalsource는concept-alignment-followup-scope/goal-before-approval-v1.md, 원247manifest/계약/완료문서원시를보존하며새단계B/C는새manifest만쓴다.
+- **current 촬영·사용자 방향 정산:** Astra task_1ca87d963b61/ctx_1853f98ab903의 새 HEAD41dea4a7 현재 세창/HUD5 단회 GUI는 14:20:32.7416140Z→14:33:22.1005301Z, Unity/wrapper0·timeoutfalse·관측자손123/정확잔여0이다. 실제XML4 Passed·원PNG8(1920/1280)을 확보했고 같은 party raycaster empty0→표시positive2→탈퇴0, 실제 I/E/초대wire·네 GameView scope 복귀를 기록했다. exactprefs 전후/반환 원부재, 리드 Registry 기존 Binary6만 복귀/137전체 before diff0 뒤 Main msg_c04fe1d8fe6f로 창을 반환했다. root2217·고정77·자기121·snapshot2217(ENV-D01 정확한줄 제외) 실제hash불일치0, report3fb5f1c5…1340/closure452a893f…2439, release→동일incidle→정확close/ptyKilledtrue·reclaimable0·122파일동결5ec9b71a…96fc다. 상세는 hud-current-capture/와 hud-current-capture-launch/의 report·settled-success-root-read-audit-v1·freeze다. 8원PNG는 리드가 모두 직접 봤고 NPC1280 대화창-스킬 겹침은 baseline/current 공통 관찰이며 새 배치 수정0이다. loopback 고정데이터로 실제GameServer/DB/모든숨김UI를 검증한 것은 아니다. 성능인자는 승인대로 전달됐지만 지정 성능파일이 없어 성능PASS0, PackageCache/import·실제Pipe3(초기검색4의에셋명오탐1 정정)/licensing로그를 보존했다. helper17신호/max508초는 READY질문 뒤 status가 끼어 답변대기가 제외되지 않은 구간(실제답후46초)과 반환/보고대기402초이며 도구수리0이다. Main msg_50d1cbab2608은 사용자가 실제전후8쌍을 보고 「A 이대로 진행」을 선택한 전달이다. 현재방향 승인으로 연결하고 병합 전 실제 화면 확인은 다시 받는다.
+
+- **콘셉트 초안 v2/v3 정산과 첫 절차 교정:** v2 task_12d65d9d6d08/ctx_7a0f0f2c05b7는 옛계획 bfa294d8…13bc의 문서PASS/차단0·비차단9~11을 남겼고 36자기/51입력 hash불일치0·정확close·41파일동결d3687d7f…1936, 생존8신호/max300초다. v3 task_918b49e70899/ctx_22642aef6fb2는 현재5행 교정/색인에 범위한정PASS를 보고했지만 PS7 한정계약과 다른 node -e 읽기/키표시를 사용하고 「적용규칙위반없음」으로 썼다. 최종PS7 재수집은 있었으나 이전일부 동일명령 실행 원시/시각을 덮어쓴 사실도 원문에 공개했다. Main msg_dc2a0f235ddd가 계약불일치로 문서PASS 인수 보류를 승인했다. 원문 concept-alignment-plan-review-v3/verdict.md SHA4029dfe385a0756caaae460fa458fe1ad4c1f22dc449342f915eaaf77bcbef1d와 closure4947f5b6…fe1b는 그대로 보존했다. 실제자기68/고정49 hash불일치0, release·동일incidle·정확close·73파일동결2af3e14d…2066/reclaimable0이며 생존7신호/max310초(정적실사/판정정리중10초초과, 작업자별도이유없음)다. closure색인에서 늦게생긴 closure.exit.txt 한파일은 제외목록에 빠졌고 실제73파일 동결에 포함됐다. Claude 런타임의 큰출력39980bytes 세션자동저장과 Bash계측런처/Node읽기를 제품쓰기나 제품확정실패로 세지 않는다. 처음 발생한 계약도구 이탈·원시 덮어쓰기는 이 goal에 기록하고 새 반복규칙/감시·검사도구는 만들지 않는다. 교정은 계약/판정/원시 보존 층에서 수행하며 Main 요청 「같은 명령 재실행 때 이전 원시 출력을 덮지 말고 새 이름으로 남긴다」를 다음 계약에 원문으로 넣는다. v3의 새#12 색인작성시각 안내와 O1 왼쪽위틀 별도후보/미산정을 최종초안에서 보완하고 신규 HUD 검증자가 문서부분을 먼저 독립판정한다. 원v3 plan/source-index/판정은 보존하며 보류판정을 새SHA에 전용하지 않는다.
+
+- **HUD5 조립·적용 정산 완료:** 신규 Astra xhigh task_5f025b090249/ctx_d300f95f4de6가 승인 Components의 9원본을 crop/9slice/비율유지로 조합해 PNG5+HUD/README.md·meta2만 적용했다. PNG canvas/atlas/기존meta·GUID/ID·코드/씬/입력은 보존했으며 리드가 출력5를 직접 보고 보고/실제script·recipe·원시를 읽었다. 고정101/현재root2215/보호2210·자기inventory41 실제hash drift0, root↔W 출력bytes 동일 뒤 release retained/external→동일incarnation idle→정확paneclose/ptyKilledtrue·reclaimable[]·W42파일동결을 마쳤다. report SHA a737f833555cf5ba9f158f45959fb5bcd272d1a2370654ea0cd1f83cc48d7a59, freeze SHA3725334682d3ceb42cd814ce97adb8a718eec1ad14601df42b48210bb819a649. 당시 원문은 `hud-art-repaint/implementation-report.md`, 정산은 `hud-art-repaint-launch/settled-product-and-root-read-audit-v2.json`이다. v1 리드 audit의 baseline 필드오독(null drift)은 relative/rootSha256 실제 재대조 v2로 바로잡았고 원문을 보존했다. 조립 첫 PS array식 실패/준비 regex실패와 두 번째 출력 뒤 모서리1회 조정도 원시로 남겼다. 자체 성공은 current/독립/미관 PASS가 아니다. heartbeat472·302초 초과(공식질문117/280초 제외)는 조립·검사/완료정리 중 발신지연으로 한 줄 기록하며 추가 전수감사0이다.
+
+- **최초 계약 교정·전달 복구:** 기본 Python의 Pillow 부재(exit1)를 성공으로 바꾸지 않고 기존 PS7/System.Drawing 대안을 공식reply msg_cbf224469293로 승인했다(새설치0). 리드가 신규 README.meta를 DefaultImporter라고 실제 관례 확인 없이 적은 최초 오류는 Components/README.md.meta의 TextScriptImporter 원문·hash를 대조한 공식reply msg_bc66c6c59963/보충2판으로 신규 한파일에만 정정했다. 기존계약/101입력·meta는 덮어쓰지 않았고 새 GUID 중복0이다. 가장 직접적인 교정은 잘못된 계약의 좁은 importer 지시 정정이며 새 반복규칙0, 제품 확정실패로 세지 않는다. 앞선 task_99b8dea3b401/ctx_e4881056ad58는 계약본문이 아닌345자 draft/turn0 때문에 Main msg_2ed69ec859d1로 실행전 abandon·정확paneclose 후, 같은 전문 경로/hash의 짧은 주입으로 새 Task를 열었다. 시작 실패를 제품실패/실행성공으로 쓰지 않는다.
+
+- **그림 파일 방향에 대한 사용자 반응:** Main msg_535d28990c88는 메인이 HUD5 작업사본/HEAD 전후를 보여 준 뒤 사용자 「OK 좋아 확인했어」(2026-10-18 22:4x KST)를 전달했다. 그림 파일 방향의 반응이며 Art pane 직접입력이나 실제 게임 전후·미관/PR 완료조건 면제가 아니다. current·독립·게임화면 미관·정확head 병합승인은 그대로 남는다.
+
+- **콘셉트 정렬 계획 초안 문서 실사·보완:** Main msg_a9b6942ece47의 사용자A 초안 요청만 따라 리드가 작성했다. 신규 Opus task_b51807e3e789/ctx_c48af0926f92의 원 판정 `concept-alignment-plan-review/verdict.md` SHA9c2f3a598abcd9008c396cc60178f94c63221d06b9747ad312f3bbf927a2fb00은 초안 b3e7c85f…ce01 버전의 문서 PASS/차단0·비차단8이며 제품/범위/게임/미관 승인0이다. 고정35·자기47 hash0drift·실제 링크21/음성대조/표3 원시를 대조하고 release/동일성·idle/정확close·V52파일 freeze SHA5c442abd95b2d633f976ce5d47db297ff516935ae8f97220e1e0b453c6f2f5e0를 마쳤다. 초기읽기/하네스/판정정리 신호420/445/435초 초과는 원시 helper 결과에 남기며 추가감사0이다. 기존 비활성 HP숫자, 견적 출처·일정·이전회색창·메모준수·HUD이름/열거·문장·대역한계를 이번 문서 범위에서 보완하고 수정본은 새 세션에서 실사한다. 원 초안/메모는 `concept-alignment-plan/plan-reviewed-v1.md`와 `lead-context-before-correction-v1.md`로 보존한다. 별도 후속 코드/소유/일정은 사용자 승인·메인배정 전 미확정이다.
+
+- **HUD baseline 확보·정산 완료:** 신규 Astra xhigh의 좁은 두 관측 API 수리와 새 격리 snapshot에서 Main 승인 단회 GUI 실행으로 실제 네 case가 Passed, HUD/인벤토리/NPC/파티초대의 1920×1080·1280×720 원PNG8장을 얻었다. HUD 실제 party wire 표시·탈퇴와 같은 raycaster의 positive2→탈퇴0 hit, 네 scope 그룹·선택·cleanup 복귀를 원시에서 확인했다. 정상 exit0·정확잔여0·exactprefs 원형, 리드 한정 Registry 기존 Binary6 복귀/137 전체diff0 뒤 Main 창을 반환했다. 보고 전문·104근거/70입력·root/snapshot 각2215파일 실제 hash 대조 불일치0 후 release/동일성·idle/정확paneclose·W105파일 동결을 마쳤다. 원문 `hud-before-capture-retry/capture-report.md`, 대조·동결·환경 반환은 `hud-before-capture-retry-launch/`에 있다. snapshot 설정의 ENV-D01 허용 한줄 자동변경과 PackageCache/pipe·Unity 자동캐시 한계를 보존하며 전체 Editor 무오류·독립/미관 PASS로 쓰지 않는다. 생존12신호/최대293초·초과0·공식질문538초 제외는 `liveness-result-v2.json` 기준이며 질문 발신주소 필터 누락을 고친 v1/v2도 남겼다. 후행 그림 적용은 새 Astra xhigh(다파일 조합 판단 신호4), 강은 current 실제 캡처와 PR 전 신규 Opus 독립실사로 잇고 R7 한정시범은 비해당이다.
+
+- **HUD baseline 미완·실패 정산:** task_70f172d47929/ctx_e38fdbde0109는 새 Main 단회 창에서 실행했으나 임시 fixture 두 GetInstanceID 호출의 CS0619로 Safe Mode에 머물러 PNG0/XML부재다. 리드도 사전 실사에서 놓쳤으며 제품 회귀/네 case 실패로 집계하지 않는다. 정확 자기 Unity 조기 종료·자손잔여0·exactprefs 원형 유지·Registry137 원형 대조 뒤 창을 반환했고, failed 원문을 전문 대조해 release/동일성·idle/정확paneclose·W67파일동결을 마쳤다. 신규 세션의 좁은 수리·새 READY가 다음이며 실제 실행은 새 Main 창 전0이다. 근거는 `hud-before-capture-launch/settled-failure-root-read-audit-v1.json`, `HUD-BEFORE-F01-lead-audit-v1.json`, `worker-evidence-freeze-after-close-v1.json`, `lead-window-return-observation-v1.json`이다. Registry 복귀 뒤 기록 저장 오타는 쓰기 재시도 없이 read-only137 대조로 원형을 확인했고 개별쓰기journal 미보존 한계를 공개했다. 생존14신호/최대267초·초과0은 실제 공식reply를 보완한 `liveness-result-v2.json` 기준이며 최초 입력 누락 결과도 보존했다.
+
+- **252 - UI 병합 확인·HUD 후속 착수:** 메인 `msg_3ed580c79335`의승인원문 「병합 승인: PR252 head 4ce8a4c339cd24d82ade786ec073daa5e13157ae」를전달받고 GitHub MERGED/merge db0169350dfe54ba6ed247684caae4e498e24c72·origin/main동일을직접확인했다. 메인은결정항목문구에따라보상미관도수용으로보았다고전달했으며별도직접미관원문을만들지않는다. 리드/Codex병합0,최신main에서새HUD브랜치를만들었고기존Minimap/설정bytes불일치0이다. Content에UI API실제main반영을통지했고성장효과API미정은유지했다.
 
 - **252 - UI 창 PR 생성:** 사용자A반영후일반push로최초head `88be65669cbc676fd1fc817f4a1fc8080cce4f09`를올리고같은05·06경계의ready PR252를열었다. 이전최종독립판정과제품source를보존한goal관리후속이며,최종head/CI는Git밖 `ui-pr-publication/` receipt에서고정한다. 미이관/미완·①②HUD이관과보상미관후행을본문에적었고SENTIS/Minimap은PRdiff제외·추가Unity/병합0이다.
 
@@ -84,6 +224,27 @@
 
 ## 범위
 
+### 현재 승인 범위 — 2026-10-21 재구성 A
+
+| 항목 | 내용 |
+|---|---|
+| 만들 것 | 승인 콘셉트4·6·7 기준의 개인 상태/직업·HP, 실제 Q/E, 지명·기존 미니맵·진행 안내·재화·파티 표시의 새 배치/자산과 표시1~3 데이터 연결. 콘셉트5 기준 길드·대장간 표현과 공동 거점 성장/개인 무기 강화 효과. 효과 표현 PR→Content 별도 소비 후속 PR→HUD 재구성 PR 순서. 기존 UI/비교·콘셉트 성과와 발판·지형 안건은 보존한다. |
+| 건드릴 곳 | 효과 PR: `03_Client/Assets/Scripts/UI/`의 새 전용 효과 표현·취소 API, 새 UI 효과 자산/프리팹·출처와 EditMode/PlayMode 시험. 정확 새 파일/리소스 경로는 선행시험·구현 계약에 고정한다. HUD PR: 승인 기능의 UI 스크립트·배치/해당 자산을 새 계약으로 정한다. goal/승인 초안·CURRENT Art 줄. Content 구독/adapter·기존 길드 창은 Content 후속 PR 소유다. |
+| 하지 않을 것 | 기존 HUD 모양·빈5슬롯·현재 앵커를 답습하는 표면 교체. 로그인/캐릭터 화면 전체·새 배경/맵·거점 맵 확장, 서버/프로토콜/공유DLL·경제 판정, Content 파일 동시 쓰기·효과 호출 임시 연결. 가짜 MP/파티HP·콘셉트 숫자/키의 기능화. 승인 이미지2회 초과 호출, PR253 branch 삭제/push/force·local79b8 push. Main 창 밖 Unity/Windows dotnet/WSL/SQL·타 파트 자원 조작. |
+| 관찰 가능한 완료조건 | 아래 현재 조건1~5와 과거 미완 조건을 실제 실행/독립 판정으로 충족한다. 이번 A 승인은 실행 범위와 디자인 기준의 승인이고 미래 제품 PASS/PR 병합 승인이 아니다. |
+
+1. 새 HUD가4·6·7의 구성 원칙으로 보이고 실제 데이터/입력·session/entry 수명을 보존한다. 실제1920×1080/1280×720 화면·raycast와 표시1~3·기존 팝업/파티 기능을 독립 확인한다. 예전 HUD/창 PASS를 새 배치의 PASS로 쓰지 않는다.
+2. 효과 표현은 값만 받아 공동 성장1.8~2.0초/개인 강화1.0~1.2초의 문장·빛·잔광 단계가 읽히며 정상 두 종류가 각각 실제 보인다. 후보 order13/상한2·비중첩·클릭 차단0을 두 해상도에서 측정한다. 시간은 승인 설계 목표이며 실제 수치는 실행 원시로 확인한다.
+3. Content는 Art 효과 PR 병합 뒤 별도 후속 PR에서 서버 확정 신호/결과 레벨·현재 session/씬·우선창을 연결한다. 최초/Query/재접속/중복/old/실패0, 47/44 양순서, Town 이탈·연결 교체·disable/destroy·보상/스토리/메뉴 취소의 잔여/replay0을 실제 경계로 검증한다. 표현 단독과 소비/C9 실화면 PASS를 구분한다.
+4. 새 자산 출처·승인된2회 회계·원본/가공·메타/GUID 보존과 실제 변경 파일을 연결한다. 미관·성능은 실제 PNG/녹화·프로파일 원시에서 판정하며 수기 성공 수치를 만들지 않는다.
+5. 효과/HUD·Content 후속 PR을 별도 경계로 검증·발행하고 각 병합은 메인 전용 checkout에서 사용자 정확 head 승인을 받는다. HUD가10-26 촬영 전 끝나지 않으면10-28~11-06 교체 기간으로 보내며 옛 HUD로 자동 회귀하지 않는다.
+
+화면·빛/재료·사용자 미관은 EditMode만으로 고정할 수 없어 실제 진입 녹화/두 해상도 PNG·독립 사람 검토로 대신 확인한다. 효과 PR은 UI/시간·취소 수명과50줄 이상 예상으로 **강**, 선행시험 Opus→구현 Sol max→독립 Opus다. R7은 Main msg_797518bb20bb의 일정 판단으로 시범 비지정이다. Unity 성공 회차8~9회/점유4~9시간은 계획값이고 첫 효과 세션에서 실제 범위/창을 다시 고정한다. Codex 예약 상한1000은 승인됐으며 첫 Sol max 실측 후 재산정한다.
+
+### 최초 범위·완료조건 — 아래는 2026-10-21 재구성 승인 전 기록
+
+현재 HUD 코드/배치 금지와 PR253 중간 병합 가정은 위 승인 범위·새 선행 조건이 대체한다. 기존 성과·당시 원문은 보존한다.
+
 시연 영상에 잡히는 화면 가운데 그림이 임시이거나 상용 에셋인 곳을 자체 그림으로 바꾸고, 거점 레벨업과 대장간 강화 성공 순간을 눈에 띄는 효과로 만든다. 캐릭터·NPC·몬스터·보스·이펙트·배경·타이틀처럼 자체 제작으로 남길 그림은 바꾸지 않는다.
 
 | 항목 | 내용 |
@@ -142,6 +303,15 @@
 
 ### PR 경계와 점검
 
+### 현재 PR 순서 — A 승인 뒤
+
+1. PR253은 사용자 결정으로 새 콘셉트 재구성 PR에 대체해 종료한다. branch/commit/원시를 삭제하지 않고 이 branch에 push하지 않는다.
+2. 효과 PR은 최신 main의 새 branch에서 전용 표현/자산·시험/API를 제공한다. Main이 지금 세 번째 트랙 착수를 배정했고 Unity는 새 창을 받아 가장 낮은 순위로 실행한다.
+3. Content의 현재 길드 화면 PR은 효과를 기다리지 않는다. Art 효과 PR 병합 뒤 Content가 별도 소비 후속 PR로 실제 확정 신호/우선창·수명을 연결한다.
+4. HUD 재구성 PR은 효과 PR 뒤 새 main/새 계약으로 시작한다. 발판·지형/종료 기록은 기존 별도 범위를 유지한다. 각 PR 병합에는 별도 사용자 승인이 필요하다.
+
+아래 PR 표/목표일은 당시 계획이며 현재 착수 순서는 위 네 항목이다.
+
 | PR | 내용 | 목표일 | 시작 조건 | 끝나는 조건 |
 |---|---|---|---|---|
 | 시범 PR | 이 goal 문서, CURRENT의 Art 줄, 시트 방법 비교 글, 무료 시범 결과 기록. 시범 그림은 Git 밖에만 둔다 | 10-16 | 범위 승인 | 문서 실사 통과 뒤 사용자 병합 승인 |
@@ -152,6 +322,125 @@
 | 종료 기록 PR | 결과 기록, 마지막 손질 기록, Gardener | 10-27 | 앞 PR 병합 | 문서 실사 뒤 사용자 병합 승인 |
 
 각 PR은 신규 독립 검증, 정확한 head의 CI와 원시 실행 근거를 메인에 보고한 뒤 **그 PR 병합 직전 사용자 명시 승인**을 받는다. 자동 병합하지 않는다. 중간 점검은 10-21 판단 때 지형 범위·거점 맵형·일정을 함께 본다. 종료 점검은 전체 PR 병합·결과 기록·Gardener 뒤다. 같은 산출물 수정이 3회를 넘으면 메인에 체크포인트를 알린다. 확정 실패 집계는 [ORCA 실패 정본](../../../00_Document/operations/ORCA.md#confirmed-failures)을 따른다.
+
+## 승인된 후속 표시 PR - 체력·직업, 스킬키, 지명·재화
+
+### 적용 중인 사용자 결정
+
+### 2026-10-21 — 첫 Sol max 크레딧 계측 후속
+
+Main `msg_620644bdce74`(14:06:03Z)의 계측·운영 판단이며 새 사용자 직접 원문은 아니다. 기존 사용자 예약1,000은 그대로다. 정확한 구현 rollout의 `token_count.rate_limits`에서 잔액 첫/끝/최소와 주간 사용률을 읽어 이번 관측 차감0을 기록했고, Main은 같은 예약·계측 방식의 추가 Sol max를 허용했다. 리드가 같은48점/잔액·5%/토큰 합을 직접 대조한 근거는 `growth-effect-pr/first-sol-max-credit-observation-v1.json`, 수신 전문은 `main-first-sol-max-credit-original-v1.json`이다. 다음부터 `credits.balance` 시간순 최솟값·주간 `used_percent`를 직접 남기며 못 읽으면 unknown으로 두고 메인에 요청한다. 토큰을 금액으로 환산하거나 전체 비용0으로 확대하지 않는다.
+
+다음 Unity 창은 GREEN·두해상도 확인의 구체적인 READY 뒤 「창 요청」 제목으로 요청하며 Content가 먼저 요청했다면 그 뒤다. 이 후속은 현재 독립 준비의 제품/실행 경계를 넓히지 않는다.
+
+### 2026-10-21 — 낡은 index.lock 메인 조건부 정리
+
+출처 Main `msg_a13b688e8bcb`, 2026-10-21T13:35:51Z. 아래는 Main pane 제출 사용자 원문과 수신 본문 전체이며 Art pane 직접 입력으로 격상하지 않는다. 원문 전사와 현재 Task의 좁은 적용은 `growth-effect-pr/implementation-01/main-stale-lock-conditional-decision-v1.md`에 보존한다.
+
+```text
+[메인 Claude] 사용자 결정 A: 낡은 index.lock은 조건이 맞으면 메인이 지운다 · art-active 잠금 지움
+- 사용자 원문(메인 pane Enter 제출): 「대시보드 결정 응답: 1) 낡은 Git 잠금 파일이 또 생겼을 때 처리 방식 → A 조건이 맞으면 메인이 지우고 알림」
+- 조건 셋: 크기 0, 생긴 지 10분 넘음, 그 순간 git.exe 0. 하나라도 아니면 메인이 사용자에게 묻는다. 지우는 것은 메인만 한다. 리드·작업자는 지금처럼 잠금을 건드리지 말고, 발견하면 경로·크기·mtime·git 프로세스 관측을 담아 메인에 보내라. 제목에 「검토 요청」을 넣으면 5분 안에 읽는다.
+- 적용(2026-10-21T13:35:27Z): git.exe 0 확인 뒤 C:/Dev/DawnHolder_Project/.git/worktrees/art-active/index.lock(0 bytes, mtime 21:46:31 KST, 2937초)을 지웠다. 메인 checkout의 .git/index.lock(10-18 21:13 KST)도 같은 조건으로 지웠다.
+- 이제 선행 시험 6파일을 보통 방식으로 add·commit할 수 있다. 시점은 네 goal 계획대로 하라. 회신은 필요 없다.
+- goal 「적용 중인 사용자 결정」에 원문과 이 메시지 ID를 기록하라.
+```
+
+### 2026-10-21 — 실행 창 대기 세션 종료·새 세션 재개
+
+출처: Main msg_0770ef4adc4d(2026-10-21T09:18:16Z), 원 JSON은 growth-effect-pr/inbox-before-pretest-launch-v1.json, 읽기본은 main-window-wait-decision-v1.md. 아래 전달 원문이 기존 중간 교체 금지/같은 session READY 조건보다 실행 창 대기 범위에서 우선한다. 작성 중인 작업을 끊는 권한은 아니다.
+
+```text
+[메인 Claude] 사용자 결정: 실행 창을 기다리는 동안에는 세션을 닫고, 창이 열리면 재개 지점으로 다시 연다
+사용자 원문(메인 pane Enter 제출, 2026-10-21 18:1x KST):
+「그리고 만약에 한 파트에서 이미 서버를 쓰고 있으면 다른 대기 파트에서 계속 리드나 작업자들이 우편확인 하는게 아니라 재개 지점 작성하고 세션을 종료하는 식으로 간다음 다시 열어서 재개하는 식으로 가자
+
+토큰 낭비가 심해」
+
+메인 적용 방식(Rules 정본 반영 전까지 이 메시지가 기준이다):
+1. 언제: 실행 창(Windows dotnet·WSL·Unity·SQL)을 요청했는데 메인이 「대기열」로 답했을 때. 또는 다른 파트가 창을 쓰는 동안 자기 파트에 실행 말고 남은 일이 없을 때.
+2. 작업자·검증자: READY와 고정 입력을 파일·SHA로 남기고 정산·종료한다. 창을 기다리며 check --wait·heartbeat·반복 조회로 세션을 살려 두지 않는다. 창이 열리면 리드가 새 실행자를 연다. 그래서 READY·승인 파일은 「같은 작업자·같은 incarnation」이 아니라 고정 파일·SHA로 실행할 수 있게 써라. 이미 같은 세션 조건이 박힌 READY는 다음 계약부터 고친다.
+3. 리드: goal 「재개 지점」에 기다리는 창 요청(READY 경로·SHA, 필요한 길이·lastEntry·Unity 수, 창이 열리면 할 첫 일)을 쓰고 local commit한다. 그다음 메인에 「재개 지점 기록·종료 준비」 status(goal SHA·commit 포함)를 보내고 턴을 끝낸다. pane은 메인이 idle을 확인하고 닫는다.
+4. 다시 열기: 창이 비면 메인이 그 파트 리드를 새 세션(같은 대화 이어 붙이기 아님)으로 열고 같은 Run을 run-use로 인수하게 한다. 진입 메시지에 창 배정을 함께 넣는다. 리드는 goal 재개 지점부터 읽는다.
+5. 하지 않는 것: 지금 작업 중인 작업자를 이 결정으로 중간에 끊지 않는다. 창을 기다리는 동안 상태 확인 메일을 서로 주고받지 않는다. 계획·계약 작성처럼 창이 필요 없는 일은 계속한다.
+6. 기록: goal 「적용 중인 사용자 결정」에 원문과 이 메시지 ID를 기록하라. ORCA R-8의 「목표 중간에 문맥을 비우려 수동 교체하지 않는다」는 실행 창 대기에 한해 이 사용자 결정이 우선한다.
+
+지금 파트별 적용:
+- Core: 보정 SQL 창(09:20Z~09:30Z)을 쓰는 중이라 해당 없음. 창을 반환한 뒤 다음 실행 창이 또 필요하면 이 방식으로 기다린다.
+- World: 새 시험 컴파일 결함 수정 READY가 나왔을 때 창이 차 있으면 이 방식으로 닫는다.
+- Content: 측정 도구 수정 작업자는 작업 중이라 계속한다. 그 뒤 Unity 창을 기다리게 되면 이 방식으로 닫는다.
+- Art: 효과 PR 계약·선행 시험 작성은 계속한다. Unity 창을 기다리게 되면 이 방식으로 닫는다.
+```
+
+
+### 2026-10-21 — 재구성 A 승인·효과 즉시 착수 배정
+
+출처는 현재 Main msg_797518bb20bb, 2026-10-21T09:16:06Z다. 아래는 메인이 전달한 사용자 Enter 원문·선택지와 메인 배정 전문이며 Art pane의 직접 사용자 입력으로 격상하지 않는다. 초안 SHA9c05e357454d286da60f07acdcce0f123f48c7f9c103e34e40be27d29fc55e4c를 승인 기준으로 고정했다. 원 JSON/읽기본은 growth-effect-pr/main-A-approval-original-v1.json·main-A-approval-readable-v1.md다.
+
+```text
+[메인 Claude] 사용자 결정: 재구성 계획 A 승인 (Art 추천안 + 효과 지금 시작)
+사용자 원문(메인 pane Enter 제출, 2026-10-21 18:1x KST):
+「대시보드 결정 응답: 1) 계획 검토 - Art 새 콘셉트 기준 화면 재구성·길드 성장 효과 계획 → A 승인 (Art 추천안 + 효과 지금 시작) (초안 msg_3fafa3a56488)」
+
+현황판의 A 선택지 문구(사용자가 고른 내용): 「범위·PR253 대체 종료·이미지 생성 2회·효과 → Content 결합 → HUD 순서를 원문대로 승인한다. 메인 제안대로 효과 PR은 지금 세 번째 트랙으로 시작하고, Unity 실행 창은 가장 낮은 순위로 받는다. Art 리드가 PR253을 닫고 효과 작업 계약부터 쓴다.」
+
+승인된 것(초안 concept-reconstruction-plan-draft.md SHA256 9c05e357454d286da60f07acdcce0f123f48c7f9c103e34e40be27d29fc55e4c 5절 기준):
+1. 기준과 범위: 콘셉트 8장의 화풍·구성 원칙을 최종 미관 기준으로 삼는다. 이번 범위는 플레이 HUD(4·6·7) + 길드·대장간 표현과 성장 효과(5)다. 로그인·캐릭터 전체·새 배경·맵은 별도 범위로 남는다.
+2. PR253: 대체 종료한다. 착수 조건은 「PR253 병합 뒤 Art 착수」에서 「PR253 대체 처리와 새 범위 승인 뒤, 메인이 Art 순서 배정」으로 바뀐다. 메인은 지금 효과 PR 착수를 배정한다.
+3. 남은 이미지 생성 2회: 초안 안대로 1회는 글자 없는 UI 구성·부품, 1회는 효과 문장·빛 재료에 쓴다. 결과가 모자라도 추가 호출하지 않는다.
+4. 순서·정책: 효과 PR → Content 결합 → HUD 재구성 PR. 효과의 정상·취소·우선 표시 정책은 초안 4절대로다.
+
+메인 배정과 판단:
+- 트랙: Art 효과 PR을 지금 세 번째 트랙으로 연다. Unity 실행 창 순서는 World WSL(열림) → Core SQL 10분 → Content Unity → Art다. Art 창은 READY와 함께 start·deadline·lastEntry·Unity 수를 요청하라. 메인이 배정한 시각만 권한이다.
+- 예산: 이 묶음의 Codex 예약 상한은 초안의 1,000 크레딧으로 둔다. 첫 Sol max 세션 정산 때 실측으로 다시 셈해 보고하라. 세션당 200 초과는 바로 알린다. 목표선보다 앞서면 Art 새 기동부터 멈춘다는 조건은 그대로다.
+- PR253 처리: 리드가 PR253을 닫는다. 닫는 코멘트에 「사용자 결정으로 새 콘셉트 기준 재구성 PR로 대체」와 사용자 원문 위치를 적어라. branch 삭제·push·force는 하지 않는다. 로컬 종료 commit 79b8b1a9도 push하지 않는다.
+- 새 branch: 효과 PR은 최신 origin/main(지금 db0169350dfe54ba6ed247684caae4e498e24c72)에서 새 branch로 만든다.
+- Content 결합의 PR 경계(초안이 메인 결정으로 남긴 것): Content의 지금 길드 화면 연결 PR은 효과를 기다리지 않고 진행한다. 효과 소비 연결은 Art 효과 PR 병합 뒤 Content의 별도 후속 PR로 한다. 길드 화면이 가장 중요한 길이라 늦추지 않기 위해서다. Content에도 같은 내용을 보냈다.
+- 구현 전 설계 검토 시범(R-7 Fable): 이 효과 PR은 시범 대상으로 지정하지 않는다. 10-28 일정 때문이다. 기본 라우팅(Opus 선행 시험 → Sol max 구현 → Opus 독립 검증)대로 간다.
+- HUD 재구성은 효과 PR 뒤에 시작한다. 10-26 촬영 전에 못 끝나면 10-28~11-06 아트 교체 기간에 넣는다. 기존 HUD로 자동 회귀하지 않는다.
+
+다음 순서:
+1. 위 원문과 결정을 goal 「적용 중인 사용자 결정」에 기록하고, goal의 범위·진척 단계·재개 지점을 새 계획으로 고쳐라. 고친 goal을 local commit하고 SHA를 보고하라.
+2. PR253을 닫고 결과(URL·상태)를 보고하라.
+3. 효과 PR의 선행 시험 계약을 써서 신규 Opus 선행 시험 작성자를 연다. 실행 창이 필요해지면 READY와 함께 요청하라.
+```
+
+
+Main `msg_3d254c772f7a`(2026-10-18T16:16:30Z)는 메인 pane에 Enter로 제출된 사용자 원문을 전달했다: 「대시보드 결정 응답: 1) Art 시연 화면 - 콘셉트 8장에 맞추는 추가 작업 중 1~3번(체력·직업, 스킬키, 지명·재화)을 HUD PR 뒤 별도 작업으로 승인할지 → A 승인」. Art 직접 입력으로 격상하지 않는다. 승인 초안은 `concept-alignment-plan-draft.md` SHA256 `185d9b0c4ef59fc59cd63b61da0587d595ac9108c7b6c6cf79b4d5c6e80a38ab`의 1~3번과 그 문서의 제외·일정·완료조건 제안이다. 메인은 담당을 Art로 확정했고 이 후속 한정으로 클라이언트 HUD 표시 코드와 HUD 씬의 해당 표시 요소를 허용했다. 원문은 `.backups/verification/2026-10-13-demo-video-art/concept-alignment-followup-scope/main-user-approval-original-v1.json`에 보존한다.
+
+### 만들 것
+
+1. 체력·직업 읽기: 상태 영역에서 서버 확정 현재/최대 체력 숫자와 확정된 기사·마법사 이름을 읽는다. 기존 비활성 HpText와 갱신 경로를 재사용하고, 서버 체력 수신 전·직업 미확정·끊김/종료/맵 전환 뒤의 표시를 구분해 오래된 값이나 직업 기본치를 확정값으로 보여 주지 않는다.
+2. 실제 스킬키·아이콘: 기존 직업별 스킬 연결과 아이콘을 대조해 실제 Q/E 및 사용 가능한 칸만 읽히게 한다. 기사의 미사용 E나 없는 기술은 채우지 않는다. 키 입력·스킬 판정은 그대로 둔다.
+3. 기존 지명·재화 정돈: 이미 표시되는 Town 등 지명과 서버 재화의 가독성을 HUD PR 병합 결과의 테두리에 맞춘다. 새 지도 기능이나 재화 계산은 만들지 않는다.
+
+### 건드릴 곳과 소유
+
+- 제품 코드 기본 대상: `03_Client/Assets/Scripts/UI/HudController.cs`, `SkillHudController.cs`, `MapNameDisplay.cs`의 표시·연결·수명 구간이다. 코드 계약은 실제 변경 파일/구간을 고정하며, 이 목록 밖 제품 파일이 필요하면 승인된 HUD 표시 책임 안인지 메인과 대조한 뒤 계약에 명시한다.
+- 씬 기본 대상: `03_Client/Assets/Scenes/99.UI/UI.unity`의 체력/직업·Q/E·지명·재화 표시 요소 및 필요한 연결이다. 씬 `.meta`/GUID와 기존 그림·sprite ID는 보존한다. 다른 화면·배치 전체의 재설계 권한이 아니다.
+- 읽기 계약: `ClassLoadout`, `ClientSkillCatalog`, 기존 HP/재화 수신 상태·세션 수명은 확인하되 서버/전송/직업 선택/스킬 판정 코드는 쓰지 않는다. World·Core와 확정 데이터·입장/종료 경계를 조율한다.
+- Content의 길드·대장간 제품 파일, 공용 helper/skin, NPC 대화 파일은 이번 후속 쓰기 대상이 아니다. 공유 UI 씬 등 파일이 겹치면 구현 쓰기 전에 Content 리드와 파일·표시 요소 소유와 쓰기 순서를 나누고 기록한다. 같은 파일 동시 쓰기 0이다.
+- 선행 시험 계약·초안은 별도 `.backups` 작업 공간에서 준비할 수 있다. 현재 HUD 제품/원시험/씬·검증 입력은 병합까지 그대로 두며, 후속 시험의 root 적용·구현 쓰기·Unity 실행은 HUD PR 병합 뒤다.
+
+### 하지 않을 것
+
+승인 초안 4~7은 포함하지 않는다: 4 미니맵 가독성·카메라/지형 레이어 조정과 5 가방 버튼/NPC 안내는 보류, 6 새 전체 지도/설정/보스 상단바는 제외, 7 왼쪽 위 상태 틀 장식 풍성화는 별도 후보·미산정이다. 가짜 마나·레벨·파티원 체력 숫자, 새 기술·아이템키·서버 데이터 채널·패킷·DB, 직업 선택/판정·스킬/재화 계산은 추가하거나 바꾸지 않는다. 기존 ESC 메뉴·지도 기능을 새로 만들지 않는다. 새 그림/생성·유료 도구·그림 ID 변경도 제외한다. 아이콘 가독성 개선이 새 그림을 요구하면 그 제작은 이 후속에 넣지 않는다. 현재 승인된 HUD 그림 방향을 다시 그리는 작업과 섞지 않는다.
+
+### 관찰 가능한 완료조건
+
+- 실제 두 직업에서 서버 확정 스냅샷과 체력·직업 표시가 맞는다. 체력 미수신·직업 미확정·끊김/종료·맵 전환 뒤 오래된 값이 보이지 않는다. 직업 기본치/로컬 fallback과 서버 확정 표시를 구분한다.
+- Q/E 그림·키 안내가 현재 직업의 실제 기술과 일치하고 미사용 칸에 없는 기술을 표시하지 않는다. 기존 직업 선택·입력·스킬 판정·골드 계산·그림 ID를 보존한다.
+- 1920×1080·1280×720에서 새 라벨/숫자/아이콘·기존 지명/재화가 읽히고 새로 입력을 가리지 않는다. 기존 보상 배치·파티 버튼 배치 사용자 결정을 되돌리지 않는다.
+- 강 검증으로 선행 요구 시험의 실제 실패 → 별도 구현자의 같은 시험 통과 → 신규 독립 검증자의 diff/원시 실사·독립 시험·현재 실제 진입 1회를 남긴다. 선행 시험은 신규 Opus, 구현은 다파일 표시·배치 판단을 맡는 신규 Astra xhigh, 독립 검증은 Astra 구현에 대한 신규 Opus를 기본으로 한다. 각 작업자는 작업 하나 뒤 정산·종료한다.
+- 실제 실행·시험 대역/실서버·미실행·사용자 미관을 나눠 보고한다. 실행 창마다 Main 전용 배정을 받고 기존 실행을 새 실행으로 세지 않는다. 정확 head의 CI와 사용자 실제 화면 확인을 연결하고 각 PR의 병합은 사용자 정확 head 승인 뒤 메인만 한다.
+
+### PR 경계·순서·일정
+
+현재 HUD 그림 PR(10-20)을 먼저 마친다. 이 후속은 그 병합 뒤 최신 main에서 별도 브랜치·별도 PR로 수행한다. 계약·선행 시험 준비만 현재 HUD 검증과 병행할 수 있으며 구현 쓰기와 Unity 실행 창은 HUD PR 병합 후에 연다. 이 승인으로 현재 HUD 검증자의 제품 쓰기 권한이 생기지 않는다.
+
+10-22~10-24에 구현·독립 검증·사용자 화면 확인을 배치하고 10-25를 영상 반영 마감으로 둔다. 못 끝나면 기존 확인 화면으로 촬영한다. 기존 길드·캐릭터 진입/저장, 성장 효과·지형 판단, 10-22~10-25 리허설과 파일·시간·Unity 창 충돌을 조율한다. 10-28 새 기능 동결은 유지한다. 구현 4~8시간+독립 약 4시간·추가 Unity 3회 각 30~60분은 승인 초안의 조건부 Art 예산이며 실측/완료 약속이 아니다.
+
+범위 고정 뒤 메인이 승인 초안 SHA `185d9b0c…38ab`와 이 만들 것·건드릴 곳·제외·완료조건·PR 경계를 대조한다. 차이가 생기면 사용자가 판단하며, 이 기록만으로 4~7이나 다른 영역의 권한을 넓히지 않는다.
 
 ## 설계
 
@@ -216,6 +505,7 @@
 |---|---|---|---|
 | 시범 PR | 문서 실사: 문서만 바뀐다 | 비교 글·결과 기록은 리드(보고서 자료는 리드 작성), 시범 그림 생성은 신규 `gpt-6.1-sol` max | 신규 Astra |
 | UI 창 PR | 강: 다섯 파일의 코드와 실제 화면, 제품+시험 50줄 이상 예상 | 그림은 신규 Sol, 적용 코드는 신규 `gpt-6-astra` xhigh(배정 신호 4: 배치 판단이 남은 다파일 화면 변경) | 신규 `claude-opus-5-5`(Astra 구현) |
+| HUD PR | 강: 5개 atlas의직렬화/표시보존과실제GUI·메모리크기/프로세스·prefs수명 | 신규 Astra xhigh(그림조립4, 캡처준비2·3·4) | 신규 독립세션1명, 임시모델배정과 실제창원시/최종diff 함께실사 |
 | 효과 PR | 강: 새 셰이더와 효과 코드, 50줄 이상 예상 | 그림은 신규 Sol, 셰이더·효과는 신규 Astra(신호 4) | 신규 `claude-opus-5-5` |
 | 발판·지형 PR | 그림·`.meta`만 바꾸면 약, 씬 참조를 바꾸면 강. 애매하면 강 | 그림은 신규 Sol, 씬 참조 교체는 범위 결정 때 배정 | 등급에 따름 |
 | 종료 기록 PR | 문서 실사 | 리드 | 신규 Astra |
@@ -226,6 +516,126 @@
 - **실행과 미실행 구분**: 이미지 생성, Unity 가져오기·컴파일·EditMode, 실화면 캡처, Play 모드 녹화, CI를 각각 따로 기록한다. 서버·DB는 이 goal에서 쓰지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 2026-10-22 — 길드 하우징 공동안v3 착수A
+
+출처는 현재 Main의 msg_af72d449c2e7(2026-10-21T20:23:34Z)다. 메인은 메인 pane Enter 제출(2026-10-22 05:25 KST)의 사용자 원문을 다음과 같이 전달했다.
+
+> 「대시보드 결정 응답: 1) 길드 하우징 화면 구현안 승인(전경 2장·이미지 생성 3회·새 PR·약 4~5시간) → A 이 안으로 착수」
+
+승인 대상은 `guild-housing-concept-01/housing-division-plan-v3.md` 그대로다. 글자 없는 같은구도의 레벨1/잠김·레벨2/열림 전경2장, 신규 생성상한3회(2장+보정1), 미리보기 제외, Art 원PNG/출처/배치만→Content 제품import/meta/UI/연결/Git 단독, PR2 main통합 뒤 최신main의 별도 하우징PR1개, 실제709×399·802×451·1920×1080 실서버값 확인/Unity90분이다. 병합은 PR마다 기존 별도 사용자 head 승인이다. Art는 Unity 창 없이 지금 PNG제작을 시작하고, 실제 경로·크기·SHA256을 Main에 보낸 뒤 Main이 두 장을 직접 본 다음 Content 인계를 알린다. 효과 외곽선 재확인20분 순서는 그대로다. 원문 전문은 `guild-housing-assets-01/main-v3-start-approval-original.md`에 보존하며 Art 직접 사용자 입력으로 격상하지 않는다.
+
+### 2026-10-22 — 빠르게 기반 먼저·보이는 동작 우선
+
+출처는 현재 Main의 msg_bedba2a6beef, 생성 2026-10-21T16:37:17Z다. 메인은 사용자 원문이 메인 pane Enter 제출(2026-10-22 01:4x KST)이라고 전달했다.
+
+> 「빠르게 기반 먼저 만드는거를 목표로 해야돼, 지금 뭐 보여줄게 없어 우리」
+
+앞 경량 경로 결정과 함께 적용한다. Main 해석/우선순위 원문은 다음과 같다.
+
+- 목표는 실제로 돌아가서 화면으로 보여 줄 수 있는 기반을 빨리 만드는 것이다. 지금은 어느 장면도 실제 화면으로 확인된 적이 없다(현황판 흐름 화면의 「실화면」 칸이 모두 비어 있다).
+- 그래서 일의 순서를 「보이는 동작」 기준으로 다시 잡아라. 실제 실행으로 보여 줄 수 있는 결과를 막는 일만 지금 한다. 예외 경로의 견고함, 검증 도구, 추가 근거, 문서 정리는 보이는 결과를 막지 않으면 10-28 뒤로 미룬다.
+- 범위를 새로 넓히지는 않는다. 지금 goal 안에서 순서만 바꾼다. 완료조건을 줄여야 보이는 결과가 빨라지는 경우는 「결정 요청」으로 메인에 올려라.
+
+Main의 현황판 관측을 Art가 모든 과거 장면/화면 원시를 재조사한 결과로 표현하지 않는다. 현재 재구성/성장 효과의 실제 화면은 미실행이며 과거 HUD/창의 역사 원시는 그대로 보존한다.
+
+다음 「한 일 / 결과 / 다음 / 결정 필요」 보고에는 ① 지금 실제로 돌려서 보여 줄 수 있는 것(없으면 없음) ② 가장 빨리 보여 줄 수 있게 되는 것과 예상 시각(KST) ③ 그걸 막는 것 하나를 더한다. Art는 같은 효과 PR 안에서 실화면 확보를 먼저 하고 남은 시험을 이어간다. 완료조건 축소나 새로운 제품 범위를 승인한 것으로 해석하지 않는다.
+
+### 2026-10-22 — 10-28까지 로컬 개발 경량 경로
+
+출처는 Main msg_a407bfc46827, 생성 2026-10-21T16:33:29Z, 현재 Main handle `term_968c841b-8b03-4e42-ba69-e97e2b1b258c`의 Run 수신이다. 메인은 아래 원문이 메인 pane Enter 제출(2026-10-22 01:3x KST)이라고 전달했다. 사용자 직접 입력으로 출처를 바꾸지 않는다. 적용은 2026-10-28 기능 동결까지며 Rules 정본 반영 전에는 이 메시지가 충돌하는 AGENTS·ORCA·스킬·goal 문구보다 우선한다.
+
+사용자 원문 세 건:
+
+> 「이제 슬슬 좀 답답하네 / DB 테이블 생성하고, 스키마 짜고, 바로 컨텐츠 로직에 적용해보고, 최적화 측정하고 하는 이 일련의 과정이 사람이 직접 찾아서 하는거보다 너무 오래 걸리는거 같은데 / 어느 부분에서 이렇게 오래 걸리는거야? 지금 벌써 DB 초입 작업만 1~2주 한거 같은데」
+
+> 「이럴거면 내가 직접 실행하는게 낫지 않나」
+
+> 「대시보드 결정 응답: 1) 10-28까지 로컬 개발 작업에 경량 경로를 쓸지 → A 10-28까지 경량 경로」
+
+메인이 보인 근거는 Core 현재 브랜치 제품 코드 +2,380줄/시험 코드 +5,494줄, 근거 폴더 214개, 10-21 Core 시험 계정 1개에 세션 약 10개·막힘 4번 모두 절차/도구, Content 측정 도구 정정 3시간 반이다. Art가 해당 Core/Content 원천을 다시 측정한 수치로 표현하지 않는다.
+
+전달된 적용 원문:
+
+1. 작업 단위: 작업자 한 명이 같은 PR 범위 안에서 구현 → 실행(배정된 실행 창 안) → 자체 확인 → 결함 수정까지 이어서 한다. 단계마다 준비 전용·실행 전용·중간 검증 세션을 따로 열지 않는다. 작업자 문맥이 차거나 범위가 바뀔 때만 새 작업자를 연다.
+2. 독립 검증: PR을 올리기 직전 한 번만 신규 Opus가 한다. diff·실행 원시·화면 결과를 함께 본다. 중간 단계의 독립 판정, 준비 문서 독립 실사는 하지 않는다.
+3. 로컬 개발 DB(이 PC의 SQLEXPRESS, Dawnholder_* DB): 스키마·login·권한·시험 데이터 변경에 승인 문서·hash·만료·머신 SID/DB GUID 관문 묶음을 새로 만들지 않는다. 리드가 실제로 실행할 SQL·명령을 짧은 목록으로 메인에 보내고(제목 「결정 요청」), 메인이 사용자에게 한 번 보여 승인받는다. 비밀(자격 파일)을 새로 쓰는 명령은 사용자가 직접 실행하는 것을 기본으로 한다. 로컬 개발에서는 가능하면 Windows 통합 인증을 써서 비밀 자체를 만들지 않는다.
+4. 시험·측정 도구: 새 하네스를 만들거나 키우지 않는다. 기존 도구·단순 명령·사람 관찰로 바로 잰다. 도구 자체의 결함을 고치는 루프를 열지 않는다. 막히면 그 측정을 단순한 감독 실행으로 바꿔 메인에 알린다.
+5. 실행 창: 메모리 때문에 한 번에 하나, 배정은 메인이 계속한다. 창 요청은 명령·예상 시간·필요 자원 세 줄이면 된다. lastEntry 세부 관문·window JSON hash 고정은 하지 않는다.
+6. 보고: 메인에는 「한 일 / 결과 / 다음 / 결정 필요」만 짧게 보낸다. SHA·생존 신호·정산 세부는 goal과 근거 파일에만 두고 메일에 넣지 않는다.
+
+그대로 지키는 것: PR 병합은 사용자 한 줄 승인과 메인 실행, AI의 비밀 원문 열람 0, 전역 설정·권한 설정 불변, 자동 승인 검토 차단은 우회하지 않고 메인에 올림, main 보호·같은 파일 동시 쓰기 금지, 미실행을 통과로 보고하지 않음, PR별 독립 검증 1회, 모델 라우팅.
+
+현재 진행 중인 작업자는 중간에 끊지 않고 다음 단계부터 적용한다. Art에 전달된 첫 할 일은 현재 독립 PS 검토가 끝나면 효과 PR의 남은 Unity 실행을 한 창(나눌 수 있으면 둘)으로 묶어 「창 요청」으로 보내고, 그 실행/결과 확인을 PR 직전 독립 검증 한 번으로 삼는 것이다. 중간 준비·관문 수리 세션을 더 열지 않는다. 하네스 관문 결함이 또 나오면 고치지 않고 결과 XML·화면을 사람이 직접 보는 방식으로 바꿔 알리며 창 순서는 Content 다음이다.
+
+### 2026-10-21 — 새 콘셉트 기준 재구성과 C9 Art 제작·이번 계획 작성
+
+출처는 현재 Main의 `msg_c01d3c0496a8`(2026-10-21T07:36:09Z, 메인 pane Enter 제출 사용자 원문 전달)이다. Art pane의 사용자 직접 입력으로 격상하지 않는다. 원시 JSON과 본문은 `.backups/verification/2026-10-13-demo-video-art/concept-reconstruction-plan/main-reentry-inbox-original-v1.json`·`main-reentry-body-original-v1.txt`에 보존했다. 아래 줄바꿈은 원문 본문의 literal `\n`만 개행으로 풀었고 문구는 고치지 않았다.
+
+- 사용자 원문 1: 「아트쪽은 기존의 HUD를 너무 참고해서 따라가지 말라고 하고, 최대한 컨셉아트 새로 뽑은거 기준으로 새로 재 구성해달라고 전달해줘」
+- 사용자 원문 2: 「대시보드 결정 응답: 2) 길드 화면 - 길드가 성장할 때 띄우는 효과를 누가 만들지 (Content 글자 표시로 충분 vs Art 효과 새로 제작) → B Art가 효과를 새로 만들기, 최대한 퀄리티 높게」
+- 메인 해석은 화면 콘셉트 8장(사용자 A 화풍/1672×941)을 새 화면 구성의 시각적 기준으로 삼는 것이다. Art는 8개 원PNG와 매핑을 대조해 새 계획으로 올린다. 기존 HUD 모양/배치를 출발점으로 고정하는 옛 추천을 새 작업의 기본값으로 쓰지 않는다. 기능·서버 확정 데이터·입력 수명 등 보존 대상과 시각적 재구성 범위는 분리한다.
+- C9의 제작 주인은 Art로 결정됐다. 옛 「주인·범위 아침 결정 대기」는 이 결정으로 주인 항목이 해소됐고 Content의 성장 확정 트리거·데이터와 Art 표현의 접점을 직접 조율한다. 예전 임시 API/소유 약속을 소급 승인하지 않는다. 새 효과의 구체 범위·PR·실행은 계획 검토 후다.
+- 이번 허용은 읽기·계획 작성·Content 조율뿐이다. 작업자/검증자/이미지 생성/Unity·WSL·빌드/제품 쓰기0이다. PR253 원격 head d2b7aa78e67c35da35a7b2e58c5736c808c7313d/기존CI4는 그대로 사용자 화면 확인·병합 승인 대기다. 로컬79b8b1a9가1commit 앞서며 이 branch에는 push하지 않는다. PR253 병합/대체 종료는 새 초안의 선택안으로만 올리고 실행하지 않는다.
+- 메인 전달의 이번 관측: 같은 노트북으로 재개해 근거 이관 불필요, origin/main은 db0169350dfe54ba6ed247684caae4e498e24c72. Claude 리셋은 2026-10-20 20:00 KST에 끝나 아래 블록의 시한 전 새 Opus 금지는 만료됐다. Codex 쓴 크레딧0/예산25800·현 목표선 약9565는 메인의 관측이며 Art 실측으로 쓰지 않는다. 상한18000/약16000 메인 재질문, Core→World·Content 두 트랙 우선/Art 계획만·가장 먼저 보류, 공유 실행 창은 메인 단독 배정을 따른다.
+
+#### 적용 중인 사용자 결정 블록 — 원문 보존
+
+원문 출처는 Main 메시지에 붙은 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-19/routing-decision-entry-block.md` 전달 블록이다. Rules 정본 반영 전 이 블록이 사본 AGENTS·ORCA·스킬과 다르면 우선하고 사본 규칙 파일은 고치지 않는다. 원문 자체의 시한 전 금지와 위 만료 관측을 구분한다.
+
+```markdown
+# 리드 진입 메시지에 넣을 적용 중 사용자 결정 — 모델 라우팅 개선 구성과 사용량 페이싱
+
+이 파일은 메인이 리드 진입 메시지에 그대로 붙이는 전달 초안이다. 정본이 아니다. 정본 반영은 Rules 리드가 맡고, 반영 전까지는 각 리드가 자기 goal의 「적용 중인 사용자 결정」에 이 블록의 원문과 출처를 기록한다.
+
+## 출처
+
+- 사용자 원문(2026-10-19 메인 대화, Enter로 제출된 입력): 「OK A로 진행하되, 지금 워크트리로 규칙이 사본 형식 느낌으로 분산되어있어서 전부 적용하려면 시간이 좀 걸릴꺼 같은데」
+- A의 내용: 현황판 결정 「모델 라우팅 - 개선 구성 적용과 10-25 리셋까지 Codex 크레딧 사용량」의 A 「개선 구성 + 크레딧 절반」. 근거 스크립트 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-19/scripts/update-decision-routing-bundle-1400.cjs`.
+- 선례: Sol xhigh 전환처럼 사용자 결정에 따른 런타임 전환은 정본 병합을 기다리지 않는다. 자기 checkout의 AGENTS·ORCA·스킬 사본이 아래와 다르면 이 블록이 우선한다.
+
+## 라우팅
+
+| 역할 | 모델 · 실행 |
+|---|---|
+| 파트 리드 (Core 포함) | `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh` |
+| 구현자 일반 | `codex --model gpt-6.1-sol -c model_reasoning_effort=max` |
+| 구현자 위험 신호 (셸·보안·입력 경계, 시간·순서·동시성·수명, 런타임·언어 경계) | `codex --model gpt-6.1-sol -c model_reasoning_effort=max` |
+| 구현자 (같은 계약 두 번째 독립 불합격) | `codex --model gpt-6-astra -c model_reasoning_effort=xhigh` |
+| 위험 신호 구현의 독립 검증 | `claude --model claude-opus-5-5 --autocompact 250000` |
+| DB·영속 데이터·프로토콜·공유 DLL·보안 경계 독립 검증 | `claude --model claude-opus-5-5 --autocompact 250000` |
+| 그 밖의 독립 검증 (문서 실사, 약·강 등급, 로컬 DB 설치·기동 도구 카드) | `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh` |
+| 선행 시험 작성, Gardener | `claude --model claude-opus-5-5` (변화 없음) |
+| 확정 실패 3회 뒤 자문, 설계 검토 시범 | `claude-fable-5-1` (변화 없음) |
+
+- 「설계 판단이 남은 새 다파일 기능」 신호와 「애매하면 Astra」 규칙은 쓰지 않는다.
+- Sol 구현을 다른 새 Sol 세션이 검증하는 것을 허용한다. 구현자·검증자 분리, 작업 하나 뒤 종료, 독립 검증 생략 금지, 리드 직접 구현 금지는 그대로다.
+- 로컬 DB 도구 카드: 사용자 실행 카드에서 독립 검증이 놓친 결함이 한 번이라도 나오면 Opus 검증으로 되돌린다.
+- `max`가 첫 기동 화면에 없으면 대체하지 말고 메인에 보고한다. 계약에는 지정 모델·effort와 화면 관측값을 적는다.
+- capacity 예외(Sol 30분 실패 뒤 Astra xhigh 새 세션)와 Claude 첫 화면 처리는 그대로다.
+
+## 사용량 페이싱
+
+- 사용자 원문(2026-10-19 14:1x KST, 위 A의 크레딧 부분을 바꿈): 「크레딧은 최대한 아끼고 싶긴한데, 사용량이 부족하면 어쩔 수 없긴 하네 / Codex 사용량 절감은 최대한 플랜 주간 소모량 기준으로 잡고, 크레딧은 비상 상황에서만 쓰는거로 하ㅏ」
+- Codex는 플랜 주간 한도만 기준으로 나눠 쓴다. 주간 한도를 하루 약 14%p로 나눈다. 크레딧은 비상 상황에서만 쓴다.
+- Codex 주간 한도는 10-19 14:11 기준 95%이고 리셋은 10-25 05:40 KST다. 그 전까지 남은 약 5%(약 1,600 크레딧)를 넘어 쓰면 크레딧이 줄어든다.
+- 사용자 원문(2026-10-19 14:2x KST, 비상 사용 결정): 「음 어찌보면 지금이 그 비상상황같은데 일단 크레딧을 쓰느거로 할까, 대신에 라우팅 측정할때는 주간 사용량 기준으로만 체크하는 식으로 가고」
+- 그래서 10-25 05:40까지는 크레딧을 비상으로 쓴다. 쓰는 속도는 주간 한도 기준과 같게 맞춘다. 하루 약 14%p, 크레딧으로 약 4,600이다(주간 100% ≈ 3만 2천 크레딧, 10-18 측정 환산). 라우팅의 효과는 이 주간 환산 속도로만 판단한다.
+- 상한은 앞서 승인한 18,000 크레딧이다. 쓴 크레딧이 약 16,000에 닿으면 메인이 사용자에게 다시 묻는다.
+- 메인이 사용률을 목표선과 비교해 앞서면 우선순위가 낮은 파트부터 새 작업자 기동 보류를 지시하고, 뒤처지면 재개를 지시한다. 리드는 그 지시를 따른다.
+- 작업자 세션 하나의 크레딧이 크게 늘면(예: Sol max 구현이 세션당 200을 넘음) 리드가 메인에 알린다.
+
+## 리드가 할 일
+
+- 이 블록의 원문과 출처를 자기 goal.md 「적용 중인 사용자 결정」에 기록한다. 자동 압축 뒤에는 goal.md를 다시 읽고 이 결정을 따른다.
+- 작업자·검증자 위임 계약마다 위 표의 지정 모델·effort·실행 명령을 적고, 기동 뒤 화면 관측값을 함께 남긴다. 자기 checkout의 AGENTS·ORCA·스킬 사본과 다르면 이 블록을 따른다. worktree의 규칙 파일은 고치지 않는다.
+- 파트 배분: 동시에 두 트랙까지만 연다. 순서는 Core → World 한 트랙, 그다음 Content, 그다음 Art(PR253 병합 뒤)다. Rules·Management는 10-28 뒤다. 메인이 목표선에 따라 보류·재개를 지시한다.
+- 2026-10-20 20:00 KST 전에는 새 Opus 세션을 열지 않는다. Opus 검증이 필요한 단계(DB·영속 데이터·프로토콜·공유 DLL·보안 경계, 위험 신호 구현)는 그 뒤로 미루고, 그 전에는 Sol로 끝나는 단계만 진행한다.
+
+```
+
+
+- **2026-10-19 사용자 A — HUD 표시1~3 승인/Art 담당:** Main `msg_3d254c772f7a`(2026-10-18T16:16:30Z)가 전달한 사용자 원문은 「대시보드 결정 응답: 1) Art 시연 화면 - 콘셉트 8장에 맞추는 추가 작업 중 1~3번(체력·직업, 스킬키, 지명·재화)을 HUD PR 뒤 별도 작업으로 승인할지 → A 승인」이다. Art 직접입력으로 격상하지 않는다. 승인 초안 SHA185d9b0c4ef59fc59cd63b61da0587d595ac9108c7b6c6cf79b4d5c6e80a38ab의1~3/제외·일정·완료조건만 승인됐고4~7은미승인이다. 메인은 이 후속 한정의 Art HUD표시코드/씬요소 권한과 담당을 확정했다. HUD PR 병합뒤별도PR·10-22~24구현/검증/화면확인·10-25영상반영마감이며 미완료면기존화면으로촬영한다. 자세한범위는 위 「승인된 후속 표시 PR」, 원문은 concept-alignment-followup-scope/main-user-approval-original-v1.json이다. 현재HUD검증자의제품쓰기권한은늘어나지않는다.
 
 - **사용자 A — UI 창 PR 지금 발행·남은 확인 두 가지 HUD PR 이관**(메인 `msg_b39571d7f7c9`,2026-10-18T09:41:47Z). 메인 pane 제출 원문 전달: 「대시보드 결정 응답: 1) Art UI 창 PR - 남은 확인 두 가지를 다음 HUD PR로 넘기고 이 PR을 지금 열지 → A 넘기고 지금 연다」. Art pane 직접사용자입력으로격상하지않는다. 메인은 보상 이전/현재1920·1280 PNG4와콘셉트8을한페이지로보여준뒤A를받았다고전달했다. 효과는①PartyHUD VIS-05②인벤토리·NPC·파티창 실제전후/최소를HUD PR10-20완료조건으로이동,현재독립결과28524029…로UI PR을지금발행하는것이다. 미관은병합승인요청때PNG4와함께사용자에게확인하고미완/예전4원문미이관·재판정안함을본문에남긴다. 원판정을사후PASS로고치지않는다. 원문은Git밖 `ui-pr-publication/main-user-A-original-v1.json`이다.
 
@@ -336,16 +746,36 @@
 
 - [x] 범위 승인
 - [x] 비교 글·무료 시범
-- [x] PR233 병합(시범 PR)
-- [>] UI 창 구현·검증
-- [ ] UI 창 PR 병합
-- [ ] 성장 효과 구현·검증
-- [ ] 효과 PR 병합
+- [x] PR233 병합
+- [x] UI 창 구현·검증
+- [x] PR252 병합
+- [x] 새 재구성 승인
+- [x] 효과 구현·검증
+- [>] PR254 병합
+- [ ] HUD 재구성 PR 병합
 - [ ] 발판·지형 PR 병합
 - [ ] 촬영 전 손질
 - [ ] 종료 기록 병합
-
 ## 실제 결과와 미실행
+
+### 성장 효과 — PR254 최종 기술 검증과 제출
+
+- 확정된 거점 성장·무기 강화 결과를 표시하는 장면 소유 View/Presentation과 원본 atlas, 선행·독립 시험을 추가했다. 공용 약 1.9초·개인 약 1.1초, 종류별 최신 1개·총 2개, 취소·비활성·장면 종료 정리와 클릭 통과를 확인했다. Content의 실제 서버 결과 소비 adapter는 병합 뒤 별도 PR이다.
+- 신규 독립 Opus의 최종 기술 판정은 통과·차단 0건·D-1 해소다. GUI 캡처 1/1·EditMode 7/7·PlayMode 25/25가 실제 통과했고 1920/1280 한글·숫자 외곽선과 반복 생성·파괴의 material/texture 수명도 확인했다. 리드가 최종 원문·실제 XML/명령·화면·보존 근거를 대조했다. 원문은 `growth-effect-pr/final-review-01/verdict.md`와 `lead-acceptance.md`다.
+- P-1은 Editor 캡처 공용 구간 157프레임 중 15개가 25ms 초과·최대 54.89ms인 비차단 관찰이다. 승인 성능 문턱·원인·실기 성능은 미확인이다. 미관·root 소유·명명 관찰은 동결 뒤 정리 대상으로 보존하며 제품 전체 PASS로 보고하지 않는다.
+- 미실행은 player 빌드의 shader variant, Content adapter·실서버·DB와 사용자 최종 미관이다. 화면은 fixture loopback이다. 실행 자원은 반환했고 ProjectSettings는 정확 복원했다. crop helper 오류 사고와 이전 실패/정정은 원시·정산에 보존했다. 구현자·검증자는 정산·종료했으며 [PR254](https://github.com/bass131/dawnholder-server/pull/254)의 정확 head·CI 확인 뒤 사용자 승인/Main 병합을 기다린다.
+
+### 선행시험 준비 Q1 — 경로 보충·준수 정정, 2026-10-21
+
+현재 Opus의 msg_7ccf19228d79·보충 msg_79a2afa46a74를 active Task/Dispatch·assignee와 대조하고 공식 reply로 A를 선택했다. 원 W-only snapshot 지정이 길이 경계 실패 위험을 만든 리드 계약의 결함이라, 이미 지정한 TEMP 아래 정확 s/03_Client만 좁게 허용하는 버전 보충으로 고쳤다. 제품 코드/전역 longpaths·패키지 변경보다 계약/실행 경로에서 막는 층을 택했고 새 반복 규칙·공유 검사 도구는 만들지 않았다. 추적2215 경로에서 W >=260 738개(정확260 9개)/최장309, 짧은 TEMP는 최장249/260이상0이며 생성 PackageCache 경로는 별도 한계다. 실제 snapshot/Unity/RED는 미실행이다.
+
+같은 조사에서 원 계약이 금지한 새 언어 helper make-ready.cjs198행을 확인해 원본·실행 원시/옛 READY를 보존하고 현행 생성기를 허용된 PowerShell로 바꾸도록 반환했다. 사후에 허용 쓰기0으로 만들지 않고 작성자의 실제 감사/보고와 후행 판정에 연결한다. READY 초안6판은 Main 수정 체크포인트로 보고했으며 확정 독립 실패0과 구분했다. 근거는 growth-effect-pr/q1-path-length-audit-v1.json·q1-ready-draft-observation-v1.json·q1-before-ready-f2778faa-v1.json·q1-reply-receipt-v1.json·q1-main-status-v1.json이다. body 자기 태그와 현재 identity를 대조했고 CLI1.4.237의 ask/reply help에 subject 옵션이 없어 공식 질문/답의 고정 subject 예외를 좁게 적용했다. reply 영수증의 같은 dispatch/asker/status answered로 답변을 확인했다. 제품/실화면/독립 PASS를 만들지 않았다.
+
+### 새 콘셉트 기준 재구성 계획 작성 — 2026-10-21
+
+Main의 사용자 결정2건과 라우팅/페이싱 전문을 아래 적용 중 결정에 연결했다. 8장 원본 직접 보기·번호/hash 대조와 현재 Content의 세 접점/소유권을 확인해 [새 계획 초안](concept-reconstruction-plan-draft.md)을 작성했다. 기존 표시1~3의 데이터/수명 요구는 남기고 기존 HUD geometry·5슬롯 가정을 대체하며, PR253 유지 병합/대체 종료의 두 선택과 후자 추천을 제시했다. C9는 거점 성장·개인 강화의 새 표현과 확정 신호/취소·검증 경계를 나눴다.
+
+전체8~9회/4~9시간 Unity 점유·Codex 기본3~4회/수정 포함4~6회는 미실측 계획값이며, 1,000크레딧 예약 상한도 승인 전 제안이다. 실제 사용량·일정 보장이 아니다. 이번 제품/시험/생성·작업자/검증자·Unity/WSL/빌드/DB·push·PR 변경0, 새 초안 독립 실사0이다. Content의 기존 코드/정적 이견 없음은 C9 제품·실화면 PASS가 아니다. 메인 보고 영수증과 원문·hash/준수 위치는 새 `concept-reconstruction-plan/`에 보존한다.
 
 ### 무료 시범 — 생성 끝, 사용 결정 A, 2026-10-13
 
