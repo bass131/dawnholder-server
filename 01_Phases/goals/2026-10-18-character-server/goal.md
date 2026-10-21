@@ -6,13 +6,29 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: 경량 경로로 정상 메뉴→마을 서버 연결 구현 중.** 새 Sol max 작업자가 짧은 계약 포인터로 시작했고 Core 실제 enum2·코드/API 소비와 World checkout host 통합을 허용받았다. 오류 매핑 선행 실행589=기존407P/신규182제품부재RED/skip0·빌드 오류0·경고57은 기준이며 새 구현의 실행 결과는 아직 없다. 실제 화면·DB/입장 통합과 PR 직전 Opus 검증은 남아 있다.
+**상태: 실제 SQL+TCP의 생성·선택·마을/길드 입장·새host 재접속 정상1건 통과.** 최신 소스를 빌드하고 실제 Core SQL repository와 ServerHost/TCP로 실행했다. 리드가 원TRX1행/counters·phase0/1 StdOut을 읽어1P/0F/0skip·exit0, 같은 계정/CharacterId의 저장 직업 Mage 재선택을 확인했다. 빌드는75warning/0error이며18:36:39Z에 창을 반환했다. 이전604 자체 시험은 후속 fixture·host 시계 수정 전 결과다. 최신 전체 회귀·Core 예외분류 수리·양쪽DLL/Unity·PR 직전 Opus 검증은 남아 있다.
 
 ## 재개 지점
 
-**진행 중: 새 Sol max 한 명이 Core 실제 enum2·mapper부터 정상 목록/생성/ID 선택·54→48→마을 입장 경로를 잇는다.** Core `msg_40b543666301`의 우선 코드/API 인계로 기존 소비 보류는 해제됐다. `world-consumer-handoff-20261022.md`의 Catalog/Sql/host 접점을 World 기존 변경과 대조해 통합한다. Core checkout은 읽기 전용이며 공유 host 파일의 정확 쓰기 범위는 두 리드가 조율한다. `msg_ad0c2e9fe064`는 실제 CatalogStatus.cs/InvalidField.cs를 분리해 공급 중이라고 알렸으므로 쓰기 종료 뒤 그 두 원천 파일을 그대로 받는다. Core 전체 실제 DB 검증은 이 구현의 선행 대기 조건이 아니다.
+**Core 인계 대기·종료 준비: Main이 World를 다시 열면 같은 Run을 인수해 Core의 고정 수리 원천부터 확인한다.** Main `msg_2e86c0b5d2d3`가 새 Core 리드에 D-CAT-READ-01/SCHEMA-02 좁은 수리와 O-CAT-REJECT-03 판정을 배치했으며 Core가 원천을 직접 인계한다. 같은 Sol max 작업자의 Content 원천/메뉴·길드 최소 소스 통합은 쓰기 종료와 실제diff 실사를 마쳤다. 추가 작성 없이 Core 인계만 기다리므로 Main 지시에 따라 작업자 정산·정확pane 종료를 마쳤으며 열린 World 작업자는 없다. 재개 지점은 goal/CURRENT 문서 checkpoint로 남기고 종료 준비를 보고한다. 리드 pane은 Main이 닫고 인계 때 새로 연다. 제품/시험54파일 미커밋과 Git 제외 근거를 같은 checkout에 보존하며, 이 대기는 전체goal 완료/병합이 아니다.
 
-현재 구현 근거는 `.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-implementation-01/`다. 첫 Task `task_97f286a61fc1`/`ctx_ae03898fbb59`는 literal tail만 남은 draft·시작 미관측으로 Main `msg_c1fdc3a66df3` 지시에 따라 시작0(제품/실행0)으로 공식 abandon하고 정확 idle pane을 닫았다. 짧은 계약 경로+hash 포인터로 새 Sol max Task `task_b6adb19bd94f`/`ctx_786c8a993cfc`를 발행해 `input_accepted/turn_started`·Working을 확인했다. 수동 Enter0이며 제품 확정실패/독립검증 실패가 아니다(`lead-recovery-summary.json`). 계약 v1.1은 Main의 경량/보이는 기반 방향과 Core `msg_5e4541ae66ed`의 실제 enum2 공급 완료·World checkout host 통합 허용을 반영한다. 같은 작업자가 구현·배정 창 실행·자체 수정까지 이어가며, 실행 준비 시 명령/예상시간/자원 세 줄로 창을 요청한다. 새 구현의 WSL/DB/Unity 실행 결과는 아직 없다.
+**재개 순서:** 현재 goal/실제 Git 상태·기존 report/context를 읽고 Core 인계의 기준·변경 파일/소유를 확인한다. 정산된 이전 Task/handle/창을 실행 권한으로 재사용하지 않고 신규 작업자에게 정확 원천 소비를 발행한다. Core checkout은 readonly이고 World host 시계 getter 등 기존 소비 delta와 Content 통합을 보존한다. 그 뒤 PR 직전 신규 Opus 검증의 양쪽 소비/실제 진입·회귀 실행 계획을 정하고 Main에 「명령/시간/자원」 세 줄로 창을 요청한다. 현재 Content 창은~22:14Z(07:14KST)이고 World/Core build/test0이다. 사용자A(`msg_e50c0b6a4305`)에 따라 최신 Network8+RuntimeEntry6 회귀는 지금 다시 요청하지 않고 그 PR 직전 검증에 합친다. 다시 자동 검토에 막히면 우회하지 않고 정확 명령/거절 문구를 Main에 올려 사용자 직접 실행으로 잇는다. 승인 밖 DB쓰기는 짧은 실제 SQL/명령으로 결정 요청한다.
+
+정산: 전체쓰기종료21:29:22Z·공식 `msg_12debfe5c862`의 failed는 Main 지시에 따른 Core 인계 대기 종료이며 제품 확정실패/독립NOTPASS가 아니다. 공식/기록/실제 변경54경로 차이0·제품종료 뒤 파일쓰기0을 대조하고 같은 identity/idle→release(retained/external)→정확 worker pane close를 확인했다. 최종 원문은 기존 `report.md`, 정산은 `lead-settlement-review-final.json`이다. 기존 생존 helper의 저장40신호 부분 관측·초과9구간/전체cadence 미확인 한계는 `lead-liveness-final.json`·`lead-context.md`에 남겼다. Core 새 리드에는 `msg_0ff6eef96f2f`로 회신 Run과 World 보존 delta를 보냈다.
+
+Content `msg_c5e72e50367b`가20:42:56Z 실제 제품쓰기 종료·정산/세션종료와 공용 `UnityClientSession.cs`·`NetworkService.cs`의 고정 기준/diff0을 인계했다. 원시는 `content-active/.backups/verification/2026-10-15-guild-client-ui/live-player/handoff-session-network.json`·동명diff이며 다음 Content 계약은 재조율 전 두파일을 쓰지 않는다. 인계본이 참조하는 Guild controller/handler/reader/state6제품이 World에 없어 최소 의존 소비를 조율했다. Content `msg_4f515dacbbe7`가 Main `msg_f805de9a658b`의 「최소 Guild 의존 원천 조율은 리드끼리」라는 최신 지시와 정확 합의로 직전 추가 판정 대기를 대체했다. 신규6cs+각meta/Guild.meta(13경로)는 고정 원천 그대로, 기존 InventorySnapshotHandler는 revision 전달1행, 공용2파일은 기존 메뉴 hook/50·52·54 등록과 Guild 생성/44·47등록/current-generation CanApply/pending·revision/Dispose/session mirror cleanup을 보존하는 최소 통합만 허용한다. Content PR2 main 선통합을 새 전제로 두지 않는다. 같은 작업자 보충 계약은 현재 근거의 `task-supplement-client-integration-v1.md`, 원천은 Content live-player의 `lead-world-guild-dependency-proposal.json`·`lead-world-inventory-revision-consumption.diff`다. 실제 쓰기 시작/종료는 작업자 status로 확인하며 현재 compile/추가 runtime은 미실행이다. Content 실행은 기존v21/DLL로 종료됐고 World Shared22 checkpoint를 보존한다. 새 캐릭터 화면 목표·Content checkout/snapshot 쓰기·원천 정책 수정은 없으며 추가 전이 의존은 재조율한다. Core 분류 수리 시점은 Main 조율을 유지한다.
+
+**최소 소스 통합 결과:** 작업자 `msg_e61ba36410c3`·`msg_b77845d3ce9e`는21:07:15Z 쓰기 시작/21:10:28Z 종료를 보고했다. 리드는 원천13경로 bytes 동일·GUID7개 지정 위치 단일·실제 UnityClientSession +20/-3/Inventory +1/-0·NetworkService 무변경과 diff --check를 직접 확인했다. 메뉴와 Guild의 연결 수명을 함께 보존했고 worker 총54변경경로의 실제 준수 위치는 기존 `report.md`·`execution-raw/actual-compliance-locations.txt`에 있다. 최종 미커밋 기준/3파일 blob은 `lead-context.md`에 기록했다. 정적 소스 통합 결과이며 새 compile/Unity/서버/DB/회귀는 모두 미실행이다. 기존313·604·SQL1P를 이번 통합의 통과로 확대하지 않는다.
+
+후속 배치: Content에 `msg_4df11d4cb8c7`로 실제 쓰기 시작/종료·최종기준과 이번 통합 쓰기 소유 종료를 회신했다. Main `msg_fc19b463c61d`로 D-CAT-READ-01/SCHEMA-02의 같은 Core goal 좁은 수리 배치와 O-CAT-REJECT-03 분류 시점을 요청해 회신을 기다린다. 새 사용자 결정이나 실행 창을 중복 요청하지 않았으며 PR 직전 Opus는 아직 열지 않았다.
+
+현재 구현 근거는 `.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-implementation-01/`다. 첫 Task `task_97f286a61fc1`/`ctx_ae03898fbb59`는 literal tail만 남은 draft·시작 미관측으로 Main `msg_c1fdc3a66df3` 지시에 따라 시작0(제품/실행0)으로 공식 abandon하고 정확 idle pane을 닫았다. 짧은 계약 경로+hash 포인터로 새 Sol max Task `task_b6adb19bd94f`/`ctx_786c8a993cfc`를 발행해 `input_accepted/turn_started`·Working을 확인했다. 수동 Enter0이며 제품 확정실패/독립검증 실패가 아니다(`lead-recovery-summary.json`). 계약 v1.1은 Main의 경량/보이는 기반 방향과 Core `msg_5e4541ae66ed`의 실제 enum2 공급 완료·World checkout host 통합 허용을 반영한다. Main `msg_55f03baa7e49`의17:15Z~17:30Z 창에서 기존 helper를 실행했고, 최초 필터 인수 전달 exit127/TRX부재 뒤 `wsl --exec`로 같은 helper/필터를 실행했다. 최종 `execution-raw/trx/world-catalog-session-03.trx`의604통과와 기존589명 보존은 `lead-trx-review-v1.json`으로 직접 대조했다. 작업자가17:19:56Z에 자기 runtime0/lock 반환을 보고해 Main `msg_d3d90bca69b4`로 창부터 반환했으며 이후 실행0이다.
+
+기존 RuntimeEntry 시험의 fixed-identity `NewServices`+`C_CharacterSelect` 진입 준비는 현재 Stored ID선택 계약과 충돌할 가능성을 정적으로 확인했다(아직 미실행). 공식 답변 `msg_aeedab4ca06a`로 같은 작업자에게 해당 기존 helper/시험8파일만 보충했다. C6의 class-only 우회 차단과 tick 비동기·저장직업 권위·deadline·Close/owner해제·닫힌 등록0의 의미 단정을 보존하며 진입 준비를 전환한다. 실제 DB 최소 경로 준비가 우선이고, 새 harness·중간 검증 세션·부분 Task 정산은 하지 않는다.
+
+Main `msg_2593da0d706d`의 사용자A 승인과 `msg_2779e15facc5`의18:33Z~18:53Z 창에서 기존 WSL build→시험 산출물 복사→Windows vstest `StoredMenuSqlEndToEnd`1건을 실행했다. `execution-raw/sql/world-sql-01.trx`의1P/0F/0skip와 전체 StdOut의 phase0(목록/생성/선택), phase1(정상Close 뒤 새host/catalog의 같은계정/CharacterId 재조회/선택), 양쪽54→48(Mage)→3→44를 리드가 직접 대조했다(`lead-sql-trx-review-v1.1.json`). 원vstest는18:35:11Z~18:35:14Z/exit0, 최신 build75warning/0error다. 작업자의18:36:39Z 자기runtime0/lock반환·Shared보존 보고를 받아 Main `msg_bab37f60d4ba`로 창부터 반환했고 원시 자원 결과도 직접 읽었다. 같은 Windows testhost 안의 새host/관리자 통합 인증 시험이며 별도 Program credential startup·프로세스 재시작·최소권한/TLS·Unity 화면/플레이는 미실행이다. 앞의604통과는 후속 fixture·host 시계 수정 전 결과이고 최신 Network/RuntimeEntry 전체 회귀는 남아 있다. Core `msg_90880d980c49`와 `world-selection-error-contract-20261022.md`는 D-CAT-READ-01(경합 없는 typed 읽기실패=Unavailable), D-CAT-SCHEMA-02(schema불일치=SchemaMismatch)의 정적 계약 불일치를 확인했다. binding/identity/Probe 구조 위반은 IntegrityFailure이며 O-CAT-REJECT-03은 원래 거부 원인 소실로 일괄 Busy를 승인할 수 없는 관찰이다. 제품 수리는 아직 없고 시점은 Main과 조율한다. World 기대값을 현재 제품값에 맞춰 바꾸지 않으며 정적 판정을 실행 실패나 독립 확정실패로 세지 않는다.
+
+최신 회귀는 미실행이다. Main `msg_64f693dba14e`의18:59Z~19:09Z 창에서 기존 Windows DLL의 Network8+RuntimeEntry6클래스1회 실행을 요청했으나 자동 승인 검토가 `blocked by policy`로 거절했고 상세 이유는 제공하지 않았다. 작업자 `msg_d2e1f91ff75a`는 프로세스/log/TRX 생성0·Windows runtime0·Git동일과 재시도0을 보고해19:06:06Z에 창을 반환했다. Main에 `msg_f4e3c202702d`로 창 반환·차단을 먼저 전달했으며 제품/시험과 산출물을 보존한다. 이번 회귀 PASS/FAIL이나 Core/독립 확정실패 결과로 세지 않고, 리드 대체 실행·명령 포장·권한/전역설정 변경으로 우회하지 않는다. 이전 실제SQL1건 성공은 유지한다. 사용자 결정 A(`msg_e50c0b6a4305`)로 해당 회귀는 PR 직전 신규 Opus 검증에 합치며, 지금 재실행하지 않는다. 거절된 정확 명령은 `report.md`의 해당 절에, 통과한 SQL 명령과의 차이는 `lead-context.md`의 04:14 KST 절에 남겼다.
 
 정상 동작을 먼저 잇고 이를 막지 않는 추가 도구·문서·예외 보강은 뒤로 둔다. 현재 World가 실제 화면으로 확인한 전체 흐름은 없다. 단일 계정의 실제 DB 생성→선택→마을 입장 서버 경로는 작업자 복구·API 공급 뒤 약1~2시간(당시 잠정03:00~04:00 KST)으로 추정했고, 화면 시각은 Content 연결·실행 창 조율이 더 필요하다고 Main에 보고했다. 완료조건과 PR 직전 Opus 검증은 유지한다.
 
@@ -125,6 +141,19 @@ Core `msg_80f596e64e30`(17:01:21Z)은 검증된 제한 checkpoint 없음·API v2
 - **착수 조건:** Unity 최소 수신 소유와 정확 파일은 Content 쓰기 종료·합의 뒤 계약 전 고정, 49..54/v22는 최신 main/타 파트 예약 대조 뒤 고정, Core 미검증 코드 복사0, 중량 실행은 메인 「실행 창 시작」 뒤다. 범위 승인만으로 이 조건을 생략하지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 차단된 회귀를 PR 직전 검증에 합침 — 2026-10-22
+
+Main `msg_e50c0b6a4305`가 메인 pane Enter 제출(2026-10-22 04:12 KST)로 확인해 전달한 사용자 원문: 「대시보드 결정 응답: 1) World 회귀 시험이 자동 승인 검토에 막힘 — 어떻게 돌릴지 → A PR 직전 검증에 합치기」.
+
+지금 회귀를 다시 돌리지 않는다. PR 직전 신규 Opus 독립 검증을 열 때 같은 Network8+RuntimeEntry6클래스 회귀를 그 검증의 실행 창에서 함께 돌리고, 그때 Main에 「창 요청」을 보낸다. 거기서도 자동 승인 검토가 막히면 우회하지 않고 정확한 명령 한 줄과 거절 문구를 「결정 요청」으로 보내며 그때 사용자가 직접 실행한다. Core 분류 수리 반영과 PR 직전 검증은 보이는 결과를 막지 않는 순서로 진행한다. 이 전달을 현재 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+### 실제 DB·TCP 정상1건 시험자료 승인 — 2026-10-22
+
+Main `msg_2593da0d706d`가 메인 pane Enter 제출로 확인해 전달한 사용자 원문: 「대시보드 결정 응답: 1) World 실서버+실DB 정상 1건 시험 승인(시험 DB에 시험행 쓰기, 20분 창) → A 승인」.
+
+승인 범위는 결정 요청 `msg_fc4e3327389d`의 기존 WSL build→시험DLL 복사→Windows vstest `StoredMenuSqlEndToEnd`1건과 같은 흐름의 창 안 수정·재실행이다. 대상은 `tcp:localhost,15433`/`Dawnholder_Char_8256bcde8c80`, 기존 공개 `local-windows.json`의 Windows 통합 인증이다. 매 런 새 시험 계정1·캐릭터1과 해당 progress/authority/receipt만 쓰고 보존한다. DDL/login/grant·기존행삭제/cleanup·새비밀·Unity·7777·원본DLL배포0이며 다른 DB쓰기가 필요하면 정확한 결정 요청을 올린다. Content 창 반환 뒤 Main이 자원을 확인하고 실제 시작 한 통을 보내야 실행하며, 종료 때 창 반환부터 보낸다. 이 승인과 관리자 통합 인증 결과를 별도 서버 Program credential startup·최소권한/TLS·Unity 화면/플레이 완료로 합치지 않는다.
+
 ### 보이는 기반 우선 — 2026-10-22
 
 Main `msg_8ba8ba647e7a`가 전달한 메인 pane Enter 제출 원문: 「빠르게 기반 먼저 만드는거를 목표로 해야돼, 지금 뭐 보여줄게 없어 우리」. 메인 해석은 실제로 화면으로 보여 줄 수 있는 기반을 먼저 연결하고, 이를 막지 않는 예외 보강·검증 도구·추가 근거·문서 정리는 10-28 뒤로 미룬다는 것이다. 기존 goal 범위를 넓히거나 완료조건을 조용히 줄이지 않는다. 완료조건 축소가 필요하면 메인에 결정 요청한다. 이후 보고에는 현재 실제로 보여 줄 것, 가장 빠른 다음 동작과 예상 KST, 막는 것 하나를 함께 적는다. 원문 메시지는 이번 구현 근거의 `core-and-visible-priority.json`에 보존했다.
