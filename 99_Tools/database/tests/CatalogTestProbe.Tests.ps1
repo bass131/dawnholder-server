@@ -1,16 +1,17 @@
 [CmdletBinding()]
 param([Parameter(Mandatory)][string]$WorkRoot)
 
-# Source-preparation deliverable: not executed in the authoring task. A new execution contract is required.
-# A later offline run uses only this existing test suite/fixture pattern; no SQL connection or DPAPI file is opened.
+# Run only under a separate offline execution contract; all files stay below the explicit WorkRoot.
+# Real file entry is tested only for refusals before SQL; in-process orchestration uses verified I/O stand-ins.
 if ($PSVersionTable.PSEdition -cne 'Desktop' -or $PSVersionTable.PSVersion.ToString() -notlike '5.1.*') {
     throw 'Run the separately approved offline suite in Windows PowerShell 5.1.'
 }
 . (Join-Path $PSScriptRoot 'TestSupport.ps1')
 $null = Initialize-TestSuite -WorkRoot $WorkRoot -Suite 'catalog-test-probe'
 $probeSource = Join-Path $script:ToolRoot 'test-environment/Set-CatalogTestProbe.ps1'
-. $probeSource
+$importOutput = . $probeSource
 . (Join-Path $script:ToolRoot 'SqlError.Common.ps1')
+Assert-True -Name 'Dot-source import is inert and produces no output' -Condition ($null -eq $importOutput)
 
 function New-ProbeFixturePlan {
     param([string]$Root)
@@ -25,21 +26,22 @@ function New-ProbeFixturePlan {
         step = 'CreateCatalogProbe'
         createdUtc = $created.ToString('yyyy-MM-ddTHH:mm:ssZ')
         expiresUtc = $created.AddHours(24).ToString('yyyy-MM-ddTHH:mm:ssZ')
-        machine = 'DESKTOP-88BJKQH'
+        machine = [Environment]::MachineName
         executorSid = 'S-1-5-21-1-2-3-1001'
-        instance = 'DESKTOP-88BJKQH\SQLEXPRESS'
-        adminEndpoint = 'lpc:.\SQLEXPRESS'
-        sqlMajor = 17
-        database = 'Dawnholder_Char_8256bcde8c80'
-        databaseGuid = '7C6E662B-9C39-4410-B256-868742E6619B'
-        runtimeName = 'dh_char_8256bcde8c80'
-        runtimeSid = '0x043491844159D3A10FA504F68F4B8425'
+        instance = [Environment]::MachineName + '\CATALOGFIXTURE'
+        adminEndpoint = 'lpc:.\CATALOGFIXTURE'
+        sqlMajor = 1
+        database = 'Dawnholder_Char_0123456789ab'
+        databaseGuid = '11223344-5566-7788-99AA-BBCCDDEEFF00'
+        runtimeName = 'dh_char_0123456789ab'
+        runtimeSid = '0x102030405060708090A0B0C0D0E0F001'
         schemaVersion = 5
         moduleRelease = 5
         moduleManifestChecksum = 'AC6D31EA3C28C21FD01D150F2828BD9AA9FCAF8384FEB9B9B2A171F4E718A571'
-        probeName = 'dh_probe_8256bcde8c80'
+        probeName = 'dh_probe_0123456789ab'
         plannedSid = '0x112233445566778899AABBCCDDEEFF11'
-        credentialPath = 'C:\Users\bass1\AppData\Local\Dawnholder\8256bcde8c80478494bcefb9cdfaf4f6\catalog-probe.clixml'
+        credentialPath = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) `
+            'Dawnholder\0123456789abcdef0123456789abcdef\catalog-probe.clixml'
         evidenceDirectory = $Root
         receiptPath = Join-Path $Root 'probe-apply-receipt.json'
         journalPath = Join-Path $Root 'probe-apply-journal.jsonl'
@@ -72,9 +74,25 @@ Assert-Throws -Name 'Action cannot reuse Apply document for Remove' -Pattern 'Ca
 }
 $counterexamples = @(
     @{ Name = 'endpoint'; Field = 'adminEndpoint'; Value = 'tcp:127.0.0.1,1433'; Code = 'TargetScope' }
+    @{ Name = 'remote instance'; Field = 'instance'; Value = 'REMOTE\CATALOGFIXTURE'; Code = 'TargetScope' }
+    @{ Name = 'default instance'; Field = 'instance'; Value = $plan.machine; Code = 'TargetScope' }
+    @{ Name = 'instance suffix'; Field = 'instance'; Value = ($plan.machine + '\BAD;SQL'); Code = 'TargetScope' }
+    @{ Name = 'endpoint suffix mismatch'; Field = 'adminEndpoint'; Value = 'lpc:.\OTHER'; Code = 'TargetScope' }
+    @{ Name = 'SQL major type'; Field = 'sqlMajor'; Value = '1'; Code = 'TargetScope' }
+    @{ Name = 'SQL major range'; Field = 'sqlMajor'; Value = 0; Code = 'TargetScope' }
+    @{ Name = 'database identifier'; Field = 'database'; Value = 'Dawnholder_Char_bad]'; Code = 'TargetScope' }
+    @{ Name = 'runtime name relation'; Field = 'runtimeName'; Value = 'dh_char_ffffffffffff'; Code = 'TargetScope' }
+    @{ Name = 'probe name relation'; Field = 'probeName'; Value = 'dh_probe_ffffffffffff'; Code = 'TargetScope' }
     @{ Name = 'runtime SID'; Field = 'runtimeSid'; Value = '0x112233445566778899AABBCCDDEEFF11'; Code = 'TargetScope' }
+    @{ Name = 'zero runtime SID'; Field = 'runtimeSid'; Value = ('0x' + ('0' * 32)); Code = 'TargetScope' }
+    @{ Name = 'runtime SID format'; Field = 'runtimeSid'; Value = '0xZZ'; Code = 'TargetScope' }
     @{ Name = 'database GUID'; Field = 'databaseGuid'; Value = [Guid]::Empty.ToString(); Code = 'TargetScope' }
+    @{ Name = 'noncanonical GUID'; Field = 'databaseGuid'; Value = $plan.databaseGuid.ToLower(); Code = 'TargetScope' }
+    @{ Name = 'GUID type'; Field = 'databaseGuid'; Value = [Guid]::Empty; Code = 'StringRequired' }
+    @{ Name = 'executor SID overflow'; Field = 'executorSid'; Value = 'S-1-5-21-4294967296-2-3-1001'
+        Code = 'TargetScope' }
     @{ Name = 'planned SID equals runtime'; Field = 'plannedSid'; Value = $plan.runtimeSid; Code = 'TargetScope' }
+    @{ Name = 'zero planned SID'; Field = 'plannedSid'; Value = ('0x' + ('0' * 32)); Code = 'TargetScope' }
     @{ Name = 'expired'; Field = 'expiresUtc'; Value = '2000-01-01T00:00:00Z'; Code = 'ApprovalWindow' }
     @{ Name = 'implicit timezone'; Field = 'expiresUtc'; Value = '2099-01-01T00:00:00'; Code = 'UtcStringRequired' }
     @{ Name = 'converted DateTime'; Field = 'expiresUtc'; Value = [DateTime]::UtcNow; Code = 'UtcStringRequired' }
@@ -87,6 +105,15 @@ $counterexamples = @(
     @{
         Name = 'credential overwrite target'; Field = 'credentialPath'
         Value = 'C:\runtime.clixml'; Code = 'CredentialScope'
+    }
+    @{
+        Name = 'credential lifetime relation'; Field = 'credentialPath'
+        Value = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) `
+            'Dawnholder\ffffffffffffffffffffffffffffffff\catalog-probe.clixml'; Code = 'CredentialScope'
+    }
+    @{
+        Name = 'credential filename'; Field = 'credentialPath'
+        Value = Join-Path ([IO.Path]::GetDirectoryName($plan.credentialPath)) 'runtime.clixml'; Code = 'CredentialScope'
     }
 )
 foreach ($example in $counterexamples) {
@@ -120,6 +147,48 @@ $drifted.sourceHashes[0].sha256 = 'F' * 64
 Assert-Throws -Name 'Changed source stops before I/O' -Pattern 'CatalogProbe:SourceDrift' -Action {
     Assert-CatalogProbeSources -Plan $drifted -SourcePath $probeSource
 }
+
+# File execution redefines its own functions, so no inherited stand-in can safely authorize a success path.
+# A deliberately different executor must be refused before SQL/credential I/O; no product test seam is added.
+$identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+try {
+    if ($identity.User.Value -ceq $plan.executorSid) { throw 'Fixture executor unexpectedly matches the real user.' }
+    $currentExecutorSid = $identity.User.Value
+}
+finally { $identity.Dispose() }
+$hostPlan = $plan.PSObject.Copy()
+$hostPlan.executorSid = $currentExecutorSid
+Assert-NoThrow -Name 'Real host accepts its current machine user and profile' -Action {
+    Assert-CatalogProbeHost -Plan $hostPlan
+}
+$hostPlan.machine = $plan.machine + '-OTHER'
+Assert-Throws -Name 'Real host refuses a different machine' -Pattern 'CatalogProbe:ExecutorIdentity' -Action {
+    Assert-CatalogProbeHost -Plan $hostPlan
+}
+$hostPlan.machine = $plan.machine
+$hostPlan.credentialPath = 'C:\runtime.clixml'
+Assert-Throws -Name 'Real host refuses a credential outside its profile' `
+    -Pattern 'CatalogProbe:ExecutorProfile' -Action {
+    Assert-CatalogProbeHost -Plan $hostPlan
+}
+Assert-True -Name 'Private credential absent before offline run' -Condition (
+    -not (Test-Path -LiteralPath $plan.credentialPath))
+$global:LASTEXITCODE = 0
+$entryOutput = & $probeSource -Action Apply -ApprovalPath $publicPath -ExpectedApprovalHash ('0' * 64)
+$entryExit = $LASTEXITCODE
+$entryResult = ConvertFrom-Json -InputObject ($entryOutput -join "`n")
+Assert-Equal -Name 'Real file entry refuses wrong public hash' -Expected PublicDocumentHash `
+    -Actual $entryResult.failure.category
+Assert-Equal -Name 'Wrong hash file entry exits 1' -Expected 1 -Actual $entryExit
+$global:LASTEXITCODE = 0
+$entryOutput = & $probeSource -Action Apply -ApprovalPath $publicPath -ExpectedApprovalHash $publicHash
+$entryExit = $LASTEXITCODE
+$entryResult = ConvertFrom-Json -InputObject ($entryOutput -join "`n")
+Assert-Equal -Name 'Real file entry preserves current executor guard' -Expected ExecutorIdentity `
+    -Actual $entryResult.failure.category
+Assert-Equal -Name 'Identity refusal exits 1' -Expected 1 -Actual $entryExit
+Assert-Equal -Name 'Identity refusal never starts SQL' -Expected NotStarted -Actual $entryResult.sqlOutcome
+Assert-True -Name 'Identity refusal writes no intent journal' -Condition (-not [IO.File]::Exists($plan.journalPath))
 
 # Exercise the real typed-command boundary with an in-memory command/parameter collection, without Open.
 $backingCommand = [Data.SqlClient.SqlCommand]::new()
@@ -170,15 +239,6 @@ function Assert-OfflineProbeAcl {
 function Assert-OfflineProbePath {
     param([string]$Path)
     if ($script:ProbeFixture.Behavior -ceq 'ReparseRefused') { Stop-CatalogProbe -Code 'ReparsePath' }
-}
-
-function Test-OfflineProbePath {
-    [CmdletBinding()]
-    param([string]$LiteralPath)
-    if ($LiteralPath -ceq $script:ProbeFixture.Plan.credentialPath) {
-        return $script:ProbeFixture.CredentialExists
-    }
-    return Microsoft.PowerShell.Management\Test-Path -LiteralPath $LiteralPath
 }
 
 function Open-OfflineProbeMaster {
@@ -276,7 +336,6 @@ $boundaries = [ordered]@{
     'Assert-CatalogProbeHost' = 'Assert-OfflineProbeHost'
     'Assert-CatalogProbeAcl' = 'Assert-OfflineProbeAcl'
     'Assert-CatalogProbeNoReparse' = 'Assert-OfflineProbePath'
-    'Test-Path' = 'Test-OfflineProbePath'
     'Open-CatalogProbeMaster' = 'Open-OfflineProbeMaster'
     'Invoke-CatalogProbeSql' = 'Invoke-OfflineProbeSql'
     'Save-CatalogProbeCredential' = 'Save-OfflineProbeCredential'
@@ -284,12 +343,27 @@ $boundaries = [ordered]@{
     'New-CatalogProbePublicFile' = 'New-OfflineProbePublicFile'
     'Remove-Item' = 'Remove-OfflineProbeCredential'
 }
+$originalBoundaries = @{}
 try {
     foreach ($name in $boundaries.Keys) {
         if (Get-Alias -Name $name -ErrorAction SilentlyContinue) { throw 'Fixture alias collision.' }
-        Set-Alias -Name $name -Value $boundaries[$name] -Scope Script
-        if ((Get-Command -Name $name).CommandType -ne 'Alias') { throw 'Fixture boundary was not shadowed.' }
+        $original = Get-Command -Name $name -CommandType Function -ErrorAction SilentlyContinue
+        $originalBoundaries[$name] = if ($null -eq $original) { $null } else { $original.ScriptBlock }
+        $body = (Get-Command -Name $boundaries[$name] -CommandType Function).ScriptBlock
+        Set-Item -Path ('Function:script:' + $name) -Value $body
     }
+    foreach ($name in $boundaries.Keys) {
+        $resolved = Get-Command -Name $name
+        if ($resolved.CommandType -ne 'Function' -or
+            [IO.Path]::GetFullPath($resolved.ScriptBlock.File) -cne [IO.Path]::GetFullPath($PSCommandPath)) {
+            throw ('Fixture boundary was not replaced by this test file: ' + $name)
+        }
+    }
+    Assert-Equal -Name 'Test-Path remains a cmdlet after stand-in installation' -Expected Cmdlet `
+        -Actual (Get-Command -Name Test-Path).CommandType
+    $hashAfterStubs = (Get-FileHash -LiteralPath $publicPath -Algorithm SHA256).Hash
+    Assert-Equal -Name 'PS5.1 Get-FileHash still handles its internal PathType call' -Expected $publicHash `
+        -Actual $hashAfterStubs
     New-ProbeScenario -Name 'success'
     $applied = Invoke-ProbeScenario
     Assert-True -Name 'Apply completes through real orchestration with stubbed I/O' -Condition $applied.succeeded
@@ -379,22 +453,15 @@ try {
             Assert-True -Name ($behavior + ' no credential') -Condition (-not $script:ProbeFixture.CredentialExists)
         }
     }
-    New-ProbeScenario -Name 'import-only'
-    . $probeSource
-    Assert-Equal -Name 'Dot-source never opens SQL' -Expected 0 -Actual $script:ProbeFixture.OpenCount
-    Assert-Equal -Name 'Dot-source never mutates SQL' -Expected 0 -Actual $script:ProbeFixture.MutationCount
-    Assert-True -Name 'Dot-source never creates credential' -Condition (-not $script:ProbeFixture.CredentialExists)
-    New-ProbeScenario -Name 'file-entry'
-    $entryOutput = & $probeSource -Action Apply -ApprovalPath $script:ProbeFixture.ApprovalPath `
-        -ExpectedApprovalHash $script:ProbeFixture.ApprovalHash
-    $entryResult = ConvertFrom-Json -InputObject ($entryOutput -join "`n")
-    Assert-True -Name 'Real file entry completes with verified stub boundaries' -Condition $entryResult.succeeded
-    Assert-Equal -Name 'File entry reaches one mutation boundary' -Expected 1 `
-        -Actual $script:ProbeFixture.MutationCount
+    Assert-True -Name 'Private credential absent after all orchestration scenarios' -Condition (
+        -not (Test-Path -LiteralPath $plan.credentialPath))
 }
 finally {
-    foreach ($name in $boundaries.Keys) {
-        Microsoft.PowerShell.Management\Remove-Item -LiteralPath ('Alias:script:' + $name) -ErrorAction SilentlyContinue
+    foreach ($name in $originalBoundaries.Keys) {
+        if ($null -ne $originalBoundaries[$name]) {
+            Set-Item -Path ('Function:script:' + $name) -Value $originalBoundaries[$name]
+        }
+        else { Microsoft.PowerShell.Management\Remove-Item -LiteralPath ('Function:script:' + $name) }
     }
 }
 Complete-TestSuite

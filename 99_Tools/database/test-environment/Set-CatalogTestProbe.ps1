@@ -116,6 +116,13 @@ function Assert-CatalogProbeApproval {
         'deleteCredential', 'originalReceiptHash', 'originalApprovalHash', 'credentialHash', 'sourceHashes'
     )
     Assert-CatalogProbeKeys -Value $Plan -Keys $keys
+    foreach ($name in $keys) {
+        if ($name -cnotin @('version', 'sqlMajor', 'schemaVersion', 'moduleRelease', 'deleteCredential',
+                'createdUtc', 'expiresUtc',
+                'serverPermissions', 'databasePermissions', 'sourceHashes') -and $Plan.$name -isnot [string]) {
+            Stop-CatalogProbe -Code 'StringRequired'
+        }
+    }
     if ($Action -cnotin @('Apply', 'Remove') -or $Plan.action -cne $Action -or
         $Plan.version -isnot [int] -or $Plan.version -ne 1 -or
         $Plan.purpose -cne 'character-catalog-probe' -or
@@ -130,14 +137,21 @@ function Assert-CatalogProbeApproval {
         ($expires - $created) -gt [TimeSpan]::FromHours(24)) {
         Stop-CatalogProbe -Code 'ApprovalWindow'
     }
-    # The allowlist deliberately limits this tool to the already selected fixture, without adopting old plans.
-    if ($Plan.machine -cne 'DESKTOP-88BJKQH' -or $Plan.instance -cne 'DESKTOP-88BJKQH\SQLEXPRESS' -or
-        $Plan.adminEndpoint -cne 'lpc:.\SQLEXPRESS' -or $Plan.sqlMajor -isnot [int] -or $Plan.sqlMajor -ne 17 -or
-        $Plan.database -cne 'Dawnholder_Char_8256bcde8c80' -or
-        $Plan.databaseGuid -cne '7C6E662B-9C39-4410-B256-868742E6619B' -or
-        $Plan.runtimeName -cne 'dh_char_8256bcde8c80' -or
-        $Plan.runtimeSid -cne '0x043491844159D3A10FA504F68F4B8425' -or
-        $Plan.probeName -cne 'dh_probe_8256bcde8c80' -or
+    # The exact target is hash-bound by the public manifest; host and SQL gates compare actual identities.
+    $instanceParts = $Plan.instance.Split('\')
+    $databaseName = [regex]::Match($Plan.database, '^Dawnholder_Char_([0-9a-f]{12})$')
+    $databaseGuid = [Guid]::Empty
+    if ($Plan.machine -cnotmatch '^[A-Za-z0-9][A-Za-z0-9-]{0,62}$' -or
+        $instanceParts.Count -ne 2 -or $instanceParts[0] -cne $Plan.machine -or
+        $instanceParts[1] -cnotmatch '^[A-Za-z][A-Za-z0-9_]{0,15}$' -or
+        $Plan.adminEndpoint -cne ('lpc:.\' + $instanceParts[1]) -or
+        $Plan.sqlMajor -isnot [int] -or $Plan.sqlMajor -lt 1 -or $Plan.sqlMajor -gt 255 -or
+        -not $databaseName.Success -or
+        -not [Guid]::TryParseExact($Plan.databaseGuid, 'D', [ref]$databaseGuid) -or
+        $databaseGuid -eq [Guid]::Empty -or $Plan.databaseGuid -cne $databaseGuid.ToString('D').ToUpperInvariant() -or
+        $Plan.runtimeName -cne ('dh_char_' + $databaseName.Groups[1].Value) -or
+        $Plan.probeName -cne ('dh_probe_' + $databaseName.Groups[1].Value) -or
+        $Plan.runtimeSid -cnotmatch '^0x[0-9A-F]{32}$' -or $Plan.runtimeSid -ceq ('0x' + ('0' * 32)) -or
         $Plan.schemaVersion -isnot [int] -or $Plan.schemaVersion -ne 5 -or
         $Plan.moduleRelease -isnot [int] -or $Plan.moduleRelease -ne 5 -or
         $Plan.moduleManifestChecksum -cnotmatch '^[0-9A-F]{64}$' -or
@@ -146,6 +160,9 @@ function Assert-CatalogProbeApproval {
         $Plan.plannedSid -ceq $Plan.runtimeSid -or $Plan.plannedSid -ceq ('0x' + ('0' * 32))) {
         Stop-CatalogProbe -Code 'TargetScope'
     }
+    try { $executor = [Security.Principal.SecurityIdentifier]::new($Plan.executorSid) }
+    catch { Stop-CatalogProbe -Code 'TargetScope' }
+    if ($executor.Value -cne $Plan.executorSid) { Stop-CatalogProbe -Code 'TargetScope' }
     if (($Plan.serverPermissions -join '|') -cne 'CONNECT SQL|VIEW SERVER PERFORMANCE STATE' -or
         ($Plan.databasePermissions -join '|') -cne 'CONNECT|SELECT ON OBJECT::dh.Account') {
         Stop-CatalogProbe -Code 'PermissionScope'
@@ -153,9 +170,19 @@ function Assert-CatalogProbeApproval {
     foreach ($name in @('serverPermissions', 'databasePermissions', 'sourceHashes')) {
         if ($Plan.$name -isnot [array]) { Stop-CatalogProbe -Code 'ArrayRequired' }
     }
+    foreach ($permission in @($Plan.serverPermissions) + @($Plan.databasePermissions)) {
+        if ($permission -isnot [string]) { Stop-CatalogProbe -Code 'PermissionScope' }
+    }
     $credentialPath = Get-CatalogProbeFullPath -Path $Plan.credentialPath
-    if ($credentialPath -cne
-        'C:\Users\bass1\AppData\Local\Dawnholder\8256bcde8c80478494bcefb9cdfaf4f6\catalog-probe.clixml') {
+    $local = [Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)
+    $credentialRoot = Join-Path $local 'Dawnholder'
+    $credentialFolder = [IO.Path]::GetDirectoryName($credentialPath)
+    $lifetime = [IO.Path]::GetFileName($credentialFolder)
+    # Keep the existing lifetime/name relation inside the current profile, without embedding an environment.
+    if ($lifetime -cnotmatch '^[0-9a-f]{32}$' -or
+        -not $lifetime.StartsWith($databaseName.Groups[1].Value, [StringComparison]::Ordinal) -or
+        [IO.Path]::GetDirectoryName($credentialFolder) -cne $credentialRoot -or
+        [IO.Path]::GetFileName($credentialPath) -cne 'catalog-probe.clixml') {
         Stop-CatalogProbe -Code 'CredentialScope'
     }
     $evidence = Get-CatalogProbeFullPath -Path $Plan.evidenceDirectory
@@ -196,8 +223,10 @@ function Assert-CatalogProbeHost {
     }
     finally { $identity.Dispose() }
     $local = [Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)
-    $expected = Join-Path $local 'Dawnholder\8256bcde8c80478494bcefb9cdfaf4f6\catalog-probe.clixml'
-    if ((Get-CatalogProbeFullPath -Path $Plan.credentialPath) -cne $expected) {
+    $credentialPath = Get-CatalogProbeFullPath -Path $Plan.credentialPath
+    $lifetime = [IO.Path]::GetFileName([IO.Path]::GetDirectoryName($credentialPath))
+    $expected = Join-Path $local ('Dawnholder\' + $lifetime + '\catalog-probe.clixml')
+    if ($lifetime -cnotmatch '^[0-9a-f]{32}$' -or $credentialPath -cne $expected) {
         Stop-CatalogProbe -Code 'ExecutorProfile'
     }
 }
@@ -410,7 +439,7 @@ function Get-CatalogProbeParameters {
 
 function Get-CatalogProbeGateSql {
     param($Plan)
-    # Identifiers cannot be SQL parameters. Only the validated database allowlist enters this quoted token.
+    # Identifiers cannot be SQL parameters. Only the validated manifest database name enters this quoted token.
     $databaseIdentifier = '[' + $Plan.database.Replace(']', ']]') + ']'
     $sql = @'
 SET NOCOUNT ON;
