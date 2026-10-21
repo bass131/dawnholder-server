@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 실제 DB metadata·지정 로그인 권한의 독립18 관측 범위 통과.** migration5/module20/catalog/runtime login·user·role·서버권한이 현재 원천과 일치했다. D17 조회문 결함을 보정해 실제2조회 각1회 exit0, 보호95/receipt6 보존. TLS/TCP/WSL·SQL로그인 실제 인증·서버 저장재접속·소비 인계는 아직 미확인이며 전체goal은 미완료다.
+**상태: 실제 DB metadata 독립18과 실제 SQL 인증·서버 기동/정상 종료 독립19의 계약 범위 통과.** migration5/module20/catalog/runtime principal 메타데이터와 실제 SQL preflight→Listening→Server stopped/exit0·잔여0을 확인했다. 서버측 TLS 값·실제 catalog DB/API·저장재접속·소비 인계·전체 강 판정은 아직 보류다. 현재 별도 시험 probe의 SQL 승인 카드 소스20을 준비하며 사용자 승인 전 login/grant·자격 생성0이다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -263,13 +263,18 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**현재 갈래: 실제 서버 기동·SQL 인증/schema5 preflight·정상 종료는 계약 범위 강 통과, 실제 저장·재접속과 DB 시험 입력 공급이 남음.** 다음 첫 일은 `runtime-boot-19/next-resume-plan.md`의 고정 계획과 메인 최신 지시를 대조해 기존 실DB 시험의 비밀 전달·probe 권한 및 현재 World의 명시 캐릭터 소비 접점을 맞추는 것이다. 새 시험 전용 공급 코드가 필요한 경우 기존 추가 검사 도구 제한과의 범위를 메인에 명시하고 신규 외부 세션 계약으로 고정한다. 새 SQL login/user/grant는 별도 승인 전 실행0. 현재 재실행할 READY/B 명령·열린 작업자0이며, 아래19는 완료 원시다. oldExpired Resume/Verify/Cleanup 실행·expiry변경0, 비밀원문열람0. 실행창 대기만 남으면 재개점/localcommit/메인 종료준비 status 뒤 턴을 끝내며 pane은 메인이 닫는다.
+**현재 갈래: 실제 서버 기동·SQL 인증/schema5 preflight·정상 종료는 계약 범위 강 통과, 실제 저장·재접속과 DB 시험 입력 공급이 남음.** 소스 준비20의 쓰기 종료·정산이 끝났고 다음 첫 일은 새 Opus의 독립 소스/안전한 오프라인 진입 검증이다. 그 원문과 고정 소스·argv·대상·부작용·회수 근거로 리드가 SQL 승인 카드 본문을 완성해 메인에 올린다(`msg_59ab73c4a610`). 새 SQL login/user/grant는 사용자의 별도 승인 전 실행0. 아래19는 완료 원시이며 반복실행할 READY/B 명령은 없다. 20은 소스/AST만 수행했고 실제 SQL/WSL/dotnet/자격 생성·시험0이다. oldExpired Resume/Verify/Cleanup 실행·expiry변경0, 비밀원문열람0. 실행창 대기만 남으면 재개점/localcommit/메인 종료준비 status 뒤 턴을 끝내며 pane은 메인이 닫는다.
 
 1. **실행 전(과거 분기, 현재 선택하지 않음):** 만료 전이고 메인이 사용자 명시 승인을 전달했는지 확인한다. `.backups/verification/2026-10-17-character-storage-foundation/db-source-ready-14/ready.md`의 정확한 새 명령·hash를 검토해 메인 사용자 실행으로만 진행한다. 승인 없는 에이전트 실행0, 옛06 READY 재사용0.
 2. **실행 결과 처리:** 사용자가 종료 전에 실행했다면 메인이 전달한 stdout/stderr/exit·시각을 먼저 보존·직접 대조한다. 성공/실패/불명확을 구분하고 동일 명령을 재실행하지 않는다. 성공 뒤에도 실제 Verify/TLS·서버 저장재접속은 별도 실행범위 확인 후 진행한다. 실패·불명확이면 새 attempt/journal을 보존하고 현재 상태 조사·후속 계획부터 새 계약으로 준비한다.
 3. **만료 뒤 재계획:** 실행 계획 만료는 **2026-10-19T06:00:00Z =15:00 KST**다. 만료했으면 옛 명령 실행·만료 값 변경0. 기존 lifetime/attempt/snapshot과 실제 자원 상태를 보존하고, 승인된 읽기 관측→복구/정리 또는 새 계획의 범위·사용자 승인을 메인과 정한다. 현재 GUID를 과거 소유 근거로 자동 채택하지 않는다.
 
 ### 다음 작업의 고정 인계
+- 소스 준비20 신규 Sol max `task_b6cec2f9dc89/ctx_ec9f57fb0e85`가 기존 시험환경 책임 아래 `Set-CatalogTestProbe.ps1`·`CatalogTestProbe.Tests.ps1` 신규2개와 할당 근거만 쓴다. 최초명령/화면 GPT-6.1-Sol max·backend unknown, input_accepted/turn_started 관측. 계약 `.backups/verification/2026-10-17-character-storage-foundation/catalog-probe-20/contract-v1.md` SHA256 `5BABC40D9C3AC41F1E1C457189B3B57F006B5152C365E1BE14229523F9F8E74E`. 현재 A는 소스/AST/정적hash만이고 새 script Invoke·dot-source·단위시험/SQL/실자격 생성은 미실행이다. 소스고정 뒤 카드 본문은 리드가 작성하고 실제 생성·권한 변경 승인은 메인이 사용자에게 묻는다.
+- 작성자 `msg_49efeb48b159`의 동일 구현 파일 자체 정적 보완4회(진입 순서·적용 후 권한·Unknown journal/credentialhash·서식)를 수정3회 초과 체크포인트로 `msg_1cd0607e8d63`에 알렸다. 독립 결함 반환·제품 확정 실패0이며 합의 범위의 소스 준비를 계속한다. 완료 후 최종 diff/원시를 대조하고 이 자체 보완을 독립 검증 실패로 세지 않는다.
+- 소스 준비20 완료 `msg_6d974bcfd7bb`: source SHA `72B4BFF09211E5BDCFCDA21F73E7A47B8C6F22B71B90F896AB7DD4C9CE735D0C`, 시험 `F1375423980CD632226A1056B317444C1F1EB58640F912D6D056A799E40AB8C3`, public Apply 미승인 draft `54E935825D33F498DCC0994D063CE0343995A6A4ACCB3811F20C59562B1BC9E8`/만료2026-10-22T11:14:07Z. 두 파일 Parser오류0·실행0이며 리드가 보고/실제두소스 전문·원시를 읽고 release/정확pane종료/ACK 완료했다. 자체 보완 최종5회와 liveness7신호/max631초/초과4·정규화 한계·CURRENT 고지 누락은20/settlement.md에 보존했다. 독립 판정/사용자 SQL 승인/실제 생성·회수 검증은 아직 없다.
+- 메인 `msg_59ab73c4a610`가 새 World 리드와 기존 Run `run_90d18490c825`를 전달했다(현재 handle은20/current-state.json). World가11:05:00Z~11:35:00Z 오류 매핑 선행시험 창을 반환한 뒤 현재Task·소비접점 상태를 직접 보내기로 했으므로 그 전에 상태 확인 메일0. 수신 시 from/Task/Dispatch를 대조하며 과거 handle로 지시하지 않는다.
+- World `msg_dc0e289ccd6d`가 창 반환 뒤 현재주소/Task·소비 접점을 문의해 `msg_518e1d92bcf6`으로 회신하고 메인 `msg_5c9484895b11`에 전달했다. 고정 기술 노트 `world-consumer-status-20261021.md` SHA256 `1BCED96840EE90913262949D1D6CF28F939D3391A7D20A5D74F7DE71BEB40C0F`(공통 goal 근거 루트)에 APIv2/host mode·handle/Close·미결 생성·54→48→입장 연결 기준과 각 검증/미실행을 구분했다. 문서·source 읽기용 고정 상태이며 최종 소비가능 코드 인계·미검증 복사·예약 파일 쓰기 이전·새 실행 승인은 아니다. 현재20은 기존 catalog/runtime를 쓰지 않는다.
 - 다음 계획 `.backups/verification/2026-10-17-character-storage-foundation/runtime-boot-19/next-resume-plan.md` SHA256 `2A1B65DD4560447C69B4A7964A178894151535311A18C08A8B8ECFB413BD0375`. 기존 CatalogDatabaseInput v2의 같은 OS named pipe·runtime/probe 분리·승인 public input을 유지한다. 조사 범위에서 기존 공급 코드를 찾지 못했으며, 자격 생성·권한 확대·새 공용 검사기 구현을 자동 승인하지 않는다. World는 메인이 새로 연 현재 주소부터 확인하고 과거 handle로 지시하지 않는다.
 - 실제DB 시험의 과거 TRX는21NotExecuted다. 현재 source는 Fact20개와 MemberData theory1개(4행)여서 실제 실행24case 가능성이 있으며 새 discovery/TRX로 확정한다. 미실행을 통과로 합산하지 않는다. 공급·권한·실행계획이 미정인 현재는 새 실행창 길이·정확 명령을 준비했다고 주장하거나 창을 선점하지 않는다.
 
