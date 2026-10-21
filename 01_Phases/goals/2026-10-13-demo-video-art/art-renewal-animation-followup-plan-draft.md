@@ -114,11 +114,13 @@
 | 책임 | 단독 작성 범위 초안 | 협업 경계 |
 |---|---|---|
 | Art | 원PNG·시트·PNG.meta의 sprite/임포트 설정·Material·clip/controller의 표현 부분·시각 prefab/장식. 타일 그림과 필요한 sprite/GUID를 Level에 전달 | 월드씬·Tile/Palette 직렬화·grid/cell/Collider·스폰·포탈·적 숫자는 Level 단독 작성으로 두고 Art가 쓰지 않는다. 새 그림이 충돌과 다르게 읽히지 않게 확인 |
-| Level | `Scenes/01.PlayArea/{Town,HuntingGround,BossRoom}.unity`의 지형 셀·배치·충돌·스폰·포탈 마커와 Tile.asset/Palette·씬의 sprite 참조, **98_Shared/GameData/Maps/map_0~2.{terrain,content}.bin의 단독 작성/재생성 주체** | Art의 외형 크기/발 위치·sprite/GUID·기존 이동/점프 성능을 입력으로 받는다. 세 월드씬과 Tile/Palette는 Level만 쓰며 `Scenes/99.UI/UI.unity`는 기존 Art HUD 범위다 |
+| Level | `Scenes/01.PlayArea/{Town,HuntingGround,BossRoom}.unity`의 지형 셀·배치·충돌·스폰과 포탈 오브젝트, Tile.asset/Palette·씬의 sprite 참조, **98_Shared/GameData/Maps/map_0~2.{terrain,content}.bin의 단독 작성/재생성 주체** | Art의 외형 크기/발 위치·sprite/GUID·기존 이동/점프 성능을 입력으로 받는다. 세 월드씬과 Tile/Palette는 Level만 쓰며 `Scenes/99.UI/UI.unity`는 기존 Art HUD 범위다 |
 | Core | 기존 이동/전투·서버 권위·맵 로더/포맷의 코드 주인. 판정 변경이 필요한 제안은 별도 계약 | Art/레벨이 예술 작업을 이유로 물리·판정·프로토콜을 바꾸지 않는다 |
 | Content | NPC/길드/대장간/보상/퀘스트의 실제 상태와 소비 연결 | NPC Talk/불꽃/상자 애니메이션이 재화·보상·퀘스트 판정을 대신하지 않는다 |
 
 현재 `Assets/Editor/TerrainBaker.cs`는 Solid/Platform 타일맵과 Spawn_Player/Spawn_Enemy_Normal·Boss·Golem 마커를 읽어 공유 terrain/content와 클라이언트 `Assets/StreamingAssets/Maps/map_{id}.terrain.bin`을 만든다. **레벨 담당은 씬+공유 bin+클라이언트 terrain 사본을 함께 갱신하고 terrain 두 벌의 byte 일치를 확인한다. content.bin은 현재 서버용으로 StreamingAssets에 복사하지 않는다.** Art는 이 bin을 쓰거나 bake하지 않는다. 포맷/서버 처리 변경은 Core에 넘긴다.
+
+포탈 좌표·목적지·도착점의 현재 정본은 `02_Server/GameServer/Maps/PortalTable.cs`다. TerrainBaker에서 포탈 데이터를 만든다고 가정하지 않는다. Level이 월드씬의 PortalTrigger/오브젝트 배치와 이 테이블의 좌표·목적지 데이터 항목을 함께 계획하며, 승인된 후속 계약에서 단독 반영한다. 서버 근접/해금/이동 판정 로직·포맷 변경은 이 데이터 배치 권한에 포함하지 않고 코드 주인과 별도 조율한다. Art는 PortalTable을 쓰지 않는다.
 
 레벨 담당에게 넘길 설계 질문은 세 가지다. 마을은 NPC/포탈의 읽기 쉬운 동선과 짧은 순환, 사냥터는 현재 점프/적 조합 안에서 높낮이·우회/직행·안전 지점을 섞는 흐름, 보스방은 공격 예고를 읽고 회피할 공간을 만드는 것이다. 실제 치수·충돌·스폰 수·포탈 위치는 레벨 담당이 제안하며 새 기믹/서버 규칙 추가와 구분한다. Art는 같은 셀/크기의 도안, pivot/접지선, 전경/배경 가림·가독성 자료를 전달한다.
 
