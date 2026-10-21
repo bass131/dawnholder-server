@@ -1,10 +1,12 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **다음 Content 90분 창 대기·리드 유지.** Main msg_bbbc3f085c11가 순서를 Art 반환→World10분→Content90분(빠르면2026-10-21T19:31Z 전후)으로 조정했다. 실제 시작은 Main이 자원을 확인한 뒤 별도 한 통으로 알린다. 현재 리드 pane 유지·작업자0/현재 실행 권한0·우편함 반복조회0이다. 앞 Menu 빌드·PNG2장·창 반환과 작업자 종료는 완료됐고 실서버·두 계정 길드 화면/PR2 최종 검증은 남았다.
+상태: **Content 실서버·두 Player 실행 창 배정·새 작업자 발행.** Main msg_8623be69f1b3가2026-10-21T19:11Z~20:41Z의90분을 시작 승인했다. 일반 Player 빌드→메모리 서버→Player2의 길드 실화면·범위 안 수정/자체 확인을 새 작업자 한 명이 잇는다. DB·SQL·비밀 변경/새 하네스·도구 수리·중간 검증0이다. 실제 두 계정·Town/전투·길드/대장간 완료는 아직 미실행이다.
 
 ## 재개 지점
 
-**다음 첫 일:** Main의 실제 시작 메시지를 받으면 현재 리드가 새 작업자 한 명으로 같은 PR 범위를 잇는다. 기존 snapshot에서 probe define만 뺀 일반 Player 빌드→`wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh run` 메모리 모드 서버→Player 두 창/802×451·서로 다른 계정의 길드 확인·범위 안 수정·자체 확인 순서다. 실행 전 실제 SDK·메모리 모드·7777 소유·자원은 새 배정 창에서 확인한다. 서버 시작 직후와 두 Player가 뜬 뒤 각각 물리·commit 여유를 기록하고 첫 길드 화면은 경로와 함께 즉시 Main에 보낸다. 현재 Probe.exe는 Menu120초 자동 종료라 게임용으로 쓰지 않는다. DB·SQL·비밀 변경/새 하네스·도구 수리·중간 독립 검증0이며 PR 직전 신규 Opus1회·CI·사용자 정확 head 병합승인은 남긴다.
+**다음 첫 일:** 신규 외부 Sol max 한 명에게 현재 PR2 범위와19:11Z~20:41Z 실행을 연결한다. 기존 snapshot에서 probe define만 제외한 일반 Player 빌드→`wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh run` 메모리 서버→802×451 Player 두 창·다른 계정의 길드 확인을 잇는다. 시작 직전 실제 SDK·메모리 모드·7777 소유/자원을 확인하고 서버 직후·두 Player 시작 뒤 각각 물리/commit 여유를 남긴다. 첫 길드 화면 경로는 즉시 Main, 종료/실패는 환경확인 뒤 창 반환부터 보낸다. 같은 작업자가 범위 안 제품수정·자체확인을 계속하며 PR 직전 신규 Opus1회/CI/사용자 정확 head 병합승인은 남긴다.
+
+- **22 - 실서버·두 Player 창 시작.** Main msg_8623be69f1b3(2026-10-21T19:10:05Z, E21/main-live-player-start.md·수신 JSON·current-identity.json)이19:11~20:41Z를 승인했다. World19:07:11Z 반환 뒤 Main19:09:33Z 관측은 대상/WSL/7777=0·물리19.69/commit17.74/C84.3GiB이며 작업자의 시작 직전 관측을 대신하지 않는다. msg_ae88976f5751 요청 범위 그대로 새 작업자 한 명, 결합 자원 두 관측·첫 길드 화면 즉시 보고·종료시 창 반환 우선을 적용한다. 다음은 Art20분이다. 원본/옛 근거·실측 한계를 보존하고 새 하네스/도구 수리/중간 검증·DB/SQL/비밀 변경0이다.
 
 - **21 - 실행 창 순서 조정.** Main msg_bbbc3f085c11(2026-10-21T18:48:16Z, E21/main-content-window-order-change.md·mail-next-content-window-new.json)은 World10분 회귀 창을 Content 앞에 넣었다. Art 반환→World10분→Content90분, 빠르면19:31Z는 예상이며 실제 시작은 여전히 Main 한 통이다. 현재 리드 유지·실행/worker0·범위와 보고 hook은 그대로다.
 
