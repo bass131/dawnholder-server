@@ -263,17 +263,26 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**현재 갈래: 실제 서버 기동·SQL 인증/TLS READY — 새 20분 실행 창 요청.** 다음 첫 일은 메인이 배정한 창과 아래 고정 READY/SHA를 받은 신규 Opus 실행자를 여는 것이다. 기존 소유 WSL clone의 현재원천 build1회→기존 Start-PersistenceServer 런처에 운영자 빈줄1개로 SQL인증/TLS·schema5 preflight→Listening/정상종료를 관측한다. oldExpired Resume/Verify/Cleanup 실행·expiry변경0, 비밀원문열람0. 실제 저장재접속·21DB시험/World소비인계는 이 기동 통과 뒤 별도 남는다. 창이 대기열이면 재개점기록/localcommit/메인종료준비status 후 턴을 끝내며, pane은 메인이 닫는다.
+**현재 갈래: 실제 서버 기동·SQL 인증/schema5 preflight·정상 종료는 계약 범위 강 통과, 실제 저장·재접속과 DB 시험 입력 공급이 남음.** 다음 첫 일은 `runtime-boot-19/next-resume-plan.md`의 고정 계획과 메인 최신 지시를 대조해 기존 실DB 시험의 비밀 전달·probe 권한 및 현재 World의 명시 캐릭터 소비 접점을 맞추는 것이다. 새 시험 전용 공급 코드가 필요한 경우 기존 추가 검사 도구 제한과의 범위를 메인에 명시하고 신규 외부 세션 계약으로 고정한다. 새 SQL login/user/grant는 별도 승인 전 실행0. 현재 재실행할 READY/B 명령·열린 작업자0이며, 아래19는 완료 원시다. oldExpired Resume/Verify/Cleanup 실행·expiry변경0, 비밀원문열람0. 실행창 대기만 남으면 재개점/localcommit/메인 종료준비 status 뒤 턴을 끝내며 pane은 메인이 닫는다.
 
 1. **실행 전(과거 분기, 현재 선택하지 않음):** 만료 전이고 메인이 사용자 명시 승인을 전달했는지 확인한다. `.backups/verification/2026-10-17-character-storage-foundation/db-source-ready-14/ready.md`의 정확한 새 명령·hash를 검토해 메인 사용자 실행으로만 진행한다. 승인 없는 에이전트 실행0, 옛06 READY 재사용0.
 2. **실행 결과 처리:** 사용자가 종료 전에 실행했다면 메인이 전달한 stdout/stderr/exit·시각을 먼저 보존·직접 대조한다. 성공/실패/불명확을 구분하고 동일 명령을 재실행하지 않는다. 성공 뒤에도 실제 Verify/TLS·서버 저장재접속은 별도 실행범위 확인 후 진행한다. 실패·불명확이면 새 attempt/journal을 보존하고 현재 상태 조사·후속 계획부터 새 계약으로 준비한다.
 3. **만료 뒤 재계획:** 실행 계획 만료는 **2026-10-19T06:00:00Z =15:00 KST**다. 만료했으면 옛 명령 실행·만료 값 변경0. 기존 lifetime/attempt/snapshot과 실제 자원 상태를 보존하고, 승인된 읽기 관측→복구/정리 또는 새 계획의 범위·사용자 승인을 메인과 정한다. 현재 GUID를 과거 소유 근거로 자동 채택하지 않는다.
 
-### 다음 창의 고정 인계
+### 다음 작업의 고정 인계
+- 다음 계획 `.backups/verification/2026-10-17-character-storage-foundation/runtime-boot-19/next-resume-plan.md` SHA256 `2A1B65DD4560447C69B4A7964A178894151535311A18C08A8B8ECFB413BD0375`. 기존 CatalogDatabaseInput v2의 같은 OS named pipe·runtime/probe 분리·승인 public input을 유지한다. 조사 범위에서 기존 공급 코드를 찾지 못했으며, 자격 생성·권한 확대·새 공용 검사기 구현을 자동 승인하지 않는다. World는 메인이 새로 연 현재 주소부터 확인하고 과거 handle로 지시하지 않는다.
+- 실제DB 시험의 과거 TRX는21NotExecuted다. 현재 source는 Fact20개와 MemberData theory1개(4행)여서 실제 실행24case 가능성이 있으며 새 discovery/TRX로 확정한다. 미실행을 통과로 합산하지 않는다. 공급·권한·실행계획이 미정인 현재는 새 실행창 길이·정확 명령을 준비했다고 주장하거나 창을 선점하지 않는다.
+
+### 완료된 실행19 고정 입력과 원시
 - 실행 READY `.backups/verification/2026-10-17-character-storage-foundation/runtime-boot-19/ready-v1.md` SHA256 `44BF752CE8340F47BD063A2A539DC97123B380CEE6FBA1B81FC83402A758F23D`; 계약 `runtime-boot-19/contract-v1.md` SHA `B80503625BAB6B8781563986AB0361CADB855E48597E6AD5992A2B1405C6CAC1`; 입력 `runtime-boot-19/entry-hashes.json` SHA `8D0E6F1C15063DBF16B6BA616848E901508FA4F49029C21214A3D13944AEC3E4`(같은 근거 루트).
-- 요청 길이20분, lastEntry=end-5분, Unity0·다른dotnet/WSL/SQL과 비중첩. build600초/launcher60초/close120초/원시60초/관문90초의예산930초. 새 실행자 기동 여유를 두고 메인이 새start/deadline/lastEntry를 배정한다. 현재19실행자·DB/WSL/dotnet실행0. 옛18창·Task권한 재사용0. 제품/진입기준6820638c 이후goal기록만변경하고실행HEAD는새메인창값을대조한다.
+- 메인 `msg_8555dde8453d`가10:10:00Z~10:30:00Z/lastEntry10:25:00Z/Unity0 창을 배정했고 실행19가 완료됐다. 실행HEAD `3ab52332ff0ef8548d2b92ab4d2b55fa57b5105f`, 제품/진입기준6820638c 이후goal기록만변경·입력12/12보존. 이 READY와 옛18/19창·Task는 반복실행권한이 아니다.
 - 대상profile2/DB schema5/publicCA·기존런처 경로와해시는READY에고정, 공개인증서유효시각은11-17T09:48:58Z. private runtime.clixml은에이전트가읽지않고기존제품만현재사용자DPAPI→자식stdin으로소비, 비밀argv/env/파일출력0. SSLtrust는자식공개CA경로만, 전역변경0.
 - 후속 경계: 기존PersistenceRestart 봇은옛직업선택이라현재Stored모드가명시거부한다. 실제저장재접속은World의새명시캐릭터소비경로와조율한다. 기존Core실DB21건은별도probecredential·서버상태조회/잠금권한을요구하므로runtime권한확대·새login/grant를자동실행하지않는다. 완료조건은축소하지않는다.
+### 10-21 실제 서버 기동 결과
+- 신규 Opus5.5 xhigh 독립19 `task_f6f04be35a9e/ctx_07dc7703111e`가 관문 실측 뒤 기존 build1회(10:11:59.755607Z~10:12:43.0994856Z,exit0/73warning/0error)와 기존 launcher1회·운영자빈줄1개(10:13:52.3980615Z~10:13:59.8405905Z,exit0/stderr0)를 실행했다. 실제 SQL 인증/schema5 preflight→`Listening on 0.0.0.0:7777`→`Server stopped.`로 계약 범위 강 통과·결함0이다.
+- owned Windows/WSL 서버dotnet0·7777연결/리스너0·Unity0 원시10:14:16.89~18.28Z를 읽고 리드 `msg_d0af8dae6bce`(10:15:03Z)로 최종판정보다 먼저 창을 반환했다. 이후 추가 WSL/dotnet/SQL 실행0. 클라이언트 Encrypt=Mandatory/TrustServerCertificate=false·자식한정 공개CA 구성을 대조했으며 서버측TLS값 조회·자식argv 직접관측은 미실행이다.
+- 판정 원문 `.backups/verification/2026-10-17-character-storage-foundation/runtime-boot-19/reviewer/report.md` SHA256 `2816408EF7115D75EB90A994C656A347A6258B51760171092FAB1A786225C72C`. 원문 전체·context·관문/실행원시·제품입력 보존을 리드가 대조하고 release/정확incarnation pane종료/ACK 완료했다. 생존신호5개/max135초/초과0, 초기heartbeat본문태그 교정과 CLI읽기오류는 같은 근거 `settlement.md`/`liveness.json`에 보존했다.
+- 실제 저장/재접속·Core 실DB 시험·실패/취소 경로·World wire·API 인계·전체goal 통과는 여전히 보류다. 이번 검증은 변경0 고정 제품상태의 독립 실행으로 대상 구현Task는 미확정이며 검증Task로 치환하지 않았다. O1SDK머신경로/O2CLI상태배너/O3기존경고는 비차단 범위밖 관찰로 보존하고 자동 정리·새규칙/도구를 시작하지 않는다.
 ### 10-21 실제 DB 관측 결과
 - 독립18은 보정 SQL의 master/target 각1회 exit0로 원천↔실제DB metadata를 대조해 관측 범위 통과했다. migration5/module20/grant10/열73·인덱스18·FK8·CHECK32·DEFAULT5 및 지정login/user/role·서버권한 일치. 마지막SQL 종료09:20:37.993Z, sqlcmd0 확인 후 메인에 창을 먼저 반환했다.
 - 판정 원문 `.backups/verification/2026-10-17-character-storage-foundation/db-state-review-18/reviewer/report.md` SHA256 `1889D0FA2A9065B14830595241BC0E68808ED055833EEA580B3C83FEB3DB6C2A`. 원문·모든C대조결과·실행/보호감사를 리드가 읽고 정산/release/정확pane종료 완료. 생존 신호 초과2·계산스크립트1차오류와 그 한계는 같은 근거의 `settlement.md`/`liveness.json`에 보존했다.
