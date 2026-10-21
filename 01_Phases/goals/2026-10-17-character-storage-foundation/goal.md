@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 실제 DB metadata 독립18과 실제 SQL 인증·서버 기동/정상 종료 독립19의 계약 범위 통과.** migration5/module20/catalog/runtime principal 메타데이터와 실제 SQL preflight→Listening→Server stopped/exit0·잔여0을 확인했다. 서버측 TLS 값·실제 catalog DB/API·저장재접속·소비 인계·전체 강 판정은 아직 보류다. 별도 시험 probe는 소스/오프라인23과 승인 카드24의 경로·metadata 독립25 대조를 마쳤다. 현재 메인을 통한 정확 Apply action/hash의 사용자 별도 승인·새 실행자 계약/공유창을 기다리며 login/grant·자격 생성0이다.
+**상태: 실제 DB metadata 독립18과 실제 SQL 인증·서버 기동/정상 종료 독립19의 계약 범위 통과.** migration5/module20/catalog/runtime principal 메타데이터와 실제 SQL preflight→Listening→Server stopped/exit0·잔여0을 확인했다. 서버측 TLS 값·실제 catalog DB/API·저장재접속·소비 인계·전체 강 판정은 아직 보류다. 별도 시험 probe는 소스/오프라인23과 승인 카드24의 경로·metadata 독립25 대조를 마쳤다. 메인 msg_07661e52fb19로 정확 Apply action/hash의 사용자 승인을 받았다. 새 실행자 계약/READY와 공유창 배정 전까지 login/grant·자격 생성0이다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -20,6 +20,15 @@
 - 메인 대조 전에도 API 문서 작성은 허용. 작업자 발행은 대조 회신 뒤. 다른 파트 착수는 메인이 각각 별도 승인하며 Core는 지시하지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 시험 probe의 정확 Apply 사용자 승인 — 2026-10-21
+메인 전달 msg_07661e52fb19(Orca created_at2026-10-21T14:07:48Z, from_handle term_968c841b-8b03-4e42-ba69-e97e2b1b258c). 사용자 원문은 메인 pane Enter 제출이며 메인 기록은23:1x KST로 근사되어 있다. 이 pane 직접 입력으로 격상하지 않는다. 원본 메시지는 공통 근거 catalog-probe-apply-26/main-user-approval.json 및25/inbox-08.json에 보존했다.
+
+> 대시보드 결정 응답: 2) 캐릭터 실DB 시험용 SQL 계정 만들기 승인 → A 승인: Apply 0B14323BEA91CC03C649C3965C42A09A2ABB772461F9D1FB2EFF3F37163B2D63
+
+승인은 카드24 SHA F5C64927D1AB5F7A080A66819C9C9E3E6CB784047B4B9EDB7D5EB2F65D40755E의 정확 Apply action 하나다. 물리 ApprovalPath C:/Dev/DawnHolder_Project/.backups/verification/2026-10-17-character-storage-foundation/catalog-probe-22/worker/approval-apply-draft.json, SHA 위값·만료2026-10-22T12:45:38Z다. 재시도/Remove/다른 login·권한·DB는 승인에 없다. main은 R2 카드/facts/25판정/draft/source·SQL Apply블록 대조와 #1/#2해소·#3대안종결/실SQL미실행 구분 전달을 확인했다.
+
+현재 리드 pane은 닫지 않고 새 실행자 계약(O1/O3 포함)·READY를 만든 뒤 **제목 「창 요청」**으로 길이·lastEntry를 메인에 보낸다. 메인은 열린창/다른요청0이라고 전달했으며 빈창이면 바로배정한다. 창 배정 전 실제 Apply/SQL은0이다. 이 지시는 현재 준비 단계에 적용하며 자원 대기열 발생시 기존 사용자 대기종료정책을 지운 것이 아니다.
 
 ### 실행 창 대기 중 세션 종료 — 2026-10-21
 메인 전달 `msg_78e01a81143e`(2026-10-21T09:18:15Z), 사용자 원문은 메인 pane Enter 제출(18:1x KST)이며 이 pane 직접 입력으로 격상하지 않는다.
@@ -263,13 +272,13 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**현재 갈래: 실제 서버 기동19의 계약 범위 통과, probe 승인 카드의 소스/오프라인23·문서/metadata25 대조 완료. 실제 probe 생성·catalog DB/API·저장재접속·전체 강 판정은 남음.** 승인 카드24와 미래 Apply facts는 같은 draft의 물리 ApprovalPath를 쓰며 독립25가 #4 해소·문서/metadata 범위 통과/새결함0을 판정했다. 실제 SQL/DPAPI/실ACL/Apply/Remove/파일 성공 진입은 미실행이다.
+**현재 갈래: 카드24의 정확 Apply action/hash를 사용자 승인받아 새 실행준비26/READY를 만드는 중이다.** 메인 msg_07661e52fb19는 현재 리드 pane을 닫지 말고 새 실행자 계약/READY를 준비한 뒤 제목에 「창 요청」을 넣어 필요한 길이·lastEntry를 보내라고 지시했다. 현재 열린창/다른요청은 없다고 전달됐지만 실제 SQL 실행창은 아직 배정되지 않았다. 창 배정 전 Apply/SQL0이다.
 
-현재 다음 행동은 메인이 카드24·판정25 원문과 R2 표본을 읽고 사용자에게 정확 Apply action과 문서 SHA256 0B14323BEA91CC03C649C3965C42A09A2ABB772461F9D1FB2EFF3F37163B2D63의 별도 승인을 묻는 것이다. 물리 문서는 C:/Dev/DawnHolder_Project/.backups/verification/2026-10-17-character-storage-foundation/catalog-probe-22/worker/approval-apply-draft.json, 만료2026-10-22T12:45:38Z=10-22 21:45:38 KST다. 카드 catalog-probe-approval-24/approval-card.md SHA F5C64927D1AB5F7A080A66819C9C9E3E6CB784047B4B9EDB7D5EB2F65D40755E, facts ADD30F29FE3DD4BC860EC52BB8DC029DED4A4888C7631DB6B557C9613772EFB2, readiness.json에 준비/미실행을 구분했다.
+정확 승인 문서는 물리 C:/Dev/DawnHolder_Project/.backups/verification/2026-10-17-character-storage-foundation/catalog-probe-22/worker/approval-apply-draft.json, Apply SHA256 0B14323BEA91CC03C649C3965C42A09A2ABB772461F9D1FB2EFF3F37163B2D63/만료2026-10-22T12:45:38Z=10-22 21:45:38 KST다. 카드24 SHA F5C64927D1AB5F7A080A66819C9C9E3E6CB784047B4B9EDB7D5EB2F65D40755E/factsADD30F29FE3DD4BC860EC52BB8DC029DED4A4888C7631DB6B557C9613772EFB2와 제품source는 불변이다. 한 번 Apply만 승인됐고 같은명령 재시도·Remove·다른대상/권한/DB는 승인0이다.
 
-승인 회신 뒤에는 메인이 **신규 Core 리드**를 열고 같은 Run의 현재 주소/권한으로 재진입한다. 첫 일은 메인이 전달한 실제 사용자 승인 action/hash·유효기간·고정 source와 현재 경로 metadata를 대조하고, 새 실행자 계약/launcher를 고정하는 것이다. 64bit pwsh7 ProcessStartInfo/정확 facts argv·child만 PSModulePath 제거와 파생 source3개 조상/hash를 실행 직전 검사한다(독립25 O1/O3 채택). 실제 실행은 새 공유창까지 배정된 뒤 새 세션으로 한다. **현재 실행 harness READY·배정창·활성 작업자는 없다.** 원 계획/old20·22 argv·19 완료 READY/옛 실행창을 실행권한으로 재사용하지 않는다. 만료하면 값을 늘리지 말고 새 계획/승인 경계를 메인과 정한다.
+다음 첫 행동은 새 Opus 실행검증자26가 A1(SQL0)으로64bit pwsh7 ProcessStartInfo/정확facts argv·child만PSModulePath제거/소유PID수명·원시·hash·시각·source3파생경로 관문을 담은 좁은 실행launcher·독립 읽기metadata 계획·READY를 고정하는 것이다. 리드가 실제harness/SQL/원시를 읽고 새창을 요청·보충한 뒤에만 승인된 기존 제품파일 Apply1회와 같은probe/DB 읽기metadata검증을 실행한다. 실제guard·DPAPI복호화·probe인증·실DB/API·저장재접속/전체goal은 현재 미실행이다.
 
-현재 source/카드 준비 작업은 끝났으므로 재개점/local commit/메인 종료준비 status 뒤 턴을 끝내고 pane은 메인이 닫는다. 승인·자원 대기 중 우편/상태 polling·heartbeat 대기0, 완료23/25 세션 재사용0. World 소비 계약은 읽기용 고정 상태만 전달했으며 최종 소비 코드 인계는 아직 없다. 아래19/옛 계획은 완료·역사 원시이며 반복실행 명령이 아니다. 비밀원문열람0, 만료 oldResume/Verify/Cleanup 실행·expiry변경0.
+원본25/23/22·oldplan/expiry/19완료READY는 보존하고 실행권한으로 재사용하지 않는다. 만료하면 값을 늘리지 말고 새계획/승인 경계를 메인과 정한다. 대기열이면READY/source고정→정산종료→새리드/실행자로재개하는 기존정책을 따르며 polling0이다. World 최종 소비 코드 인계는 아직 없다. 아래19는 완료·역사 원시로만 읽는다.
 
 1. **실행 전(과거 분기, 현재 선택하지 않음):** 만료 전이고 메인이 사용자 명시 승인을 전달했는지 확인한다. `.backups/verification/2026-10-17-character-storage-foundation/db-source-ready-14/ready.md`의 정확한 새 명령·hash를 검토해 메인 사용자 실행으로만 진행한다. 승인 없는 에이전트 실행0, 옛06 READY 재사용0.
 2. **실행 결과 처리:** 사용자가 종료 전에 실행했다면 메인이 전달한 stdout/stderr/exit·시각을 먼저 보존·직접 대조한다. 성공/실패/불명확을 구분하고 동일 명령을 재실행하지 않는다. 성공 뒤에도 실제 Verify/TLS·서버 저장재접속은 별도 실행범위 확인 후 진행한다. 실패·불명확이면 새 attempt/journal을 보존하고 현재 상태 조사·후속 계획부터 새 계약으로 준비한다.

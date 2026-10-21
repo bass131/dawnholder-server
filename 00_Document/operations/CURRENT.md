@@ -2,7 +2,7 @@
 
 상태·결정·남은 일은 각 goal의 재개 안내에서 확인한다. 아직 병합되지 않은 goal은 아래 해당 worktree에서 읽는다. 다른 worktree의 로컬 기록이 이 checkout에도 있다고 가정하지 않는다.
 
-- Core: [흐름 전체 DB 표와 캐릭터 저장 연결](../../01_Phases/goals/2026-10-17-character-storage-foundation/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `feat/character-storage-foundation-20261017` · 실제 SQL 인증·서버 기동/종료 확인 · probe 승인 카드 독립 실사 완료/사용자 별도 승인 대기 · 실제 저장·재접속/최종 인계 보류
+- Core: [흐름 전체 DB 표와 캐릭터 저장 연결](../../01_Phases/goals/2026-10-17-character-storage-foundation/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `feat/character-storage-foundation-20261017` · 실제 SQL 인증·서버 기동/종료 확인 · probe Apply 사용자 승인/실행 READY 준비·새 창 배정 전 SQL0 · 실제 저장·재접속/최종 인계 보류
 
 - <a id="content-worktree"></a>Content: [길드 현황·거점 성장·대장간 화면](../../01_Phases/goals/2026-10-15-guild-client-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `plan/content-guild-ui-20261015`
 
