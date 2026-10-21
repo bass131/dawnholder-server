@@ -14,6 +14,7 @@
 - 완료조건·PR 경계: 이미지1회 제작·실제 원본/사본 경로·SHA256·bytes·크기·구도 확인과 Main 전달을 마쳤다. Main msg_52f6a03326b2의 사용자 「대시보드 결정 응답: 1) 길드 화면 「거점 전경 + 하우징」 콘셉트 디자인 확인 → A 이 방향으로 승인」은 디자인 방향 승인이다. 원문은 `guild-housing-concept-01/design-direction-approval-original.md`, 사본은 같은 폴더 guild-housing-concept-v1.png다. 글자의 「길」 뭉개짐은 게임 글꼴로 새로 쓰며, 제품/독립 PASS와 구분한다. 기존10/10·잔여0, 지금 commit/PR0이다. Art 에셋/해상도·Content 데이터/버튼·보존 접점·PR·시간/10-28 가능·Unity 창을 맞춘 공동안을 한 번 승인받은 뒤 제품 쓰기를 시작한다.
 
 ## 재개 지점
+- **Level 경계 대조·한 통 인계 준비:** Main msg_740b5a5277e9의 Level 개설을 수신하고 실제 새 리드 handle/level-active/busy를 대조했다. 후속 계획6절과 결정3을 갱신했다(SHA256 1ee15fe55eb0435f2e5b33fe3966cdd2694938a3ce508d73860b0e63ed6e9a6d). Art는 PNG/meta·sprite·표현 자산, Level은 Town/HuntingGround/BossRoom 씬·Tile/Palette 직렬화/참조·배치/충돌/스폰/포탈·공유 Maps 및 클라 terrain 사본 단독 작성으로 제안한다. 기존99.UI HUD는 Art이며 실제 쓰기/생성/실행0이다. 현재는 Art 측 갱신이고 Level 초안/회신 대조는 아직이다. 아래 초안의 이전 SHA·미정 기록은 당시 상태로 보존한다. Level에 현재 초안/경계를 한 통 보내고 idle로 끝내며 다음 Art 리드는 회신을 대조한다. HUD 창/RED 재개는 그대로다.
 - **후속 아트·애니메이션 계획 초안 완료·종료 준비 재개:** Main msg_88c76e6c8c1a의 글 작업만 이어 art-renewal-animation-followup-plan-draft.md(SHA256 a4e0ac3dc4059ed521159ab79e4b0957be2f00ca6bc82d2bae4fa98f099f6fe7)를 썼다. 현재 실제 에셋/상태·스킬과 설치 AI Assistant2.20.0-pre.2의 GenerateSpritesheet/MCP availability·기본4×4/1024²·견적 경로를 읽고 공식 문서의 형식/비용 설명을 대조했다. 실제 MCP 연결/생성 성공·견적/잔액은 미확인이다. 대상29베이스/51시트와 작은 시연안3베이스/1시트·보정최대1/제안30Credits는 승인 전 계획이다. Art는 원화/표현, 레벨 담당(사용자미정)은 배치·충돌·스폰·포탈 및98_Shared/GameData/Maps 단독 작성자로 제안했다. 조사 메모는 art-renewal-animation-plan/lead-context.md다. 생성/Unity/새작업자0이며 기존 HUD READY·Sol max 첫 단계RED·15분창/별도시작 대기는 바꾸지 않았다. 초안 경로/SHA·예산/담당 결정 요청과 종료 준비를 Main에 보낸 뒤 idle로 끝낸다.
 - **창 대기 정산 완료·종료 준비:** Main msg_0859ae3bf6fb를 적용해 원 작성자 worker_done msg_bd7afbb4cbd9를 작성만 수락했고 READY/report 전문·동일 시험4hash를 대조했다. release retained 뒤 같은 incarnation/leaf의 완료·빈 prompt를 확인해 정확 terminal만 close(ptyKilled=true)했다. READY는 hud-reconstruction-pr/pretest-01/READY.md, SHA256 0a58115e6312d56dd2442d475af0d6589436635c5b85b3d6609c869b8b5cce45, Q1/Q2 확정 보충은 lead-acceptance.md다. 신규 Sol max 첫 단계 실제 RED 경로를 선택했다. 준비 계약은 implementation-01/contract.md(SHA256 d3f03689dc8b89b00e99885a53b6dc6da89c26cbc1d361e2c562fe63044f5108)이며 입력18·새 출력4/부모3의 실제 경로를 대조했다. 필요한 창15분·Content→World→Art·예상00:40Z 전후/시작 미허가, Unity.exe 관측 0 개(2026-10-21T23:19:11.4260511Z)이며 실제 시작 전 Main 재확인이 필요하다. 새 Art 리드가 같은 Run을 인수하고 Main 시작을 받은 뒤 계약의 현재 기준/모델·보호 hash를 확인해 발행한다. 현재 실행0·RED/제품PASS0·새 구현자0이며 창 밖 준비도 끝났다. 기록 local commit 뒤 Main에 종료 준비를 보내고 idle로 둔다.
 - **HUD 시험 작성 종료·실행 창 요청 준비:** msg_3babbd6857e6의23:01:25Z 쓰기 종료를 수신했고 report/context 전문과 실제 시험 소스·4개 hash를 대조했다. 새 EditMode11/PlayMode6은 미실행이며 정적 예상 RED를 실제 실패로 세지 않는다. 공식 질문 msg_ca4b7729fa9f의 명령/15분/Unity1을 Content 창 뒤 Main 새 배정에 연결한다. Q1 직업 한/영 이름 허용·Q2 시험 중 dispatcher 일시 정지/finally 복원은 요구 범위 안이다. 메인 결정 msg_5137ee030ae4의 Art 폴더 상태줄 원문은 아래와 pretest-01/main-statusline-decision.md에 보존한다. 설정 쓰기0·실행0·신규 실행 전담0이다.
@@ -526,6 +527,11 @@ Main `msg_3d254c772f7a`(2026-10-18T16:16:30Z)는 메인 pane에 Enter로 제출�
 - **실행과 미실행 구분**: 이미지 생성, Unity 가져오기·컴파일·EditMode, 실화면 캡처, Play 모드 녹화, CI를 각각 따로 기록한다. 서버·DB는 이 goal에서 쓰지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 2026-10-22 — Level 개설·Art와 타일맵 경계 대조
+
+현재 Main msg_740b5a5277e9(2026-10-21T23:39:03Z)가 사용자 결정 A로 Level 파트를 열었다고 전달했다. 사용자 정확 원문은 이 메시지에 없어 새로 만들지 않는다. 현재 리드는 term_74a66d54-c19a-4fce-88ba-3cb78f0f30a2/[Level 리드 Sol]이며 지금은 글로만 범위·계획 초안을 쓴다. Art는 Level 리드와 직접 그림/배치·충돌·출현·포탈 데이터의 경계를 맞추고 두 초안의 맵 데이터/씬 타일맵 작성자를 같게 적는다. 생성·Unity·새 작업자·제품/맵 쓰기 승인으로 확대하지 않는다. 이는 앞 후속 계획의 「레벨 담당 파트 미정」 상태를 갱신한다.
+
 
 ### 2026-10-22 — 아트 전면 개선·애니메이션 후속 계획 초안 요청
 

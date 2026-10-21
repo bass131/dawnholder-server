@@ -109,12 +109,12 @@
 
 ## 6 - Art와 레벨 담당의 파일 경계
 
-레벨디자인 담당 파트는 **사용자 결정 대기**다. 현재 World를 후보로 제시할 수 있으나 이 초안이 배정이나 새 파트 생성을 승인하지 않는다.
+레벨디자인은 **사용자 결정 A로 개설된 Level 파트**가 계획한다(Main msg_740b5a5277e9, 2026-10-21T23:39:03Z 전달). 현재 리드는 [Level 리드 Sol]이며 지금은 글로만 범위·계획을 작성한다. 아래는 Art 측의 파일 경계 제안이고 Level 초안과의 대조/회신은 아직 대기다. 파트 개설을 제품·맵 데이터 쓰기나 새 실행 승인으로 확대하지 않는다.
 
 | 책임 | 단독 작성 범위 초안 | 협업 경계 |
 |---|---|---|
-| Art | 원PNG·시트·Sprite/Material·clip/controller의 표현 부분·시각 prefab/장식. 승인된 시연 묶음의 기존 Tile 자산 sprite 교체 | grid/cell/Collider/Tilemap 셀·스폰·포탈·적 숫자는 바꾸지 않는다. 새 그림의 발판 폭/통로 모양이 기존 충돌과 다르게 읽히지 않게 확인 |
-| 레벨 담당(파트 미정) | `Scenes/01.PlayArea/{Town,HuntingGround,BossRoom}.unity`의 지형 셀·배치·충돌·스폰·포탈 마커, **98_Shared/GameData/Maps/map_0~2.{terrain,content}.bin의 단독 작성/재생성 주체** | Art의 외형 크기/발 위치·기존 이동/점프 성능을 입력으로 받는다. 같은 씬에 Art와 동시에 쓰지 않는다 |
+| Art | 원PNG·시트·PNG.meta의 sprite/임포트 설정·Material·clip/controller의 표현 부분·시각 prefab/장식. 타일 그림과 필요한 sprite/GUID를 Level에 전달 | 월드씬·Tile/Palette 직렬화·grid/cell/Collider·스폰·포탈·적 숫자는 Level 단독 작성으로 두고 Art가 쓰지 않는다. 새 그림이 충돌과 다르게 읽히지 않게 확인 |
+| Level | `Scenes/01.PlayArea/{Town,HuntingGround,BossRoom}.unity`의 지형 셀·배치·충돌·스폰·포탈 마커와 Tile.asset/Palette·씬의 sprite 참조, **98_Shared/GameData/Maps/map_0~2.{terrain,content}.bin의 단독 작성/재생성 주체** | Art의 외형 크기/발 위치·sprite/GUID·기존 이동/점프 성능을 입력으로 받는다. 세 월드씬과 Tile/Palette는 Level만 쓰며 `Scenes/99.UI/UI.unity`는 기존 Art HUD 범위다 |
 | Core | 기존 이동/전투·서버 권위·맵 로더/포맷의 코드 주인. 판정 변경이 필요한 제안은 별도 계약 | Art/레벨이 예술 작업을 이유로 물리·판정·프로토콜을 바꾸지 않는다 |
 | Content | NPC/길드/대장간/보상/퀘스트의 실제 상태와 소비 연결 | NPC Talk/불꽃/상자 애니메이션이 재화·보상·퀘스트 판정을 대신하지 않는다 |
 
@@ -126,6 +126,6 @@
 
 1. **10-28 전 작은 묶음:** HUD 뒤 마을 타일·대장간·불꽃 베이스3회, Unity 시트 최대2회, 제안30 Unity Credits 상한, Unity2~3시간을 승인할지. 실제 견적/조직 잔액은 아직 미확인이다.
 2. **전체 후속:** 29베이스/51시트(예비 포함 Sol32회·Unity56작업)의 대상/수량을 검토할지. 전체 생산 비용 상한은 첫 실제 견적 뒤 별도 확정한다. Sol 시트 대안과 NpcVillager 추가는 이 수량에 자동 포함하지 않는다.
-3. **역할·소유:** 단일 좌석의 Claude MCP 에셋 제작 역할과 쓰기 경로, 레벨 담당 파트 및 Maps 데이터 단독 작성자를 정할지.
+3. **역할·소유:** 단일 좌석의 Claude MCP 에셋 제작 역할/쓰기 경로와 Level·Art의 위 파일 경계를 승인할지. Level 파트 선택은 Main의 사용자 결정 A 전달로 해소됐고 두 초안의 경계 대조는 남아 있다.
 
 승인 전 다음 일은 사용자/메인의 계획 검토뿐이다. 승인 후에도 먼저 현재 HUD를 이어가고 후속은 별도 범위·브랜치/PR 계약과 Main 창 배정으로 시작한다. 이 초안 작성으로 현재 HUD PR의 제품 범위나 생성 예산을 확대하지 않는다. 현재 파일만의 원문/수량 대조는 리드가 했으며 독립 검증·실제 Unity/MCP 생성 성공·사용자 미관 통과로 보고하지 않는다.
