@@ -36,9 +36,9 @@ public sealed class CharacterMenuCatalogFailureMappingTests
                 CharacterMenuCatalogFailureMappingProbe.UndefinedField };
             foreach (object[] failure in DirectFailures)
             {
-                foreach (string field in fields)
+                foreach (string coreField in fields)
                 {
-                    yield return new[] { failure[0], field, failure[1] };
+                    yield return new[] { failure[0], coreField, failure[1] };
                 }
             }
         }

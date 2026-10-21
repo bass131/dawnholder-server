@@ -74,14 +74,14 @@ internal sealed class CharacterMenuCatalogFailureMappingProbe
         Type underlying = Enum.GetUnderlyingType(enumType);
         (decimal minimum, decimal maximum) = Type.GetTypeCode(underlying) switch
         {
-            TypeCode.SByte => (sbyte.MinValue, sbyte.MaxValue),
-            TypeCode.Byte => (byte.MinValue, byte.MaxValue),
-            TypeCode.Int16 => (short.MinValue, short.MaxValue),
-            TypeCode.UInt16 => (ushort.MinValue, ushort.MaxValue),
-            TypeCode.Int32 => (int.MinValue, int.MaxValue),
-            TypeCode.UInt32 => (uint.MinValue, uint.MaxValue),
-            TypeCode.Int64 => (long.MinValue, long.MaxValue),
-            TypeCode.UInt64 => (ulong.MinValue, ulong.MaxValue),
+            TypeCode.SByte => ((decimal)sbyte.MinValue, (decimal)sbyte.MaxValue),
+            TypeCode.Byte => ((decimal)byte.MinValue, (decimal)byte.MaxValue),
+            TypeCode.Int16 => ((decimal)short.MinValue, (decimal)short.MaxValue),
+            TypeCode.UInt16 => ((decimal)ushort.MinValue, (decimal)ushort.MaxValue),
+            TypeCode.Int32 => ((decimal)int.MinValue, (decimal)int.MaxValue),
+            TypeCode.UInt32 => ((decimal)uint.MinValue, (decimal)uint.MaxValue),
+            TypeCode.Int64 => ((decimal)long.MinValue, (decimal)long.MaxValue),
+            TypeCode.UInt64 => ((decimal)ulong.MinValue, (decimal)ulong.MaxValue),
             _ => throw new InvalidOperationException($"Unsupported enum underlying type: {underlying}"),
         };
 

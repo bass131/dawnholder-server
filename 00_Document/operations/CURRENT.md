@@ -6,7 +6,7 @@
 
 - <a id="content-worktree"></a>Content: [길드 현황·거점 성장·대장간 화면](../../01_Phases/goals/2026-10-15-guild-client-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `plan/content-guild-ui-20261015`
 
-- World: [캐릭터 목록·생성·선택 서버 처리](../../01_Phases/goals/2026-10-18-character-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `feat/character-server-20261018` · 2026-10-21 오류 매핑 시험 컴파일 결함 수정 준비·기존407은 과거 GREEN/새 실행은 시험 미진입
+- World: [캐릭터 목록·생성·선택 서버 처리](../../01_Phases/goals/2026-10-18-character-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `feat/character-server-20261018` · 2026-10-21 오류 매핑 시험 보완·정적 READY/재실행 미관측·창대기 종료 준비
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 

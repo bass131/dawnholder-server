@@ -6,11 +6,30 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: 오류 매핑 선행시험의 컴파일 결함 두 원인 수정 준비.** 마지막 실행 완료는 Unity 실제session313 GREEN·서버 요청/응답 조립407 GREEN이다. Core 오류 매핑 신규 시험2파일328줄은 정적 READY까지만 작성했으며 컴파일·시험 발견수·RED/PASS는 미관측이다. 전송217GREEN·Shared22 배포는 유지하며 실제 Core bridge·저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
+**상태: 오류 매핑 시험 최소 보완·정적 READY 완료, 새 실행 창 대기·세션 종료 준비.** 마지막 실행 완료는 Unity 실제session313 GREEN·서버 요청/응답 조립407 GREEN이다. Core 오류 매핑 신규 시험2파일328줄은 정적 READY까지만 작성했으며 컴파일·시험 발견수·RED/PASS는 미관측이다. 전송217GREEN·Shared22 배포는 유지하며 실제 Core bridge·저장·서버 입장·Content/Guild 통합·PR 전 전체 독립 강 판정은 남아 있다.
 
 ## 재개 지점
 
-**다음 첫 일: 신규 Opus 선행시험 작성자에게 오류 매핑 시험 두 파일의 컴파일 결함만 수정·재준비 위임.** 현재 main 수신과 READY v2 재실사를 마쳤고 Main `msg_db2d138a5a00` 창의 1회 실행은 A0/B0/C1/D0이었다. 신규 시험 두 파일에서 T1(C#14 속성 접근자의 field 변수명/연동 경고2)·T2(enum 범위 switch 튜플 공통 타입: CS8506·CS8131)로 빌드가 실패해 시험은 호출되지 않았다. 새 세션은 기대값·입력표·실제 typed Core 접점·literal frame·제품부재 단정·undefined 값 탐색을 보존하며 두 결함만 고친다. 새 Task·현재 HEAD·변경 시험 SHA로 다시 정적 READY를 고정하고 메인에 새 실행 창을 요청한다. 옛 Task/창/clone/lastEntry 재사용·현재창 추가실행·리드 직접 시험수정은 하지 않는다. 기존407·신규RED/PASS/발견수/TRX는 이번 실행에서 미관측이며 제품확정실패/독립NOTPASS가 아니다.
+**다음 첫 일: 창이 열리면 메인이 연 새 리드 세션에서 고정 시험 SHA 재확인 → 새 실행자/현재 기준 입력 → A→B→C→D.** Main `msg_80a517f29947`의 사용자 결정에 따라 창을 기다리며 세션을 유지하지 않는다. 현재 시험 보완 작성자는 정산·종료했고 리드는 이 재개점과 사용자 결정 원문을 local commit한 뒤 메인에 종료 준비를 보고하고 턴을 끝낸다. 리드 pane은 메인이 idle을 확인해 닫는다. 다음 진입은 **같은 대화 이어 붙이기가 아닌 새 세션**이며 같은 Run `run_90d18490c825`를 현재 handle로 인수한다. 이 goal은 진행 중이며 완료/병합이 아니다.
+
+근거 W는 `.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-testfix-01/`다. 같은 노트북의 Git 제외 근거를 보존하며 이관은 필요 없다. 최종 local HEAD/goal SHA/현재 상태는 W의 `lead-window-wait-handoff-v1.json`과 실제 Git에서 확인한다.
+
+| 고정 인계 파일 | SHA256 |
+|---|---|
+| `ready-plan-v1.md` | `2C78076F3F8EAC1F3DC175C406BD14D69801B62280839758A2F4F5CFB747C0D7` |
+| `ready-hashes-v1.json` (승인 대상14) | `12EDDF2359CD8F5E614919AEF2A3464E1CDADE141B925B88525B2719D802D780` |
+| `prepared-inputs-v1.json` (575, 당시 기준) | `29E292B0EA2CDBFC8B760C52E105503663F56393719E97411110F24688BE17FF` |
+| `static-settlement-report-v1.md` | `DEAD6C4D384830121ECAAFC35E5FE796EDBADED23CECB5423C670531D98B80E5` |
+| `static-settlement-metadata-v1.json` | `95BF7E39CB156EC0FAD33FD86F5ADFA4B3E170372B6B3097647A00F3D721918E` |
+| `lead-settlement-review-v1.1.json` | `F56809970D2605F5530BED43E57052B0AEF452DB4C6D9A08C16576B8E7914F99` |
+
+- **수정과 실제 상태:** 새 선행시험 작성 Task `task_a9ab435a7e81`/Dispatch `ctx_c10a18413474`가 T1(get 안 `field`→`coreField`, 39·41줄)과 T2(switch8갈래 원소 `(decimal)` 명시,77~84줄)만 두 파일 +10/-10으로 보완했다. 역변환하면 두 전체 원본 SHA가 복구돼 이름·입력표·기대값·literal18·factory 전 단정·실제 typed Core 접점·mapper 먼저 부재 단정·undefined 탐색이 보존됨을 리드가 직접 대조했다. 수정 뒤 Tests SHA는 `5B5A454DF61579F339C234BB775DCD129AAEBA008B744FC14BD76E40C7B916AF`(208줄), Support SHA는 `7579A0474A4ED4EF599DE2E250AC1A10CEE49E097EB615A523CC40940459F21E`(120줄)다. 경로는 `02_Server/GameServer.Tests/Network/CharacterMenuCatalogFailureMappingTests.cs`와 `CharacterMenuCatalogFailureMappingTestSupport.cs`다.
+- **미실행 경계:** 수정 뒤 caller/backup/clone/WSL/dotnet/build/test는 모두0이며 compile·경고·발견수·RED/PASS/skip/TRX·기존407 전후는 미관측이다. 마지막 실제 실행은 아래 09:04~09:06Z의 컴파일 실패이고 과거407 GREEN을 현재 수정의 통과로 세지 않는다. 신규제품부재RED와 뒤 의미 단정도 아직 미관측이다. Core bridge/실제저장·선택/입장/Content·Guild와 전체PR 독립 강은 남아 있다.
+- **다음 새 실행자의 입력:** 위 고정 시험 SHA와 READY의 정적 결과를 인계받되 옛 Task/Dispatch/incarnation/창/lastEntry/clone을 권한으로 쓰지 않는다. 당시 READY는 HEAD `83dad1f65697f1123171a7bffbd3d1a34e0fb190`·두시험 M·당시 goal SHA에 고정돼 있다. **이번 goal 기록·checkpoint commit 뒤에는 이 config/prepared/approval을 그대로 실행할 수 없다.** 새 Task·현재 HEAD/branch/clean·현재 goal SHA로 새 버전 config·source inventory·prepared·승인을 만든다. 기존 Capture SHA `34D390970C1451409D37932735EB8274B1E6E8C97D89B87B1E6D9A4BE4DEED16`와 Bash SHA `EC2AE822B5C3D363C8EA64AB4601039076640535FF34D23C094C2B77784D1EB5`는 그대로 재사용한다. 실행자는 현재 배정표의 신규 Opus 선행 실행자이며 기존 작성자를 재사용하지 않는다. 입력 목록은 구조·count·기계 hash/차이만 확인하고 수백 행·전체 hash 로그·과거 대화를 반복 출력하지 않는다.
+- **기다리는 창 요청:** 새30분 WSL 창, lastEntry=start+240초, Unity0·unityOwner없음, owner는 새 실행 Task다. 메인이 새 리드/실행자 준비 여유가 있는 start/deadline/lastEntry를 진입 메시지에 함께 배정한다. fresh runtime/Run 인수·회신주소 통지·시험SHA/현재기준 재실사 후 그 창으로만 실행하며 이전 승인 파일은 없다. A1560/B1440/C1320/D120초·Windows6/4/40GiB·Linux4/12GiB/runtime0·같은lock·SDK10.0.301·새clone·단1회/restore-build-test각1/retry·kill0·원본보존 관문을 유지한다. 같은7클래스(기존407+오류매핑)로 실제발견/TRX·원실패/뒤의미미도달을 전수 분류하고 D 자원/runtime/동일lock/원본·준비SHA를 먼저 확인해 Main에 창을 반환한 뒤 TRX를 실사한다. DB/서버7777/Unity/DLL복사/역복사/설치/전역변경0이다.
+- **정산·종료:** Main 창대기 결정 전달 `msg_12cfc73ee709`, 정적범위 축소 보충 v1.1 `msg_f4a48ac34d9f`에 따라 작성자는 READY까지만 마쳤다. 전체쓰기종료09:46:13.697Z/worker_done `msg_8a8f967d7817`, 보고2·증거40·시험2 SHA와 prepared575 차이0, heartbeat11/최대274초/초과0을 리드가 원시 대조했다. 리드 비교의 시각 형식 자동변환 차이는 원시 v1을 보존하고 `lead-settlement-review-v1.1.json`에서 ISO 문자열로 다시 읽어 실제차이0으로 확인했다. completed·정확identity·idle→release(retained/external)→정확pane close(ptyKilled true)·리드생존을 확인했다. succeeded는 **정적 보완·READY 완료**이며 제품/시험/독립 판정 통과가 아니다. 열린 World 작업자 Task는 없다. push/PR/merge는 하지 않았다.
+
+아래 10-19 종료·10-21 첫 재개/실행 정산은 당시 기록이며 현재 실행 권한이 아니다.
 - **2026-10-21 재개 실행 정산:** Main 재진입 `msg_14ff7b5796bd`에 따라 origin/main `db0169350dfe54ba6ed247684caae4e498e24c72`를 자기 branch에 받았고 규칙파일변경0·충돌0이었다. 신규 Opus 선행 실행 Task `task_43cf9b016b36`/`ctx_dc45b62aa694`는 제품·시험 readonly로 A→B→C→D를 한 번 수행했다. caller09:04:47~09:06:11Z/83.626초·원exit1·retry/kill0, restore7/비시험프로젝트6은 성공했으나 GameServer.Tests가 새 시험 두 파일의 고유진단3·경고59로 Build FAILED였다. test/기존407 보존·신규제품부재RED/의미·TRX는 미관측이다. D 자원/runtime·같은lock·원본742/준비564/승인14 SHA차이0을 먼저 대조해 `msg_bd71772f2574`로 Main 창을 반환한 뒤 C를 실사했다. 원문은 `approval-01/catalog-failure-mapping-pretest-02/report.md` SHA256 `913A90876D2F3C76C331BEBF51B2206F5AE8298050715B7C98C4A6487164B9D8`, metadata `A2783C5604614F49922021CC223A1956D2A824630AC04D8D9475C329CAD7CCAD`, 리드 정산 `lead-settlement-review-v2.json`이다. 보고12/쓰기감사55/backup742 hash와 작성자 컴파일분류 차이0을 확인했다. **신호 초과0 보고는 원시18개의 실제 간격과 달라 최대318초/초과3으로 리드 정산에서 교정하고 `msg_84379646a7fe`로 Main에 즉시 보고했다.** 원문은 수정하지 않았다. 전체쓰기종료09:11:12Z/worker_done `msg_0eb1dbec4f8e` 뒤 completed·정확identity·idle을 대조하고 release(retained/external)→해당pane만close(ptyKilled true)·리드생존을 확인했다. succeeded는 실행·분류 작업 완료이며 제품/시험 통과가 아니다. 두 시험의 컴파일 결함은 첫 실제 발생으로 기록하고 기존 작성층에서 수정하며 새 반복 규칙·도구는 만들지 않는다. 전체 PR 독립 강은 후속이다.
 
 - **종료 원천과 Task 처리:** Main `msg_f67c2b23de92`(2026-10-18T22:32:57Z)가 사용자 귀환·노트북 종료 전 정리 지시를 전달했다. 오늘 WSL 창은 배정하지 않는다. `task_fb7b455f8af8`/`ctx_f2ce01b6eb0d`는 정적 READY만 완료한 상태에서 `msg_d5072c0251ad`로 정리 지시를 받아 전체쓰기를22:35:43Z에 종료했고 `msg_9d00cfdb53c0`으로 failed 정산했다. 이는 실행 미완료의 사용자 종료 사유이며 제품결함·독립NOTPASS·확정실패가 아니다. release 뒤 정확 identity/완료 idle을 확인해 해당 pane만 닫았다. 열린 World 작업 Task는 없으며 재개 때 새 Task를 만든다.
@@ -86,6 +105,32 @@ Core `msg_80f596e64e30`(17:01:21Z)은 검증된 제한 checkpoint 없음·API v2
 - **착수 조건:** Unity 최소 수신 소유와 정확 파일은 Content 쓰기 종료·합의 뒤 계약 전 고정, 49..54/v22는 최신 main/타 파트 예약 대조 뒤 고정, Core 미검증 코드 복사0, 중량 실행은 메인 「실행 창 시작」 뒤다. 범위 승인만으로 이 조건을 생략하지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 실행 창 대기 중 세션 정산·종료 — 2026-10-21
+
+현재 메인 `msg_80a517f29947`(2026-10-21T09:18:15Z)이 전달한 사용자 원문과 적용 방식이다. 메인 pane Enter 제출 원문이며 이 pane의 직접 사용자 입력으로 격상하지 않는다. 실행 창 대기에 한해 ORCA R-8·현재 규칙 사본보다 이 결정이 우선하며 사본은 수정하지 않는다. 현재 작성 중이던 시험 보완은 중단하지 않고 READY 경계까지 진행했다. 이후 미배정 실행은 새 세션으로 이관하고 정적 작성자를 정산한다. 이 결정 원문은 mail-wake-23.json과 main-window-wait-decision-pending-goal.md에도 보존했다.
+
+````text
+[메인 Claude] 사용자 결정: 실행 창을 기다리는 동안에는 세션을 닫고, 창이 열리면 재개 지점으로 다시 연다
+사용자 원문(메인 pane Enter 제출, 2026-10-21 18:1x KST):
+「그리고 만약에 한 파트에서 이미 서버를 쓰고 있으면 다른 대기 파트에서 계속 리드나 작업자들이 우편확인 하는게 아니라 재개 지점 작성하고 세션을 종료하는 식으로 간다음 다시 열어서 재개하는 식으로 가자
+
+토큰 낭비가 심해」
+
+메인 적용 방식(Rules 정본 반영 전까지 이 메시지가 기준이다):
+1. 언제: 실행 창(Windows dotnet·WSL·Unity·SQL)을 요청했는데 메인이 「대기열」로 답했을 때. 또는 다른 파트가 창을 쓰는 동안 자기 파트에 실행 말고 남은 일이 없을 때.
+2. 작업자·검증자: READY와 고정 입력을 파일·SHA로 남기고 정산·종료한다. 창을 기다리며 check --wait·heartbeat·반복 조회로 세션을 살려 두지 않는다. 창이 열리면 리드가 새 실행자를 연다. 그래서 READY·승인 파일은 「같은 작업자·같은 incarnation」이 아니라 고정 파일·SHA로 실행할 수 있게 써라. 이미 같은 세션 조건이 박힌 READY는 다음 계약부터 고친다.
+3. 리드: goal 「재개 지점」에 기다리는 창 요청(READY 경로·SHA, 필요한 길이·lastEntry·Unity 수, 창이 열리면 할 첫 일)을 쓰고 local commit한다. 그다음 메인에 「재개 지점 기록·종료 준비」 status(goal SHA·commit 포함)를 보내고 턴을 끝낸다. pane은 메인이 idle을 확인하고 닫는다.
+4. 다시 열기: 창이 비면 메인이 그 파트 리드를 새 세션(같은 대화 이어 붙이기 아님)으로 열고 같은 Run을 run-use로 인수하게 한다. 진입 메시지에 창 배정을 함께 넣는다. 리드는 goal 재개 지점부터 읽는다.
+5. 하지 않는 것: 지금 작업 중인 작업자를 이 결정으로 중간에 끊지 않는다. 창을 기다리는 동안 상태 확인 메일을 서로 주고받지 않는다. 계획·계약 작성처럼 창이 필요 없는 일은 계속한다.
+6. 기록: goal 「적용 중인 사용자 결정」에 원문과 이 메시지 ID를 기록하라. ORCA R-8의 「목표 중간에 문맥을 비우려 수동 교체하지 않는다」는 실행 창 대기에 한해 이 사용자 결정이 우선한다.
+
+지금 파트별 적용:
+- Core: 보정 SQL 창(09:20Z~09:30Z)을 쓰는 중이라 해당 없음. 창을 반환한 뒤 다음 실행 창이 또 필요하면 이 방식으로 기다린다.
+- World: 새 시험 컴파일 결함 수정 READY가 나왔을 때 창이 차 있으면 이 방식으로 닫는다.
+- Content: 측정 도구 수정 작업자는 작업 중이라 계속한다. 그 뒤 Unity 창을 기다리게 되면 이 방식으로 닫는다.
+- Art: 효과 PR 계약·선행 시험 작성은 계속한다. Unity 창을 기다리게 되면 이 방식으로 닫는다.
+````
 
 ### 2026-10-21 재진입 — 모델 라우팅과 사용량 페이싱
 
