@@ -2,7 +2,7 @@
 
 상태: **효과 PR254는 사용자 정확 head 승인 뒤 Main이 병합했다. 최종 독립 기술 통과·차단 0·D-1 해소와 실제 XML 1/7/25·CI 네 개 통과를 기록했고 구현자/검증자 정산·자원 반환·정확 설정 복원도 끝났다. 현재는 새 Opus의 HUD 선행 요구시험 4파일 작성이 끝났고, 리드가 원문과 실제 hash를 대조했다. Unity 최초 실행은 Main 창 배정 대기이며 실제 RED/통과는 아직 없다. Content의 HUD 파일 예약 없음은 현재 Run 발신자와 대조했다. 새 HUD 실제 실행·통과·제품 구현은 아직이며 Content 소비/하우징 반영·발판/지형 판단·촬영 손질/종료 기록도 남는다. P-1과 미관·미실행 한계는 보존한다.**
 
-**다음 첫 일:** 선행시험 작성자 task_14b8ce692692/ctx_513d74d0996a의 공식 질문 msg_ca4b7729fa9f를 Main의 Content 뒤 15분 실행 창 배정에 연결한다. 원문·원시 hash는 hud-reconstruction-pr/pretest-01/report.md·written-hashes.txt이며 아직 실행 0이다. 같은 작성자 유지와 창 대기 정산의 적용은 Main 배정 회신에 맞추며 새 실행 전담 세션을 임의로 만들지 않는다. 전체 HUD 구현 초안은 여전히 미발행이다. 제품·기존 시험·씬·생성·Unity/dotnet/WSL/DB는 별도 허가 전 접근하지 않는다.
+**다음 첫 일:** Main msg_0859ae3bf6fb의 Content → World compile15분 → Art HUD15분 순서에서 res-check 뒤 별도 「시작」을 받는다. 예상00:40Z 전후는 확정 배정이 아니다. 재개한 새 Art 리드는 pretest-01/READY.md·lead-acceptance.md와 implementation-01/contract.md를 읽고 신규 Sol max 구현자의 첫 단계에 실제 RED 1회를 넣는다. 원 작성자는 작성만 수락·실행 미완으로 정산/종료했다. 구현 계약은 PREPARED/NOT ISSUED이며 시작 전 새 세션/Unity0이다. 실제 RED 뒤 같은 Sol이 같은 PR 구현·배정 실행·자체 확인·수정을 잇고 PR 직전 신규 Opus 한 번을 수행한다.
 
 **병렬 전경 제작 완료:** 승인 공동안 v3의 같은 구도·글자 없는 레벨1/잠김·레벨2/열림 원PNG 두 장과 출처·배치를 `guild-housing-assets-01/`에 보존하고 제작 세션을 정산했다. Main은 두 원본을 직접 확인하고 Content에 인계를 알린다고 했다. 생산용 호출은 2/3회이며 남은 1회는 쓰지 않는다. 미리보기 제외·709/802/1920 확인·Content 제품 import/meta/UI/Git 단독·PR2 main 뒤 별도 PR·Unity 90분 경계는 v3 그대로다.
 
@@ -14,6 +14,7 @@
 - 완료조건·PR 경계: 이미지1회 제작·실제 원본/사본 경로·SHA256·bytes·크기·구도 확인과 Main 전달을 마쳤다. Main msg_52f6a03326b2의 사용자 「대시보드 결정 응답: 1) 길드 화면 「거점 전경 + 하우징」 콘셉트 디자인 확인 → A 이 방향으로 승인」은 디자인 방향 승인이다. 원문은 `guild-housing-concept-01/design-direction-approval-original.md`, 사본은 같은 폴더 guild-housing-concept-v1.png다. 글자의 「길」 뭉개짐은 게임 글꼴로 새로 쓰며, 제품/독립 PASS와 구분한다. 기존10/10·잔여0, 지금 commit/PR0이다. Art 에셋/해상도·Content 데이터/버튼·보존 접점·PR·시간/10-28 가능·Unity 창을 맞춘 공동안을 한 번 승인받은 뒤 제품 쓰기를 시작한다.
 
 ## 재개 지점
+- **창 대기 정산 완료·종료 준비:** Main msg_0859ae3bf6fb를 적용해 원 작성자 worker_done msg_bd7afbb4cbd9를 작성만 수락했고 READY/report 전문·동일 시험4hash를 대조했다. release retained 뒤 같은 incarnation/leaf의 완료·빈 prompt를 확인해 정확 terminal만 close(ptyKilled=true)했다. READY는 hud-reconstruction-pr/pretest-01/READY.md, SHA256 0a58115e6312d56dd2442d475af0d6589436635c5b85b3d6609c869b8b5cce45, Q1/Q2 확정 보충은 lead-acceptance.md다. 신규 Sol max 첫 단계 실제 RED 경로를 선택했다. 준비 계약은 implementation-01/contract.md(SHA256 d3f03689dc8b89b00e99885a53b6dc6da89c26cbc1d361e2c562fe63044f5108)이며 입력18·새 출력4/부모3의 실제 경로를 대조했다. 필요한 창15분·Content→World→Art·예상00:40Z 전후/시작 미허가, Unity.exe 관측 0 개(2026-10-21T23:19:11.4260511Z)이며 실제 시작 전 Main 재확인이 필요하다. 새 Art 리드가 같은 Run을 인수하고 Main 시작을 받은 뒤 계약의 현재 기준/모델·보호 hash를 확인해 발행한다. 현재 실행0·RED/제품PASS0·새 구현자0이며 창 밖 준비도 끝났다. 기록 local commit 뒤 Main에 종료 준비를 보내고 idle로 둔다.
 - **HUD 시험 작성 종료·실행 창 요청 준비:** msg_3babbd6857e6의23:01:25Z 쓰기 종료를 수신했고 report/context 전문과 실제 시험 소스·4개 hash를 대조했다. 새 EditMode11/PlayMode6은 미실행이며 정적 예상 RED를 실제 실패로 세지 않는다. 공식 질문 msg_ca4b7729fa9f의 명령/15분/Unity1을 Content 창 뒤 Main 새 배정에 연결한다. Q1 직업 한/영 이름 허용·Q2 시험 중 dispatcher 일시 정지/finally 복원은 요구 범위 안이다. 메인 결정 msg_5137ee030ae4의 Art 폴더 상태줄 원문은 아래와 pretest-01/main-statusline-decision.md에 보존한다. 설정 쓰기0·실행0·신규 실행 전담0이다.
 - **Main 재삭제 확인·기본 Git 재개:** Main msg_6bdd6b70be37의23:00:38Z 삭제(0B·10분·git0)를 수신하고 현재 잠금 부재를 확인했다. 재개 기록만 기본 Git으로 커밋한다. Claude 상태줄의 반복 git diff와 잠금 시각이 겹친다는 Main의 추정은 미확정이며, 상태줄/설정은 변경하지 않는다. 재발 시 크기·created/mtime·git.exe 수만 보고한다. 선행시험 작성과 Content 창 뒤 새 HUD 실행 배정 경계는 유지한다.
 - **Main 삭제 뒤 새 잠금·Content 창 뒤 실행:** Main msg_065a26803b82의22:49:07Z 삭제와 Content Unity 창22:49:28Z~다음날00:19Z를 수신했다. 작성자에게 HUD 실행은 그 뒤 새 배정 전 불가와 직전 Git 원시 요청을 전달했다. 리드가 기본 Git 재개 전22:54Z에 생성22:50Z·0B·age4.67분·git0인 새 lock을 확인해 삭제/재시도하지 않았다. 상세와 리드의22:31:05Z 직전 Git 호출 원시는 pretest-01/lead-context.md다. 기록 커밋은 계속 대기하며 시험 작성은 이어간다.
@@ -771,7 +772,7 @@ Main의 현황판 관측을 Art가 모든 과거 장면/화면 원시를 재조�
 - [x] 새 재구성 승인
 - [x] 효과 구현·검증
 - [x] PR254 병합
-- [>] HUD 선행시험 작성 완료·실행 창 대기
+- [>] HUD 선행시험 작성 정산·실행 창 대기
 - [ ] 발판·지형 PR 병합
 - [ ] 촬영 전 손질
 - [ ] 종료 기록 병합
