@@ -1,10 +1,12 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **두 계정 길드·보상·거점 성장 실화면 확보·창 반환·작업자 종료.** 일반 Player와 메모리 서버로 초기 금고10/거점1, 두 보상50·재료1·재화 주머니1과 금고30, 정상 구매 뒤 두 금고0/거점2/대장간해금을 확인했다. 개인 강화·동일대상 피해, 구매 경합/거부, 나머지 입력/해상도와 PR 직전 독립 검증·CI는 미실행이다. 현재 실행/활성 작업자0이며 전체 PR2 PASS가 아니다.
+상태: **후속75분 창 시작 승인·신규 작업자 발행 준비.** Main msg_550e90f9551f가20:59:31Z~22:14Z를 시작했다. 기존 일반 Player 재사용·새 Unity빌드0·메모리 서버1/Player2로 C5/C4잔여/C8을 잇는다. 이전 두계정 보상·정상 거점 성장 실화면/반환은 보존하며 전체 PR2 PASS는 아니다. 사용자 플레이 종료 통보 또는22:04Z 중 먼저 오는 때 정리,22:14Z 반환이다.
 
 ## 재개 지점
 
-**다음 첫 일:** Main의 별도 시작을 받은 뒤 신규 외부 Sol max 한 명이 현재 PR2의 C5·C4 잔여·C8을 이어 확인한다. 기존 일반 Player를 입력 동일 확인 뒤 재사용하고 메모리 서버1/Player2의75분(정리10분 포함), 사람 실제 입력10~15분을 요청했다(msg_9f0fb42067c5). 시작 전 실행/새 worker0이다. 종료 Task는 재사용하지 않는다. World에 두 공유파일 쓰기 종료·기준1484265/diff0을 인계했으므로 재조율 전 해당 파일 쓰기0이다. 자체 확인 뒤 PR 직전 신규 Opus1회·CI·사용자 정확 head 병합승인은 남는다. 승인된 하우징 v3는 PR2 main 통합 뒤 최신main 새 브랜치/별도PR로 시작한다.
+**다음 첫 일:** 이번 창의 새 외부 Sol max 한 명이 보존된 Guild.exe의 원본/산출물 입력 동일 확인 후 실제 메모리 서버·두 Player를 준비한다. 빌드0·SQL0·새하네스/도구수리0, C5 강화/같은대상 기본공격 전후·C4 경합/부족 거부·C8 입력/목표해상도를 확인한다. 준비됨 한 통에 새 A/B 실제 위치와 한 단계 한 줄 사람 조작을 적고, 사람 시작 전 작업자 입력0을 확정한다. 사용자 종료 알림 또는22:04Z부터 정리하고22:14Z까지 창 반환을 먼저 보낸다. World에 소유 인계한 공유2파일/의존6/Inventory접점은 재조율 전 readonly다. PR 직전 신규 Opus1회·CI·정확head승인, 하우징/C9별도후속은 유지한다.
+
+- **26 - 사용자 지금 플레이·후속75분 실제 시작.** Main msg_550e90f9551f(20:59:31Z, E21/main-followup75-start.md) 사용자 원문(메인05:59KST Enter): 「대시보드 결정 응답: 1) Content 강화·구매 겹침 확인용 직접 플레이 10~15분 — 언제 할지 → A 지금 함(창 바로 시작)」. 창은2026-10-21T20:59:31Z~22:14Z이며 Main 직전관측 대상Unity/dotnet/WSL/7777=0·물리20.2GiB는 작업자의 실제 시작 관측을 대신하지 않는다. 기존Guild.exe재사용/입력동일확인, sync-wsl.sh run 서버1·Player2·새Unity빌드0·DB/SQL0이다. 사용자 완료 메인알림 또는22:04Z 중 먼저 오는 쪽에서 정리,22:14Z「창 반환」을 보낸다. 준비됨은 실제 두창 준비/입력0 뒤 위치·방향·버튼·횟수를 한 단계 한 줄로 전달한다. 새 근거는 G/live-player-followup이며 이전Y/Task/원시는 보존한다.
 
 - **24 - 다음 실행 창·사람 입력 시각 대기.** Main msg_f805de9a658b(20:53:06Z, E21/main-next-window-human-time-and-housing-package.md)은75분 요청에 사람10~15분이 필요하므로 사용자 시각 답 뒤 res-check·별도「시작」을 보낸다고 했다. 그 전 실행/신규작업자0이다. 한 단계 한 줄 안내안은 Y/lead-next-window-human-steps.md이며 새 창 A/B 실제 위치·현재 상태를 확인한 뒤 채운다. NPC E는 일반 대화이고 강화는 근처 trigger의「대장간」→오른쪽「무기 강화」다. 같은 적/공격 전후 비교와 기존F8 잔수, 공유2파일 재조율을 보존하며 미확인 경합·피해를 통과로 채우지 않는다.
 - **25 - World 최소 원천 소비·하우징 패키지 수령.** World msg_3fdca688635a가 인계를 접수했고 필요한 Guild6cs+meta6/폴더meta1와 InventorySnapshotHandler의ReceiveInventoryRevision1행을 제시했다. 리드가1484265 원천/blob/SHA 동일·World13경로부재·실제1행diff를 확인했다. 기존 정확목록의 한정배치 질문 msg_cad50535734f는 최신 Main msg_f805de9a658b의 리드간 최소 의존 조율 지시로 해소됐다. msg_4f515dacbbe7의 정확 비화면소비 합의는 UI/씬/Content checkout 쓰기0·메뉴313/Shared22·Guild수명/44·47/현재세대/pending·revision/cleanup·meta/GUID 보존, 공유파일 통째덮어쓰기0이다. 이 소비에 PR2 main 선통합을 새 선행조건으로 두지 않으며 실제 World 쓰기/실행/최종 독립·CI·PR승인은 별도다. 원천핀/1행diff/합의 원문은 Y/lead-world-guild-dependency-proposal.json·lead-world-inventory-revision-consumption.diff·lead-world-guild-dependency-agreement.md다.
