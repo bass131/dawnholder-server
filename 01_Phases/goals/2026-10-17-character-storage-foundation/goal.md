@@ -335,6 +335,8 @@ READY 감사 원시는 `catalog-probe-apply-26/`에 둔다. 최종 launcher909�
 2. **실행 결과 처리:** 사용자가 종료 전에 실행했다면 메인이 전달한 stdout/stderr/exit·시각을 먼저 보존·직접 대조한다. 성공/실패/불명확을 구분하고 동일 명령을 재실행하지 않는다. 성공 뒤에도 실제 Verify/TLS·서버 저장재접속은 별도 실행범위 확인 후 진행한다. 실패·불명확이면 새 attempt/journal을 보존하고 현재 상태 조사·후속 계획부터 새 계약으로 준비한다.
 3. **만료 뒤 재계획:** 실행 계획 만료는 **2026-10-19T06:00:00Z =15:00 KST**다. 만료했으면 옛 명령 실행·만료 값 변경0. 기존 lifetime/attempt/snapshot과 실제 자원 상태를 보존하고, 승인된 읽기 관측→복구/정리 또는 새 계획의 범위·사용자 승인을 메인과 정한다. 현재 GUID를 과거 소유 근거로 자동 채택하지 않는다.
 
+World선택오류정적판정 msg_32e0da8531ea→Core회신msg_90880d980c49: typed ReadFailed/NotDispatched→IntegrityFailure는APIv1:65와불일치(D-CAT-READ-01),schemaCompatiblefalse의분류분리대상(D-CAT-SCHEMA-02),Rejected원래code가owner에서소실돼모두Busy인O-CAT-REJECT-03을확인했다. 원문/근거world-selection-error-contract-20261022.md. 현재정상DB/TCP실행미차단예외분류라보이는기반우선지시에따라새작업자/실행창0·수리후순위로메인에알렸으며최종PR판정의미해결로보존한다. 실제정상경로나필수회귀차단이관측되면같은goal안좁은수리로조율한다. 정적관측이며실행/독립확정실패집계0이다.
+
 ### 다음 작업의 고정 인계
 
 - 실행준비27 READY `reviewer/ready.md` SHA256 `D5A63A157457E9FD30FB1D0D13FAD4C1BAC4D88B8C8C51496051522F80002257`, launcher9135134DD2770EC864BED0918C770AF9B95325E23237EC6A3845E955EA618A61/SQL93CC7CCF921DEB6A1250075F5797682624C49FE5245ED1E91AD989900632CFE8/inputs33DC4B47DA1BA21854F70F63C59BECFEDFC805D315501E47F5A5D96A9C2E363E。Preflight정확1회/exit0/의도한비허가하나·childSQL0/26입력전후일치·사전3bytes사본불변/현재21입력21일치를리드가대조했다. 실제26→27diff117추가26삭제·1000행/SQL헤더한줄차이, READY115추가표현·leaf129→130·765초산식한계를보충에서명시했다. 보충 `catalog-probe-apply-27/lead-supplement-b1-v1.md` SHA256 `A49E63FACF317572DB18E3E5BC6F8A2E727FC4B1804B7D9D73A23B8B74EBA7A6`는D27-P1(GitBash읽기일부대pwsh7문구)/실제관문metadataPWsh7·PS5.1SQL0·Main판단필요를보존한다. 입력/READY/원문수정0,공식질문deliveryACK완료/worker_done전이다.
