@@ -25,9 +25,15 @@ namespace Dawnholder.Client.UI
         TMP_Text _status = null!;
         TMP_Text _result = null!;
         Button _levelUp = null!;
+        Button _close = null!;
+        Button _refresh = null!;
+        string? _connectionStatus;
+        string? _connectionResult;
+        bool _refreshAllowed;
 
         public bool IsOpen { get; private set; }
         public event Action? LevelUpRequested;
+        public event Action? RefreshRequested;
 
         public static GuildWindow BuildRuntime(Transform parent)
         {
@@ -67,6 +73,14 @@ namespace Dawnholder.Client.UI
             Render();
         }
 
+        internal void SetConnectionStatus(string? status, string? result, bool refreshAllowed)
+        {
+            _connectionStatus = status;
+            _connectionResult = result;
+            _refreshAllowed = refreshAllowed;
+            Render();
+        }
+
         void OnEnable()
         {
             Subscribe();
@@ -85,7 +99,10 @@ namespace Dawnholder.Client.UI
             Unsubscribe();
             _source = null;
             if (_levelUp != null) _levelUp.onClick.RemoveListener(RequestLevelUp);
+            if (_close != null) _close.onClick.RemoveListener(Close);
+            if (_refresh != null) _refresh.onClick.RemoveListener(RequestRefresh);
             LevelUpRequested = null;
+            RefreshRequested = null;
         }
 
         void LateUpdate() => _layout?.Resize();
@@ -116,6 +133,14 @@ namespace Dawnholder.Client.UI
             if (CanRequest()) LevelUpRequested?.Invoke();
         }
 
+        void Close() => SetOpen(false);
+
+        void RequestRefresh()
+        {
+            if (!_destroyed && isActiveAndEnabled && IsOpen && _refreshAllowed)
+                RefreshRequested?.Invoke();
+        }
+
         void Render()
         {
             if (_layout == null || _destroyed) return;
@@ -132,13 +157,21 @@ namespace Dawnholder.Client.UI
             _status.text = display == null ? "서버 동기화 대기 중" : display.LevelUpPending
                 ? "거점 성장 처리 중" : GuildWindowLayout.AvailabilityText(display.LevelUp);
             _result.text = display != null ? GuildWindowLayout.ResultText(display.LevelUpResult) : string.Empty;
+            if (_connectionStatus != null) _status.text = _connectionStatus;
+            if (_connectionResult != null) _result.text = _connectionResult;
             _levelUp.interactable = CanRequest();
-            _layout.SetVisibility(isActiveAndEnabled && IsOpen, _inputAllowed);
+            _refresh.interactable = _refreshAllowed;
+            _layout.SetVisibility(isActiveAndEnabled && IsOpen);
         }
 
         void BuildView()
         {
             _layout = new GuildWindowLayout(gameObject, "Guild", "길드 현황", right: false);
+            _layout.Inset(140f, 192f);
+            _close = _layout.CloseButton();
+            _close.onClick.AddListener(Close);
+            _refresh = _layout.RefreshButton();
+            _refresh.onClick.AddListener(RequestRefresh);
             _name = _layout.Label("GuildName", 54f, 48f);
             TMP_Text notice = _layout.Label("AutoJoinNotice", 102f, 42f);
             notice.text = "접속하면 기본 길드에 자동 가입됩니다.";
@@ -150,6 +183,9 @@ namespace Dawnholder.Client.UI
             _blacksmith = _layout.Label("BlacksmithStatus", 296f, 38f);
             _status = _layout.Label("ActionStatus", 334f, 42f);
             _result = _layout.Label("ActionResult", 376f, 42f);
+            TMP_Text lifetime = _layout.Label("LifetimeNotice", 418f, 76f, width: 270f);
+            lifetime.fontSizeMax = 17f;
+            lifetime.text = "공동 성장은 서버 프로세스 동안 유지됩니다.";
             _levelUp = _layout.ActionButton("LevelUp", "거점 레벨업");
             _levelUp.onClick.AddListener(RequestLevelUp);
             Render();
