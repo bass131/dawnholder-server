@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: writer41 failed정산·작업자종료,전용DB release4/게임0보존.** A실제경합/51030은관측했고PS7observer일탈을보존한다. B첫writer의provider-2로후속writer/C는미실행이며원인미확정·재개43의기존DB B/C/설정선확인계약초안을Main에별도요청한다. 활성worker0/source쓰기0,현재Art뒤preservation42실제창을기다린다. 독립35/goal·PR완료미해소다.
+**상태: writer41 failed정산·종료/DB release4·게임0보존,Main이writer43기존DB B/C재개를사용자A안의절차보정으로승인했다.** writer43계약/입력READY·실제25분창전worker/SQL0,현재Art뒤preservation42실제20분시작을기다린다. 다음ContentOpus50분→LevelA45분→writer43 25분이며A observer일탈·B원인미확정/독립writer보류·goal·PR미완료는그대로다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -379,6 +379,10 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**현재 첫 일 — preservation42 actual시작메일과writer43후순위실창을기다린다.** Main msg_3f7d70b37274(23:16:36Z/currenthandle/thread msg_247ad786408d대조)는기존ownedDB의남은B/C/SET선행·readback을사용자A범위안절차보정으로승인했다. marker/release4/게임0/6snapshot불일치시stop·PS5.1actualhost(관측포함)/CommandTimeout30·카드외삭제·정리0/DB보존·제품수리/새도구0·미관측/다른오류FAIL조건이다. 새DB/CREATE/A재실행/archive추출은없다.
+- writer-race-resume-43/main-scope-authority.md/lead-acceptance.md·contract-v1.md SHA256 5B71EFE66B365CFFC0D59734565AF15FF97BE815A5C27C11E3C582A2633B85C4 ·dispatch-spec/preparation을확정했다. 원draftAE8F59B4D746FA7512F8A14B110ABD0E10B30C5178B40093AAF7FFA81F98E2E9는미승인당시기록으로보존하고새v1은승인상태/원천/queue만반영했다. source125leaf·hash불일치0/새worker·SQL0이며실제25분T/res-check메일전기동0이다.
+- Main순서는현재Art19분→Corepreservation42 20분→ContentOpus50분→LevelA45분→Corewriter43 25분이다. writer43대기1시간초과는상시wait/poll/heartbeat없이재개점/goal-onlycheckpoint후idle로끝내라는지시다. preservation42의127고정입력/EDA224계약은유지하고Art반환후실제시작메일을받으면신규Sol max를연다. 별도READY회신메일/정상단계재허가를추가하지않는다.
 
 **현재 첫 일 — writer41 failed정산과B/C재개43초안을Main에보고하고Art뒤preservation42실제창을받는다.** worker_done msg_b172bbe66be2(23:04:54Z)의현재Task/Dispatch/from·report/context전문·write-audit/실제raw를대조해failed수락,release는released/closed_agent_terminal/archive captured로활성worker0이다. 소스126고정불일치0·원시46hash·17snapshot부분불일치0·stagearchive/고정001~004일치·report/contexthash일치/diffcheck0이다. A의metadata5/owned2행보존·정확parameter삭제뒤6동일/Brollback뒤6동일·retainedrelease4/게임0/transaction0를직접읽었다. source/Git쓰기0·독립35 #1/#2/#3각1회/미해소writer보류는유지한다.
 - B 실제원시명령은 SET LOCK_TIMEOUT1000; INSERTAccount 를한CommandText로묶었고제품New-DbCommand의CommandTimeout30초와30.0277691초/provider-2가일치한다. B의@@LOCK_TIMEOUT/실제wait원시가없어compile/SET선적용미도달은미확정가설이며제품잠금결함/1222통과로단정0이다. Microsoftprimary근거/가설은writer-race-resume-43/cause-attribution.md에분리했다.
