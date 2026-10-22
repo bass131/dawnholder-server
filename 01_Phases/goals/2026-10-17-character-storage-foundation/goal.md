@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 실제 catalog DB25건 통과·저장/새 SQL 연결 재조회 확인, 수리30 자체회귀457P·작업자 정산 완료.** 원 code 전달/매핑과 schema 시험 literal을 수리하고 최종 보고·실제diff/hash·TRX를 리드가 대조했다. 작업자를 종료하고 고정 소스를 메인에 인계한다. 실제 서버 프로세스 재기동/World 합동 흐름과 Core PR 직전 신규 Opus1회는 남으며 전체goal완료/실화면완료로보고하지않는다.
+**상태: 합동 재기동 입력 확정·30분 창 요청, 사용자 서버 기동 참여 판단 대기.** 기존 실DB 저장/새 SQL 연결 재조회와 수리30 자체회귀 근거는 유지한다. World Stored 봇 정적 인계를 실제 파일과 대조하고 정확 두 client argv·공개 profile 공급·DB 쓰기/보존·Linux 새 PID 경계를 준비했다. compile·실제 서버 재기동/World 합동 흐름과 Core PR 직전 신규 Opus1회는 미실행이며 전체goal완료/실화면완료로 보고하지 않는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -32,6 +32,8 @@
 이번 리드 진입의 ORCA_* 환경 목록 조회에서 hook token 필드가 도구 출력에 포함된 사실을 메인 `msg_2854dbf27337`에 알렸다. 값의 파일 재기록/메시지 전달/사용은0이며 해당 관찰은 core-reentry-20261022-context.md에 보존한다. 이번 리드 세션 전체의 비밀 열람0을 주장하지 않으며 이후 아래 조회 제한을 따른다.
 
 13:40KST 신규 리드 진입에서도 메일을 읽기 전 전체 ORCA_* 조회를 해 hook token 필드가 도구 출력에 포함되는 동종 재발이 있었다. 메인 `msg_4fbe90a1204d`와 후속 `msg_17bf093941d6`로 보고했다. 값의 별도 파일 저장·재인용·전달·사용0이며 이번 세션 전체의 비밀 열람0을 주장하지 않는다. 기존 이름 지정 조회 제한을 그대로 적용하고 규칙 파일/검사 구현으로 범위를 넓히지 않는다. 원시값을 복제하지 않은 관측·시점은 `joint-restart-plan-31/context.md`에 보존했다.
+
+메인 `msg_44e38cbc51c5`로 연 신규 리드 진입에서도 메일을 읽기 전 전체 ORCA_* 조회로 같은 필드가 출력되는 재발이 있었다. `msg_93c08ae9953f`로 즉시 메인에 보고했고 비밀값의 별도 파일 저장·재인용·메시지 전달·사용은0이다. 이번 세션 전체 비밀 열람0을 주장하지 않는다. 기존 이름 지정 제한을 적용하며 규칙 파일은 수정하지 않는다. 값 없이 남긴 관측은 `joint-restart-ready-33/context.md`에 있다.
 
 메인 `msg_fd0687ba7cb8`(2026-10-22T02:16:08Z)은 사용자 결정이 아닌 **메인 범위 판정**으로 200→8, 202→15, 203/204/206/207→14를 확인하고 O-CAT-REJECT-03 제품3파일 및 D-CAT-LITERAL-04 시험 literal1곳을 신규 Sol max 한 명이 같은 PR에서 수리하도록 승인했다. SQL/migration/manifest/PDL/wire번호/설정 변경0, PR 직전 Opus1회다. 201/205는 기존 fence/dispatch 의미를 보존해 Core·World 리드가 조율하고 공개 계약 문구 차이만 메인에 올린다. 정적 수리→관련회귀20~30분→합동재기동30분→PR직전Opus45~60분 순서이며 각 실행 창은 정확 argv가 정해진 뒤 별도 요청한다.
 
@@ -337,7 +339,16 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**다음 첫 일 — World 봇 A 보완 완료 후 합동 입력 확정.** 신규 Core 리드가 `run_1b758e0cc722`를 run-use로 인수하고 World(`run:run_90d18490c825`)의 최종 봇 소스·정확1/2차 client argv·시험 account/characterId·공개 profile 공급 결과를 받는다. `joint-restart-prep-32/preparation.md`의 기존 서버 argv와 DB 쓰기/정리를 실제 입력에 맞춰 닫은 뒤 **Core가 합동30분 창을 대표로 세 줄 요청**한다. PR 직전 신규 Opus45~60분은 별도다. 현재 창 요청/실행/작업자0이며 bot argv 미확정을 READY로 보고하지 않는다.
+**다음 첫 일 — 사용자 서버 기동 참여 시각·새 합동창 T를 메인에게 받아 재개.** `run_1b758e0cc722` 인수 후 `joint-restart-ready-33/preparation.md`와 `user-server-commands.md`, 메인 판단 회신부터 읽는다. 합동30분 창 세 줄 요청 `msg_4e5b9a23fd10`, 기존 credential 소비 서버2회 사용자 직접 실행 판단 요청 `msg_566e008bfb3e`를 보냈다. Content→Art→Level 반환 뒤 메인이 res-check/새T를 정한다. 대기뿐이므로 재개점·로컬 기록commit 뒤 종료 준비하며 wait/poll/sleep을 열지 않는다.
+
+- World 최종 인계 `msg_e66793e9c058`을 수신해 인계문/source pin 및 실제63파일 hash를 대조했다(불일치0). 공개 원본 profile/CA와 양쪽 기존 런처도 일치한다. 정확 두 봇 argv·동일 account/ID·공개파일2개 후속 공급 소유·DB authority/progress/receipt 정상쓰기·시험행보존/cleanup0·실제 Linux PID/birth/정상 종료 기준은 위 preparation에 고정했다. World리드 재기동/기존 작업자 재사용은 필요하지 않으며 현재 새 작업자0이다.
+- 기존 런처는 Import-Clixml로 credential을 복호화해 child stdin에 쓰므로 사용자 직접 실행 단계로 분리했다. 정확 두 명령·PowerShell7 cwd·각 로그/exit/UTC 파일과 Enter 종료 순서는 사용자 카드에 있다. AI credential 본문/hash 열람은0이나 환경 조회 사건을 포함한 세션 전체 비밀 열람0은 주장하지 않는다. 사용자 참여/새T 전 실행하지 않는다.
+- 새창 첫 실행은 기존 sync-wsl.sh build로 봇 포함 fresh compile이다. 이어 신규 실행 소유자가 공개파일2개 공급/empty-ca 생성·source/clone/SDK 확인과 두 직접DLL 실행·Linux PID/birth 관측을 맡고, 서버2회 기동/Enter는 사용자가 맡는 계획이다. 현재 공개파일 공급/compile/WSL/봇/서버/SQL/Unity 실행0, 독립PASS0이다. PR직전 신규Opus45~60분은 별도다.
+- 지금 보여 줄 수 있는 것: 기존 실DB 저장/새 SQL 연결 재조회 원시와 World 봇 정적 코드/인계. 가장 빠른 다음 가시 결과와 시각: 사용자 참여·새T 확정 후 배정30분 내 동일 캐릭터 재입장 before/after 로그(절대 KST 미정). 막는 것: 실행창 대기열 및 서버 기동 사용자 참여 시각 판단.
+
+### 이전 준비32 인계
+
+**World 봇 A 보완 완료 후 합동 입력 확정 계획(당시 상태).** 신규 Core 리드가 `run_1b758e0cc722`를 run-use로 인수하고 World(`run:run_90d18490c825`)의 최종 봇 소스·정확1/2차 client argv·시험 account/characterId·공개 profile 공급 결과를 받는다. `joint-restart-prep-32/preparation.md`의 기존 서버 argv와 DB 쓰기/정리를 실제 입력에 맞춰 닫은 뒤 **Core가 합동30분 창을 대표로 세 줄 요청**한다. PR 직전 신규 Opus45~60분은 별도다. 당시 창 요청/실행/작업자0이며 bot argv 미확정을 READY로 보고하지 않는다.
 
 - 사용자 결정4 A를 위 적용 결정에 기록했다. Core 진입 HEAD `721485fd`/clean은 메인 전달과 일치했고 Run 인수 receipt(consumer generation6)·현재 terminal/incarnation/모델은 `.backups/verification/2026-10-17-character-storage-foundation/joint-restart-prep-32/`에 보존했다. 과거 handle/Task/Dispatch/창은 권한으로 쓰지 않는다.
 - World 새 리드의 `msg_7247a5c56b10`은 기존 봇 보완 착수/현재 Run을 알렸다. Core는 `msg_d47ccb39b3c5`로 새 회신 주소, `msg_9937fb6a5509`로 공개 profile/CA 공급과 최종 client 입력을 조율했다. World 후속 `msg_6a3f4ff244b7`은 공개 profile/CA 공급은 Main 지정 Core 담당이며 봇 작성자 계약에 섞지 않고 후속 합동실행 계약에서 World logs 경로/소유를 닫겠다고 알렸다. 이번 리드의 World 파일 쓰기·credential 본문/hash·ORCA_* 전체 조회는0이다.
