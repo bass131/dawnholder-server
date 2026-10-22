@@ -6,10 +6,45 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: Core 고정 guard 소비 완료·최신 compile 미실행·Content 창 반환 뒤 재개.** 기존 실제 SQL+TCP 정상1건(생성·선택·마을/길드 입장·새host 재접속)의1P/0F/0skip·exit0과 저장 직업 Mage 재선택 근거는 보존한다. 그 빌드는75warning/0error였다. 이후 Content 최소 소스 통합과 Core guard 소비 뒤에는 빌드/시험을 실행하지 못했다. 이전604 자체 시험은 후속 fixture·host 시계 수정 전 결과다. 최신 compile·전체 회귀·별도 Program 재시작/불러오기·양쪽DLL/Unity·PR 직전 Opus 검증이 남아 있다.
+**상태: #3·#4 시험의 정적 준비를 정산하고 작업자를 종료했다. Core #1·#2 수리 원천을 기다린다.** #4 패킷 시험 수정과 #3 고정 3슬롯 시험 소비는 아직 실행 전이다. Main은 #3 소비 보류를 메인 실수로 정정했고 기존 소비를 유효한 준비 결과로 확인했다. #1 원code/분류·#2 checksum의 새 고정 commit/hash를 받아 새 세션에서 소비·회귀를 잇는다. 이번 수리 실행0, 전체 PR·goal 독립 PASS/병합이 아니다.
 
 ## 재개 지점
 
+**다음 첫 일: Core #1·#2의 새 고정 수리 원천이 도착하면 Main이 연 신규 World 리드가 같은 Run을 인수한다.** 최신 재개점 문서 checkpoint와 실제 Git 상태를 먼저 대조한다. 제품 기준 HEAD는 `fb6d7d53aaa42086f95515a870667207d2651596`, branch는 `feat/character-server-20261018`이며 문서 checkpoint의 정확 SHA는 `approval-01/pr-blocker-repair-01/lead-doc-checkpoint.json`에 둔다. 기존 제품·시험 미커밋을 보존하고, 새 외부 작업자 한 명에게 Core의 정확 파일·commit/hash와 World 보존 delta를 고정해 소비·자체 확인을 잇게 한다. #3도 새 Core commit의 해당 파일과 대조하되 원복하지 않는다. 네 차단을 정리한 뒤 명령·예상 시간·자원 세 줄로 새 실행창을 요청한다. 과거 창·정산된 Task/Dispatch/handle은 실행 권한이 아니며 새 goal을 자동 시작하지 않는다.
+
+**현재 정산:** `task_c435ed0f8741`/`ctx_cc0e317ecc4e`의 최종 원문 `worker/report-final-v1.2.md`(SHA256 `6AD7C3E2D8D0F269F198A502A5B41E8D1C5B99938ACAF64880DB4E3DAA69D902`)와 실제 시험2·근거16경로를 대조했다. 최종 전체쓰기 종료02:31:21Z, `msg_655a8d8ae9e3`의 succeeded는 #3/#4 정적 준비 범위만이다. release(external/retained) 뒤 동일 incarnation 완료 idle을 확인해 정확 작업자 pane을 닫았다. 리드 생존·World 작업자0·reclaimable0이며 원시와 한계는 같은 폴더 `lead-settlement.md`에 있다. #4 after1673D42D…4903·#3 after0799C042…0EF75·기존 facade91B0CAA3…46B4와 보호101경로 drift0을 확인했다.
+
+#3은 v1.1(02:12:28Z)에 따라02:16:12.2467439Z 한 번 소비됐다. Main 보류 원문 저장02:16:49.9432716Z·리드 중지전달02:17:24Z·작업자 자연check 최초수신02:19:59Z를 구분한다. Main `msg_d8e3d5fc0227`은02:24:27Z에 #3 보류가 메인 실수이며 실제 소비가 유효하다고 정정했고, 같은 작업자가 그 정정을 최종 보고에 반영했다. 이 운영 중지·정정을 제품 결함 확정 실패로 세지 않는다. 중지 수신 뒤 시험 추가쓰기·복원0이며 원본backup06009F…0771와 전후 원시는 보존한다. 미발행 복원 초안은 권한0이다.
+
+### 직전 독립 검증 창 — 반환 완료
+
+Main `msg_e12ee883003d`의 Art 반환 뒤 전용 WSL clone/SDK10.0.301/helper 창은 T=`2026-10-22T01:27:28Z`, lastEntry=`02:27:28Z`, 최종 반환기한=`02:42:28Z`였다. 공식 답 `msg_849e18217033`으로 전달한 실제 Core facade11/13/14 시험 보완과 Network/RuntimeEntry 회귀를 실행했고, 실DB1건은 명시 제외했다. 창은 Main `msg_8af7e2e67bb1`로 이미 반환했다. Windows dotnet/DB/7777/Unity/원본DLL복사0이며 이 기록은 새 실행 권한이 아니다. 실제 실패4건·정산·원시 한계는 아래 독립 검증 기록을 따른다.
+
+
+
+### 이번 리드 메타데이터 조회 정정
+
+진입 초기에 ORCA* 환경변수 전체를 조회해 hook token 필드가 도구 출력에 포함됐다. 값을 근거파일·회신으로 복제하거나 권한에 사용하지 않았고 DB/private credential 파일 읽기는0이다. 이 리드 세션 전체의 비밀열람0을 주장하지 않는다. Core 답변의 같은유형 공개를 읽으며 초기출력을 재인식한 시점에 Main에 별도 status로 정정 보고했다(`pr-blocker-repair-01/lead-main-metadata-correction.json`). 교정은 진입 메타데이터 선택층에서 명시한 비밀 아닌 필드만 조회하는 것으로 한정하며 새도구/전역설정/임의권한변경0이다. 기존 승인 규칙은 유지한다.
+### 이번 독립 검증 정산
+
+Opus `task_8ae3d20774bb`/`ctx_8c57ea2e7c11`는 원문 `worker/report.md`와 실제 diff/원TRX·쓰기종료를 대조해 failed로 정산했다. release(external/retained) 뒤 같은 incarnation 완료idle을 확인해 정확 검증자 pane만 닫았고 리드생존·작업자0·reclaimable0을 확인한 뒤 새 Sol을 열었다. 창은 자원 종료 근거를 먼저 읽고 Main `msg_8af7e2e67bb1`로 반환했으며 이후 runtime0이다. 원문·리드 감사·모델/해제·종료/생존 근거는 `approval-01/pr-verification-01/lead-settlement.md`와 같은 폴더다.
+
+실패4건은 전수 분류됐고 기존 기대 완화0이다. #1은 Core 소유 원code·목표 분류 조율, #2는 schema5 도구/검토literal 소비 보완, #3과 #4는 승인3슬롯/54패킷 계약으로 낡은 시험을 바꾸는 대상이다. #2/#3의 World 소비Task는 기존 구현자의 실제변경 목록으로 `task_b6adb19bd94f`에 연결했으며 Core 원저작 Task는 미확정이다. 같은계약·같은번호 확정실패3회 조건은 아직 성립하지 않았다.
+
+검증 보고의 Windows 반환 stderr 폐기와 scratchpad 관문추출3파일은 계약 대비 원시보존 한계로 Main `msg_cedda934ca99`에 공개했다. 폐기원문 복구·전범위PASS를 주장하지 않는다. 저장 생존신호12개·일반최대445초·초과4구간과 질문대기439초는 근거에 구분했다. 설계 관찰 O1/O2는 비차단 후속이며 새 후보·검사도구를 이번 범위에 늘리지 않는다. 실DB·Unity·별도 Program·양쪽 DLL/CI·C1~C9의 남은 미실행은 유지한다.
+### 직전 compile 리드 종료 기록
+
+**다음 첫 일: Content → Art 반환 뒤 Main이 새 World 리드를 열면 같은 Run을 인수하고 신규 Opus 검증 계약과 실행창을 준비한다.** 현재 HEAD는 `fb6d7d53aaa42086f95515a870667207d2651596`, branch는 `feat/character-server-20261018`, status는 goal 항목을 포함한 43줄이다. 제품·시험 54경로와 원본 Shared DLL을 합친 보호 55경로의 drift는 0이다. 이전 handle·Task·Dispatch·compile 창은 기록이며 새 실행 권한이 아니다.
+
+**이번 결과와 정산:** 기존 WSL build 1회는 `2026-10-22T00:28:56Z~00:29:33Z`, SDK `10.0.301`, exit 0, 최종 75 warning/0 error다. 실제 자원·잠금 반환 근거를 읽고 결과 해석 전에 Main에게 `msg_48fae090acaf`로 창을 반환했다. 실행자 관측의 기반 wslhost 2개와 Main 후속 res-check의 WSL 배포·wslhost 0을 구분해 보존했다. `task_afa5c3012eb7`/`ctx_3d27b15ae4b7`는 `msg_00ec0b6b4b97`의 succeeded·전체 쓰기 종료로 정산했다. 보고 9경로와 실제 9경로를 대조했고, release(external/retained) 뒤 같은 incarnation의 완료 idle을 확인해 정확 pane만 닫았다. 리드 생존·작업자 0·reclaimable 0이다. 저장된 생존 신호는 8개, 최대 일반 간격 248초·300초 초과 0이며 공식 질문 대기 1929초는 별도다. 요청·화면은 Sol max, backend는 unknown이다.
+
+**다음 창 요청과 재진입:** Main `msg_956b8af8837b`의 지시대로 `msg_3bfe5ab478f7`에 세 줄로 요청했다. Content 재검증(현재 예정 `01:13:10Z`까지) → Art HUD RED 반환 뒤, 신규 `claude --model claude-opus-5-5 --autocompact 250000` 한 명이 PR 직전 강검증 준비·Core 실제 facade 11/13/14 시험 보완·기존 Network/RuntimeEntry 전체 회귀를 함께 수행하는 안이다. 준비 포함 75분, lastEntry=T+60분, 반환=T+75분은 요청안이며 아직 승인되지 않았다. 전용 WSL clone·SDK10.0.301·동일 workspace lock·기존 helper build/test·기존 시험 확장만 요청했다. 새 harness·Windows dotnet·DB·7777·Unity·원본 DLL 복사는 0이다. 새 Opus와 새 검증 계약은 아직 없다. 새 리드는 현재 goal과 위 Main 원문·정산 근거를 읽고 사전 맥락, 관련 규칙 원문, 실제 경로 확인, 고정 입력을 담은 신규 계약을 발행한다. 검증자는 테스트만 쓰고 제품 결함을 번호로 반환한다. Main의 새 시작 T 없이 실행하지 않는다. 창 대기뿐이므로 재개점을 남기고 「종료 준비」를 보내며 우편함 wait·sleep·반복 조회를 열지 않는다.
+
+**다음 검증의 경계:** 기존 World literal 11/13 시험은 mapper seam이다. 실제 Core facade의 typed 읽기 실패→11, 유효 schema false→13, 구조·binding·identity 위반→14와 acquire·입장 금지를 실행해 확인해야 한다. Core 시험을 fixture 없이 복사하지 않는다. 기존 회귀의 모든 실패를 분류하고 현재 제품값에 맞춰 기대값을 바꾸지 않는다. O-CAT-REJECT-03, 별도 Program credential startup·프로세스 재시작, 양쪽 DLL·Unity와 C1~C9의 남은 미실행은 그대로다. 이번 compile이나 다음 WSL 범위만으로 전체 PR·독립 PASS를 선언하지 않는다.
+
+근거는 `.backups/verification/2026-10-18-character-server/approval-01/compile-resume-02/`의 `lead-context.md`, `lead-build-review.json`, `lead-input-and-gate-review.json`, `lead-settlement-review.json`, `lead-liveness.json`, 정산·종료 receipt다. 최종 `worker/report.md` SHA256은 `BC10183C21DE5F46E70EB82211BA4A53BC17B525216D301FBC6EA88D86257678`이다. 이번 세션의 제품·시험 직접 쓰기와 Git commit/push는 0이며 기존 미커밋을 보존한다. Main은 진입 메시지의 09:0x KST가 오기이고 최초 발송은 08:4x KST였다고 교정했다.
+
+### 이전 리드 종료 당시 기록
 **다음 첫 일: Content 실제 반환 뒤 Main이 연 새 World 리드에서 같은 Run을 인수하고, 새 시작 창·새 Sol max 실행자로 기존 WSL build1회를 수행한다.** Main `msg_5c994575a875`의 Content 창은22:49:28Z~2026-10-22T00:19Z이며 그 뒤 배정한다. `msg_2ac340ace025`로 준비포함15분·lastEntry=배정T+12분·최종반환=T+15분의3줄 요청을 보냈고 새시작은 아직없다. 자원은 전용 WSL clone/SDK10.0.301/workspace lock만, Windows dotnet/DB/7777/Unity/원본DLL복사0이다. 실제 새창의 시작/끝/lastEntry로 다시 고정하고 과거창·Task·보충을 권한으로 재사용하지 않는다. 회귀는 사용자A대로 PR직전 Opus에 합친다. 창대기뿐이므로 이 재개점을 local checkpoint한 뒤 종료준비를 보내고 Main이idle확인후 리드pane을 닫는다.
 
 **이번 실제 결과:** Core 고정 guard 제품 한 파일의 bytes·실제 +7/-2와 비대상 53경로 보존을 리드가 대조했다. source Task의 succeeded는 소비·다음 실행 준비 범위다. 그 정산과 compile 창이 겹쳐 새 실행자를 열었으나 준비 중 JS 평가 문법 오류 뒤 직전 관문이 시작 제한을 넘겼다. 빌드와 WSL은 시작하지 않았고 compiler 경고·오류는 미측정이다. 자기 runtime 시작 0·Windows 대상 process 0·7777 listen 0을 직접 읽고 창부터 반환했다. Linux lock 가용성은 미관측이다.
@@ -151,6 +186,13 @@ Core `msg_80f596e64e30`(17:01:21Z)은 검증된 제한 checkpoint 없음·API v2
 - **착수 조건:** Unity 최소 수신 소유와 정확 파일은 Content 쓰기 종료·합의 뒤 계약 전 고정, 49..54/v22는 최신 main/타 파트 예약 대조 뒤 고정, Core 미검증 코드 복사0, 중량 실행은 메인 「실행 창 시작」 뒤다. 범위 승인만으로 이 조건을 생략하지 않는다.
 
 ## 적용 중인 사용자 결정
+### 2026-10-22 메타데이터 조회와 현재 수리 배정
+
+Main `msg_2702d8757098`의 현재 지시 원문: 「환경 식별에서 ORCA_* 전체를 조회하지 마라(env|grep ORCA, Get-ChildItem env:ORCA* 등). 그 안에 ORCA_AGENT_HOOK_TOKEN·ORCA_AGENT_LAUNCH_TOKEN 비밀 값이 있다. 필요한 값은 ORCA_TERMINAL_HANDLE처럼 이름을 지정해 읽어라. 이름만 필요하면 값 없이 이름만 출력하라.」 현재 작업자 v1.2에 같은 문장을 넣었고 향후 계약에도 적용한다. 규칙 사본/전역설정을 수정하지 않는다.
+
+Main `msg_9cd1c179f3be`는 203→14·Core 단일 Sol 수리와 D-CAT-LITERAL-04를 확인했다. 그때의 #2/#3 보류 중 #3은 Main `msg_d8e3d5fc0227`이 메인 실수로 정정했다. #3의 현재 고정 3슬롯 시험 소비는 유효하며 되돌리지 않는다. #2는 checksum 수리 원천을 기다린다. 운영 중지·정정을 제품 결함 확정 실패로 세지 않는다.
+
+Core raw201은 직접 Rejected 또는 검증된 NotApplied로 적용 안 됨이 확정됐으나 현재 소유를 확정할 수 없는 경우9 RecoveryRequired로 Core/World가 합의했다(Core msg_b4ab8eba6a8a). genuine FenceLost→12는 별도로 유지한다. Main `msg_d8e3d5fc0227`의 205→11은 사용자 직접 결정이 아닌 **메인 범위 판정**이다. [확정 무변경 seal 해석 메모](packet-code-seal-interpretation-v1.md)에 정확 문구와 기본 일곱 코드·205 예외를 기록했다. Core API 보충 문구와 ordinal 일치하며 API v1과 전송 계약 v1 원문은 유지한다. 실제 새 제품 소비·실행은 아직0이다.
 
 ### 차단된 회귀를 PR 직전 검증에 합침 — 2026-10-22
 
