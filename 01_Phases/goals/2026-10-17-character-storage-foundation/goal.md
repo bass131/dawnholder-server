@@ -341,6 +341,8 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 **다음 첫 일 — 사용자 서버 기동 참여 시각·새 합동창 T를 메인에게 받아 재개.** `run_1b758e0cc722` 인수 후 `joint-restart-ready-33/preparation.md`와 `user-server-commands.md`, 메인 판단 회신부터 읽는다. 합동30분 창 세 줄 요청 `msg_4e5b9a23fd10`, 기존 credential 소비 서버2회 사용자 직접 실행 판단 요청 `msg_566e008bfb3e`를 보냈다. Content→Art→Level 반환 뒤 메인이 res-check/새T를 정한다. 대기뿐이므로 재개점·로컬 기록commit 뒤 종료 준비하며 wait/poll/sleep을 열지 않는다.
 
+- 메인 `msg_b48d51625b82`가 기존 런처의 credential 복호화/stdin 전송을 직접 확인하고 **서버 기동 두 번만 사용자 직접 실행으로 분리하는 안을 수용**했다. 사용자 참여시각은 현황판 결정 대기이며 추천 오늘안(빨라야21:10KST쯤)은 확정시각이 아니다. Core는 Content→Art→Level 다음 네 번째다. 사용자 원문 회신/새T를 받기 전 실행하지 않는다. 창이 열리면 메인이 두 명령의 복사카드와 Enter 신호를 사용자에게 전달하고, Core는 각 단계 확인을 제목 **「즉시 보고」**로 메인에게 보낸다. 사용자 직접 실행을 AI 대리 실행으로 바꾸지 않는다.
+- 같은 메시지의 PR256/main 병합 전달은 수신했다. 이번 대기 기록에서는 main을 받지 않으며 제품/source/argv 고정입력을 보존한다. 다음 세션이 창 전 입력을 바꾸면 기존 요청을 그대로 실행하지 말고 source/hash·argv를 다시 고정한다. 현재 후속 기록 외 실행/새작업자0이다.
 - World 최종 인계 `msg_e66793e9c058`을 수신해 인계문/source pin 및 실제63파일 hash를 대조했다(불일치0). 공개 원본 profile/CA와 양쪽 기존 런처도 일치한다. 정확 두 봇 argv·동일 account/ID·공개파일2개 후속 공급 소유·DB authority/progress/receipt 정상쓰기·시험행보존/cleanup0·실제 Linux PID/birth/정상 종료 기준은 위 preparation에 고정했다. World리드 재기동/기존 작업자 재사용은 필요하지 않으며 현재 새 작업자0이다.
 - 기존 런처는 Import-Clixml로 credential을 복호화해 child stdin에 쓰므로 사용자 직접 실행 단계로 분리했다. 정확 두 명령·PowerShell7 cwd·각 로그/exit/UTC 파일과 Enter 종료 순서는 사용자 카드에 있다. AI credential 본문/hash 열람은0이나 환경 조회 사건을 포함한 세션 전체 비밀 열람0은 주장하지 않는다. 사용자 참여/새T 전 실행하지 않는다.
 - 새창 첫 실행은 기존 sync-wsl.sh build로 봇 포함 fresh compile이다. 이어 신규 실행 소유자가 공개파일2개 공급/empty-ca 생성·source/clone/SDK 확인과 두 직접DLL 실행·Linux PID/birth 관측을 맡고, 서버2회 기동/Enter는 사용자가 맡는 계획이다. 현재 공개파일 공급/compile/WSL/봇/서버/SQL/Unity 실행0, 독립PASS0이다. PR직전 신규Opus45~60분은 별도다.
