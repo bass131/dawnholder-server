@@ -25,14 +25,14 @@
 - 작업자·검증자는 작업 하나 후 정산·종료하고 재사용하지 않는다. 수정과 재검증은 새 세션으로 수행한다. 같은 계약·같은 결함 번호의 확정 실패 3회 뒤 새 Sol과 읽기 전용 Fable Advisor를 쓰는 조건·집계·메인 보고는 [확정 실패 정본](00_Document/operations/ORCA.md#confirmed-failures)을 따른다. 파트당 검증자는 동시에 하나만 연다. 절차는 [Orca 위임 지침](.agents/skills/dawnholder-goal-loop/references/orca-work.md)을 따른다.
 - 일반 작업자는 할당 범위만 수행하고 추가 위임하지 않는다. 메인이 지정한 파트 리드만 승인된 목표·공간·권한 안에서 좁은 작업자를 한 단계 둘 수 있다. 새 목표·파트·승인 밖 세션 생성은 메인에 올린다. 범위 안 결함과 다음 후보·새 요청의 기본값·애매한 범위 판정은 [목표 범위 정본](.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)을 따르며 후보마다 범위 확대 승인을 요청하지 않는다.
 - goal 범위는 만들 것·건드릴 곳·하지 않을 것·관찰 가능한 완료조건과 PR 경계로 고정한다. 착수 전 메인이 승인 초안과 대조하고 차이가 있으면 사용자가 판단한다. 완료조건을 막는 범위 안 결함만 루프에서 수정하며, 같은 산출물 수정이 3회를 넘으면 메인 체크포인트를 알린다. 이 체크포인트와 같은 계약·결함 번호의 확정 실패 3회 집계는 구분한다([목표 범위 정본](.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)).
-- 마감 구간 리드는 Core·Content·Rules·CodeMap·Management 다섯이다. CodeMap은 Architecture 파트의 분석·검사 책임과 표시 이름이며, 코드 리팩토링은 코드 주인 파트가 한다. 기존 `architecture-active` 경로와 Architecture 태그는 유지한다. 배치·추가 파트의 승인 경계는 [R-1](00_Document/operations/ORCA.md#r1-management-placement)을 따른다.
+- 마감 구간 정식 리드는 Core·Content·Rules·CodeMap·Management·Art·Level 일곱이다. CodeMap은 Architecture 파트의 분석·검사 책임과 표시 이름이며, 코드 리팩토링은 코드 주인 파트가 한다. 기존 `architecture-active` 경로와 Architecture 태그는 유지한다. 배치·추가 파트의 승인 경계는 [R-1](00_Document/operations/ORCA.md#r1-management-placement)을 따른다.
 - 같은 파일의 동시 쓰기를 금지한다. 기존 사용자 변경을 보존하고 무관한 변경을 되돌리지 않는다.
 - 메인은 전체 소스·로그·대화를 반복 수집하지 않고 짧은 결과와 필요한 근거를 확인한다. 다만 최종 판정 원문은 승인 전 직접 읽고 [R-2 원천 표본 대조](00_Document/operations/ORCA.md#r2-source-check)를 따른다. 보고와 실제 수행이 다르거나 미실행을 통과로 보고하면 의도와 무관하게 즉시 메인에 보고한다. 위임 도구 부재·막힘을 숨기고 구현 전체를 대신하지 않는다.
 - 합의된 범위의 수정·검증은 계속한다. 이미 받은 승인을 반복 요청하지 않되, 지침·스킬 사용만으로 범위나 외부 변경 권한을 넓히지 않는다.
 
 ## 모델 라우팅
 
-- 메인 Claude `claude-opus-5-5` → 기본 다섯·승인된 추가 파트 리드 `gpt-6.1-sol` xhigh(Codex CLI, `[<파트> 리드 Sol]` 태그) → 구현자 `gpt-6.1-sol` xhigh 또는 `gpt-6-astra` xhigh다. [배정](.agents/skills/dawnholder-goal-loop/references/implementer-routing.md)·[시범](.agents/skills/dawnholder-goal-loop/SKILL.md#구현자-모델-시범)을 따른다. 독립 검증·리뷰는 [모델 시범](.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지), 선행 시험 작성은 신규 `claude-opus-5-5`다. 리드 기동·문맥 옵션은 [R-1](00_Document/operations/ORCA.md#r1-management-placement), 작업자 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다. 리드 모델 계열이 바뀌면 태그의 모델명도 그 계열로 바뀐다.
+- 메인 Claude `claude-opus-5-5` → 정식 파트·승인된 추가 파트 리드 `gpt-6.1-sol` xhigh(Codex CLI, `[<파트> 리드 Sol]` 태그) → 구현자 `gpt-6.1-sol` xhigh 또는 `gpt-6-astra` xhigh다. [배정](.agents/skills/dawnholder-goal-loop/references/implementer-routing.md)·[시범](.agents/skills/dawnholder-goal-loop/SKILL.md#구현자-모델-시범)을 따른다. 독립 검증·리뷰는 [모델 시범](.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지), 선행 시험 작성은 신규 `claude-opus-5-5`다. 리드 기동·문맥 옵션은 [R-1](00_Document/operations/ORCA.md#r1-management-placement), 작업자 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다. 리드 모델 계열이 바뀌면 태그의 모델명도 그 계열로 바뀐다.
 - [R-7 Fable 구현 전 설계 검토 시범](00_Document/operations/ORCA.md#r7-fable-pilot)은 4범주·2~3작업 한정으로 해당 정본의 범위와 절차를 따른다. 기본 모델 배정과 확정 실패 3회 뒤 Advisor를 대체하지 않는다.
 - 보고서 자료의 조사·설계 해설·본문·HTML·전용 생성 스크립트는 리드가 작성한다. Sol에 보고서 작성·렌더링 구현을 맡기지 않는다. 독립 검증자가 내용·근거·표시를 검토하고 메인이 [작성 기준](00_Document/conventions/REPORTING.md)에 따라 사용자 최종 보고를 전달한다.
 - 세션 생성 시 모델을 명시한다. 요청 모델·launch 설정·화면 표시와 백엔드 실제 모델을 구분하며 정확히 확인할 수 없는 실제 모델은 `unknown`으로 기록한다. 새 pane에 `--terminal`로 연결한 경우 launch 모델값 대신 최초 실행 명령과 화면 표시를 근거로 삼는다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. 사용자 승인 예외인 Sol 배정 작업자의 capacity 장기 실패 시 **신규 `gpt-6-astra` 작업자** 전환만 [capacity 정본](00_Document/operations/ORCA.md#capacity-retry)을 따른다. Astra 배정은 재시도만 한다. 리드 직접 구현·실행 중 모델 변경·Opus 대체는 허용하지 않는다. 문서 변경만으로 기존 런타임 모델이 바뀌었다고 보고하지 않는다.
@@ -40,7 +40,7 @@
 
 ## 메시지와 보고
 
-- 모든 세션 간 Orca 메시지의 subject/body 첫머리와 타 세션 터미널 입력에는 자기 태그를 붙인다: `[메인 Claude]`, `[Core 리드 Sol]`, `[Core Sol]`, `[Core 검증자]`, `[Content 리드 Sol]`, `[Content Sol]`, `[Content 검증자]`, `[Rules 리드 Sol]`, `[Rules Sol]`, `[Rules 검증자]`, `[Architecture 리드 Sol]`, `[Architecture Sol]`, `[Architecture 검증자]`, `[Management 리드 Sol]`, `[Management Sol]`, `[Management 검증자]`. 회신은 [R-3](00_Document/operations/ORCA.md#r3-reply-tag)을 따른다. Astra 구현자는 `[<파트> 구현 Astra]`를 쓰며 현재 리드의 `[<파트> 리드 Sol]` 태그와 구분한다. 정본의 「Sol」은 구현자 역할도 뜻한다.
+- 모든 세션 간 Orca 메시지의 subject/body 첫머리와 타 세션 터미널 입력에는 자기 태그를 붙인다: `[메인 Claude]`, `[Core 리드 Sol]`, `[Core Sol]`, `[Core 검증자]`, `[Content 리드 Sol]`, `[Content Sol]`, `[Content 검증자]`, `[Rules 리드 Sol]`, `[Rules Sol]`, `[Rules 검증자]`, `[Architecture 리드 Sol]`, `[Architecture Sol]`, `[Architecture 검증자]`, `[Management 리드 Sol]`, `[Management Sol]`, `[Management 검증자]`, `[Art 리드 Sol]`, `[Art Sol]`, `[Art 구현 Astra]`, `[Art 검증자]`, `[Level 리드 Sol]`, `[Level Sol]`, `[Level 검증자]`. 회신은 [R-3](00_Document/operations/ORCA.md#r3-reply-tag)을 따른다. Astra 구현자는 `[<파트> 구현 Astra]`를 쓰며 현재 리드의 `[<파트> 리드 Sol]` 태그와 구분한다. 정본의 「Sol」은 구현자 역할도 뜻한다.
 
 <a id="core-tag-transition"></a><a id="lead-tag-transition"></a>
 
