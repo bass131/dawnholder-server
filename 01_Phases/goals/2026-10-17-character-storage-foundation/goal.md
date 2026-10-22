@@ -21,6 +21,12 @@
 
 ## 적용 중인 사용자 결정
 
+### 기존 봇 최소 보완으로 별도 서버 재기동 확인 — 2026-10-22
+
+메인 `msg_111bc46d64e8`(2026-10-22T09:09:29Z, 현재 Main from_handle 대조)의 사용자 결정4 A 전달이다. 사용자 원문의 해당 선택은 「4) 저장 캐릭터 재기동 확인 — 기존 봇을 조금 늘려 지금 자동으로 볼지, 미룰지 → A 기존 봇을 최소로 늘려 지금 자동 확인」이며, 사용자가 본 A는 「기존 서버 재기동 시험 봇(지금은 직업을 골라 접속)에 「저장된 캐릭터 목록을 받아 ID로 고르기」만 더한다. Sol 한 명이 1~2시간 쓰고, 30분 실행 창에서 서버 프로그램을 따로 켜고 끄며 같은 캐릭터가 다시 불러와지는지 본다. 네가 자는 동안에도 진행된다. 경량 경로의 「새 시험 도구 금지」에 대한 예외 하나가 된다.」다. 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+예외는 World 기존 봇 Stored 목록·ID 선택/재조회 한 건이며 새 하네스·인증 분기·PDL·SQL 변경을 묶지 않는다. World 신규 Sol max 한 명이 보완하고 Core는 World 고정 서버의 공개 profile·기존 런처·정상 종료/새 PID 재기동·DB 입력과 정리를 준비한다. 양쪽 정확 argv와 DB 쓰기 범위 확정 뒤 Core가 합동30분 창을 대표 요청한다. PR 직전 Core 신규 Opus45~60분 창은 별도다. 대기뿐이면 재개점/로컬commit 후 종료 준비하며 메인이 닫았다가 보완 완료 후 새 세션을 연다. 모델 라우팅·사용량 블록은 아래 기존 원문을 그대로 적용하고 규칙 사본은 수정하지 않는다.
+
 ### 수리30의 메인 범위 판정과 환경 조회 제한 — 2026-10-22
 
 이번 리드 진입의 ORCA_* 환경 목록 조회에서 hook token 필드가 도구 출력에 포함된 사실을 메인 `msg_2854dbf27337`에 알렸다. 값의 파일 재기록/메시지 전달/사용은0이며 해당 관찰은 core-reentry-20261022-context.md에 보존한다. 이번 리드 세션 전체의 비밀 열람0을 주장하지 않으며 이후 아래 조회 제한을 따른다.
@@ -330,6 +336,15 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**다음 첫 일 — World 봇 A 보완 완료 후 합동 입력 확정.** 신규 Core 리드가 `run_1b758e0cc722`를 run-use로 인수하고 World(`run:run_90d18490c825`)의 최종 봇 소스·정확1/2차 client argv·시험 account/characterId·공개 profile 공급 결과를 받는다. `joint-restart-prep-32/preparation.md`의 기존 서버 argv와 DB 쓰기/정리를 실제 입력에 맞춰 닫은 뒤 **Core가 합동30분 창을 대표로 세 줄 요청**한다. PR 직전 신규 Opus45~60분은 별도다. 현재 창 요청/실행/작업자0이며 bot argv 미확정을 READY로 보고하지 않는다.
+
+- 사용자 결정4 A를 위 적용 결정에 기록했다. Core 진입 HEAD `721485fd`/clean은 메인 전달과 일치했고 Run 인수 receipt(consumer generation6)·현재 terminal/incarnation/모델은 `.backups/verification/2026-10-17-character-storage-foundation/joint-restart-prep-32/`에 보존했다. 과거 handle/Task/Dispatch/창은 권한으로 쓰지 않는다.
+- World 새 리드의 `msg_7247a5c56b10`은 기존 봇 보완 착수/현재 Run을 알렸다. Core는 `msg_d47ccb39b3c5`로 새 회신 주소, `msg_9937fb6a5509`로 공개 profile/CA 공급과 최종 client 입력을 조율했다. World checkout에는 아직 logs/profile이 없고 기존 런처는 자기 checkout 안 JSON만 받으므로 공개 파일 공급 소유권을 World에 확인 요청했다. credential 본문/hash·ORCA_* 전체 조회는 하지 않았다.
+- Core/World 기존 런처 hash 일치와 공개 profile/CA·Program 정상종료 경로를 정적 확인했다. 런처가 출력하는 Windows wsl.exe PID와 Linux GameServer PID를 구분해 첫 실제 Program 종료·새 PID/birth를 관측해야 한다. DB는 기존 시험 DB에서 새 전용 account/캐릭터의 저장 흐름만, DDL/login/grant/새 비밀/기존행 삭제·cleanup0으로 준비했다. 실제 입력 확정 전 실행하지 않는다.
+- 지금 보여줄 것: 기존 실DB 저장/새 SQL 연결 재조회·World 자체회귀 원시. 다음 가시 결과: World 보완(메인 계획1~2시간) 뒤 배정30분 창의 동일 캐릭터 자동 재입장. 완료 KST는 보완/창 배정 전 미정이다. 남은 것은 World driver/공개 입력 회신이므로 재개점/로컬 기록commit 후 종료 준비하며 check-wait/poll/sleep0이다. WSL/dotnet/build/test/server/Unity/SQL은 이번 세션 모두 미실행이고 독립 PASS가 아니다.
+
+### 이전 driver 결정 대기 기록
 
 **2026-10-22 합동 driver 사용자 A/B 결정 대기 — 봇 수정·작업자·실행0.** 새 Core 리드가 `run_1b758e0cc722`를 run-use로 인수했다(consumer generation5, receipt `joint-restart-plan-31/run-use.json`). 진입 HEAD `1869799cdef878d8370239ab2c6b9a71a4b1788a`/clean은 메인 전달과 일치했다. 현재 회신 주소는 `run:run_1b758e0cc722`, 현재 terminal/incarnation·모델·맥락은 같은 폴더 `context.md`에 있다. 과거 handle/Task/Dispatch/실행 창은 권한으로 쓰지 않는다.
 
