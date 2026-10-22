@@ -49,17 +49,22 @@ $permissions = 'modules/permissions.sql'
 $real = Read-ModuleBundle -DatabaseRoot $script:ToolRoot
 $manifest = Read-FixtureManifest -Root $script:ToolRoot
 $manifestHash = Get-Sha256Hex -Bytes ([IO.File]::ReadAllBytes($manifestPath))
-$declaration = Read-FixtureText -Path (Join-Path $script:ToolRoot 'migrations/004_module_release.sql')
-Assert-Equal -Name 'reviewed bundle -> 18 modules' -Expected 18 -Actual @($real.Modules).Count
-Assert-Equal -Name 'reviewed bundle -> release version 4' -Expected 4 -Actual $real.ReleaseVersion
+$declaration = Read-FixtureText -Path (Join-Path $script:ToolRoot 'migrations/005_character_catalog.sql')
+Assert-Equal -Name 'reviewed bundle -> 20 modules' -Expected 20 -Actual @($real.Modules).Count
+Assert-Equal -Name 'reviewed bundle -> release version 5' -Expected 5 -Actual $real.ReleaseVersion
 Assert-Equal -Name 'reviewed bundle -> manifest checksum equals raw file SHA256' -Expected $manifestHash -Actual $real.ManifestChecksum
-Assert-True -Name '004 declaration carries the raw manifest SHA256 (no self-hash cycle)' `
-    -Condition ($declaration -cmatch "VALUES\(4, '$manifestHash'\)" -and
-    @($manifest.Entries | Where-Object { $_.Path -cmatch 'manifest|004_' }).Count -eq 0)
+Assert-True -Name '005 declaration carries the raw manifest SHA256 (no self-hash cycle)' `
+    -Condition ($declaration -cmatch "VALUES\(5, '$manifestHash'\)" -and
+    @($manifest.Entries | Where-Object { $_.Path -cmatch 'manifest|00[45]_' }).Count -eq 0)
+$historicalDeclaration = Read-FixtureText -Path (Join-Path $script:ToolRoot 'migrations/004_module_release.sql')
+Assert-True -Name '004 keeps its immutable historical release identity' -Condition (
+    $historicalDeclaration.Contains("VALUES(4, 'C529392B46BB0F02D7A863201D74B9CC60187842365B1DBDCF8953CEE714A731')")
+)
 $kinds = @($manifest.Entries | ForEach-Object { if ($_.Kind -ceq 'FN') { 'codec' } elseif ($_.Path -cmatch '/internal/') { 'helper' } `
             elseif ($_.Kind -ceq 'Permissions') { 'permissions' } else { 'public' } })
-Assert-Equal -Name 'manifest order codec -> 8 helpers -> 9 public -> permissions' `
-    -Expected ((@('codec') + @('helper') * 8 + @('public') * 9 + @('permissions')) -join ',') -Actual ($kinds -join ',')
+Assert-Equal -Name 'manifest order two codecs -> 8 helpers -> 10 public -> permissions' `
+    -Expected ((@('codec') * 2 + @('helper') * 8 + @('public') * 10 + @('permissions')) -join ',') `
+    -Actual ($kinds -join ',')
 $valueMismatches = @()
 $dependencyMismatches = @()
 foreach ($entry in $manifest.Entries) {
@@ -91,18 +96,18 @@ $catalogRows = @([regex]::Matches($catalog, "\('(\w+)', '(FN|P)', (\d+), 0x([0-9
 $manifestRows = @($manifest.Entries | Where-Object ObjectName | ForEach-Object {
         '{0}|{1}|{2}|{3}|{4}' -f $_.ObjectName, $_.Kind, $_.DefinitionBytes, $_.DefinitionChecksum, $_.SourceChecksum
     })
-Assert-Equal -Name 'strict catalog module expectations equal manifest (18 rows)' `
+Assert-Equal -Name 'strict catalog module expectations equal manifest (20 rows)' `
     -Expected (($manifestRows | Sort-Object) -join ';') -Actual (($catalogRows | Sort-Object) -join ';')
-# The catalog runs after 004 is recorded; its release literal must name the same reviewed bundle as 004.
+# The catalog runs after 005 is recorded; 004 retains the previous release identity.
 $releasePattern = "ModuleRelease r JOIN dh\.SchemaVersion s[\s\S]*?ManifestChecksum[^']*'([0-9A-F]{64})'"
 $releaseLiteral = [regex]::Match($catalog, $releasePattern).Groups[1].Value
-Assert-Equal -Name 'strict catalog release declaration expects the raw manifest SHA256 declared by 004' `
+Assert-Equal -Name 'strict catalog release declaration expects the raw manifest SHA256 declared by 005' `
     -Expected $manifestHash -Actual $releaseLiteral
 $permissionsText = (Read-FixtureText -Path (Join-Path $script:ToolRoot $permissions)).Replace("`r`n", "`n")
 $grants = @([regex]::Matches($permissionsText, '(?m)^GRANT EXECUTE ON OBJECT::dh\.(\w+) TO (dh_runtime|dh_recovery);$') |
         ForEach-Object { $_.Groups[1].Value + '>' + $_.Groups[2].Value })
-Assert-Equal -Name 'permissions: exactly nine individual public EXECUTE grants (runtime5/recovery4)' `
-    -Expected 'ReadAdmission>dh_runtime,AcquireAndLoad>dh_runtime,WriteSafeCheckpoint>dh_runtime,ReleaseRuntime>dh_runtime,ResolveRuntimeOperation>dh_runtime,InspectRecovery>dh_recovery,RecoverAndLoad>dh_recovery,ReleaseRecovery>dh_recovery,ResolveRecoveryOperation>dh_recovery' `
+Assert-Equal -Name 'permissions: exactly ten individual public EXECUTE grants (runtime6/recovery4)' `
+    -Expected 'ReadAdmission>dh_runtime,AcquireAndLoad>dh_runtime,WriteSafeCheckpoint>dh_runtime,ReleaseRuntime>dh_runtime,ResolveRuntimeOperation>dh_runtime,InspectRecovery>dh_recovery,RecoverAndLoad>dh_recovery,ReleaseRecovery>dh_recovery,ResolveRecoveryOperation>dh_recovery,CharacterCatalog>dh_runtime' `
     -Actual ($grants -join ',')
 
 # ---- Manifest identity and shape.
@@ -132,8 +137,8 @@ Assert-Throws -Name 'manifest with an extra top-level field rejected' -Pattern '
     -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 foreach ($case in @(
-        @{ Name = 'release version 5'; Property = 'ReleaseVersion'; Value = 5 },
-        @{ Name = 'release version as string'; Property = 'ReleaseVersion'; Value = '4' },
+        @{ Name = 'unknown release version 6'; Property = 'ReleaseVersion'; Value = 6 },
+        @{ Name = 'release version as string'; Property = 'ReleaseVersion'; Value = '5' },
         @{ Name = 'format version 2'; Property = 'FormatVersion'; Value = 2 },
         @{ Name = 'source encoding text changed'; Property = 'SourceEncoding'; Value = 'UTF-8' }
     )) {
@@ -219,7 +224,7 @@ $changedCause = '^Module source structure violation: .*' +
 Assert-Throws -Name 'changed source without reviewed manifest update rejected' -Pattern $changedCause `
     -Action { Read-ModuleBundle -DatabaseRoot $root }
 
-# SQL-STRUCTURE-06 shape: the catalog release check keeps the stale identity while 004 and the manifest agree.
+# SQL-STRUCTURE-06 shape: the catalog release check keeps the stale identity while 005 and the manifest agree.
 $staleRelease = 'A8D8DC923CD472F1113DD1A1B1FC92A9A02E4034C5AF20489DEA87867ADE1070'
 $root = New-DatabaseFixture -Name 'stale-catalog-release'
 $staleEdit = @{
@@ -352,7 +357,7 @@ foreach ($case in @(
     Edit-FixtureText -Path (Join-Path $root $permissions) -Find $case.Find -Replace $case.Replace
     Sync-FixtureHashConsumers -Root $root
     Assert-Throws -Name ("permissions $($case.Name) rejected") `
-        -Pattern '^Permissions source must contain only the nine reviewed individual EXECUTE grants' -Action { Read-ModuleBundle -DatabaseRoot $root }
+        -Pattern '^Permissions source must contain only the reviewed individual EXECUTE grants' -Action { Read-ModuleBundle -DatabaseRoot $root }
 }
 
 $root = New-DatabaseFixture -Name 'permissions-comment-only-change'
@@ -362,7 +367,8 @@ Assert-NoThrow -Name 'permissions comment change keeps the grant set (control)' 
 
 # ---- Migration sources.
 $sources = @(Get-DatabaseMigrationSources -Phase Complete -DatabaseRoot $script:ToolRoot)
-$expectedNames = '001_initial.sql,002_persistence_metadata.sql,003_module_metadata.sql,004_module_release.sql'
+$expectedNames = '001_initial.sql,002_persistence_metadata.sql,003_module_metadata.sql,004_module_release.sql,' +
+    '005_character_catalog.sql'
 Assert-Equal -Name 'migration sources -> exact ordered names' -Expected $expectedNames -Actual (($sources | ForEach-Object Name) -join ',')
 $recomputed = @($sources | ForEach-Object { (Get-ExpectedModuleValues -Path (Join-Path $script:ToolRoot ('migrations/' + $_.Name))).SourceChecksum })
 Assert-Equal -Name 'migration checksums re-derived from source' -Expected ($recomputed -join ',') -Actual (($sources | ForEach-Object Checksum) -join ',')
@@ -375,7 +381,7 @@ Assert-Equal -Name '001 raw bytes unchanged (protected SHA256)' -Expected 'A8318
     -Actual (Get-Sha256Hex -Bytes ([IO.File]::ReadAllBytes((Join-Path $script:ToolRoot 'migrations/001_initial.sql'))))
 
 $root = New-DatabaseFixture -Name 'migration-extra'
-Write-FixtureText -Path (Join-Path $root 'migrations/005_extra.sql') -Text "SELECT 1;`n"
+Write-FixtureText -Path (Join-Path $root 'migrations/006_extra.sql') -Text "SELECT 1;`n"
 Assert-Throws -Name 'extra migration file rejected' -Pattern '^Migration files must be the reviewed contiguous version/name set' `
     -Action { Get-DatabaseMigrationSources -Phase Complete -DatabaseRoot $root }
 $baseline = @(Get-DatabaseMigrationSources -Phase Baseline001 -DatabaseRoot $root)
@@ -422,7 +428,7 @@ Assert-Throws -Name 'history unknown name rejected' -Pattern $historyPattern `
 $drift = [pscustomobject]@{ Version = 1; Name = $history[0].Name; Checksum = $history[0].Checksum.ToLowerInvariant() }
 Assert-Throws -Name 'history checksum drift (case) rejected' -Pattern $historyPattern `
     -Action { Assert-DatabaseMigrationHistory -History @($drift) -Sources $sources }
-$newer = @($history) + [pscustomobject]@{ Version = 5; Name = '005_future.sql'; Checksum = ('A' * 64) }
+$newer = @($history) + [pscustomobject]@{ Version = 6; Name = '006_future.sql'; Checksum = ('A' * 64) }
 Assert-Throws -Name 'history with newer migration rejected' -Pattern '^Database has unknown/newer migrations' `
     -Action { Assert-DatabaseMigrationHistory -History $newer -Sources $sources }
 
@@ -440,8 +446,12 @@ Assert-Throws -Name 'JSON rows: JSON null literal rejected' -Pattern '^Expected 
 Assert-Throws -Name 'JSON rows: whitespace-only text rejected' `
     -Pattern '^Expected the complete database JSON row array' -Action { ConvertFrom-DatabaseJsonRows -Json '   ' }
 # Truncated arrays pass the leading-bracket guard and must still fail in the JSON parser itself.
-Assert-Throws -Name 'JSON rows: truncated array rejected by the parser' -Pattern '^Invalid array passed in' `
-    -Action { ConvertFrom-DatabaseJsonRows -Json '[{"Version":1}' }
+$jsonFailure = $null
+try { $null = ConvertFrom-DatabaseJsonRows -Json '[{"Version":1}' } catch { $jsonFailure = $_ }
+Assert-True -Name 'JSON rows: truncated array rejected by the parser' -Condition (
+    $null -ne $jsonFailure -and $jsonFailure.FullyQualifiedErrorId -cmatch
+    ',Microsoft\.PowerShell\.Commands\.ConvertFromJsonCommand$'
+) -Detail $(if ($null -ne $jsonFailure) { $jsonFailure.FullyQualifiedErrorId })
 
 # ---- Known-answer source identity, fixed outside PowerShell (Node crypto, verifier evidence).
 # Expected values do not come from product or TestSupport code: UTF-8 source, explicit UTF-16LE stored text.

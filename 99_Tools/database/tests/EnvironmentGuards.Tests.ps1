@@ -154,26 +154,41 @@ function Test-ManifestBoundary {
     $manifest.MigrationManifest = @($Rows)
     Assert-TestEnvironmentManifest -Manifest $manifest -Database $database -ManifestPath $contract.ManifestPath -Contract $contract
 }
-Assert-NoThrow -Name 'manifest: Planned/no migrations, Baseline001/001, Installed/001-004 accepted' -Action {
+Assert-NoThrow -Name 'manifest: Planned/empty, Baseline001/001 and complete states/001-005 accepted' -Action {
     Test-ManifestBoundary -State 'Planned' -Rows @()
     Test-ManifestBoundary -State 'Baseline001' -Rows @($migrations[0])
-    Test-ManifestBoundary -State 'Installed' -Rows $migrations
+    foreach ($state in @('Installed', 'Bound', 'PrincipalsReady', 'CleanupStarted', 'Removed')) {
+        Test-ManifestBoundary -State $state -Rows $migrations
+    }
+    Test-ManifestBoundary -State 'Created' -Rows @($migrations[0..3])
 }
+Assert-Equal -Name 'manifest fixture uses the five reviewed migration names' -Expected (
+    '001_initial.sql|002_persistence_metadata.sql|003_module_metadata.sql|' +
+    '004_module_release.sql|005_character_catalog.sql'
+) -Actual ($migrations.Name -join '|')
 Assert-Equal -Name 'manifest lifecycle schema is 2' -Expected 2 `
     -Actual (New-TestEnvironmentManifest -Contract $contract -Database $database).SchemaVersion
 $boundary = '^Lifecycle state does not match the recorded SQL migration boundary'
 $ordered = '^Recorded migrations must retain the reviewed ordered contiguous version/name contract'
 $identity = '^Invalid recorded migration identity'
 $oldName = [pscustomobject]@{ Version = 3; Name = '003_persistence_payload.sql'; Checksum = $migrations[2].Checksum }
-$fifth = [pscustomobject]@{ Version = 5; Name = '005_future.sql'; Checksum = ('F' * 64) }
+$unknownFifth = [pscustomobject]@{ Version = 5; Name = '005_future.sql'; Checksum = ('F' * 64) }
+$sixth = [pscustomobject]@{ Version = 6; Name = '006_future.sql'; Checksum = ('F' * 64) }
+$badChecksum = [pscustomobject]@{ Version = 5; Name = $migrations[4].Name; Checksum = ('G' * 64) }
 $lower = [pscustomobject]@{ Version = 1; Name = $migrations[0].Name; Checksum = $migrations[0].Checksum.ToLowerInvariant() }
 foreach ($case in @(
         @{ Name = 'Installed with three migrations'; State = 'Installed'; Rows = @($migrations[0..2]); Pattern = $boundary },
+        @{ Name = 'old Installed with four migrations'; State = 'Installed'; Rows = @($migrations[0..3]); Pattern = $boundary },
+        @{ Name = 'Planned with one migration'; State = 'Planned'; Rows = @($migrations[0]); Pattern = $boundary },
         @{ Name = 'Bound with one migration'; State = 'Bound'; Rows = @($migrations[0]); Pattern = $boundary },
         @{ Name = 'Baseline001 with two migrations'; State = 'Baseline001'; Rows = @($migrations[0..1]); Pattern = $boundary },
         @{ Name = 'hole 001,003'; State = 'Created'; Rows = @($migrations[0], $migrations[2]); Pattern = $ordered },
         @{ Name = 'previous 003 name'; State = 'Created'; Rows = @($migrations[0], $migrations[1], $oldName); Pattern = $ordered },
-        @{ Name = 'fifth version'; State = 'Installed'; Rows = @($migrations) + $fifth; Pattern = $identity },
+        @{ Name = 'unknown fifth name'; State = 'Installed'; Rows = @($migrations[0..3]) + $unknownFifth; Pattern = $ordered },
+        @{ Name = 'unknown sixth version'; State = 'Installed'; Rows = @($migrations) + $sixth; Pattern = $identity },
+        @{ Name = 'tampered fifth checksum format'; State = 'Installed'; Rows = @($migrations[0..3]) + $badChecksum; Pattern = $identity },
+        @{ Name = 'fifth migration before fourth'; State = 'Created'; Rows = @($migrations[0..2]) + $migrations[4]; Pattern = $ordered },
+        @{ Name = 'duplicate fifth version'; State = 'Installed'; Rows = @($migrations) + $migrations[4]; Pattern = $identity },
         @{ Name = 'duplicate version'; State = 'Created'; Rows = @($migrations[0], $migrations[0]); Pattern = $identity },
         @{ Name = 'lowercase checksum'; State = 'Baseline001'; Rows = @($lower); Pattern = $identity }
     )) {

@@ -584,20 +584,15 @@ function New-DependentScenario {
     [void][IO.Directory]::CreateDirectory((Join-Path $source '.backups\evidence'))
     $private = Join-Path $env:LOCALAPPDATA ('Dawnholder\' + $lifetime)
     New-WindowsSqlPrivateDirectory -Path $private -Sid $script:ExecutorSid
-    $accountId = [Guid]::NewGuid().ToString('D')
-    $characterId = [Guid]::NewGuid().ToString('D')
     Write-JsonFile -Path (Join-Path $source 'profile.json') -Value ([ordered]@{
-            persistedAccountName = 'fixture_user'
+            profileVersion = 2
             database = 'Dawnholder_DependentFixture'
             serverEndpoint = ('tcp:localhost,' + $script:FixturePort)
-            slotId = 1
-            accountId = $accountId
-            characterId = $characterId
         })
     [IO.File]::WriteAllText((Join-Path $source 'public-ca.pem'),
         "dependent-service public fixture, not a certificate`n")
     Write-JsonFile -Path (Join-Path $source 'runtime.json') -Value ([ordered]@{
-            Version = 1
+            Version = 2
             LifetimeId = $lifetime
             ExecutorSid = $script:ExecutorSid
             ServiceAccount = ('NT Service\' + $script:InstanceService)
@@ -606,8 +601,6 @@ function New-DependentScenario {
             NetworkMode = 'Mirrored'
             WslSubnet = $null
             WslDistribution = 'Ubuntu'
-            AccountId = $accountId
-            CharacterId = $characterId
             PublicCaPath = 'public-ca.pem'
             CredentialPath = (Join-Path $private 'runtime.clixml')
             CertificateReceiptHash = ('C' * 64)
@@ -634,7 +627,7 @@ function New-DependentScenario {
             Port = $script:FixturePort
             Database = 'Dawnholder_DependentFixture'
             RuntimeLogin = 'dh_dependent_fixture'
-            SchemaVersion = 4
+            SchemaVersion = 5
             CertificateThumbprint = $script:FixtureThumbprint
             Encrypt = 'Mandatory'
             TrustServerCertificate = $false

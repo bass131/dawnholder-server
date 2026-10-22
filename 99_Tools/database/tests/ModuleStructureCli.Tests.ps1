@@ -90,16 +90,18 @@ $compliant = Invoke-StructureCheck -Root $compliantRoot
 $compliantStrict = Invoke-StructureCheck -Root $compliantRoot -Strict
 Assert-Equal -Name 'compliant tree -> status' -Expected 'compliant' -Actual $compliant.Result.Status
 Assert-Equal -Name 'compliant tree -> ViolationCount' -Expected 0 -Actual $compliant.Result.ViolationCount
-# 19 module/permission files and 4 migrations for placement, plus the three hash consumers MSSQL.md requires.
+# Release 5: 21 module/permission files and 5 migrations, plus manifest and three registered consumers.
 $structureFiles = @(
     Get-ChildItem -LiteralPath (Join-Path $compliantRoot 'modules') -Filter '*.sql' -File -Recurse
     Get-ChildItem -LiteralPath (Join-Path $compliantRoot 'migrations') -Filter '*.sql' -File
 ) | ForEach-Object { $_.FullName.Substring($compliantRoot.Length + 1).Replace('\', '/') }
-$expectedChecked = @($structureFiles) + @('modules/manifest.json', 'verify-schema.sql', 'Module.Common.ps1')
-Assert-Equal -Name 'compliant tree -> checked files (23 structure files + manifest, catalog, Module.Common)' `
+$expectedChecked = @($structureFiles) + @(
+    'modules/manifest.json', 'verify-schema.sql', 'Module.Common.ps1', 'ModuleHash.Common.ps1'
+)
+Assert-Equal -Name 'compliant tree -> checked files (26 SQL files + manifest and three consumers)' `
     -Expected ((@($expectedChecked) | Sort-Object) -join '|') `
     -Actual ((@($compliant.Result.CheckedFiles) | Sort-Object) -join '|')
-Assert-Equal -Name 'compliant tree -> checked file count' -Expected 26 -Actual @($compliant.Result.CheckedFiles).Count
+Assert-Equal -Name 'compliant tree -> checked file count' -Expected 30 -Actual @($compliant.Result.CheckedFiles).Count
 Assert-Equal -Name 'compliant tree -> warning exit' -Expected 0 -Actual $compliant.ExitCode
 Assert-Equal -Name 'compliant tree -> Strict exit' -Expected 0 -Actual $compliantStrict.ExitCode
 Assert-True -Name 'compliant tree -> machine fields' -Condition (

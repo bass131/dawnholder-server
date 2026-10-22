@@ -306,7 +306,8 @@ $script:FixtureContract = [pscustomobject]@{
 }
 # Applied history recomputed from the migration files by TestSupport (UTF-8, LF), independent of the product hash.
 $migrationNames = @(
-    '001_initial.sql', '002_persistence_metadata.sql', '003_module_metadata.sql', '004_module_release.sql'
+    '001_initial.sql', '002_persistence_metadata.sql', '003_module_metadata.sql', '004_module_release.sql',
+    '005_character_catalog.sql'
 )
 $appliedRows = @(for ($index = 0; $index -lt $migrationNames.Count; $index++) {
         $path = Join-Path $script:ToolRoot ('migrations/' + $migrationNames[$index])
@@ -318,7 +319,9 @@ $appliedRows = @(for ($index = 0; $index -lt $migrationNames.Count; $index++) {
     })
 $driftRows = @($appliedRows | ForEach-Object { $_.PSObject.Copy() })
 $driftRows[0].Checksum = '0' * 64
-$unknownRows = @($appliedRows) + [pscustomobject][ordered]@{ Version = 999999; Name = 'unknown'; Checksum = '0' * 64 }
+$unknownRows = @($appliedRows) + [pscustomobject][ordered]@{
+    Version = 6; Name = '006_future.sql'; Checksum = '0' * 64
+}
 
 # Answers only the runner's lock and history reads; any later command is recorded and refused. One fixture is used
 # at a time, so the answers live in script state read by the fake command (as in ModuleDeployment).

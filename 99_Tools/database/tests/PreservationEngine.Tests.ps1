@@ -84,8 +84,18 @@ Assert-Throws -Action { Assert-PreservationIds -Ids $ids -Contract $binding } -P
 
 $outputPath = Join-Path $script:SuiteRoot 'output.json'
 Write-NewEngineJson -Path $outputPath -Value @{ Fixed = 'first' }
-Assert-Throws -Action { Write-NewEngineJson -Path $outputPath -Value @{ Fixed = 'second' } } -Pattern 'exist' `
-    -Name 'CreateNew refuses an existing output at write time'
+# Native file-exists text is localized. Keep the atomic CreateNew cause and the original bytes as the contract.
+$createFailure = $null
+try { Write-NewEngineJson -Path $outputPath -Value @{ Fixed = 'second' } } catch { $createFailure = $_.Exception }
+while ($null -ne $createFailure -and $createFailure -isnot [IO.IOException]) {
+    $createFailure = $createFailure.InnerException
+}
+Assert-True -Name 'CreateNew refuses an existing output at write time' -Condition (
+    $null -ne $createFailure -and ($createFailure.HResult -band 0xFFFF) -in @(80, 183)
+)
+Assert-Equal -Name 'CreateNew refusal preserves the first output' -Expected 'first' -Actual (
+    (Read-FixtureText -Path $outputPath | ConvertFrom-Json).Fixed
+)
 Assert-Throws -Action {
     Assert-EngineEvidencePath -Directory $script:SuiteRoot -Path $outputPath
 } -Pattern 'already exists' -Name 'existing output is refused before connecting'
@@ -287,14 +297,20 @@ function New-FixtureActual($Module) {
         ExpectedOwnerPrincipalId = 1
     }
 }
-if ($script:FixtureState.History.Count -eq 4) {
+if ($script:FixtureState.History.Count -eq 5) {
     $script:FixtureState.Recorded = @($script:FixtureBundle.Modules |
             Select-Object ObjectName, Kind, SourceChecksum, DefinitionBytes, DefinitionChecksum)
     $script:FixtureState.Actual = @($script:FixtureBundle.Modules | ForEach-Object { New-FixtureActual -Module $_ })
-    $script:FixtureState.Releases = @([pscustomobject]@{
+    $script:FixtureState.Releases = @(
+        [pscustomobject]@{
             Version = 4
+            ManifestChecksum = 'C529392B46BB0F02D7A863201D74B9CC60187842365B1DBDCF8953CEE714A731'
+        },
+        [pscustomobject]@{
+            Version = 5
             ManifestChecksum = $script:FixtureBundle.ManifestChecksum
-        })
+        }
+    )
 }
 function ConvertTo-FixtureRows($Rows, [string]$Sql) {
     $array = @($Rows | Where-Object { $null -ne $_ })
@@ -352,10 +368,11 @@ function Open-EngineObservedConnection($Context, [switch]$Master) {
             } elseif ($sql.StartsWith('UPDATE dh.ModuleDefinition SET DefinitionChecksum')) {
                 $state.Recorded[0].DefinitionChecksum = '0' * 64
             } elseif ($sql.Contains('INSERT dh.ModuleRelease')) {
-                $version = if ($sql.Contains('VALUES(3,')) { 3 } else { 4 }
+                $declaration = [regex]::Match($sql, "VALUES\((?<Version>[345]), '(?<Hash>[0-9A-F]{64})'\)")
+                if (-not $declaration.Success) { throw 'Fixture release declaration is missing.' }
                 $state.Releases = @([pscustomobject]@{
-                        Version = $version
-                        ManifestChecksum = $script:FixtureBundle.ManifestChecksum
+                        Version = [int]$declaration.Groups['Version'].Value
+                        ManifestChecksum = $declaration.Groups['Hash'].Value
                     }) + $state.Releases
             } elseif ($sql.StartsWith('CREATE OR ALTER')) {
                 $name = [regex]::Match($sql, '^CREATE OR ALTER (PROCEDURE|FUNCTION) (dh\.\w+)').Groups[2].Value

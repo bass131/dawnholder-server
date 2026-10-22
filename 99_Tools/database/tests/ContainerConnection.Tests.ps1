@@ -296,6 +296,37 @@ Assert-Throws -Name 'v1 manifest is rejected before its old fields are examined'
 }
 
 # Every literal throw in product PS and the two fixed Open categories must have exactly one safe reason.
+# These release-5 public reasons must remain exact; nearby provider text is never made safe by its prefix.
+$releaseReasons = @(
+    'Permissions source must contain only the reviewed individual EXECUTE grants.'
+    'Historical release pin is missing.'
+    'Manifest hash target registration has missing, duplicate or unknown paths; expected 21 entries.'
+)
+foreach ($reason in $releaseReasons) {
+    Assert-Equal -Name ('release 5 public reason remains visible: ' + $reason) -Expected $reason -Actual (
+        Get-TestEnvironmentStopReason -Exception ([InvalidOperationException]::new($reason))
+    )
+    foreach ($untrusted in @(
+            ($reason + ' Password=OFFLINE-SANITIZE-SENTINEL'),
+            ('C:\fixture-only\private\runtime.clixml ' + $reason)
+        )) {
+        $failure = [InvalidOperationException]::new($untrusted)
+        Assert-Equal -Name ('release 5 reason with untrusted extra text is sanitized: ' + $untrusted) `
+            -Expected 'Unclassified failure; provider/native text suppressed.' `
+            -Actual (Get-TestEnvironmentStopReason -Exception $failure)
+        $summary = Get-TestEnvironmentFailureSummary -Exception $failure
+        Assert-True -Name ('failure summary hides untrusted extra text: ' + $untrusted) -Condition (
+            -not $summary.Contains('OFFLINE-SANITIZE-SENTINEL') -and
+            -not $summary.Contains('C:\fixture-only') -and -not $summary.Contains('runtime.clixml')
+        )
+    }
+}
+Assert-Equal -Name 'unknown release reason is sanitized' `
+    -Expected 'Unclassified failure; provider/native text suppressed.' -Actual (
+    Get-TestEnvironmentStopReason -Exception ([InvalidOperationException]::new(
+            'Unknown release decision; Password=OFFLINE-SANITIZE-SENTINEL C:\fixture-only\private'))
+)
+
 function Get-ConstantStopText {
     param($Statement)
     $pipeline = $Statement.Pipeline

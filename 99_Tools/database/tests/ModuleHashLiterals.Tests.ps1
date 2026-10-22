@@ -149,7 +149,7 @@ function Test-UnregisteredLiteralCase {
     Assert-True -Name "$Name -> violation with one unregistered literal after a complete inspection" -Condition (
         $null -ne $result -and $result.Status -ceq 'violation' -and $result.ViolationCount -eq 1 -and
         $result.HashViolationCount -eq 1 -and $result.HashUnregisteredLiteralCount -eq 1 -and
-        $result.HashTargetCount -eq 116 -and $result.HashInspectionComplete -eq $true -and
+        $result.HashTargetCount -eq 131 -and $result.HashInspectionComplete -eq $true -and
         $result.HashLiteralInspectionComplete -eq $true -and $drift.Count -eq 0) -Detail $detail
     Assert-Equal -Name "$Name -> literal file, line, offset and observed text" `
         -Expected (Format-StimulusLocation -Location $Expected) -Actual (Format-StimulusLocation -Location $literal)
@@ -256,7 +256,7 @@ Assert-Equal -Name 'repository tree -> CheckedFiles are exactly the product inpu
     -Expected ($productInputs -join '|') -Actual ($realChecked -join '|')
 
 # Every exact 64-hex literal of those inputs is one registered hex target at the same File+Offset.
-# 80 = manifest source 19 + definition 18, catalog source 18 + definition 18, migrations 4, identity 2, 001 guard 1.
+# Release 5 has 91 hex literals: manifest 21+20, catalog 20+20, migrations 5, identities 3, v4 pin 1, 001 guard 1.
 $occurrences = @(@(foreach ($file in $productInputs) {
             $text = Get-LiteralCoordinateText -Path (Join-Path $script:ToolRoot $file)
             foreach ($match in [regex]::Matches($text, $literalPattern)) {
@@ -268,8 +268,8 @@ $registeredHex = @(@(if ($realResult) {
                 '{0}@{1}={2}' -f $_.File, $_.Offset, $_.Observed
             }
         }) | Sort-Object)
-Assert-True -Name 'repository tree -> the 80 product 64-hex literals are exactly the registered hex target locations' `
-    -Condition ($occurrences.Count -eq 80 -and ($occurrences -join '|') -ceq ($registeredHex -join '|')) `
+Assert-True -Name 'repository tree -> the 91 product 64-hex literals are exactly the registered hex target locations' `
+    -Condition ($occurrences.Count -eq 91 -and ($occurrences -join '|') -ceq ($registeredHex -join '|')) `
     -Detail ('literals=' + $occurrences.Count + '; registered=' + $registeredHex.Count)
 $misplaced = @(if ($realResult) {
         $realResult.HashTargets | Where-Object {
@@ -279,8 +279,8 @@ $misplaced = @(if ($realResult) {
             (1 + ([regex]::Matches($text.Substring(0, $_.Offset), "`n")).Count) -ne $_.Line
         }
     })
-Assert-True -Name 'repository tree -> each of the 116 target offsets starts its observed value on the reported line' `
-    -Condition ($null -ne $realResult -and $realResult.HashTargetCount -eq 116 -and $misplaced.Count -eq 0) `
+Assert-True -Name 'repository tree -> each of the 131 target offsets starts its observed value on the reported line' `
+    -Condition ($null -ne $realResult -and $realResult.HashTargetCount -eq 131 -and $misplaced.Count -eq 0) `
     -Detail (@($misplaced | ForEach-Object { $_.File + ':' + $_.Line + '@' + $_.Offset }) -join ', ')
 
 Test-LiteralFreeCase -Name 'reviewed copy' -Root (New-DatabaseFixture -Name 'reviewed')
@@ -550,7 +550,7 @@ $mixed = $warning.Result
 Assert-True -Name 'registered drift plus an unregistered literal -> two hash violations, one of each kind' -Condition (
     $null -ne $mixed -and $mixed.Status -ceq 'violation' -and $mixed.ViolationCount -eq 2 -and
     $mixed.HashViolationCount -eq 2 -and $mixed.HashUnregisteredLiteralCount -eq 1 -and
-    @($mixed.HashTargets | Where-Object IsDrift).Count -eq 1 -and $mixed.HashTargetCount -eq 116) `
+    @($mixed.HashTargets | Where-Object IsDrift).Count -eq 1 -and $mixed.HashTargetCount -eq 131) `
     -Detail (Get-IssueText -Result $mixed)
 Assert-Equal -Name 'registered drift plus an unregistered literal -> warning pilot exit' -Expected 1 `
     -Actual $warning.ExitCode
@@ -596,7 +596,7 @@ $text = Invoke-StructureCheck -Root $root -Text
 $compact = ($text.StdOut + $text.StdErr) -replace '\s+', ''
 Assert-True -Name 'text mode unregistered literal -> status, both count lines and file:line warning, exit1' -Condition (
     $text.ExitCode -eq 1 -and $compact.Contains('Modulestructure:violation.') -and
-    $compact.Contains('Hashconsumers:116;complete:True;drift:0.') -and
+    $compact.Contains('Hashconsumers:131;complete:True;drift:0.') -and
     $compact.Contains('Producthashliterals:complete:True;unregistered:1;totalhashviolations:1.') -and
     $compact.Contains($textExpected.File + ':' + $textExpected.Line + ':')) `
     -Detail ('exit=' + $text.ExitCode + '; ' + ($text.StdOut + $text.StdErr).Trim())
