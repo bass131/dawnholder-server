@@ -64,6 +64,7 @@
 
 ## 작업 진입점
 
+- Orca 환경변수는 `ORCA_TERMINAL_HANDLE`처럼 이름을 지정해서만 읽는다. `ORCA_*` 전체 목록 조회(`env|grep ORCA`, `Get-ChildItem env:ORCA*` 등)는 금지한다. 그 안에 비밀 토큰이 있다.
 - 기능 구현·오류 수정·리팩토링·환경 정비 등 실제 다단계 작업은 [목표 루프](.agents/skills/dawnholder-goal-loop/SKILL.md)를 사용한다. 간단한 질문·설명·아이디어 논의에는 목표를 자동 시작하지 않는다.
 - 파일을 쓰기 전에 최신 지침·현재 goal·할당 계약·관련 영역과 CODE_CONVENTION의 해당 절을 읽고, 적용 규칙·기존 예시·재사용 대상·영향 파일·배치와 이름의 근거·질문·기준 SHA를 짧은 맥락 메모에 남긴다. 역할별 읽기 상한과 양식은 [작업 맥락 스킬](.agents/skills/dawnholder-task-context/SKILL.md)을 따른다.
 - 위임 계약은 [작업 맥락 정본](.agents/skills/dawnholder-task-context/SKILL.md#파일-쓰기-전-메모와-원문-계약)의 경로 기계 확인·요구/판정 기준·관련 원문/제외 이유·harness·대안·원시 수치 기준을 적용한다. 완료 보고에는 메모의 계획과 구분한 실제 준수 파일·구간을 적고, 검증자는 메모·원문 계약·실제 diff와 [판정 양식](.agents/skills/dawnholder-task-context/references/templates.md#검증-판정)의 실제 Task 연결·결함 귀속·설계 관찰을 대조한다.
