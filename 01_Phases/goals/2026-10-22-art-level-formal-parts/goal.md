@@ -2,12 +2,12 @@
 
 ## 재개 지점
 
-다음 첫 일은 메인이 [PR257 - Art·Level 정식 파트 반영](https://github.com/bass131/dawnholder-server/pull/257)의 판정 원문·R-2 표본을 대조하고 사용자 정확 head 병합 승인을 받는 것이다. 작성자와 검증자는 정산·종료했고, 원래 보류 branch/HEAD의 clean 복귀도 확인했다. 이 PR 상태 기록을 커밋·푸시한 뒤 다시 그 branch로 돌아가 최종 head와 복귀 근거를 메인에 보낸다. 리드는 병합·자동 병합하지 않는다.
+다음 첫 일은 리드가 작성한 종료 기록 세 파일을 신규 Sol xhigh가 독립 문서 실사하는 것이다. PR257 병합과 신규 Opus Gardener의 보고·정산·pane 종료는 끝났다. 실사 뒤 이 고정 문서를 바꾸지 않고 결과·정확 head·PR 정보는 E와 메인 승인 묶음에 기록한다. 종료 기록 PR도 사용자 정확 head 승인 뒤 메인이 병합하면 clean에서 최신 origin/main으로 detach 이동하고 종료 준비를 보낸다. 리드는 병합·자동 병합하지 않는다.
 
 - 범위 v1은 메인 `msg_05287e94df36`의 사용자 지시 대조로 착수했다. 뒤이은 사용자 결정 A(메인 전달 `msg_7c3b9abcbabf`)로 Art·Level만 정식 승격하고 World의 지위·경로·권한은 유지하는 범위가 확정됐다.
-- 공간 `rules-active`, branch `docs/art-level-formal-parts-20261022`, 기준은 최신 원격 main `65cdd20054b6ef296e814ad34a9a3363eb1a0877`이다. 보류 branch `feat/shared-execution-lock-20261015`와 기존 NOT PASS는 보존한다. PR 보고 뒤 시작 branch로 clean 복귀한다.
+- 공간 `rules-active`, 종료 branch `docs/art-level-formal-parts-closeout-20261022`, 기준은 병합 뒤 최신 origin/main `d3e24f965f3ca4c2d33b005a08e3f5049ac93a2b`다. 제품 문서 PR branch는 `docs/art-level-formal-parts-20261022`, 당시 기준은 `65cdd200`이었다. 보류 branch `feat/shared-execution-lock-20261015`와 기존 NOT PASS는 보존하며 종료 때 branch를 삭제하지 않는다.
 - 근거 E는 `.backups/verification/2026-10-22-art-level-formal-parts/`다. 현재 Run 주소·모델·runtime/handle/incarnation 등 상세는 E/`lead-context.md`·`run-create.json`·`run-address-send.json`을 따른다.
-- 소유권: 리드는 이 goal/CURRENT Rules 줄, 작성자는 정본 네 파일, CLAUDE는 메인만 쓴다. 작성자/검증자는 Git·추가 위임을 하지 않는다.
+- 소유권: 리드는 이 goal/CURRENT Rules 줄과 종료 때 BACKLOG 기존 후보의 원천·미승인 경계, 작성자는 정본 네 파일, CLAUDE는 메인만 쓴다. 작성자/검증자는 Git·추가 위임을 하지 않는다.
 
 ## 진척 단계
 
@@ -18,8 +18,11 @@
 - [x] 독립 문서 실사
 - [x] 문서 PR 생성
 - [x] 원래 브랜치 복귀
-- [>] PR257 병합
-- [ ] 목표 종료 정리
+- [x] PR257 병합
+- [x] Gardener
+- [>] 종료 기록 실사
+- [ ] 종료 기록 PR 병합
+- [ ] 최신 main 정리
 
 ## 요구사항 원천과 범위 결정
 
@@ -113,7 +116,29 @@
 - 위 고정 실사 입력은 보존하며, 이 단락과 다음 PR/복귀 상태 등 리드의 사후 결과 기록만 goal에 추가한다. 실사 뒤 정본 다섯 파일과 CURRENT의 내용을 변경하지 않으며, 최종 PR 보고에서 실사 입력과 후속 행정 기록을 구분한다.
 
 - **PR 생성과 복귀 확인:** [PR257 - Art·Level 정식 파트 반영](https://github.com/bass131/dawnholder-server/pull/257)을 main 대상으로 생성했다. 원문/receipt는 E/`pr-body.md`·`pr-create-receipt.json`, commit/push 원시는 E/`git-commit-documents.txt`·`git-push-documents.txt`다. 원래 `feat/shared-execution-lock-20261015`/`2419c013`로 clean 복귀해 보류 상태 보존을 확인했고, 이 PR 번호·단계 기록을 위해 문서 branch로 잠깐 돌아왔다(E/`return-original-branch-first-state.json`). 마지막 상태 기록 push 뒤 다시 원래 branch로 clean 복귀하며 최종 head/원격 대조는 E와 메인 보고에 둔다.
-- 현재 PR은 열림·미병합이다. 전체 목표 종료/Gardener/결과 기록과 모든 PR 병합이 끝나기 전에는 최신 main detach 정리를 완료로 표시하지 않는다. 다음 goal을 자동 시작하지 않는다.
+- 위 PR 생성·복귀 기록 당시에는 열림·미병합이었다. 전체 목표 종료/Gardener/결과 기록과 모든 PR 병합이 끝나기 전에는 최신 main detach 정리를 완료로 표시하지 않는다. 다음 goal을 자동 시작하지 않는다.
+
+- **PR257 병합:** 메인 `msg_cb38c593557e`가 전달한 사용자 원문은 「병합 승인: PR257 head e2230b32cd06b396d5816997377c2f0927c5fc3c」다. 메인은 head/OPEN·MERGEABLE·CLEAN을 다시 대조하고 2026-10-22T13:39:50Z에 병합했다. merge commit은 `d3e24f965f3ca4c2d33b005a08e3f5049ac93a2b`이며 GitHub API와 fetch한 origin/main에서도 확인했다(E/`pr257-merged-receipt.json`, `check-pr257-main-followup.json`, `closeout-branch-state.json`).
+- **좁힌 종료 절차:** 현행 R-8/Gardener 정본은 전체 goal 뒤 Gardener→결과 포함 종료 기록 PR→종료 점검을 정하고 작은 목표 예외는 미합의다. 따라서 경량 기간에 읽기 전용 Gardener 보고1파일, 리드의 goal/CURRENT 결과 기록, 그 종료 diff의 신규 Sol xhigh 문서 실사1회로 한정한다. 새 구현자·제품 실행·대형 보고·추가 감사·새 규칙을 만들지 않는다. 이는 독립 세션/병합 승인을 생략하는 예외가 아니라 대상과 산출물을 좁히는 운영 판단이다.
+
+
+## 종료 Gardener
+
+- 신규 `claude-opus-5-5` Gardener(Task `task_7f33b6e2da5b`, Dispatch `ctx_bb0e5b998144`)가 읽기 전용으로 보고 한 파일을 작성했다. 화면 표시는 Opus 5.5, backend 실제 모델은 `unknown`이다. 원문 E/`gardener/context-report.md`, SHA256 `e5fa24439b9f3df80eb632f8461ec4409a68b9ecacd627ac6c09b6aaf5c37131`, 완료 `msg_84b54b3c6618`(2026-10-22T13:54:27Z)이다. 리드는 전문·실제 diff·고정 입력 27건을 대조했고 hash 불일치 0이다(E/`gardener-lead-audit.json`).
+- 차단 문서 결함·CI 실패·설정 완화·활성 파트 명단 잔여는 없었다. PR257 두 commit의 CI는 네 workflow씩 8건 모두 성공이다. 정리 제안은 기존 `official-draft-check-helper`에 원천을 보태는 한 건이며, 새 후보 행·채택·구현은 없다. 상세 제안과 승인 경계는 [BACKLOG](../../../00_Document/operations/BACKLOG.md)의 해당 ID에만 두고 이 goal에 진행 장부를 복제하지 않는다.
+- 기존 생존 신호 편차 647초·349초는 기존 `heartbeat-interval-review` 처리와 사용자 운영 선택에 따른 기록이며 새 후보로 늘리지 않았다. Gardener의 신호 4개는 기존 helper에서 최대 간격 131초·300초 초과 0구간이었다. 첫 신호 전과 완료 뒤는 미측정이다(E/`gardener-scoped-signals.json`, `gardener-liveness-result.json`).
+- Gardener의 첫 heartbeat 시도 두 건은 hook의 메모 선행·출력 손실 검사에 실행 전에 막혔다. 지정 밖 `hb1.json`은 생성되지 않았고 리다이렉트 없는 단일 명령으로 신호를 보냈다. 보고 한 파일 계약과 출력 저장 안내가 부딪친 첫 관측만 남기며 새 규칙·예외·후보는 만들지 않는다. 권한 우회·설정 변경은 없었다.
+- 완료·쓰기 종료와 실제 identity를 확인해 release한 뒤 정확한 Gardener pane만 닫았다(`ptyKilled=true`). 부모 Rules pane 생존을 확인하고 완료 묶음을 ack했다(E/`gardener-release.json`, `gardener-before-close-identity.json`, `gardener-close.json`, `ack-gardener-completed.json`). 세션은 재사용하지 않는다.
+
+## 다음 계획 후보
+
+- BACKLOG `official-draft-check-helper`: Gardener의 줄 끝 차이 사후 대조 사례를 기존 행에 미승인 근거로 추가했다. 기존 승인 범위·담당 후보·대기 상태는 유지하며, helper 범위 확대나 메인 보고 생략은 채택하지 않았다. 후보 도착 검사는 기존 `node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-22-art-level-formal-parts/goal.md`로 리드와 독립 실사자가 각각 실행하고 원시를 E에 보존한다. 다음 goal을 자동 발행하지 않는다.
+
+## 종료 기록 실사와 남은 절차
+
+- 종료 기록은 이 goal, CURRENT Rules 한 줄, BACKLOG 기존 후보 한 행의 세 파일이다. 신규 독립 `gpt-6.1-sol xhigh` 문서 실사를 한 번 수행하며 구현 Task는 해당 없음(리드 소유 종료 문서)이고 Gardener Task는 원천으로 연결한다. 실사 시 실제 diff·원문·hash·링크·후보 도착·현재 상태의 사실성을 대조한다. 문서/실제 제품 실행을 구분한다.
+- 최종 고정 이후 판정·PR 번호·정확 head·원격 CI·병합·최신 main 정리의 관측은 E/`closeout-review/` 및 메인 승인/종료 묶음에 보존한다. 실사 뒤 문서를 고쳤으면 최종 변경을 신규 독립 재실사하며 재실사 결과를 goal에 다시 쓰지 않는다. 이 기록 시점에는 종료 실사·종료 PR 병합·최신 main 정리가 아직 남았다.
+- 종료 PR도 메인/사용자 관문을 거친다. 병합 수신 뒤 `git fetch`·clean 확인·`git checkout --detach origin/main`·HEAD 40자 보고를 수행하고 R-8 종료 준비를 보낸다. 보류 branch `feat/shared-execution-lock-20261015`의 `2419c0132fde71232fe1e9be4696897efb9e7281`과 기존 NOT PASS를 보존한다. 코드·게임·DB·Unity·WSL·새 도구 실행은 이 종료 기록에서도 없다.
 
 ## 적용 중인 사용자 결정
 
