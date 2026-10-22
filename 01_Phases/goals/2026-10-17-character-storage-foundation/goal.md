@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 실행39 failed 정산·작업자 종료, Main이 EngineBoundary 두 리터럴 수리를 기존goal 안의 계약 변경으로 허용해 실행40 준비.** fake release 정렬 수리와 원시를 보존했다. preservation은 아직104 PASS/3 FAIL 뒤 미완주이며 남은 R39-P01은 제품 도구의 HistoryAfter4/Release1 대 current5/2다. 새 계약은 해당 파일의 두 값만 변경하도록 고정하고 migration/manifest 근거표를 붙였다. 실제 창 배정 전 신규작업자/추가실행0, 독립 차단 해소·goal·PR 완료는 아니며 writer DB는 아침 사용자 결정 전 실행0이다.
+**상태: 실행39 failed 정산·종료, preservation40 두 리터럴 수리 계약 READY/실제20분 창 대기. 별도 writer 전용 DB A 승인을 받아 실행41 계약을 리드 수락하고35분 창을 요청한다.** preservation은104 PASS/3 FAIL 뒤 미완주이고 R39-P01의 HistoryAfter4→5/Release1→2 두 값만 기존goal 안에서 수리한다. writer는 승인 frozen 카드의 새 DB 하나/실제 경합3시험/owned GUID 두행 삭제/DB보존만이며 실제 SQL·신규작업자0이다. Level S2-A 반환(늦어도22:20:20Z)→Core preservation20분→그 뒤 새 요청 도착순이다. 실창 배정 전 추가실행0, 독립차단 해소·goal·PR 완료가 아니다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -20,6 +20,15 @@
 - 메인 대조 전에도 API 문서 작성은 허용. 작업자 발행은 대조 회신 뒤. 다른 파트 착수는 메인이 각각 별도 승인하며 Core는 지시하지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### writer 경합 새 전용 시험 DB A 승인 — 2026-10-23
+
+현재 Main msg_f8c4fdba9103(2026-10-22T21:36:04Z/from_handle term_af8df74f-854d-4b86-9022-65d6cd2c14d8)이 메인 pane 제출 원문을 전달했다. 이 pane 직접 사용자 입력으로 격상하지 않는다.
+
+> 2) Core 캐릭터 저장 - 쓰기 경합 시험용 새 전용 시험 DB를 만들어도 되는지 → A 승인
+
+허용 범위는 review-repair-36/writer-db-command-card.md(SHA256 94F93C5E397E9A45D0FA19F718A2B4B37B412BB142D84210E30FE4C0D260EE04) 그대로다. tcp:localhost,15433에 새 Dawnholder_Test_CatalogRace_20261023 하나, 이미 있으면 중단한다. 기존 프로젝트 DB 연결0이며 카드 명시 master는 존재검사/생성 제어 연결만 즉시dispose한다. 고정base48aabbd5의 기존도구로 빈release4 설치→현재 실제 Invoke-Migrations로 release5 writer경합3시험, DDL은 기존001~005/modules뿐이다. 시험A owned GUID 두행만 삭제, DB DROP/자동cleanup0·DB보존, Windows 통합 인증/최대 own3연결·비밀/로그인/서비스/전역/KILL0이다.
+Main 별도25~35분 창에서만 실행하며 preservation20분과 합치지 않는다. 신규 실행자 계약을 고정하고 리드 수락 뒤 창을 요청하라는 지시다. 경합 미관측은 FAIL이며 DB 삭제는 이 승인에 없다. 현재 queue는 Level S2-A 반환 늦어도22:20:20Z→Core preservation20분(준비통지 뒤)→새 요청 도착순이다. Unity/LevelWSL 창과 겹치지 않는다. 원문은 writer-race-execution-41/main-user-authority.md와 regression-execution-40/inbox-wake-22-scope-ack.json이다.
 
 ### 밤중 기존 승인 작업 계속 — 2026-10-23
 
@@ -370,6 +379,10 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**현재 첫 일 — Main 실제창 뒤 preservation40부터 실행하고 writer41은 별도35분 창을 요청한다.** Main msg_f8c4fdba9103의 사용자 A 전달을 대조했다. 위 새 승인 절과 frozen 카드의 경계만 writer41에 반영했다. writer-race-execution-41/contract-v1.md(SHA256 027534510E590A18F913AA023ADBE3EEE753115478ACD06D763A37F26FDE1BB2)·source-inputs.json·source-excerpts.md·execution-plan-v1.json·dispatch-spec.md를 고정하고 lead-acceptance.md로 수락했다. 기준HEAD6141c8ec/제품·규칙126입력 읽기전용 고정일치, base/current001~004 normalized 고정4값 모두일치·source쓰기0/새도구0/SQL연결0/stage둘미생성/신규작업자0이다. 별도 Main35분을 요청하며 실창 원문은 아직 없다. 실제 worker는 창 배정 뒤 신규 Sol max, DB보존·실제block 미관측FAIL·자원선반환·PR직전 새 Opus 판정을 따른다.
+- preservation40은 Main msg_69bd54ff6d31(21:41:16Z)에 이미 READY를 보냈다. frozen40계약 SHA20E535C23AA43E19A7F41152B603A13ED070C69F2C3C506F5E391C89CB722008과127고정입력은 보존한다. 이후 lead goal-only checkpoint가 HEAD를 옮겨도 goal은 계약상 처음부터 제외되므로 실창 때 실제HEAD/goal-only diff·나머지127일치 보충기록으로 이어간다. source/계약을 다시 쓰거나 불필요 재허가를 만들지 않는다.
+- 현재 순서는 Level S2-A 반환 늦어도22:20:20Z→Core preservation40 20분→새 요청 도착순이다. 이 예상시각은 실행권한이 아니다. Main 실제T/res-check 전 worker/추가실행0이며 메일 wake 이외 상시poll/wait/heartbeat0, 대기만 남으면 checkpoint/idle로 턴을 끝낸다. 독립35 #1/#2/#3 각1회·미해소 writer 보류/PR직전 새 Opus는 유지한다.
 
 **현재 첫 일 — 실행40의 준비됨을 Main에 알리고 실제20분 시작 메일 뒤 신규 Sol max를 기동한다.** Main msg_1de79f742fd2(21:29:14Z,current Main handle/요청thread 확인)는 goal의 관련provision/verify·시험 안인 Test-EngineBoundary.ps1 추가를 범위 확대가 아닌 위임계약13+1=14 변경으로 판정했다. 실제 task쓰기는 이 파일의 HistoryAfter4→5·Release1→2 두리터럴뿐이며 나머지1/0/0·reader·rollback/atomicity·pin·SQL·manifest/다른source는불변이다. 새 값은 manifest/migration 원문 근거·단정전후표를 남기고 제품 계산으로 기대값을 만들지 않는다. 다른제품파일이 필요하면 고치지 말고 반환한다. Main은 두파트 준비 중 먼저 준비된 쪽에 다음 창을 주며 동시에 준비됐으면 Level A가 먼저라고 했다. 준비만으로 실행권한을 갖지 않는다.
 - 실행39 worker_done msg_4ece6bad4024(21:26:44Z)를 현재 Task/Dispatch/발신·쓰기종료·실제diff와 대조해 failed로 수락했다. report 전문/context 실제준수/write-audit-final/내부raw를 읽고 worker-release의 released/closed_agent_terminal/archive captured를 확인했다. 활성작업자0·pane재사용0이다. lead-final-audit.json은 고정126에 의도source1 반영 후불일치0·읽기전용113 보존, 이전473/84 필드변경0·이번3PASS/미진입470 연결 및 새3FAIL 원문행 불일치0·이전38 주요9근거hash불일치0·EngineBoundary A5468906… 불변을 확인했다. 새3FAIL은 R39-P01의 옛 단정a로 귀속하며38d3원문/필드는 보존한다. 검증35 #1/#2/#3각1회는 유지하고 새경계를 자동합산하지 않는다.
