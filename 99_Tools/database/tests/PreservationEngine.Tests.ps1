@@ -304,7 +304,7 @@ if ($script:FixtureState.History.Count -eq 5) {
     $script:FixtureState.Releases = @(
         [pscustomobject]@{
             Version = 4
-            ManifestChecksum = 'C529392B46BB0F02D7A863201D74B9CC60187842365B1DBDCF8953CEE714A731'
+            ManifestChecksum = $script:Case.HistoricalReleaseChecksum
         },
         [pscustomobject]@{
             Version = 5
@@ -528,6 +528,8 @@ function Invoke-EntryCase {
         RestoreMismatch = [bool]$RestoreMismatch
         EventPath = $eventPath
         Snapshot = $snapshotInput
+        # Test-only history is input data; embedding it in the copied product helper would add an unregistered consumer.
+        HistoricalReleaseChecksum = 'C529392B46BB0F02D7A863201D74B9CC60187842365B1DBDCF8953CEE714A731'
         History = ConvertTo-Json -InputObject $manifest.MigrationManifest -Depth 5 -Compress
     }
     Write-FixtureText -Path $casePath -Text (ConvertTo-Json -InputObject $caseData -Depth 10)

@@ -107,7 +107,7 @@ $permissionsText = (Read-FixtureText -Path (Join-Path $script:ToolRoot $permissi
 $grants = @([regex]::Matches($permissionsText, '(?m)^GRANT EXECUTE ON OBJECT::dh\.(\w+) TO (dh_runtime|dh_recovery);$') |
         ForEach-Object { $_.Groups[1].Value + '>' + $_.Groups[2].Value })
 Assert-Equal -Name 'permissions: exactly ten individual public EXECUTE grants (runtime6/recovery4)' `
-    -Expected 'ReadAdmission>dh_runtime,AcquireAndLoad>dh_runtime,WriteSafeCheckpoint>dh_runtime,ReleaseRuntime>dh_runtime,ResolveRuntimeOperation>dh_runtime,InspectRecovery>dh_recovery,RecoverAndLoad>dh_recovery,ReleaseRecovery>dh_recovery,ResolveRecoveryOperation>dh_recovery,CharacterCatalog>dh_runtime' `
+    -Expected 'CharacterCatalog>dh_runtime,ReadAdmission>dh_runtime,AcquireAndLoad>dh_runtime,WriteSafeCheckpoint>dh_runtime,ReleaseRuntime>dh_runtime,ResolveRuntimeOperation>dh_runtime,InspectRecovery>dh_recovery,RecoverAndLoad>dh_recovery,ReleaseRecovery>dh_recovery,ResolveRecoveryOperation>dh_recovery' `
     -Actual ($grants -join ',')
 
 # ---- Manifest identity and shape.

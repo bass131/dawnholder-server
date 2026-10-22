@@ -520,11 +520,11 @@ $root = New-DatabaseFixture -Name 'text-mode-violation'
 Write-FixtureText -Path (Join-Path $root 'modules/procedures/extra_lookup.sql') `
     -Text "CREATE OR ALTER PROCEDURE dh.ExtraLookup`nAS`nBEGIN`n    SET NOCOUNT ON;`nEND;`n"
 $textViolation = Invoke-StructureCheck -Root $root -Text
-# The host may wrap long warning lines when output is redirected; compare whitespace-normalized text.
+# The host localizes the warning prefix and may wrap long redirected lines; preserve the diagnostic contract.
 $textOutput = ($textViolation.StdOut + $textViolation.StdErr).Trim() -replace '\s+', ' '
 Assert-True -Name 'text mode violation -> status line and file:line warning with fix' -Condition (
     $textViolation.ExitCode -eq 0 -and $textOutput -cmatch 'Module structure: violation\.' -and
-    $textOutput -cmatch 'WARNING: modules/procedures/extra_lookup\.sql:1: .*Fix: Move the known object') `
+    $textOutput -cmatch '(?:WARNING|경고): modules/procedures/extra_lookup\.sql:1: .*Fix: Move the known object') `
     -Detail $textOutput
 
 Complete-TestSuite
