@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 실행40은115 PASS/4 FAIL로 완주해 failed정산·작업자종료.** 승인된두리터럴수리로 BeforeComplete복원4·atomicity2는PASS다. 남은R40-F01은기존fixture가MalformedRelease의REPLICATE자극을해석하지못한b이며범위밖수리0으로Main에반환한다. 현재자원반환완료·활성worker0,writer41별도35분은ContentU1수리50분뒤접수됐고실제새창전SQL/DB/worker0이다. 독립35차단/goal·PR완료는미해소다.
+**상태: 실행40 failed정산·종료 뒤 Main이 R40-F01 후속계약을 같은goal로 허용했고 실행42 창전 정적입력조사·계약준비 완료.** 기존6자극/42고유saved NonQuery를한번에대조해현재동종누락은MalformedRelease REPLICATE 한종/두진입으로고정했다. 실제source쓰기·추가시험·활성worker0이다. writer41 35분→Art19분→preservation42 20분 순서로실제Main창을기다리며,독립35차단·goal·PR완료는미해소다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -379,6 +379,10 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**현재 첫 일 — 실행42의 정적일괄조사·계약 READY를 Main에 보내고 writer41 실제창부터 기다린다.** Main msg_a6835255f9bf(22:16:30Z/currenthandle/thread msg_8030ec50b363확인)는같은goal/기존13PS안PreservationEngine.Tests한곳의기존자극해석수리·단정/reader/SQL/정렬/pin보존·기존suite1회를허용했다. 창전남은fake입력일괄정적조사조건은regression-execution-42/static-input-review.md·static-input-inventory.json에완료했다. 기존engine자극6종/선언4·5/parameter·negativeflags·단위입력및40saved9events/85NonQuery·고유42SQL을한번에대조했다. 현재같은원인미처리후보는MalformedRelease REPLICATE('0',64)한종(AfterComplete/unobserved두곳)뿐이다. DefinitionDrift의REPLICATE0/F는다른prefix분기로현재fresh고정state에서처리/40거부PASS이며모든임의SQL상태의해석을주장하지않는다.
+- 신규실행42계약regression-execution-42/contract-v1.md SHA256 EDA224B8EEED7135CF60E4FBA94DDE635A00E1180CF4220FA812A76B1CDF6023 는해당기존release responder한곳만보완·새함수/일반parser/하네스/도구·case/단정추가0·기존119이름/기대값보존이다. task쓰기1/상한14·다른126고정읽기전용/leadgoal예외1을구분하고source-excerpts/plan/static표를붙였다. 실제source수리·기동/실행0이며새catalog42 WorkRoot/TEMP는미생성이다. 별도20분실창전새worker0이다.
+- 현재Main순서는ContentU1수리50분(반환늦어도23:00:08Z)→Corewriter41 35분→Art19분(요청22:02:19Z)→Corepreservation42 20분→Level새요청이다. writer41접수·승인카드/제품126입력불변,실제Main res-check/T/entry마감/반환메일전SQL/DB/worker0이다. 실행40liveness초과327/309를within으로쓰지않는처리와독립35 #1/#2/#3각1회유지도Main이받았다. 준비완료뒤goal-onlycheckpoint/idle,상시poll/wait/heartbeat0이다.
 
 **현재 첫 일 — 실행40 failed정산/새R40-F01 후보를 Main에 반환하고 writer41 실제창을 기다린다.** msg_9671cf107b0a의Task/Dispatch/currentfrom·report전문/context/실제diff/쓰기종료를대조해failed를수락했다. worker-release는released/closed_agent_terminal/archive captured,활성worker0·pane재사용0이다. 승인source두값만2bytes·최종3A8EBD407E987AD39334288430808DE17CFEF97B269438F34F387840A8E1680E/lastwrite22:00:20.546Z다. PS5.1 suite실제22:01:11.955Z~22:02:53.115Z/101.1598초·exit1/results119건115PASS4FAIL0OBSERVED로완주했다. BeforeComplete4복원/atomicity2PASS·후속3경로실제도달,상위이전3실패는이번PASS다.
 - R40-F01(b): PreservationEngine.Tests.ps1:370–372의quoted64hex INSERT대역이 Test-EngineBoundary:97의기존 VALUES(3,REPLICATE('0',64))자극을해석하지못한다. 실제AfterComplete events.Log165/unobserved158·UNOBSERVED SqlNumber0와EngineCheck.Common재전파를읽었다. AfterComplete복원5PASS/거부3PASS·MalformedReleaseUNOBSERVED,의도547두개외새0이더해진결과가상위4FAIL이다. 해당fixture는이번task읽기전용이라변경0,단정/SQL/reader/rollback/atomicity완화0이다. 좁은후보는next-candidate.md이며반복된preservation경계수리메인체크포인트로보고한다. Main판정/새계약/실제창전추가수리·worker0이다.
