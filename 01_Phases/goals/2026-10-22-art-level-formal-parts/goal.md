@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-다음 첫 일은 독립 문서 실사 PASS의 원문·고정 입력을 보존한 상태에서 리드가 문서 PR을 만들고 정확한 head를 메인에 보고하는 것이다. 작성자와 검증자는 모두 정산·종료했다. 병합은 PR별 사용자 정확 head 승인 뒤 메인이 수행하며 이 리드는 병합하지 않는다.
+다음 첫 일은 메인이 [PR257 - Art·Level 정식 파트 반영](https://github.com/bass131/dawnholder-server/pull/257)의 판정 원문·R-2 표본을 대조하고 사용자 정확 head 병합 승인을 받는 것이다. 작성자와 검증자는 정산·종료했고, 원래 보류 branch/HEAD의 clean 복귀도 확인했다. 이 PR 상태 기록을 커밋·푸시한 뒤 다시 그 branch로 돌아가 최종 head와 복귀 근거를 메인에 보낸다. 리드는 병합·자동 병합하지 않는다.
 
 - 범위 v1은 메인 `msg_05287e94df36`의 사용자 지시 대조로 착수했다. 뒤이은 사용자 결정 A(메인 전달 `msg_7c3b9abcbabf`)로 Art·Level만 정식 승격하고 World의 지위·경로·권한은 유지하는 범위가 확정됐다.
 - 공간 `rules-active`, branch `docs/art-level-formal-parts-20261022`, 기준은 최신 원격 main `65cdd20054b6ef296e814ad34a9a3363eb1a0877`이다. 보류 branch `feat/shared-execution-lock-20261015`와 기존 NOT PASS는 보존한다. PR 보고 뒤 시작 branch로 clean 복귀한다.
@@ -16,9 +16,10 @@
 - [x] 문서 작성
 - [x] 메인 문장 반영
 - [x] 독립 문서 실사
-- [>] 문서 PR 생성
-- [ ] 원래 브랜치 복귀
-- [ ] 메인 병합 대기
+- [x] 문서 PR 생성
+- [x] 원래 브랜치 복귀
+- [>] PR257 병합
+- [ ] 목표 종료 정리
 
 ## 요구사항 원천과 범위 결정
 
@@ -110,6 +111,9 @@
 - 검증자 자신의 신호 12:55:48Z→13:01:37Z 349초 편차는 원시/helper로 확인해 구간·이유를 기록했다. 공식 질문 대기 13:02:18Z→13:07:22Z와 구분하고 전 구간 준수를 주장하지 않는다. 다른 의심 근거가 없어 기존 초과 정산 기준에 따라 추가 감사·재작업 없이 처리했다(E/`doc-review-heartbeat-question-reply.json`, 판정 OP-2). 작성자 647초는 메인 처리 OP-1로 별도 보존한다.
 - 검증자의 전체 쓰기 종료·worker_done succeeded 뒤 release는 retained/external_terminal을 반환했다. exact 현재 identity/빈 prompt를 확인해 해당 pane만 닫았고 부모 Rules pane 하나를 확인했다(E/`doc-review-release.json`·`doc-review-close.json`·`doc-review-after-close-terminals.json`). 완료 delivery도 전체 처리 뒤 ack했다. 검증자는 재사용하지 않는다.
 - 위 고정 실사 입력은 보존하며, 이 단락과 다음 PR/복귀 상태 등 리드의 사후 결과 기록만 goal에 추가한다. 실사 뒤 정본 다섯 파일과 CURRENT의 내용을 변경하지 않으며, 최종 PR 보고에서 실사 입력과 후속 행정 기록을 구분한다.
+
+- **PR 생성과 복귀 확인:** [PR257 - Art·Level 정식 파트 반영](https://github.com/bass131/dawnholder-server/pull/257)을 main 대상으로 생성했다. 원문/receipt는 E/`pr-body.md`·`pr-create-receipt.json`, commit/push 원시는 E/`git-commit-documents.txt`·`git-push-documents.txt`다. 원래 `feat/shared-execution-lock-20261015`/`2419c013`로 clean 복귀해 보류 상태 보존을 확인했고, 이 PR 번호·단계 기록을 위해 문서 branch로 잠깐 돌아왔다(E/`return-original-branch-first-state.json`). 마지막 상태 기록 push 뒤 다시 원래 branch로 clean 복귀하며 최종 head/원격 대조는 E와 메인 보고에 둔다.
+- 현재 PR은 열림·미병합이다. 전체 목표 종료/Gardener/결과 기록과 모든 PR 병합이 끝나기 전에는 최신 main detach 정리를 완료로 표시하지 않는다. 다음 goal을 자동 시작하지 않는다.
 
 ## 적용 중인 사용자 결정
 
