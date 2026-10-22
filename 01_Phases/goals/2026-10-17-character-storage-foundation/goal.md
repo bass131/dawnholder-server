@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 재기동 확인·실행자 종료·최신 main 통합·최종 Opus 정적 READY 완료, 기존 DB 반복 허용/실행 대기열 네 번째.** before/after 각 exit0·같은 ID/Mage·실제 old507→new480/birth·동일 DLL hash를 원시 대조했다. 양쪽 정상종료와13:34:27.624Z 작업잔여0 확인 뒤 Main에 창을 반환했다. 최종 보고/쓰기감사29파일·World63입력을 대조하고 정확 pane을 닫았다. Main msg_cee1f10d5be8은 기존 승인 안의 B3 반복을 메인 판단으로 허용했고 같은 대화 resume을 지시했다. 창 미배정·검증자 미발행이며 신규 독립 판정/PR은 남아 있다.
+**상태: 같은 대화 재개·새 Run 바인딩 완료, 최신 main 반영 뒤 신규 Opus 정적 실사 발행 준비.** 기존 재기동 before/after·같은 ID/Mage·양쪽 정상종료·작업잔여0과 실행자 종료 근거는 유지한다. Main msg_1fe0ec82b039에 따라 검증자의 정적 준비를 창 밖에서 시작하고 실행 직전 READY 뒤 새 창을 요청한다. 기존 승인 안 B3 반복 허용은 유지하며 현재 실행창 권한/신규 독립판정은 아직 없다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -20,6 +20,16 @@
 - 메인 대조 전에도 API 문서 작성은 허용. 작업자 발행은 대조 회신 뒤. 다른 파트 착수는 메인이 각각 별도 승인하며 Core는 지시하지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 밤중 기존 승인 작업 계속 — 2026-10-23
+
+새 Main msg_1fe0ec82b039(2026-10-22T16:08:31Z)이 메인 pane Enter 제출 원문을 전달했다. 이 pane 직접입력으로 격상하지 않는다.
+
+> 클로드 업데이트하고왔어, 이어서 진행해보자 인계목록 체크해줘
+>
+> 나 슬슬 잘 건데 잘 사이에 계속 작업 수행해줘
+
+메인은 이를 인계 메모의 리드 재개·진입 메시지·실행 창 운영을 기존 승인 안에서 계속하라는 뜻으로만 해석했다. 병합·새 사용자결정·사용자 손이 필요한 일은 아침까지 기다리며 그 밖의 새 사용자결정은 없다. 원문은 준비35/entry-terminal-inbox.json에 있다. Core는 같은 대화 resume·신규 Opus 정적 실사/준비 발행→실행 직전 창 시작 요청으로 잇고, 과거 창·handle을 실행 권한으로 쓰지 않는다.
 
 ### 전체 goal 종료 뒤 worktree 최신 main 정렬 — 2026-10-22
 
@@ -360,6 +370,10 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**2026-10-23 현재 첫 일 — 준비35의 현재 source/계약을 고정하고 신규 Opus를 정적 실사·준비로 발행.** 같은 대화 재개 뒤 새 Main term_af8df74f-854d-4b86-9022-65d6cd2c14d8/리드 term_be147670-4f48-47a4-8de5-162d4c89bb1f를 진입 원문과 현재 CLI로 대조했다. Run run_1b758e0cc722는 consumer_generation9로 인수했고 회신 주소는 run:run_1b758e0cc722다. 진입6115fe897178a42542b193f5f1dbb109e1d46979/clean·v2의114입력 중 goal-only 차이1개·제품/시험 불일치0을 확인했다. 이후 전진한 origin/main8a4bea491aac3f174e9ce6a322aedf383fb18f46을 기존 최종검증 전 통합 지시에 따라 fetch/충돌0으로 반영했고 통합HEAD36c27c6cfbab5b6e906890332d9f46b7644ee6da/clean이다. 신규 변경은 타파트 종료3문서이며 build/시험은 실행하지 않았다. 준비34 v2/원시는 보존하고 준비35/context.md·source-comparison.json·main-integration.json과 신규 발행 계약으로 연결한다.
+
+Main msg_1fe0ec82b039의 현재 순서는 **신규 Opus 정적 실사/시험 준비 → 실행 직전 READY → Main에 창 시작 요청 → 새 res-check·T/lastEntry/반환 수신 → B1 WSL 비DB→B2 PS5.1→B3 Windowsdotnet 실DB**다. 예상 실행45~60분·동시자원하나/Unity0이다. Level은16:04:49Z 반환했고 Main16:07:19Z 자원잔여0/SQLRunning을 관측했으나 이것은 새 실행창 배정이 아니다. Core 차례지만 창 시작 요청 전에 Art가19분 READY를 먼저 내면 Art→Core로 바뀔 수 있으며 메인이 알린다. B3 기존승인 범위 판단 msg_cee1f10d5be8은 그대로다. 리드는 우편함 wait/sleep/poll 없이 단독check로 메시지를 처리하며 모델/권한 막힘은 상태를 보존해 메인에 올린다. 현재 검증자 발행 전이다. 이전 대기열 문단은 당시 기록이다.
 
 **같은 대화 재개/다음 첫 일 — Main의 새 res-check·시작T/반환을 수신 → 현재 HEAD/source 대조 → 신규 Opus 한 명 발행.** Main msg_cee1f10d5be8(13:59:41Z, 현재 from_handle 일치)이 대기열과 기존 DB 반복 범위를 확정했다. 기존 사용자 승인 안의 같은 DB tcp:localhost,15433/Dawnholder_Char_8256bcde8c80·Windows 통합 인증·런별 고유 시험행/authority/progress/receipt 쓰기·잠금/DMV 관측 반복을 새 사용자 승인 없이 허용하는 **메인 판단**이며 사용자 직접입력으로 격상하지 않는다. DDL/새DB/login/grant/기존행삭제/cleanup/KILL0, 범위 밖 필요가 생기면 중단/메인에 올린다. 원시는 준비34/inbox-wake-after-ready-v2.json이다.
 
