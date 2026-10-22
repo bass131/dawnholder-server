@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 합동 재기동 입력 확정·오늘 Unity 창들 뒤 사용자 참여 확정, 정확한 창 시작 시각 대기.** 기존 실DB 저장/새 SQL 연결 재조회와 수리30 자체회귀 근거는 유지한다. World Stored 봇 정적 인계를 실제 파일과 대조하고 정확 두 client argv·공개 profile 공급·DB 쓰기/보존·Linux 새 PID 경계를 준비했다. compile·실제 서버 재기동/World 합동 흐름과 Core PR 직전 신규 Opus1회는 미실행이며 전체goal완료/실화면완료로 보고하지 않는다.
+**상태: 합동 재기동 준비 유지·PR 직전 Opus 계약 초안/READY 정적 준비 완료, 정확한 창 시작 시각 대기.** 기존 실DB 저장/새 SQL 연결 재조회와 수리30 자체회귀 근거는 유지한다. World63파일·공개 입력과 정확 argv를 재대조했고 사용자2회 기동/메인 신호 분리를 유지한다. 최종 PR 검증의 diff·강 등급·필수 시험·정확 명령/예상45~60분 입력은 `prereview-ready-34/`에 준비했다. compile·실제 서버 재기동/World 합동 흐름·신규 Opus 판정은 미실행이며 전체goal완료/실화면완료로 보고하지 않는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -46,6 +46,8 @@ Level 창 반환 뒤 메인이 res-check를 하고 Core를 다시 열거나 깨�
 13:40KST 신규 리드 진입에서도 메일을 읽기 전 전체 ORCA_* 조회를 해 hook token 필드가 도구 출력에 포함되는 동종 재발이 있었다. 메인 `msg_4fbe90a1204d`와 후속 `msg_17bf093941d6`로 보고했다. 값의 별도 파일 저장·재인용·전달·사용0이며 이번 세션 전체의 비밀 열람0을 주장하지 않는다. 기존 이름 지정 조회 제한을 그대로 적용하고 규칙 파일/검사 구현으로 범위를 넓히지 않는다. 원시값을 복제하지 않은 관측·시점은 `joint-restart-plan-31/context.md`에 보존했다.
 
 메인 `msg_44e38cbc51c5`로 연 신규 리드 진입에서도 메일을 읽기 전 전체 ORCA_* 조회로 같은 필드가 출력되는 재발이 있었다. `msg_93c08ae9953f`로 즉시 메인에 보고했고 비밀값의 별도 파일 저장·재인용·메시지 전달·사용은0이다. 이번 세션 전체 비밀 열람0을 주장하지 않는다. 기존 이름 지정 제한을 적용하며 규칙 파일은 수정하지 않는다. 값 없이 남긴 관측은 `joint-restart-ready-33/context.md`에 있다.
+
+메인 `msg_cb46b0e453e9`로 연 20:50KST 신규 리드 진입에서도 메일을 읽기 전 전체 조회로 같은 필드가 도구 출력에 포함됐다. `msg_37bace7c4abc`로 즉시 보고했고 값의 별도 파일/메시지 복제·사용은0이다. 세션 전체 비밀 열람0을 주장하지 않으며 기존 이름 지정 제한을 적용한다. 원시값 없이 시점·경계를 `prereview-ready-34/context.md`에 남겼고 규칙/검사 구현은 바꾸지 않는다.
 
 메인 `msg_fd0687ba7cb8`(2026-10-22T02:16:08Z)은 사용자 결정이 아닌 **메인 범위 판정**으로 200→8, 202→15, 203/204/206/207→14를 확인하고 O-CAT-REJECT-03 제품3파일 및 D-CAT-LITERAL-04 시험 literal1곳을 신규 Sol max 한 명이 같은 PR에서 수리하도록 승인했다. SQL/migration/manifest/PDL/wire번호/설정 변경0, PR 직전 Opus1회다. 201/205는 기존 fence/dispatch 의미를 보존해 Core·World 리드가 조율하고 공개 계약 문구 차이만 메인에 올린다. 정적 수리→관련회귀20~30분→합동재기동30분→PR직전Opus45~60분 순서이며 각 실행 창은 정확 argv가 정해진 뒤 별도 요청한다.
 
@@ -351,7 +353,12 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**다음 첫 일 — 오늘 Unity 창들 뒤 메인의 새 합동창 T를 받아 재개.** 사용자 참여는 A로 확정됐다(`msg_c629e1487ba6`, 적용결정 원문 참조). `run_1b758e0cc722` 인수 후 `joint-restart-ready-33/preparation.md`와 `user-server-commands.md`, 메인의 정확 T부터 확인한다. 합동30분 창 요청은 `msg_4e5b9a23fd10`이고 서버2회 사용자 실행 분리는 `msg_b48d51625b82`가 수용했다. Content→Art→Level 반환 뒤 메인이 res-check/새T를 정하며 21:10쯤은 확정 T가 아니다. 대기뿐이므로 재개점·로컬 기록commit 뒤 종료 준비하며 wait/poll/sleep을 열지 않는다.
+**다음 첫 일 — Level 창 반환 뒤 메인의 정확 합동 T를 받아 신규 실행자에게 build부터 발행.** 사용자 참여 A와 서버2회 사용자 직접 실행/메인 신호는 유지한다. 현재 메인 `msg_cb46b0e453e9`의 순서는 Level(반환 늦어도12:26:37Z)→Core합동30분→Art HUD19분이다. 예상 반환/21:10쯤을 실행 T로 바꾸지 않는다. `prereview-ready-34/ready-draft-v1.md`·합동 실행자 초안과 준비33의 preparation/사용자 카드가 첫 입력이다. 이번 지시에 따라 B정적 준비 뒤에는 종료 준비 대신 짧은 status 후 턴을 끝내며 pane을 열어 둔다. 우편함 wait/poll/sleep은 열지 않는다.
+
+- 신규 리드가 HEAD/clean을 대조하고 같은 Run을 인수했다. World 고정63파일과 인계문/pin·Core 공개profile/CA·양쪽 launcher hash 재대조 결과 불일치0이다. World 공개2파일은 미공급으로 남기며 신규 실행자가 소유한다. 실제 관측/경로와 read-only107입력 snapshot은 `.backups/verification/2026-10-17-character-storage-foundation/prereview-ready-34/`에 있다. source/argv·준비33 입력은 바꾸지 않았다.
+- PR 직전 신규 Opus의 계약 초안/READY·실제 구현Task/근거 지도·diff 원시·관련8절 원문을 같은 폴더에 준비했다. 준비 기준96파일 +9657/-622는 로컬 origin/main merge-base 비교이며 최종 PR 원격 diff를 대신하지 않는다. 강 등급은 DB/영속·입력/수명·도구 및50줄 이상에 따른다. 전체 비DB 회귀→기존PS5.1 오프라인→최종fresh DLL의 Windows 통합 인증 DB시험을 순차 실행하는45~60분 예상이고 새 하네스0이다.
+- 합동 실행 결과/쓰기 종료·최종head/base/diff와 정확 실행창/기존DB시험 반복 범위를 발행 직전에 채운다. 검증자는 합동 결과 뒤에만 신규 Opus로 연다. 역사LocalDB fresh/upgrade·일부 거부/경합/Express metadata·현재 API 실DB를 구분하고 부족한 필수 증거는 보류한다. 현재 실행/작업자/검증자 발행/독립PASS0이며 PR/병합은 아직 아니다.
+- 메인 후속 `msg_c310cd9a2038`(11:55:34Z, 현재 from_handle 대조)은 **합동 창 뒤 origin/main 반영 → PR 검증 READY 최종 고정**을 지시했다. 합동 전에는 받지 않고 충돌은 「판단 요청」으로 보낸다. 이번 초안의96파일/107입력은 반영 전 snapshot으로 보존하며 받은 뒤의 실제 diff/규칙/시험목록으로 새 계약을 발행한다. 후속 원문은 같은 근거 `inbox-before-ready.json`이다.
 
 - 메인 `msg_b48d51625b82`가 기존 런처의 credential 복호화/stdin 전송을 직접 확인하고 **서버 기동 두 번만 사용자 직접 실행으로 분리하는 안을 수용**했다. 당시 사용자 참여시각 결정 대기는 후속 `msg_c629e1487ba6`의 오늘 Unity창들 뒤 A 선택으로 해소됐다. Core는 Content→Art→Level 다음 네 번째이며 새T 전 실행하지 않는다. 창이 열리면 메인이 두 명령의 복사카드와 Enter 신호를 사용자에게 전달하고, Core는 빌드 끝·Listening·before 결과·첫PID 종료·새PID/Listening·after 결과를 제목 **「즉시 보고」**로 메인에게 보낸다. 사용자 직접 실행을 AI 대리 실행으로 바꾸지 않는다.
 - 같은 메시지의 PR256/main 병합 전달은 수신했다. 이번 대기 기록에서는 main을 받지 않으며 제품/source/argv 고정입력을 보존한다. 다음 세션이 창 전 입력을 바꾸면 기존 요청을 그대로 실행하지 말고 source/hash·argv를 다시 고정한다. 현재 후속 기록 외 실행/새작업자0이다.
