@@ -42,6 +42,7 @@ namespace Dawnholder.Client.Network.Handlers.Inventory
                 InventorySnapshotApplyResult applied = mirror.ApplySnapshot(revision, currency, slots);
                 if (applied == InventorySnapshotApplyResult.Rejected) return;
                 session.Inventory.ReceiveSnapshot(revision);
+                session.Guild.ReceiveInventoryRevision(revision);
                 if (applied == InventorySnapshotApplyResult.Applied) mirror.NotifyChanged();
             });
         }

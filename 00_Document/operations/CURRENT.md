@@ -4,7 +4,7 @@
 
 - Core: [노트북 SQL Express 시연 DB 도구](../../01_Phases/goals/2026-10-16-laptop-sql-express/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `docs/laptop-sql-express-closeout-20261017`
 
-- <a id="content-worktree"></a>Content: [길드 현황·거점 성장·대장간 화면](../../01_Phases/goals/2026-10-15-guild-client-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `plan/content-guild-ui-20261015`
+- <a id="content-worktree"></a>Content: [길드 현황·거점 성장·대장간 화면](../../01_Phases/goals/2026-10-15-guild-client-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/content-guild-client-integration-20261018`
 
 - World: [길드 서버 — 클리어 보상에서 거점·무기 성장까지](../../01_Phases/goals/2026-10-14-guild-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `docs/guild-server-closeout-20261018`
 

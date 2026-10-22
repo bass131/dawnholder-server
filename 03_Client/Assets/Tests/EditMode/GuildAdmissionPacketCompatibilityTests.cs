@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Network;
 using NUnit.Framework;
@@ -82,17 +81,14 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(21, ProtocolVersion.Current);
             Assert.AreEqual(76, snapshot.Length);
             byte[] chunk = admission.Concat(snapshot).Concat(result).ToArray();
-            if (!replaceBeforeDrain)
-            {
-                LogAssert.Expect(LogType.Warning, new Regex(@"Unknown PacketId 44\b"));
-                LogAssert.Expect(LogType.Warning, new Regex(@"Unknown PacketId 47\b"));
-            }
+            object guild = GuildClientProduct.State(_session);
 
             int consumed = _session.OnRecv(new ArraySegment<byte>(chunk));
             Assert.AreEqual(108, consumed);
             Assert.IsNull(_session.CharacterLoad.Status);
             Assert.IsNull(ClassLoadout.ServerClass);
             Assert.IsFalse(_session.CanSendGameplay);
+            Assert.IsFalse(GuildClientProduct.Read<bool>(guild, "HasSnapshot"));
             if (replaceBeforeDrain) _current = false;
             _queue.Drain();
 
@@ -102,6 +98,7 @@ namespace Dawnholder.Client.Tests
             {
                 Assert.IsNull(_session.CharacterLoad.Status);
                 Assert.IsNull(ClassLoadout.ServerClass);
+                Assert.IsFalse(GuildClientProduct.Read<bool>(guild, "HasSnapshot"));
             }
             else
             {
@@ -109,7 +106,10 @@ namespace Dawnholder.Client.Tests
                 Assert.AreEqual(CharacterClass.Mage, _session.CharacterLoad.LoadedClass);
                 Assert.AreEqual(CharacterClass.Mage, ClassLoadout.ServerClass);
                 Assert.AreEqual((int)CharacterClass.Knight, ClassLoadout.GetMenuSelectedClassValue(-1));
+                Assert.IsTrue(GuildClientProduct.Read<bool>(guild, "HasSnapshot"));
+                Assert.AreEqual(0x0102030405060708L, GuildClientProduct.Read<long>(guild, "SnapshotSequence"));
             }
+            Assert.IsFalse(GuildClientProduct.Pending(_session));
             LogAssert.NoUnexpectedReceived();
         }
     }
