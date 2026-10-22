@@ -479,7 +479,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual(1, mirrorTargets.Count(target => target is InventoryPanel), "R8 the old panel left the mirror");
             Assert.Contains(InventoryPanel.Instance, mirrorTargets, "R8 the new panel follows the mirror");
             Assert.AreEqual(1, mirrorTargets.Count(target => target is HudController), "dungeon R1 the map's HUD follows the mirror once");
-            Assert.AreEqual(2, mirrorTargets.Length, "nothing else follows the mirror");
+            Assert.AreEqual(1, mirrorTargets.Count(target => target is GuildUiController), "the map's guild UI follows the mirror once");
+            Assert.AreEqual(3, mirrorTargets.Length, "nothing else follows the mirror");
             Assert.AreEqual(1, InventoryPanelProbe.Subscribers(requests, "Changed"), "R8 the old panel left the requests");
 
             _fixture.Peer.Send(new S_MapTransition { destMapId = 3, spawnX = 0, spawnY = 0 }.Write());
