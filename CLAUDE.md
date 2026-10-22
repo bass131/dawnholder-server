@@ -23,7 +23,7 @@
 
 ## 메인 세션 진입
 
-- 사용자는 세션을 마칠 때 리드를 모두 닫는다. 새 메인 세션은 [RESUME](00_Document/operations/RESUME.md)의 진입 절차대로 리드를 다시 연다. 마감 구간의 리드는 Core·Content·Rules·CodeMap·Management 다섯이다. 메인은 `C:/Dev/DawnHolder_Project`에서, Core 리드는 `core-active`, 나머지는 승인된 각 worktree 탭에 연다([배치 정본](00_Document/operations/ORCA.md#r1-management-placement)). Core는 GameDev의 새 이름이며 태그 전환은 [전환 정본](AGENTS.md#core-tag-transition)을 따른다.
+- 사용자는 세션을 마칠 때 리드를 모두 닫는다. 새 메인 세션은 [RESUME](00_Document/operations/RESUME.md)의 진입 절차대로 리드를 다시 연다. 마감 구간의 정식 리드는 Core·Content·Rules·CodeMap·Management·Art·Level 일곱이다. 메인은 `C:/Dev/DawnHolder_Project`에서, Core 리드는 `core-active`, 나머지는 승인된 각 worktree 탭에 연다([배치 정본](00_Document/operations/ORCA.md#r1-management-placement)). Core는 GameDev의 새 이름이며 태그 전환은 [전환 정본](AGENTS.md#core-tag-transition)을 따른다.
 - CodeMap은 Architecture 파트의 표시 이름이자 분석·검사 책임의 이름이다. 작업 경로와 태그(`[Architecture 리드 Sol]`·`[Architecture Sol]`·`[Architecture 검증자]`)의 Architecture 이름은 그대로 쓴다.
 - 리드가 준비되면 메인 handle을 Orca 메시지로 알린다.
 - 메인이 직접 하는 운영 의무는 세 가지이며 세부는 각 링크를 따른다.
