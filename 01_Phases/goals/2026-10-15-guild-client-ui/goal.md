@@ -1,10 +1,52 @@
 # 길드 현황·거점 성장·대장간 화면
 
-상태: **결함1의 새 Opus 한정 재검증 PASS·정산 완료, PR255 - 길드 서버 연결 검토·승인 대기.** 원 NOT PASS 실행의 Edit352 중350PASS(독립3 포함)·기존2FAIL과 Play19/19PASS는 보존한다. 수리 후 같은 EditMode 1회는352/352PASS·실패/skip0이며 기존350건 결과 변화0·이름 변경2건 모두PASS다. Play19는 이번 미재실행이다. 새 실행 자원/Registry137값 복귀와 검증자 정산·종료를 마쳤다. 두 계정의 파티·보스 클리어 보상·금고30·거점2/2·대장간 해금, 같은 Golem16/기본Melee 피해20→25와 B개인강화0/보너스0, 강화 요청 수신1은 기존 실제 관측이다. C4 실제 두 요청 경합/거부 화면, C5 A단계0→1·실제 골드20/재료1 소비 표시, C8 남은 입력/팝업·세 해상도와 정상 퀘스트 끝까지 경로는 **리허설 확인(10-24~25, 알려진 미확인)**이다. CI의 정확 head 결과는 [PR255 - 길드 서버 연결](https://github.com/bass131/dawnholder-server/pull/255)에서 별도로 확인하며 실화면 미확인을 통과로 바꾸지 않는다.
+현재 상태(10-22 신규 진입): **하우징 v3 전용 PR 실행 없는 작성 착수. 성장 효과 PR3는 Art V-1/F-1 보완 대기.** 아래 이전 상태/실행 원시는 보존한다.
+
+상태: **성장 효과 소비자 구현·자체 실행 미완료 정산. C9 표시 V-1 차단·기존 시험 F-1 Art 보완 대기, 독립 검증/PR 미진행.** 아래 PR255 결과는 병합 전 검증 기록이며 현재 실행으로 소급하지 않는다. 이전 상태: **결함1의 새 Opus 한정 재검증 PASS·정산 완료, PR255 - 길드 서버 연결 CI4/4·R-2 확인 완료, 사용자 승인 대기.** 원 NOT PASS 실행의 Edit352 중350PASS(독립3 포함)·기존2FAIL과 Play19/19PASS는 보존한다. 수리 후 같은 EditMode 1회는352/352PASS·실패/skip0이며 기존350건 결과 변화0·이름 변경2건 모두PASS다. Play19는 이번 미재실행이다. 새 실행 자원/Registry137값 복귀와 검증자 정산·종료를 마쳤다. 두 계정의 파티·보스 클리어 보상·금고30·거점2/2·대장간 해금, 같은 Golem16/기본Melee 피해20→25와 B개인강화0/보너스0, 강화 요청 수신1은 기존 실제 관측이다. C4 실제 두 요청 경합/거부 화면, C5 A단계0→1·실제 골드20/재료1 소비 표시, C8 남은 입력/팝업·세 해상도와 정상 퀘스트 끝까지 경로는 **리허설 확인(10-24~25, 알려진 미확인)**이다. CI의 정확 head 결과는 [PR255 - 길드 서버 연결](https://github.com/bass131/dawnholder-server/pull/255)에서 별도로 확인하며 실화면 미확인을 통과로 바꾸지 않는다.
 
 ## 재개 지점
 
-**다음 첫 일:** 담당 리드는 PR255 - 길드 서버 연결의 최종 head와 CI를 Main에 보고한다. Main은 판정 원문·R-2 원천 표본과 정확 head CI를 직접 확인하고 사용자의 해당 head 개별 병합 승인을 받는다. 원 강검증·결함1 한정 재검증의 관계와 미실행 경계는 PR에 적었으며 리드/Codex는 병합하지 않는다. 수리자 task_81d37948fade/ctx_4e34468bea27와 새 검증자 task_143544d83db2/ctx_9ef55a0c4d10는 모두 정산·종료돼 재사용하지 않는다. Main msg_804ca34b8b1c의40분 창에서 같은 EditMode1회를 마쳤고 창 반환 msg_a99fb5f6b8c6/Registry137 before차이0이다. 반환 뒤 shared live 재조회·추가native0이다. 근거는 G/pr2-final-review/recheck-1/의 verdict.md/json·lead-settlement.md·lead-settlement-audit.json이며 원 NOT PASS·fix-1·원시를 보존한다. F8 잔여0/리허설 미확인·C9/하우징 별도PR을 유지한다.
+**다음 첫 일:** Main msg_e5d4e50cf67c에 따라 최신 main 65cdd200에서 새 하우징 전용 브랜치 feat/content-guild-housing-20261022로 전환했다. 신규 Sol max 한 명에게 실행 없이 코드·시험 작성/import·meta를 맡긴다. 준비 뒤 Unity가 필요하면 세 줄 「창 요청」을 보내고 Main의 새 시작 전에는 실행하지 않는다. PR3 WIP 6dd1e69b는 원 feat/content-guild-growth-effects-20261022에 보존하고, Art V-1/F-1 main 반영 뒤 새 입력/창에서 이어간다. 실행/독립 판정/PR 생성/병합은 아직0이다.
+
+### 현재 PR 범위 — 하우징 v3
+
+- **만들 것:** 승인된 두 원전경을 서버 확정 거점 레벨에 맞춰 비율을 보존해 표시하고 기존 실제 TMP 값·세 버튼·대기/오류/서버수명 안내를 읽을 수 있는 길드 하우징 화면으로 교체한다.
+- **건드릴 곳:** GuildWindow.cs, 필요 전용 GuildHousingLayout.cs/meta, 신규 Resources/UI/GuildHousing/의 원PNG 두 장/meta와 폴더meta, 이 책임의 신규 EditMode/PlayMode 시험/meta, 현재 goal/CURRENT/자산 출처 문서. Content 단일 제품 작성자만 import·새 GUID를 소유한다.
+- **하지 않을 것:** GuildUiController/BlacksmithWindow/GuildWindowLayout/Art 효과·기존 자산/씬/meta·서버/네트워크/packet/DLL/경제/정책 변경, 새 건물/가구/건설/저장/레벨2 미리보기, 이미지 새 생성/편집, 새 하네스·설정 변경·창 밖 native 실행·병합.
+- **관찰 가능한 완료조건:** 기존 BuildRuntime/Bind/SetOpen/SetInputAllowed·의도 event와 G/Town 진입·우선창/입력/구독/수명·pending/result/refresh 계약을 보존한다. 미동기화를 확정 레벨1로 꾸미지 않으며 실제 서버 확정 전경1/2·길드명/인원/금고/레벨/비용/해금·대기/오류와 세 버튼을709×399·802×451·1920×1080에서 확인한다. 실제 실행·자체수리 후 PR직전 신규 Opus 강 독립 한 번·CI·각PR정확head 사용자 승인/Main병합은 남는다. 이번 정적 단계는 실행 통과가 아니다.
+- **PR 경계/순서:** 최신 main에서 하우징 전용 PR1개. 파일 비교에서 PR3 제품/시험과 겹침0이다. 하우징은 Art V-1/F-1과 독립, PR3는 Art 보완 선병합 뒤 진행한다. 두 Content PR은 각각 검증 완료 뒤 어느 순서든 가능하며 공통 goal/CURRENT 줄은 한쪽을 덮지 않고 양쪽 상태/역사를 합친다. 향후 PR3 가용영역 소비는 GuildUiController.cs의 자기 창 bounds 조회에 두고 GuildWindow/하우징 제품에 쓰지 않는다. 분리근거는 E/housing-v3-20261022/file-overlap.json이다.
+- **승인/범위 근거:** 기존 사용자 v3 승인 msg_fd5a51caa10f와 최신 Main msg_e5d4e50cf67c의 실행 없는 선행 판단이다(사용자 새 결정으로 격상하지 않음). Art 원본은 guild-housing-assets-01/assets의1672×941 두PNG를 무변형 사용한다. 강 등급(UI/자산·다파일·입력/수명 보존), R-7 한정 시범 목표 아님.
+
+- **41 - 하우징 분리 착수와 현재 Run 인수.** Main 진입의 HEAD/clean을 확인하고 consumer_generation5로 같은 Run을 인수했다. 최신main65cdd200·PR3WIP6dd1e69b의 제품/시험 교집합0을 확인하고 하우징 branch로 전환했다. WIP source5경로는 이 branch에 옮기지 않았으며 기존 goal 진척 기록만 보존했다. 근거 E/housing-v3-20261022/lead-context.md·file-overlap.json·main-entry-message.json·run-current-receipt.json. 초기 ORCA 전체 조회1건의 비밀 tool출력 포함은 Main msg_8c99bcc243e8로 즉시 보고했으며 값 재인용/별도복사0·이후 이름지정조회만 한다.
+
+### Art V-1/F-1 공통 기술 계약
+
+Art msg_569f4c2fbc57를 현재 Art coordinator와 대조하고 수용했다. 아래는 양쪽 goal에 고정할 같은 문장이다. Content 소비자는 GuildUiController.cs이고 하우징과 쓰기가 겹치지 않는다. 실제 API/main SHA는 Art 보완 병합 뒤 다시 고정한다.
+
+HUD PR 생성·commit/push 안전 지점 뒤 최신 main의 별도 작은 Art PR에서 Art는 GuildGrowthEffectView.cs·GuildGrowthEffectPresentation.cs에 public bool TrySetAvailableArea(Rect? normalizedAvailableArea) 하나를 추가해 null/미지정은 기존 기본 배치, finite·[0,1] 안·양수 폭/높이 값은 화면 좌하단 원점의 가용영역, 잘못된 값은 false와 기존 배치·진행효과 보존으로 처리하고 Content는 GuildUiController.cs에서 자기 열린 창 전체 영역을 피해 값을 계산·갱신하며 Art가 두 효과 전체 최대 경계·라벨·화면/영역 resize를 소유하고 타이머 재시작·사설 자식 조작·창 숨김·정상 이벤트 생략/지연 없이 기존 BuildRuntime/TryPlayConfirmed를 보존하며, 같은 Art 계약에서 GuildGrowthEffectLifecycleTests.cs·GuildGrowthEffectIndependentLifecycleTests.cs의 Setup/소유 cleanup에 활성 listener 부재 시 owned AudioListener만 보완하고 원8FAIL·기존단정·로그기대를 보존해 동일명령을 재검증하며, Art의 실제 창/전체 애니메이션 경계·아래 버튼 입력·기존 지원 크기 검증과 Content PR3 접속 뒤 원880×495 Town 통합 재확인을 구분해 완료 판정한다.
+
+### 이전 재개 — 성장 효과 소비
+**다음 첫 일:** Main msg_b065a38cba60의 판단에 따라 Art 리드와 V-1 배치/API·F-1 두 fixture AudioListener 보완의 파일 소유/순서를 합의하고 같은 기술 계약 문장을 양쪽 goal에 고정한다. 현재 구현자는 failed 정산·종료했고 재사용하지 않는다. 현재는 Art 답과 후속 창 대기뿐이므로 소스/시험·재개 기록을 로컬 checkpoint로 보존하고 Main에 「종료 준비」를 보낸다. 새 리드는 이 goal과 E/pr3-growth-effects-20261022/의 report·남은항목·Main판단·lead-settlement-audit부터 읽고 현재 Run/경로를 다시 인수한다. Art 보완의 실제 main/API/기준을 다시 고정하고, 필요하면 새 Content 작업자로 공개입력 소비만 연결한 뒤 같은 Edit/Play 명령·두 Town 화면을 새 배정창에서 확인한다. 원FAIL/PNG와C9보류를보존하며수정·자체확인뒤 PR직전신규Opus1회가남았다. 기존하우징v3·리허설·각PR정확head승인/Main병합·기존자산/씬참조보존은유지한다. 우편함wait/sleep/반복조회0·추가native0·push/PR0이다.
+
+### 현재 PR 범위 — 성장 효과 연결
+
+- **만들 것:** 기존 GuildRequestController.GrowthConfirmed를 병합된 Art GuildGrowthEffectView에 연결한다. 현재 세션의 서버 확정 kind와 State의 확정 레벨을 한 번 소비하고 Town의 정상 상태에서 두 kind를 표시한다.
+- **건드릴 곳:** GuildUiController와 필요하면 같은 UI 폴더의 단일 소비 책임 타입/해당 meta, 이 접점의 요구사항 시험, 관련 현재 문서. Art 공개 BuildRuntime/TryPlayConfirmed/CancelAll은 main의 구현을 그대로 쓴다.
+- **하지 않을 것:** 서버 판정·경제·packet·공유DLL·네트워크 확정 알고리즘 변경, Art 효과/기존 자산/씬 삭제·재제작, 하우징·임시효과·새 하네스·전역 설정·병합. 현재 신호가 첫 동기화/Query/재접속/중복을 걸러내는 계약을 재구현하지 않는다.
+- **관찰 가능한 완료조건:** C9의 한 번 재생/미재생을 현재 신호에서 검증하고, 세션 교체·disable/destroy·Town 이탈·메뉴/스토리/상위창·사망/전환 때 취소와 늦은 신호 차단, 정상 Town 두 kind 가시성·본문 가독성을 실제 진입으로 확인한다. 기존 EditMode/PlayMode 관련 시험과 새 독립 Opus의 diff/원시/화면 검토 후 PR/CI/head를 Main에 보낸다. 강 등급(수명 경계·여러 파일 예상, 실제 줄 수는 완료 diff로 기록), R-7 한정 시범 목표 아님. 경량 경로에 따라 중간 독립/새 하네스0이며 창 배정이 필수다.
+- **PR 경계:** 이번 PR은 성장 효과 소비만, 다음은 승인된 하우징v3 전용 PR이다. 각 PR의 사용자 정확 head 승인과 Main 병합을 유지한다. scope 승인 출처는 Main 진입 msg_c818058f6e00·기존 C9/PR3 경계이며 완료조건 축소0이다.
+
+- **39 - 성장 효과 소비 자체 실행·미완료 정산.** 외부 Sol max가 제품1파일·시험2파일/각meta에 서버확정 소비·현재session/구독세대/씬·우선창 취소를 연결했다. 최종Edit 원XML363/363PASS와 Play45중37PASS/8FAIL·신규연결12/12/기존GuildUi8/8PASS를 리드가 대조했다. 실제GUI Town880×495·동적TCP대역에서 거점/무기PNG2장을 확인했으며 실서버/DB·독립/CI통과로 확대하지 않는다. 제출 source5+근거82의bytes/hash87건 차이0, 실패8 case명과 전수분류 일치를 확인했다. 이는 리드 정산이며 독립 판정이 아니다. formal failed 정산 뒤 release/정확pane종료를 마쳤고 재사용하지 않는다. 원문·원XML·PNG·실제diff·정산은 E/`pr3-growth-effects-20261022/impl/report.md`와 상위`lead-settlement-audit.json`·`worker-final-release.json`·`worker-final-close.json`이다.
+- **40 - C9 표시 결함과 기존 시험 환경 보완 판단.** Main msg_b065a38cba60은 무기효과가 기존버튼/안내를 가리는 V-1을 승인된C9 안의 차단결함으로 판단했다(사용자 새결정 아님). Art가 presentation 배치 또는 공개배치입력을 보완하고, 같은 계약에 기존두Play fixture의 Setup AudioListener만 추가하는 F-1 보완을 묶는 것이 기본이다. 로그무시/단정완화0·원FAIL보존/동일명령재실행·PR직전신규Opus1회를 유지한다. Art가 서면으로 넘기기 전 Content의 기존Art파일 쓰기0이며 창숨김/valid신호지연·폐기/사적자식좌표수정0이다. API/파일범위는 아직미합의이며 합의뒤양쪽goal에같은문장으로고정한다. Main 원문은 E/`pr3-growth-effects-20261022/main-defect-scope-decision.md`다.
+- **창 반환과 사본 한계:** Main 배정 Unity1창은10:18:03Z에 작업자잔여0·Preferences10/Registry137 before차이0으로 반환했고 Main에해석보다먼저알렸다. 이후공유live재조회/추가native0이다. probe/g는goal종료까지보존한다. 사본자동차이는승인SENTIS1줄·TimeManager직렬화와MinimapRT CRLF→LF의3개이며원bytes/hash를보존했다. 두설정만이라는반환문구는원시대조후즉시정정했다. 저장소설정이관0·전체bytes동일주장0이며이전실행을미래사본/다음창의권한으로재사용하지않는다.
+
+- **38 - 새 리드 진입과 성장 효과 소비 착수.** Run consumer_generation4로 인수하고 현재 회신 주소를 Main에 알렸다. 첫 환경 식별에서 전체 ORCA 변수를 조회1건하여 비밀 변수가 tool 출력에 포함됐음을 Main msg_b3301fd8a65a로 즉시 보고했다. 값 재인용·근거파일 복사0이며 이후 필요한 이름만 조회한다. 기존 규칙의 반복 위반이며 새 규칙/검사 구현은 Content 범위 밖이라 Main에 보고하고 작업자 계약에 기존 금지 원문을 포함한다. 제품/Unity·DB·새 독립 판정은 당시0이다. 원시 위치 E/resume-20261022/lead-context.md·run-use-receipt.json.
+
+- **37 - 환경변수 전체 조회 금지 적용·기존 조회 사실 기록.** Main 운영 지침 msg_5026eac53bbb(사용자 새 결정으로 격상하지 않음)을 지금부터 적용하고 이후 작업자 계약에도 아래 문장을 넣는다. 현재 Content 리드의 저장된 실제 tool 입력184건에서2026-10-21T22:23:35Z `Get-ChildItem Env:ORCA*` 실행1건과 해당 출력에 hook/launch token 변수명이 있는 사실을 확인했다. 값은 재출력·재게시하지 않았다. 작업자 전체 provider 명령은 미감사라 부재를 단정하지 않는다. 근거는 G/pr2-final-review/recheck-1/lead-env-query-audit.json이다. 첫 parser의0건은 저장형식 오인이라 원시를 보존하고 정정했다.
+
+> 환경 식별에서 ORCA_* 전체를 조회하지 마라(env|grep ORCA, Get-ChildItem env:ORCA* 등). 그 안에 ORCA_AGENT_HOOK_TOKEN·ORCA_AGENT_LAUNCH_TOKEN 비밀 값이 있다. 필요한 값은 ORCA_TERMINAL_HANDLE처럼 이름을 지정해 읽어라. 이름만 필요하면 값 없이 이름만 출력하라.
+
+- **36 - PR255 - 길드 서버 연결 CI·R-2 완료와 병합 대기 종료 준비.** 정확 PR head9924e4680b93d47b1cc71d6a76d01e3b713e7dda에서 architecture-tests/code-rules/dotnet-tests/module-boundaries4개가 모두completed/success임을 리드가 CI원시·현재PR과 대조했다. Main msg_e8e9b5296657는 새 verdict.md 전문·edit-exit·case-set·fix-commit.diff의 R-2 대조 완료와 사용자 미승인/수면 중을 알렸고 병합 대기뿐이면 종료 준비하도록 했다. PR본문에 CI결과와 snapshot의 승인SENTIS/MinimapRT줄바꿈 차이·전체bytes동일 주장0을 반영했다. CI관측 명령2개도 정상exit0으로 끝났고 추가worker/Task/native·병합0이다. 근거는 G/pr2-final-review/recheck-1/ci-final-head-audit.json·ci-completion-*.json·pr-body-v2-ci-complete.md다. 로컬재개commit은 PR에push하지 않고 Main에구분해보고한다. 전체goal은 C9·하우징·리허설 후속이 남아 종료하지 않으며 Gardener/새작업을 자동기동하지 않는다.
 
 - **35 - PR255 - 길드 서버 연결 생성.** 원 강검증 기준73ce98f3와 수리/새검증 기준b1e569c6의 제품·설정·Shared5tree가 같고 최신main71976dab 미반영0임을 확인했다. 담당리드가 branch를push하고 [PR255 - 길드 서버 연결](https://github.com/bass131/dawnholder-server/pull/255)을 생성했다. PR은 검증과 실화면 관측/미확인·C9/하우징 별도경계 및 사용자 정확head 승인·메인 병합을 구분한다. 그 뒤 저장소 변경은 이 정산·PR 연결 문서뿐이며 최종head/CI 원시는 G/pr2-final-review/recheck-1/에 보존해 Main에 보낸다.
 
@@ -603,10 +645,11 @@ Art가 쓰는 기존 네 창·`NpcDialogPanel`·공유 표시 helper는 읽기�
 - [x] 창 구조 검증
 - [x] PR251 병합
 - [x] 핵심 화면 확인
-- [>] 연결 독립 검증
-- [ ] 연결 화면 병합
-- [ ] 리허설 화면 확인
+- [x] 연결 독립 검증
+- [x] PR255 병합
 - [ ] 성장 효과 연결
+- [>] 하우징 화면
+- [ ] 리허설 화면 확인
 - [ ] 목표 종료 점검
 
 PR 번호가 정해지면 해당 병합 단계를 `PR번호 병합`으로 바꾼다. 선행 시험 원시는 E/`pr1-tdd/`, 구현 계약 v1/보충 v2~v5·고정입력·실행·취소 정산은 E/`pr1-impl/`에 둔다. 구현 배정은 Astra xhigh 1회차(신호2·4, 독립 결함0, 절차 관측은 별도)다. 자체 Unity는 전체 동일byte snapshot에서만 실행했고 source 사용자 설정은 쓰지 않았다. 다음도 현재 입력을 새로 고정하며 실제 게임 진입은 PR2에서 따로 검증한다.
