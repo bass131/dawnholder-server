@@ -17,7 +17,7 @@ namespace Dawnholder.Client.UI
             _levelOne = Resources.Load<Sprite>("UI/GuildHousing/GuildBaseLevel1");
             _levelTwo = Resources.Load<Sprite>("UI/GuildHousing/GuildBaseLevel2");
             Place(UiWindowAppearance.CreateInset("GuildInfoBand", panel).rectTransform,
-                new Vector2(416f, 80f), new Vector2(12f, -52f));
+                new Vector2(416f, 84f), new Vector2(12f, -52f));
             var scenery = new GameObject("HousingForeground", typeof(RectTransform));
             scenery.transform.SetParent(panel, worldPositionStays: false);
             _foreground = scenery.AddComponent<Image>();
@@ -28,8 +28,8 @@ namespace Dawnholder.Client.UI
             RectTransform sceneryRect = _foreground.rectTransform;
             sceneryRect.anchorMin = sceneryRect.anchorMax = new Vector2(0f, 1f);
             sceneryRect.pivot = new Vector2(0.5f, 0.5f);
-            sceneryRect.sizeDelta = new Vector2(416f, 218f);
-            sceneryRect.anchoredPosition = new Vector2(220f, -245f);
+            sceneryRect.sizeDelta = new Vector2(416f, 214f);
+            sceneryRect.anchoredPosition = new Vector2(220f, -247f);
             // Only the foreground path sits behind this band; buildings and their flags stay above it.
             Place(UiWindowAppearance.CreateHeader("TreasuryBand", panel).rectTransform,
                 new Vector2(416f, 32f), new Vector2(12f, -322f));
