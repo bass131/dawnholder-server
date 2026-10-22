@@ -36,10 +36,10 @@ Invoke-EngineCheck -Request $PSBoundParameters -Tool 'Test-EngineBoundary' -Requ
             $observed = @($context.Report.Observations | Where-Object Scenario -CEQ 'FirstInstall')
             $expectedCounts = [ordered]@{
                 HistoryBefore = 1
-                HistoryAfter = 4
+                HistoryAfter = 5
                 ModuleRegistration = 0
                 ActualModules = 0
-                Release = 1
+                Release = 2
             }
             foreach ($kind in $expectedCounts.Keys) {
                 $visits = @($observed | Where-Object Kind -CEQ $kind)
