@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 실행37 계약미완료failed 정산·작업자종료,선택3수리/실증을새창에서재개할준비.** 원common은1354PASS/84FAIL·preservation결과미기록,나머지7진입exit0,선택structure170PASS/1FAIL이다. bundle/preservation재실행2는NotExecuted다. 두창실제반환을Main에보고했고최종보고/쓰기감사·원시를대조해worker_done failed수락뒤owned terminal을release했다. 리드goal+시험3변경만로컬체크포인트로보존하고다음20분창/신규Sol max배정전추가실행0이다. 독립차단해소/전체goal/PR완료는아니며writer DB는별도아침사용자결정전0이다.
+**상태: 실행37 정산·작업자종료,Main이선택3수리/실증20분창을접수해Content반환뒤정확시작메일대기.** 원common은1354PASS/84FAIL·preservation결과미기록,나머지7진입exit0,선택structure170PASS/1FAIL이다. bundle/preservation재실행2는NotExecuted다. 두창실제반환/failed수락/owned terminal release를마쳤고리드goal+시험3변경은로컬checkpoint0a81641c에보존했다. 기존82밖의실패2건분류표를작성했으며Main의res-check·T·lastEntry·반환메일전신규Sol max기동/추가실행0이다. 독립차단해소/전체goal/PR완료는아니며writer DB는별도아침사용자결정전0이다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -370,6 +370,10 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**현재 첫 일 — Main의Content반환후새실행20분시작메일을읽고신규Sol max를기동.** Main msg_d311a3efbc05(20:19:32Z,current from_handle term_af8df74f-854d-4b86-9022-65d6cd2c14d8)는요청20분을접수했다. 현재Content U1-02 진단T20:07:44Z/반환늦어도20:37:44Z이며실제반환후res-check·정확T·lastEntry T+15·반환 T+20을별도보낸다. 예상반환시각을실행권한으로쓰지않고신규작업자는시작메일뒤만연다. 범위는같은13PS/세결함·catalog38·structure원인/좁은수리뒤ModuleStructureCli→ModuleBundle→PreservationEngine 각1회·PowerShell child순차1개,새도구/실제SQL/WSL/dotnet/Unity/server/writerDB0이다. 대기25분안쪽은idle로턴종료,heartbeat/wait/반복조회0이다.
+- Main요청의기존82밖2FAIL은regression-execution-37/lead-failure-classification-before38.md에별도표로기록했다(SHA256 80CB0DE2FC6BDCA9795116300A8B7DA5895F9F9F9510985C8024EE49FD8FA7F8). bundle a1은원35 nine단정을수리36에서ten으로갱신할때CharacterCatalog를끝에넣은고정기대순서결함이며수리37정적수정뒤미실행이다. structure는원35 fixture누락b와현재prefix보완뒤동일실패d1을구분했고기존단정의호스트경계가원인후보일뿐제품회귀c를확정하지않았다. 실제raw·원35행·blame귀속을대조했고둘다같은승인#1시험범위,현재a1/b82/c0/d1을보존한다.
+- ORCA#confirmed-failures 원문을재확인했다. 검증35의같은계약#1/#2/#3은각1회이며실행37의시간미실행2·자체수리d1을동일원인의확정실패로자동합산하지않는다. 현재3회도달번호0,다음같은계약·같은번호확정실패를원문과누계로기록하고3회도달시네번째시도전에Main에원문3건/이유를먼저보고한다. source는checkpoint0a81641c33f49af70b520d57d498378e393b0ba8에서불변,이번에는분류근거/goal만보완했다. 표·새재개점보존후추가조회없이idle로끝낸다.
 
 **현재 첫 일 — 새Main실행창과신규작업자배정뒤남은선택3수리/실증을재개.** 실행37의worker_done msg_729c722e3b23(20:10:24Z),현재Task task_fb757d776dd3/Dispatch ctx_170069c63c66/발신terminal을대조해계약미완료failed로수락했다. report전문·context최종실제준수·write-audit-final.json/audit-time-correction·실제3시험diff·각command/반환/선택원시를읽었다. worker-release.json은released/closed_agent_terminal/archive captured로정확owned터미널종료를확인했다. 이후작업자재사용/추가위임/리드직접시험0이다.
 - 리드lead-final-audit-v3.json은고정127입력중리드goal1예외·나머지126expected일치(자기수리3After 반영),읽기전용113보존,원common9결과1354/84/9와나머지7진입17·99·84·156·112·98·75PASS/FAIL0의직접재집계일치를확인했다. 원래473행의정확raw행/전문과관측된최신결과연결불일치0,원분류a15/b247/c7/d204·기존82를보존했다. 최신연결386기록PASS+1stdout관측PASS+84FAIL+2미도달이며전체원인/제품/독립PASS로확대하지않는다. 최초lead JSON감사rich-stderr직렬화중단과stdout한행separator오가정교정은settlement.md에범위/원시를기록했고제품/시험실행에는영향0이다.
