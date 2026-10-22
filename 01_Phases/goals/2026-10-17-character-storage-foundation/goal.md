@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 합동 재기동 입력 확정·30분 창 요청, 사용자 서버 기동 참여 판단 대기.** 기존 실DB 저장/새 SQL 연결 재조회와 수리30 자체회귀 근거는 유지한다. World Stored 봇 정적 인계를 실제 파일과 대조하고 정확 두 client argv·공개 profile 공급·DB 쓰기/보존·Linux 새 PID 경계를 준비했다. compile·실제 서버 재기동/World 합동 흐름과 Core PR 직전 신규 Opus1회는 미실행이며 전체goal완료/실화면완료로 보고하지 않는다.
+**상태: 합동 재기동 입력 확정·오늘 Unity 창들 뒤 사용자 참여 확정, 정확한 창 시작 시각 대기.** 기존 실DB 저장/새 SQL 연결 재조회와 수리30 자체회귀 근거는 유지한다. World Stored 봇 정적 인계를 실제 파일과 대조하고 정확 두 client argv·공개 profile 공급·DB 쓰기/보존·Linux 새 PID 경계를 준비했다. compile·실제 서버 재기동/World 합동 흐름과 Core PR 직전 신규 Opus1회는 미실행이며 전체goal완료/실화면완료로 보고하지 않는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -20,6 +20,18 @@
 - 메인 대조 전에도 API 문서 작성은 허용. 작업자 발행은 대조 회신 뒤. 다른 파트 착수는 메인이 각각 별도 승인하며 Core는 지시하지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 오늘 Unity 창들 뒤 서버 기동 사용자 참여 — 2026-10-22
+
+메인 `msg_c629e1487ba6`(2026-10-22T10:15:55Z, 현재 Main from_handle 대조)의 사용자 A 결정 전달이다. 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 저장 캐릭터 재기동 확인 - 서버 두 번 켜기에 참여할 시각 → A 오늘 밤 Unity 창들 바로 뒤
+
+사용자가 본 A의 내용(현황판 원문):
+
+> 앞의 Unity 창 세 개가 끝나는 대로(빨라야 21:10쯤) 메인이 알림을 보낸다. 그때부터 약 30분 동안 PC 앞에서 명령 두 개를 붙여 넣고, 신호에 맞춰 Enter를 두 번 누르면 된다. 오늘 안에 같은 캐릭터 재입장 결과가 나온다.
+
+Level 창 반환 뒤 메인이 res-check를 하고 Core를 다시 열거나 깨워 정확 시작 T를 전달한다. 메인이 사용자에게 두 명령 복사카드와 Enter 신호를 중계하며 Core는 빌드 끝·서버 Listening·before 봇 결과·첫 PID 종료·새 PID/Listening·after 봇 결과를 제목 **「즉시 보고」**로 전달한다. 21:10쯤은 최초 예상이며 실행 권한/확정 T가 아니다. 시작 T 전 대기뿐이면 재개점을 쓰고 종료 준비하며 새 상시 우편 대기를 열지 않는다.
 
 ### 기존 봇 최소 보완으로 별도 서버 재기동 확인 — 2026-10-22
 
@@ -339,14 +351,14 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**다음 첫 일 — 사용자 서버 기동 참여 시각·새 합동창 T를 메인에게 받아 재개.** `run_1b758e0cc722` 인수 후 `joint-restart-ready-33/preparation.md`와 `user-server-commands.md`, 메인 판단 회신부터 읽는다. 합동30분 창 세 줄 요청 `msg_4e5b9a23fd10`, 기존 credential 소비 서버2회 사용자 직접 실행 판단 요청 `msg_566e008bfb3e`를 보냈다. Content→Art→Level 반환 뒤 메인이 res-check/새T를 정한다. 대기뿐이므로 재개점·로컬 기록commit 뒤 종료 준비하며 wait/poll/sleep을 열지 않는다.
+**다음 첫 일 — 오늘 Unity 창들 뒤 메인의 새 합동창 T를 받아 재개.** 사용자 참여는 A로 확정됐다(`msg_c629e1487ba6`, 적용결정 원문 참조). `run_1b758e0cc722` 인수 후 `joint-restart-ready-33/preparation.md`와 `user-server-commands.md`, 메인의 정확 T부터 확인한다. 합동30분 창 요청은 `msg_4e5b9a23fd10`이고 서버2회 사용자 실행 분리는 `msg_b48d51625b82`가 수용했다. Content→Art→Level 반환 뒤 메인이 res-check/새T를 정하며 21:10쯤은 확정 T가 아니다. 대기뿐이므로 재개점·로컬 기록commit 뒤 종료 준비하며 wait/poll/sleep을 열지 않는다.
 
-- 메인 `msg_b48d51625b82`가 기존 런처의 credential 복호화/stdin 전송을 직접 확인하고 **서버 기동 두 번만 사용자 직접 실행으로 분리하는 안을 수용**했다. 사용자 참여시각은 현황판 결정 대기이며 추천 오늘안(빨라야21:10KST쯤)은 확정시각이 아니다. Core는 Content→Art→Level 다음 네 번째다. 사용자 원문 회신/새T를 받기 전 실행하지 않는다. 창이 열리면 메인이 두 명령의 복사카드와 Enter 신호를 사용자에게 전달하고, Core는 각 단계 확인을 제목 **「즉시 보고」**로 메인에게 보낸다. 사용자 직접 실행을 AI 대리 실행으로 바꾸지 않는다.
+- 메인 `msg_b48d51625b82`가 기존 런처의 credential 복호화/stdin 전송을 직접 확인하고 **서버 기동 두 번만 사용자 직접 실행으로 분리하는 안을 수용**했다. 당시 사용자 참여시각 결정 대기는 후속 `msg_c629e1487ba6`의 오늘 Unity창들 뒤 A 선택으로 해소됐다. Core는 Content→Art→Level 다음 네 번째이며 새T 전 실행하지 않는다. 창이 열리면 메인이 두 명령의 복사카드와 Enter 신호를 사용자에게 전달하고, Core는 빌드 끝·Listening·before 결과·첫PID 종료·새PID/Listening·after 결과를 제목 **「즉시 보고」**로 메인에게 보낸다. 사용자 직접 실행을 AI 대리 실행으로 바꾸지 않는다.
 - 같은 메시지의 PR256/main 병합 전달은 수신했다. 이번 대기 기록에서는 main을 받지 않으며 제품/source/argv 고정입력을 보존한다. 다음 세션이 창 전 입력을 바꾸면 기존 요청을 그대로 실행하지 말고 source/hash·argv를 다시 고정한다. 현재 후속 기록 외 실행/새작업자0이다.
 - World 최종 인계 `msg_e66793e9c058`을 수신해 인계문/source pin 및 실제63파일 hash를 대조했다(불일치0). 공개 원본 profile/CA와 양쪽 기존 런처도 일치한다. 정확 두 봇 argv·동일 account/ID·공개파일2개 후속 공급 소유·DB authority/progress/receipt 정상쓰기·시험행보존/cleanup0·실제 Linux PID/birth/정상 종료 기준은 위 preparation에 고정했다. World리드 재기동/기존 작업자 재사용은 필요하지 않으며 현재 새 작업자0이다.
 - 기존 런처는 Import-Clixml로 credential을 복호화해 child stdin에 쓰므로 사용자 직접 실행 단계로 분리했다. 정확 두 명령·PowerShell7 cwd·각 로그/exit/UTC 파일과 Enter 종료 순서는 사용자 카드에 있다. AI credential 본문/hash 열람은0이나 환경 조회 사건을 포함한 세션 전체 비밀 열람0은 주장하지 않는다. 사용자 참여/새T 전 실행하지 않는다.
 - 새창 첫 실행은 기존 sync-wsl.sh build로 봇 포함 fresh compile이다. 이어 신규 실행 소유자가 공개파일2개 공급/empty-ca 생성·source/clone/SDK 확인과 두 직접DLL 실행·Linux PID/birth 관측을 맡고, 서버2회 기동/Enter는 사용자가 맡는 계획이다. 현재 공개파일 공급/compile/WSL/봇/서버/SQL/Unity 실행0, 독립PASS0이다. PR직전 신규Opus45~60분은 별도다.
-- 지금 보여 줄 수 있는 것: 기존 실DB 저장/새 SQL 연결 재조회 원시와 World 봇 정적 코드/인계. 가장 빠른 다음 가시 결과와 시각: 사용자 참여·새T 확정 후 배정30분 내 동일 캐릭터 재입장 before/after 로그(절대 KST 미정). 막는 것: 실행창 대기열 및 서버 기동 사용자 참여 시각 판단.
+- 지금 보여 줄 수 있는 것: 기존 실DB 저장/새 SQL 연결 재조회 원시와 World 봇 정적 코드/인계. 가장 빠른 다음 가시 결과와 시각: 오늘 Unity창들 뒤 새T로 배정되는30분 내 동일 캐릭터 재입장 before/after 로그(절대 KST 미정). 막는 것: 실행창 대기열 및 메인 res-check/정확 T 전달.
 
 ### 이전 준비32 인계
 
