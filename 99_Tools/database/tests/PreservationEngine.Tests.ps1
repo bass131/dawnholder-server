@@ -368,11 +368,19 @@ function Open-EngineObservedConnection($Context, [switch]$Master) {
             } elseif ($sql.StartsWith('UPDATE dh.ModuleDefinition SET DefinitionChecksum')) {
                 $state.Recorded[0].DefinitionChecksum = '0' * 64
             } elseif ($sql.Contains('INSERT dh.ModuleRelease')) {
-                $declaration = [regex]::Match($sql, "VALUES\((?<Version>[345]), '(?<Hash>[0-9A-F]{64})'\)")
-                if (-not $declaration.Success) { throw 'Fixture release declaration is missing.' }
+                if ($sql -ceq "INSERT dh.ModuleRelease(Version, ManifestChecksum) VALUES(3, REPLICATE('0', 64));") {
+                    # Model the fixed malformed-history stimulus so the product performs its own rejection.
+                    $releaseVersion = 3
+                    $releaseChecksum = '0' * 64
+                } else {
+                    $declaration = [regex]::Match($sql, "VALUES\((?<Version>[345]), '(?<Hash>[0-9A-F]{64})'\)")
+                    if (-not $declaration.Success) { throw 'Fixture release declaration is missing.' }
+                    $releaseVersion = [int]$declaration.Groups['Version'].Value
+                    $releaseChecksum = $declaration.Groups['Hash'].Value
+                }
                 $state.Releases = @([pscustomobject]@{
-                        Version = [int]$declaration.Groups['Version'].Value
-                        ManifestChecksum = $declaration.Groups['Hash'].Value
+                        Version = $releaseVersion
+                        ManifestChecksum = $releaseChecksum
                     }) + $state.Releases
             } elseif ($sql.StartsWith('CREATE OR ALTER')) {
                 $name = [regex]::Match($sql, '^CREATE OR ALTER (PROCEDURE|FUNCTION) (dh\.\w+)').Groups[2].Value
