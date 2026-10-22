@@ -25,6 +25,8 @@
 
 이번 리드 진입의 ORCA_* 환경 목록 조회에서 hook token 필드가 도구 출력에 포함된 사실을 메인 `msg_2854dbf27337`에 알렸다. 값의 파일 재기록/메시지 전달/사용은0이며 해당 관찰은 core-reentry-20261022-context.md에 보존한다. 이번 리드 세션 전체의 비밀 열람0을 주장하지 않으며 이후 아래 조회 제한을 따른다.
 
+13:40KST 신규 리드 진입에서도 메일을 읽기 전 전체 ORCA_* 조회를 해 hook token 필드가 도구 출력에 포함되는 동종 재발이 있었다. 메인 `msg_4fbe90a1204d`와 후속 `msg_17bf093941d6`로 보고했다. 값의 별도 파일 저장·재인용·전달·사용0이며 이번 세션 전체의 비밀 열람0을 주장하지 않는다. 기존 이름 지정 조회 제한을 그대로 적용하고 규칙 파일/검사 구현으로 범위를 넓히지 않는다. 원시값을 복제하지 않은 관측·시점은 `joint-restart-plan-31/context.md`에 보존했다.
+
 메인 `msg_fd0687ba7cb8`(2026-10-22T02:16:08Z)은 사용자 결정이 아닌 **메인 범위 판정**으로 200→8, 202→15, 203/204/206/207→14를 확인하고 O-CAT-REJECT-03 제품3파일 및 D-CAT-LITERAL-04 시험 literal1곳을 신규 Sol max 한 명이 같은 PR에서 수리하도록 승인했다. SQL/migration/manifest/PDL/wire번호/설정 변경0, PR 직전 Opus1회다. 201/205는 기존 fence/dispatch 의미를 보존해 Core·World 리드가 조율하고 공개 계약 문구 차이만 메인에 올린다. 정적 수리→관련회귀20~30분→합동재기동30분→PR직전Opus45~60분 순서이며 각 실행 창은 정확 argv가 정해진 뒤 별도 요청한다.
 
 보충 `msg_50070e5dfb00`은 직전 종료 준비를 대체해 리드 pane을 유지하고 단일 수리 작업자를 진행하도록 했다. 다음 문장을 작업자 계약에도 넣었다: 「환경 식별에서 ORCA_* 전체를 조회하지 마라(env|grep ORCA, Get-ChildItem env:ORCA* 등). 그 안에 ORCA_AGENT_HOOK_TOKEN·ORCA_AGENT_LAUNCH_TOKEN 비밀 값이 있다. 필요한 값은 ORCA_TERMINAL_HANDLE처럼 이름을 지정해 읽어라. 이름만 필요하면 값 없이 이름만 출력하라.」 해당 값을 다시 출력·저장·전달하지 않는다. 사용자 보고는 메인이 맡는다. 원문·위임 근거는 `catalog-rejection-repair-30/`에 보존한다.
@@ -328,6 +330,14 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**2026-10-22 합동 driver 정적 조율 — 실행0·메인 경로 결정 대기.** 새 Core 리드가 `run_1b758e0cc722`를 run-use로 인수했다(consumer generation5, receipt `joint-restart-plan-31/run-use.json`). 진입 HEAD `1869799cdef878d8370239ab2c6b9a71a4b1788a`/clean은 메인 전달과 일치했다. 현재 회신 주소는 `run:run_1b758e0cc722`, 현재 terminal/incarnation·모델·맥락은 같은 폴더 `context.md`에 있다. 과거 handle/Task/Dispatch/실행 창은 권한으로 쓰지 않는다.
+
+- **World 합의:** Core=실제 Program/DB 접점·소유 PID·기동/정상 종료/새 PID 재기동, World=Stored 목록/생성/선택/입장·동일 account/characterId 재조회/재선택. 서버는 World 고정 checkout, Core가 대표 30분 창 요청이다. World `msg_9c544847ba0d`·`msg_ec3659c6a528`와 Core `msg_fb065491d94d`·`msg_0ca281ef8e74`로 조율했다. 수리30 소비 후838P/0F/0skip은 World/메인이 전달한 자체 회귀이며 이번 Core가 TRX를 재검증한 수치가 아니다.
+- **막힘:** World 기존 `StoredMenuSqlEndToEnd`의 phase0/1은 같은 testhost의 새 ServerHost이므로 별도 Program 재기동이 아니다. 기존 봇은 구형 class-only라 제외했고, 실제 Stored 메뉴를 운전할 기존 UI/CLI 진입부는 World/Core 정적 확인에서 찾지 못했다. 정확 client argv를 꾸미거나 새 harness를 만들지 않는다. 기존 Start-PersistenceServer 런처의 SQL credential→자식 stdin/Enter 정상 종료는 있으나 Windows 통합 인증은 시험 fixture에만 있다. World 배포 public profile/CA와 소유 빌드는 신규 실행 입력으로 정해야 한다.
+- **메인 결정 요청:** `msg_17bf093941d6`으로 Content의 실제 Stored 메뉴 인계·사람 조작(권장)을 확인해 달라고 올렸다. 준비가 없다면 기존 봇의 Stored 지원 최소 확장은 하네스 확장 금지의 범위 판단이 필요하며 자동 착수하지 않는다. 분석/정확 확인 수준·자원/부작용/정리는 `.backups/verification/2026-10-17-character-storage-foundation/joint-restart-plan-31/driver-analysis.md`에 있다.
+- **다음 첫 일:** 현재 메인의 client 경로/범위 결정을 받고 Content/World 고정 인계를 확인 → driver/client/server 정확 argv·새 시험행쓰기·자원·정리를 닫기 → 합동30분 창을 명령/시간/자원 세 줄로 요청한다. Core PR직전 신규 Opus45~60분 창은 그 뒤 별도로 요청한다. 아직 창 요청·새 작업자·제품/시험 쓰기·빌드/시험/WSL/서버/Unity/DB 실행0이다. 의존 결정 대기만 남으면 로컬 기록 commit과 종료 준비를 보내고 wait/poll/sleep을 열지 않는다.
+- **가시 결과:** 지금은 Core 실DB 저장/새 SQL 연결 조회와 World 자체회귀 근거를 보여 줄 수 있다. 가장 빠른 다음 가시 결과는 실제 메뉴가 준비되고 창이 시작된 뒤 약30분에 같은 저장 캐릭터 재입장이다(확정 KST는 메뉴 인계/창 배정 뒤). 막는 것은 별도프로세스 Stored client driver 부재다.
 
 **2026-10-22 수리30 정산 완료 — 고정 원천을 메인에 인계.** Task `task_1db97bbffcb6`/Dispatch `ctx_3d0a4531a910`의 신규 Sol max가 O-CAT-REJECT-03·D-CAT-LITERAL-04를 제품3/기존시험3파일에서 수리했다. 최종 보고·실제 전체diff·현재source6hash·TRX와 정확worker_done `msg_8ac1322ef4bf`를 대조해 정산하고 동일 작업자 pane을 종료했다. 활성 작업자0이며 리드 회신 주소는 `run:run_1b758e0cc722`다. 경로/모델·runtime/incarnation 원시는 `core-reentry-20261022-context.md`와 `catalog-rejection-repair-30/launch-observation.json`에 있다.
 
