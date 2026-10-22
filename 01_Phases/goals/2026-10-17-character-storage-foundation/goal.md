@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 실제 catalog DB25건 통과·저장/새 SQL 연결 재조회 확인, World에 최종 enum/repository 원천 인계.** 빈목록 SQL NULL 해석 결함 D28-01을 수정했고 단일 구현28의 보고/7파일/실행원시를 대조해 정산·pane 종료했다. 실제 SQL 로그인·서버 기동19 근거는 별도 유지한다. 실제 서버 프로세스 재기동/불러오기·World 합동 흐름과 PR직전 신규Opus1회는 아직 남으며 전체goal완료/실화면완료로보고하지않는다.
+**상태: 실제 catalog DB25건 통과·저장/새 SQL 연결 재조회 확인, World PR 판정 #1~#3 기술 조율.** 빈목록 SQL NULL 해석 결함 D28-01을 수정했고 단일 구현28을 정산·종료했다. 선택 probe 수리29는 source-ready이며 새 빌드/시험은 미실행이다. World 독립 원문에서 O-CAT-REJECT-03이 차단으로 검출됐고, 리드 정적 대조에서 Core 검토 시험의 옛 checksum D-CAT-LITERAL-04도 찾았다. 수리 범위·203→14 의미는 메인 확인 대기다. 실제 서버 프로세스 재기동/불러오기·World 합동 흐름과 Core PR직전 신규Opus1회는 남으며 전체goal완료/실화면완료로보고하지않는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -318,6 +318,12 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**2026-10-22 새 Core 리드 — World 판정 답변 전달, 메인 결정 대기.** 메인 `msg_77facf9a3bdd`의 글 조율만 수행했다. HEAD `8e8c0dba`/clean 확인 뒤 현재 세션이 `run_1b758e0cc722`를 인수하고 World `run:run_90d18490c825`에 새 회신 주소를 알렸다. 제품·시험 쓰기/실행/새 작업자0이다.
+
+- **판정:** #1은 기존 O-CAT-REJECT-03과 동일하며 IdentityMismatch203→14를 권고했다. owner/work-result/selection 3파일의 원 code·resolver NotApplied 전파와 명시 매핑표 보충은 메인 확인 전 수정하지 않는다. #2는 Core 시험의 옛005 checksum D-CAT-LITERAL-04도 발견해 수정본 전 소비를 보류했다. #3은 현 Core 3슬롯 시험을 고정 인계했다.
+- **근거:** 공통 goal 근거 루트의 `world-pr-core-answers-20261022.md`와 `world-pr-consumption-20261022.json`에 판정 원문/hash·소비34경로/회귀2파일/조건부도구4파일·실행 한계를 기록했다. World 자체 facade8P와 Core268행의 미실행을 구분하며 fixture를 복제하지 않는다. 현재 주소·모델·진입 receipt와 환경 출력의 hook token 필드 노출 관찰은 `core-reentry-20261022-context.md`와 개별 receipt에 보존하고 메인에 알렸다.
+- **다음 첫 일:** 메인 매핑/단일 Sol max 수리 범위 결정을 받은 뒤 같은 PR 계약으로 이어간다. 실제 별도 서버 재기동·World 합동30분과 Core PR 직전 신규 Opus45~60분은 요청이며 driver/창 미확정이다. 대기만 남으면 종료 준비를 보내고 mailbox wait/poll/sleep을 열지 않는다. 이전 handle/Task/Dispatch/창은 실행 권한으로 재사용하지 않는다.
 
 **2026-10-22 다음 첫 일 — 고정 수리의 World 소비와 실행 창 조율:** 선택 probe의 `D-CAT-READ-01`(typed ReadFailed/NotDispatched → Unavailable), `D-CAT-SCHEMA-02`(유효 Probe의 schema 비호환 → SchemaMismatch) 소스 수리를 마쳤다. 단일 Sol max 수리29의 제품 +7/-2와 신규 시험268행을 리드가 원문·전체 diff·현재 hash로 대조했고 작업자는 정산·종료했다. 근거 `.backups/verification/2026-10-17-character-storage-foundation/catalog-error-repair-29/settlement.md`·`worker/report.md`. **빌드·시험·실제 진입/독립 판정은 미실행**이며 Content 실행 창 동안 Core 실행0을 유지한다. 고정 원천은 World `run:run_90d18490c825`에 직접 인계하며, 실제 별도 서버 프로세스 재기동·불러오기/합동 흐름과 PR 직전 신규 Opus 1회는 남는다. `O-CAT-REJECT-03`은 원래 rejection code의 owner/work-result 전파·매핑 계약까지 넓어 이번 guard 수리에서 제외하고 PR 직전 알려진 미해결로 공개한다. 할 일이 실행 창 대기뿐이면 메인에 종료 준비를 보내며 우편함 wait/poll/sleep을 열지 않는다. 새 리드 회신 주소는 `run:run_1b758e0cc722`, 이전 handle/Task/Dispatch/창은 재사용하지 않는다.
 
