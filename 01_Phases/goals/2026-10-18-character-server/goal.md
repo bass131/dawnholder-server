@@ -6,11 +6,15 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: Core #1·#2 고정 수리 소비를 정적으로 확인했고 새 회귀 창을 요청했다.** 제품3·schema 시험1과 World admission의203→14 기대를 소비했다. 리드가 실제5파일 diff·원천4해시 일치·보존94경로 차이0을 대조했다. 기존 #3·#4도 보존됐으며 아직 실행0이다. Art Unity 사용 뒤 Main의 새 WSL창에서 회귀를 잇고, 전체 PR·goal 독립 PASS/병합은 아직 아니다.
+**상태: Core 고정 수리 소비 후 WSL 자체회귀 838P/0F/0skip를 확인하고 실행자를 정산·종료했다.** 제품3·schema 시험1과 admission203→14 기대를 소비했고 기존 #3·#4·보호94경로를 보존했다. 실제 별도 Program 재기동에 쓸 Stored 클라이언트 driver가 확인되지 않아 Core와 공동 보고하고 메인 경로 판단을 기다린다. 실DB·별도 Program 재기동·Unity와 PR직전 독립 검증은 남았으며 전체 PR·goal PASS/병합은 아니다.
 
 ## 재개 지점
 
-**현재 첫 일: Main의 시작T를 받으면 신규 Sol max 실행자가 고정 소비5파일을 입력으로 기존 build→Network/RuntimeEntry 회귀를 수행한다.** `msg_274f81f76bd5`로20분·전용Ubuntu clone/SDK10.0.301/workspace lock의 창을 세 줄로 요청했다. Main `msg_673f1f7e9158`은 대기열1번·Art 실제반환(~04:23:39Z) 뒤 res-check/시작T 통지를 확인했고, 짧은 대기이므로 리드pane은 유지하되 우편함대기 없이 턴을 끝내라고 지시했다. 창은 아직 미배정이다. Windows dotnet/실DB/7777/Unity/원본DLL복사0이며 새 실행계약은 `approval-01/core-rejection-consumption-01/executor-contract-v1.md`다. 과거창/Task/Dispatch/handle은 실행권한이 아니다.
+**다음 첫 일: 메인이 합동 Stored driver 경로를 정하면 Core와 정확 client/server 명령·부작용·자원을 고정한다.** Core는 World checkout의 실제 Program 시작/정상종료/새PID 재기동, World는 같은account/characterId의 목록·생성·선택·입장·재조회 관찰을 맡고 Core가 대표 창요청을 모으기로 했다. 기존 `StoredMenuSqlEndToEnd`는 같은testhost 안의2host 재생성이므로 별도Program 재기동을 대신하지 못한다. World Unity에는 메뉴Network API가 있지만 현재실행가능한Stored조작driver는미확인이다. 기존서버런처는있어 통합인증제품분기부재만을유일막힘으로올리지않는다. Core대표공동보고는 Content실메뉴인계/사람조작우선, 미준비시기존봇Stored최소확장의명시범위판정이다. 새하네스/인증우회/실행/합동30분창요청0이며 논의대기뿐이면우편함대기없이턴을끝낸다. 근거는 `approval-01/core-rejection-consumption-01/lead-core-existing-entry-findings.json`, `lead-core-auth-and-driver-boundary.json`, `lead-core-joint-report-agreement.json`과수신원문이다.
+
+**이번 자체회귀·정산:** Main 배정창의 신규Sol max가 기존helper로 restore2/build2/test1을실행했고 SDK10.0.301·각74warning/0error·원exit0이다. 원TRX Counters와838행(모두Passed/실패·skip0), 실제Core facade11/13/14 및 acquire203→14를리드가직접대조했다. 제품/시험추가수정0·고정5/보호94차이0, 실제근거50경로와보고50경로차이0이다. 자원원시를먼저읽고Main에창반환한뒤TRX를분석했다. 자기실행잔여0과기반WSL3프로세스관측보존을구분했고kill/shutdown0이다. 최종보고/쓰기종료·명시succeeded를대조하고release(external/retained)→동일incarnation완료idle→정확pane종료·리드생존/작업자0/reclaimable0을확인했다. 신호6개/max313초·초과1은창반환뒤TRX/쓰기감사/최종보고정리구간으로기록했다. 원문은 `executor/report.md`, 정산/실사·원시는 `lead-executor-settlement.md`, `lead-execution-trx-review.json`과같은폴더다. 이것은자체회귀이며838개독립판정이나실DB/별도Program/Unity/전체PR통과가아니다.
+
+**직전 대기열 기록(회귀 완료): Main의 시작T를 받으면 신규 Sol max 실행자가 고정 소비5파일을 입력으로 기존 build→Network/RuntimeEntry 회귀를 수행한다.** `msg_274f81f76bd5`로20분·전용Ubuntu clone/SDK10.0.301/workspace lock의 창을 세 줄로 요청했다. Main `msg_673f1f7e9158`은 대기열1번·Art 실제반환(~04:23:39Z) 뒤 res-check/시작T 통지를 확인했고, 짧은 대기이므로 리드pane은 유지하되 우편함대기 없이 턴을 끝내라고 지시했다. 창은 아직 미배정이다. Windows dotnet/실DB/7777/Unity/원본DLL복사0이며 새 실행계약은 `approval-01/core-rejection-consumption-01/executor-contract-v1.md`다. 과거창/Task/Dispatch/handle은 실행권한이 아니다.
 
 **이번 정적 소비:** 신규Sol max의 실제5파일 +61/-29를 원본backup·diff·source-pin과 직접 대조했다. Core 제품3과 schema시험1의 after rawhash가 고정원천과 일치하고 admission시험은 승인된11→14 한행뿐이다. 보호94경로의 존재/불재와hash를 다시 읽어 차이0을 확인했다. 실행·독립PASS는 아니다. 맥락·고정계약·v1.1분류정정·v1.2창대기정산·리드실사는 `approval-01/core-rejection-consumption-01/`에 있다. 합동 별도프로세스 재기동→같은캐릭터불러오기 driver는 Core 재진입 뒤 조율하고, PR직전 신규Opus1회는 그 뒤다. 아래는 직전 종료 당시 기록이다.
 
