@@ -1,13 +1,14 @@
 # 길드 현황·거점 성장·대장간 화면
 
-현재 상태(10-22 신규 진입): **하우징 v3 계약 준비·신규 Sol max 공식 attach 시작 미확인/복구 판단 대기. 성장 효과 PR3는 Art V-1/F-1 보완 대기.** 아래 이전 상태/실행 원시는 보존한다.
+현재 상태(10-22 신규 진입): **하우징 v3 주입 실패 정산·신규 Sol max 짧은 계약 재발행 준비. 성장 효과 PR3는 Art V-1/F-1 보완 대기.** 아래 이전 상태/실행 원시는 보존한다.
 
 상태: **성장 효과 소비자 구현·자체 실행 미완료 정산. C9 표시 V-1 차단·기존 시험 F-1 Art 보완 대기, 독립 검증/PR 미진행.** 아래 PR255 결과는 병합 전 검증 기록이며 현재 실행으로 소급하지 않는다. 이전 상태: **결함1의 새 Opus 한정 재검증 PASS·정산 완료, PR255 - 길드 서버 연결 CI4/4·R-2 확인 완료, 사용자 승인 대기.** 원 NOT PASS 실행의 Edit352 중350PASS(독립3 포함)·기존2FAIL과 Play19/19PASS는 보존한다. 수리 후 같은 EditMode 1회는352/352PASS·실패/skip0이며 기존350건 결과 변화0·이름 변경2건 모두PASS다. Play19는 이번 미재실행이다. 새 실행 자원/Registry137값 복귀와 검증자 정산·종료를 마쳤다. 두 계정의 파티·보스 클리어 보상·금고30·거점2/2·대장간 해금, 같은 Golem16/기본Melee 피해20→25와 B개인강화0/보너스0, 강화 요청 수신1은 기존 실제 관측이다. C4 실제 두 요청 경합/거부 화면, C5 A단계0→1·실제 골드20/재료1 소비 표시, C8 남은 입력/팝업·세 해상도와 정상 퀘스트 끝까지 경로는 **리허설 확인(10-24~25, 알려진 미확인)**이다. CI의 정확 head 결과는 [PR255 - 길드 서버 연결](https://github.com/bass131/dawnholder-server/pull/255)에서 별도로 확인하며 실화면 미확인을 통과로 바꾸지 않는다.
 
 ## 재개 지점
 
-**다음 첫 일:** Main 복구 판단 msg_dd2fadb4b83b의 답을 받아 공식 attach 상태부터 처리한다. 하우징 branch/계약 준비는 끝났지만 신규 Sol max의 최초 worker-start는 input_accepted 뒤 turn_start_unobserved이며 현재 exact/live/pending이다. JSON draft가 계약중간246자 일반텍스트여서 공식 placeholder 복구조건에 맞지 않아 Enter/재전송/새Task/abandon/종료0으로 보존했다. Task task_2a164f614ea5/Dispatch ctx_d7cdfc5fad09·현재pane/receipt/미보고transcript는 E/housing-v3-20261022/worker-start-receipt.json·worker-attach-show/read/transcript.json에 있다. 실제 작업 시작·완료로 보고하지 않는다. 현재 PR3 WIP는 원branch6dd1e69b에 보존하고 재개 때 최신main을 받아 AGENTS 이름지정조회규칙을 유지한다. Unity/WSL/dotnet/서버/DB0이며 복구 뒤 정적작성, 실행필요시 별도 세줄창요청/새시작을 따른다. 현재 할 일은 답 대기뿐이라 우편함wait/sleep/반복조회 없이 턴을 끝낸다.
+**다음 첫 일:** Main msg_b50211ffc9e0의 명시 복구 판단으로 원조각Dispatch를 abandon하고 같은incarnation의이전pane를닫았다. 계약v2파일 전문을 고정하고 신규 Sol max의 새Task/Dispatch에는 절대경로/SHA256/검증후시작의짧은pointer만발행한다. 실제 Working·worker-show·작업자기록의계약SHA확인으로 시작을 확인하며 다시어긋나면Enter/중복발행없이Main에판단요청한다. 실행창은없으며정적작성만진행한다. PR3WIP는원branch6dd1e69b에보존/재개때최신main통합, ArtV-1/F-1선반영·후속원Town창재확인/PR직전신규독립은유지한다. 근거E/housing-v3-20261022/worker-contract-v2.md·mail-recovery-answer-01.json·worker-fragmented-abandon/close.json.
 
+- **43 - 주입 실패 공식 중단과 짧은 계약 재발행 준비.** 메인 명시 판단 msg_b50211ffc9e0을 받아 원 pending/시작미확인 Dispatch를공식abandon하고원receipt/현재대상전체incarnation일치·idle화면을대조해정확pane종료(ptyKilled=true)했다. 리드pane생존/추가작업자0을확인했으며현재도구주입실패를제품확정실패/같은산출물수정횟수에넣지않는다. v2는동일제품/시험scope이며공식spec만짧은pointer로바꾸고원계약/원시는보존한다. 새입력/실제시작은후속receipt와작업자SHA기록으로확인한다.
 - **42 - 공식 attach 시작 미확인·복구 판단 요청.** 첫화면 gpt-6.1-sol max·idletrue·선택창없음을 확인한 새pane에 v1을 한 번 공식연결했다. 입력접수와 턴시작을 구분했으며 placeholder크기조건불충족으로 임의Enter/텍스트재전송/중복기동0이다. provider transcript는 session_not_reported라 계약제출전문/실제시작미확인이다. 원시/판단요청은 E/housing-v3-20261022/에 보존했다. 고정goal원bytes는 worker-fixed-goal-ba0.md이고 본갱신은 수신/lifecycle상태뿐이며 계약범위/판정기준을 바꾸지 않는다.
 ### 현재 PR 범위 — 하우징 v3
 
