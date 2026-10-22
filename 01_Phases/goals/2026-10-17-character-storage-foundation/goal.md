@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 실행38을 계약 미완료 failed로 정산하고 작업자를 종료했다.** structure171 PASS/0 FAIL·bundle94 PASS/0 FAIL은 실제 완주했지만 preservation은 stdout104 PASS/3 FAIL 뒤 Owner 예외로 중단됐다. 내부 bundle 선언 불일치의 제품/fixture 귀속은 d로 남겼다. 실제 자원 반환20:42:46Z를 Main에 먼저 알렸고 최종 보고·쓰기 종료·원시/변경 범위 대조를 마쳤다. goal+시험1파일의 로컬 체크포인트를 보존한 뒤 새 Sol max의 원인 확인/기존 preservation 재실행20분 창을 요청한다. 배정 전 신규 작업자/추가 실행0, 독립 차단 해소·goal·PR 완료는 아니며 writer DB는 아침 사용자 결정 전 실행0이다.
+**상태: 실행38 정산·작업자 종료 뒤 preservation 후속20분 창 접수, Main의 실제 시작 메일 대기.** structure171 PASS/0 FAIL·bundle94 PASS/0 FAIL은 완주했지만 preservation은 stdout104 PASS/3 FAIL 뒤 중단돼 귀속d다. 원시·정산·source1은 로컬 체크포인트44d9e611에 보존했다. Content v2 반환 때 Level A 준비 통지가 없으면 Core가 먼저이고, 준비됐으면 Level A45분 뒤다. 배정 전 신규 작업자/추가 실행0, 독립 차단 해소·goal·PR 완료는 아니며 writer DB는 아침 사용자 결정 전 실행0이다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -370,6 +370,9 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**현재 첫 일 — Main의 실제 preservation20분 시작 메일 뒤 신규 Sol max를 연다.** 현재 Main handle에서 온 msg_7b344743b332(20:55:37Z)가 실행38 정산과 후속 요청을 접수했다. 구조171/0·번들94/0, preservation104/3 뒤 미완주/귀속d와 검증35 #1/#2/#3 각1회 유지도 받아들였다. 현재 Content U1-02 진단v2의 반환은 늦어도21:14:44Z다. 반환 때 Level A의 보완 고정 준비 통지가 없으면 Core20분을 먼저 주고, 준비됐다면 Level A45분 뒤에 준다. 이 예상 순서/시각은 실행 권한이 아니며 실제 새 창 T/진입마감/반환을 받은 뒤에만 기동한다.
+- 다음 범위는 같은13PS/세결함 안의 preservation 선언 불일치 원인 추적·근거 있는 fixture 수리 뒤 기존 PreservationEngine.Tests.ps1 한 suite, 새 catalog39/preservation01·PowerShell child순차1개다. 승인 밖 제품 수리는 고치지 않고 고정해 반환, 새도구/Unity/dotnet/WSL/server/실제SQL/writerDB0이다. 고정 source/원시/다음 계약 입력은 regression-execution-38/lead-execution-handoff.md·lead-final-audit.json·lead-checkpoint.json에 있다. 현재 source는44d9e61112d4381d9cea91d27cd744fcdee5f2a2 이후 불변·활성 작업자0이다. 대기만 남아 이 goal 기록을 로컬 보존하고 heartbeat/wait/반복조회·추가 회신 메일 없이 idle로 턴을 끝낸다.
 
 **현재 첫 일 — Main의 새 실행 창 배정 뒤 신규 Sol max가 preservation 남은 실패를 진단·수리·실증한다.** 실행38 worker_done msg_63db8c91f39e(20:47:52Z)의 현재 Task task_0770b8fcb82e/Dispatch ctx_310bb4142a1b/발신을 대조하고 failed를 수락했다. 최종 report 전문·context 계획/실제 준수·write-audit-final·actual diff1·results/command/내부 실패 raw를 읽었다. worker-release.json은 released/closed_agent_terminal/archive captured이며 현재 활성 작업자0, 이전 pane 재사용0이다. 실제 자원 반환과 Main msg_d6fc0d512ad2의 선보고는 아래에 보존했다.
 - lead-final-audit.json은 고정126입력(리드goal 제외)에 자기source1 delta를 반영해 불일치0, 읽기전용113 보존, 이전473/84의 원래 필드 변경0을 확인했다. 이번 직접 관측112 PASS의 raw 연결과 새3 FAIL의 정확 stdout행 불일치0, 미진입361·기존82·과거d204 보존이다. 구조171/0·번들94/0은 완주 results이고 preservation104/3은 stdout만의 부분 관측이다. 원c2 두 이름은 이번 stdout80/102행 PASS에 도달했다. 내부 engine-BeforeComplete/result.json을 직접 읽어 Outcome FAIL·Current bundle differs from its migration declaration·StateComparisons1/Atomicity0을 확인했다. 이후 Atomicity.Owner 접근 중단/AfterComplete 이후 미도달을 보존하고 새3 FAIL 및 중단 귀속은 d로 남긴다. 같은 계약/같은 번호의 확정 실패가 새로 확인되지 않아 검증35 #1/#2/#3 각1회는 유지한다.
