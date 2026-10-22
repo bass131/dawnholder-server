@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 합동 재기동 준비 유지·PR 직전 Opus 계약 초안/READY 정적 준비 완료, 정확한 창 시작 시각 대기.** 기존 실DB 저장/새 SQL 연결 재조회와 수리30 자체회귀 근거는 유지한다. World63파일·공개 입력과 정확 argv를 재대조했고 사용자2회 기동/메인 신호 분리를 유지한다. 최종 PR 검증의 diff·강 등급·필수 시험·정확 명령/예상45~60분 입력은 `prereview-ready-34/`에 준비했다. compile·실제 서버 재기동/World 합동 흐름·신규 Opus 판정은 미실행이며 전체goal완료/실화면완료로 보고하지 않는다.
+**상태: 별도 새 서버의 같은 저장 캐릭터 재입장·양쪽 정상 종료·작업잔여0 확인, 창 반환·실행자 정산/종료 완료.** before/after 각 exit0·같은 ID/Mage·실제 old507→new480/birth·동일 DLL hash를 원시 대조했다. after user exit0/Server stopped와13:34:27.624Z PID480 소멸/7777·Linux/Windows 작업잔여0을 직접 읽고 Main msg_146b1277fb31에 반환을 보냈다. 최종 보고/쓰기감사29파일·World63입력을 대조했고 worker_done 뒤 정확 pane을 닫았다. origin/main 통합·신규 Opus 독립 판정/PR은 남아 있다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -20,6 +20,14 @@
 - 메인 대조 전에도 API 문서 작성은 허용. 작업자 발행은 대조 회신 뒤. 다른 파트 착수는 메인이 각각 별도 승인하며 Core는 지시하지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 전체 goal 종료 뒤 worktree 최신 main 정렬 — 2026-10-22
+
+Main msg_9057057b908f(13:32:47Z, 현재 from_handle 대조)가 전달한 사용자 원문이다. 이 pane 직접 사용자 입력으로 격상하지 않는다. 원문 수신은 준비34/inbox-final-return-approved-ack.json에 보존했다.
+
+> 각 파트들 Goal 작업 다 끝나면 main 브랜치를 체크아웃 받아서 한번 최신화해줘
+
+Main이 전달한 방법은 목표 PR 병합·goal 결과 기록 등 종료조건을 충족한 뒤 `git fetch` → clean 확인 → `git checkout --detach origin/main` → HEAD40자 보고다. 이 goal은 PR직전 독립검증/병합·종료작업이 남아 지금 detach하지 않는다. 사용자 미커밋 변경·실행자 소유를 보존하고 PR 병합 권한/정확head 사용자 승인은 기존대로다. 합동 창 뒤 현재 작업 브랜치에 origin/main을 반영하는 앞 지시와 전체goal 종료 뒤 detach 최신화는 다른 단계다.
 
 ### 오늘 Unity 창들 뒤 서버 기동 사용자 참여 — 2026-10-22
 
@@ -334,8 +342,8 @@ World `msg_560337c050b9`: 소유 충돌 없음은 기술 의견, 후속 착수 �
 - [x] 사용자 범위 승인
 - [x] 저장 계약 확정
 - [x] 선행 시험 작성
-- [>] 저장 기반 구현
-- [ ] 실제 경로 검증
+- [x] 저장 기반 구현
+- [>] 실제 경로 검증
 - [ ] 독립 강 검증
 - [ ] 제품 PR 병합
 - [ ] 종료 점검
@@ -353,7 +361,17 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**다음 첫 일 — Level 창 반환 뒤 메인의 정확 합동 T를 받아 신규 실행자에게 build부터 발행.** 사용자 참여 A와 서버2회 사용자 직접 실행/메인 신호는 유지한다. 현재 메인 `msg_cb46b0e453e9`의 순서는 Level(반환 늦어도12:26:37Z)→Core합동30분→Art HUD19분이다. 예상 반환/21:10쯤을 실행 T로 바꾸지 않는다. `prereview-ready-34/ready-draft-v1.md`·합동 실행자 초안과 준비33의 preparation/사용자 카드가 첫 입력이다. 이번 지시에 따라 B정적 준비 뒤에는 종료 준비 대신 짧은 status 후 턴을 끝내며 pane을 열어 둔다. 우편함 wait/poll/sleep은 열지 않는다.
+**다음 첫 일 — 리드 기록 커밋→최신 origin/main 반영(충돌은 Main 판단 요청)→받은 상태의 최종 Opus 계약/READY 재고정·실행창 요청.** 실행자 Task task_be0c3aeb55b9/Dispatch ctx_c97acb6bcf7b는 worker_done msg_61a54269875b/outcome succeeded와 쓰기종료를 대조했다. 최종 보고 executor/report-final.md SHA256 BA680D5C7A33374CF0A3D13F8F99272484308E9FE9686BAB2B57BA9535BD1475, 감사v2의 파일28개+감사자체1개가 존재하고 hash/length불일치0·World63불일치0·Core/World HEAD불변이다. release retained/external_terminal 뒤 incarnation 00ae6b3a-832f-44be-8eb1-e2061eafeb9a/idle을 확인해 정확 pane을 terminal close/ptyKilled true로 종료했다. 실제 자원 반환13:34:27.624Z는 승인반환13:36:02Z 안이며 Main 보고는 msg_146b1277fb31이다. 이후 추가 WSL/build/봇0을 유지한다. 전체goal 종료 뒤 detach 최신화는 별도 종료조건이며 지금하지 않는다. 리드는 wait/poll/sleep을 열지 않는다.
+
+- 정산 원문은 준비34/executor/report-final.md·raw/final-source-and-write-audit-v2.json, 리드 대조는 lead-final-executor-audit.json, lifecycle은 joint-worker-final-show/release·joint-terminal-before-close/close.json이다. v1감사의 공개2경로 배열 읽기 오류/목록누락은 원본 report.md·감사v1을 보존하고 최종v2로 정정했다; 제품/실행 원시는 불변이다. 기존 liveness helper 집계는 신호25개·300초 초과1건(13:34:43Z→13:42:24Z,461초), 최종 source/보고·감사v2 정정 구간이다. 질문대기3건은 helper 규칙으로 따로 집계했고 원시는 joint-liveness-input/provenance/result.json과 settlement.md에 보존했다. 이는 독립 PASS가 아니다.
+
+13:27:58Z after user exit/ended/Server stopped 부재로 공식ask msg_ea8ce3fd04d6의 반환만5분연장을 Main msg_22124c39a560에 요청했다. Main msg_4a77bbf52c84(13:31:03Z)가 **반환13:36:02Z를 승인**해 보충v1.5·동일ask공식reply로 전달했다. 새기동lastEntry13:26:02Z는 늘리지 않으며 새기동/봇재실행0이다. Main은13:30:49Z 계속Tick을 확인해 사용자마지막Enter를 재안내했고 아직실제종료완료는 아니다. 준비34/pending-final-return-question.md와 joint-window-supplement-v1-5.md에 승인/미실행 경계를 남겼다.
+
+- 문서dirty 확인은 Core/World 리드의 진행/PR준비 기록으로 직접 실사해 공식reply msg_ebbcd478f294·보충v1.1로 해소했다. 사용자조기시도 보존·현재자식/공개조건 관측은 Main후속에 따른 보충v1.2이며 원래source/argv/창·모델/자격대리금지 불변이다. 원시·보충·상태전달은 준비34 폴더에 있다. 실제서버기동/봇전후/독립판정은 아직 없다.
+- 보충v1.2의12:54:41Z Linux서버/봇PID0·7777없음/공개조건을 원시로 읽고 Main msg_45197e804853에 첫명령재실행준비를 즉시보고했다. Main msg_add2d7c79994가12:57:08Z 사용자신호1전달을 확인했으나 실제기동답은 없었다.13:00Z에도 새started/Listening/before0으로 실행자가 공식ask msg_7e4c20cf2392의10분연장을 요청해 Main msg_c4b3adec5a2e로 전달했다. **아직미승인**이며 동일ask는답대기다. 제안lastEntry13:16:02Z/반환13:21:02Z를 적용하지 않고 기존13:06:02Z/13:11:02Z를 지킨다. 다음 재개는 Main의 연장판단/실제사용자기동을 수신해 같은ask에reply하는 일이며 준비34/pending-extension-question.md가 현재대기주소다.
+- **연장승인/첫기동확인:** Main msg_2ea6da528bdd(13:03:29Z)가10분연장과사용자첫기동/Listening을전달했다. 현재유효lastEntry13:16:02Z/반환13:21:02Z로보충v1.3·같은ask공식reply에반영했고나머지조건은불변이다. Main관측started13:02:46.196Z·런처OwnedWSL PID26428/birth·Listening/사용자답과실행자의실제LinuxPID/birth확인을구분한다. 다음첫일은실행자의현재Linux원시→before봇결과를받아신호2(사용자Enter)를즉시보고하는일이다. 다음창은Main전달상Content60분이다. 위미승인문장은당시기록이다.
+
+- 현재 실행자의 최초명령·첫화면 Sol max/backend unknown, 준비satisfied·현재incarnation·Task/Dispatch와 최종계약/경로검사는 준비34의 joint-*.json·joint-executor-contract-v1.md·joint-dispatch-spec-v1.md다. 4신호는 준비완료→첫Listening/before성공→Server stopped/exit0·첫PID종료/7777해제→새PID/birth/Listening/after결과다. 마지막 사용자Enter 뒤 잔여/창반환을 해석보다 먼저 메인에 보낸다. lastEntry 뒤 새기동0/부족하면 사전연장요청·실패는상태보존/판단요청이며 강제kill/WSLshutdown/SQLservice/비밀열람/우회0이다.
 
 - 신규 리드가 HEAD/clean을 대조하고 같은 Run을 인수했다. World 고정63파일과 인계문/pin·Core 공개profile/CA·양쪽 launcher hash 재대조 결과 불일치0이다. World 공개2파일은 미공급으로 남기며 신규 실행자가 소유한다. 실제 관측/경로와 read-only107입력 snapshot은 `.backups/verification/2026-10-17-character-storage-foundation/prereview-ready-34/`에 있다. source/argv·준비33 입력은 바꾸지 않았다.
 - PR 직전 신규 Opus의 계약 초안/READY·실제 구현Task/근거 지도·diff 원시·관련8절 원문을 같은 폴더에 준비했다. 준비 기준96파일 +9657/-622는 로컬 origin/main merge-base 비교이며 최종 PR 원격 diff를 대신하지 않는다. 강 등급은 DB/영속·입력/수명·도구 및50줄 이상에 따른다. 전체 비DB 회귀→기존PS5.1 오프라인→최종fresh DLL의 Windows 통합 인증 DB시험을 순차 실행하는45~60분 예상이고 새 하네스0이다.
