@@ -6,7 +6,9 @@
 
 ## 재개 지점
 
-**다음 첫 일:** E/housing-v3-20261022/exec/report.md·writing-ended.json과 리드의 lead-execution-final-file-audit.json·lead-return-and-snapshot-audit.json을 읽고 잔여 T1/T2/U1의 제품/fixture 귀속과 추가 snapshot 설정 차이를 판단한다. 기존 시험은 이번 계약에서 read-only였으므로 조용히 단정을 바꾸지 않는다. 실제 Lv2·재접속/입력수명·두 창/다른 크기·client viewport 잔여는 새 작업자와 새 Main res-check/T/lastEntry/반환 배정 뒤에만 실행한다. 이번 마지막 창은 반환했고 추가 native/재연장/작업자 재사용0이다. PR직전 신규 Opus 강 독립·CI·PR 및 정확 head 사용자 병합 승인은 아직 남았다. PR3 WIP는 원 branch 6dd1e69b에 보존하며 Art 보완의 실제 main/API를 다시 고정한 뒤 별도로 재개한다.
+**다음 첫 일:** Main msg_4e12e2df1e7b의 사용자 A 결정으로 기존 시험2파일/3메서드 fixture 한정 수리·새사본i·신규 외부gpt-6.1-sol max1명/A50분 준비를 진행한다. 판정·기대값·threshold·case집합·공용helper·제품은 그대로다. 리드 발행 계약과 worker READY를 원문/입력hash로 확인해 Main에 준비됨을 보낸다. 메인 res-check/T/lastEntry/반환 전 Unity/WSL/Player·i생성/native0이며 Core→Content A→Art순서(준비전선순위 예외는메인판단)를 따른다. 기존 failed 정산/h5차이·원실패는 보존한다. A뒤3FAIL이 풀린 뒤 B70을별도요청하며 실제Lv2/구매·재접속/입력·Player세viewport·합성효과불확인/PR직전새Opus강검증·CI/PR·개별병합승인은 아직남았다. PR3WIP6dd1e69b는별도로보존한다.
+
+- **48 - 기존 시험 세 fixture 수리 사용자 A 결정·신규 준비.** Main msg_4e12e2df1e7b(16:18:14Z)가 사용자 A 허용 원문과 한정조건을 전달했다. 대기msg_23139dc554d3은 이 결정으로 풀렸고 리드는 발행초안·10개원문/21입력·세심볼/경로확인 자료를 준비했다. 실제worker cwd/IDs·최종입력·새창은 발행/시작 때 고정한다. 원문 E/housing-v3-20261022/main-repair-scope-decision.json, 제안 repair-contract-proposal-v4.md SHA E7A2721A8F5C2EFF42FD7550B5DD0CBDFBA0C75AF248BB7DFF88FC498444298A다. 리드제품/시험수정0·기존h보존·i미생성·추가native0 상태에서 신규외부Solmax의READY를준비한다.
 
 - **47 - 하우징 글상자 수리·실서버 Lv1 일부 확인·미완료 정산.** 신규 Sol max(backend unknown)의 task_cdcb8bb742f8/ctx_7be90227a532는 TMP overflow H1을 허용 GuildWindow.BuildView·GuildHousingLayout constructor geometry 두 파일에서 수리했다. 실행 당시 HEAD7abea87a+수리2파일이며 실제 hash는 exec/writing-ended.json에 고정했다. 같은 Edit361/361(신규9), Play53개50PASS/3FAIL(신규3/3), skip0·case 추가/제외0·최초34PASS의 새실패0이다. H1 17case 중16개는PASS, 나머지1개는 뒤 T2 전제에 도달했다. T1 caption 유일1/실제3, T2 다른 창 가림의 pixel damage 전제, U1 맵 HUD mirror target1/실제0은 귀속 미확정 FAIL이다. 기존 시험/공통 helper 변경0·독립NOTPASS/제품확정실패 집계로 소급0이다.
 - 일반 Player build447.47초/exit0 뒤 동일 exe hash의 Player2·실제 WSL memory server로 Town/Lv1 회원·온라인1→2/금고5→10·잠김·세 버튼을 관찰했다. 닫기/조회 요청 원시는 있으나 push와 refresh 개별 효과·G 합성효과는 확정하지 않았다. PNG820×498은 외창이며 요청802×451을 viewport 실측으로 바꾸지 않는다. 실제 Lv2/구매/재접속/완전한 입력수명/두 창/709·1920 Player는 미실행이다. 대역 GUI의 세 OverlayAtTarget PASS와 실서버 관측을 구분한다.
@@ -145,6 +147,23 @@ HUD PR 생성·commit/push 안전 지점 뒤 최신 main의 별도 작은 Art PR
 - 12 - 하네스 독립 강검증: G/`qa-short-path/verdict.md`·`verdict.json`과 E21/`lead-verifier-settlement.md`·audit 원문을 보존했다. A~C는 통과이나 C 실제 entry는 예상 HEAD/goal 차이2건을 exit1로 거부했으며 D 준비 완료가 아니다. #1~#5·#7은 낮음/비차단 후속, #6은 중간/다음 D 전 필수다. W-1~W-7과 검증 scratch 보존을 다음 계약에 반영한다. 필수 판정·시험 원시는 대조됐고 manifest상 런타임 TEMP 출력1 부재는 별도 정산에 남겼다. 저장 신호16개의 helper는 max483초/초과6구간이며 수신 원시 범위·실제 lastHeartbeat 차이를 구분했다. 검증자는 정산·정확 pane 종료/재사용0이다.
 
 ## 적용 중인 사용자 결정
+
+### 10-23 하우징 기존 시험 3메서드 fixture 수리 A 허용
+
+Main msg_4e12e2df1e7b(2026-10-22T16:18:14Z)가 메인 pane Enter 제출 사용자 원문(10-23 01:2x KST)을 전달했다. 이 리드 pane의 사용자 직접 입력으로 격상하지 않으며 원문 전체는 E/housing-v3-20261022/main-repair-scope-decision.json에 보존한다.
+
+> 대시보드 결정 응답: 1) Content 하우징 - 실패한 기존 시험 3개의 준비 코드를 고쳐도 되는지 → A 허용
+
+메인이 올린 A 선택지 원문:
+
+> Content가 기존 시험 두 파일의 세 시험 메서드 안 준비 코드만 고친다. 판정·기대값·기준값은 그대로 둔다. 새 Sol max 작업자 한 명이 Unity 50분 창에서 원래 실패를 다시 확인한 뒤 고치고 전체 시험을 다시 돌린다. 창 순서는 Core 다음이다.
+
+허용 예외는 GuildWindowIndependentSceneTests의 T1 NegativeControl_EmptiedButtonCaption_TheMissingCaptionIsReported·T2 NegativeControl_OtherWindowOverText_EveryCoveredTextIsReported, InventorySceneLifecycleTests의 U1 MapTransition_RebuildsOnePanelWithTheStoredMirror_RequeriesAfterReady_AndEndingHasNone 메서드 내부 fixture 코드뿐이다. 판정·기대값·threshold·case집합·공용helper·제품 코드는 그대로이며 임의 sleep/재시도/숫자 완화0이다. T1/T2는 같은 명령의 원 실패→수리 뒤 negative control 손상 검출을 남긴다. U1은 원본 재현·진단 뒤 정상 준비 지연이 관측될 때만 기존 WaitForHudAndSettledPanel을 재사용하고 그 외에는 제품 결함 후보로 메인에 올린다. PR직전 신규Opus 강검증은 고친 기존시험마다 실패 전수분류와 제품 계산 복제로 항상 통과하는 시험인지 별도 판정하며 PR보고에 이 사용자 결정과 fixture수정을 공개한다.
+
+새사본 C:/dh/content/probe/i는 10-21 사용자 허용 공간 R 아래에서 g/h와 같은 방식으로 부재·소유 확인 뒤1회 생성한다. h전체/R은 goal종료까지 삭제·정리0이다. snapshot 자동차이 허용은 기존 SENTIS한줄·TimeManager직렬화·MinimapRT CRLF→LF 세항목 밖으로 넓히지 않는다. 신규 외부 gpt-6.1-sol max1명만 열고 최초명령/화면표시를 확인하며 backend는 알 수 없으면 unknown으로 쓴다.
+
+A50분은 Unity1/WSL0/Player0/DB0/새build0이다. 메인이 정한 순서는 Core PR직전Opus→Content A→Art HUD19분이며 빈창에서 선순위가 준비전이면 준비된쪽 우선은 메인이 판단한다. READY뒤 준비됨1통, Main res-check/T/lastEntry/반환 전 native0이다. B70은 A종료·3FAIL해결 뒤 별도요청이며 사용자 손이 필요한 일은 메인에 먼저 올린다. 대기 안내 msg_23139dc554d3은 이 결정으로 풀린다.
+
 
 ### 10-22 목표 종료 직후 최신 main 배치 사용자 결정
 
