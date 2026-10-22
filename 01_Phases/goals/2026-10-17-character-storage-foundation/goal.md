@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 실제 catalog DB25건 통과·저장/새 SQL 연결 재조회 확인, World PR 판정 #1~#3 기술 조율.** 빈목록 SQL NULL 해석 결함 D28-01을 수정했고 단일 구현28을 정산·종료했다. 선택 probe 수리29는 source-ready이며 새 빌드/시험은 미실행이다. World 독립 원문에서 O-CAT-REJECT-03이 차단으로 검출됐고, 리드 정적 대조에서 Core 검토 시험의 옛 checksum D-CAT-LITERAL-04도 찾았다. 수리 범위·203→14 의미는 메인 확인 대기다. 실제 서버 프로세스 재기동/불러오기·World 합동 흐름과 Core PR직전 신규Opus1회는 남으며 전체goal완료/실화면완료로보고하지않는다.
+**상태: 실제 catalog DB25건 통과·저장/새 SQL 연결 재조회 확인, 수리30 자체회귀457P·작업자 정산 완료.** 원 code 전달/매핑과 schema 시험 literal을 수리하고 최종 보고·실제diff/hash·TRX를 리드가 대조했다. 작업자를 종료하고 고정 소스를 메인에 인계한다. 실제 서버 프로세스 재기동/World 합동 흐름과 Core PR 직전 신규 Opus1회는 남으며 전체goal완료/실화면완료로보고하지않는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -20,6 +20,16 @@
 - 메인 대조 전에도 API 문서 작성은 허용. 작업자 발행은 대조 회신 뒤. 다른 파트 착수는 메인이 각각 별도 승인하며 Core는 지시하지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 수리30의 메인 범위 판정과 환경 조회 제한 — 2026-10-22
+
+이번 리드 진입의 ORCA_* 환경 목록 조회에서 hook token 필드가 도구 출력에 포함된 사실을 메인 `msg_2854dbf27337`에 알렸다. 값의 파일 재기록/메시지 전달/사용은0이며 해당 관찰은 core-reentry-20261022-context.md에 보존한다. 이번 리드 세션 전체의 비밀 열람0을 주장하지 않으며 이후 아래 조회 제한을 따른다.
+
+메인 `msg_fd0687ba7cb8`(2026-10-22T02:16:08Z)은 사용자 결정이 아닌 **메인 범위 판정**으로 200→8, 202→15, 203/204/206/207→14를 확인하고 O-CAT-REJECT-03 제품3파일 및 D-CAT-LITERAL-04 시험 literal1곳을 신규 Sol max 한 명이 같은 PR에서 수리하도록 승인했다. SQL/migration/manifest/PDL/wire번호/설정 변경0, PR 직전 Opus1회다. 201/205는 기존 fence/dispatch 의미를 보존해 Core·World 리드가 조율하고 공개 계약 문구 차이만 메인에 올린다. 정적 수리→관련회귀20~30분→합동재기동30분→PR직전Opus45~60분 순서이며 각 실행 창은 정확 argv가 정해진 뒤 별도 요청한다.
+
+보충 `msg_50070e5dfb00`은 직전 종료 준비를 대체해 리드 pane을 유지하고 단일 수리 작업자를 진행하도록 했다. 다음 문장을 작업자 계약에도 넣었다: 「환경 식별에서 ORCA_* 전체를 조회하지 마라(env|grep ORCA, Get-ChildItem env:ORCA* 등). 그 안에 ORCA_AGENT_HOOK_TOKEN·ORCA_AGENT_LAUNCH_TOKEN 비밀 값이 있다. 필요한 값은 ORCA_TERMINAL_HANDLE처럼 이름을 지정해 읽어라. 이름만 필요하면 값 없이 이름만 출력하라.」 해당 값을 다시 출력·저장·전달하지 않는다. 사용자 보고는 메인이 맡는다. 원문·위임 근거는 `catalog-rejection-repair-30/`에 보존한다.
+
+메인 `msg_c5811871fac5`(2026-10-22T02:24:26Z)의 후속 범위 판정은 다음 예외만 확인했다. 「205→11 확인(메인 범위 판정, 사용자 결정 아님): resolver가 원 ID를 seal해 NotApplied와 게임 무변경이 확정되고 current·fence 검증을 통과한 경우만 wire 11로 내보낸다. 원 code·원 ID·deadline은 내부에 보존하고 자동 재시도는 하지 않는다. 그 밖의 205는 이 문구로 넓히지 않는다. 10·12·8은 쓰지 않는다.」 기존 API v1/v2 bytes는 보존하고 [오류 계약 보충 v1](character-storage-api-error-supplement-v1.md)에 같은 문구·원code200..207의8행 표를 고정했다. 작업자에는 `mapping-supplement-v2.md`를 전달해 미완료 소스 작업의205 gate를 해소했고 World에도 같은 문구를 해석 메모로 남기도록 보냈다. 실행 B의 창은 여전히 미배정이다.
 
 ### Windows 통합 인증 실DB 시험 승인 — 2026-10-22
 
@@ -319,11 +329,14 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**2026-10-22 새 Core 리드 — World 판정 답변 전달, 메인 결정 대기.** 메인 `msg_77facf9a3bdd`의 글 조율만 수행했다. HEAD `8e8c0dba`/clean 확인 뒤 현재 세션이 `run_1b758e0cc722`를 인수하고 World `run:run_90d18490c825`에 새 회신 주소를 알렸다. 제품·시험 쓰기/실행/새 작업자0이다.
+**2026-10-22 수리30 정산 완료 — 고정 원천을 메인에 인계.** Task `task_1db97bbffcb6`/Dispatch `ctx_3d0a4531a910`의 신규 Sol max가 O-CAT-REJECT-03·D-CAT-LITERAL-04를 제품3/기존시험3파일에서 수리했다. 최종 보고·실제 전체diff·현재source6hash·TRX와 정확worker_done `msg_8ac1322ef4bf`를 대조해 정산하고 동일 작업자 pane을 종료했다. 활성 작업자0이며 리드 회신 주소는 `run:run_1b758e0cc722`다. 경로/모델·runtime/incarnation 원시는 `core-reentry-20261022-context.md`와 `catalog-rejection-repair-30/launch-observation.json`에 있다.
 
-- **판정:** #1은 기존 O-CAT-REJECT-03과 동일하며 IdentityMismatch203→14를 권고했다. owner/work-result/selection 3파일의 원 code·resolver NotApplied 전파와 명시 매핑표 보충은 메인 확인 전 수정하지 않는다. #2는 Core 시험의 옛005 checksum D-CAT-LITERAL-04도 발견해 수정본 전 소비를 보류했다. #3은 현 Core 3슬롯 시험을 고정 인계했다.
-- **근거:** 공통 goal 근거 루트의 `world-pr-core-answers-20261022.md`와 `world-pr-consumption-20261022.json`에 판정 원문/hash·소비34경로/회귀2파일/조건부도구4파일·실행 한계를 기록했다. World 자체 facade8P와 Core268행의 미실행을 구분하며 fixture를 복제하지 않는다. 현재 주소·모델·진입 receipt와 환경 출력의 hook token 필드 노출 관찰은 `core-reentry-20261022-context.md`와 개별 receipt에 보존하고 메인에 알렸다.
-- **다음 첫 일:** 메인 매핑/단일 Sol max 수리 범위 결정을 받은 뒤 같은 PR 계약으로 이어간다. 실제 별도 서버 재기동·World 합동30분과 Core PR 직전 신규 Opus45~60분은 요청이며 driver/창 미확정이다. 대기만 남으면 종료 준비를 보내고 mailbox wait/poll/sleep을 열지 않는다. 이전 handle/Task/Dispatch/창은 실행 권한으로 재사용하지 않는다.
+- **검증/근거:** 최종 SDK10.0.301 빌드72warning/0error, 회귀457P/0F/0skip(신규43), owner67/catalog200/RuntimeEntry190 및 source6/보존8/DLL2 일치를 리드가 원시에서 계산했다. 이는 자체회귀이며 강 독립 PASS가 아니다. `catalog-rejection-repair-30/settlement.md`·`lead-final-source-audit.json`·`lead-regression-evidence.json`·`worker/report.md`에 전체 근거·535초 heartbeat 누락/argv 실패 관찰을 보존했다.
+- **고정/소비:** 이 로컬 source checkpoint의 정확commit/hash와 파일별 소비/보존 delta는 같은 근거의 `source-pin.json`·`world-handoff-ready.md`다. World는 제품3파일+corrected schema검토시험1파일을 소비하고 기존3슬롯시험·facade·host/TimeProvider/session/Close/Content 변경을 보존한다. Core owner/facade시험2파일과 전체fixture를 복제하지 않는다. 원APIv1/v2 bytes는 유지하며 [오류 계약 보충](character-storage-api-error-supplement-v1.md)을 함께 읽는다.
+- **실행 종료:** 창 반환 `msg_34a55d9536dd`를 판정 전에 보냈다. Main `msg_b6b1b9036da8`이 관련프로세스/배포/7777모두0과 이전bash종료를 확인했고 이후 Main이 켠Ubuntu는 Main 소유다. Core의 shutdown/kill·새실행0이다.
+- **다음 첫 일/남은 조건:** Main이 연 신규World의 현재 주소·고정source 소비 원시와 합동 driver를 확인한다. 실제 별도 서버 프로세스 재기동/저장 캐릭터 불러오기·World 합동 흐름30분, Core PR직전 신규Opus45~60분은 정확argv/별도창이 필요하며 아직 미실행이다. 이전handle/Task/Dispatch/창을 재사용하지 않는다. 대기뿐이면 이 재개점/고정source를 알리고 종료 준비를 보내며 mailbox wait/poll/sleep을 열지 않는다.
+
+### 이전 재개 기록
 
 **2026-10-22 다음 첫 일 — 고정 수리의 World 소비와 실행 창 조율:** 선택 probe의 `D-CAT-READ-01`(typed ReadFailed/NotDispatched → Unavailable), `D-CAT-SCHEMA-02`(유효 Probe의 schema 비호환 → SchemaMismatch) 소스 수리를 마쳤다. 단일 Sol max 수리29의 제품 +7/-2와 신규 시험268행을 리드가 원문·전체 diff·현재 hash로 대조했고 작업자는 정산·종료했다. 근거 `.backups/verification/2026-10-17-character-storage-foundation/catalog-error-repair-29/settlement.md`·`worker/report.md`. **빌드·시험·실제 진입/독립 판정은 미실행**이며 Content 실행 창 동안 Core 실행0을 유지한다. 고정 원천은 World `run:run_90d18490c825`에 직접 인계하며, 실제 별도 서버 프로세스 재기동·불러오기/합동 흐름과 PR 직전 신규 Opus 1회는 남는다. `O-CAT-REJECT-03`은 원래 rejection code의 owner/work-result 전파·매핑 계약까지 넓어 이번 guard 수리에서 제외하고 PR 직전 알려진 미해결로 공개한다. 할 일이 실행 창 대기뿐이면 메인에 종료 준비를 보내며 우편함 wait/poll/sleep을 열지 않는다. 새 리드 회신 주소는 `run:run_1b758e0cc722`, 이전 handle/Task/Dispatch/창은 재사용하지 않는다.
 

@@ -11,6 +11,158 @@ namespace Dawnholder.Server.GameServer.Tests.Persistence.CharacterCatalog;
 public sealed class CharacterSelectionProbeFailureTests
 {
     [Theory]
+    [InlineData(PersistenceResultCode.Busy, CatalogStatus.Busy)]
+    [InlineData(PersistenceResultCode.StaleFence, CatalogStatus.RecoveryRequired)]
+    [InlineData(PersistenceResultCode.Conflict, CatalogStatus.OperationConflict)]
+    [InlineData(PersistenceResultCode.IdentityMismatch, CatalogStatus.IntegrityFailure)]
+    [InlineData(PersistenceResultCode.InvalidClass, CatalogStatus.IntegrityFailure)]
+    [InlineData(PersistenceResultCode.CancelledBeforeApply, CatalogStatus.IntegrityFailure)]
+    [InlineData(PersistenceResultCode.SequenceMismatch, CatalogStatus.IntegrityFailure)]
+    [InlineData(PersistenceResultCode.IntegrityFailure, CatalogStatus.IntegrityFailure)]
+    public async Task AcquireRejected_PublishesItsCauseWithoutACharacterOrLease(PersistenceResultCode code, CatalogStatus expected)
+    {
+        Fixture fixture = new();
+        (CharacterSelectionHandle handle, var acquire) = await fixture.AcquireInFlight();
+        acquire.Complete(AcquireAndLoadResult.Rejected(code));
+
+        await fixture.AssertFailure(handle, expected, Repo.Acquire);
+    }
+
+    [Theory]
+    [InlineData(PersistenceResultCode.Busy, CatalogStatus.Busy)]
+    [InlineData(PersistenceResultCode.StaleFence, CatalogStatus.RecoveryRequired)]
+    [InlineData(PersistenceResultCode.Conflict, CatalogStatus.OperationConflict)]
+    [InlineData(PersistenceResultCode.IdentityMismatch, CatalogStatus.IntegrityFailure)]
+    [InlineData(PersistenceResultCode.InvalidClass, CatalogStatus.IntegrityFailure)]
+    [InlineData(PersistenceResultCode.CancelledBeforeApply, CatalogStatus.Unavailable)]
+    [InlineData(PersistenceResultCode.SequenceMismatch, CatalogStatus.IntegrityFailure)]
+    [InlineData(PersistenceResultCode.IntegrityFailure, CatalogStatus.IntegrityFailure)]
+    public async Task AcquireResolvedNotApplied_PublishesTheValidatedCauseWithoutRetry(PersistenceResultCode code, CatalogStatus expected)
+    {
+        Fixture fixture = new();
+        (CharacterSelectionHandle handle, var acquire) = await fixture.AcquireInFlight();
+        acquire.Complete(AcquireAndLoadResult.AcquireUnknown());
+        var query = await fixture.Characters.NextResolveAsync();
+        Assert.Equal(acquire.Request.Operation, query.Request.Operation);
+        Assert.Same(acquire.Deadline, query.Deadline);
+        Assert.Equal(ResolveMode.QueryOnly, query.Request.Mode);
+        PersistenceAuthority free = new(fixture.Identity, PersistenceOwnerKind.Free, null, 7, 0);
+        query.Complete(ResolveOperationResult.NotApplied(code, new(free, null, null)));
+
+        await fixture.AssertFailure(handle, expected, Repo.Acquire, Repo.Resolve);
+    }
+
+    [Fact]
+    public async Task AcquireUnknown_SealsTheOriginalOperationBeforePublishingConfirmedNoEffect()
+    {
+        Fixture fixture = new();
+        (CharacterSelectionHandle handle, var acquire) = await fixture.AcquireInFlight();
+        acquire.Complete(AcquireAndLoadResult.AcquireUnknown());
+        var query = await fixture.Characters.NextResolveAsync();
+        query.Complete(ResolveOperationResult.StillUnknown());
+        var seal = await fixture.Characters.NextResolveAsync();
+        Assert.Equal(acquire.Request.Operation, query.Request.Operation);
+        Assert.Equal(acquire.Request.Operation, seal.Request.Operation);
+        Assert.Same(acquire.Deadline, seal.Deadline);
+        Assert.Equal(ResolveMode.QueryOnly, query.Request.Mode);
+        Assert.Equal(ResolveMode.SealIfAbsent, seal.Request.Mode);
+        PersistenceAuthority free = new(fixture.Identity, PersistenceOwnerKind.Free, null, 7, 0);
+        seal.Complete(ResolveOperationResult.NotApplied(PersistenceResultCode.CancelledBeforeApply, new(free, null, null)));
+
+        await fixture.AssertFailure(handle, CatalogStatus.Unavailable, Repo.Acquire, Repo.Resolve, Repo.Resolve);
+    }
+
+    [Theory]
+    [InlineData(false, CatalogStatus.OperationConflict)]
+    [InlineData(true, CatalogStatus.CancelledBeforeDispatch)]
+    public async Task AcquireTerminalStatus_PreservesConflictAndConfirmedNonDispatch(bool notDispatched, CatalogStatus expected)
+    {
+        Fixture fixture = new();
+        (CharacterSelectionHandle handle, var acquire) = await fixture.AcquireInFlight();
+        acquire.Complete(notDispatched ? AcquireAndLoadResult.NotDispatched() : AcquireAndLoadResult.Conflict());
+
+        await fixture.AssertFailure(handle, expected, Repo.Acquire);
+    }
+
+    [Theory]
+    [InlineData(PersistenceResultCode.StaleFence)]
+    [InlineData(PersistenceResultCode.CancelledBeforeApply)]
+    public async Task NotAppliedWithChangedFence_RemainsOutcomeUnknownAndCannotRelease(PersistenceResultCode code)
+    {
+        Fixture fixture = new();
+        (CharacterSelectionHandle handle, var acquire) = await fixture.AcquireInFlight();
+        acquire.Complete(AcquireAndLoadResult.AcquireUnknown());
+        var query = await fixture.Characters.NextResolveAsync();
+        PersistenceAuthority changed = new(fixture.Identity, PersistenceOwnerKind.Free, null, 9, 0);
+        query.Complete(ResolveOperationResult.NotApplied(code, new(changed, null, null)));
+
+        CatalogResult result = await handle.Completion.WaitAsync(StoreCallRecorder.Limit);
+        Assert.Equal(CatalogStatus.OutcomeUnknown, result.Status);
+        Assert.Equal(fixture.Request, result.Request);
+        Assert.Null(result.Character);
+        Assert.Null(result.Lease);
+        Assert.Empty(result.Characters);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => handle.Close(null).WaitAsync(StoreCallRecorder.Limit));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => fixture.Service.FlushAsync(fixture.Budget()).WaitAsync(StoreCallRecorder.Limit));
+        Assert.Equal(new[] { Repo.Admission, Repo.Acquire, Repo.Resolve }, fixture.Characters.Calls);
+        Assert.Single(fixture.Repository.Calls);
+    }
+
+    [Fact]
+    public async Task CloseDuringAcquire_DiscardsTheLateCauseWithoutRetryOrRelease()
+    {
+        Fixture fixture = new();
+        (CharacterSelectionHandle handle, var acquire) = await fixture.AcquireInFlight();
+        Task closing = handle.Close(null);
+        Assert.Same(closing, handle.Close(null));
+        acquire.Complete(AcquireAndLoadResult.Rejected(PersistenceResultCode.IdentityMismatch));
+
+        await fixture.AssertFailure(handle, CatalogStatus.OutcomeUnknown, Repo.Acquire);
+        await closing.WaitAsync(StoreCallRecorder.Limit);
+    }
+
+    [Fact]
+    public async Task AcquireUnresolved_DoesNotBecomeAConfirmedRejection()
+    {
+        Fixture fixture = new();
+        (CharacterSelectionHandle handle, var acquire) = await fixture.AcquireInFlight();
+        acquire.Complete(AcquireAndLoadResult.AcquireUnknown());
+        var query = await fixture.Characters.NextResolveAsync();
+        query.Complete(ResolveOperationResult.StillUnknown());
+        var seal = await fixture.Characters.NextResolveAsync();
+        seal.Complete(ResolveOperationResult.StillUnknown());
+
+        CatalogResult result = await handle.Completion.WaitAsync(StoreCallRecorder.Limit);
+        Assert.Equal(CatalogStatus.OutcomeUnknown, result.Status);
+        Assert.Null(result.Character);
+        Assert.Null(result.Lease);
+        Assert.Empty(result.Characters);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => handle.Close(null).WaitAsync(StoreCallRecorder.Limit));
+        Assert.Equal(new[] { Repo.Admission, Repo.Acquire, Repo.Resolve, Repo.Resolve }, fixture.Characters.Calls);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task CancellationOrDeadlineDuringAcquire_DoesNotPublishTheLateRejection(bool expireDeadline)
+    {
+        Fixture fixture = new();
+        using CancellationTokenSource cancellation = new();
+        (CharacterSelectionHandle handle, var acquire) = await fixture.AcquireInFlight(cancellation.Token);
+        if (expireDeadline)
+            fixture.Clock.Advance(TimeSpan.FromSeconds(5));
+        else
+            cancellation.Cancel();
+
+        CatalogResult published = await handle.Completion.WaitAsync(StoreCallRecorder.Limit);
+        Assert.Equal(CatalogStatus.OutcomeUnknown, published.Status);
+        Assert.False(acquire.ResultTask.IsCompleted);
+        acquire.Complete(AcquireAndLoadResult.Rejected(PersistenceResultCode.IdentityMismatch));
+
+        Assert.Same(published, await fixture.AssertFailure(handle, CatalogStatus.OutcomeUnknown, Repo.Acquire));
+    }
+
+    [Theory]
     [InlineData("read failed")]
     [InlineData("not dispatched")]
     public async Task TypedReadFailure_IsUnavailableWithoutAcquiringOrPublishing(string failure)
@@ -221,6 +373,18 @@ public sealed class CharacterSelectionProbeFailureTests
             (AccountContext)OfflineCatalog.AliceAccount(), OfflineCatalog.CharacterA, OfflineCatalog.OperationA,
             Request, Deadline, cancellation);
 
+        public async Task<(CharacterSelectionHandle Handle, Repo.PendingCall<AcquireAndLoadRequest, AcquireAndLoadResult> Call)> AcquireInFlight(
+            CancellationToken cancellation = default)
+        {
+            CharacterSelectionHandle handle = Begin(cancellation);
+            var probe = await ReadProbe();
+            probe.Complete(Probe());
+            var acquire = await Characters.NextAcquireAsync();
+            Assert.Equal(OfflineCatalog.OperationA, acquire.Request.Operation.OperationId);
+            Assert.Same(Deadline, acquire.Deadline);
+            return (handle, acquire);
+        }
+
         public async Task<Repo.PendingCall<ReadAdmissionRequest, ReadAdmissionResult>> ReadProbe()
         {
             RecordingCatalogRepository.Call selection = await Repository.Next("Select");
@@ -245,7 +409,7 @@ public sealed class CharacterSelectionProbeFailureTests
             _ => throw new ArgumentOutOfRangeException(nameof(response)),
         };
 
-        public async Task<CatalogResult> AssertFailure(CharacterSelectionHandle handle, CatalogStatus expected)
+        public async Task<CatalogResult> AssertFailure(CharacterSelectionHandle handle, CatalogStatus expected, params string[] mutationCalls)
         {
             CatalogResult result = await handle.Completion.WaitAsync(StoreCallRecorder.Limit);
             Assert.Equal(expected, result.Status);
@@ -255,7 +419,8 @@ public sealed class CharacterSelectionProbeFailureTests
             Assert.Empty(result.Characters);
             await handle.Close(null).WaitAsync(StoreCallRecorder.Limit);
             await Service.FlushAsync(Budget()).WaitAsync(StoreCallRecorder.Limit);
-            AssertReadOnlyCalls();
+            Assert.Single(Repository.Calls);
+            Assert.Equal(new[] { Repo.Admission }.Concat(mutationCalls), Characters.Calls);
             return result;
         }
 

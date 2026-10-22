@@ -150,13 +150,27 @@ public sealed class CharacterSelectionHandle
         PersistenceWorkResult acquired = await submission.Completion.WaitAsync(
             _deadline.GetRemaining(), _clock, _cancellation).ConfigureAwait(false);
         if (acquired.Status != PersistenceWorkStatus.Acquired)
+        {
             return new(acquired.Status switch
             {
                 PersistenceWorkStatus.Conflict => CatalogStatus.OperationConflict,
                 PersistenceWorkStatus.Unresolved or PersistenceWorkStatus.FenceLost => CatalogStatus.OutcomeUnknown,
                 PersistenceWorkStatus.NotDispatched => CatalogStatus.CancelledBeforeDispatch,
-                _ => CatalogStatus.Busy
+                PersistenceWorkStatus.Rejected or PersistenceWorkStatus.NotApplied => acquired.Code switch
+                {
+                    PersistenceResultCode.Busy => CatalogStatus.Busy,
+                    PersistenceResultCode.StaleFence => CatalogStatus.RecoveryRequired,
+                    PersistenceResultCode.Conflict => CatalogStatus.OperationConflict,
+                    PersistenceResultCode.IdentityMismatch or PersistenceResultCode.InvalidClass or
+                        PersistenceResultCode.SequenceMismatch or PersistenceResultCode.IntegrityFailure => CatalogStatus.IntegrityFailure,
+                    // Only a resolver's validated unchanged authority confirms the sealed operation had no effect.
+                    PersistenceResultCode.CancelledBeforeApply when acquired.Status == PersistenceWorkStatus.NotApplied
+                        => CatalogStatus.Unavailable,
+                    _ => CatalogStatus.IntegrityFailure
+                },
+                _ => CatalogStatus.IntegrityFailure
             }, _request);
+        }
         if (acquired.LoadedClass != summary.Class) return new(CatalogStatus.IntegrityFailure, _request);
         return new(CatalogStatus.Selected, _request, summary, lease: new AdmissionLease(_owner!));
     }
