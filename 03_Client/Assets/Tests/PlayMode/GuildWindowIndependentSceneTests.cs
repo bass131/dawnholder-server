@@ -446,16 +446,21 @@ namespace Dawnholder.Client.Tests.PlayMode
                     Vector2 anchorMax = smithPanel.anchorMax;
                     Vector2 anchored = smithPanel.anchoredPosition;
                     int order = smithCanvas.sortingOrder;
+                    TMP_Text closeCaption = smithPanel.Find("Close/Label").GetComponent<TMP_Text>();
+                    bool closeCaptionEnabled = closeCaption.enabled;
                     smithPanel.anchorMin = guildPanel.anchorMin;
                     smithPanel.anchorMax = guildPanel.anchorMax;
                     smithPanel.anchoredPosition = guildPanel.anchoredPosition;
                     smithCanvas.sortingOrder = guildCanvas.sortingOrder + 1;
+                    // Identical overlaid Close glyphs would preserve the covered caption pixels.
+                    closeCaption.enabled = false;
                     return () =>
                     {
                         smithPanel.anchorMin = anchorMin;
                         smithPanel.anchorMax = anchorMax;
                         smithPanel.anchoredPosition = anchored;
                         smithCanvas.sortingOrder = order;
+                        closeCaption.enabled = closeCaptionEnabled;
                     };
                 },
                 "every guild text's F∩S ink drops",
@@ -491,11 +496,16 @@ namespace Dawnholder.Client.Tests.PlayMode
         [UnityTest]
         public IEnumerator NegativeControl_EmptiedButtonCaption_TheMissingCaptionIsReported()
         {
+            // Every button has a Label; use one caption instance for expectation, damage and undo.
+            TMP_Text caption = null;
             yield return NegativeControl("negative-emptied-button-caption",
-                (pair, expected) => new[] { Find(expected, pair.Guild, "Label").Name },
+                (pair, expected) =>
+                {
+                    caption = ActionButton(pair.Guild).GetComponentInChildren<TMP_Text>(true);
+                    return new[] { expected.Single(item => item.Window == pair.Guild && item.Text == caption).Name };
+                },
                 pair =>
                 {
-                    TMP_Text caption = Label(pair.Guild, "Label");
                     string before = caption.text;
                     caption.text = string.Empty;
                     return () => caption.text = before;

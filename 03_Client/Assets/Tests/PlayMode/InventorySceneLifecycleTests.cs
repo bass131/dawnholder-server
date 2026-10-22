@@ -473,6 +473,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual("재화 20", InventoryPanelProbe.Currency);
             Assert.AreEqual("재료 ×3", InventoryPanelProbe.Slot(0));
             Assert.IsTrue(InventoryPanelProbe.Interactable(InventoryPanelProbe.Use(1)));
+            // Map Ready precedes the additive HUD; use its existing visible and settled preparation gate.
+            yield return HudOverlapProbe.WaitForHudAndSettledPanel();
             object[] mirrorTargets = InventoryPanelProbe.Targets(mirror, "OnInventoryChanged");
             Assert.AreEqual(1, mirrorTargets.Count(target => target is InventoryPanel), "R8 the old panel left the mirror");
             Assert.Contains(InventoryPanel.Instance, mirrorTargets, "R8 the new panel follows the mirror");
