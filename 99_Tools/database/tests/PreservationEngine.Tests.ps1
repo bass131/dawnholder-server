@@ -414,7 +414,8 @@ function Open-EngineObservedConnection($Context, [switch]$Master) {
                         SchemaVersion = $(if ($schema.Count) { $release.Version } else { $null })
                     }
                 })
-            return (ConvertTo-FixtureRows -Rows $rows -Sql $sql)
+            # Match the query's ORDER BY r.Version rather than the fake insertion order.
+            return (ConvertTo-FixtureRows -Rows ($rows | Sort-Object Version) -Sql $sql)
         }
         throw 'Unexpected SQL at the offline entry boundary.'
     }
