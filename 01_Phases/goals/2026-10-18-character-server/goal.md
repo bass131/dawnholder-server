@@ -6,9 +6,16 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: Core 고정 수리 소비 후 WSL 자체회귀 838P/0F/0skip를 확인하고 실행자를 정산·종료했다.** 제품3·schema 시험1과 admission203→14 기대를 소비했고 기존 #3·#4·보호94경로를 보존했다. 실제 별도 Program 재기동에 쓸 Stored 클라이언트 driver가 확인되지 않아 Core와 공동 보고하고 메인 경로 판단을 기다린다. 실DB·별도 Program 재기동·Unity와 PR직전 독립 검증은 남았으며 전체 PR·goal PASS/병합은 아니다.
+**상태: Core 수리 소비·자체회귀838P를 정산했고, 합동 재기동 경로의 사용자 A/B 답변을 기다리며 종료 준비한다.** Main이 다른 파트에도 Stored 메뉴 화면이 없음을 확인해 A기존봇 최소확장 / B합동재기동 유예후 PR직전 독립검증을 사용자 결정으로 올렸다. 답전 봇 수정·신규작업자·실행0이다. 소비5파일·기존 #3/#4·보호94경로를 보존하며, 실DB·별도Program·Unity·전체PR 독립PASS/병합을 주장하지 않는다.
 
 ## 재개 지점
+
+**다음 첫 일: 메인이 사용자 A/B 답변과 적용 범위를 전달해 새 World 리드를 열면, 이 goal·현재 Git 상태를 대조하고 같은 Run을 인수한다.** 현재메인원문은 `approval-01/core-rejection-consumption-01/lead-inbox-wake-10.json`의 `msg_2287e8a62f08`다. 답시각은미정이며 A추천을승인으로해석하지않는다. 이리드/종료된작업자/반환창/과거handle은실행권한이아니다. 두갈래기록은준비안이고어느쪽도아직착수하지않는다.
+
+- **A — 기존 봇 Stored 최소확장 승인 시:** World 리드가 Protocol22·Stored 서버통합을 가진 기존 `feat/character-server-20261018` branch에서 신규 Sol max 한 명에게 `99_Tools/headless-bot/`의 기존 Program/BotSession·PersistenceRestart/Probe 접점을 읽혀, Stored 목록과 고정 characterId 선택만 최소 확장하는 새 계약을 발행한다. class-only seed/restore로대체하지않고 새하네스/불필요생성기능을넣지않는다. 정확파일범위는사용자답과현재diff를읽은뒤고정하며 World리드만commit/push한다. Core는메인이다시연새리드가같은World고정서버의공개profile·기존런처·정상종료/새PID재기동/DB입력을담당한다. 기존합의대로 **Core가 합동30분창을 대표 세 줄 요청**하며, 양쪽client/server정확argv·시험account/characterId·실제쓰기/정리와신규시작T가정해지기전실행0이다. 저장캐릭터입력이없으면임의seed/DDL/새비밀을만들지않고필요입력을메인에올린다. 기존credential을쓰는실행은사용자직접실행기본을유지한다.
+- **B — 합동 재기동 유예·현 증거로 PR직전 검증 승인 시:** World 리드가 같은branch의전체제품/시험diff·수리소비5파일/보호94·원TRX838P와실행원시·과거독립차단4건의처리근거를고정해 신규 `claude --model claude-opus-5-5 --autocompact 250000`의 PR직전 강검증 계약을 준비한다. 제품쓰기종료와검증자테스트소유를분리하고필요한실행창은World가세줄요청한다. 사용자답에서명시한유예만반영하며 별도Program재기동·실DB/Unity·양쪽DLL/CI등미실행을통과로바꾸거나C1~C9를조용히줄이지않는다. 판정원문/남은미실행/리스크를메인에전달한뒤PR·병합관문을따른다. 답전검증자기동/실행/봇수정0이다.
+
+아래는 A/B 결정 요청 전의 조율·완료 기록이다.
 
 **다음 첫 일: 메인이 합동 Stored driver 경로를 정하면 Core와 정확 client/server 명령·부작용·자원을 고정한다.** Core는 World checkout의 실제 Program 시작/정상종료/새PID 재기동, World는 같은account/characterId의 목록·생성·선택·입장·재조회 관찰을 맡고 Core가 대표 창요청을 모으기로 했다. 기존 `StoredMenuSqlEndToEnd`는 같은testhost 안의2host 재생성이므로 별도Program 재기동을 대신하지 못한다. World Unity에는 메뉴Network API가 있지만 현재실행가능한Stored조작driver는미확인이다. 기존서버런처는있어 통합인증제품분기부재만을유일막힘으로올리지않는다. Core대표공동보고는 Content실메뉴인계/사람조작우선, 미준비시기존봇Stored최소확장의명시범위판정이다. 새하네스/인증우회/실행/합동30분창요청0이며 논의대기뿐이면우편함대기없이턴을끝낸다. 근거는 `approval-01/core-rejection-consumption-01/lead-core-existing-entry-findings.json`, `lead-core-auth-and-driver-boundary.json`, `lead-core-joint-report-agreement.json`과수신원문이다.
 
