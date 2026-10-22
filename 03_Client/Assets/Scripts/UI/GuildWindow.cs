@@ -15,6 +15,7 @@ namespace Dawnholder.Client.UI
         bool _inputAllowed;
         bool _destroyed;
         GuildWindowLayout? _layout;
+        GuildHousingLayout? _housing;
         TMP_Text _name = null!;
         TMP_Text _members = null!;
         TMP_Text _online = null!;
@@ -145,6 +146,7 @@ namespace Dawnholder.Client.UI
         {
             if (_layout == null || _destroyed) return;
             GuildStatusDisplay? display = _source?.Guild;
+            _housing?.SetBaseLevel(display?.BaseLevel);
             _name.text = display?.GuildName ?? "길드 정보를 기다리는 중";
             _members.text = display != null ? "회원 " + display.MemberCount.ToString("N0") : "회원 —";
             _online.text = display != null ? "온라인 " + display.OnlineCount.ToString("N0") : "온라인 —";
@@ -167,27 +169,30 @@ namespace Dawnholder.Client.UI
         void BuildView()
         {
             _layout = new GuildWindowLayout(gameObject, "Guild", "길드 현황", right: false);
-            _layout.Inset(140f, 192f);
+            _layout.Inset(354f, 150f);
             _close = _layout.CloseButton();
             _close.onClick.AddListener(Close);
+            _housing = new GuildHousingLayout((RectTransform)_close.transform.parent);
             _refresh = _layout.RefreshButton();
             _refresh.onClick.AddListener(RequestRefresh);
-            _name = _layout.Label("GuildName", 54f, 48f);
-            TMP_Text notice = _layout.Label("AutoJoinNotice", 102f, 42f);
+            _name = _layout.Label("GuildName", 54f, 28f);
+            TMP_Text notice = _layout.Label("AutoJoinNotice", 108f, 24f);
+            notice.fontSizeMax = 17f;
             notice.text = "접속하면 기본 길드에 자동 가입됩니다.";
-            _members = _layout.Label("MemberCount", 144f, 38f, width: 196f);
-            _online = _layout.Label("OnlineCount", 144f, 38f, left: 228f, width: 196f);
-            _treasury = _layout.Label("Treasury", 182f, 38f);
-            _level = _layout.Label("BaseLevel", 220f, 38f);
-            _cost = _layout.Label("LevelUpCost", 258f, 38f);
-            _blacksmith = _layout.Label("BlacksmithStatus", 296f, 38f);
-            _status = _layout.Label("ActionStatus", 334f, 42f);
-            _result = _layout.Label("ActionResult", 376f, 42f);
-            TMP_Text lifetime = _layout.Label("LifetimeNotice", 418f, 76f, width: 270f);
+            _members = _layout.Label("MemberCount", 82f, 26f, width: 196f);
+            _online = _layout.Label("OnlineCount", 82f, 26f, left: 228f, width: 196f);
+            _treasury = _layout.Label("Treasury", 324f, 28f);
+            _level = _layout.Label("BaseLevel", 356f, 28f);
+            _cost = _layout.Label("LevelUpCost", 384f, 28f, width: 202f);
+            _blacksmith = _layout.Label("BlacksmithStatus", 384f, 28f, left: 228f, width: 196f);
+            _status = _layout.Label("ActionStatus", 412f, 28f);
+            _result = _layout.Label("ActionResult", 440f, 42f);
+            TMP_Text lifetime = _layout.Label("LifetimeNotice", 482f, 26f);
             lifetime.fontSizeMax = 17f;
             lifetime.text = "공동 성장은 서버 프로세스 동안 유지됩니다.";
             _levelUp = _layout.ActionButton("LevelUp", "거점 레벨업");
             _levelUp.onClick.AddListener(RequestLevelUp);
+            GuildHousingLayout.PlaceActions(_levelUp, _refresh);
             Render();
         }
     }

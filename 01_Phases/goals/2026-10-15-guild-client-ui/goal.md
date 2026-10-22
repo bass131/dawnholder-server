@@ -1,13 +1,16 @@
 # 길드 현황·거점 성장·대장간 화면
 
-현재 상태(10-22 신규 진입): **하우징 v3 주입 실패 정산·신규 Sol max 짧은 계약 재발행 준비. 성장 효과 PR3는 Art V-1/F-1 보완 대기.** 아래 이전 상태/실행 원시는 보존한다.
+현재 상태(10-22 신규 진입): **하우징 v3 정적 작성·작업자 정산 완료, 새 실행창 대기. 성장 효과 PR3는 Art V-1/F-1 보완 대기.** 아래 이전 상태/실행 원시는 보존한다.
 
 상태: **성장 효과 소비자 구현·자체 실행 미완료 정산. C9 표시 V-1 차단·기존 시험 F-1 Art 보완 대기, 독립 검증/PR 미진행.** 아래 PR255 결과는 병합 전 검증 기록이며 현재 실행으로 소급하지 않는다. 이전 상태: **결함1의 새 Opus 한정 재검증 PASS·정산 완료, PR255 - 길드 서버 연결 CI4/4·R-2 확인 완료, 사용자 승인 대기.** 원 NOT PASS 실행의 Edit352 중350PASS(독립3 포함)·기존2FAIL과 Play19/19PASS는 보존한다. 수리 후 같은 EditMode 1회는352/352PASS·실패/skip0이며 기존350건 결과 변화0·이름 변경2건 모두PASS다. Play19는 이번 미재실행이다. 새 실행 자원/Registry137값 복귀와 검증자 정산·종료를 마쳤다. 두 계정의 파티·보스 클리어 보상·금고30·거점2/2·대장간 해금, 같은 Golem16/기본Melee 피해20→25와 B개인강화0/보너스0, 강화 요청 수신1은 기존 실제 관측이다. C4 실제 두 요청 경합/거부 화면, C5 A단계0→1·실제 골드20/재료1 소비 표시, C8 남은 입력/팝업·세 해상도와 정상 퀘스트 끝까지 경로는 **리허설 확인(10-24~25, 알려진 미확인)**이다. CI의 정확 head 결과는 [PR255 - 길드 서버 연결](https://github.com/bass131/dawnholder-server/pull/255)에서 별도로 확인하며 실화면 미확인을 통과로 바꾸지 않는다.
 
 ## 재개 지점
 
-**다음 첫 일:** Main msg_b50211ffc9e0의 명시 복구 판단으로 원조각Dispatch를 abandon하고 같은incarnation의이전pane를닫았다. 계약v2파일 전문을 고정하고 신규 Sol max의 새Task/Dispatch에는 절대경로/SHA256/검증후시작의짧은pointer만발행한다. 실제 Working·worker-show·작업자기록의계약SHA확인으로 시작을 확인하며 다시어긋나면Enter/중복발행없이Main에판단요청한다. 실행창은없으며정적작성만진행한다. PR3WIP는원branch6dd1e69b에보존/재개때최신main통합, ArtV-1/F-1선반영·후속원Town창재확인/PR직전신규독립은유지한다. 근거E/housing-v3-20261022/worker-contract-v2.md·mail-recovery-answer-01.json·worker-fragmented-abandon/close.json.
+**다음 첫 일:** 하우징 정적작성Task를정산/종료했으므로Main의새실행창배정뒤신규Solmax에실행/자체확인계약을발행한다. 준비계획은E/housing-v3-20261022/next-execution-plan.md이며승인root의미사용h후보·기존Edit/GUIPlay/세실제viewport·build1후메모리server/Player2·관문/반환/미실행을구분한다. 우선자체60분창을요청하고부족하면연장요청/반환하며완료를확약하지않는다. 현재Unity/컴파일/시험/화면/독립/CI/PR은미실행,새화면0이다. 창/남의답대기뿐이면우편함wait/sleep/반복조회없이재개기록뒤Main에종료준비를보낸다. PR3WIP는원branch6dd1e69b보존·재개때最新main통합/ArtV-1/F-1선반영·원Town재확인,각PR최종신규Opus/정확head사용자승인/Main병합은유지한다.
 
+- **45 - 하우징 정적 작성·작업자 정산 완료.** 신규Solmax는제품2cs/시험2cs·원PNG2/새meta6의12경로를작성했고리드는report/메모·실제diff와source12+근거31의bytes/hash43차이0·보호입력30차이0·허용파일교집합/원PNG동일을대조했다. 제품C#+86/-12·시험+415/-0의정적산출물이며실제import/컴파일/시험/화면·독립통과가아니다. formal succeeded는정적단계범위로수용했고release retained/external뒤같은inc/완료·빈draft를대조해정확pane종료(ptyKilledtrue)·reclaimable0/재사용0을확인했다. 원문은E/housing-v3-20261022/impl/report.md·writing-ended.json,리드정산은lead-static-file-settlement.json·lead-static-protection-settlement.json·worker-static-release/close.json이다.
+- 생존신호저장10건의기존helper는max630초/초과347초(12:24:56→12:30:43),630초(12:30:43→12:41:13)2구간/exit1을냈다. 두구간은reviewing/최종보고준비중이며정확지연원인은미확정이다. 신호저장범위밖·첫신호전은미측정이며초과만으로추가provider감사를늘리지않았다. 원시는worker-static-liveness-messages/result.json이다.
+- **44 - 신규 Sol max 짧은pointer 계약 실제 시작.** 원pane를재사용하지않고새Task/Dispatch에경로/SHA/전문검증지시만발행해턴시작을확인했다. 작업자원시Get-FileHash/전문읽기및현재identity를대조한status의SHA가계약v2와일치한다. 첫인사Astra태그는작업자가ContentSol로교정했으며실제기동명령/첫화면은Solmax, backendunknown이다. 이확인은작업시작이며정적작성/실행/독립통과가아니다. Main msg_b50211ffc9e0의복구를처리완료해status로알렸고native0/창없음을유지한다.
 - **43 - 주입 실패 공식 중단과 짧은 계약 재발행 준비.** 메인 명시 판단 msg_b50211ffc9e0을 받아 원 pending/시작미확인 Dispatch를공식abandon하고원receipt/현재대상전체incarnation일치·idle화면을대조해정확pane종료(ptyKilled=true)했다. 리드pane생존/추가작업자0을확인했으며현재도구주입실패를제품확정실패/같은산출물수정횟수에넣지않는다. v2는동일제품/시험scope이며공식spec만짧은pointer로바꾸고원계약/원시는보존한다. 새입력/실제시작은후속receipt와작업자SHA기록으로확인한다.
 - **42 - 공식 attach 시작 미확인·복구 판단 요청.** 첫화면 gpt-6.1-sol max·idletrue·선택창없음을 확인한 새pane에 v1을 한 번 공식연결했다. 입력접수와 턴시작을 구분했으며 placeholder크기조건불충족으로 임의Enter/텍스트재전송/중복기동0이다. provider transcript는 session_not_reported라 계약제출전문/실제시작미확인이다. 원시/판단요청은 E/housing-v3-20261022/에 보존했다. 고정goal원bytes는 worker-fixed-goal-ba0.md이고 본갱신은 수신/lifecycle상태뿐이며 계약범위/판정기준을 바꾸지 않는다.
 ### 현재 PR 범위 — 하우징 v3
@@ -132,6 +135,13 @@ HUD PR 생성·commit/push 안전 지점 뒤 최신 main의 별도 작은 Art PR
 - 12 - 하네스 독립 강검증: G/`qa-short-path/verdict.md`·`verdict.json`과 E21/`lead-verifier-settlement.md`·audit 원문을 보존했다. A~C는 통과이나 C 실제 entry는 예상 HEAD/goal 차이2건을 exit1로 거부했으며 D 준비 완료가 아니다. #1~#5·#7은 낮음/비차단 후속, #6은 중간/다음 D 전 필수다. W-1~W-7과 검증 scratch 보존을 다음 계약에 반영한다. 필수 판정·시험 원시는 대조됐고 manifest상 런타임 TEMP 출력1 부재는 별도 정산에 남겼다. 저장 신호16개의 helper는 max483초/초과6구간이며 수신 원시 범위·실제 lastHeartbeat 차이를 구분했다. 검증자는 정산·정확 pane 종료/재사용0이다.
 
 ## 적용 중인 사용자 결정
+
+### 10-22 목표 종료 직후 최신 main 배치 사용자 결정
+
+Main msg_e9057cb9c0a3가전달한메인paneEnter제출사용자원문은「각 파트들 Goal 작업 다 끝나면 main 브랜치를 체크아웃 받아서 한번 최신화해줘」다. 이pane의직접입력으로격상하지않으며원문은E/housing-v3-20261022/main-goal-closeout-decision.json에보존한다.
+
+메인적용해석은모든goalPR병합·결과기록이끝난뒤리드pane를닫기전에git fetch→clean확인→git checkout --detach origin/main으로자기worktree를최신화하고HEAD40자를종료보고에적는것이다. mainbranch는메인checkout이소유하므로다른worktree는detach를쓴다. 미커밋변경이남으면옮기지않고경로목록과메인에보고하며로컬/원격branch삭제0,다음goalbranch는다음리드가만든다. 현재goal은하우징·C9·리허설/검증/병합이남아종료아니며지금detach하지않는다. 현재하우징branch는65cdd200위이고PR3재개때는main을받는다.
+
 
 ### 10-22 결함1에 대한 메인 범위 판정
 
@@ -495,7 +505,14 @@ H03의 실제 두 name 인자 오분류는 제품 확정 실패·독립 NOT PASS
 | [BACKLOG](../../../00_Document/operations/BACKLOG.md) `game-ui-style-reference`·`ui-layer-sort-design`·`client-ui-session-state` | 참고 경계다. 별도 스타일 정본 작성, 전역 UI 계층 이관, 기존 세션 UI bool 리팩토링을 이번 범위로 채택하지 않는다. 새 창의 표시/수명과 겹침은 이번 요구로 검증한다. |
 | 메인 할당의 운영 경량화 안내·현재 ORCA/스킬 | 실행 단계 일괄 승인·자동 관문, 생존 신호 초과 한 줄 정산, 결정/단계 결과/결함 중심 goal 기록을 적용한다. 독립 세션·역할 분리·병합 승인 경계는 유지한다. |
 
-### 적용 중인 사용자 결정과 메인 운영 판단(10-17)
+### 적용 중인 사용자 결정
+
+### 10-22 목표 종료 직후 최신 main 배치 사용자 결정
+
+Main msg_e9057cb9c0a3가전달한메인paneEnter제출사용자원문은「각 파트들 Goal 작업 다 끝나면 main 브랜치를 체크아웃 받아서 한번 최신화해줘」다. 이pane의직접입력으로격상하지않으며원문은E/housing-v3-20261022/main-goal-closeout-decision.json에보존한다.
+
+메인적용해석은모든goalPR병합·결과기록이끝난뒤리드pane를닫기전에git fetch→clean확인→git checkout --detach origin/main으로자기worktree를최신화하고HEAD40자를종료보고에적는것이다. mainbranch는메인checkout이소유하므로다른worktree는detach를쓴다. 미커밋변경이남으면옮기지않고경로목록과메인에보고하며로컬/원격branch삭제0,다음goalbranch는다음리드가만든다. 현재goal은하우징·C9·리허설/검증/병합이남아종료아니며지금detach하지않는다. 현재하우징branch는65cdd200위이고PR3재개때는main을받는다.
+과 메인 운영 판단(10-17)
 
 메인 msg_e32c52197032가 전달한 사용자 원문은 「대시보드 결정 응답: 1) 10-28 시연 준비 - 길드 순환과 지금 있는 한 판 흐름의 실화면 리허설에 힘을 몰지 → A 시연 우선 재정렬」이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다. World·Content 길드 화면이 시연 우선이며 현재 승인된 패널형 목표와 두 제품 PR 범위는 유지한다. Content의 기존 10-22~25 촬영 리허설 책임은 Core 리허설로 이관됐고, 본 goal의 길드 화면/서버 연결 검증을 새 목표로 넓히지 않는다.
 
@@ -505,7 +522,14 @@ Unity·중량 실행은 메인이 한 번에 하나씩 배정한다. 종료·실
 
 - msg_462b5c7668a3: 「우편함 check·inbox의 반환은 그 결과만 받는 별도 도구 호출로 읽고 해석한 뒤에 다음 행동을 시작한다. check와 실행 명령을 한 셸 호출이나 한 batch로 묶지 않는다.」
 - msg_f4d55486e803: 「JSON의 시각 필드는 ConvertFrom-Json -DateKind String으로 읽거나 원문 문자열로 비교하고, 시각을 쓰는 실행 관문 스크립트는 실제 실행 창 전에 오프라인으로 한 번 통과시켜 본다.」
-### 적용 중인 사용자 결정과 전환 정산(10-18)
+### 적용 중인 사용자 결정
+
+### 10-22 목표 종료 직후 최신 main 배치 사용자 결정
+
+Main msg_e9057cb9c0a3가전달한메인paneEnter제출사용자원문은「각 파트들 Goal 작업 다 끝나면 main 브랜치를 체크아웃 받아서 한번 최신화해줘」다. 이pane의직접입력으로격상하지않으며원문은E/housing-v3-20261022/main-goal-closeout-decision.json에보존한다.
+
+메인적용해석은모든goalPR병합·결과기록이끝난뒤리드pane를닫기전에git fetch→clean확인→git checkout --detach origin/main으로자기worktree를최신화하고HEAD40자를종료보고에적는것이다. mainbranch는메인checkout이소유하므로다른worktree는detach를쓴다. 미커밋변경이남으면옮기지않고경로목록과메인에보고하며로컬/원격branch삭제0,다음goalbranch는다음리드가만든다. 현재goal은하우징·C9·리허설/검증/병합이남아종료아니며지금detach하지않는다. 현재하우징branch는65cdd200위이고PR3재개때는main을받는다.
+과 전환 정산(10-18)
 
 아래 원문은 메인이 사용자 직접 입력을 전달한 것이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 구 검증자의 쓰기 종료 후 대기 기록을 현재 goal에 반영했다. 원문/수신 시각은 E/`pr1-verify-20261017/lead-pending-user-decisions-20261017.md`·`lead-env-d01-main-messages.json` 및 E/`pr1-size-transaction-20261018/authority-messages.json`에 보존한다.
 
@@ -517,7 +541,14 @@ Unity·중량 실행은 메인이 한 번에 하나씩 배정한다. 종료·실
 
 구 검증 정산 원문은 E/`pr1-verify-20261017/scope-transition-settlement-1.md`(SHA256 `B966BD8B92195B7E2DC1A53E6490BB13CECE27FF5120F10A932056188A38C677`)다. 실제 의미진단은20sources/295references·오류0/경고0/info1(CS9236)로 참고 진단만 인정했고 Unity/실제 화면 통과가 아니다. Unity 창은 반환·종료됐으며 과거 창으로 재실행하지 않는다. 저장 메시지269신호의 생존 간격 초과7개(최대637초), 절차 경계 이탈과 원시는 새 전환 근거/메인 보고 `msg_860913b603a9`에 연결한다. 루프525초와 Orca 송신시각524초를 구분하며 저장 창 밖은 미확인이다.
 
-### 적용 중인 사용자 결정 — 동결까지 산출물 우선(10-18 16:00 KST)
+### 적용 중인 사용자 결정
+
+### 10-22 목표 종료 직후 최신 main 배치 사용자 결정
+
+Main msg_e9057cb9c0a3가전달한메인paneEnter제출사용자원문은「각 파트들 Goal 작업 다 끝나면 main 브랜치를 체크아웃 받아서 한번 최신화해줘」다. 이pane의직접입력으로격상하지않으며원문은E/housing-v3-20261022/main-goal-closeout-decision.json에보존한다.
+
+메인적용해석은모든goalPR병합·결과기록이끝난뒤리드pane를닫기전에git fetch→clean확인→git checkout --detach origin/main으로자기worktree를최신화하고HEAD40자를종료보고에적는것이다. mainbranch는메인checkout이소유하므로다른worktree는detach를쓴다. 미커밋변경이남으면옮기지않고경로목록과메인에보고하며로컬/원격branch삭제0,다음goalbranch는다음리드가만든다. 현재goal은하우징·C9·리허설/검증/병합이남아종료아니며지금detach하지않는다. 현재하우징branch는65cdd200위이고PR3재개때는main을받는다.
+ — 동결까지 산출물 우선(10-18 16:00 KST)
 
 Main `msg_88584137e7c3`(2026-10-18T07:00:22Z)이 전달한 사용자 원문: 「목표까지 일단 빠르게 빠르게 작업물 쳐내고 이후에 안정성 찾아가는거로 진행하자, 일단 좀 윤곽이 보여야 어떤걸 고쳐야 할지 보일 것 같아」. 메인 창 직접 입력의 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 원문 전체와 메인 적용 기준은 E/`pr1-fast-window-20261018/main-output-first-direction.json`에 보존한다.
 
