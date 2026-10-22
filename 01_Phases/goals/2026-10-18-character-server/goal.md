@@ -6,9 +6,15 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: #3·#4 시험의 정적 준비를 정산하고 작업자를 종료했다. Core #1·#2 수리 원천을 기다린다.** #4 패킷 시험 수정과 #3 고정 3슬롯 시험 소비는 아직 실행 전이다. Main은 #3 소비 보류를 메인 실수로 정정했고 기존 소비를 유효한 준비 결과로 확인했다. #1 원code/분류·#2 checksum의 새 고정 commit/hash를 받아 새 세션에서 소비·회귀를 잇는다. 이번 수리 실행0, 전체 PR·goal 독립 PASS/병합이 아니다.
+**상태: Core #1·#2 고정 수리 소비를 정적으로 확인했고 새 회귀 창을 요청했다.** 제품3·schema 시험1과 World admission의203→14 기대를 소비했다. 리드가 실제5파일 diff·원천4해시 일치·보존94경로 차이0을 대조했다. 기존 #3·#4도 보존됐으며 아직 실행0이다. Art Unity 사용 뒤 Main의 새 WSL창에서 회귀를 잇고, 전체 PR·goal 독립 PASS/병합은 아직 아니다.
 
 ## 재개 지점
+
+**현재 첫 일: Main의 시작T를 받으면 신규 Sol max 실행자가 고정 소비5파일을 입력으로 기존 build→Network/RuntimeEntry 회귀를 수행한다.** `msg_274f81f76bd5`로20분·전용Ubuntu clone/SDK10.0.301/workspace lock의 창을 세 줄로 요청했다. Main `msg_673f1f7e9158`은 대기열1번·Art 실제반환(~04:23:39Z) 뒤 res-check/시작T 통지를 확인했고, 짧은 대기이므로 리드pane은 유지하되 우편함대기 없이 턴을 끝내라고 지시했다. 창은 아직 미배정이다. Windows dotnet/실DB/7777/Unity/원본DLL복사0이며 새 실행계약은 `approval-01/core-rejection-consumption-01/executor-contract-v1.md`다. 과거창/Task/Dispatch/handle은 실행권한이 아니다.
+
+**이번 정적 소비:** 신규Sol max의 실제5파일 +61/-29를 원본backup·diff·source-pin과 직접 대조했다. Core 제품3과 schema시험1의 after rawhash가 고정원천과 일치하고 admission시험은 승인된11→14 한행뿐이다. 보호94경로의 존재/불재와hash를 다시 읽어 차이0을 확인했다. 실행·독립PASS는 아니다. 맥락·고정계약·v1.1분류정정·v1.2창대기정산·리드실사는 `approval-01/core-rejection-consumption-01/`에 있다. 합동 별도프로세스 재기동→같은캐릭터불러오기 driver는 Core 재진입 뒤 조율하고, PR직전 신규Opus1회는 그 뒤다. 아래는 직전 종료 당시 기록이다.
+
+**이번 정산:** 정적작성자의 최종원문·명시succeeded·실제5+27경로·전체쓰기종료를 대조하고 정적READY만 정산했다. release(external/retained) 뒤 동일incarnation 완료idle을 확인해 정확pane만 닫았으며 리드생존·World작업자0·reclaimable0이다. 저장신호8개의 최대450초·초과1구간은 READY뒤 실행창대기에서 턴을 끝낸 구간으로 근거에 구분했다. 보고/실제수행 불일치0, 실행성공이나독립PASS가아니다. 원문은 `worker/report-final-v1.2.md`, 정산·시각/신호·종료원시는 같은근거의 `lead-settlement.md`와 연결파일이다. 종료된작성자는재사용하지않는다.
 
 **다음 첫 일: Core #1·#2의 새 고정 수리 원천이 도착하면 Main이 연 신규 World 리드가 같은 Run을 인수한다.** 최신 재개점 문서 checkpoint와 실제 Git 상태를 먼저 대조한다. 제품 기준 HEAD는 `fb6d7d53aaa42086f95515a870667207d2651596`, branch는 `feat/character-server-20261018`이며 문서 checkpoint의 정확 SHA는 `approval-01/pr-blocker-repair-01/lead-doc-checkpoint.json`에 둔다. 기존 제품·시험 미커밋을 보존하고, 새 외부 작업자 한 명에게 Core의 정확 파일·commit/hash와 World 보존 delta를 고정해 소비·자체 확인을 잇게 한다. #3도 새 Core commit의 해당 파일과 대조하되 원복하지 않는다. 네 차단을 정리한 뒤 명령·예상 시간·자원 세 줄로 새 실행창을 요청한다. 과거 창·정산된 Task/Dispatch/handle은 실행 권한이 아니며 새 goal을 자동 시작하지 않는다.
 
@@ -186,6 +192,12 @@ Core `msg_80f596e64e30`(17:01:21Z)은 검증된 제한 checkpoint 없음·API v2
 - **착수 조건:** Unity 최소 수신 소유와 정확 파일은 Content 쓰기 종료·합의 뒤 계약 전 고정, 49..54/v22는 최신 main/타 파트 예약 대조 뒤 고정, Core 미검증 코드 복사0, 중량 실행은 메인 「실행 창 시작」 뒤다. 범위 승인만으로 이 조건을 생략하지 않는다.
 
 ## 적용 중인 사용자 결정
+### 2026-10-22 새 World 리드 진입
+
+Main `msg_f4d6658430f8`는 아래에 이미 기록된 모델 라우팅·사용량 페이싱 원문과 경량 경로·보이는 기반·창대기 종료 결정을 유지했다. 진입 메시지 전문과 출처는 `approval-01/core-rejection-consumption-01/entry-inbox-original.json`에 보존한다. 새 작업자 지정은 Sol max이며 위험/DB·프로토콜 독립 검증은 신규 Opus다. 규칙 사본은 수정하지 않는다.
+
+이번 새 리드도 메시지 수신 전 `Get-ChildItem Env:ORCA*`를 실행해 hook token 필드가 도구출력에 포함됐다. 비밀열람0을 주장하지 않으며 값은 근거/회신으로 복제하지 않았다. 즉시 Main에 보고했고 Main은 오늘 네 번째 같은 유형이라고 확인했다. 기존 같은 유형을 첫 발생으로 다시 세지 않는다. 이름을 지정한 환경 조회만 적용하며 새 규칙·도구/전역설정 변경은 하지 않는다. Main의 지침 위치 판단은 메인 소유다. 보고/수신 원문은 위 근거 폴더와 `lead-before-launch-inbox.json`에 있다.
+
 ### 2026-10-22 메타데이터 조회와 현재 수리 배정
 
 Main `msg_2702d8757098`의 현재 지시 원문: 「환경 식별에서 ORCA_* 전체를 조회하지 마라(env|grep ORCA, Get-ChildItem env:ORCA* 등). 그 안에 ORCA_AGENT_HOOK_TOKEN·ORCA_AGENT_LAUNCH_TOKEN 비밀 값이 있다. 필요한 값은 ORCA_TERMINAL_HANDLE처럼 이름을 지정해 읽어라. 이름만 필요하면 값 없이 이름만 출력하라.」 현재 작업자 v1.2에 같은 문장을 넣었고 향후 계약에도 적용한다. 규칙 사본/전역설정을 수정하지 않는다.
