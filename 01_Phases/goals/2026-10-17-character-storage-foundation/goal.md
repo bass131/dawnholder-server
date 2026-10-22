@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 별도 새 서버의 같은 저장 캐릭터 재입장·양쪽 정상 종료·작업잔여0 확인, 창 반환·실행자 정산/종료 완료.** before/after 각 exit0·같은 ID/Mage·실제 old507→new480/birth·동일 DLL hash를 원시 대조했다. after user exit0/Server stopped와13:34:27.624Z PID480 소멸/7777·Linux/Windows 작업잔여0을 직접 읽고 Main msg_146b1277fb31에 반환을 보냈다. 최종 보고/쓰기감사29파일·World63입력을 대조했고 worker_done 뒤 정확 pane을 닫았다. origin/main 통합·신규 Opus 독립 판정/PR은 남아 있다.
+**상태: 같은 저장 캐릭터의 별도 서버 재입장·정상종료 확인, 실행자 정산/종료·최신 main 통합 완료.** before/after 각 exit0·같은 ID/Mage·실제 old507→new480/birth·동일 DLL hash를 원시 대조했다. after user exit0/Server stopped와13:34:27.624Z PID480 소멸/7777·Linux/Windows 작업잔여0을 직접 읽고 Main msg_146b1277fb31에 반환을 보냈다. 최종 보고/쓰기감사29파일·World63입력을 대조했고 worker_done 뒤 정확 pane을 닫았다. 최신 main은 충돌 없이 반영했다. 반영 상태의 최종 Opus 계약/READY 갱신과 실행창 배정·신규 독립 판정/PR은 남아 있다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -361,7 +361,9 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**다음 첫 일 — 리드 기록 커밋→최신 origin/main 반영(충돌은 Main 판단 요청)→받은 상태의 최종 Opus 계약/READY 재고정·실행창 요청.** 실행자 Task task_be0c3aeb55b9/Dispatch ctx_c97acb6bcf7b는 worker_done msg_61a54269875b/outcome succeeded와 쓰기종료를 대조했다. 최종 보고 executor/report-final.md SHA256 BA680D5C7A33374CF0A3D13F8F99272484308E9FE9686BAB2B57BA9535BD1475, 감사v2의 파일28개+감사자체1개가 존재하고 hash/length불일치0·World63불일치0·Core/World HEAD불변이다. release retained/external_terminal 뒤 incarnation 00ae6b3a-832f-44be-8eb1-e2061eafeb9a/idle을 확인해 정확 pane을 terminal close/ptyKilled true로 종료했다. 실제 자원 반환13:34:27.624Z는 승인반환13:36:02Z 안이며 Main 보고는 msg_146b1277fb31이다. 이후 추가 WSL/build/봇0을 유지한다. 전체goal 종료 뒤 detach 최신화는 별도 종료조건이며 지금하지 않는다. 리드는 wait/poll/sleep을 열지 않는다.
+**다음 첫 일 — main 반영 상태의 최종 Opus 계약/READY v2·source 목록을 고정하고 정확 명령/기존 DB 시험행 쓰기·45~60분 창을 Main에 요청.** 실행자 Task task_be0c3aeb55b9/Dispatch ctx_c97acb6bcf7b는 worker_done msg_61a54269875b/outcome succeeded와 쓰기종료를 대조했다. 최종 보고 executor/report-final.md SHA256 BA680D5C7A33374CF0A3D13F8F99272484308E9FE9686BAB2B57BA9535BD1475, 감사v2의 파일28개+감사자체1개가 존재하고 hash/length불일치0·World63불일치0·Core/World HEAD불변이다. release retained/external_terminal 뒤 incarnation 00ae6b3a-832f-44be-8eb1-e2061eafeb9a/idle을 확인해 정확 pane을 terminal close/ptyKilled true로 종료했다. 실제 자원 반환13:34:27.624Z는 승인반환13:36:02Z 안이며 Main 보고는 msg_146b1277fb31이다. 이후 추가 WSL/build/봇0을 유지한다. 전체goal 종료 뒤 detach 최신화는 별도 종료조건이며 지금하지 않는다. 리드는 wait/poll/sleep을 열지 않는다.
+
+- **main 반영 실제:** 리드 기록865e81b612fb9b5ed639079a91fff39d8b9dc81b/clean 뒤13:49Z fetch로 origin/main d3e24f965f3ca4c2d33b005a08e3f5049ac93a2b를 확인했다. `git merge --no-edit origin/main` exit0·충돌0/clean, 통합HEAD4f9efa98de589751b1d9b1f23fc145823f0aadd4다. Main msg_1431084b81be에 짧은 결과를 보냈다. 새로운 정식7파트/태그·이름지정 환경조회의 지침 변경을 읽었고 기존 사용자 경량결정은 유지한다. 통합은 Git 기계작업이며 새 빌드/시험 성공이 아니다. v1의96파일/107입력은 과거 snapshot으로 보존하고 final-diff-*/final-source-inputs.json·contract-v2.md/ready-v2.md를 새로 만든다. 기존31시험파일+독립 사례1개 안에서 신규 Opus 한 명, B1 전체 비DB→B2 기존PS5.1 8개진입→B3 fresh DLL Windows 통합인증 Category DB집합, 새DDL/DB/login/grant/cleanup0·추가서버/봇0이다. 창 미배정/검증자 미발행이다.
 
 - 정산 원문은 준비34/executor/report-final.md·raw/final-source-and-write-audit-v2.json, 리드 대조는 lead-final-executor-audit.json, lifecycle은 joint-worker-final-show/release·joint-terminal-before-close/close.json이다. v1감사의 공개2경로 배열 읽기 오류/목록누락은 원본 report.md·감사v1을 보존하고 최종v2로 정정했다; 제품/실행 원시는 불변이다. 기존 liveness helper 집계는 신호25개·300초 초과1건(13:34:43Z→13:42:24Z,461초), 최종 source/보고·감사v2 정정 구간이다. 질문대기3건은 helper 규칙으로 따로 집계했고 원시는 joint-liveness-input/provenance/result.json과 settlement.md에 보존했다. 이는 독립 PASS가 아니다.
 
