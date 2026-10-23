@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: writer43 B/C 자체 성공을 정산했고 PR 전 신규 독립 Opus 준비가 남았다.** 두writer provider1222·실제LCK_M_SCH_S와rollback6동일·C upgrade/1회replay6동일을원시대조했다. 작업자는종료·현재SQL0이며시험DB는release5/게임0으로보존한다. 독립35 차단해소·goal/PR완료는아직판정하지않는다.
+**상태: PR 전 신규 독립44 계약 준비를 마쳤다.** 전체PR 정적 실사와 기존PS 시험 보완·8진입 재검증을 새 Opus에 맡긴다. 기존C#/SQL은35 독립실측과같은bytes임을대조해근거를검토하며이번WSL/실DB는재실행하지않는계획이다. writer43 자체성공·DB보존은유지하고독립차단해소·PR완료는아직판정하지않는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -362,8 +362,8 @@ World `msg_560337c050b9`: 소유 충돌 없음은 기술 의견, 후속 착수 �
 - [x] 저장 계약 확정
 - [x] 선행 시험 작성
 - [x] 저장 기반 구현
-- [>] 실제 경로 검증
-- [ ] 독립 강 검증
+- [x] 실제 경로 검증
+- [>] 독립 강 검증
 - [ ] 제품 PR 병합
 - [ ] 종료 점검
 
@@ -379,6 +379,12 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**현재 첫 일 — 신규 독립44의 A 정적 준비를 시작하고 READY 뒤 실제 PS 실행창을 요청한다.** 기존 승인 PR전 신규 Opus 절차를 잇는다. 계약·전체PR110파일/128입력·기존PS시험17쓰기·8진입 계획과 이전실측byte 대조를 `prereview-ready-44/`에 준비했다. C#/SQL 제품변경0·35 독립시험14인스턴스hash동일을 근거로 이전1885/25PASS raw를 직접 실사하며, 이번 미실행을 현재실행으로 합산하지 않는다. 실제 B는 PS5.1/pwsh7 기존8진입·짧은catalog44 경로·별도30분 창 계획이고 Main 실제창 전0이다.
+
+기존container82·과거d204와35 #1/#2/#3·41/43 원시/기술오류·파생교정은 독립결론을 유도하지 않고 검토한다. 강 필수 독립시험 보완·실행/실제경로가 부족하면 PASS를 보류한다. source/테스트/규칙/DB/전역 쓰기0으로 준비했고 현재worker/SQL0이다. 계약·계획·byte/경로 검사는 같은 폴더 원문을 따른다. 구현·실DB 자체 실행 단계 결과는 정산자료 범위이며 최종 독립판정과 구분한다.
+
+
 
 **현재 첫 일 — PR 전 신규 독립 Opus의 고정입력·계약·실행창을 준비한다.** writer43 worker_done msg_e03e2b1e043a의현재Task/Dispatch/from·report/context전문·write-end·원시를대조해succeeded수락,release는closed_agent_terminal/archive captured·reclaimable0이다. B의별도SET/readback1000은설치전에실제관측됐고CommandTimeout30유지·기존두writer는각1014.7015/1005.1956ms에provider1222다. PS5.1observer의실제DMV는writer65→installer52/LCK_M_SCH_S·wait74/11ms다. 이전41실행의-2가설/PS7일탈·failed를소급변경하지않는다.
 
