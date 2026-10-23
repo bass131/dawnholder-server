@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 사용자 A에 따라 기본 회귀 경로를 진행한다.** 신규Opus의 기존C#2파일 독립보완과현재B1/B3를고정계약으로준비하고READY뒤10~15분창1개를요청한다. 조건3writer독립재현·5별도서버전체경로·8ResumeVerify/Cleanup은사용자가수용한미실행한계로남긴다. 새DB/DDL/행삭제/서버/Unity0·런고유시험행API만허용하며역사실측을이번실행으로합산하지않는다. O1후속·container82 d/별도안정화와44보류원문은보존한다.
+**상태: 독립45의 사용자 A 범위 기본 회귀 통과를 수락하고 단일 제품 PR을 준비한다.** 새 차단 결함0, B1 1894통과/실패0·기존 정적 Skip5, B3 25통과/실패0/Skip0이다. 조건3/5/8은 사용자 수용 미실행·판정 보류이며 O1 후속·container82 d를 유지한다. 판정 원문 전문·현재 TRX·고정 입력을 대조하고 succeeded 정산·정확 pane 종료를 마쳤다. 반환 시 WSL 잔류와 이후 메인05:32:12Z 자동 종료 관측은 함께 보존했다. 근거는 prereview-followup-45/settlement.md·reviewer/report.md·lead-resource-addendum.md다. goal 전체 완료·병합은 아니다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -373,7 +373,7 @@ World `msg_560337c050b9`: 소유 충돌 없음은 기술 의견, 후속 착수 �
 - [x] 선행 시험 작성
 - [x] 저장 기반 구현
 - [x] 실제 경로 검증
-- [>] 독립 강 검증
+- [x] 독립 강 검증 — 사용자 A 수용 범위, 조건3·5·8 미실행 한계는 유지
 - [ ] 제품 PR 병합
 - [ ] 종료 점검
 
@@ -390,9 +390,13 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**현재 첫 일 — 사용자 A를 반영한 고정계약으로 신규Opus를 기동해 독립보완 READY를 처리한다.** Main msg_7e767b95191c와전달원문을goal의사용자결정절/준비45에기록했다. 기존C#두파일보완과현재B1/B3만수행하며실행은READY뒤Main새10~15분창1개전까지0이다. 같은폴더contract-v1.md·source-inputs.json·dispatch-spec.md·기동원시에현재범위/고정입력/모델과실제Task연결을기록한다. 이전초안·완료조건덮음자료는승인전판단자료로보존하며실행허가로쓰지않는다.
+**현재 첫 일 — 시험 보완·판정 결과를 commit/push하고 단일 제품 PR을 생성한다.** 독립45 Task task_4aeed0ed8b3a/Dispatch ctx_855692f97e82는 worker_done msg_5440eb958866(05:31:54Z)/succeeded 정산 뒤 정확 pane 종료했다. 리드는 판정 원문·맥락 메모 전문과 diff·명령/exit·현재 TRX를 읽었고 읽기 전용125·과거 근거32 hash 불일치0, 허용 시험 두 파일 최종 hash 일치, 범위 밖 dirty0, diff-check0을 확인했다. 원문 `prereview-followup-45/reviewer/report.md` SHA256 035E02768ACCD9B18E364F8F4CF427D6876F4C87F3D6B1A8E2EBFCBE655BA52A, 정산 `settlement.md`, 직접 대조 `lead-final-source-audit.json`·`lead-return-audit.json`이다. 원문 판정은 사용자 A 범위 기본 회귀 통과·새 차단 결함0이며 강 필수 세 항목을 각각 충족했다. catalog 밖 전체 PR 정적 실사는44 원문과 제품 bytes 동일로 연결한 범위다.
 
-조건3writer독립재현·5서버전체재기동/불러오기·8ResumeVerify/Cleanup은위사용자결정원문과함께다음판정한계에명시한다. 새DB/DDL/행삭제/서버/Unity0·런고유시험행API만,필수입력없음Skip통과0·과거35/41/43/33/34의이번합산0이다. 후보시간은선택전자료의추정일뿐이며다른경로를추가하지않는다. 현재기동준비/실제B0이며자연wake에서진행보고/질문을잇고상시poll/wait/timer0이다.
+이번45가 10-22 경량 경로의 **PR 직전 신규 Opus 독립 검증 1회**에 해당한다. 계약1·5·17·54행은 신규 외부 Opus의 사용자 A 최종 강 판정과 세 항목의 별도 판정을 고정했고 원문은 독립 보완7범주/새9인스턴스·현재 B1/B3·diff 실사를 구분해 판정했다. 같은 제품 bytes에 추가 독립 세션을 자동 발행하지 않는다. 완료조건8 중 Resume 실제 경로는 별도 미실행 한계이며 goal 전체 완료를 뜻하지 않는다.
+
+실제 창은 T05:14:27Z/lastEntry05:25:27Z/반환05:29:27Z였다. B1 05:17:19.602–05:20:30.956Z exit0·1894통과/실패0/정적 Skip5, 복사05:20:55.703–05:20:58.777Z exit0·두 DLL hash 일치, B3 05:21:09.643–05:21:19.221Z exit0·25/25/Skip0을 대조했다. 컴파일 예외 재시도는 미사용이다. 반환 시 Windows/WSL dotnet 없음·7777 listener0·SQL15433 ESTABLISHED0·index.lock2경로 없음이었지만 Ubuntu Running/vmmemWSL 잔류가 있었다. Main msg_90c70a39800a가05:32:12Z 재관측에서 WSL 배포·vmmemWSL0과 idle 자동 종료를 전달했다. 양쪽 모두 shutdown·terminate는 하지 않았으며 앞 관측을 소급해 잔류0으로 바꾸지 않는다. 독립 원문은 쓰기 종료 뒤 보존하고 뒤 관측은 `lead-resource-addendum.md`·`main-resource-return-observation.json`을 판정 원문 세트로 붙였다. Core 창은 메인이 닫았고 새 실행은 없다.
+
+조건3 writer 독립 재현·5 서버 전체 재기동/불러오기·8 ResumeVerify/Cleanup은 위 사용자 결정 원문과 함께 최종 판정 한계에 명시한다. 새 DB/DDL/행삭제/서버/Unity는 이번 실행 범위 밖이며 런 고유 시험행 API만 허용했다. 필수 입력 없음 Skip을 통과로 세지 않고 과거35/41/43/33·34를 이번 실행으로 합산하지 않는다. 후보 시간은 선택 전 자료의 추정일뿐이며 다른 경로를 추가하지 않는다.
 
 44는failed정산/정확pane종료완료·새결함0이며35 #1/#2/#3각1회유지다. timer8개 자기보고/직접관측구분·pending/draft·lastEntry·TEMP영향완전배제불가·liveness28신호/초과10구간/max527초/질문대기1993초는원문에보존했다. 이전수행원문/정산은 `prereview-ready-44/settlement.md`·`lead-final-audit.json`이다.
 
@@ -400,6 +404,7 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 - O1 - 선택 Close 예산 만료 뒤 항목 추적: 느린 DB 중 끊김이 반복되면 재시작 전까지 선택 가용성이 떨어질 수 있다(정적 추론). 이번PR제품수정은하지않고다음판정원문에도한계로남긴다.
 - 기존 container82 - LINUX_SQL 안전문구/AST 공백은d·PR귀속아님·통과아님을유지한다. base common실행/Linux도구수리루프는이goal에서열지않는다. 정본후보등록은소유절차로전달하며Core가BACKLOG정본을임의수정하지않는다.
+- O10 - 독립45가 B1의 PR 파일 warning39건을 비차단 관찰로 남겼다. CODE_CONVENTION의 현 error 적용 범위 밖이며 이번 PR에서 규칙을 확대하거나 무관한 경고 정리로 넓히지 않는다. 원시는45 reviewer/raw/b1-build-warnings.txt다.
 
 ### 이전 재개 기록
 
