@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: PR259가 병합됐다.** 사용자 정확 head 승인을 메인이 전달했고, 메인이 새 head CI 4/4 SUCCESS를 대조한 뒤 병합했다. 제품과 독립 판정 결과를 기록했고 Gardener 산출물도 수용됐다. 결과 포함 종료 기록의 독립 문서 실사·종료 기록 PR·종료 점검을 진행한다. 사용자 A의 조건3·5·8 미실행·O1 정적 위험·container82 d 한계는 유지한다.
+**상태: PR259가 병합됐다.** 사용자 정확 head 승인을 메인이 전달했고, 메인이 새 head CI 4/4 SUCCESS를 대조한 뒤 병합했다. 제품과 독립 판정 결과·Gardener 산출물을 포함한 종료 기록4문서의 독립 실사는 PASS다. 종료 기록 PR261의 최종 추가 기록 실사·별도 병합 관문·종료 점검을 진행한다. 사용자 A의 조건3·5·8 미실행·O1 정적 위험·container82 d 한계는 유지한다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -386,10 +386,10 @@ World `msg_560337c050b9`: 소유 충돌 없음은 기술 의견, 후속 착수 �
 - [x] 실제 경로 검증
 - [x] 독립 검증 — 독립45 사용자 A 기본 회귀·독립48 PS13 약PASS, 조건3·5·8 미실행 한계 유지
 - [x] 제품 PR259 병합
-- [>] 종료 기록
+- [>] PR261 병합 — 종료 기록
 - [ ] 종료 점검
 
-제품 PR [259 - Core 캐릭터 생성·선택·SQL 저장 기반](https://github.com/bass131/dawnholder-server/pull/259)은 메인이 사용자 정확 head 승인을 확인한 뒤 병합했다(merge `24c80053071759d1c7e283175ba6289c5036c2c6`). 종료 기록 PR은 별도 정확 head 승인과 메인 병합을 거친다.
+제품 PR [259 - Core 캐릭터 생성·선택·SQL 저장 기반](https://github.com/bass131/dawnholder-server/pull/259)은 메인이 사용자 정확 head 승인을 확인한 뒤 병합했다(merge `24c80053071759d1c7e283175ba6289c5036c2c6`). 종료 기록 PR [261 - Core 캐릭터 저장 기반 종료 기록과 후속 후보](https://github.com/bass131/dawnholder-server/pull/261)은 별도 정확 head 승인과 메인 병합을 거친다.
 
 ## 선행 시험 준비 관측
 
@@ -402,7 +402,7 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**다음 첫 일 — Gardener 결과와 후속 후보를 포함한 종료 기록의 신규 독립 문서 실사 뒤 PR 하나를 올린다.** 제품 PR259의 새 head CI4SUCCESS와 메인 병합은 끝났다. [Gardener 원문](gardener.md)은 읽기 전용 다섯 범주 점검·정리 후보2개·새 차단0이며, Main `msg_00d9a0500d36`가 원문파일을 산출물로 수용했다. 완료 전달의 운영 사건은 아래에 별도 기록하며 판정 실패로 세지 않는다.
+**다음 첫 일 — PR261의 최종 추가 기록을 새 Sol xhigh Fast가 독립 실사한 뒤, 최종 head·판정 원문을 메인에 보낸다.** 종료 기록4문서의 첫 독립 실사는 PASS이며 PR261 초안을 만들었다. 제품 PR259의 새 head CI4SUCCESS와 메인 병합은 끝났다. [Gardener 원문](gardener.md)은 읽기 전용 다섯 범주 점검·정리 후보2개·새 차단0이며, Main `msg_00d9a0500d36`가 원문파일을 산출물로 수용했다. 완료 전달의 운영 사건은 아래에 별도 기록하며 판정 실패로 세지 않는다.
 
 Gardener 후보1은 BACKLOG `prepush-ci-format-checks`의 이번 관측 추가, 후보2는 `powershell-format-equivalence-helper`다. 제안 이관이며 검사/규칙 채택이나 새 도구 구현 승인이 아니다. 원문 수치 대조 보충: PSSA3.7초 관측의 실제 실행대상은33개(변경대상10개와 구분), 「PR단위 네번째」는 PR3개의 언어별 관측4건이다. 원문은 bytes 그대로 보존하고 리드 보충/정산을 `closeout-49/gardener-settlement.md`에 둔다.
 
@@ -412,9 +412,11 @@ Gardener 후보1은 BACKLOG `prepush-ci-format-checks`의 이번 관측 추가, 
 
 현재 종료 branch는 최신 main에서 만든 `docs/character-storage-closeout-20261023`이며 base는 위 merge다. 제품 PS10의 commit blob SHA256은 독립48의 판정 당시 raw bytes와10/10 일치한다. CI 각 job과 병합 관측·명령·검증 bytes의 근거는 `ci-style-execution-48/publication-*`이며 종료 입력·검증·정산은 `closeout-49/`에 둔다.
 
-남은 순서는 결과 포함 종료 기록의 신규 독립 문서 실사 → 종료 기록 PR·메인 R-2/별도 사용자 정확 head 승인·메인 병합 → 종료 점검·최신 main 정렬 → R-8 종료 준비다. 다음 goal은 자동 착수하지 않는다. 제품PR 승인과 종료기록PR 승인은 별개다. 아래 독립48·47 기록의 이전 head/다음 행동은 당시 이력으로 보존한다.
+종료 기록4문서의 신규 외부 Sol 독립 실사(Task `task_b1e05435397a`/Dispatch `ctx_30083622192a`)는 문서 실사 PASS·새 차단0·필수 미검토0이다. 입력23개 hash/bytes·후보171/6·기존167 ID와 다른파트 CURRENT 보존·45/48 원시 및 미실행 한계를 대조했고 제품 실행0이다. 판정 원문은 `closeout-49/reviewer-02/report.md`(SHA256 `8412078DFC381905DB5EB1CBFDB8E7690116A42DEE1167AFEB491037B41901B6`)이며 리드가 전문과 원시를 직접 읽었다. 완료 신호 뒤 release·같은 incarnation idle 확인·정확pane 종료를 마쳤다. 생존 신호는 최초 heartbeat부터 완료까지604초 간격1개가300초를 넘었고 공식ask0이다. 중간 신호나 대기 시간을 추정하지 않고 `closeout-49/reviewer-02-settlement.md`에 기록해 메인에 보고했다. 이 판정·PR 번호·아래 복구 결정을 추가한 최종 변경분은 별도 신규 세션에 실사한다.
 
-종료 문서 실사 배정 교정(리드 첫 기록): 이 goal의 10-19 사용자 라우팅 표가 기본 스킬 시범보다 우선인데 리드가 신규 Astra를 잘못 열었다. Main `msg_30d7fa8e1b36` 정정에 따라 작업 시작 전 공식 draft/turn_start_unobserved 상태의 계약을 abandon·사유 기록·정확pane 종료했고 문서/제품 쓰기0·판정실패 집계0이다. 신규 지정은 `gpt-6.1-sol` xhigh Fast이며 첫 rollout의 model/effort/service_tier를 확인한다. 새 반복규칙은 만들지 않고 원시를 `closeout-49/reviewer-wrong-routing-*`에 보존한다.
+남은 순서는 최종 추가 기록 독립 실사 → PR261 최종 head·메인 R-2/별도 사용자 정확 head 승인·메인 병합 → 종료 점검·최신 main 정렬 → R-8 종료 준비다. 다음 goal은 자동 착수하지 않는다. 제품PR 승인과 종료기록PR 승인은 별개다. 아래 독립48·47 기록의 이전 head/다음 행동은 당시 이력으로 보존한다.
+
+종료 문서 실사 배정·주입 교정(리드 첫 기록): 이 goal의 10-19 사용자 라우팅 표가 기본 스킬 시범보다 우선인데 리드가 신규 Astra를 잘못 열었다. 공식 draft placeholder3567자는 spec675자+관측된 역사 header4787자=5462±2 조건과 맞지 않았다. Enter·재주입0으로 보존했고, old provider transcript는 session_not_reported여서 rollout의 미제출을 직접 입증한 것은 아니다. Main `msg_30d7fa8e1b36` 라우팅 정정과 `msg_c61545ff5f7d`의 시작 전 교체 판단에 따라 draft/turn_start_unobserved 상태의 계약을 abandon·사유 기록·정확pane 종료했다. 문서/제품 쓰기0·판정실패 집계0이며 주입 운영 사건이다. 신규 `gpt-6.1-sol` xhigh Fast에는 짧은 pointer 계약을 발행했다. 첫 rollout line9의 model/effort/service_tier는 `gpt-6.1-sol`/xhigh/priority이고 line10의 제출 입력은 발행 spec475자 전문과 일치한다(`closeout-49/reviewer-02-submission-audit.json`). backend 실제 모델은 unknown으로 구분한다. 새 반복규칙은 만들지 않고 원시를 `closeout-49/reviewer-wrong-routing-*`와 `reviewer-draft-precondition.json`에 보존한다.
 ### 독립48 통합 전 기록
 
 독립48 Task `task_bd3022fc4198`/Dispatch `ctx_d72b8941ddd1`은 신규 외부 Opus5.5로 실제35분 창 T10:21:40Z/lastEntry10:43:40Z/returnBy10:56:40Z에서 고정v4/13suite를10:22:24–10:37:05Z 실행했다. 결과 PASS1553·FAIL0·OBSERVED30,13suite exit0·누락/대상0/Skip0이며 원문 판정은 **약PASS**다.47A token/AST·PSSA33진단0은 동일bytes의 재사용 근거이며48 재실행으로 세지 않는다. 구현46의 공백10파일32행 밖 동작 변경은 없다.
@@ -1058,4 +1060,4 @@ verification-02 최종원문 전문/해시 직접대조, task_6420a379c787/ctx_6
 - 남은 위험과 후속 위치: 조건3·5·8 미실행/판정보류, O1 정적 가용성 위험, container82 d·PR 비귀속·통과 아님은 위 「다음 계획 후보」에 연결한다. Gardener 제안의 채택/검사 구현·규칙화는 메인·사용자 결정 사항이다.
 - 보존 자원: 실제 DB·시험행·기존 SQL 서비스·WorkRoot·원시·0바이트 placeholder는 그대로 보존한다. 종료 기록에서 DB/서버/Unity/WSL 실행이나 자원 삭제·복구는 하지 않았다.
 - 다음 계획 초안: 동결 뒤 실제 환경과 실행 창·DB 쓰기/서버 종료 권한을 확인하고 미실행 경로 또는 O1 재현 중 무엇을 먼저 할지 사용자가 정한다. 새 goal/파트/제품 작업은 자동 착수하지 않는다.
-- 현재 종료 조건: 종료 기록의 독립 문서 실사·종료 기록 PR의 별도 승인/메인 병합과 최종 종료 점검이 남았다. 그 뒤 clean 상태에서 최신 main 정렬·정확 HEAD 보고·R-8 종료 준비를 메인에 보낸다.
+- 현재 종료 조건: 종료 기록4문서 실사 PASS 뒤 PR261을 만들었다. 최종 추가 기록의 독립 실사·PR261의 별도 승인/메인 병합과 최종 종료 점검이 남았다. 그 뒤 clean 상태에서 최신 main 정렬·정확 HEAD 보고·R-8 종료 준비를 메인에 보낸다.
