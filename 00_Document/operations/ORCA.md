@@ -24,9 +24,9 @@
 로컬 `.backups/` 근거는 Git 제외 자료다. 전달 사실과 직접 보존된 실행 근거를 구분하며, 문서 반영을 runtime 전환·새 실행 성공으로 보고하지 않는다.
 
 <a id="r1-management-placement"></a>
-### R-1 — Core·Content·Rules·CodeMap·Management 세션 배치
+### R-1 — Core·Content·Rules·CodeMap·Management·Art·Level 세션 배치
 
-마감 구간 리드는 **Core·Content·Rules·CodeMap·Management 다섯**이다. 게임은 Core 서버 기반과 Content 콘텐츠 두 파트로 나누며, 다른 파트의 구현·진행 상태는 각 goal에서 확인한다. Core의 기존 명칭과 세션·계약의 태그 전환은 [AGENTS Core 전환 정본](../../AGENTS.md#core-tag-transition)을 따른다.
+마감 구간 정식 리드는 **Core·Content·Rules·CodeMap·Management·Art·Level 일곱**이다. Core는 게임의 서버 기반을, Content는 콘텐츠를 맡으며, 다른 파트의 구현·진행 상태는 각 goal에서 확인한다. Core의 기존 명칭과 세션·계약의 태그 전환은 [AGENTS Core 전환 정본](../../AGENTS.md#core-tag-transition)을 따른다.
 
 메인 Claude는 원래 clone `C:/Dev/DawnHolder_Project` 루트(main)의 사용자 생성 표식 checkout에서 열고 파일을 쓰지 않는다. Orca 「기본」 탭이다. Core 리드는 아래 표의 `core-active` worktree, 나머지 리드도 표의 승인 worktree 별도 탭에서 연다. CodeMap은 Architecture의 **분석·검사 책임과 표시 이름**이다. 리팩토링은 코드 주인 파트가 맡는다. `architecture-active` 경로·아래 표의 Architecture 태그를 유지한다. 보조 세션은 메인 checkout 탭의 split에 읽기 전용으로 열고 [보조 세션 스킬](../../.agents/skills/dawnholder-helper-session/SKILL.md)로 진입한다.
 
@@ -37,8 +37,10 @@
 | Rules | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` | `[Rules 리드 Sol]`·`[Rules Sol]`·`[Rules 검증자]` |
 | CodeMap | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` | `[Architecture 리드 Sol]`·`[Architecture Sol]`·`[Architecture 검증자]` |
 | Management | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` | `[Management 리드 Sol]`·`[Management Sol]`·`[Management 검증자]` |
+| Art | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active` | `[Art 리드 Sol]`·`[Art Sol]`·`[Art 구현 Astra]`·`[Art 검증자]` |
+| Level | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/level-active` | `[Level 리드 Sol]`·`[Level Sol]`·`[Level 검증자]` |
 
-기본 다섯과 승인된 추가 파트의 신규 리드는 `gpt-6.1-sol` xhigh(Codex CLI), `[<파트> 리드 Sol]` 태그다. 아래 `<승인 경로>`·`<파트>`는 확인한 작업 경로·파트 이름으로 바꾼다. CodeMap의 발신 태그는 표의 Architecture를 유지하며, 리드 태그는 `[<파트> 구현 Astra]`와 구분한다. 전환기 Astra/Sol 리드 태그 수용과 현재 `from_handle`·Task·Dispatch 대조는 [AGENTS 전환 정본](../../AGENTS.md#lead-tag-transition)을 따른다. 경로·태그가 새 파트·권한을 만들지 않는다.
+정식 파트와 승인된 추가 파트의 신규 리드는 `gpt-6.1-sol` xhigh(Codex CLI), `[<파트> 리드 Sol]` 태그다. 아래 `<승인 경로>`·`<파트>`는 확인한 작업 경로·파트 이름으로 바꾼다. CodeMap의 발신 태그는 표의 Architecture를 유지하며, 리드 태그는 `[<파트> 구현 Astra]`와 구분한다. 전환기 Astra/Sol 리드 태그 수용과 현재 `from_handle`·Task·Dispatch 대조는 [AGENTS 전환 정본](../../AGENTS.md#lead-tag-transition)을 따른다. 경로·태그가 새 파트·권한을 만들지 않는다.
 
 ```text
 orca terminal create --worktree "path:<승인 경로>" --title "<파트> 리드" --command "codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh"
@@ -53,9 +55,9 @@ orca terminal create --worktree "path:<승인 경로>" --title "<파트> 리드"
 
 pane의 소속 worktree와 shell의 실제 cwd는 별도로 확인한다. cwd만 옮겨 소속 불일치를 우회하지 않는다. 현재 조회한 worktree/handle/identity를 기준으로 승인된 배치를 대조한다.
 
-Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지한다. **승인 밖 새 파트는 사용자 승인 시 메인이 별도 worktree 탭에 열고 목표 종료 때 닫는다.** 리드는 위 기동 기준, 작업자·검증자는 R-5·R-6을 따르며, 태그는 [AGENTS](../../AGENTS.md#메시지와-보고)의 `[<파트> 리드 Sol]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 추가 파트 승인이나 태그가 기존 모델·쓰기·Git·병합 권한을 넓히지 않는다.
+정식 파트 외 기존 목표 한정 추가 파트의 승인 경계는 유지한다. **승인 밖 새 파트는 사용자 승인 시 메인이 별도 worktree 탭에 열고 목표 종료 때 닫는다.** 리드는 위 기동 기준, 작업자·검증자는 R-5·R-6을 따르며, 태그는 [AGENTS](../../AGENTS.md#메시지와-보고)의 `[<파트> 리드 Sol]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 추가 파트 승인이나 태그가 기존 모델·쓰기·Git·병합 권한을 넓히지 않는다.
 
-각 파트의 목표 종료 판정은 해당 goal의 완료조건과 [R-8](#r8-astra-lifecycle)을 따른다. 다섯 리드 결정은 새 goal의 자동 착수나 R-8 교체 생략을 허용하지 않는다.
+각 파트의 목표 종료 판정은 해당 goal의 완료조건과 [R-8](#r8-astra-lifecycle)을 따른다. 정식 리드 배치는 새 goal의 자동 착수나 R-8 교체 생략을 허용하지 않는다.
 
 <a id="r2-source-check"></a>
 ### R-2 — 깨끗한 보고의 원천 표본 대조

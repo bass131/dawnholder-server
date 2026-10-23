@@ -1,5 +1,4 @@
 using System;
-using System.Text.RegularExpressions;
 using Dawnholder.Client.Network;
 using NUnit.Framework;
 using Shared.GameData;
@@ -14,8 +13,7 @@ namespace Dawnholder.Client.Tests
     // from that table: LittleEndian, [ushort size incl. header][ushort id], 43 = 5, 45 = 46 = 8, 44 = 66 + name bytes
     // with the UInt16 name byte length at offset 64, 47 = 26, guild name 「새벽 길드」 as UTF-16LE. IDs 1..42 are the
     // order of PDL.xml at main 5c16194; guild 43..47 stay fixed, and admission adds 48 in v21. Nothing uses the generator
-    // or the server. The current client has no guild handler yet (Content's later screen PR adds it), so the last
-    // test pins how today's client survives the server's new 44/47 pushes.
+    // or the server. The final test also checks Content's consumer without weakening the raw framing contract.
     public sealed class GuildProtocolCompatibilityTests
     {
         static readonly string[] ContractOrder =
@@ -182,10 +180,10 @@ namespace Dawnholder.Client.Tests
         }
 
         // One receive chunk carries a whole 44, a whole 47 and the first 3 bytes of the next 44. The committed
-        // ClientNet framing must cut the two complete frames, wait for the rest, and today's dispatcher drops both
-        // unknown IDs with its warning while the connection stays open.
+        // ClientNet framing must cut the two complete frames and wait for the rest. Registered consumers apply
+        // only on main; an unsolicited result does not create a pending purchase or grant gameplay authority.
         [Test]
-        public void CurrentClient_FramesGuildPushesThroughClientNet_DropsBothUnknownIds_AndStaysOpen()
+        public void CurrentClient_FramesGuildPushesThroughClientNet_ConsumesRegisteredIds_AndStaysOpen()
         {
             var queue = new ManualConnectionQueue();
             _session = new UnityClientSession(() => true, queue.Post);
@@ -195,14 +193,17 @@ namespace Dawnholder.Client.Tests
             Buffer.BlockCopy(snapshot, 0, chunk, 0, snapshot.Length);
             Buffer.BlockCopy(result, 0, chunk, snapshot.Length, result.Length);
             Buffer.BlockCopy(snapshot, 0, chunk, snapshot.Length + result.Length, 3);
-            LogAssert.Expect(LogType.Warning, new Regex(@"Unknown PacketId 44\b"));
-            LogAssert.Expect(LogType.Warning, new Regex(@"Unknown PacketId 47\b"));
+            object guild = GuildClientProduct.State(_session);
 
             int consumed = _session.OnRecv(new ArraySegment<byte>(chunk));
+            Assert.IsFalse(GuildClientProduct.Read<bool>(guild, "HasSnapshot"));
             queue.Drain();
 
             Assert.AreEqual(76 + 26, consumed, "two complete frames are cut; the partial third waits");
             Assert.IsFalse(_session.IsClosed);
+            Assert.IsTrue(GuildClientProduct.Read<bool>(guild, "HasSnapshot"));
+            Assert.AreEqual(0x0102030405060708L, GuildClientProduct.Read<long>(guild, "SnapshotSequence"));
+            Assert.IsFalse(GuildClientProduct.Pending(_session));
             LogAssert.NoUnexpectedReceived();
         }
 
