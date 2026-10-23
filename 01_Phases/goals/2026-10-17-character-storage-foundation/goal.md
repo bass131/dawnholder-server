@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: preservation42 자체119건 PASS 정산 완료, writer43 별도25분 실제 창 대기.** 고정 SQL 입력 해석 fixture 한 곳만 수리했고 읽기전용126/이전70근거/원래473·84·3필드를 보존했다. 작업자는 종료했고 신규worker·SQL0이다. Content Opus50분→Level A45분v3 뒤 실제 시작 메일로 writer43을 재개한다. 독립35/실DB 후속·PR직전 신규Opus/goal·PR완료는 별도다.
+**상태: writer43 B/C 자체 성공을 정산했고 PR 전 신규 독립 Opus 준비가 남았다.** 두writer provider1222·실제LCK_M_SCH_S와rollback6동일·C upgrade/1회replay6동일을원시대조했다. 작업자는종료·현재SQL0이며시험DB는release5/게임0으로보존한다. 독립35 차단해소·goal/PR완료는아직판정하지않는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -379,6 +379,46 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**현재 첫 일 — PR 전 신규 독립 Opus의 고정입력·계약·실행창을 준비한다.** writer43 worker_done msg_e03e2b1e043a의현재Task/Dispatch/from·report/context전문·write-end·원시를대조해succeeded수락,release는closed_agent_terminal/archive captured·reclaimable0이다. B의별도SET/readback1000은설치전에실제관측됐고CommandTimeout30유지·기존두writer는각1014.7015/1005.1956ms에provider1222다. PS5.1observer의실제DMV는writer65→installer52/LCK_M_SCH_S·wait74/11ms다. 이전41실행의-2가설/PS7일탈·failed를소급변경하지않는다.
+
+- 리드원시대조: source125고정불일치0·worker57artifact해시불일치0/별도ledger2외추가0·report/context쓰기종료해시일치·41report불변이다. before6부분은41baseline/retained와동일,rollback6은before/41과동일,replay6은upgrade직후와동일이다. actualC commit/replay1회·verify-schema/source해시일치·history5/release5/현재manifest·요구7flow표누락0·게임0/transaction0를확인했다. SQL재연결/추가실행0·정리승인없음/DB보존이다.
+- 준비기술오류2건/파생교정2건의원본과교정을구분한다. Manifest literal은actualSQLRelease로출처를교정했고Typechar(2)selector의허위missing7은원시그대로Trim대조로교정했다. 완전준수PASS/제품확정실패로자동합산하지않고독립검증에넘긴다. 기존liveness helper는현재Dispatch7신호/over·max358초/질문대기63·61초이며300이내로쓰지않는다. Main반환/기록보존접수 msg_fc8a96b7770a도보존했다.
+- 실제반환01:01:12.367Z·리드선보고01:06:15Z/마감01:08:15Z전·known기술/직계child·ownSQL0의관측한계는위원문대로다. 다음ContentB70창중CoreSQL/worker0이며독립35 #1/#2/#3각1회/독립차단해소·PR전신규Opus·goal완료는별도다. source/HEAD변경은worker종료뒤leadgoal로컬checkpoint만이며push/merge0이다.
+- 정산원문 writer-race-resume-43/settlement.md SHA256 E196010C902242D76A4118E192919A4622E249A49686C84C5D02389BE34BEF53, worker/report.md 901A34AC3132F6C650C80603AD217E04705604198BCB6AF29D9002A8653C627F, lead-final-audit.json E7BBC20092ED5F191A610856D7C6F3AC09DCDCEE125C51151B3C87C15AE34A34. 다음은새독립계약을준비해별도Main창을요청하고실제시작전idle한다.
+
+
+
+**writer43 최종 정산 liveness 초과 수신.** 현재Task/Dispatch/from·태그일치의내용heartbeat msg_cad08605a595(01:07:58Z)가직전status01:02:00Z뒤자체elapsed358.203초를보고했다. 메시지UTC초기준차358초이며300초이내로쓰지않는다. actual자원반환뒤정산구간/새SQL0으로제품결함·추가실행과구분하고현재Dispatch기존helper최종감사에원시를연결한다. report/쓰기종료·worker_done은아직미수신이고source/HEAD/commit변경0이다. 원문 writer-race-resume-43/inbox-wake-52-check.json이다.
+
+
+
+**현재 첫 일 — writer43 최종report·쓰기종료·worker_done을 대조한다.** 현재worker msg_fa93774a750e의Task task_be252ff4d751/Dispatch ctx_4e287d385fe3/from일치를확인했고 resources-return.json·connection3개disposed·db-retained-state-observed를직접읽었다. actual01:01:12.367Z PS5.1의known기술PID10개/직계child0·known ownSQLestablished0·관련workload0·7777listen0·상주SQL15433/sqlservr19368만이다. 반환observer28552/부모19444도리드현재조회없음을확인했다. 범위는기록identity/직계child/현재조회이고전OS수명·미관측후손0으로넓히지않는다. raw에lock/메모리항목이없어그항목0을추가하지않는다.
+
+- 자기연결3개Closed/disposed·transaction0,기존전용DBhistory5/release5/actualmanifestAC6D31EA3C28C21FD01D150F2828BD9AA9FCAF8384FEB9B9B2A171F4E718A571·게임0/transaction0를보존했다. db-retained-state-observed는앞record의expectedliteral복사를actualSQLsnapshot에서관측한값으로교정한원문이고앞record도보존했다. 이반환상태를B/C최종통과/독립통과로쓰지않는다.
+- Main msg_fb492f60befa(01:06:15Z)로최종해석전에실제창반환을선보고했다. actual반환마감01:08:15Z전이며다음배정은Main현재res-check다. worker는추가SQL/새진입0·source125불변/HEAD0eb9561c유지를보고했고현재report/쓰기정산중이다. 최종report/쓰기종료·worker_done대조전source/HEAD/commit변경0이다. 원문 writer-race-resume-43/worker/resources-return.json·db-retained-state-observed.json·lead-return-observer-exit-observation.json·main-resource-return.json이다.
+
+
+
+**writer43 두번째 setup 오류와 같은창 기술 재진입.** 공식ask msg_946e3705fcc3(00:52:17Z)의현재Task/Dispatch·실제asker를대조했다. worker의첫 & scriptblock 안에dot-source한helper/연결이 다음block에서보이지않아 Invoke-DbScalar not recognized로6snapshot의SQL호출전에중단했다. shell-a.txt전문·db-entry·scope-error-exit를직접읽었고첫연결은정확DB/marker·transaction0·Catalog미적용읽기뿐,DDL/writer/B/C0이다. Stop-Transcript/exit0뒤리드00:52:46Z현재PID20724없음도확인했다. 원시와과거승인/목표범위를보존한다.
+
+- 공식reply msg_b9b105e38dae(00:53:18Z/질문대기61초)로같은worker/동일창에서새PS5.1기술shell만열어inline scope를교정하고기존B/C를재개하도록답했다. 새Orca세션/runner/helper/소스수리/새DB/시험A재실행0이다. 새shell의실제host·자원/lock/이전own연결해제·새연결target/실행guard·marker/transaction0/Catalog미적용부터다시확인→6snapshot/release4/game0/ownedGUID0→기존B/C만이며각단계실제성공을확인한다. 실제B/C다른오류/미관측은FAIL·후속중단,정상단계재허가0·lastEntry01:03:15Z/반환01:08:15Z·자동연장0이다. 두setup오류를제품확정실패/통과로자동합산하지않고최종report에구분한다. 원문 lead-scope-error-exit-observation.json·lead-scope-error-reply.json이다.
+
+
+
+**writer43 진입 전 자기진단 오류 교정.** 공식ask msg_27830d07714d(00:49:02Z)의 현재Task/Dispatch·dispatch발신/body태그와 실제asker를 대조했다. source-before의125 Expected/Actual은 실제같지만 Where-Object Expected -CNE Actual이 literal을비교해125drift로 잘못throw했고 후속batch가이를확인하지않고 기술PS5.1 shellA만 연 사실을 worker가 보고했다. 당시 SQL/DDL/행쓰기0·shell은 SQL전보류다. 최초원시와source-before-correction을 보존하고 리드도00:49:46Z source125재해시 불일치0·HEAD/계약불변을 확인했다. 원래source-before125쌍도scriptblock으로재대조해0이다.
+
+- 공식reply msg_dedec55a1f64(00:50:05Z/질문대기63초)로 같은승인B/C 재개를허용했다. 실제PS5.1/자원/전체lock/DB전제 진입확인·기술단계실제exit확인뒤 기존순서만이며 새창·새권한·정상단계재허가0이다. 새runner/helper/소스수리로넓히지않고 최초진단오류·후속batch경계실수를report에남기며 제품drift/제품결함/통과실적으로계산하지않는다. 이오류를막는교정은기존inline명령의실제결과확인층이며 새반복규칙이나하네스추가를하지않는다. lastEntry01:03:15Z/반환01:08:15Z·반환선보고·DB보존은그대로다. 원문 lead-diagnostic-correction-audit.json·lead-diagnostic-correction-reply.json이다.
+
+
+
+**현재 첫 일 — writer43의 원시 진행·실제 자원반환을 처리한다.** Main msg_73a20ea3f0fc(00:43:14Z/currenthandle·태그확인)가 Level A-v3의00:32:57Z부분반환 뒤 T2026-10-23T00:43:15Z/lastEntry01:03:15Z/반환01:08:15Z를 배정했다. res-check00:40:45Z는Unity/dotnet/WSL/GameServer/git0·실행WSL배포0·7777 0·여유17.49GiB/commit14.99GiB·SQL19368 Running·상주wslservice5432 예외/coreCoAssignedfalse다. art-active lock은 Main이기존10-21사용자A로00:43:08Z삭제,Core삭제0이다. 원문 writer-race-resume-43/main-window-authority.md와raw를 보존했다.
+
+- 기동 전 HEAD0eb9561c461751eebad5d8de8beb7b6ce2d0dba3/clean·고정125 해시불일치0·frozen계약5B71EFE66B365CFFC0D59734565AF15FF97BE815A5C27C11E3C582A2633B85C4 일치·공통/각worktree index.lock0/금지process0을 확인했다. 기존41ownedDB B/C만·PS5.1actualhost/observer·SET1000단독/readback1000·CommandTimeout30·최대SQL3·새DB/CREATE/A재실행/삭제/archive/runner/KILL/secret/전역0을 actual-dispatch에 연결했다. DB전제는 실행자가 실제확인하고 불일치면stop이다.
+- 신규 Task task_be252ff4d751/Dispatch ctx_4e287d385fe3/terminal term_b7f2965b-92d6-41e5-b2a5-e6876e813140/incarnation9e0fd2ad-1b90-43b4-ae10-da39dd33b5a8/resourcewtr_6a3e472eca30이다. worker-start ready/input_accepted/turnStartobserved와 worker-show 현재IDs·requested/effective codex/gpt-6.1-sol/max를 대조했고 첫화면 GPT-6.1-Sol max/Working·backendunknown/최초argv전문미관측을 구분했다. source/HEAD/commit은 쓰기종료·worker_done 전 바꾸지 않고 leadgoal만 계약예외로 기록한다. worker-start/show/first-screen/lead-launch-observation에 원시를 보존했다.
+- 반환을 최종해석보다 먼저 Main에 보고한다. 실제 경합미관측/다른오류는FAIL·lastEntry뒤새진입/자동연장0·DB보존이다. 현재기동은 B/C통과·독립통과가 아니며 source125읽기전용/신규worker1·SQL은 실행자관측 전미확정이다. 상시check/poll/wait/heartbeat를 열지 않고 자연wake에서 처리한다.
+
+
 
 **현재 첫 일 — writer43 실제 시작 메일 전 idle을 유지한다.** 실행42 worker_done msg_b80d865d673d의 Task/Dispatch/from·report/context·실제diff·쓰기종료를 대조해 succeeded 수락, worker-release는 released/closed_agent_terminal/archive captured다. 기존 release responder 한 hunk의 정확한 MalformedRelease REPLICATE 입력만 해석했고 단정119·기대값/reader/SQL/정렬/pin/rollback·atomicity는 보존했다. 실제 PS5.1 한회 23:39:40.036Z~23:41:24.564Z/104.5276초/exit0·stderr0·119PASS0FAIL이며 이전4FAIL은 R40-F01(b)로 해소됐다. 자체suite 결과이며 독립통과/실SQL 증명으로 확대하지 않는다.
 - 리드 원시대조: stdout119/results119 이름·순서·상태·detail 불일치0, 고정127 자기delta1 외불일치0/readonly126 보존·이전70근거 및 worker38해시 불일치0·원래473/84/3필드변경0/이번관측3·0·3·diffcheck0이다. BeforeComplete 복원4/atomicity2, AfterComplete 복원5/거부4 PASS·unobserved 의도547두개·mismatch 내부FAIL/후속중단을 바깥단정PASS로 확인했다. 독립35 #1/#2/#3 각1회는 유지한다.
