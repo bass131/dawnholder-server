@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 독립45의 사용자 A 범위 기본 회귀 통과를 수락하고 단일 제품 PR을 준비한다.** 새 차단 결함0, B1 1894통과/실패0·기존 정적 Skip5, B3 25통과/실패0/Skip0이다. 조건3/5/8은 사용자 수용 미실행·판정 보류이며 O1 후속·container82 d를 유지한다. 판정 원문 전문·현재 TRX·고정 입력을 대조하고 succeeded 정산·정확 pane 종료를 마쳤다. 반환 시 WSL 잔류와 이후 메인05:32:12Z 자동 종료 관측은 함께 보존했다. 근거는 prereview-followup-45/settlement.md·reviewer/report.md·lead-resource-addendum.md다. goal 전체 완료·병합은 아니다.
+**상태: [PR259 - Core 캐릭터 생성·선택·SQL 저장 기반](https://github.com/bass131/dawnholder-server/pull/259)을 생성했다.** 독립45의 사용자 A 범위 기본 회귀 통과·새 차단 결함0, B1 1894통과/실패0·기존 정적 Skip5, B3 25통과/실패0/Skip0이다. 조건3/5/8은 사용자 수용 미실행·판정 보류이며 O1 후속·container82 d를 유지한다. 판정 원문·현재 TRX·고정 입력 대조와 succeeded 정산·정확 pane 종료를 마쳤다. 반환 시 WSL 잔류와 이후 메인 자동 종료 관측은 함께 보존했다. 근거는 prereview-followup-45/settlement.md·reviewer/report.md·lead-resource-addendum.md다. PR 검사·메인 R-2 대조·사용자 정확 head 병합 승인을 남기며 goal 전체 완료·병합은 아니다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -374,10 +374,10 @@ World `msg_560337c050b9`: 소유 충돌 없음은 기술 의견, 후속 착수 �
 - [x] 저장 기반 구현
 - [x] 실제 경로 검증
 - [x] 독립 강 검증 — 사용자 A 수용 범위, 조건3·5·8 미실행 한계는 유지
-- [ ] 제품 PR 병합
+- [ ] 제품 PR259 병합
 - [ ] 종료 점검
 
-PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
+제품 PR은 [259 - Core 캐릭터 생성·선택·SQL 저장 기반](https://github.com/bass131/dawnholder-server/pull/259)이다. 사용자 정확 head 승인 전 병합하지 않는다.
 
 ## 선행 시험 준비 관측
 
@@ -390,7 +390,7 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**현재 첫 일 — 시험 보완·판정 결과를 commit/push하고 단일 제품 PR을 생성한다.** 독립45 Task task_4aeed0ed8b3a/Dispatch ctx_855692f97e82는 worker_done msg_5440eb958866(05:31:54Z)/succeeded 정산 뒤 정확 pane 종료했다. 리드는 판정 원문·맥락 메모 전문과 diff·명령/exit·현재 TRX를 읽었고 읽기 전용125·과거 근거32 hash 불일치0, 허용 시험 두 파일 최종 hash 일치, 범위 밖 dirty0, diff-check0을 확인했다. 원문 `prereview-followup-45/reviewer/report.md` SHA256 035E02768ACCD9B18E364F8F4CF427D6876F4C87F3D6B1A8E2EBFCBE655BA52A, 정산 `settlement.md`, 직접 대조 `lead-final-source-audit.json`·`lead-return-audit.json`이다. 원문 판정은 사용자 A 범위 기본 회귀 통과·새 차단 결함0이며 강 필수 세 항목을 각각 충족했다. catalog 밖 전체 PR 정적 실사는44 원문과 제품 bytes 동일로 연결한 범위다.
+**현재 첫 일 — PR259의 현재 head·검사 상태와 판정 원문 세트를 메인에 전달한다.** 단일 제품 PR259를 생성했으며 시험 보완·결과 기록·PR 번호를 담당 리드가 commit/push한다. 이후 메인 R-2 원천 표본 대조와 사용자 정확 head 승인을 기다린다. Codex 병합·자동 병합 예약은 하지 않는다. 독립45 Task task_4aeed0ed8b3a/Dispatch ctx_855692f97e82는 worker_done msg_5440eb958866(05:31:54Z)/succeeded 정산 뒤 정확 pane 종료했다. 리드는 판정 원문·맥락 메모 전문과 diff·명령/exit·현재 TRX를 읽었고 읽기 전용125·과거 근거32 hash 불일치0, 허용 시험 두 파일 최종 hash 일치, 범위 밖 dirty0, diff-check0을 확인했다. 원문 `prereview-followup-45/reviewer/report.md` SHA256 035E02768ACCD9B18E364F8F4CF427D6876F4C87F3D6B1A8E2EBFCBE655BA52A, 정산 `settlement.md`, 직접 대조 `lead-final-source-audit.json`·`lead-return-audit.json`이다. 원문 판정은 사용자 A 범위 기본 회귀 통과·새 차단 결함0이며 강 필수 세 항목을 각각 충족했다. catalog 밖 전체 PR 정적 실사는44 원문과 제품 bytes 동일로 연결한 범위다.
 
 이번45가 10-22 경량 경로의 **PR 직전 신규 Opus 독립 검증 1회**에 해당한다. 계약1·5·17·54행은 신규 외부 Opus의 사용자 A 최종 강 판정과 세 항목의 별도 판정을 고정했고 원문은 독립 보완7범주/새9인스턴스·현재 B1/B3·diff 실사를 구분해 판정했다. 같은 제품 bytes에 추가 독립 세션을 자동 발행하지 않는다. 완료조건8 중 Resume 실제 경로는 별도 미실행 한계이며 goal 전체 완료를 뜻하지 않는다.
 
