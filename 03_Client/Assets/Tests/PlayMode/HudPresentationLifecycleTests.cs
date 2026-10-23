@@ -156,6 +156,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _fixture.EnterScriptedTown();
             _fixture.Hp(37, 100);
             yield return _fixture.WaitMap(0);
+            yield return WaitHud("first Knight connection Ready");
             yield return _fixture.Frames(2);
             Observe("first Knight connection Ready, HP 37/100");
 
@@ -492,7 +493,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         {
             Expect(view.HpTexts.Any(), requirement + ": HP 라벨이 그려져 미확정 상태가 읽힌다", view);
             Expect(!view.HpTexts.Any(HasDigit), requirement + ": HP 라벨에 숫자가 없다", view);
-            Expect(!view.ShowsNumberPair, requirement + ": 어떤 그려진 글자도 체력 숫자 쌍을 보이지 않는다", view);
+            Expect(!view.ShowsNumberPair, requirement + ": 그려진 HP 라벨이 체력 숫자 쌍을 보이지 않는다", view);
             Expect(!view.ShowsFullHpBar, requirement + ": HP 바가 가득 찬 확정 체력처럼 보이지 않는다", view);
         }
 
@@ -551,14 +552,15 @@ namespace Dawnholder.Client.Tests.PlayMode
             internal float? HpBar { get; set; }
 
             internal IEnumerable<string> HpTexts => Texts.Where(text => text.Contains("HP"));
-            internal bool ShowsNumberPair => Texts.Any(text => NumberPair.IsMatch(text));
+            // Quest progress also renders n / m. Only the HP label is evidence about HP authority.
+            internal bool ShowsNumberPair => HpTexts.Any(text => NumberPair.IsMatch(text));
             internal bool ShowsFullHpBar => HpBar.HasValue && HpBar.Value >= 0.999f;
             // 플레이어가 읽는 gold: 그려진 라벨의 숫자, 그려지지 않으면 없음.
             internal string ShownGold => GoldDrawn ? new string((GoldText ?? string.Empty).Where(char.IsDigit).ToArray()) : string.Empty;
 
             // 받은 current와 max가 그 순서로, 다른 숫자에 붙지 않고 읽힌다. 서식은 구현에 맡긴다.
             internal bool ShowsHp(int current, int max) =>
-                Texts.Any(text => Regex.IsMatch(text, $@"(?<!\d){current}(?!\d)\D+(?<!\d){max}(?!\d)"));
+                HpTexts.Any(text => Regex.IsMatch(text, $@"(?<!\d){current}(?!\d)\D+(?<!\d){max}(?!\d)"));
 
             internal bool ShowsAny(string[] names) => Texts.Any(text => names.Any(name => text.Contains(name)));
             internal bool Shows(Sprite sprite) => Sprites.Contains(sprite);

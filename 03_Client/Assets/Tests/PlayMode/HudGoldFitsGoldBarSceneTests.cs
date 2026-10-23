@@ -16,12 +16,13 @@ namespace Dawnholder.Client.Tests.PlayMode
 {
     // Dungeon goal R10 on the real UI scene (01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md 「결함 PR의 요구」):
     // from 0 to the server cap the HUD gold is one line, every drawn glyph lies inside Gold_bar, its digits are the
-    // panel's, up to six digits keep size 18 and longer amounts stay at 12 or more. The scripted TCP peer sends each
+    // panel's. Demo HUD reconstruction A supersedes R10's old 18/12 typography with reference size 32
+    // (actual em 21.333 pixels at 1280x720); longer amounts also retain at least 32. The scripted TCP peer sends each
     // amount as a server snapshot and the product's HudController writes the label; the test never sets its text.
     public sealed class HudGoldFitsGoldBarSceneTests
     {
-        const float SizeUpToSixDigits = 18f;
-        const float SmallestLongSize = 12f;
+        const float SizeUpToSixDigits = 32f;
+        const float SmallestLongSize = 32f;
         // Float noise only: world units for the ink check, points for the size check.
         const float InkTolerance = 0.01f;
         const float SizeTolerance = 0.01f;
@@ -31,9 +32,9 @@ namespace Dawnholder.Client.Tests.PlayMode
         [SetUp] public void Setup() => _fixture = new MapEntryPlayFixture();
         [UnityTearDown] public IEnumerator Teardown() => _fixture.Cleanup();
 
-        // 0 and 999,999: the shortest and the longest amount the size-18 rule covers.
+        // 0 and 999,999: the shortest and the longest amount the size-32 rule covers.
         [UnityTest]
-        public IEnumerator RealUiHudGold_UpToSixDigits_IsOneLineInsideGoldBar_AtSize18_WithThePanelDigits()
+        public IEnumerator RealUiHudGold_UpToSixDigits_IsOneLineInsideGoldBar_AtSize32_WithThePanelDigits()
         {
             var layouts = new List<GoldLayout>();
             yield return ObserveGold(layouts, 0, 999_999);
@@ -41,12 +42,12 @@ namespace Dawnholder.Client.Tests.PlayMode
             AssertDigitsLineAndBar(layouts);
             Assert.IsEmpty(Amounts(layouts, layout => Mathf.Abs(layout.MinSize - SizeUpToSixDigits) > SizeTolerance ||
                 Mathf.Abs(layout.MaxSize - SizeUpToSixDigits) > SizeTolerance),
-                "R10 up to six digits every glyph is drawn at size 18, as before\n" + Table(layouts));
+                "HUD reconstruction A: up to six digits every glyph is drawn at reference size 32\n" + Table(layouts));
         }
 
         // 1,000,000 is the shortest seven-digit amount, 99,999,999 is eight 9s, and 1,000,000,000 is the server cap.
         [UnityTest]
-        public IEnumerator RealUiHudGold_SevenToTenDigits_IsOneLineInsideGoldBar_AtSize12OrMore_WithThePanelDigits()
+        public IEnumerator RealUiHudGold_SevenToTenDigits_IsOneLineInsideGoldBar_AtSize32OrMore_WithThePanelDigits()
         {
             Assert.AreEqual(1_000_000_000, InventoryLimits.MaxCurrency, "fixture: the last amount below is the server cap");
             var layouts = new List<GoldLayout>();
@@ -54,7 +55,7 @@ namespace Dawnholder.Client.Tests.PlayMode
 
             AssertDigitsLineAndBar(layouts);
             Assert.IsEmpty(Amounts(layouts, layout => layout.MinSize < SmallestLongSize - SizeTolerance),
-                "R10 from seven digits every glyph is still drawn at size 12 or more\n" + Table(layouts));
+                "R10 from seven digits every glyph is still drawn at size 32 or more\n" + Table(layouts));
         }
 
         // Enters the scripted Town, sends each amount as the next server snapshot and records how the HUD drew it.
@@ -100,7 +101,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         // The label as it is drawn now: ForceMeshUpdate lays it out with its current settings, auto size included, so
         // the read does not depend on when batch renders the canvas. Ink is each visible glyph's drawn quad
         // (characterInfo bottomLeft/topRight). isTextOverflowing and textBounds are not used: this font's line is taller
-        // than the label (34.35 against 14.92 at size 18) and both count the line's ascender and descender, so they
+        // than the label (34.35 against 14.92 at size 32) and both count the line's ascender and descender, so they
         // report overflow for every amount (goal 「R10의 알려진 함정」).
         static GoldLayout Measure(TMP_Text gold, RectTransform goldBar, int amount, string panelText)
         {

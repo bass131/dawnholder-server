@@ -1,8 +1,7 @@
 using TMPro;
-using Dawnholder.Client.Scenes;
+using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.State;
-using Shared.GameData;
 using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -11,7 +10,7 @@ using UnityEngine.UI;
 namespace Dawnholder.Client.UI
 {
     /// <summary>
-    /// HUD 표시 핸들러. HP/MP 슬라이더 + 자원 텍스트(HP/Gold) 표시.
+    /// 현재 연결의 확정 HP·직업과 인벤토리 재화를 표시한다. 배치는 HudLayout이 소유한다.
     ///
     /// **헌법 #1 (Server Authority)**: HUD는 *서버가 알려준* 값만 표시합니다.
     /// Entry owner가 <see cref="ApplyServerHP"/>로 마지막 서버 HP를 표시합니다.
@@ -31,16 +30,17 @@ namespace Dawnholder.Client.UI
         [FormerlySerializedAs("hpText")]
         [SerializeField] TMP_Text _hpText;
 
+        [Header("Confirmed class")]
+        [SerializeField] TMP_Text _classText;
+        [SerializeField] Image _knightPortrait;
+        [SerializeField] Image _magePortrait;
+
         [Header("MP")]
         [SerializeField] Slider _mpSlider;
 
         [Header("Resources")]
         [FormerlySerializedAs("goldText")]
         [SerializeField] TMP_Text _goldText;
-
-        [Header("Mock Initial Values (MP — 서버 채널 미박힘)")]
-        [SerializeField] int _mockMpCurrent = 50;
-        [SerializeField] int _mockMpMax = 50;
 
         void Awake()
         {
@@ -56,42 +56,41 @@ namespace Dawnholder.Client.UI
         void OnDestroy()
         {
             UnbindInventory();
-            _boundSession?.UnbindHud(this);
-            _boundSession = null;
+            UnbindHp();
             if (Instance == this) Instance = null;
         }
 
         void OnDisable()
         {
             UnbindInventory();
-            _boundSession?.UnbindHud(this);
-            _boundSession = null;
+            UnbindHp();
         }
 
         void OnEnable()
         {
+            ShowUnconfirmedHp();
+            RenderClass();
+            TryBindLatestEntry();
             BindInventory();
             RenderGold();
         }
 
         void Start()
         {
-            // HP 초기값 = 선택 직업 full HP — 서버 S_PlayerHp 도착 전 임시 표시 (곧 서버 권위값이 덮음).
-            // ClassLoadout 경유 — process-local 캐시 우선 (다중 인스턴스 PlayerPrefs 오염 차단).
-            int classValue = Bootstrap.ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
-            PlayerStats stats = PlayerStats.ForClass((CharacterClass)classValue);
-            if (!_hasServerHp && Bootstrap.ClassLoadout.ServerClass.HasValue) UpdateHP(stats.MaxHp, stats.MaxHp);
-
-            UpdateMP(_mockMpCurrent, _mockMpMax);
+            // An HP callback may arrive before Start; never replace it with a class default.
+            if (!_hasServerHp) ShowUnconfirmedHp();
+            RenderClass();
             BindInventory();
             RenderGold();
-            TryBindLatestEntry();
+            if (UnityClientSession.Instance != null) TryBindLatestEntry();
         }
 
         void Update()
         {
             TryBindLatestEntry();
+            RenderClass();
             BindInventory();
+            if (UnityClientSession.Instance != null && UnityClientSession.Instance.IsClosed) RenderGold();
         }
 
         void BindInventory()
@@ -113,7 +112,8 @@ namespace Dawnholder.Client.UI
 
         void RenderGold()
         {
-            if (_inventorySource != null && _inventorySource.HasSnapshot)
+            if (_inventorySource != null && _inventorySource.HasSnapshot &&
+                (UnityClientSession.Instance == null || !UnityClientSession.Instance.IsClosed))
                 UpdateGold(_inventorySource.Currency);
             else if (_goldText != null)
             {
@@ -127,13 +127,40 @@ namespace Dawnholder.Client.UI
             var session = UnityClientSession.Instance;
             if (ReferenceEquals(_boundSession, session) && session != null &&
                 _boundEpoch == session.Entry.Epoch && session.IsCurrentEntry(_boundEpoch)) return;
-            _boundSession?.UnbindHud(this);
-            _boundSession = null;
-            if (session != null && session.TryBindHud(this))
+            UnbindHp();
+            ShowUnconfirmedHp();
+            if (session != null && !session.IsClosed && session.TryBindHud(this))
             {
                 _boundSession = session;
                 _boundEpoch = session.Entry.Epoch;
             }
+        }
+
+        void UnbindHp()
+        {
+            _boundSession?.UnbindHud(this);
+            _boundSession = null;
+            _boundEpoch = 0;
+        }
+
+        void ShowUnconfirmedHp()
+        {
+            _hasServerHp = false;
+            if (_hpSlider != null) _hpSlider.value = 0f;
+            if (_hpText != null) _hpText.text = "HP - / -";
+        }
+
+        void RenderClass()
+        {
+            // ResetServerClass has no event. Read the current authority, including the close→cleanup gap.
+            var session = UnityClientSession.Instance;
+            CharacterClass? confirmed = ClassLoadout.ServerClass;
+            if (session != null && (session.IsClosed || !session.CharacterLoad.IsSuccess)) confirmed = null;
+            if (_classText != null)
+                _classText.text = confirmed == CharacterClass.Knight ? "Knight" :
+                    confirmed == CharacterClass.Mage ? "Mage" : "-";
+            if (_knightPortrait != null) _knightPortrait.gameObject.SetActive(confirmed == CharacterClass.Knight);
+            if (_magePortrait != null) _magePortrait.gameObject.SetActive(confirmed == CharacterClass.Mage);
         }
 
         public void ApplyServerHP(int current, int max)

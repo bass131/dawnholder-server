@@ -27,7 +27,7 @@ using UnityEditor;
 
 namespace Dawnholder.Client.Tests.PlayMode
 {
-    // Current-look captures of the inventory, NPC dialogue, party invite and dungeon reward windows on the real Town and
+    // Current-look captures of the player HUD, inventory, NPC dialogue, party invite and dungeon reward on the real Town and
     // additive UI scenes, for the user's look check (01_Phases/goals/2026-10-13-demo-video-art 「06」 실화면). Each window
     // opens by its normal entry: I after the wire inventory snapshot, E inside a scene NPC's trigger, S_PartyInviteRecv
     // and S_DungeonClearResult from the scripted peer. That peer is loopback test authority, not GameServer. Canvases,
@@ -45,6 +45,8 @@ namespace Dawnholder.Client.Tests.PlayMode
 
         MapEntryPlayFixture _fixture;
         readonly List<string> _record = new();
+        readonly List<string> _hudOverlaps = new();
+        RectTransform _hudPopup;
         string _output;
         string _window;
         Vector2? _mouseOriginal;
@@ -59,6 +61,8 @@ namespace Dawnholder.Client.Tests.PlayMode
         {
             _fixture = new MapEntryPlayFixture();
             _record.Clear();
+            _hudOverlaps.Clear();
+            _hudPopup = null;
             _output = null;
             _window = null;
             _mouseOriginal = null;
@@ -118,11 +122,93 @@ namespace Dawnholder.Client.Tests.PlayMode
         }
 
         [UnityTest, Timeout(240000)]
+        public IEnumerator Hud_KnightAndParty_WithConfirmedHpAndQ_CapturedFromTheGameView()
+        {
+            Begin("hud-knight");
+            yield return SelectPrimarySize(approvedSizes: true);
+            yield return ReadySyncedTown();
+            yield return ShowHudParty(0, 1);
+            yield return CaptureBothSizes(() => HudController.Instance != null);
+            TMP_Text hp = HudController.Instance.transform.Find("character_status/HpText").GetComponent<TMP_Text>();
+            Assert.IsTrue(ScreenUiProbe.IsShown(hp));
+            Assert.AreEqual("HP 37 / 100", hp.text);
+            Assert.IsFalse(HudController.Instance.transform.Find("skill_panel/skill_slot_2").gameObject.activeInHierarchy);
+        }
+
+        [UnityTest, Timeout(240000)]
+        public IEnumerator Hud_MageAndParty_WithConfirmedHpQeAndMaximumGold_CapturedFromTheGameView()
+        {
+            Begin("hud-mage");
+            yield return SelectPrimarySize(approvedSizes: true);
+            yield return ReadySyncedTown();
+            yield return ReconnectForHud(CharacterClass.Mage);
+            yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_InventoryRequest) >= 1,
+                "new Mage connection's inventory query", 3);
+            _fixture.Peer.Send(Snapshot(1, 1_000_000_000));
+            yield return MapEntryPlayFixture.Wait(() => InventoryState.Instance.HasSnapshot &&
+                InventoryState.Instance.Currency == 1_000_000_000, "Mage snapshot currency 1000000000", 3);
+            // Use the normal map entry and quest-intro reveal; no UI-only Reveal call fabricates the progress panel.
+            _fixture.Peer.Send(new S_MapTransition { destMapId = 1, spawnX = 2, spawnY = 0 }.Write());
+            yield return MapEntryPlayFixture.Wait(() => _fixture.Session.Entry.MapId == 1 && _fixture.Session.Entry.SceneReady,
+                "Mage enters HuntingGround", 10);
+            _fixture.Hp(61, 88);
+            yield return _fixture.WaitMap(1);
+            _fixture.Peer.Send(new S_QuestUpdate { currentCount = 2, targetCount = 8 }.Write());
+            yield return MapEntryPlayFixture.Wait(() => QuestProgressHud.Instance != null &&
+                QuestProgressHud.Instance.GetComponent<CanvasGroup>().alpha >= 0.99f && QuestState.Instance.CurrentCount == 2 &&
+                QuestState.Instance.TargetCount == 8, "normal quest reveal after the wire progress 2/8", 20);
+            Note("HUD progress input", "same Mage connection -> S_MapTransition map1 -> S_PlayerHp 61/88 -> S_QuestUpdate 2/8 -> normal intro/reveal");
+            yield return ShowHudParty(1, 0);
+            yield return CaptureBothSizes(() => HudController.Instance != null);
+            Transform hud = HudController.Instance.transform;
+            Assert.AreEqual("HP 61 / 88", hud.Find("character_status/HpText").GetComponent<TMP_Text>().text);
+            Assert.IsTrue(hud.Find("skill_panel/skill_slot_2").gameObject.activeInHierarchy);
+            Assert.AreEqual("Gold: 1000000000", hud.Find("Gold_bar/GoldText").GetComponent<TMP_Text>().text);
+        }
+
+        IEnumerator ShowHudParty(byte localClass, byte otherClass)
+        {
+            _fixture.Peer.Send(new S_PartyUpdate { partyId = 11, leaderEntityId = 700,
+                member0EntityId = 700, member1EntityId = 701, member0Class = localClass, member1Class = otherClass }.Write());
+            yield return MapEntryPlayFixture.Wait(() => PartyState.Instance != null && PartyState.Instance.InParty &&
+                PartyState.Instance.Member0Class == localClass && PartyState.Instance.Member1Class == otherClass,
+                "wire party membership for the HUD", 3);
+            yield return _fixture.Frames(3);
+            Note("HUD party input", $"S_PartyUpdate party11, member0 700/class{localClass}, member1 701/class{otherClass}; no member HP/MP/name invented");
+        }
+
+        IEnumerator ReconnectForHud(CharacterClass confirmed)
+        {
+            EntryWirePeer previous = _fixture.Peer;
+            NetworkService.Instance.Disconnect();
+            yield return MapEntryPlayFixture.Wait(() => UnityClientSession.Instance == null && ClassLoadout.ServerClass == null &&
+                LocalPlayerMovement.Instance == null, "old connection owner cleanup before Mage capture", 5);
+            previous.Dispose();
+            yield return MapEntryPlayFixture.Wait(() => previous.Completion.IsCompleted, "previous capture peer shutdown", 3);
+            Assert.IsEmpty(previous.Errors);
+            _fixture.Peer = EntryWirePeer.Listen();
+            MapEntryPlayFixture.Set(NetworkService.Instance, "_serverPort", _fixture.Peer.Port);
+            NetworkService.Instance.Connect("127.0.0.1", (int)confirmed);
+            yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Selected && ClassLoadout.ServerClass == confirmed,
+                "new capture connection's authoritative class", 10);
+            _fixture.Peer.Send(new S_EnterMap { entityId = 700, spawnX = 2, spawnY = 0 }.Write());
+            yield return MapEntryPlayFixture.Wait(() => _fixture.Session.Entry.SceneReady && _fixture.Player != null,
+                "new capture connection's Town entry", 10);
+            _fixture.Hp(61, 88);
+            yield return _fixture.WaitMap(0);
+            yield return MapEntryPlayFixture.Wait(() => HudController.Instance != null && SceneManager.GetSceneByName("UI").isLoaded,
+                "new capture connection's additive HUD", 10);
+            _fixture.PairInput();
+            yield return _fixture.Frames(3);
+        }
+
+        [UnityTest, Timeout(240000)]
         public IEnumerator Inventory_OpenedByIAfterTheWireSnapshot_CapturedFromTheGameView()
         {
             Begin("inventory");
-            yield return SelectPrimarySize();
+            yield return SelectPrimarySize(approvedSizes: true);
             yield return ReadySyncedTown();
+            yield return ShowHudParty(0, 1);
             bool shownBeforeI = InventoryPanelProbe.Group.alpha > 0f;
             yield return Press(Key.I);
             yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Group.alpha > 0f, "I opens the inventory panel", 3);
@@ -136,6 +222,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Note("panel currency text", InventoryPanelProbe.Currency);
             for (int i = 0; i < InventoryLimits.MaxSlots; i++) Note($"panel slot {i + 1} text", InventoryPanelProbe.Slot(i));
             NoteCanvas("panel", InventoryPanel.Instance);
+            _hudPopup = InventoryPanel.Instance.transform.Find("Inventory").GetComponent<RectTransform>();
             yield return CaptureBothSizes(() => InventoryPanelProbe.Group.alpha > 0f);
         }
 
@@ -143,8 +230,9 @@ namespace Dawnholder.Client.Tests.PlayMode
         public IEnumerator NpcDialogue_OpenedByEInsideASceneNpcTrigger_CapturedFromTheGameView()
         {
             Begin("npc-dialog");
-            yield return SelectPrimarySize();
+            yield return SelectPrimarySize(approvedSizes: true);
             yield return ReadySyncedTown();
+            yield return ShowHudParty(0, 1);
             LocalPlayerMovement player = _fixture.Player;
             NpcInteractable npc = UnityEngine.Object.FindObjectsByType<NpcInteractable>()
                 .Where(item => item.gameObject.scene == SceneManager.GetActiveScene())
@@ -156,6 +244,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return MapEntryPlayFixture.Wait(() => MapEntryPlayFixture.Field<bool>(npc, "_isPlayerNear"),
                 "the player stands inside the NPC trigger", 3);
             bool shownBeforeE = NpcDialogPanel.IsShown;
+            RectTransform actionBar = HudController.Instance.transform.Find("skill_panel").GetComponent<RectTransform>();
+            RectTransform goldBar = HudController.Instance.transform.Find("Gold_bar").GetComponent<RectTransform>();
+            Vector2 actionBefore = actionBar.anchoredPosition, goldBefore = goldBar.anchoredPosition;
             yield return Press(Key.E);
             yield return MapEntryPlayFixture.Wait(() => NpcDialogPanel.IsShown, "E shows the NPC dialogue", 3);
             yield return _fixture.Frames(3);
@@ -174,7 +265,12 @@ namespace Dawnholder.Client.Tests.PlayMode
             Note("dialogue text", shownText.text.Replace("\n", "\\n"));
             Note("portrait active / shown sprite / scene NPC portrait", $"{portrait.gameObject.activeInHierarchy} / {(shownPortrait == null ? "none" : shownPortrait.name)} / {(scenePortrait == null ? "none" : scenePortrait.name)}");
             NoteCanvas("dialogue", panel);
+            _hudPopup = MapEntryPlayFixture.Field<GameObject>(panel, "_root").GetComponent<RectTransform>();
             yield return CaptureBothSizes(() => NpcDialogPanel.IsShown);
+            yield return Press(Key.E);
+            yield return MapEntryPlayFixture.Wait(() => !NpcDialogPanel.IsShown, "E closes the real NPC dialogue", 3);
+            yield return _fixture.Frames(3);
+            NoteHudRestored(actionBar, goldBar, actionBefore, goldBefore);
         }
 
         // Also the party invite layout requirement (goal 06 「추가 사용자 결정 — 파티 초대 배치 수정」): both answer buttons'
@@ -185,7 +281,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         public IEnumerator PartyInvite_ShownByTheScriptedPeersInvite_CapturedFromTheGameView()
         {
             Begin("party-invite");
-            yield return SelectPrimarySize();
+            yield return SelectPrimarySize(approvedSizes: true);
             yield return ReadySyncedTown();
             var failures = new List<string>();
             Assert.IsNotNull(PartyInvitePopup.Instance, "Town builds the hidden invite popup");
@@ -212,21 +308,24 @@ namespace Dawnholder.Client.Tests.PlayMode
             UiWindowSkin skin = PartyInviteLayout.LoadSkin();
             PartyInviteLayout layout = PartyInviteLayout.Observe(popup.transform, PartyInviteLayout.PrefabSprite(skin, "_headerPrefab"), InviterClass.ToString());
             layout.NoteFacts("popup", Note);
+            _hudPopup = layout.Panel.GetComponent<RectTransform>();
             NoteChecks(layout.Checks, failures);
             NoteChecks(PopupWindowChecks(popup, group, layout, skin), failures);
             NotePointers("pointers at capture");
             NoteRenderersAround(EarlierWhiteDot, 80f);
             NoteScenesAndCameras();
-            var frame = new CaptureResult();
-            yield return Capture(frame);
-            Note("minimum capture", "not run: this Party contract captures only current 1920x1080");
-            string captureRecord = WriteRecord();
+            yield return CaptureBothSizes(() => group.alpha == 1f && popup.isActiveAndEnabled, () =>
+            {
+                PartyInviteLayout minimum = PartyInviteLayout.Observe(popup.transform,
+                    PartyInviteLayout.PrefabSprite(skin, "_headerPrefab"), InviterClass.ToString());
+                minimum.NoteFacts("popup minimum", Note);
+                NoteChecks(minimum.Checks, failures);
+                NoteChecks(PopupWindowChecks(popup, group, minimum, skin), failures);
+            });
+            // CaptureBothSizes already wrote this immutable snapshot; responses use the separate existing record.
+            string captureRecord = RecordPath(null);
             byte[] captureRecordBytes = File.ReadAllBytes(captureRecord);
             Note("capture record", $"{captureRecord} | {captureRecordBytes.Length} bytes sha256 {Sha256(captureRecordBytes)}");
-            Assert.IsTrue(frame.Written && frame.SameSizeAsScreen && frame.SampledColours > 1,
-                "the actual Game view frame was saved at its own size and is not flat");
-            Assert.AreEqual(PrimaryWidth, frame.Width);
-            Assert.AreEqual(PrimaryHeight, frame.Height);
             yield return ObservePartyResponses(popup, group, layout, failures);
             string responsesRecord = WriteRecord(phase: "responses");
             // Read back after both writes, so these checks and the next line reach Editor.log rather than either record.
@@ -246,10 +345,14 @@ namespace Dawnholder.Client.Tests.PlayMode
         {
             Begin("reward");
             NoteRewardWindowSource();
-            yield return SelectPrimarySize(approvedRewardSizes: true);
+            yield return SelectPrimarySize(approvedSizes: true);
             yield return ReadySyncedTown();
+            yield return ShowHudParty(0, 1);
             yield return MoveFixtureMouseOffScreen();
             bool shownBeforeResult = RewardWindowShown();
+            RectTransform actionBar = HudController.Instance.transform.Find("skill_panel").GetComponent<RectTransform>();
+            RectTransform goldBar = HudController.Instance.transform.Find("Gold_bar").GetComponent<RectTransform>();
+            Vector2 actionBefore = actionBar.anchoredPosition, goldBefore = goldBar.anchoredPosition;
             ArraySegment<byte> wire = ServerRewardResult();
             Note("input path", "scripted peer S_DungeonClearResult -> DungeonClearResultHandler -> DungeonClearRewardState.Apply -> DungeonClearRewardWindow.LateUpdate publishes it");
             Note("result data", $"DungeonClearRewards table: Success, currency {DungeonClearRewards.Currency}, items "
@@ -264,6 +367,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             NotePointers("pointers at capture");
             NoteRewardWindow("primary");
             NoteCamerasAndPlayer("primary");
+            _hudPopup = MapEntryPlayFixture.Field<RectTransform>(DungeonClearRewardWindow.Instance, "_panel");
             var minimum = new CaptureResult();
             yield return CaptureBothSizes(RewardWindowShown, () =>
             {
@@ -275,6 +379,19 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.IsTrue(minimum.SameSizeAsScreen, "the minimum frame has the Game view's own size");
             Assert.AreEqual(MinimumWidth, minimum.Width, "minimum frame width");
             Assert.AreEqual(MinimumHeight, minimum.Height, "minimum frame height");
+            Component confirm = MapEntryPlayFixture.Field<Component>(DungeonClearRewardWindow.Instance, "_confirm");
+            yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, PartyInviteLayout.ScreenRectOf(confirm).center);
+            yield return MapEntryPlayFixture.Wait(() => !RewardWindowShown(), "the real Confirm pointer closes rewards", 3);
+            yield return _fixture.Frames(3);
+            NoteHudRestored(actionBar, goldBar, actionBefore, goldBefore);
+        }
+
+        void NoteHudRestored(RectTransform actionBar, RectTransform goldBar, Vector2 actionBefore, Vector2 goldBefore)
+        {
+            Note("HUD after popup closed", $"action {actionBefore} -> {actionBar.anchoredPosition}, gold {goldBefore} -> {goldBar.anchoredPosition}");
+            WriteRecord("hud-restored");
+            Assert.AreEqual(actionBefore, actionBar.anchoredPosition, "closing the popup restores the prior action bar position");
+            Assert.AreEqual(goldBefore, goldBar.anchoredPosition, "closing the popup restores the prior gold position");
         }
 
         // Use the existing fixture mouse through the live input module; do not invoke listeners directly. The peer
@@ -589,15 +706,15 @@ namespace Dawnholder.Client.Tests.PlayMode
             Note("graphics device", $"{SystemInfo.graphicsDeviceType} / {SystemInfo.graphicsDeviceName}");
         }
 
-        IEnumerator SelectPrimarySize(bool approvedRewardSizes = false)
+        IEnumerator SelectPrimarySize(bool approvedSizes = false)
         {
 #if UNITY_EDITOR
             _gameView = GameViewTargetSize.Find(out string missing);
-            if (approvedRewardSizes && _gameView == null) throw new InvalidOperationException("Approved reward capture requires Game view: " + missing);
+            if (approvedSizes && _gameView == null) throw new InvalidOperationException("Approved capture requires Game view: " + missing);
             if (_gameView == null) Note("game view", "not found: " + missing);
             else
             {
-                if (approvedRewardSizes) _gameView.EnableApprovedSizes();
+                if (approvedSizes) _gameView.EnableApprovedSizes();
                 Note("game view before", _gameView.Describe());
                 Note("game view built-in sizes", _gameView.ListBuiltIn());
                 Note("game view select primary", _gameView.TrySelect(PrimaryWidth, PrimaryHeight));
@@ -651,8 +768,10 @@ namespace Dawnholder.Client.Tests.PlayMode
         IEnumerator CaptureBothSizes(Func<bool> stillShown, Action noteAtMinimum = null, CaptureResult minimumResult = null)
         {
             NoteScenesAndCameras();
+            NoteHud("primary");
             Note("window shown before primary capture", stillShown());
             var primary = new CaptureResult();
+            CaptureResult minimumFrame = minimumResult ?? new CaptureResult();
             yield return Capture(primary);
             Note("window still shown after primary capture", stillShown());
 #if UNITY_EDITOR
@@ -664,8 +783,9 @@ namespace Dawnholder.Client.Tests.PlayMode
                     reached => Note("Screen reached minimum size", reached));
                 yield return _fixture.Frames(3);
                 Note("window still shown at minimum size", stillShown());
+                NoteHud("minimum");
                 noteAtMinimum?.Invoke();
-                yield return Capture(minimumResult ?? new CaptureResult());
+                yield return Capture(minimumFrame);
             }
             if (_gameView != null) Note("game view after captures", _gameView.Describe());
 #endif
@@ -676,6 +796,60 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.Greater(primary.SampledColours, 1, "the frame is not one flat colour");
             Assert.AreEqual(PrimaryWidth, primary.Width, "primary frame width");
             Assert.AreEqual(PrimaryHeight, primary.Height, "primary frame height");
+            Assert.IsTrue(minimumFrame.Written, "the minimum Game view frame was written");
+            Assert.IsTrue(minimumFrame.SameSizeAsScreen, "the minimum frame has the Game view's own size");
+            Assert.AreEqual(MinimumWidth, minimumFrame.Width, "minimum frame width");
+            Assert.AreEqual(MinimumHeight, minimumFrame.Height, "minimum frame height");
+            Assert.IsEmpty(_hudOverlaps, "visible HUD and the real popup have separate screen regions:\n" + string.Join("\n", _hudOverlaps));
+        }
+
+        void NoteHud(string stage)
+        {
+            HudController hud = HudController.Instance;
+            Note(stage + " HUD", hud == null ? "absent" : $"scene {hud.gameObject.scene.name}, Screen {Screen.width}x{Screen.height}");
+            if (hud == null) return;
+            foreach (TMP_Text text in hud.GetComponentsInChildren<TMP_Text>().Where(ScreenUiProbe.IsShown))
+            {
+                text.ForceMeshUpdate();
+                Camera camera = text.canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : text.canvas.worldCamera;
+                Vector2 origin = RectTransformUtility.WorldToScreenPoint(camera, text.transform.TransformPoint(Vector3.zero));
+                Vector2 em = RectTransformUtility.WorldToScreenPoint(camera, text.transform.TransformPoint(Vector3.up * text.fontSize));
+                Note($"{stage} HUD text {PartyInviteLayout.Path(text.transform)}",
+                    $"'{text.text.Replace("\n", "\\n")}' | rect {PartyInviteLayout.ScreenRectOf(text)} | glyph bounds {ScreenUiProbe.Bounds(text.transform, text.textBounds)} | "
+                    + $"font {text.font?.name} size {text.fontSize}, em pixels {Vector2.Distance(origin, em):F3}, lines {text.textInfo.lineCount}, "
+                    + $"visible glyphs {text.textInfo.characterInfo.Take(text.textInfo.characterCount).Count(character => character.isVisible)}, raycastTarget {text.raycastTarget}");
+            }
+            foreach (string name in new[] { "character_status", "Party_Info", "skill_panel", "Gold_bar", "MinimapPlaceholder", "Quest_Hud" })
+            {
+                Transform area = hud.transform.Find(name);
+                Rect rect = PartyInviteLayout.ScreenRectOf(area.GetComponent<RectTransform>());
+                Note($"{stage} HUD area {name}", $"active {area.gameObject.activeInHierarchy}, screen rect {rect}, centre hits "
+                    + string.Join(" | ", ScreenUiProbe.RaycastHits(rect.center).Select(hit => PartyInviteLayout.Path(hit.transform))));
+                if (_hudPopup != null && ScreenUiProbe.IsShown(area))
+                {
+                    Rect popup = PartyInviteLayout.ScreenRectOf(_hudPopup);
+                    bool overlaps = rect.Overlaps(popup);
+                    Note($"{stage} HUD/popup {name}", $"HUD {rect}, popup {popup}, overlaps {overlaps}");
+                    if (overlaps) _hudOverlaps.Add($"{stage} {name}: HUD {rect}, popup {popup}");
+                }
+            }
+            Component map = hud.transform.Find("MinimapPlaceholder/MinimapView").GetComponent(PartyInviteLayout.UiType("RawImage"));
+            Texture mapTexture = (Texture)PartyInviteLayout.Get(map, "texture");
+            Note(stage + " minimap", $"screen rect {PartyInviteLayout.ScreenRectOf(map)}, RT {mapTexture.width}x{mapTexture.height}, uv {PartyInviteLayout.Get(map, "uvRect")}");
+            SkillHudController skills = SkillHudController.Instance;
+            if (skills == null) return;
+            foreach (string field in new[] { "_qIconImage", "_eIconImage" })
+            {
+                Component icon = MapEntryPlayFixture.Field<Component>(skills, field);
+                Sprite sprite = icon == null ? null : PartyInviteLayout.SpriteOf(icon);
+                if (sprite == null) continue;
+                Vector2[] vertices = sprite.vertices;
+                string mesh = vertices.Length == 0 ? "empty" : $"x {vertices.Min(vertex => vertex.x):F4}..{vertices.Max(vertex => vertex.x):F4} "
+                    + $"y {vertices.Min(vertex => vertex.y):F4}..{vertices.Max(vertex => vertex.y):F4}";
+                Note($"{stage} HUD icon {field}", $"sprite {PartyInviteLayout.Describe(sprite)}, source rect {sprite.rect}, "
+                    + $"bounds {sprite.bounds}, vertices {vertices.Length}, mesh {mesh}, "
+                    + $"screen rect {PartyInviteLayout.ScreenRectOf(icon)}, useSpriteMesh {PartyInviteLayout.Get(icon, "useSpriteMesh")}");
+            }
         }
 
         sealed class CaptureResult
