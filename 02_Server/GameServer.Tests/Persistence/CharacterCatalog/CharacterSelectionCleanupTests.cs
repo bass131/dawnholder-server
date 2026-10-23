@@ -5,7 +5,7 @@ using Repo = Dawnholder.Server.GameServer.Tests.Persistence.RecordingCharacterRe
 
 namespace Dawnholder.Server.GameServer.Tests.Persistence.CharacterCatalog;
 
-/// <summary>Close is placed at a known storage barrier, not at an arbitrary delay after selection starts.</summary>
+/// <summary>Close or caller cancellation lands at a known storage barrier, not at an arbitrary delay after selection starts.</summary>
 public sealed class CharacterSelectionCleanupTests
 {
     [Fact]
@@ -28,8 +28,11 @@ public sealed class CharacterSelectionCleanupTests
         await fixture.Service.FlushAsync(fixture.Budget()).WaitAsync(StoreCallRecorder.Limit);
     }
 
-    [Fact]
-    public async Task CloseDuringAcquire_LateSuccessReleasesTheSameOwnerWithoutPublishingALease()
+    // v1 「선택·취소·종료 상태 계약」: a projection handed to a close before selection is never captured.
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task CloseDuringAcquire_LateSuccessReleasesTheSameOwnerWithoutPublishingALease(bool withProjection)
     {
         Fixture fixture = new();
         CharacterSelectionHandle handle = fixture.Begin();
@@ -38,7 +41,7 @@ public sealed class CharacterSelectionCleanupTests
             await fixture.Characters.NextAnyAsync());
         fixture.AnswerProbe(probe);
         var acquire = await fixture.Characters.NextAcquireAsync();
-        Task closing = handle.Close(null);
+        Task closing = handle.Close(withProjection ? PersistenceTestValues.KnightSafeMoved() : null);
         Assert.Same(closing, handle.Close(null));
         PersistenceAuthority held = new(fixture.Identity, PersistenceOwnerKind.Runtime,
             acquire.Request.Operation.OwnerId, 8, 0);
@@ -61,6 +64,45 @@ public sealed class CharacterSelectionCleanupTests
         Assert.NotEqual(CatalogStatus.Selected, result.Status);
         Assert.Null(result.Character);
         Assert.Null(result.Lease);
+        Assert.Equal(new[] { Repo.Admission, Repo.Acquire, Repo.Release }, fixture.Characters.Calls);
+        await fixture.Service.FlushAsync(fixture.Budget()).WaitAsync(StoreCallRecorder.Limit);
+    }
+
+    [Fact]
+    public async Task CallerCancellationDuringAcquire_LateSuccessIsReleasedWithoutWorldClose()
+    {
+        Fixture fixture = new();
+        using CancellationTokenSource caller = new();
+        CharacterSelectionHandle handle = fixture.Begin(caller.Token);
+        await fixture.AnswerSelection();
+        var probe = Assert.IsType<Repo.PendingCall<ReadAdmissionRequest, ReadAdmissionResult>>(
+            await fixture.Characters.NextAnyAsync());
+        fixture.AnswerProbe(probe);
+        var acquire = await fixture.Characters.NextAcquireAsync();
+        caller.Cancel();
+
+        // The acquire was dispatched, so v1 allows neither CancelledBeforeDispatch nor Unavailable here.
+        CatalogResult result = await handle.Completion.WaitAsync(StoreCallRecorder.Limit);
+        Assert.Equal(CatalogStatus.OutcomeUnknown, result.Status);
+        Assert.Null(result.Character);
+        Assert.Null(result.Lease);
+        Assert.False(acquire.ResultTask.IsCompleted);
+        PersistenceAuthority held = new(fixture.Identity, PersistenceOwnerKind.Runtime,
+            acquire.Request.Operation.OwnerId, 8, 0);
+        PersistenceToken character = PersistenceTestValues.Token(1);
+        PersistenceToken progress = PersistenceTestValues.Token(2);
+        OperationReceipt receipt = PersistenceTestValues.AcquiredReceipt(acquire.Request.Operation.OperationId,
+            held, character, progress);
+        acquire.Complete(AcquireAndLoadResult.Acquired(receipt, new(held, character, progress)));
+
+        // World has not called Close; Core still owns the dispatched acquire and releases what it gained.
+        var release = await fixture.Characters.NextReleaseAsync();
+        Assert.Equal(held, release.Request.Authority);
+        PersistenceAuthority free = new(fixture.Identity, PersistenceOwnerKind.Free, null, 9, 0);
+        release.Complete(ReleaseResult.Released(
+            PersistenceTestValues.ReleasedReceipt(release.Request.Operation.OperationId, free), new(free, null, null)));
+
+        await handle.Close(null).WaitAsync(StoreCallRecorder.Limit);
         Assert.Equal(new[] { Repo.Admission, Repo.Acquire, Repo.Release }, fixture.Characters.Calls);
         await fixture.Service.FlushAsync(fixture.Budget()).WaitAsync(StoreCallRecorder.Limit);
     }
@@ -95,9 +137,9 @@ public sealed class CharacterSelectionCleanupTests
         public PersistenceIdentity Identity { get; } = new(1, OfflineCatalog.Alice01, OfflineCatalog.CharacterA);
         public PersistenceDeadline Budget() => PersistenceDeadline.FromBudget(Clock, TimeSpan.FromSeconds(5));
 
-        public CharacterSelectionHandle Begin() => Service.BeginSelectCharacter(
+        public CharacterSelectionHandle Begin(CancellationToken cancellation = default) => Service.BeginSelectCharacter(
             (AccountContext)OfflineCatalog.AliceAccount(), OfflineCatalog.CharacterA, OfflineCatalog.OperationA,
-            new(OfflineCatalog.SessionA, 7), Budget(), CancellationToken.None);
+            new(OfflineCatalog.SessionA, 7), Budget(), cancellation);
 
         public async Task AnswerSelection()
         {
