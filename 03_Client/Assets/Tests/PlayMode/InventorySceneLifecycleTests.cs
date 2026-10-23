@@ -473,11 +473,16 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual("재화 20", InventoryPanelProbe.Currency);
             Assert.AreEqual("재료 ×3", InventoryPanelProbe.Slot(0));
             Assert.IsTrue(InventoryPanelProbe.Interactable(InventoryPanelProbe.Use(1)));
+            yield return _fixture.AssertHud();
             object[] mirrorTargets = InventoryPanelProbe.Targets(mirror, "OnInventoryChanged");
             Assert.AreEqual(1, mirrorTargets.Count(target => target is InventoryPanel), "R8 the old panel left the mirror");
             Assert.Contains(InventoryPanel.Instance, mirrorTargets, "R8 the new panel follows the mirror");
             Assert.AreEqual(1, mirrorTargets.Count(target => target is HudController), "dungeon R1 the map's HUD follows the mirror once");
-            Assert.AreEqual(2, mirrorTargets.Length, "nothing else follows the mirror");
+            string[] targetTypes = mirrorTargets
+                .Select(target => target?.GetType().FullName ?? "<null>").ToArray();
+            CollectionAssert.AreEquivalent(
+                new[] { typeof(InventoryPanel).FullName, typeof(GuildUiController).FullName, typeof(HudController).FullName },
+                targetTypes, "inventory consumers: " + string.Join(", ", targetTypes));
             Assert.AreEqual(1, InventoryPanelProbe.Subscribers(requests, "Changed"), "R8 the old panel left the requests");
 
             _fixture.Peer.Send(new S_MapTransition { destMapId = 3, spawnX = 0, spawnY = 0 }.Write());
