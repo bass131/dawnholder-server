@@ -1,6 +1,6 @@
 # 길드 현황·거점 성장·대장간 화면
 
-현재 상태(10-23 B70 미승인 직렬화4차이·failed 정산/작업자종료·정식판단 대기): **일반build1은exit0이나사본미승인4차이로게임전체0/완료조건미실행이며formal failed475795a0f07b를수용했다. report전체·126봉인/5pin·source/n각2286/output234현물·owned62533 index를실사하고정확worker pane종료ptyKilledtrue/reclaimable0을마쳤다. 반복4차이의향후취급을A새계약4exact한정허용/B별도설정정비선행으로Main45a4ecc8e618에정식판단요청했고새실행창요청0이다. U1한정PASS보존·제품확정실패/독립NOTPASS추가0이며전체하우징·Lv2/구매/재접속/viewport·최종독립/CI/PR/goal은미완료다.**
+현재 상태(10-23 사용자A4exact허용·Fast보충·새B70계약 고정/90분창 요청): **Mainb304e92d9ffc가사용자A「그4개만정확히허용하고실행」을전달해source-before/postbuild4쌍을새사본허용목록에만추가했다. 새계약v3/60입력v4에후속Fast결정18abeea382af도반영해09:28v2요청을보충하며현재Main배정/T대기·worker/native/live0이다. 새자동Playergate는작업자준비/READY필수·현재미구현이며기존창수동허용재사용0·90분요청이다. 앞선B70failed정산/종료와U1한정PASS는보존하고전체하우징·Lv2/구매/재접속/viewport·최종독립/CI/PR/goal은미완료다. 설정정비B는하우징뒤후보로남긴다.**
 
 이전 상태(10-23 U1 사용자 A 한정 독립 강검증 PASS·정산): **새Opus가Edit361/361·Play53/53·독립수명3/3과현재U1실제Ending진입을검증해한정PASS했다. 원문/현물·복원·실제Task를실사하고자원반환·formal succeeded·정확검증자종료를마쳤다. 자기stdout manifest0→98bytes 기록불일치1은원시/별도정정을보존하고Main f2b4488ceb3c의단독비차단결정을적용했다. 전체하우징·실제Lv2/B70/Player·최종CI/PR/goal은미완료다.**
 
@@ -16,8 +16,10 @@
 
 ## 재개 지점
 
-**다음 첫 일:** Main의정식판단요청msg_45a4ecc8e618(02:40:49Z)에대한A/B결정을확인한다. 선택지는lead-b70-four-difference-decision-request-v1.md(SHA87B96C346F2581554A23D07EA4841351E4AA3C4B5D4A7D53C4E6191326132EF6)의A다음계약4경로/source-before/postbuild exactSHA한정허용(리드추천)/B별도프로젝트설정정비·신규구현/독립검증/PR선행이다. 실제Player영향/Graphics내장동등성은미검증이며자동직렬화=무영향으로판정하지않는다. 그전새B70창요청/worker/native/정규화/원본이관0이고종료worker재사용0이다. B70 task_1a44ce3c9d7c/ctx_55c1920dffaf는formal failed475795a0f07b수용·원문전체/봉인126/5pin실사·정확inc666fcfbc/idle/새제출사용자작업없음/직전check뒤release(externalretained)→정확panecloseptyKilledtrue/reclaimable0으로정산종료했다. 원문report.md SHAED03EDCB2AA5AEF925AB2034AB50D920B4A46206C9325D98A09DB9147A794C65,정산lead-b70-final-settlement-v1.md SHA4F0552DA14D95F7DFBA3318C47ACB208CE6F5D92C706D10D8DBAC82D059EB899와Main전송receipt를읽는다. 실제native관측02:11:45.8393554Z/창반환status02:26:01Z·workerWSLunknown/Registry최종137raw없음/이후native0·Main별도res-check를구분한다. 전체하우징/Lv2·구매·재접속·실제viewport/최종독립·CI·PR·goal미완료·U1한정PASS보존·제품확정실패/독립NOTPASS추가0·n/h~m/R보존이다.
+**다음 첫 일:** 새B70실행창요청msg_67793059d60f(실제서버09:28:24Z)의현재Main검토/배정·res-check/T/lastEntry/cleanup/return을확인한다. 그요청의Core44/03:13정보는02:46통지당시의역사정보로현재큐/시작주장이아니다. 후속Fast결정18abeea382af에따라최신계약은b70-execution-contract-v3.md SHA41A4348D15391AB2EB35F5701EB2355076ED7DBF45738401F6F9E7D802444D02·60입력b70-inputs-v4.json SHA0F2665791A2F4AAECDA55D4AB230A32682945650463F5AAA734A74EF24FD6984이며이전v2/v3입력은보존한다. 요청90분/제안T+75last/T+80cleanup/T+90return·새worker/native/live/q생성/cachecopy0이다. Main실제시작뒤fresh외부Astraxhigh를codex --model gpt-6-astra -c model_reasoning_effort=xhigh -c service_tier="fast"로기동하고새rollout첫thread_settings service_tier priority의실path/원문줄을작업착수전에확인해ledger에남긴다. default/unknown이면Task시작0·Main보고·전역설정/다른pane /fast입력0이다. 실제Task/Dispatch/incarnation/worker폴더입력검사와runtime고정은그뒤다. 자동자기server허용Playergate는W=b70-v2-exec에신규worker가먼저준비/negative실entry검사/리드READY실사할필수하네스이며현재미구현·리드실행코드작성0·옛수동예외재사용0이다. source2286/4exactallowlist84AACDE1…EE479/새sourceD2F14DD8…1B0A67·snapshot후보q현재부재/기존h~p/R보존·n/Library읽기cache만사용한다. 설정정비B는후보·A의렌더무영향판정아님/과거failed불변·최종독립강검증/전체goal미완료다.
 
+- **66 - 사용자A4exact허용·새B70계약/90분창요청과Fast보충.** Mainb304e92d9ffc(02:46:59Z)의사용자원문/현재from태그를대조하고새4path source-before/postbuild쌍만allowlist에추가했다. 리드현물source2286/433111780bytes·집합/보호보존과4쌍source/h/n·58입력bytes/SHA불일치0/9신규출력부모/q부재를기계확인했다. o/p가이미존재해보존하고q를후보로고정했으며실제worker폴더검사는발행전별도다. 새계약v2 SHA87167889…16B49·입력v3 F010A557…C7D8A/58개로90분창을Main67793059d60f(09:28:24Z)에요청했다. 예산gate준비15+source/cache10+build15(직전811.716895초)+server5/UI35미측정+반환10이며확정완료시간/추가연장계획이아니다. Main6fa4e3b2533e의다음계약필수자동Playergate준비를W만의worker구현/실entrynegative검사/READY검토로명시했고현재script미구현/worker/native0이다. 기존실행소스/data바인딩/새gate범위와90분예산을Main대조요청했다.
+- 후속Main18abeea382af(09:21:28Z)Fast사용자결정을읽고모델/effort불변·신규Codexflag추가·첫rollout thread_settings priority 원문확인/미확인착수0을v3/입력v4에보충했다. 전역config/현재세션Fast토글/다른pane입력0이며예시max를effort변경으로추정하지않고현재AGENTS의Astraxhigh를유지했다. 구계약/입력은그대로보존하고v3 SHA41A4348D…44D02·입력v4 0F266579…D6984/60개를최신으로삼는다. 09:28요청의Core44/03:13은과거통지이며현재queue로오인한문구를별도정정한다. 현재Main실행창미배정·신규worker/snapshot/native/live0, 원시mail175/176/177·lead-b70-v2-preparation-context/path-and-pin-audit/contract-acceptance·fast-and-queue-supplement-context/v3-fast-contract-acceptance·b70-exact-settings-allowlist/source-before·요청receipt가근거다.
 - **65 - B70 formal failed 수용·봉인 실사·정확작업자종료·4차이 정식판단 요청.** msg475795a0f07b(02:35:23Z)는현재worker/Task/Dispatch/명시failed·수신helperallowed와일치했다. writingEnded02:34:08.8852599Z·report원문전체/context실제준수·files-modified를읽었고봉인126파일20568114bytes/중복0·불일치0·5pin일치·선언한manifest/writing-ended2개만unindexed였다. reportSHAED03EDCB…A794C65·writing-endedSHA CB5100DF…6A4469·evidencemanifest1017BFF1…BFFDA를보존한다. source/n입력각2286현물과output234·owned62533index감사한계를최종정산원문에구분했다. source제품/시험추가수정0·전체할당미완료/환경관문failed·제품확정실패/독립NOTPASS추가0이다.
 - 최종기존helper31저장메시지/26신호·max412초·over334/398/335/301/323/318/412/questionWaits[]를보존했고공식대기와겹친4구간을자동전면면제하지않았다. 명시준비335/build경계301/file정산412초위반·초기형식/실행전UTC정정과범위가다른중간22신호/max398·HB-only491초를분리했다. 엄밀300초준수/새제품실패주장0이다. 리드종료대조bounded20메시지read는contentCompletefalse/clipping이므로전체대화실사근거로쓰지않았다.
 - 수용후worker-release는external_terminal/retained/processActionnone,정확Task/inc666fcfbc/cwd/done/idle와screen의최종tool뒤빈prompt·새제출사용자작업없음/직전check를대조해term5e1a5845만close해ptyKilledtrue를받았다. run한정reclaimable0/retained42는역사집계이며sourcegitclean·close뒤reportSHA동일이다. 원시accepted-failed-settlement/final-seals-audit/liveness-result-final/worker-done-policy-result/worker-read-before-release/worker-release/show-before-close/screen-before-close/worker-close/reclaimable-after-close-v1에연결했다. 종료worker재사용/추가native/새worker/새창0이다.
@@ -240,6 +242,24 @@ HUD PR 생성·commit/push 안전 지점 뒤 최신 main의 별도 작은 Art PR
 - 12 - 하네스 독립 강검증: G/`qa-short-path/verdict.md`·`verdict.json`과 E21/`lead-verifier-settlement.md`·audit 원문을 보존했다. A~C는 통과이나 C 실제 entry는 예상 HEAD/goal 차이2건을 exit1로 거부했으며 D 준비 완료가 아니다. #1~#5·#7은 낮음/비차단 후속, #6은 중간/다음 D 전 필수다. W-1~W-7과 검증 scratch 보존을 다음 계약에 반영한다. 필수 판정·시험 원시는 대조됐고 manifest상 런타임 TEMP 출력1 부재는 별도 정산에 남겼다. 저장 신호16개의 helper는 max483초/초과6구간이며 수신 원시 범위·실제 lastHeartbeat 차이를 구분했다. 검증자는 정산·정확 pane 종료/재사용0이다.
 
 ## 적용 중인 사용자 결정
+### 10-23 신규 Codex Fast 적용
+
+Main msg_18abeea382af(2026-10-23T09:21:28Z)가 메인 pane Enter 제출 사용자 원문 두 줄을 전달했다. 이 리드 pane의 직접 사용자 입력으로 격상하지 않으며 원문은 E/housing-v3-20261022/mail-runtime-followup-177.json에 보존한다.
+
+> OK 추가적으로 앞으로 Codex 세션은 Fast 모드도 켜서 작업해줘
+> 일단 지금 켜져있는 세션은 내가 Fast모드 킬게
+
+앞으로 여는 모든 Codex 작업자/검증자 세션 기동에 -c service_tier="fast"를 더한다. 모델/effort와 검증 강도는 그대로다. 이 결정 뒤 첫 신규 세션은 새 rollout의 첫 thread_settings에 service_tier="priority"가 있는지 실제 경로/원문줄로 확인해 계약 또는 ledger에 남긴다. default/unknown이면 작업 시작 전에 Main에 보고한다. 기존 세션은 사용자가 직접 토글하며 리드는 다른 pane에 /fast 입력·이유만으로 재기동·전역config 편집을 하지 않는다. 정본 반영은 Rules 소유이고 이 goal 기록을 현행 적용 근거로 삼는다.
+
+### 10-23 새 B70 시험 사본의 빌드 설정4개 exact 차이 허용 A
+
+Main msg_b304e92d9ffc(2026-10-23T02:46:59Z)가 메인 pane 제출 사용자 원문을 전달했다. 원문은 E/housing-v3-20261022/mail-runtime-followup-175.json이다.
+
+> 대시보드 결정 응답: 1) Content 하우징 실제 실행 - 빌드할 때마다 Unity가 바꾸는 설정 파일 4개를 시험 사본에서 허용할지 → A 그 4개만 정확히 허용하고 실행
+
+새 계약에서 UniversalRP.asset·UniversalRenderPipelineGlobalSettings.asset·GraphicsSettings.asset·ProjectSettings.asset 네 경로의 exact source-before/postbuild SHA(h/n관측값)만 사본 허용 목록에 더한다. 새 build마다 전후 원시/pathset을 남기고 결과4개중하나라도다르거나 다른차이가생기면 게임단계전hold다. 원본/패키지/전역analytics/Unity/제품/시험쓰기0·렌더영향미검증/사용자결정명시·fresh worker/별도창/최종독립은 유지하며 과거failed/승인은 소급하지않는다. 규범4쌍은 b70-exact-settings-allowlist-v1.json(SHA84AACDE1D6EC79A4521B7DD63C6F16151EC034F693A8CB6D910C586E73FEE479)이다.
+
+후속 후보: 저장소 설정/직렬화·define 기준 정비(B)는 버리지 않고 하우징 실제 검증 뒤 별도 범위로 다룬다. 자동 생성 runtime목록/shader필터를 수기고정하면 변화를없앨수있는지와제품영향은 미확인이다. 현재goal의제품/설정수정이나새goal자동착수로확대하지않는다.
 
 ### 10-23 하우징 기존 시험 3메서드 fixture 수리 A 허용
 
