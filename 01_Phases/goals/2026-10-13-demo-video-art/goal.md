@@ -1,8 +1,8 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **Main msg_16762b50c9c4(2026-10-23T10:58:03Z)가 신규 Opus의 현재 기술 판독을 HUD PR 한정 통과로 조건부 수용했다. 운영 이탈1건·생존 초과2구간(364/644초) 정정·seal 뒤 완료 receipt 별도 hash를 원판정 옆에 묶으며 원 verdict/manifest/seal/.cmp-a를 보존한다. HUD-F03 주석 수치는 이 PR에서 고치지 않고 다음 Art PR 첫 수정으로 기록한다. 실제 full Play140=121통과/Audio8 기존 실패/11Skipped·전체suite NOTPASS·Opus 직접실행0을 유지한다. 구현자와 검증자는 정산 종료·재사용0이며 현재 PR 발행 준비, goal미완이다.**
+상태: **PR260 - 전투 HUD 재구성과 팝업 배치·구독 수명 보완을 생성했다(https://github.com/bass131/dawnholder-server/pull/260). Main msg_16762b50c9c4의 HUD PR 한정 조건부 수용·원문/정정 보존·HUD-F03 다음 Art PR 첫 수정 판단을 반영했다. 판독 source6e69eb87/base8a4bea49 이후 goal 기록만 커밋했으며 제품/시험 변화0이다. 실제 Play140=121통과/Audio8 기존 실패/11Skipped·전체suite NOTPASS·Opus 직접실행0을 유지한다. 최종head·모든CI·메인전달 결과는 PR checks와 pr-final-review-02/lead-final-pr-ci-report.json에 연결한다. 병합0·전체Art goal미완이다.**
 
-**다음 첫 일:** 메인 결정 원문과 pr-final-review-02/lead-main-acceptance-addendum.md를 연결한 뒤 최신 main 확인→리드 commit·push→PR 생성→모든 CI 확인→Main에 PR번호·정확 head40자·CI결과를 전달한다. 병합은 하지 않는다. 판독 source head6e69eb87769cca0d0b42f31e92015dc95beb9868/base8a4bea491aac3f174e9ce6a322aedf383fb18f46이며 후속 리드 goal 기록 커밋과 구분한다. 원15산출물/4713입력/구독3종·requests·Ending Passed 및 원Art22 Passed 근거를 보존한다. 보호 Minimap/draft2는 원hash 그대로 commit제외다. HUD-F03은 다음 Art PR(발판·지형 또는 촬영 전 손질)의 첫 수정이며 BACKLOG로 넘기거나 자동 착수하지 않는다. 병합 승인 요청에 「남은 결함: HUD-F03 주석 수치, Audio8 기존 실패 8」을 표시한다. Opus task_a9f0e4342324/ctx_d5300a3612dd의 정산 종료·직접실행0과 user A 실행Codex/판정Opus 한계, Audio24 actualhead/base diff0 재확인 조건을 유지한다. 새 Unity/자원조회/세션0이다.
+**다음 첫 일:** PR260의 최신 head와 모든 CI 결과를 확인해 Main에 정확 head40자·CI별 결과·원판정/리드정정 경로를 전달한다. 그 전달 뒤는 Main의 같은 head R-2 재대조와 사용자 병합 승인 단계다. 리드는 병합하거나 다음 Art 작업을 자동 착수하지 않는다. 병합 승인 요청에는 「남은 결함: HUD-F03 주석 수치, Audio8 기존 실패 8」을 표시한다. HUD-F03은 다음 Art PR(발판·지형 또는 촬영 전 손질)의 첫 수정이며 BACKLOG이관0이다. 판독 source head6e69eb87769cca0d0b42f31e92015dc95beb9868/base8a4bea491aac3f174e9ce6a322aedf383fb18f46, 이후 goal-only 문서 커밋은 PR head로 구분한다. 구현자/검증자 정산 종료·재사용0·원4713입력/15산출물 보존·보호Minimap/draft2 commit제외·새Unity/자원조회/세션0을 유지한다.
 
 **병렬 전경 제작 완료:** 승인 공동안 v3의 같은 구도·글자 없는 레벨1/잠김·레벨2/열림 원PNG 두 장과 출처·배치를 `guild-housing-assets-01/`에 보존하고 제작 세션을 정산했다. Main은 두 원본을 직접 확인하고 Content에 인계를 알린다고 했다. 생산용 호출은 2/3회이며 남은 1회는 쓰지 않는다. 미리보기 제외·709/802/1920 확인·Content 제품 import/meta/UI/Git 단독·PR2 main 뒤 별도 PR·Unity 90분 경계는 v3 그대로다.
 
@@ -626,6 +626,8 @@ Main `msg_3d254c772f7a`(2026-10-18T16:16:30Z)는 메인 pane에 Enter로 제출�
 ## 적용 중인 메인 범위 판단
 
 ### 2026-10-23 — PR 판독 조건부 수용·HUD-F03 다음 Art PR 첫 수정
+
+**PR260 - 전투 HUD 재구성과 팝업 배치·구독 수명 보완:** https://github.com/bass131/dawnholder-server/pull/260, 생성2026-10-23T11:07:17Z, 최초 head72c69c7353af27ac884b30f88ece987d87889b99/base8a4bea491aac3f174e9ce6a322aedf383fb18f46. 독립 판독 뒤72c69c73과 이 PR 기록은 goal-only이며 제품/시험 source는6e69eb87과 동일하다. 최종head/CI별결과/메인전달은 pr-final-review-02/lead-final-pr-ci-report.json과 PR checks에 남기며 리드 병합0이다.
 
 Main msg_16762b50c9c4(10:58:03Z, thread msg_611b6972b74b)는 판정 원문과 리드 자료를 직접 읽고 현재 기술 판독을 HUD PR 한정 통과로 수용했다. task-context SKILL.md:55의 메인 결정이며 사용자 병합 승인과 구분한다. 메인 표본은 verdict SHA/통과·F03·Audio24 문구, W 안 .cmp-a의2980B/path-hash CSV, 현행 주석, base8a4bea49..head6e69eb87의27경로(A11/M16), Audio fixture2 diff0·UI scene Camera/Listener 전후0이다. 전수 검증을 수행했다는 뜻은 아니다.
 
