@@ -2,8 +2,8 @@
 function Get-WindowsSqlMigrationFailureCode {
     param([Exception]$Exception)
     $pattern = '^WINDOWS_SQL_APPLY_FAILED_APPLY_MIGRATIONS_' +
-        '(OWNED_DATABASE|BEGIN_TRANSACTION|LOCK|MIGRATION_00[1-5]|HISTORY_00[1-5]|' +
-        'MODULES|CATALOG|COMMIT|ROLLBACK|TRANSACTION_DISPOSE|CONNECTION_DISPOSE)_SQL_(UNKNOWN|N?[0-9]{1,10})\z'
+    '(OWNED_DATABASE|BEGIN_TRANSACTION|LOCK|MIGRATION_00[1-5]|HISTORY_00[1-5]|' +
+    'MODULES|CATALOG|COMMIT|ROLLBACK|TRANSACTION_DISPOSE|CONNECTION_DISPOSE)_SQL_(UNKNOWN|N?[0-9]{1,10})\z'
     $current = $Exception
     while ($null -ne $current) {
         $code = $current.Data['WindowsSqlMigrationFailureCode']

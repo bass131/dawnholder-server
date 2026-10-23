@@ -171,7 +171,7 @@ function New-WindowsSqlMigrationFailure {
         $number = (New-DatabaseSqlFailure -Exception $Exception).Data['DatabaseSqlNumber']
     }
     $numberText = if ($number -eq 0) { 'UNKNOWN' }
-    elseif ($number -lt 0) { 'N' + (-[long]$number).ToString([Globalization.CultureInfo]::InvariantCulture) }
+    elseif ($number -lt 0) { 'N' + ( - [long]$number).ToString([Globalization.CultureInfo]::InvariantCulture) }
     else { $number.ToString([Globalization.CultureInfo]::InvariantCulture) }
     $code = 'WINDOWS_SQL_APPLY_FAILED_APPLY_MIGRATIONS_' + $Stage + '_SQL_' + $numberText
     $failure = [InvalidOperationException]::new($code)

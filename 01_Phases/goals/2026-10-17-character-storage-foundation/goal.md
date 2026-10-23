@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: [PR259 - Core 캐릭터 생성·선택·SQL 저장 기반](https://github.com/bass131/dawnholder-server/pull/259)을 생성했다.** 독립45의 사용자 A 범위 기본 회귀 통과·새 차단 결함0, B1 1894통과/실패0·기존 정적 Skip5, B3 25통과/실패0/Skip0이다. 조건3/5/8은 사용자 수용 미실행·판정 보류이며 O1 후속·container82 d를 유지한다. 판정 원문·현재 TRX·고정 입력 대조와 succeeded 정산·정확 pane 종료를 마쳤다. 반환 시 WSL 잔류와 이후 메인 자동 종료 관측은 함께 보존했다. 근거는 prereview-followup-45/settlement.md·reviewer/report.md·lead-resource-addendum.md다. PR 검사·메인 R-2 대조·사용자 정확 head 병합 승인을 남기며 goal 전체 완료·병합은 아니다.
+**상태: 신규 독립48이 PS13 실제 회귀를 마치고 구현46 서식 수리를 약 PASS로 판정했다.** 13/13 suite exit0, PASS1553·FAIL0·OBSERVED30, 누락/대상0/Skip0이며 보호입력·HEAD/index·10PS bytes 보존을 리드도 대조했다. 실행 창은 기한 전 반환·Main 종료 확인했고 검증자 정산·정확pane 종료를 마쳤다. Main의 원문/원시 표본 대조 일치와 약PASS 수용을 받았다. 담당 리드의 10PS+goal commit·push/새headCI·R-2/사용자 정확head 승인·병합이 남는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -20,6 +20,17 @@
 - 메인 대조 전에도 API 문서 작성은 허용. 작업자 발행은 대조 회신 뒤. 다른 파트 착수는 메인이 각각 별도 승인하며 Core는 지시하지 않는다.
 
 ## 적용 중인 사용자 결정
+
+### 앞으로 여는 Codex 세션 Fast 적용 — 2026-10-23
+
+Main msg_ca44a74faa07(2026-10-23T09:21:27Z/current Main from_handle)이 메인 pane Enter 제출 사용자 원문 두 줄을 전달했다. 이 pane의 사용자 직접 입력으로 격상하지 않는다. 원문 보존은 `ci-style-review-47/main-fast-user-decision-authority.json`이다.
+
+> OK 추가적으로 앞으로 Codex 세션은 Fast 모드도 켜서 작업해줘
+> 일단 지금 켜져있는 세션은 내가 Fast모드 킬게
+
+앞으로 여는 모든 Codex 세션(리드·작업자·Sol 검증자·해당 조건의 Astra)에 `-c service_tier="fast"`를 명시한다.10-19 모델/effort 라우팅은 그대로다. 예: 구현자 `codex --model gpt-6.1-sol -c model_reasoning_effort=max -c service_tier="fast"`, 신규 리드는 xhigh를 유지한다. Claude/Opus는 대상이 아니다. 현재 열린 세션은 사용자가 직접 전환하며 리드가 다른 pane에 /fast를 입력하거나 이 이유로 재기동하지 않는다.
+
+이 결정 뒤 처음 여는 Codex 세션은 실제 새 rollout의 첫 thread_settings가 `"service_tier":"priority"`인지 원문으로 확인해 rollout 경로/해당 줄을 계약 또는 ledger에 남긴다. Main이 전달한 Fast catalog id는 priority다. default면 해당 세션 작업 시작 전에 Main에 보고하며 전역 config.toml 편집/우회0이다. Main은 사용자 TUI 토글 뒤 전역값 fast·18:19:51KST 수정 관측을 전달했지만, 이를 이 세션 런타임 확인으로 쓰지 않는다. 범위/검증 강도는 바뀌지 않고 규칙 정본 반영은 Rules 담당이다.
 
 ### PR 전 기본 회귀만 실행하고 나머지 실제 경로는 한계로 기록 — 2026-10-23
 
@@ -373,8 +384,8 @@ World `msg_560337c050b9`: 소유 충돌 없음은 기술 의견, 후속 착수 �
 - [x] 선행 시험 작성
 - [x] 저장 기반 구현
 - [x] 실제 경로 검증
-- [x] 독립 강 검증 — 사용자 A 수용 범위, 조건3·5·8 미실행 한계는 유지
-- [ ] 제품 PR259 병합
+- [x] 독립 검증 — 독립45 사용자 A 기본 회귀·독립48 PS13 약PASS, 조건3·5·8 미실행 한계 유지
+- [>] 제품 PR259 병합
 - [ ] 종료 점검
 
 제품 PR은 [259 - Core 캐릭터 생성·선택·SQL 저장 기반](https://github.com/bass131/dawnholder-server/pull/259)이다. 사용자 정확 head 승인 전 병합하지 않는다.
@@ -390,7 +401,38 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**현재 첫 일 — PR259의 현재 head·검사 상태와 판정 원문 세트를 메인에 전달한다.** 단일 제품 PR259를 생성했으며 시험 보완·결과 기록·PR 번호를 담당 리드가 commit/push한다. 이후 메인 R-2 원천 표본 대조와 사용자 정확 head 승인을 기다린다. Codex 병합·자동 병합 예약은 하지 않는다. 독립45 Task task_4aeed0ed8b3a/Dispatch ctx_855692f97e82는 worker_done msg_5440eb958866(05:31:54Z)/succeeded 정산 뒤 정확 pane 종료했다. 리드는 판정 원문·맥락 메모 전문과 diff·명령/exit·현재 TRX를 읽었고 읽기 전용125·과거 근거32 hash 불일치0, 허용 시험 두 파일 최종 hash 일치, 범위 밖 dirty0, diff-check0을 확인했다. 원문 `prereview-followup-45/reviewer/report.md` SHA256 035E02768ACCD9B18E364F8F4CF427D6876F4C87F3D6B1A8E2EBFCBE655BA52A, 정산 `settlement.md`, 직접 대조 `lead-final-source-audit.json`·`lead-return-audit.json`이다. 원문 판정은 사용자 A 범위 기본 회귀 통과·새 차단 결함0이며 강 필수 세 항목을 각각 충족했다. catalog 밖 전체 PR 정적 실사는44 원문과 제품 bytes 동일로 연결한 범위다.
+**다음 첫 일 — 담당 리드가 10PS+goal을 commit/push하고 새 head의 모든 CI를 확인한다.** Main `msg_32d875a46b91`(10:59:01Z)이 판정원문/집계·공백밖diff·12행SUMMARY·11행Cert/MachineKeys/receipt를 표본 대조해 일치·약PASS 수용을 확인했다. 이 대조는 검증자의 전수검증과 구분한다. 신규 Core 리드는 같은 Run `run_1b758e0cc722` generation10을 인수했고 rollout `01a16831-300e-79b3-8382-15a58fccbd7b` 첫 thread_settings의 `service_tier: priority`를 원문 확인했다. 기존 HEAD632aa53cf05037f60e2caa5b3e7cea456350efcd/status11/indexSHA371CECD0…1645와 고정 입력을 보존한 상태다. checkpoint ref로 checkout하지 않았다.
+
+독립48 Task `task_bd3022fc4198`/Dispatch `ctx_d72b8941ddd1`은 신규 외부 Opus5.5로 실제35분 창 T10:21:40Z/lastEntry10:43:40Z/returnBy10:56:40Z에서 고정v4/13suite를10:22:24–10:37:05Z 실행했다. 결과 PASS1553·FAIL0·OBSERVED30,13suite exit0·누락/대상0/Skip0이며 원문 판정은 **약PASS**다.47A token/AST·PSSA33진단0은 동일bytes의 재사용 근거이며48 재실행으로 세지 않는다. 구현46의 공백10파일32행 밖 동작 변경은 없다.
+
+판정원문 `ci-style-execution-48/reviewer/report.md` SHA256 `CC1B4DE98AE88402D42A07412288A36EA2998AE2AE91055F9443C3818710D8ED`, context `B70725A181A9B1ED897D207E90CFA89308421C2F94B8F25DA133586C17672209`, 실행summary `A2DB43E68E00D81142BC493B92696D7A1B4BAA74131E6FC640845B86990EF3E4`를 리드가 전문/실제raw와 대조했다. 리드 `lead-final-source-audit.json`에서13결과 직접집계/receipt hash/보호137·근거21·지원6·입력8/HEAD·status·index 불일치0이다.11행 비관리자·Cert/MachineKeys 전후무변화·R3/잔여/lock 원시는 같은 폴더에 있다.
+
+리드 직접 반환 관측10:42:21Z는 표식child0/양쪽lockfalse/WorkRoot·b-run보존이며 Main보고 `msg_d5e2fa4da13e`/10:42:35Z다. Main `msg_cca920e022b2`의10:45:01Z res-check로 창을 닫았고 추가실행0이다. worker_done `msg_1d915d04a0f4` succeeded/쓰기종료10:49:58Z, release/exact incarnation·idle확인/close ptyKilled true로 정산했다. 생존17신호/max270초/300초초과0·공식질문대기440초를 구분한다. 검증자final-drift v1 경로버그와 리드 liveness 입력형식오류는 원시를 보존하고 각각수정원시로 대조했으며 제품실패로 집계하지 않는다.
+
+근거 `ci-style-execution-48/settlement.md`·`lead-final-source-audit.json`·`liveness.json`·기동/종료receipt가 현재정본이다. 기존45 사용자A 조건3/5/8미실행·O1정적위험/container82 d/PR귀속아님/통과아님은 그대로다. 전체goal완료·새headCI통과·병합승인은 아직 아니다. Main 원문/원시 표본 대조는 `msg_32d875a46b91`로 끝났다. 남은 순서는 리드commit/push → 새head모든CI → MainR-2 → 사용자정확PR+40head승인 → Main병합이다. 정확commit/head·CI결과와 판정bytes 연결은 같은48근거의 publication 원시에 남기며 자기commit SHA를 이 파일에 재귀 기입하지 않는다.
+
+### 독립47 종료 당시 재개 기록
+
+
+두 번째 창 msg_3314d92caae7는 T09:27:45Z/lastEntry09:49:45Z/returnBy10:02:45Z였으나 리드가 정산/checkpoint 작업 뒤09:42Z에 읽었다.13suite 전부를 lastEntry 안에 시작할 수 없으면 일부를 돌리지 말라는 Main 조건대로 B0을 유지했다. second-window-unused-return.json의09:44:54Z 실제 관측은 자기표식child0·WorkRoot/b-run 없음·양쪽lockfalse·HEAD632aa53c/status11이며 새실행세션/실제토큰·Cert·MachineKeys조회0이다. Main msg_0512d43da9bd(09:45:48Z)로 기한 전 반환 보고와 리드 확인 지연을 알렸다. 이 두 번째 창도 재개 근거로 쓰지 않고, 다음 배정은 신규리드 인계준비 통보 뒤 요청하도록 마감했다. Main 최신 반환 확인/자원창 메시지는 같은 Run에서 확인한다.
+
+독립47 Task task_7e3b62a9fad9/Dispatch ctx_3693ce4d4af7는 worker_done msg_ffb01c13267c(09:26:08Z)/failed, 판정 HELD/B0로 정산했다. reviewer/report.md SHA05D9D82E…56FB·context.md SHA229494E1…FA82 전문을 읽고 쓰기 종료09:25:31Z와 실제 bytes를 대조했다. lead-final-source-audit.json의 보호137/근거21/지원6/도구49/실행입력8 drift0·WorkRoot/b-run 부재를 확인했고 release의 external retained/none 뒤 정확pane close ptyKilled true를 받았다. 현재goal/제품은 미완료이고 failed는 제품결함·확정실패3회가 아니다.
+
+새35분 요청 msg_002c8ecba71c는 Main msg_73b0ec026bc6로 Art 반환 뒤 대기열1번/추가조건0 접수다. 제안 lastEntry T+22분·returnBy T+35분·반환여유120초·suite cap450초·allow-unobservable none을 유지하되 실제 값은 새 Main 메시지로만 받는다. Art T09:11:46Z/returnBy09:29:46Z와 닫힌 원Core창은 실행권한이 아니다.
+
+재개 정본은 ci-style-review-47/lead-wait-handoff.md와 execution-inputs-v4.json SHA6485A6D1…FA76이다. 준비메모96842C81…F3D5·감사v4 C86D41FC…7623·도우미51F07845…6D53·R3수집기/계획/소스/근거를 전수 machine hash로 대조한다. actual Task/Dispatch/terminal/incarnation·출력폴더·새창 argv는 새 실행 보충에 남긴다. 감사v4 raw의 과거Task47 표기는 준비출처이며 새 runtime 권한으로 쓰지 않는다. 기존47원문/코드는 고쳐 쓰지 않는다.
+
+현재 checkout은 feat/character-storage-foundation-20261017/HEAD632aa53cf05037f60e2caa5b3e7cea456350efcd, dirty11=리드goal+수리46 PS10이다. 감사v4의 expected HEAD/status 보존을 위해 대기용 goal-only checkpoint는 현재HEAD/index를 움직이지 않는 별도 로컬 checkpoint ref로 남기며 실제 commit/goal SHA·불변 대조는 lead-goal-checkpoint.json에서 확인한다. 새 리드는 그 ref로 checkout하지 않는다.10PS backup frozen-style-10.patch SHA9D753A57…85BC와 실제 파일/고정 source를 함께 보존한다. reset/clean/stash·제품 commit/push는 아직 하지 않는다.
+
+실행은 기존13suite/순서/argv·1~9 PS5.1/10~13 pwsh7·child PSModulePath 제거 그대로다. 실제 자기child0·worktree/common index.lock false를 별도로 확인한다. none·실제 비관리자 토큰·11행 Cert 두저장소 thumbprint/MachineKeys 메타데이터 전후·차이/조회불가/잔여/예산부족 시 다음suite0·원시보존·반환/되돌리기0을 유지한다. 기존 R3는 신규 두suite/profile/Dawnholder/<GUID> owner/DACL뿐이다. SQL/WSL/dotnet/Unity/서버0, 반환 보고를 결과 해석보다 먼저 한다.
+
+원Core창은 Main msg_88499ba3e85c가09:10:40/09:11:04Z 직접 관측+B0로 닫았다. 검증자 return-01.state.txt/return-02.processes.json은09:11Z 자기표식child0·WorkRoot/b-run 없음·lockfalse를 보였지만 returnBy09:06:32Z 뒤다. Main 신규11행 조건 시점의 창 소모, 검증자의 옛delivery ACK지연·check-04 bytes소실·자기점검 실패3건, 리드의 idle 확인 누락/늦은 반환 보고를 각각 보존했다. heartbeat19회/300초초과13회는 공식대기·idle미확인 구간과 구분하며 절차무편차/기한준수로 보고하지 않는다.
+
+47A의32행 공백/token·AST/PSSA33진단0은 관찰이며 필수13suite B0라 약PASS가 아니다. 새 실행자는 실제결과/실패전수 a/b/c/d와 미실행을 판정한다. 이후 담당리드만10PS+goal commit/push·새head 모든CI/MainR2를 확인하고 사용자 정확 PR+40head 승인 뒤 Main checkout만 병합한다. 기존45 사용자A3/5/8 미실행·O1후속/container82 d·goal종료 Gardener/사용자점검은 그대로다. 자연 wake에서만 확인하고 mailbox timer/sleep/상시poll0이다.
+
+**수리46 완료 근거.** 신규 Sol max Task task_adcbc2fa0c5d/Dispatch ctx_15d31353a58e/terminal term_c44df3a3-1c25-4cef-82e4-66ef9afd1833를 fresh split에서 기동했다. 최초 명령·화면 GPT-6.1-Sol max, backend unknown, tui-idle/input_accepted/turn_started·exact identity를 관측했다. 계약 SHA256 A00D1AD76530455EDDBE8EDAFD617F512DE082B1392264B2D69BA4E134231F78, 입력138/쓰기10/읽기전용127/goal예외1·근거5의 사전 대조 불일치0이다. Main msg_e7e6c637a5ac를 반영한 보충v2(CE1CE2AD49F1730B168FC6AA3A725EC20A872C43D8F901864F033AECDFFF4926)를 현재 미정산 Task에 전달했다(msg_fc103442c76c). 정적 token/문자열·AST 대조 뒤 기존 checker+프로젝트 범위 PSSA1.25.0으로 PowerShell33대상 자기 확인을 수행한다. pwsh/PSSA만 쓰고 dotnet SDK/WSL/Unity/SQL·제품/시험 파일 실행0이어서 메인 원문상 별도 자원창 없이 허용한다. 기존 PS 회귀는 이번 작업자가 실행하지 않고 신규 검증자에게 계획을 넘긴다. 원계약·원시는 보존하며 자기확인을 독립 통과로 부르지 않는다. 근거 `ci-style-repair-46/launch-observation.json`·`issuance-self-check.json`이다. PR259 code-rules run39907038332의 PSUseConsistentIndentation/Whitespace 실패다. 같은 goal·기존 PR파일10개 안의 공백 변경만 허용하고 토큰/문자열·SQL/보안/오류/timeout·줄 경계를 보존한다. 신규 외부 독립 Opus의 예정 등급은 순수 기계 서식 약이며 기존 시험 실행을 생략하지 않는다. 의미 동등성이 깨지거나 애매하면 약 통과를 내지 않고 강 전환/메인 판단으로 올린다. A 정적 수정·구문/토큰 대조와 보충v2 PSSA 자기 확인만 허용하며 기존 PS 회귀는 신규 검증자의 정확 계획과 자원 대상 여부 판정 뒤다. WSL/dotnet/DB/서버/Unity0, 기존 검증자45 재사용0, 리드 직접 수정0, 검사정책 완화0이다. 근거 `ci-style-repair-46/context.md`·계약/입력과 실패 CI artifact다. 기존 head의 CI module-boundaries·architecture-tests·dotnet-tests는 모두 통과했고 code-rules 서식32만 실패로 남았다. 원시 ci-style-repair-46/dotnet-ci-followup-03.json이다. 수리46 감사 코드3회초과 체크포인트 msg_83898141c323를 메인 msg_1c719c7f0abf로 보고했다. 제품은 첫 공백 수정1회/10파일32행이며 감사 코드의 nested-token·합성 생성자·stderr 객체 직렬화·IScriptExtent 위치 정규화 보완과 구분한다. static-05 자기 감사는10파일동등/exit0이나 PSSA·독립 통과는 아직 아니다. 관련 원시·버전을 보존하며 확정 제품 결함 반복3회 집계로 바꾸지 않는다. 메인의 xhigh 정정은 이미 max 기동 뒤 수신해 goal 사용자 원문의 max 우선 적용과 실제 기동 근거를 msg_a36ac78e664e로 전달했다. 메인은 msg_bd6be0f9237c(05:59:41Z)에서 사용자 원문 직접 대조 뒤 xhigh 정정을 철회하고 현재 Sol max 그대로 진행하라고 확인했다. 새 사용자 라우팅 변경·실행 중 모델 변경은 없다. 원문은 ci-style-repair-46/main-routing-correction-withdrawal.json이다.
+
+**독립45 완료 근거 — PR259 생성·판정 원문 세트 전달을 마쳤다.** 단일 제품 PR259를 생성했으며 시험 보완·결과 기록·PR 번호를 담당 리드가 commit/push한다. 이후 메인 R-2 원천 표본 대조와 사용자 정확 head 승인을 기다린다. Codex 병합·자동 병합 예약은 하지 않는다. 독립45 Task task_4aeed0ed8b3a/Dispatch ctx_855692f97e82는 worker_done msg_5440eb958866(05:31:54Z)/succeeded 정산 뒤 정확 pane 종료했다. 리드는 판정 원문·맥락 메모 전문과 diff·명령/exit·현재 TRX를 읽었고 읽기 전용125·과거 근거32 hash 불일치0, 허용 시험 두 파일 최종 hash 일치, 범위 밖 dirty0, diff-check0을 확인했다. 원문 `prereview-followup-45/reviewer/report.md` SHA256 035E02768ACCD9B18E364F8F4CF427D6876F4C87F3D6B1A8E2EBFCBE655BA52A, 정산 `settlement.md`, 직접 대조 `lead-final-source-audit.json`·`lead-return-audit.json`이다. 원문 판정은 사용자 A 범위 기본 회귀 통과·새 차단 결함0이며 강 필수 세 항목을 각각 충족했다. catalog 밖 전체 PR 정적 실사는44 원문과 제품 bytes 동일로 연결한 범위다.
 
 이번45가 10-22 경량 경로의 **PR 직전 신규 Opus 독립 검증 1회**에 해당한다. 계약1·5·17·54행은 신규 외부 Opus의 사용자 A 최종 강 판정과 세 항목의 별도 판정을 고정했고 원문은 독립 보완7범주/새9인스턴스·현재 B1/B3·diff 실사를 구분해 판정했다. 같은 제품 bytes에 추가 독립 세션을 자동 발행하지 않는다. 완료조건8 중 Resume 실제 경로는 별도 미실행 한계이며 goal 전체 완료를 뜻하지 않는다.
 

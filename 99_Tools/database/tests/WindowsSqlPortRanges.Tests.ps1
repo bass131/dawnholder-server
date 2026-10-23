@@ -9,8 +9,8 @@ $fixtureText = [IO.File]::ReadAllText($fixturePath)
 $stop = $fixtureText.IndexOf('$allowCases = @(')
 if ($stop -lt 0) { throw 'DEPENDENT_FIXTURE_BOUNDARY_NOT_FOUND' }
 $prefix = $fixtureText.Substring(0, $stop).
-    Replace(". (Join-Path `$PSScriptRoot 'TestSupport.ps1')", ". '$(Join-Path $PSScriptRoot 'TestSupport.ps1')'").
-    Replace("'windows-sql-dependent-service'", "'windows-sql-port-ranges'")
+Replace(". (Join-Path `$PSScriptRoot 'TestSupport.ps1')", ". '$(Join-Path $PSScriptRoot 'TestSupport.ps1')'").
+Replace("'windows-sql-dependent-service'", "'windows-sql-port-ranges'")
 . ([scriptblock]::Create($prefix)) -WorkRoot $WorkRoot
 [IO.File]::WriteAllText((Join-Path $script:SuiteRoot 'reused-fixture-prefix.ps1'), $prefix)
 $script:FixturePort = 15433
@@ -146,18 +146,18 @@ function Invoke-PortRequirement {
     $null = Assert-True -Name ($Id + ' actual Preflight outcome and no effects') -Condition ($correct -and $clean) `
         -Detail ('direct=' + $directError + '; public=' + $errorText + '; effects=' + ($effects -join ','))
     $script:PortCases.Add([pscustomobject]@{
-        Id = $Id
-        Port = $Port
-        ExpectedError = $ExpectedError
-        DirectError = $directError
-        Error = $errorText
-        DirectPort = $directPort
-        DirectNetsh = $directCalls
-        Netsh = @($script:NetshCalls.ToArray())
-        Events = @($script:World.Events.ToArray())
-        Violations = @($script:World.Violations.ToArray())
-        Observation = $observed
-    })
+            Id = $Id
+            Port = $Port
+            ExpectedError = $ExpectedError
+            DirectError = $directError
+            Error = $errorText
+            DirectPort = $directPort
+            DirectNetsh = $directCalls
+            Netsh = @($script:NetshCalls.ToArray())
+            Events = @($script:World.Events.ToArray())
+            Violations = @($script:World.Violations.ToArray())
+            Observation = $observed
+        })
     $script:PortCases | ConvertTo-Json -Depth 14 |
         Set-Content -LiteralPath (Join-Path $script:SuiteRoot 'port-cases.json')
     return $observed

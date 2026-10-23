@@ -292,7 +292,7 @@ function New-CatalogProbeOwnedFile {
     $acl.SetAccessRuleProtection($true, $false)
     $acl.SetOwner([Security.Principal.SecurityIdentifier]::new($ExecutorSid))
     $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
-        [Security.Principal.SecurityIdentifier]::new($ExecutorSid), 'FullControl', 'Allow'))
+            [Security.Principal.SecurityIdentifier]::new($ExecutorSid), 'FullControl', 'Allow'))
     # Owner and executor-only ACL are present at CreateNew, rather than corrected after writing the secret.
     return [IO.FileStream]::new(
         $Path, [IO.FileMode]::CreateNew, [Security.AccessControl.FileSystemRights]::FullControl,
@@ -360,7 +360,7 @@ function ConvertFrom-CatalogProbeSidHex {
     for ($index = 0; $index -lt 16; $index++) {
         $bytes[$index] = [Convert]::ToByte($Value.Substring(2 + $index * 2, 2), 16)
     }
-    return ,$bytes
+    return , $bytes
 }
 
 function Get-CatalogProbeParameters {

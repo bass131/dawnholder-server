@@ -54,8 +54,8 @@ function New-ProbeFixturePlan {
         originalApprovalHash = ''
         credentialHash = ''
         sourceHashes = @($sources | ForEach-Object {
-            [pscustomobject]@{ path = $_; sha256 = (Get-FileHash -LiteralPath (Join-Path $script:ToolRoot $_)).Hash }
-        })
+                [pscustomobject]@{ path = $_; sha256 = (Get-FileHash -LiteralPath (Join-Path $script:ToolRoot $_)).Hash }
+            })
     }
 }
 
@@ -439,7 +439,7 @@ try {
         if ($behavior -ceq 'SqlUnknown') {
             Assert-Equal -Name 'Unconfirmed SQL remains Unknown' -Expected Unknown -Actual $result.sqlOutcome
             $events = @(Get-Content -LiteralPath $script:ProbeFixture.Plan.journalPath |
-                ForEach-Object { ConvertFrom-Json -InputObject $_ })
+                    ForEach-Object { ConvertFrom-Json -InputObject $_ })
             Assert-Equal -Name 'Unknown SQL state is durable' -Expected Unknown -Actual $events[-1].sqlOutcome
         }
         if ($behavior -ceq 'ReceiptPartial') {

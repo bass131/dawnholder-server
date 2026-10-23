@@ -1289,7 +1289,7 @@ Assert-True -Name 'IND-FLOW-13 migrations 001..005 and release 5 commit without 
     -Condition (
     (@($script:Sql.Versions | ForEach-Object Name) -join '|') -ceq
     ('001_initial.sql|002_persistence_metadata.sql|003_module_metadata.sql|' +
-        '004_module_release.sql|005_character_catalog.sql') -and
+    '004_module_release.sql|005_character_catalog.sql') -and
     $moduleInvoke.Count -eq 1 -and $moduleInvoke[0].Transaction -and $moduleInvoke[0].SameConnection -and
     $moduleInvoke[0].AllowFirstInstall -and -not $moduleInvoke[0].ReleaseAlreadyApplied -and
     $moduleInvoke[0].ReleaseVersion -eq 5 -and $null -eq $script:Sql.Binding -and

@@ -414,9 +414,9 @@ function Test-ModuleHashConsumers {
         $historicalLiteral = [regex]::Match($hashSource, "\`$historicalManifest = '(?<Value>[0-9A-F]{64})'")
         if (-not $historicalLiteral.Success) { throw 'Historical release pin is missing.' }
         $targets.Add((New-ModuleHashTarget -File 'ModuleHash.Common.ps1' -Text $hashSource `
-            -Offset $historicalLiteral.Groups['Value'].Index -Kind 'HistoricalManifestPin' `
-            -Source 'Immutable release 4 bundle identity' -Observed $historicalLiteral.Groups['Value'].Value `
-            -Expected $historicalManifest))
+                    -Offset $historicalLiteral.Groups['Value'].Index -Kind 'HistoricalManifestPin' `
+                    -Source 'Immutable release 4 bundle identity' -Observed $historicalLiteral.Groups['Value'].Value `
+                    -Expected $historicalManifest))
         $activeFile = 'Module.Common.ps1'
         $moduleCommon = [IO.File]::ReadAllText((Join-Path $DatabaseRoot $activeFile))
         $baselinePattern = "\`$index -eq 0 -and \`$hash -cne '(?<Value>[0-9A-F]{64})'"

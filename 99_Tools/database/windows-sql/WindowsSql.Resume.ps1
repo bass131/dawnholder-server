@@ -258,9 +258,9 @@ function Assert-WindowsSqlResumeProvenance {
         $previous = Read-WindowsSqlPreviousAttempt -Adapter $Adapter
         foreach ($value in @($State, $attempt)) {
             if ((Get-WindowsSqlField -Object $value -Name 'PreviousBindingHash') -cne
-                    $context.Binding.PreviousBinding.Sha256 -or
+                $context.Binding.PreviousBinding.Sha256 -or
                 (Get-WindowsSqlField -Object $value -Name 'PreviousAttemptHash') -cne
-                    $context.Binding.PreviousAttempt.Sha256 -or
+                $context.Binding.PreviousAttempt.Sha256 -or
                 (Get-WindowsSqlField -Object $value -Name 'PreviousAttemptId') -cne $previous.AttemptId) {
                 throw 'WINDOWS_SQL_RESUME_PROVENANCE_CHANGED'
             }
@@ -516,7 +516,7 @@ function Invoke-WindowsSqlResume {
         else {
             Assert-WindowsSqlResumeProvenance -Adapter $adapter -State $journal.Value
             $completed = 'SetMixedAuthentication|SetTcpPort|SetServerCertificate|RestartService|' +
-                'CreateDatabase|ApplyMigrations|CreateRuntimeLogin'
+            'CreateDatabase|ApplyMigrations|CreateRuntimeLogin'
             if ($journal.Value.Status -cne 'Applied' -or
                 ($journal.Value.CompletedChanges -join '|') -cne $completed -or
                 $null -ne $journal.Value.PendingOperation -or $null -ne $journal.Value.FailedOperation -or

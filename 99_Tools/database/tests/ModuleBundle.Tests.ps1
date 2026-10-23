@@ -368,7 +368,7 @@ Assert-NoThrow -Name 'permissions comment change keeps the grant set (control)' 
 # ---- Migration sources.
 $sources = @(Get-DatabaseMigrationSources -Phase Complete -DatabaseRoot $script:ToolRoot)
 $expectedNames = '001_initial.sql,002_persistence_metadata.sql,003_module_metadata.sql,004_module_release.sql,' +
-    '005_character_catalog.sql'
+'005_character_catalog.sql'
 Assert-Equal -Name 'migration sources -> exact ordered names' -Expected $expectedNames -Actual (($sources | ForEach-Object Name) -join ',')
 $recomputed = @($sources | ForEach-Object { (Get-ExpectedModuleValues -Path (Join-Path $script:ToolRoot ('migrations/' + $_.Name))).SourceChecksum })
 Assert-Equal -Name 'migration checksums re-derived from source' -Expected ($recomputed -join ',') -Actual (($sources | ForEach-Object Checksum) -join ',')
