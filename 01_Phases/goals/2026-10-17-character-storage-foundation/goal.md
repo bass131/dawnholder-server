@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: 독립44는 판정 보류·새 결함0으로 정산·종료했다.** 강 필수 독립보완0·현재C#/SQL미실행·기존container82 d가 사유다. 8PS 각1회는 common exit1/나머지7개 exit0이며 자원반환을 메인이 접수했다. 리드는 고정127/허용시험17/과거근거22 불일치0·실패82행 이름/상세일치를 대조했다. 원문 prereview-ready-44/reviewer/report.md·settlement.md·lead-final-audit.json. 다음은 Main의 O1 처리와 최소 독립보완/실행 범위 판정이며 새worker·추가실행·PR0이다.
+**상태: 독립44 보류 정산 뒤 Main의 범위 판정을 적용했다.** O1은 후속·container82는d/별도안정화이며 다음 신규Opus의 기존C#2파일 독립보완과현재B1/B3는필수다. 완료조건1~8의독립/자체/미실행표와추가실행안은 prereview-followup-45/completion-coverage-and-execution-options.md 한곳에준비했다. 조건3writer·5전체재기동·8ResumeVerify/Cleanup의수용은사용자답대기,현재새worker/실행/정식창요청/PR0이다. 이전44원문/정산은보존한다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -380,11 +380,16 @@ World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Co
 
 ## 재개 지점
 
-**현재 첫 일 — 독립44 정산 뒤 Main의 최소 다음 범위 판정을 처리한다.** 판정 원문 전문·context·실행/분류·고정입력/과거근거를 대조했다. Task task_c96201c9417b / Dispatch ctx_7c6aa247d08e는 failed settled, release는 external_terminal retained였으나 동일incarnation·fresh최초Task·idle를 확인하고 정확pane만 닫았다. 새 결함0이며35 #1/#2/#3 각1회는 유지한다. 근거 `prereview-ready-44/settlement.md`·`lead-final-audit.json`이다.
+**현재 첫 일 — 사용자 완료조건 수용 답과 Main의 합친 최종범위를 처리한다.** Main msg_3b79283037d2(03:41:37Z) 원문을 `prereview-followup-45/main-scope-authority.md`에보존했다. 조건1~8의독립역사근거/자체만/미실행과명령개요·추정시간·자원·DB쓰기·새DB·창수는 `completion-coverage-and-execution-options.md` 한파일이다. 기존C#두시험의독립보완/현재B1B3계약은같은폴더 `contract-draft-v1.md`로준비했으나미발행이다. 새worker/실행0,사용자답뒤선택경로를합친정식창요청1회만한다.
 
-Main 결정 초안은 `prereview-ready-44/decision-request-44.md`다. O1(선택 Close 예산 뒤 영구 추적)은 후속 권고, 기존C#시험의 독립보완과 현재B1/B3 실행 범위를 제안하며 역사35/43 실측 수용 범위는 추정하지 않는다. 기존container82는 d/PR귀속아님을 보존하고 별도안정화 권고다. 강 필수/완료조건을 낮추거나 새DB·실행창 권한을 추정하지 않는다. 답변 전 새worker/제품수정/WSL/SQL/상시poll·wait0이다.
+B1/B3만은10~15분1창추정,writer독립재현은새전용DB/DDL·owned두행삭제포함25~35분1창,전체서버는기존봇관측범위부족을먼저해소해야하며30~45분1창잠정이다. Resume8256의기존plan은만료검사에서거부되고Cleanup은소유DB/login삭제·조건부설정복원/재시작경로다. 시연DB를보존할새유효ResumeApplied수명의구체준비가없으므로V/C의총시간·실제창수는미확정이다. 옛만료/plan을고치거나가짜journal로우회하지않는다. 표의시간/하한을실제완주확약으로쓰지않는다.
 
-운영 원문에는 timer8개 자기보고(285/170/290×5/280)와 리드가 직접 관측한 sleep/draft 범위를 구분했다. answered뒤pending·전달지연·lastEntry조정·TEMP공유편차와 영향완전배제불가를 보존한다. 기존helper28신호/초과10구간/max527초에는 공식질문대기1993초가 포함되므로 모두 활동위반으로 계산하지 않는다. 실제반환03:08:46Z/Main접수 뒤 추가실행0·실DB보존이며 PR/goal완료는 아직 아니다.
+44는failed정산/정확pane종료완료·새결함0이며35 #1/#2/#3각1회유지다. timer8개 자기보고/직접관측구분·pending/draft·lastEntry·TEMP영향완전배제불가·liveness28신호/초과10구간/max527초/질문대기1993초는원문에보존했다. 이전수행원문/정산은 `prereview-ready-44/settlement.md`·`lead-final-audit.json`이다.
+
+### 후속 후보 — Main 44 범위 판정
+
+- O1 - 선택 Close 예산 만료 뒤 항목 추적: 느린 DB 중 끊김이 반복되면 재시작 전까지 선택 가용성이 떨어질 수 있다(정적 추론). 이번PR제품수정은하지않고다음판정원문에도한계로남긴다.
+- 기존 container82 - LINUX_SQL 안전문구/AST 공백은d·PR귀속아님·통과아님을유지한다. base common실행/Linux도구수리루프는이goal에서열지않는다. 정본후보등록은소유절차로전달하며Core가BACKLOG정본을임의수정하지않는다.
 
 ### 이전 재개 기록
 
