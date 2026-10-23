@@ -18,13 +18,14 @@ namespace Dawnholder.Client.Tests.PlayMode
     // (01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md 「결함 PR의 요구」). The HUD gold font's digits have
     // different advances ('4' widest, '1' narrowest in Pretendard SDF Proper), so 444,444 is wider than 999,999 and
     // the auto size depends on which digits are drawn, not only on how many. Each amount must still be one line,
-    // every drawn glyph inside Gold_bar, the panel's digits, size 18 up to six digits and 12 or more from seven.
-    // The amounts are picked from the font asset; the expected values are only R10's numbers above.
+    // every drawn glyph inside Gold_bar and the panel's digits. Demo HUD reconstruction A supersedes only the
+    // old 18/12 typography: reference size 32 for short amounts and at least 32 for long amounts (actual minimum
+    // screen em 21.333 pixels). Amounts still come from the font asset; no product formatting calculation is copied.
     public sealed class HudGoldFitsGoldBarEdgeAmountsSceneTests
     {
-        const int LongestSizeEighteenDigits = 6;
-        const float SizeUpToSixDigits = 18f;
-        const float SmallestLongSize = 12f;
+        const int LongestShortAmountDigits = 6;
+        const float SizeUpToSixDigits = 32f;
+        const float SmallestLongSize = 32f;
         // Float noise only: world units for the ink check, points for the size check.
         const float InkTolerance = 0.01f;
         const float SizeTolerance = 0.01f;
@@ -88,13 +89,13 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.IsEmpty(Amounts(layouts, layout => layout.Lines != 1), "R10 the HUD gold is one line\n" + table);
             Assert.IsEmpty(Amounts(layouts, layout => layout.Glyphs == 0 || layout.GlyphsOutsideBar != 0),
                 "R10 every drawn glyph lies inside Gold_bar (no drawn glyph counts as a failure)\n" + table);
-            Assert.IsEmpty(Amounts(layouts, layout => layout.ServerDigits.Length <= LongestSizeEighteenDigits &&
+            Assert.IsEmpty(Amounts(layouts, layout => layout.ServerDigits.Length <= LongestShortAmountDigits &&
                 (Mathf.Abs(layout.MinSize - SizeUpToSixDigits) > SizeTolerance ||
                 Mathf.Abs(layout.MaxSize - SizeUpToSixDigits) > SizeTolerance)),
-                "R10 up to six digits every glyph is drawn at size 18\n" + table);
-            Assert.IsEmpty(Amounts(layouts, layout => layout.ServerDigits.Length > LongestSizeEighteenDigits &&
+                "R10 up to six digits every glyph is drawn at size 32\n" + table);
+            Assert.IsEmpty(Amounts(layouts, layout => layout.ServerDigits.Length > LongestShortAmountDigits &&
                 layout.MinSize < SmallestLongSize - SizeTolerance),
-                "R10 from seven digits every glyph is drawn at size 12 or more\n" + table);
+                "R10 from seven digits every glyph is drawn at size 32 or more\n" + table);
         }
 
         // The label as drawn now, read the same way as HudGoldFitsGoldBarSceneTests.Measure: ForceMeshUpdate lays it out

@@ -166,8 +166,8 @@ namespace Dawnholder.Client.Tests
                     System.Reflection.BindingFlags.NonPublic).Invoke(hud, null);
                 if (!hpBeforeStart)
                 {
-                    Assert.AreEqual($"HP {initialHp} / {initialHp}", label.text);
-                    Assert.AreEqual(1f, slider.value);
+                    Assert.AreEqual("HP - / -", label.text, "confirmed class alone does not confirm HP");
+                    Assert.AreEqual(0f, slider.value);
                     hud.ApplyServerHP(23, 203);
                 }
                 Assert.AreEqual("HP 23 / 203", label.text);
@@ -209,8 +209,8 @@ namespace Dawnholder.Client.Tests
                 Assert.IsNull(ClassLoadout.ServerClass);
                 if (!hpBeforeStart)
                 {
-                    Assert.AreEqual("awaiting HP", label.text, "menu Mage must not manufacture an HP placeholder");
-                    Assert.AreEqual(0.25f, slider.value);
+                    Assert.AreEqual("HP - / -", label.text, "menu Mage must not manufacture confirmed HP");
+                    Assert.AreEqual(0f, slider.value);
                     hud.ApplyServerHP(23, 203);
                 }
                 Assert.AreEqual("HP 23 / 203", label.text);

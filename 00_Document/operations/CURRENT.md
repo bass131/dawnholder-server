@@ -10,7 +10,7 @@
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 
-- Art: [10-28 시연 아트 — UI 창·성장 효과·발판 교체](../../01_Phases/goals/2026-10-13-demo-video-art/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active` · `feat/demo-video-art-growth-effects-20261021`
+- Art: [10-28 시연 아트 — UI 창·성장 효과·발판 교체](../../01_Phases/goals/2026-10-13-demo-video-art/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active` · `feat/demo-video-art-hud-reconstruction-20261022`
 
 - Rules: [Art·Level 정식 파트 운영 규칙](../../01_Phases/goals/2026-10-22-art-level-formal-parts/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/art-level-formal-parts-closeout-20261022` · PR257 병합·Gardener 완료, 종료 기록 실사 중 · [공용 실행 잠금은 10-28 뒤까지 보류·기존 NOT PASS 유지](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#재개-지점) · [기존 PR2 가드는 동결까지 보류](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점)
 
