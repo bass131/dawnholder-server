@@ -62,7 +62,8 @@ $other = $null
 $transaction = $null
 $accountId = [Guid]::NewGuid()
 $characterId = [Guid]::NewGuid()
-$argsSql = @{account = $accountId; character = $characterId; missing = [Guid]::NewGuid() }
+$argsSql = @{account = $accountId; character = $characterId; missing = [Guid]::NewGuid();
+    accountName = $accountId.ToString('N').Substring(0, 16); characterName = $characterId.ToString('N').Substring(0, 12) }
 try {
     Assert-DatabaseOwner $connection
     [void](Invoke-DbNonQuery $connection (Get-MigrationText (Join-Path $PSScriptRoot 'verify-schema.sql')))
@@ -72,8 +73,9 @@ try {
     Invoke-Migrations -Connection $connection -Transaction $transaction -Phase Complete -Contract $Contract
     [void](Invoke-DbNonQuery $connection 'SET XACT_ABORT OFF;' @{} $transaction)
     [void](Invoke-DbNonQuery $connection @'
-INSERT dh.Account(AccountId) VALUES(@account);
-INSERT dh.Character(CharacterId,AccountId,Class) VALUES(@character,@account,0);
+INSERT dh.Account(AccountId,NormalizedName) VALUES(@account,@accountName);
+INSERT dh.Character(CharacterId,AccountId,Slot,Name,NameKey,Class)
+VALUES(@character,@account,1,@characterName,UPPER(@characterName),0);
 INSERT dh.CharacterProgress(CharacterId,MapId,PositionX,PositionY,Hp,MaxHp)
 VALUES(@character,1,12.5,-2.25,140,150);
 '@ $argsSql $transaction)
@@ -106,11 +108,11 @@ AND p.SavedUtc IS NOT NULL AND c.CreatedUtc IS NOT NULL AND a.CreatedUtc IS NOT 
     $transaction.Rollback('UnknownVersionGuard')
     [void](Invoke-DbNonQuery $connection 'SET XACT_ABORT OFF;' @{} $transaction)
 
-    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.Account(AccountId) VALUES(@account)' $argsSql $transaction } @(2627, 2601) 'account PK duplicate rejected'
-    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.Character(CharacterId,AccountId,Class) VALUES(@character,@account,1)' $argsSql $transaction } @(2627, 2601) 'character PK duplicate rejected'
+    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.Account(AccountId,NormalizedName) VALUES(@account,@accountName)' $argsSql $transaction } @(2627, 2601) 'account PK duplicate rejected'
+    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.Character(CharacterId,AccountId,Slot,Name,NameKey,Class) VALUES(@character,@account,1,@characterName,UPPER(@characterName),1)' $argsSql $transaction } @(2627, 2601) 'character PK duplicate rejected'
     Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.CharacterProgress(CharacterId,MapId,PositionX,PositionY,Hp,MaxHp) VALUES(@character,0,0,0,80,80)' $argsSql $transaction } @(2627, 2601) 'progress PK duplicate rejected'
     Assert-SqlError { Invoke-DbNonQuery $connection "INSERT dh.SchemaVersion(Version,Name,Checksum) SELECT 999999,Name,Checksum FROM dh.SchemaVersion WHERE Version=1" @{} $transaction } @(2627, 2601) 'migration name unique constraint'
-    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.Character(CharacterId,AccountId,Class) VALUES(@missing,@missing,0)' $argsSql $transaction } @(547) 'orphan character rejected'
+    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.Character(CharacterId,AccountId,Slot,Name,NameKey,Class) VALUES(@missing,@missing,2,N''OrphanName'',N''ORPHANNAME'',0)' $argsSql $transaction } @(547) 'orphan character rejected'
     Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.CharacterProgress(CharacterId,MapId,PositionX,PositionY,Hp,MaxHp) VALUES(@missing,0,0,0,80,80)' $argsSql $transaction } @(547) 'orphan progress rejected'
     Assert-SqlError { Invoke-DbNonQuery $connection 'DELETE dh.Account WHERE AccountId=@account' $argsSql $transaction } @(547) 'account deletion does not cascade'
     Assert-SqlError { Invoke-DbNonQuery $connection 'DELETE dh.Character WHERE CharacterId=@character' $argsSql $transaction } @(547) 'character deletion does not cascade'
@@ -141,7 +143,7 @@ AND p.SavedUtc IS NOT NULL AND c.CreatedUtc IS NOT NULL AND a.CreatedUtc IS NOT 
     Assert-Equal 1 (Invoke-DbScalar $connection 'DELETE dh.CharacterProgress WHERE CharacterId=@character; SELECT @@ROWCOUNT;' $argsSql $transaction) 'delete progress test row'
     Assert-Equal 1 (Invoke-DbScalar $connection 'DELETE dh.Character WHERE CharacterId=@character; SELECT @@ROWCOUNT;' $argsSql $transaction) 'delete character test row'
     Assert-Equal 1 (Invoke-DbScalar $connection 'DELETE dh.Account WHERE AccountId=@account; SELECT @@ROWCOUNT;' $argsSql $transaction) 'delete account test row'
-    [void](Invoke-DbNonQuery $connection 'INSERT dh.Account(AccountId) VALUES(@account)' $argsSql $transaction)
+    [void](Invoke-DbNonQuery $connection 'INSERT dh.Account(AccountId,NormalizedName) VALUES(@account,@accountName)' $argsSql $transaction)
     Assert-Equal 1 (Invoke-DbScalar $connection 'SELECT COUNT(*) FROM dh.Account WHERE AccountId=@account' $argsSql $transaction) 'rollback witness exists before rollback'
     $transaction.Rollback()
     $transaction.Dispose()

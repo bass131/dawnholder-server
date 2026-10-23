@@ -2,14 +2,10 @@ function Assert-WindowsSqlProfile {
     param($Adapter)
     $profile = ConvertFrom-WindowsSqlPlanBytes -Bytes (Read-WindowsSqlInputBytes -Plan $Adapter.Plan `
             -Relative $Adapter.Runtime.ProfilePath)
-    if (-not (Test-WindowsSqlShape -Object $profile -Fields @('persistedAccountName', 'database',
-                'serverEndpoint', 'slotId', 'accountId', 'characterId')) -or
+    if (-not (Test-WindowsSqlShape -Object $profile -Fields @('profileVersion', 'database', 'serverEndpoint')) -or
         $profile.database -cne $Adapter.Plan.Database -or
         $profile.serverEndpoint -cne ('tcp:' + $Adapter.Runtime.TlsServerName + ',' + $Adapter.Plan.Port) -or
-        $profile.slotId -ne 1 -or $profile.accountId -cne $Adapter.Runtime.AccountId -or
-        $profile.characterId -cne $Adapter.Runtime.CharacterId -or
-        $profile.persistedAccountName -isnot [string] -or
-        $profile.persistedAccountName -cnotmatch '^[a-z0-9_]{3,16}$') {
+        -not (Test-WindowsSqlInteger -Value $profile.profileVersion) -or $profile.profileVersion -ne 2) {
         throw 'WINDOWS_SQL_PROFILE_CHANGED'
     }
 }

@@ -34,6 +34,7 @@ public sealed class SqlCharacterRepository : ICharacterRepository
             command => SqlRuntimeParameters.Operation(command, operation, resolving: false),
             row =>
             {
+                if (row.Status == "OperationPayloadMismatch") return AcquireAndLoadResult.Conflict();
                 row.ValidateOperation(operation, resolving: false);
                 PersistenceObservation current = row.Current();
                 return row.Outcome == 1
@@ -111,7 +112,8 @@ public sealed class SqlCharacterRepository : ICharacterRepository
         Action<SqlCommand> parameters, Func<SqlPersistenceResult, T> map, Func<T> notDispatched, Func<T> unknown)
     {
         ArgumentNullException.ThrowIfNull(deadline);
-        if (!identity.Equals(_options.Identity) || deadline.IsExpired || cancellationToken.IsCancellationRequested)
+        if ((_options.BoundIdentity is not null && !identity.Equals(_options.BoundIdentity)) ||
+            deadline.IsExpired || cancellationToken.IsCancellationRequested)
             return notDispatched();
         bool dispatched = false;
         try
@@ -136,7 +138,7 @@ public sealed class SqlCharacterRepository : ICharacterRepository
             // From this boundary even a synchronous provider error/cancel cannot prove that SQL did not run.
             dispatched = true;
             await using SqlDataReader reader = await command.ExecuteReaderAsync(cancellation.Token).ConfigureAwait(false);
-            SqlPersistenceResult row = await SqlPersistenceResult.ReadAsync(reader, _options, cancellation.Token)
+            SqlPersistenceResult row = await SqlPersistenceResult.ReadAsync(reader, _options, cancellation.Token, identity)
                 .ConfigureAwait(false);
             return map(row);
         }

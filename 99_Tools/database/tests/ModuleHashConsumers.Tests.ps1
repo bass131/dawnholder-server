@@ -11,19 +11,24 @@ $null = Initialize-TestSuite -WorkRoot $WorkRoot -Suite 'module-hash-consumers'
 
 $manifestFile = 'modules/manifest.json'
 $catalogFile = 'verify-schema.sql'
-$declarationFile = 'migrations/004_module_release.sql'
+$declarationFile = 'migrations/005_character_catalog.sql'
+$historicalDeclarationFile = 'migrations/004_module_release.sql'
+$historicalPinFile = 'ModuleHash.Common.ps1'
 $guardFile = 'Module.Common.ps1'
-$consumerFiles = @($manifestFile, $catalogFile, $declarationFile, $guardFile)
+$consumerFiles = @($manifestFile, $catalogFile, $declarationFile, $historicalDeclarationFile, $historicalPinFile, $guardFile)
+# Approved release 5: 20 objects + permissions, 5 migrations, current/historical declarations and the v4 pin.
+$historicalIdentity = 'C529392B46BB0F02D7A863201D74B9CC60187842365B1DBDCF8953CEE714A731'
 $expectedKinds = [ordered]@{
-    ManifestSourceChecksum = 19
-    ManifestDefinitionChecksum = 18
-    ManifestDefinitionBytes = 18
-    CatalogSourceChecksum = 18
-    CatalogDefinitionChecksum = 18
-    CatalogDefinitionBytes = 18
-    CatalogMigrationChecksum = 4
+    ManifestSourceChecksum = 21
+    ManifestDefinitionChecksum = 20
+    ManifestDefinitionBytes = 20
+    CatalogSourceChecksum = 20
+    CatalogDefinitionChecksum = 20
+    CatalogDefinitionBytes = 20
+    CatalogMigrationChecksum = 5
     CatalogManifestIdentity = 1
-    ReleaseManifestIdentity = 1
+    ReleaseManifestIdentity = 2
+    HistoricalManifestPin = 1
     ImmutableMigrationChecksum = 1
 }
 $identitySource = 'modules/manifest.json (raw UTF-8 bytes)'
@@ -59,7 +64,7 @@ function New-ConsumerRow {
 
 function Get-ConsumerTable {
     param([Parameter(Mandatory)][string]$Root)
-    # The verifier's own enumeration of every hash-like literal in the four consumer files and its reviewed value.
+    # Independent enumeration includes the unchanged v4 declaration/pin and the current v5 declaration.
     # Any 64-hex token or entry hash field that is not a documented consumer is kept as an UNREGISTERED row.
     $rows = New-Object 'Collections.Generic.List[object]'
     $manifestBytes = [IO.File]::ReadAllBytes((Join-Path $Root $manifestFile))
@@ -187,6 +192,18 @@ function Get-ConsumerTable {
             Expected = $identity
         },
         @{
+            File = $historicalDeclarationFile
+            Kind = 'ReleaseManifestIdentity'
+            Source = $identitySource
+            Expected = $historicalIdentity
+        },
+        @{
+            File = $historicalPinFile
+            Kind = 'HistoricalManifestPin'
+            Source = 'Immutable release 4 bundle identity'
+            Expected = $historicalIdentity
+        },
+        @{
             File = $guardFile
             Kind = 'ImmutableMigrationChecksum'
             Source = $immutableSource
@@ -293,10 +310,10 @@ function Test-SingleDriftCase {
     $drift = @(Get-DriftIssue -Result $result)
     $issue = if ($drift.Count -eq 1) { $drift[0] } else { $null }
     $detail = Get-IssueText -Result $result
-    Assert-True -Name "$Name -> violation with one hash drift of 116 complete targets" -Condition (
+    Assert-True -Name "$Name -> violation with one hash drift of 131 complete targets" -Condition (
         $null -ne $result -and $result.Status -ceq 'violation' -and
         $result.HashViolationCount -eq 1 -and $result.ViolationCount -eq 1 -and
-        $result.HashTargetCount -eq 116 -and $result.HashInspectionComplete -eq $true) -Detail $detail
+        $result.HashTargetCount -eq 131 -and $result.HashInspectionComplete -eq $true) -Detail $detail
     Assert-True -Name "$Name -> drift names the consumer file, line, kind and source" -Condition (
         $null -ne $issue -and $issue.File -ceq $Consumer.File -and $issue.Line -eq $Consumer.Line -and
         $issue.Kind -ceq $Consumer.Kind -and $issue.Source -ceq $Consumer.Source) -Detail $detail
@@ -364,9 +381,9 @@ function Invoke-ChildScript {
 $realArguments = @('-Json', '-Strict')
 $real = Invoke-PowerShellFile -File (Join-Path $script:ToolRoot 'Test-ModuleStructure.ps1') -Arguments $realArguments
 $realResult = if ($real.StdOut.Trim().StartsWith('{')) { $real.StdOut | ConvertFrom-Json } else { $null }
-Assert-True -Name 'repository tree -> compliant, 116 complete targets, no drift, Strict exit0' -Condition (
+Assert-True -Name 'repository tree -> compliant, 131 complete targets, no drift, Strict exit0' -Condition (
     $real.ExitCode -eq 0 -and $null -ne $realResult -and $realResult.Status -ceq 'compliant' -and
-    $realResult.HashTargetCount -eq 116 -and $realResult.HashInspectionComplete -eq $true -and
+    $realResult.HashTargetCount -eq 131 -and $realResult.HashInspectionComplete -eq $true -and
     $realResult.HashViolationCount -eq 0 -and $realResult.ViolationCount -eq 0) `
     -Detail ('exit=' + $real.ExitCode + '; ' + (Get-IssueText -Result $realResult))
 
@@ -379,9 +396,9 @@ $reviewed = Invoke-StructureCheck -Root $reviewedRoot
 $reviewedStrict = Invoke-StructureCheck -Root $reviewedRoot -Strict
 $reviewedResult = $reviewed.Result
 $targets = @(if ($reviewedResult) { $reviewedResult.HashTargets })
-Assert-True -Name 'reviewed copy -> compliant with 116 complete targets and zero drift' -Condition (
+Assert-True -Name 'reviewed copy -> compliant with 131 complete targets and zero drift' -Condition (
     $null -ne $reviewedResult -and $reviewedResult.Status -ceq 'compliant' -and
-    $reviewedResult.HashTargetCount -eq 116 -and $targets.Count -eq 116 -and
+    $reviewedResult.HashTargetCount -eq 131 -and $targets.Count -eq 131 -and
     $reviewedResult.HashInspectionComplete -eq $true -and $reviewedResult.HashViolationCount -eq 0) `
     -Detail (Get-IssueText -Result $reviewedResult)
 Assert-Equal -Name 'reviewed copy -> warning exit' -Expected 0 -Actual $reviewed.ExitCode
@@ -411,7 +428,7 @@ $targetKeys = @($targets | ForEach-Object {
 $missing = @($tableKeys | Where-Object { $_ -cnotin $targetKeys })
 $extra = @($targetKeys | Where-Object { $_ -cnotin $tableKeys })
 Assert-True -Name 'CLI targets equal the independent table (file, line, kind, source, observed, expected)' `
-    -Condition ($tableKeys.Count -eq 116 -and $missing.Count -eq 0 -and $extra.Count -eq 0) `
+    -Condition ($tableKeys.Count -eq 131 -and $missing.Count -eq 0 -and $extra.Count -eq 0) `
     -Detail ('table=' + $tableKeys.Count + '; missing=' + ($missing -join ' ; ') + '; extra=' + ($extra -join ' ; '))
 $misplaced = @($targets | Where-Object {
         $line = (Read-FixtureText -Path (Join-Path $reviewedRoot $_.File)).Split("`n")[$_.Line - 1]
@@ -445,7 +462,7 @@ foreach ($case in $driftCases) {
         $stimulus = Get-OtherHex -Value $consumer.Value
     }
     Set-ConsumerLiteral -Root $root -Consumer $consumer -Value $stimulus
-    # Keep the stimulus and align only the consumers that hash the edited file (manifest identity or 004).
+    # Keep the stimulus and align only dependent consumers (manifest identity or current 005 declaration).
     if ($case.Chain -ceq 'manifest') {
         Sync-FixtureHashConsumers -Root $root -PreserveManifestEntries
     }
@@ -471,7 +488,7 @@ $text = Invoke-StructureCheck -Root $root -Text
 $textOutput = ($text.StdOut + $text.StdErr) -replace '\s+', ''
 Assert-True -Name 'text mode drift -> status, counts and the file:line replacement, exit1' -Condition (
     $text.ExitCode -eq 1 -and $textOutput.Contains('Modulestructure:violation.') -and
-    $textOutput.Contains('Hashconsumers:116;complete:True;drift:1.') -and
+    $textOutput.Contains('Hashconsumers:131;complete:True;drift:1.') -and
     $textOutput.Contains(('verify-schema.sql:' + $release.Line + ':')) -and
     $textOutput.Contains(("Fix:Replace'" + $staleText + "'with'" + $release.Value + "'"))) `
     -Detail ('exit=' + $text.ExitCode + '; ' + ($text.StdOut + $text.StdErr).Trim())
@@ -529,17 +546,18 @@ Test-SingleDriftCase @lastStage
 
 # ---- Inputs, registrations and literal formats that cannot be inspected (unavailable, exit2 in both modes).
 $absentCases = @(
-    @{ Name = 'catalog verify-schema.sql absent'; File = $catalogFile; Count = 55 },
-    @{ Name = 'Module.Common.ps1 absent'; File = $guardFile; Count = 115 },
+    @{ Name = 'catalog verify-schema.sql absent'; File = $catalogFile; Count = 61 },
+    @{ Name = 'Module.Common.ps1 absent'; File = $guardFile; Count = 130 },
     @{ Name = 'manifest absent'; File = $manifestFile; Count = 0 },
-    @{ Name = '004 declaration absent'; File = $declarationFile; Count = 112 }
+    @{ Name = '005 declaration absent'; File = $declarationFile; Count = 125 },
+    @{ Name = '004 historical declaration absent'; File = $historicalDeclarationFile; Count = 124 }
 )
 foreach ($case in $absentCases) {
     $root = New-DatabaseFixture -Name ('absent-' + ($case.File -replace '\W+', '-'))
     Remove-Item -LiteralPath (Join-Path $root $case.File)
     $absentCause = [regex]::Escape(($case.File -split '/')[-1])
     Test-HashUnavailableCase -Name $case.Name -Root $root -MessagePattern $absentCause -File $case.File
-    # Targets observed before the error are reported; an incomplete count is never the registered 116.
+    # Partial counts bind the observed stages: manifest 61, catalog 60, migrations 5, identities 3, pin/guard 2.
     Assert-Equal -Name ($case.Name + ' -> targets observed before the error') -Expected $case.Count `
         -Actual $(if ($script:LastHashResult) { $script:LastHashResult.HashTargetCount })
 }
@@ -555,8 +573,8 @@ foreach ($migration in @(
     $absentCause = [regex]::Escape(($migration -split '/')[-1])
     Test-HashUnavailableCase -Name $absentName -Root $root -MessagePattern $absentCause -File $migration
     $partial = $script:LastHashResult
-    Assert-True -Name ($absentName + ' -> partial target list below the registered 116') -Condition (
-        $null -ne $partial -and $partial.HashTargetCount -lt 116 -and
+    Assert-True -Name ($absentName + ' -> partial target list below the registered 131') -Condition (
+        $null -ne $partial -and $partial.HashTargetCount -lt 131 -and
         $partial.HashTargetCount -eq @($partial.HashTargets).Count) `
         -Detail $(if ($partial) { 'targets=' + $partial.HashTargetCount })
 }
@@ -713,7 +731,7 @@ foreach ($case in $permissionsCases) {
 
 $catalogRow = "    ('SerializeProgress', 'P', "
 $rowPattern = "(?m)^    \('SerializeProgress', 'P', \d+, 0x[0-9A-F]{64},\r?\n\s+'[0-9A-F]{64}'\),\r?\n"
-$rowCount = '^Expected exactly 18 known @modules rows'
+$rowCount = '^Expected exactly 20 known @modules rows'
 $catalogCases = @(
     @{ Name = 'catalog module row missing'; Cause = $rowCount; Edit = 'remove' },
     @{ Name = 'catalog module row duplicated'; Cause = $rowCount; Edit = 'duplicate' },
@@ -779,9 +797,9 @@ Add-FixtureText -Path (Join-Path $root $catalogFile) -Text $extraCheck
 Test-HashUnavailableCase -Name 'catalog release identity check duplicated' -Root $root `
     -MessagePattern ($identityCount + 'verify-schema\.sql\.$') -File $catalogFile
 $root = New-DatabaseFixture -Name 'declaration-literal-absent'
-Edit-FixtureText -Path (Join-Path $root $declarationFile) -Find 'VALUES(4, ' -Replace 'VALUES(5, '
-Test-HashUnavailableCase -Name '004 declaration literal absent' -Root $root `
-    -MessagePattern ($identityCount + 'migrations/004_module_release\.sql\.$') -File $declarationFile
+Edit-FixtureText -Path (Join-Path $root $declarationFile) -Find 'VALUES(5, ' -Replace 'VALUES(6, '
+Test-HashUnavailableCase -Name '005 declaration literal absent' -Root $root `
+    -MessagePattern ($identityCount + 'migrations/005_character_catalog\.sql\.$') -File $declarationFile
 
 $guardCause = '^Expected one immutable 001 source checksum guard\.$'
 $guardEdit = @{
@@ -807,8 +825,8 @@ $mixed = $script:LastHashResult
 $observedDrift = @(if ($mixed) {
         $mixed.HashTargets | Where-Object { $_.Kind -ceq 'CatalogManifestIdentity' -and $_.IsDrift }
     })
-Assert-True -Name 'drift plus missing 001 guard -> partial targets keep the observed drift, count below 116' `
-    -Condition ($null -ne $mixed -and $mixed.HashTargetCount -eq 115 -and $observedDrift.Count -eq 1) `
+Assert-True -Name 'drift plus missing 001 guard -> partial targets keep the observed drift, count below 131' `
+    -Condition ($null -ne $mixed -and $mixed.HashTargetCount -eq 130 -and $observedDrift.Count -eq 1) `
     -Detail $(if ($mixed) { 'targets=' + $mixed.HashTargetCount })
 
 # ---- Structure and hash results stay distinguishable.
@@ -822,7 +840,7 @@ $structureResult = $structure.Result
 Assert-True -Name 'structure-only violation -> complete hash inspection with zero drift' -Condition (
     $null -ne $structureResult -and $structureResult.Status -ceq 'violation' -and
     $structureResult.ViolationCount -eq 1 -and $structureResult.HashViolationCount -eq 0 -and
-    $structureResult.HashTargetCount -eq 116 -and $structureResult.HashInspectionComplete -eq $true) `
+    $structureResult.HashTargetCount -eq 131 -and $structureResult.HashInspectionComplete -eq $true) `
     -Detail (Get-IssueText -Result $structureResult)
 Assert-Equal -Name 'structure-only violation -> warning pilot exit' -Expected 0 -Actual $structure.ExitCode
 Assert-Equal -Name 'structure-only violation -> Strict exit' -Expected 1 -Actual $structureStrict.ExitCode
@@ -980,7 +998,7 @@ $stubbed = Invoke-ChildScript -Name 'hash-without-bundle-reader' -Lines @(
 )
 Assert-True -Name 'hash inspection completes with the bundle reader, structure CLI and SQL entry points stubbed' `
     -Condition ($stubbed.ExitCode -eq 0 -and $null -ne $stubbed.Result -and $stubbed.Result.Complete -eq $true -and
-    $stubbed.Result.Targets -eq 116 -and $stubbed.Result.Issues -eq 0) -Detail $stubbed.Output
+    $stubbed.Result.Targets -eq 131 -and $stubbed.Result.Issues -eq 0) -Detail $stubbed.Output
 
 # Unregistered 64-hex literals (N-14), including the two former scope observations of this suite, are asserted in
 # ModuleHashLiterals.Tests.ps1 with the same stimuli.

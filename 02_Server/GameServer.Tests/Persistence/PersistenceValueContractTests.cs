@@ -11,23 +11,34 @@ namespace Dawnholder.Server.GameServer.Tests.Persistence;
 /// </summary>
 public sealed class PersistenceValueContractTests
 {
-    [Fact]
-    public void Identity_KeepsFixedSlotAndBothGuids_WithValueEquality()
+    [Theory]
+    [InlineData((byte)1)]
+    [InlineData((byte)2)]
+    [InlineData((byte)3)]
+    public void Identity_KeepsEachAccountSlotAndBothGuids_WithValueEquality(byte slotId)
     {
-        PersistenceIdentity identity = new(1, AccountId, CharacterId);
+        PersistenceIdentity identity = new(slotId, AccountId, CharacterId);
 
-        Assert.Equal((byte)1, identity.SlotId);
+        Assert.Equal(slotId, identity.SlotId);
         Assert.Equal(AccountId, identity.AccountId);
         Assert.Equal(CharacterId, identity.CharacterId);
-        Assert.Equal(new PersistenceIdentity(1, AccountId, CharacterId), identity);
-        Assert.NotEqual(new PersistenceIdentity(1, AccountId, OtherOwnerId), identity);
+        Assert.Equal(new PersistenceIdentity(slotId, AccountId, CharacterId), identity);
+        Assert.NotEqual(new PersistenceIdentity(slotId, AccountId, OtherOwnerId), identity);
+        Assert.NotEqual(new PersistenceIdentity(slotId, OtherOwnerId, CharacterId), identity);
+    }
+
+    [Fact]
+    public void Identity_DistinguishesSlotsWithinTheSameAccount()
+    {
+        Assert.NotEqual(new PersistenceIdentity(1, AccountId, CharacterId), new PersistenceIdentity(2, AccountId, CharacterId));
+        Assert.NotEqual(new PersistenceIdentity(2, AccountId, CharacterId), new PersistenceIdentity(3, AccountId, CharacterId));
     }
 
     [Theory]
     [InlineData((byte)0)]
-    [InlineData((byte)2)]
+    [InlineData((byte)4)]
     [InlineData((byte)255)]
-    public void Identity_RejectsAnySlotOtherThanOne(byte slotId)
+    public void Identity_RejectsSlotsOutsideTheThreeAccountSlots(byte slotId)
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => new PersistenceIdentity(slotId, AccountId, CharacterId));
     }

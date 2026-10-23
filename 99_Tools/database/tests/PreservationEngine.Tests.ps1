@@ -84,8 +84,18 @@ Assert-Throws -Action { Assert-PreservationIds -Ids $ids -Contract $binding } -P
 
 $outputPath = Join-Path $script:SuiteRoot 'output.json'
 Write-NewEngineJson -Path $outputPath -Value @{ Fixed = 'first' }
-Assert-Throws -Action { Write-NewEngineJson -Path $outputPath -Value @{ Fixed = 'second' } } -Pattern 'exist' `
-    -Name 'CreateNew refuses an existing output at write time'
+# Native file-exists text is localized. Keep the atomic CreateNew cause and the original bytes as the contract.
+$createFailure = $null
+try { Write-NewEngineJson -Path $outputPath -Value @{ Fixed = 'second' } } catch { $createFailure = $_.Exception }
+while ($null -ne $createFailure -and $createFailure -isnot [IO.IOException]) {
+    $createFailure = $createFailure.InnerException
+}
+Assert-True -Name 'CreateNew refuses an existing output at write time' -Condition (
+    $null -ne $createFailure -and ($createFailure.HResult -band 0xFFFF) -in @(80, 183)
+)
+Assert-Equal -Name 'CreateNew refusal preserves the first output' -Expected 'first' -Actual (
+    (Read-FixtureText -Path $outputPath | ConvertFrom-Json).Fixed
+)
 Assert-Throws -Action {
     Assert-EngineEvidencePath -Directory $script:SuiteRoot -Path $outputPath
 } -Pattern 'already exists' -Name 'existing output is refused before connecting'
@@ -287,14 +297,20 @@ function New-FixtureActual($Module) {
         ExpectedOwnerPrincipalId = 1
     }
 }
-if ($script:FixtureState.History.Count -eq 4) {
+if ($script:FixtureState.History.Count -eq 5) {
     $script:FixtureState.Recorded = @($script:FixtureBundle.Modules |
             Select-Object ObjectName, Kind, SourceChecksum, DefinitionBytes, DefinitionChecksum)
     $script:FixtureState.Actual = @($script:FixtureBundle.Modules | ForEach-Object { New-FixtureActual -Module $_ })
-    $script:FixtureState.Releases = @([pscustomobject]@{
+    $script:FixtureState.Releases = @(
+        [pscustomobject]@{
             Version = 4
+            ManifestChecksum = $script:Case.HistoricalReleaseChecksum
+        },
+        [pscustomobject]@{
+            Version = 5
             ManifestChecksum = $script:FixtureBundle.ManifestChecksum
-        })
+        }
+    )
 }
 function ConvertTo-FixtureRows($Rows, [string]$Sql) {
     $array = @($Rows | Where-Object { $null -ne $_ })
@@ -352,10 +368,19 @@ function Open-EngineObservedConnection($Context, [switch]$Master) {
             } elseif ($sql.StartsWith('UPDATE dh.ModuleDefinition SET DefinitionChecksum')) {
                 $state.Recorded[0].DefinitionChecksum = '0' * 64
             } elseif ($sql.Contains('INSERT dh.ModuleRelease')) {
-                $version = if ($sql.Contains('VALUES(3,')) { 3 } else { 4 }
+                if ($sql -ceq "INSERT dh.ModuleRelease(Version, ManifestChecksum) VALUES(3, REPLICATE('0', 64));") {
+                    # Model the fixed malformed-history stimulus so the product performs its own rejection.
+                    $releaseVersion = 3
+                    $releaseChecksum = '0' * 64
+                } else {
+                    $declaration = [regex]::Match($sql, "VALUES\((?<Version>[345]), '(?<Hash>[0-9A-F]{64})'\)")
+                    if (-not $declaration.Success) { throw 'Fixture release declaration is missing.' }
+                    $releaseVersion = [int]$declaration.Groups['Version'].Value
+                    $releaseChecksum = $declaration.Groups['Hash'].Value
+                }
                 $state.Releases = @([pscustomobject]@{
-                        Version = $version
-                        ManifestChecksum = $script:FixtureBundle.ManifestChecksum
+                        Version = $releaseVersion
+                        ManifestChecksum = $releaseChecksum
                     }) + $state.Releases
             } elseif ($sql.StartsWith('CREATE OR ALTER')) {
                 $name = [regex]::Match($sql, '^CREATE OR ALTER (PROCEDURE|FUNCTION) (dh\.\w+)').Groups[2].Value
@@ -397,7 +422,8 @@ function Open-EngineObservedConnection($Context, [switch]$Master) {
                         SchemaVersion = $(if ($schema.Count) { $release.Version } else { $null })
                     }
                 })
-            return (ConvertTo-FixtureRows -Rows $rows -Sql $sql)
+            # Match the query's ORDER BY r.Version rather than the fake insertion order.
+            return (ConvertTo-FixtureRows -Rows ($rows | Sort-Object Version) -Sql $sql)
         }
         throw 'Unexpected SQL at the offline entry boundary.'
     }
@@ -511,6 +537,8 @@ function Invoke-EntryCase {
         RestoreMismatch = [bool]$RestoreMismatch
         EventPath = $eventPath
         Snapshot = $snapshotInput
+        # Test-only history is input data; embedding it in the copied product helper would add an unregistered consumer.
+        HistoricalReleaseChecksum = 'C529392B46BB0F02D7A863201D74B9CC60187842365B1DBDCF8953CEE714A731'
         History = ConvertTo-Json -InputObject $manifest.MigrationManifest -Depth 5 -Compress
     }
     Write-FixtureText -Path $casePath -Text (ConvertTo-Json -InputObject $caseData -Depth 10)

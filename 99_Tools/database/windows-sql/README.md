@@ -28,7 +28,7 @@ CLI에는 adapter, SQL, script, 관측값, 머신 우회, 비밀, TLS 완화 인
 | 네트워크 | 현재 NAT 또는 mirrored 유지, Windows endpoint IPv4, WSL에서 그 주소로 해석되는 TLS DNS 이름 |
 | 중단 | Apply 설정 변경 후 서비스 재시작 1회. 같은 인스턴스의 다른 연결도 끊김. Cleanup 복원에도 재시작이 필요할 수 있음 |
 | 인증서 | 별도 Prepare 단계의 새 인증서·개인키 서비스 읽기 권한 부여 승인. OS 전역 Root 저장소 변경 없음 |
-| 저장 identity | 기존 서버 규칙으로 정한 persistedAccountName/AccountId, 새 CharacterId, slot 1 |
+| 저장 identity | 서버가 확정한 AccountContext, 생성할 이름·직업·slot 1~3, 목록에서 명시적으로 선택할 CharacterId. profile/runtime에는 고정 계정·캐릭터를 넣지 않음 |
 | 출력 | SourceRoot 아래 공개 파일/근거, 현재 사용자 LOCALAPPDATA 아래 전용 PrivateRoot |
 
 인증서 키 검사는 Windows의 `crypt32`/CAPI 및 해당 SChannel CSP에 접근할 수 있는 실행 권한이 필요하다.
@@ -176,7 +176,9 @@ runtime에 넣는다. Verify는 누락·추가 파일·링크·hash 차이를 �
 ## 4. 별도 인증서 Prepare
 
 다음 모든 예시의 `<...>`는 실제 승인값으로 바꿔야 한다. 예시는 실행 승인이 아니다.
-공개 파일은 `<SourceRoot>\.backups\windows-sql\`처럼 정상 디렉터리에 두고,
+공개 파일과 실행 근거는 `<SourceRoot>\windows-sql-run\`처럼 SourceRoot 아래의 정상 디렉터리에 둔다.
+조상에도 junction/symlink/reparse가 없어야 하며, 기존 `.backups` junction은 그대로 보존한다.
+이 경로는 배치 예시이며 실제 실행 전에 경로와 입력을 계획/hash로 고정한다.
 PrivateRoot는 `%LOCALAPPDATA%\Dawnholder\<새 lifetime>`의 **직속** 하위다.
 `%LOCALAPPDATA%\Dawnholder` 부모는 실행자가 확인하여 마련한다. 기존 전용 폴더는 재사용하지 않는다.
 
@@ -202,7 +204,7 @@ PrivateRoot는 `%LOCALAPPDATA%\Dawnholder\<새 lifetime>`의 **직속** 하위�
 
 ```powershell
 $tools = Join-Path (Get-Location) '99_Tools/database/windows-sql'
-$preparationPath = (Resolve-Path '.backups/windows-sql/preparation.json').Path
+$preparationPath = (Resolve-Path 'windows-sql-run/preparation.json').Path
 $preparationHash = (Get-FileHash -LiteralPath $preparationPath).Hash
 # 위 파일 전체와 hash를 사용자에게 보여 준 뒤 승인된 값 그대로 실행한다.
 & "$tools/New-WindowsSqlCertificate.ps1" -PreparationPath $preparationPath `
@@ -240,29 +242,30 @@ Prepare 성공 뒤에도 Plan이 `Blocked`이거나 Apply 전에 중단하면 �
 
 ## 5. runtime/profile/계획을 만들고 고정한다
 
-`profile.json`은 기존 Start-PersistenceServer 공개 형식이다. `accountId`는 서버의
-`Accounts/AccountIdResolver.cs`가 소유한 UUID v5 규칙으로 기존 승인 계정 이름과 일치시킨다.
-`PersistenceOptions`의 이름 정규화/identity 검사는 실제 서버 진입에서 다시 수행된다.
+`profile.json`은 Start-PersistenceServer가 전달하고 실제 서버 진입에서 읽는 **profile2**다.
+닫힌 필드는 `profileVersion`, `database`, `serverEndpoint` 세 개다. profileVersion은 정수 2이며,
+단일 계정·캐릭터를 고정하던 `persistedAccountName/slotId/accountId/characterId`는 넣지 않는다.
+[PersistenceRuntimeStartup](../../../02_Server/GameServer/Hosting/PersistenceRuntime/PersistenceRuntimeStartup.cs)의
+입력 검사와 [PersistenceOptions](../../../02_Server/GameServer/Persistence/PersistenceOptions.cs)가 이 계약을 소유한다.
+서버가 확정한 계정의 목록·생성·명시 선택은 §7의 Core API로 수행한다.
 
 ```json
 {
-  "persistedAccountName": "<소문자 영숫자/밑줄 3~16자>",
+  "profileVersion": 2,
   "database": "Dawnholder_<신규 이름>",
-  "serverEndpoint": "tcp:<TLS DNS 이름>,<승인 포트>",
-  "slotId": 1,
-  "accountId": "<승인 계정 UUID>",
-  "characterId": "<새 캐릭터 UUID>"
+  "serverEndpoint": "tcp:<TLS DNS 이름>,<승인 포트>"
 }
 ```
 
-`runtime.json`은 아래 필드만 받는다. PublicCaPath와 ProfilePath는 SourceRoot 기준 `/` 상대 경로다.
+`runtime.json`은 **Version 2**이며 아래 필드만 받는다. AccountId/CharacterId 고정 필드는 없다.
+PublicCaPath와 ProfilePath는 SourceRoot 기준 `/` 상대 경로다.
 CredentialPath는 정확히 `<PrivateRoot>\runtime.clixml`이고 존재하지 않는 새 파일이어야 한다.
 runtime 비밀은 Apply에서 이 노트북 현재 사용자의 CurrentUser DPAPI로 새 생성한다.
 데스크톱 credential을 복사하지 않는다.
 
 ```json
 {
-  "Version": 1,
+  "Version": 2,
   "LifetimeId": "<계획과 같은 lifetime>",
   "ExecutorSid": "<현재 사용자 SID>",
   "ServiceAccount": "NT Service\\MSSQL$SQLEXPRESS",
@@ -271,12 +274,10 @@ runtime 비밀은 Apply에서 이 노트북 현재 사용자의 CurrentUser DPAP
   "NetworkMode": "<Nat 또는 Mirrored>",
   "WslSubnet": null,
   "WslDistribution": "Ubuntu",
-  "AccountId": "<profile과 같은 UUID>",
-  "CharacterId": "<profile과 같은 UUID>",
-  "PublicCaPath": ".backups/windows-sql/public-ca.pem",
+  "PublicCaPath": "windows-sql-run/public-ca.pem",
   "CredentialPath": "<PrivateRoot>\\runtime.clixml",
   "CertificateReceiptHash": "<Prepare의 실제 certificate.json SHA256>",
-  "ProfilePath": ".backups/windows-sql/profile.json",
+  "ProfilePath": "windows-sql-run/profile.json",
   "VerifyHostFiles": [ "<host-files.json의 객체 배열 전체로 대체>" ]
 }
 ```
@@ -284,7 +285,7 @@ runtime 비밀은 Apply에서 이 노트북 현재 사용자의 CurrentUser DPAP
 NAT의 WslSubnet은 실제 WSL link route와 정확히 같은 IPv4 CIDR 문자열로 바꾼다.
 mirrored만 null이다. 방화벽 규칙은 승인 포트·Windows local address·WSL remote subnet·정확 SQL 서비스에 한정한다.
 
-`plan.json`은 기존 v1을 유지한다:
+`plan.json`의 형식 Version은 기존 1을 유지하고, 대상 SchemaVersion은 **5**로 고정한다:
 
 ```json
 {
@@ -299,7 +300,7 @@ mirrored만 null이다. 방화벽 규칙은 승인 포트·Windows local address
   "Port": 15433,
   "Database": "Dawnholder_<신규 이름>",
   "RuntimeLogin": "dh_<신규 이름>",
-  "SchemaVersion": 4,
+  "SchemaVersion": 5,
   "CertificateThumbprint": "<Prepare의 실제 thumbprint>",
   "Encrypt": "Mandatory",
   "TrustServerCertificate": false,
@@ -309,7 +310,7 @@ mirrored만 null이다. 방화벽 규칙은 승인 포트·Windows local address
   "RestartApproved": true,
   "FirewallApproved": true,
   "SourceRoot": "<현재 checkout 절대 경로>",
-  "EvidenceRoot": "<SourceRoot>\\.backups\\windows-sql\\evidence",
+  "EvidenceRoot": "<SourceRoot>\\windows-sql-run\\evidence",
   "PrivateRoot": "<Prepare와 같은 전용 절대 경로>",
   "Inputs": [ "<아래에서 실제 계산한 Path/Sha256 배열로 대체>" ]
 }
@@ -327,8 +328,8 @@ $paths = @(
     '99_Tools/database/Test-ModuleStructure.ps1', '99_Tools/database/verify-schema.sql',
     '99_Tools/database/modules/manifest.json', '99_Tools/sync-wsl.sh',
     '99_Tools/Formatting/sdk.sh', 'global.json',
-    '.backups/windows-sql/runtime.json', '.backups/windows-sql/profile.json',
-    '.backups/windows-sql/public-ca.pem'
+    'windows-sql-run/runtime.json', 'windows-sql-run/profile.json',
+    'windows-sql-run/public-ca.pem'
 )
 $paths += Get-ChildItem "$databaseRoot/migrations" -File -Filter '*.sql' |
     ForEach-Object { '99_Tools/database/migrations/' + $_.Name }
@@ -341,8 +342,8 @@ $paths += '99_Tools/database/windows-sql/WindowsSqlVerifyHost/WindowsSqlVerifyHo
 $inputs = @($paths | Sort-Object -Unique | ForEach-Object {
     [ordered]@{ Path = $_; Sha256 = (Get-FileHash -LiteralPath (Join-Path $sourceRoot $_)).Hash }
 })
-$planPath = (Resolve-Path '.backups/windows-sql/plan.json').Path
-$plan = Get-Content -LiteralPath $planPath -Raw | ConvertFrom-Json -AsHashtable
+$planPath = (Resolve-Path 'windows-sql-run/plan.json').Path
+$plan = Get-Content -LiteralPath $planPath -Raw | ConvertFrom-Json -AsHashtable -DateKind String
 $plan.Inputs = $inputs
 $plan | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $planPath -Encoding utf8NoBOM
 $planHash = (Get-FileHash -LiteralPath $planPath).Hash
@@ -357,7 +358,7 @@ hash를 계산한 것만으로 승인이 생기지 않는다. 파일 전체·대
 아래 변수는 직전 승인 파일/정확 hash이며 자동으로 새 hash를 재계산하여 승인 대용으로 삼지 않는다.
 
 ```powershell
-$runtimePath = '.backups/windows-sql/runtime.json'
+$runtimePath = 'windows-sql-run/runtime.json'
 $cli = Join-Path $tools 'Invoke-WindowsSqlEnvironment.ps1'
 & $cli -PlanPath $planPath -ExpectedPlanHash $planHash -RuntimePath $runtimePath -Step Preflight
 & $cli -PlanPath $planPath -ExpectedPlanHash $planHash -RuntimePath $runtimePath -Step Plan
@@ -382,8 +383,18 @@ DB GUID/login SID/firewall 소유 receipt다. 다른 소유자·버전·설정�
 & $cli -PlanPath $planPath -ExpectedPlanHash $planHash -RuntimePath $runtimePath -Step Verify
 ```
 
-Verify는 WSL의 실제 SqlClient 연결에서 TLS chain/name·서버 identity·TCP·runtime 5 RPC 권한과
-직접 DML 거부를 확인하고, 로컬 관리 연결에서 정확 소유 DB의 migration/catalog/계정 바인딩을 대조한다.
+Verify는 WSL의 실제 SqlClient 연결에서 TLS chain/name·서버 identity·TCP·runtime 권한을 확인한다.
+검사 host가 확인하는 EXECUTE 허용 대상은 `ReadAdmission`, `AcquireAndLoad`, `WriteSafeCheckpoint`,
+`ReleaseRuntime`, `ResolveRuntimeOperation` 5개다. 검사 host에 열거된 recovery/internal RPC 권한 부재와
+`dh.Character` 직접 DML 권한 부재·UPDATE 거부도 확인한다. 이 권한 검사는 목록·생성·선택 API의
+실행 결과를 검증하지 않는다. 정확 범위는 [검사 host](WindowsSqlVerifyHost/Program.cs)에 있다.
+로컬 관리 연결은 정확 소유 DB의 001~005 migration 이력·checksum, 현재 module/release,
+schema5 catalog 구조와 runtime 역할·권한을 대조하며 단일 계정 바인딩은 검사하지 않는다.
+
+이 설치 경로의 Apply는 **새로 소유한 빈 DB**에 001~005와 module을 적용하고, 고정 계정이나
+캐릭터 게임 행을 미리 만들지 않는다. 기존 001~004 DB 업그레이드와 게임 행이 있는 DB의
+첫 변경 전 거부는 **별도로 승인한 격리 fixture**에서 검증한다. 기존 DB를 이 Apply에 넣거나
+보호 DB를 fixture로 사용하지 않는다. 설치 Verify는 캐릭터 저장·재접속 또는 강 독립 검증 완료가 아니다.
 자격은 DPAPI→인메모리→자식 stdin으로만 전달한다. 예외 상세·연결 문자열·비밀은 출력하지 않는다.
 관리 문자열의 수명을 짧게 하고 SecureString/BSTR/프로세스를 정리하지만 관리 힙의 모든 복사본에 대한
 물리적 즉시 삭제를 보장한다고 주장하지 않는다. timeout/취소 시 자식 종료, 성공 fallback 없음이다.
@@ -391,10 +402,11 @@ Verify는 WSL의 실제 SqlClient 연결에서 TLS chain/name·서버 identity·
 ## 7. 실제 저장·재접속·정상 종료는 별도 관측
 
 Verify만으로 게임 저장 동작을 통과 처리하지 않는다. 기존 서버 빌드/7777 소유·메모리 관문과
-사용자 승인 runtime 창을 확보한 뒤 기존 launcher를 그대로 사용한다:
+사용자 승인 runtime 창을 확보한 뒤 아래 launcher로 profile2 서버를 시작한다. 시작/preflight만으로
+목록·생성·선택이 실행되지는 않는다. 다음은 승인값으로 고정해야 하는 예시다:
 
 ```powershell
-$runtime = Get-Content '.backups/windows-sql/runtime.json' -Raw | ConvertFrom-Json
+$runtime = Get-Content 'windows-sql-run/runtime.json' -Raw | ConvertFrom-Json
 $publicCa = Join-Path $sourceRoot $runtime.PublicCaPath
 & './99_Tools/Start-PersistenceServer.ps1' `
     -ProfilePath (Join-Path $sourceRoot $runtime.ProfilePath) `
@@ -405,9 +417,23 @@ $publicCa = Join-Path $sourceRoot $runtime.PublicCaPath
 ```
 
 공개 CA hash는 계획의 승인 input hash와 먼저 대조한다. 실행자가 파일을 바꾼 뒤 자동 계산값만
-받아들이지 않는다. 실제 저장 계정으로 입장→class 선택→승인 safe checkpoint 저장→연결 해제→재접속의
-저장/복원 결과를 관측한다. Enter로 정상 종료하고 shutdown 완료·프로세스 exit·남은 owned session을 확인한다.
-계정/캐릭터/시각/exit/정상종료/전후 보호 근거를 반환하고 비밀은 원시에 넣지 않는다.
+받아들이지 않는다. [Core API v2](../../../01_Phases/goals/2026-10-17-character-storage-foundation/character-storage-api-v2.md)와
+그 문서가 보존하는 API v1 의미를 기준으로, **별도로 승인한 Core API→SQL fixture**에서 다음을 관측한다.
+
+1. 서버가 확정한 `AccountContext`로 `ListCharactersAsync`를 호출한다. 캐릭터가 없으면
+   `PrepareCreate`에 slot 1~3·이름·직업을 전달하고, 반환된 descriptor와 서버가 발급한 OperationId로
+   `CreateCharacterAsync`를 호출한다. 생성은 선택/입장과 별도이며 재시도는 원래 descriptor/OperationId를 유지한다.
+2. 목록의 `CharacterId`를 명시해 `BeginSelectCharacter`를 호출하고 소유권과 선택 완료를 확인한다.
+   기존 캐릭터는 저장된 직업으로 불러오며 새 직업 선택으로 덮어쓰지 않는다.
+3. 선택된 캐릭터의 승인 safe checkpoint 저장과 연결 종료를 각각 관측한다. 다시 연결해 같은 계정의
+   목록에서 같은 CharacterId를 명시 선택하고, 저장 결과와 Town·풀 HP 복원을 확인한다. 다른 캐릭터와의 오염도 구분한다.
+4. 서버의 Enter 정상 종료는 별도로 수행한다. shutdown 완료·프로세스 exit·남은 owned session을 확인하고,
+   서버 재기동 뒤 같은 캐릭터를 다시 불러와 종료 시 저장/복원 근거를 남긴다.
+
+Core의 [CharacterCatalogService](../../../02_Server/GameServer/Persistence/Catalog/CharacterCatalogService.cs)와
+host 소비 접점은 World 세션/패킷 adapter 연결 완료를 뜻하지 않는다. 미연결 경계는 World 후속 연결과
+화면 전체 재접속 검증으로 남기며, 위 API fixture 결과를 실제 클라이언트 화면 성공으로 보고하지 않는다.
+계정/캐릭터/단계별 시각·결과/exit/정상종료/전후 보호 근거를 반환하고 비밀은 원시에 넣지 않는다.
 도구는 기존 DB 내용을 읽어 보호 증거를 대신 만들지 않는다.
 
 ## 8. 소유 자원 정리와 실패 회복 경계

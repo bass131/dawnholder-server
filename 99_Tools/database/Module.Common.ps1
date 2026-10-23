@@ -40,7 +40,7 @@ function Read-ModuleBundle([string]$DatabaseRoot) {
         'FormatVersion', 'ReleaseVersion', 'SourceEncoding', 'DefinitionEncoding', 'Entries'
     )
     if ($manifest.FormatVersion -isnot [int] -or $manifest.FormatVersion -ne 1 -or
-        $manifest.ReleaseVersion -isnot [int] -or $manifest.ReleaseVersion -ne 4 -or
+        $manifest.ReleaseVersion -isnot [int] -or $manifest.ReleaseVersion -ne 5 -or
         $manifest.SourceEncoding -cne 'UTF-8; no BOM; CRLF->LF' -or
         $manifest.DefinitionEncoding -cne 'UTF-16LE; no BOM; LF; actual CR removed' -or
         $manifest.Entries -isnot [Array]) {
@@ -90,12 +90,12 @@ function Read-ModuleBundle([string]$DatabaseRoot) {
                 throw 'Permissions must be the final single bundle entry without an engine definition.'
             }
             $expectedGrants = foreach ($public in @($contract | Where-Object Public)) {
-                $role = if ($public.Name -cin @('ReadAdmission', 'AcquireAndLoad', 'WriteSafeCheckpoint',
+                $role = if ($public.Name -cin @('CharacterCatalog', 'ReadAdmission', 'AcquireAndLoad', 'WriteSafeCheckpoint',
                         'ReleaseRuntime', 'ResolveRuntimeOperation')) { 'dh_runtime' } else { 'dh_recovery' }
                 'GRANTEXECUTEONOBJECT::dh.' + $public.Name + 'TO' + $role + ';'
             }
             if (($executable -replace '\s', '') -cne ($expectedGrants -join '')) {
-                throw 'Permissions source must contain only the nine reviewed individual EXECUTE grants.'
+                throw 'Permissions source must contain only the reviewed individual EXECUTE grants.'
             }
             $permissions = [pscustomobject]@{
                 Path = $entry.Path
@@ -156,7 +156,7 @@ function Get-DatabaseMigrationSources(
 ) {
     if ([string]::IsNullOrWhiteSpace($DatabaseRoot)) { $DatabaseRoot = $PSScriptRoot }
     $names = @('001_initial.sql', '002_persistence_metadata.sql',
-        '003_module_metadata.sql', '004_module_release.sql')
+        '003_module_metadata.sql', '004_module_release.sql', '005_character_catalog.sql')
     $files = @(Get-ChildItem -LiteralPath (Join-Path $DatabaseRoot 'migrations') -File -Filter '*.sql' |
             Sort-Object Name)
     if ($Phase -eq 'Baseline001') {
@@ -242,19 +242,24 @@ function Assert-DatabaseModuleState(
     $State,
     $Bundle,
     [bool]$AllowFirstInstall = $false,
-    [bool]$RequireCurrentSource = $false
+    [bool]$RequireCurrentSource = $false,
+    [bool]$AllowCatalogAdditions = $false
 ) {
     if ($AllowFirstInstall -and $State.Recorded.Count -eq 0 -and $State.Actual.Count -eq 0) { return }
-    if ($State.Recorded.Count -ne $Bundle.Modules.Count -or $State.Actual.Count -ne $Bundle.Modules.Count) {
+    $expectedModules = @($Bundle.Modules)
+    if ($AllowCatalogAdditions -and $State.Recorded.Count -eq 18) {
+        $expectedModules = @($expectedModules | Where-Object ObjectName -CNotIn @('dh.AccountIdentity', 'dh.CharacterCatalog'))
+    }
+    if ($State.Recorded.Count -ne $expectedModules.Count -or $State.Actual.Count -ne $expectedModules.Count) {
         throw 'Existing module registration/object set is incomplete or unexpected; refuse adoption or overwrite.'
     }
-    $expectedNames = @($Bundle.Modules.ObjectName | Sort-Object)
+    $expectedNames = @($expectedModules.ObjectName | Sort-Object)
     foreach ($rows in @($State.Recorded, $State.Actual)) {
         if ((($rows.ObjectName | Sort-Object) -join '|') -cne ($expectedNames -join '|')) {
             throw 'Unregistered/missing/unexpected module; restore or review it before deploying a new declaration.'
         }
     }
-    foreach ($expected in $Bundle.Modules) {
+    foreach ($expected in $expectedModules) {
         $recorded = @($State.Recorded | Where-Object ObjectName -CEQ $expected.ObjectName)[0]
         $actual = @($State.Actual | Where-Object ObjectName -CEQ $expected.ObjectName)[0]
         if ($recorded.Kind.TrimEnd() -cne $expected.Kind -or $actual.Kind.TrimEnd() -cne $expected.Kind -or
@@ -312,7 +317,7 @@ SELECT ISNULL((
     }
     $state = Get-DatabaseModuleState -Connection $Connection -Transaction $Transaction
     Assert-DatabaseModuleState -State $state -Bundle $Bundle -AllowFirstInstall $AllowFirstInstall `
-        -RequireCurrentSource $ReleaseAlreadyApplied
+        -RequireCurrentSource $ReleaseAlreadyApplied -AllowCatalogAdditions (-not $ReleaseAlreadyApplied)
     [void](Invoke-DbNonQuery -Connection $Connection -Transaction $Transaction -Sql @'
 SET ANSI_NULLS ON;
 SET QUOTED_IDENTIFIER ON;

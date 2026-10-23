@@ -3,15 +3,22 @@ using Dawnholder.Server.GameServer.Hosting;
 using Dawnholder.Server.GameServer.Hosting.PersistenceRuntime;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Persistence;
 using Shared.GameData;
 
 Console.WriteLine("=== Dawnholder Server ===");
 Console.WriteLine($"Tick rate: {Constants.ServerTickRate} TPS ({Constants.TickIntervalMs}ms)");
 
+// Safe defaults come from the same loaded world content used for gameplay, before persistence preflight.
+var mapProvider = MapDataLoader.LoadAll();
+GameWorld world = new(mapProvider);
+var town = world.Map.PlayerSpawnPosition;
+SafeDefaults defaults = new(town.X, town.Y, PlayerStats.Knight().MaxHp, PlayerStats.Mage().MaxHp);
+
 PersistenceRuntimeStartup? persistence;
 try
 {
-    persistence = await PersistenceRuntimeStartup.CreateAsync(args, CancellationToken.None);
+    persistence = await PersistenceRuntimeStartup.CreateAsync(args, CancellationToken.None, defaults);
 }
 catch
 {
@@ -22,13 +29,9 @@ catch
 }
 using var persistenceLifetime = persistence;
 
-// 맵 바이너리 로드 — startup 1회. 플레이 맵 파일 부재 시 hard error (fail loud, 헌법 #3 정합).
-var mapProvider = MapDataLoader.LoadAll();
-
 // IPAddress.Any (= 0.0.0.0) → 모든 네트워크 인터페이스에서 listen.
 IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 7777);
 
-GameWorld world = new GameWorld(mapProvider);
 if (persistence is not null)
     world.AttachPersistence(persistence.Services);
 ServerHost host = new(world, endPoint);

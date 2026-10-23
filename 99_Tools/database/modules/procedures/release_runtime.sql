@@ -1,4 +1,5 @@
 CREATE OR ALTER PROCEDURE dh.ReleaseRuntime
+    @ContractVersion int,
     @SlotId int,
     @AccountId uniqueidentifier,
     @CharacterId uniqueidentifier,
@@ -31,12 +32,14 @@ BEGIN
     -- 51023 schema/binding, 51024 mutation/snapshot, 51025 transaction count.
     IF @@TRANCOUNT <> 0
         THROW 51021, 'Ambient transaction is not accepted.', 1;
+    IF @ContractVersion <> 5 OR @ContractVersion IS NULL
+        THROW 51023, 'Catalog runtime version is required.', 1;
     SET IMPLICIT_TRANSACTIONS OFF;
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
     SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
     DECLARE @Kind int = @ReleaseRuntimeKind;
-    IF @SlotId IS NULL OR @SlotId <> 1 OR @AccountId IS NULL OR @CharacterId IS NULL
+    IF @SlotId IS NULL OR @SlotId NOT BETWEEN 1 AND 3 OR @AccountId IS NULL OR @CharacterId IS NULL
         OR @AccountId = '00000000-0000-0000-0000-000000000000'
         OR @CharacterId = '00000000-0000-0000-0000-000000000000'
         OR @LockTimeoutMs IS NULL OR @LockTimeoutMs < 1 OR @LockTimeoutMs > 2000
@@ -66,7 +69,7 @@ BEGIN
         @Reason = NULL;
     IF @payload IS NULL
         THROW 51020, 'InvalidRequest.', 1;
-    -- Lock and current authority (observed inside the slot transaction).
+    -- Lock and current authority (observed inside the character transaction).
     DECLARE @lockResult int;
     DECLARE @boundAccount uniqueidentifier;
     DECLARE @boundCharacter uniqueidentifier;
@@ -105,10 +108,12 @@ BEGIN
     DECLARE @productVersion nvarchar(128) = CONVERT(nvarchar(128), SERVERPROPERTY('ProductVersion'));
     DECLARE @databaseName nvarchar(128) = DB_NAME();
     DECLARE @schemaVersion int;
-    -- One transaction owns the slot lock, current observations, mutation and proof.
+    -- One transaction owns the character lock, current observations, mutation and proof.
     BEGIN TRY
         BEGIN TRANSACTION;
         EXEC dh.LockAndReadAuthority
+            @SlotId = @SlotId,
+            @CharacterId = @CharacterId,
             @LockTimeoutMs = @LockTimeoutMs,
             @lockResult = @lockResult OUTPUT,
             @boundAccount = @boundAccount OUTPUT,
@@ -129,6 +134,7 @@ BEGIN
         EXEC dh.AssertPersistenceContract
             @SchemaVersion = @schemaVersion OUTPUT;
         EXEC dh.ReadOperationReceipt
+            @LockTimeoutMs = @LockTimeoutMs,
             @OperationId = @OperationId,
             @Kind = @Kind,
             @payload = @payload,
@@ -188,13 +194,14 @@ BEGIN
                     OwnerKind = @currentOwnerKind,
                     OwnerId = @currentOwner,
                     LastSequence = @currentSequence,
-                    ChangedUtc = SYSUTCDATETIME() WHERE SlotId = 1;
+                    ChangedUtc = SYSUTCDATETIME() WHERE CharacterId = @boundCharacter;
                 IF @@ROWCOUNT <> 1
                     THROW 51024, 'Authority update failed.', 1;
                 SET @resultCode = @Released;
                 SET @outcome = @Applied;
                 -- Release proves authority relinquishment only; game observations stay in current diagnostics.
                 EXEC dh.SerializePersistenceSnapshot
+                    @SlotId = @SlotId,
                     @Kind = @Kind,
                     @resultCode = @resultCode,
                     @boundAccount = @boundAccount,
@@ -215,6 +222,8 @@ BEGIN
             ELSE
                 SET @outcome = @NotApplied;
             EXEC dh.RecordOperationReceipt
+                @SlotId = @SlotId,
+                @CharacterId = @boundCharacter,
                 @OperationId = @OperationId,
                 @Kind = @Kind,
                 @payload = @payload,
@@ -244,6 +253,7 @@ BEGIN
         THROW 51025, 'Transaction count did not return to zero.', 1;
     -- Emit one terminal row only after COMMIT; Current* does not replace historical ResultSnapshot.
     EXEC dh.EmitPersistenceResult
+        @SlotId = @SlotId,
         @status = @status,
         @OperationId = @OperationId,
         @outcome = @outcome,

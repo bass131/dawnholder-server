@@ -614,7 +614,8 @@ function Get-StepStatus {
 function Get-RecordedMigrationRows {
     param([Parameter(Mandatory)][int]$Count)
     # Rows shaped like dh.SchemaVersion; checksums come from the independent TestSupport recomputation.
-    $names = @('001_initial.sql', '002_persistence_metadata.sql', '003_module_metadata.sql', '004_module_release.sql')
+    $names = @('001_initial.sql', '002_persistence_metadata.sql', '003_module_metadata.sql',
+        '004_module_release.sql', '005_character_catalog.sql')
     return @(for ($index = 0; $index -lt $Count; $index++) {
             $source = Join-Path $script:ToolRoot ('migrations/' + $names[$index])
             [pscustomobject]@{
@@ -668,7 +669,7 @@ function Get-RemoveArguments {
 }
 
 $baselineRows = @(Get-RecordedMigrationRows -Count 1)
-$completeRows = @(Get-RecordedMigrationRows -Count 4)
+$completeRows = @(Get-RecordedMigrationRows -Count 5)
 $noConnection = '^(Open|Sql\.)'
 
 function Get-ManifestState {
@@ -815,11 +816,11 @@ Assert-True -Name 'Complete reaches the runner once with the approved contract a
     $migrations.Count -eq 1 -and $migrations[0].Name -ceq 'Migrations.Complete' -and
     [string]$migrations[0].Detail -ceq ('Approved=True;Database=' + $database) -and
     [string]$migrations[0].Journal -cmatch 'InstallComplete:Pending$') -Detail (Format-RunDetail -Run $complete)
-Assert-True -Name 'Complete leaves state Installed with the four reviewed migration rows' -Condition (
+Assert-True -Name 'Complete leaves state Installed with the five reviewed migration rows' -Condition (
     $before -ceq 'Baseline001' -and -not $complete.Threw -and $manifest.State -ceq 'Installed' -and
-    @($manifest.MigrationManifest).Count -eq 4 -and
+    @($manifest.MigrationManifest).Count -eq 5 -and
     ((@($manifest.MigrationManifest) | ForEach-Object { $_.Name }) -join '|') -ceq
-    '001_initial.sql|002_persistence_metadata.sql|003_module_metadata.sql|004_module_release.sql') `
+    '001_initial.sql|002_persistence_metadata.sql|003_module_metadata.sql|004_module_release.sql|005_character_catalog.sql') `
     -Detail ('before=' + $before + '; ' + (Format-RunDetail -Run $complete))
 
 $installedBefore = Get-ManifestState -Scenario $order

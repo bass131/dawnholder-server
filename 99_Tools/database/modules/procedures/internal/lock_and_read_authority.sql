@@ -1,4 +1,6 @@
 CREATE OR ALTER PROCEDURE dh.LockAndReadAuthority
+    @SlotId int,
+    @CharacterId uniqueidentifier,
     @LockTimeoutMs int,
     @lockResult int OUTPUT,
     @boundAccount uniqueidentifier OUTPUT,
@@ -18,7 +20,14 @@ BEGIN
     SET @currentOwnerKind = NULL;
     SET @currentOwner = NULL;
     SET @currentSequence = NULL;
-    EXEC @lockResult = sys.sp_getapplock @Resource = N'Dawnholder.Persistence.Slot.1',
+    -- Row/table waits have a fixed 2000 ms bound; application locks retain the requested timeout.
+    -- SET LOCK_TIMEOUT requires a literal, and a dynamic SET would end with its inner batch scope.
+    SET LOCK_TIMEOUT 2000;
+    EXEC @lockResult = sys.sp_getapplock @Resource = N'Dawnholder.SchemaMigration',
+        @DbPrincipal = 'public', @LockMode = 'Shared', @LockOwner = 'Transaction', @LockTimeout = @LockTimeoutMs;
+    IF @lockResult NOT IN (0, 1) RETURN;
+    DECLARE @resource nvarchar(255) = N'Dawnholder.Persistence.Character.' + CONVERT(nvarchar(36), @CharacterId);
+    EXEC @lockResult = sys.sp_getapplock @Resource = @resource,
         @DbPrincipal = 'public',
         @LockMode = 'Exclusive',
         @LockOwner = 'Transaction',
@@ -31,6 +40,6 @@ BEGIN
             @currentOwnerKind = OwnerKind,
             @currentOwner = OwnerId,
             @currentSequence = LastSequence
-        FROM dh.CharacterAuthority WITH (UPDLOCK, HOLDLOCK) WHERE SlotId = 1;
+        FROM dh.CharacterAuthority WITH (UPDLOCK) WHERE CharacterId = @CharacterId AND SlotId = @SlotId;
     END;
 END;

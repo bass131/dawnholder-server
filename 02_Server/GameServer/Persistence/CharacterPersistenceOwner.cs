@@ -69,7 +69,8 @@ public sealed class CharacterPersistenceOwner
         long expectedFence,
         CharacterClass intendedClass,
         SafeDefaults safeDefaults,
-        PersistenceDeadline deadline)
+        PersistenceDeadline deadline,
+        Guid? operationId = null)
     {
         lock (_gate)
         {
@@ -78,7 +79,9 @@ public sealed class CharacterPersistenceOwner
                 return new(status);
             if (_acquireSubmitted || expectedFence < 0 || !Enum.IsDefined(intendedClass) || safeDefaults is null)
                 return new(PersistenceSubmitStatus.Invalid);
-            AcquireAndLoadRequest request = new(_identity, Guid.NewGuid(), _runtimeOwnerId, expectedFence, intendedClass, safeDefaults);
+            if (operationId == Guid.Empty) return new(PersistenceSubmitStatus.Invalid);
+            AcquireAndLoadRequest request = new(_identity, operationId ?? Guid.NewGuid(), _runtimeOwnerId,
+                expectedFence, intendedClass, safeDefaults);
             _acquireSubmitted = true;
             return Enqueue(new PersistenceWorkItem(request, deadline));
         }
@@ -197,32 +200,33 @@ public sealed class CharacterPersistenceOwner
             }
             else if (work is not null)
             {
-                OperationOutcome outcome = work.Acquire is not null
+                StoreResult result = work.Acquire is not null
                     ? await ExecuteAcquireAsync(work.Acquire, work.Deadline).ConfigureAwait(false)
                     : await ExecuteCheckpointAsync(work.Checkpoint!, work.Deadline).ConfigureAwait(false);
                 lock (_gate)
                 {
                     _activeWork = null;
-                    work.Completion.TrySetResult(new PersistenceWorkResult(ToWorkStatus(outcome),
-                        work.Acquire is not null && outcome == OperationOutcome.Acquired ? _storedClass : null));
+                    work.Completion.TrySetResult(new PersistenceWorkResult(ToWorkStatus(result.Outcome),
+                        work.Acquire is not null && result.Outcome == OperationOutcome.Acquired ? _storedClass : null,
+                        result.Code));
                 }
             }
         }
     }
 
-    Task<OperationOutcome> ExecuteAcquireAsync(AcquireAndLoadRequest request, PersistenceDeadline deadline)
+    Task<StoreResult> ExecuteAcquireAsync(AcquireAndLoadRequest request, PersistenceDeadline deadline)
         => ExecuteMutationAsync(request.Operation, deadline,
             (budget, token) => _repository.AcquireAndLoadAsync(request, budget, token), ClassifyAcquire);
 
-    Task<OperationOutcome> ExecuteCheckpointAsync(SafeCheckpoint checkpoint, PersistenceDeadline deadline)
+    Task<StoreResult> ExecuteCheckpointAsync(SafeCheckpoint checkpoint, PersistenceDeadline deadline)
     {
         WriteSafeCheckpointRequest request;
         lock (_gate)
         {
             if (_frozen || _stopped || _authority is null || _characterToken is null || _authority.LastSequence == long.MaxValue)
-                return Task.FromResult(OperationOutcome.NotDispatched);
+                return Task.FromResult(new StoreResult(OperationOutcome.NotDispatched));
             if (checkpoint.CharacterClass != _storedClass)
-                return Task.FromResult(OperationOutcome.NotDispatched);
+                return Task.FromResult(new StoreResult(OperationOutcome.NotDispatched));
             request = new WriteSafeCheckpointRequest(_authority, _authority.LastSequence + 1, Guid.NewGuid(),
                 _characterToken, _progressToken, checkpoint);
         }
@@ -240,10 +244,10 @@ public sealed class CharacterPersistenceOwner
 
         if (closing.Ticket.Checkpoint is not null)
         {
-            OperationOutcome final = await ExecuteCheckpointAsync(closing.Ticket.Checkpoint, closing.Deadline).ConfigureAwait(false);
+            StoreResult final = await ExecuteCheckpointAsync(closing.Ticket.Checkpoint, closing.Deadline).ConfigureAwait(false);
             lock (_gate)
             {
-                if (final is not (OperationOutcome.Durable or OperationOutcome.CheckpointNoChange))
+                if (final.Outcome is not (OperationOutcome.Durable or OperationOutcome.CheckpointNoChange))
                 {
                     CompleteClose(FailureCloseStatus());
                     return;
@@ -286,7 +290,7 @@ public sealed class CharacterPersistenceOwner
         return true;
     }
 
-    async Task<OperationOutcome> ExecuteMutationAsync<T>(
+    async Task<StoreResult> ExecuteMutationAsync<T>(
         OperationIdentity operation,
         PersistenceDeadline deadline,
         Func<PersistenceDeadline, CancellationToken, Task<T>> invoke,
@@ -294,14 +298,14 @@ public sealed class CharacterPersistenceOwner
     {
         CallResult<T> call = await CallOnceAsync(operation, deadline, invoke).ConfigureAwait(false);
         if (!call.Started)
-            return OperationOutcome.NotDispatched;
+            return new(OperationOutcome.NotDispatched);
         StoreResult result = call.Value is null ? new(OperationOutcome.Unknown) : classify(call.Value);
         OperationOutcome outcome;
         lock (_gate)
         {
             outcome = Settle(operation, result);
             if (outcome != OperationOutcome.Unknown)
-                return outcome;
+                return result with { Outcome = outcome };
             _frozen = true;
         }
 
@@ -318,7 +322,7 @@ public sealed class CharacterPersistenceOwner
             {
                 outcome = Settle(operation, result);
                 if (outcome != OperationOutcome.Unknown)
-                    return outcome;
+                    return result with { Outcome = outcome };
             }
         }
         lock (_gate)
@@ -327,7 +331,7 @@ public sealed class CharacterPersistenceOwner
             _stopped = true;
             CancelWaiting();
         }
-        return OperationOutcome.Unknown;
+        return new(OperationOutcome.Unknown);
     }
 
     async Task<CallResult<T>> CallOnceAsync<T>(
@@ -546,8 +550,8 @@ public sealed class CharacterPersistenceOwner
     static StoreResult ClassifyAcquire(AcquireAndLoadResult result) => result.Status switch
     {
         AcquireAndLoadStatus.Acquired => new(OperationOutcome.Acquired, result.Receipt, result.Current),
-        AcquireAndLoadStatus.Rejected => new(OperationOutcome.Rejected),
-        AcquireAndLoadStatus.Conflict => new(OperationOutcome.Conflict),
+        AcquireAndLoadStatus.Rejected => new(OperationOutcome.Rejected, Code: result.Code),
+        AcquireAndLoadStatus.Conflict => new(OperationOutcome.Conflict, Code: result.Code),
         AcquireAndLoadStatus.NotDispatched => new(OperationOutcome.NotDispatched),
         _ => new(OperationOutcome.Unknown)
     };
@@ -556,8 +560,8 @@ public sealed class CharacterPersistenceOwner
     {
         WriteSafeCheckpointStatus.Durable => new(OperationOutcome.Durable, result.Receipt, result.Current),
         WriteSafeCheckpointStatus.CheckpointNoChange => new(OperationOutcome.CheckpointNoChange, result.Receipt, result.Current),
-        WriteSafeCheckpointStatus.Rejected => new(OperationOutcome.Rejected),
-        WriteSafeCheckpointStatus.Conflict => new(OperationOutcome.Conflict),
+        WriteSafeCheckpointStatus.Rejected => new(OperationOutcome.Rejected, Code: result.Code),
+        WriteSafeCheckpointStatus.Conflict => new(OperationOutcome.Conflict, Code: result.Code),
         WriteSafeCheckpointStatus.NotDispatched => new(OperationOutcome.NotDispatched),
         _ => new(OperationOutcome.Unknown)
     };
@@ -565,7 +569,7 @@ public sealed class CharacterPersistenceOwner
     static StoreResult ClassifyRelease(ReleaseResult result) => result.Status switch
     {
         ReleaseStatus.Released => new(OperationOutcome.Released, result.Receipt, result.Current),
-        ReleaseStatus.Rejected => new(OperationOutcome.Rejected),
+        ReleaseStatus.Rejected => new(OperationOutcome.Rejected, Code: result.Code),
         ReleaseStatus.NotDispatched => new(OperationOutcome.NotDispatched),
         _ => new(OperationOutcome.Unknown)
     };
@@ -580,7 +584,7 @@ public sealed class CharacterPersistenceOwner
             PersistenceResultCode.Released => OperationOutcome.Released,
             _ => OperationOutcome.Unknown
         }, result.Receipt, result.Current),
-        OperationResolutionStatus.NotApplied => new(OperationOutcome.NotApplied, null, result.Current),
+        OperationResolutionStatus.NotApplied => new(OperationOutcome.NotApplied, null, result.Current, result.Code),
         OperationResolutionStatus.FenceLost => new(OperationOutcome.FenceLost, result.Receipt, result.Current),
         _ => new(OperationOutcome.Unknown)
     };
@@ -603,6 +607,7 @@ public sealed class CharacterPersistenceOwner
         Unknown, Acquired, Durable, CheckpointNoChange, Released, Rejected, Conflict, NotDispatched, NotApplied, FenceLost
     }
 
-    readonly record struct StoreResult(OperationOutcome Outcome, OperationReceipt? Receipt = null, PersistenceObservation? Current = null);
+    readonly record struct StoreResult(OperationOutcome Outcome, OperationReceipt? Receipt = null,
+        PersistenceObservation? Current = null, PersistenceResultCode? Code = null);
     readonly record struct CallResult<T>(bool Started, T? Value) where T : class;
 }

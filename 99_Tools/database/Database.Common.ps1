@@ -162,6 +162,16 @@ SELECT ISNULL((
 '@
         $history = @(ConvertFrom-DatabaseJsonRows -Json $historyText)
         Assert-DatabaseMigrationHistory -History $history -Sources $sources
+        if ($Phase -eq 'Complete' -and $history.Count -lt 5) {
+            # The old runtime did not take SchemaMigration. Hold exclusive table locks until commit,
+            # before applying even migration 002/003/004, so refusal leaves all history and game rows unchanged.
+            foreach ($table in @('Account', 'Character', 'CharacterProgress', 'CharacterAuthority', 'CharacterOperation')) {
+                $guard = "IF OBJECT_ID(N'dh.$table', N'U') IS NOT NULL " +
+                "EXEC(N'IF EXISTS(SELECT 1 FROM dh.$table WITH (TABLOCKX, HOLDLOCK)) " +
+                "THROW 51030, ''Catalog upgrade refuses existing game rows.'', 1;');"
+                [void](Invoke-DbNonQuery -Connection $Connection -Sql $guard -Transaction $Transaction)
+            }
+        }
         foreach ($source in $sources) {
             if ($source.Version -le $history.Count) {
                 Write-Output "Migration $($source.Version) unchanged."

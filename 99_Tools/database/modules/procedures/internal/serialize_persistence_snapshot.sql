@@ -1,4 +1,5 @@
 CREATE OR ALTER PROCEDURE dh.SerializePersistenceSnapshot
+    @SlotId int,
     @Kind int,
     @resultCode smallint,
     @boundAccount uniqueidentifier,
@@ -23,7 +24,7 @@ BEGIN
     SET @snapshot = (SELECT 1 AS version,
         @Kind AS kind,
         @resultCode AS resultCode,
-        1 AS slotId,
+        @SlotId AS slotId,
         LOWER(CONVERT(char(36), @boundAccount)) AS accountId,
         LOWER(CONVERT(char(36), @boundCharacter)) AS characterId,
         @currentOwnerKind AS ownerKind,

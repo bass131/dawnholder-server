@@ -16,16 +16,17 @@ internal sealed class SqlPersistenceResult
     ];
     readonly Dictionary<string, object> _values;
 
-    SqlPersistenceResult(Dictionary<string, object> values, PersistenceOptions options)
+    SqlPersistenceResult(Dictionary<string, object> values, PersistenceOptions options, PersistenceIdentity expectedIdentity)
     {
         _values = values;
         if (Required<int>("TransportVersion") != 1 || Required<int>("PayloadVersion") != 1 ||
             Required<int>("SnapshotVersion") != 1 || Required<int>("SchemaVersion") != SqlPersistenceDeployment.SchemaVersion ||
             Required<string>("DatabaseName") != options.Database ||
-            !Version.TryParse(Required<string>("ProductVersion"), out _) || Required<int>("CurrentSlotId") != 1)
+            !Version.TryParse(Required<string>("ProductVersion"), out _) || Required<int>("CurrentSlotId") is < 1 or > 3)
             throw new InvalidDataException("Incompatible persistence transport.");
-        PersistenceIdentity identity = new(1, Required<Guid>("CurrentAccountId"), Required<Guid>("CurrentCharacterId"));
-        if (!identity.Equals(options.Identity))
+        PersistenceIdentity identity = new((byte)Required<int>("CurrentSlotId"),
+            Required<Guid>("CurrentAccountId"), Required<Guid>("CurrentCharacterId"));
+        if (!identity.Equals(expectedIdentity))
             throw new InvalidDataException("Persistence binding mismatch.");
         Authority = new PersistenceAuthority(identity, (PersistenceOwnerKind)Required<byte>("CurrentOwnerKind"),
             Optional<Guid>("CurrentOwnerId"), Required<long>("CurrentFence"), Required<long>("CurrentLastSequence"));
@@ -39,7 +40,7 @@ internal sealed class SqlPersistenceResult
     internal byte Outcome => Required<byte>("Outcome");
 
     internal static async Task<SqlPersistenceResult> ReadAsync(
-        SqlDataReader reader, PersistenceOptions options, CancellationToken cancellationToken)
+        SqlDataReader reader, PersistenceOptions options, CancellationToken cancellationToken, PersistenceIdentity? expectedIdentity = null)
     {
         Dictionary<string, object>? row = null;
         bool malformed = false;
@@ -67,7 +68,7 @@ internal sealed class SqlPersistenceResult
         // Exceptions from trailing DONE/error tokens reach the repository before any result can become success.
         if (malformed || resultSets != 1 || row is null)
             throw new InvalidDataException("Incomplete persistence result.");
-        return new SqlPersistenceResult(row, options);
+        return new SqlPersistenceResult(row, options, expectedIdentity ?? options.Identity);
     }
 
     internal AdmissionProbe Admission()

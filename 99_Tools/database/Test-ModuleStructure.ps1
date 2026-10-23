@@ -15,6 +15,11 @@ function Get-ModuleStructureContract {
     $snapshot = @('SerializePersistenceSnapshot')
     $public = @(
         @{
+            Name = 'CharacterCatalog'
+            File = 'character_catalog.sql'
+            Calls = @('AssertPersistenceContract')
+        }
+        @{
             Name = 'ReadAdmission'
             File = 'read_admission.sql'
             Calls = $shared
@@ -87,6 +92,13 @@ function Get-ModuleStructureContract {
             Public = $false
             RequiredCalls = @()
         }
+    }
+    [pscustomobject]@{
+        Name = 'AccountIdentity'
+        Kind = 'FN'
+        Path = 'modules/functions/account_identity.sql'
+        Public = $false
+        RequiredCalls = @()
     }
     [pscustomobject]@{
         Name = 'PersistencePayloadV1'

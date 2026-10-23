@@ -7,11 +7,11 @@ namespace Dawnholder.Server.GameServer.Persistence.Sql;
 
 internal static class SqlPersistenceDeployment
 {
-    internal const int SchemaVersion = 4;
+    internal const int SchemaVersion = 5;
     static readonly string[] MigrationNames =
     [
         "001_initial.sql", "002_persistence_metadata.sql",
-        "003_module_metadata.sql", "004_module_release.sql"
+        "003_module_metadata.sql", "004_module_release.sql", "005_character_catalog.sql"
     ];
 
     internal static void ValidateManifest(string manifest)

@@ -49,7 +49,12 @@ function New-EngineState {
         $state.History.Add([pscustomobject]@{ Version = $source.Version; Name = $source.Name; Checksum = $source.Checksum })
     }
     if ($Installed) {
-        $state.Releases.Add([pscustomobject]@{ Version = 4; ManifestChecksum = $script:Bundle.ManifestChecksum })
+        # Installed means the approved five-row history, with immutable v4 followed by current v5.
+        $state.Releases.Add([pscustomobject]@{
+                Version = 4
+                ManifestChecksum = 'C529392B46BB0F02D7A863201D74B9CC60187842365B1DBDCF8953CEE714A731'
+            })
+        $state.Releases.Add([pscustomobject]@{ Version = 5; ManifestChecksum = $script:Bundle.ManifestChecksum })
         foreach ($module in $script:Bundle.Modules) {
             $state.Recorded.Add([pscustomobject]@{
                     ObjectName = $module.ObjectName
@@ -142,15 +147,23 @@ $script:Responder = {
         $engine.History.Add([pscustomobject]@{ Version = $Values.version; Name = $Values.name; Checksum = $Values.hash })
         return 1
     }
-    if ($Sql.Contains('CREATE TABLE dh.Account')) { $engine.Events.Add('MIGRATION:001'); return -1 }
-    if ($Sql.Contains('CREATE TABLE dh.CharacterAuthority')) { $engine.Events.Add('MIGRATION:002'); return -1 }
-    if ($Sql.Contains('CREATE TABLE dh.ModuleRelease')) { $engine.Events.Add('MIGRATION:003'); return -1 }
+    if ($Sql.StartsWith("IF OBJECT_ID(N'dh.") -and $Sql.Contains('Catalog upgrade refuses existing game rows.')) {
+        # This fixture has no game rows. Record each guard; it does not simulate lock or engine semantics.
+        $table = [regex]::Match($Sql, "OBJECT_ID\(N'(?<Name>dh\.\w+)'").Groups['Name'].Value
+        $engine.Events.Add('EMPTY-GUARD:' + $table)
+        return -1
+    }
+    # 005 also contains CREATE TABLE dh.AccountGuild, so recognize release declarations before table fragments.
     if ($Sql.Contains('INSERT dh.ModuleRelease')) {
-        $engine.Events.Add('MIGRATION:004')
         $declared = [regex]::Match($Sql, "VALUES\((\d+), '([0-9A-F]{64})'\)")
+        if (-not $declared.Success) { throw 'Fixture release declaration is missing.' }
+        $engine.Events.Add(('MIGRATION:{0:D3}' -f [int]$declared.Groups[1].Value))
         $engine.Releases.Add([pscustomobject]@{ Version = [int]$declared.Groups[1].Value; ManifestChecksum = $declared.Groups[2].Value })
         return 1
     }
+    if ($Sql.Contains('CREATE TABLE dh.Account')) { $engine.Events.Add('MIGRATION:001'); return -1 }
+    if ($Sql.Contains('CREATE TABLE dh.CharacterAuthority')) { $engine.Events.Add('MIGRATION:002'); return -1 }
+    if ($Sql.Contains('CREATE TABLE dh.ModuleRelease')) { $engine.Events.Add('MIGRATION:003'); return -1 }
     if ($Sql.Contains('FROM dh.ModuleRelease r LEFT JOIN dh.SchemaVersion')) {
         $engine.Events.Add('RELEASES')
         $rows = foreach ($release in ($engine.Releases | Sort-Object Version)) {
@@ -240,16 +253,19 @@ $metaOrder = @($moduleNames | ForEach-Object { 'META:' + $_ })
 # ---- First Complete install after the Baseline001 lifecycle step, with `[]` for empty sets.
 $engine = New-EngineState -AppliedMigrations 1
 $run = Invoke-Complete -Engine $engine
-$expected = @('LOCK', 'HISTORY', 'MIGRATION:002', 'SV:2', 'MIGRATION:003', 'SV:3', 'MIGRATION:004', 'SV:4', 'HISTORY',
+$expected = @('LOCK', 'HISTORY',
+    'EMPTY-GUARD:dh.Account', 'EMPTY-GUARD:dh.Character', 'EMPTY-GUARD:dh.CharacterProgress',
+    'EMPTY-GUARD:dh.CharacterAuthority', 'EMPTY-GUARD:dh.CharacterOperation',
+    'MIGRATION:002', 'SV:2', 'MIGRATION:003', 'SV:3', 'MIGRATION:004', 'SV:4', 'MIGRATION:005', 'SV:5', 'HISTORY',
     'RELEASES', 'RECORDED', 'ACTUAL', 'SESSION') + $ddlOrder + @('GRANTS', 'RECORDED', 'ACTUAL') + $metaOrder + @('CATALOG')
 Assert-True -Name 'first Complete install (empty sets as []) -> succeeds' -Condition ($null -eq $run.Error) -Detail ([string]$run.Error)
-Assert-Equal -Name 'observed three-space engine header -> 18 metadata rows recorded' -Expected 18 `
+Assert-Equal -Name 'observed three-space engine header -> 20 metadata rows recorded' -Expected 20 `
     -Actual $engine.Recorded.Count
-Assert-Equal -Name 'first install order: lock, history, 002-004, recheck, declaration, state, 18 DDL in manifest order, grants, recheck, metadata, catalog' `
+Assert-Equal -Name 'first install order: lock, history, five empty guards, 002-005, recheck, declaration, state, 20 DDL, grants, metadata, catalog' `
     -Expected ($expected -join ',') -Actual ($run.Events -join ',')
 Assert-Equal -Name 'first install -> single owned transaction committed' -Expected 'Begin,Commit,Dispose' -Actual ($run.Transactions -join ',')
 Assert-True -Name 'first install -> every command inside the migration transaction' -Condition $run.AllInTransaction
-Assert-Equal -Name 'first install -> 18 modules reported applied' -Expected 18 `
+Assert-Equal -Name 'first install -> 20 modules reported applied' -Expected 20 `
     -Actual @($run.Output | Where-Object { $_ -cmatch '^Module dh\.\w+ applied\.$' }).Count
 
 # ---- The same first install when the engine returns NULL for an empty scalar FOR JSON subquery.
@@ -291,13 +307,13 @@ Add-TestResult -Name 'Baseline001 on empty history with DBNull for the empty set
     -Detail ('error=' + $run.Error + '; events=' + ($run.Events -join ',') + '; tx=' + ($run.Transactions -join ','))
 
 # ---- Re-running the same reviewed bundle on an installed database.
-$run = Invoke-Complete -Engine (New-EngineState -AppliedMigrations 4 -Installed)
+$run = Invoke-Complete -Engine (New-EngineState -AppliedMigrations 5 -Installed)
 $expected = @('LOCK', 'HISTORY', 'HISTORY', 'RELEASES', 'RECORDED', 'ACTUAL', 'SESSION', 'GRANTS', 'RECORDED', 'ACTUAL') +
 $metaOrder + @('CATALOG')
 Assert-Equal -Name 'same bundle rerun -> no migration body or DDL, grants and verification repeated' `
     -Expected ($expected -join ',') -Actual ($run.Events -join ',')
 Assert-Equal -Name 'same bundle rerun -> committed once' -Expected 'Begin,Commit,Dispose' -Actual ($run.Transactions -join ',')
-Assert-Equal -Name 'same bundle rerun -> 18 unchanged modules verified' -Expected 18 `
+Assert-Equal -Name 'same bundle rerun -> 20 unchanged modules verified' -Expected 20 `
     -Actual @($run.Output | Where-Object { $_ -cmatch 'unchanged; actual definition verified\.$' }).Count
 
 # ---- Rejections before any DDL on an installed database.
@@ -311,24 +327,24 @@ function Test-RejectedBeforeDdl {
     Assert-Equal -Name "$Name -> owned transaction rolled back, not committed" -Expected 'Begin,Rollback,Dispose' -Actual ($run.Transactions -join ',')
 }
 
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 @($engine.Actual | Where-Object ObjectName -CEQ 'dh.ReadAdmission')[0].DefinitionChecksum = ('0' * 64)
 Test-RejectedBeforeDdl -Name 'actual definition drift' -Engine $engine -Pattern '^Registered/actual module drift: dh\.ReadAdmission'
 
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 $engine.Actual.Add((New-ActualRow -ObjectName 'dh.Unreviewed' -Kind 'P' -Bytes 2 -Checksum ('A' * 64)))
 Test-RejectedBeforeDdl -Name 'unregistered dh module present' -Engine $engine -Pattern '^Existing module registration/object set is incomplete or unexpected'
 
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 [void]$engine.Recorded.Remove(@($engine.Recorded | Where-Object ObjectName -CEQ 'dh.SerializeProgress')[0])
 Test-RejectedBeforeDdl -Name 'registration missing for one module' -Engine $engine -Pattern '^Existing module registration/object set is incomplete or unexpected'
 
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 [void]$engine.Actual.Remove(@($engine.Actual | Where-Object ObjectName -CEQ 'dh.SerializeProgress')[0])
 $engine.Actual.Add((New-ActualRow -ObjectName 'dh.SerializeProgressCopy' -Kind 'P' -Bytes 2 -Checksum ('A' * 64)))
 Test-RejectedBeforeDdl -Name 'same count but different object name' -Engine $engine -Pattern '^Unregistered/missing/unexpected module'
 
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 $engine.Recorded.Clear()
 $engine.Actual.Clear()
 Test-RejectedBeforeDdl -Name 'registrations and objects erased after install' -Engine $engine `
@@ -341,33 +357,33 @@ foreach ($case in @(
         @{ Name = 'QUOTED_IDENTIFIER off'; Object = 'dh.ReadAdmission'; Property = 'QuotedIdentifier'; Value = $false },
         @{ Name = 'codec not schema bound'; Object = 'dh.PersistencePayloadV1'; Property = 'SchemaBound'; Value = $false }
     )) {
-    $engine = New-EngineState -AppliedMigrations 4 -Installed
+    $engine = New-EngineState -AppliedMigrations 5 -Installed
     @($engine.Actual | Where-Object ObjectName -CEQ $case.Object)[0].($case.Property) = $case.Value
     Test-RejectedBeforeDdl -Name ("actual module $($case.Name)") -Engine $engine `
         -Pattern ('^Registered/actual module drift: ' + [regex]::Escape($case.Object))
 }
 
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 @($engine.Recorded | Where-Object ObjectName -CEQ 'dh.ReadAdmission')[0].SourceChecksum = ('B' * 64)
 Test-RejectedBeforeDdl -Name 'already-declared release with a different source registration' -Engine $engine `
     -Pattern '^Already-declared release has different source registration: dh\.ReadAdmission'
 
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 foreach ($list in @($engine.Recorded, $engine.Actual)) {
     @($list | Where-Object ObjectName -CEQ 'dh.ReadAdmission')[0].DefinitionChecksum = ('C' * 64)
 }
 Test-RejectedBeforeDdl -Name 'unchanged source with different reviewed definition metadata' -Engine $engine `
     -Pattern '^Unchanged source has different reviewed definition metadata: dh\.ReadAdmission'
 
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 $engine.History[1] = [pscustomobject]@{ Version = 2; Name = $engine.History[1].Name; Checksum = $engine.History[1].Checksum.ToLowerInvariant() }
 $run = Invoke-Complete -Engine $engine
 Assert-True -Name 'applied history drift -> rejected before any migration body' -Condition (
     $run.Error -cmatch '^Migration history has a hole' -and ($run.Events -join ',') -ceq 'LOCK,HISTORY' -and
     ($run.Transactions -join ',') -ceq 'Begin,Rollback,Dispose') -Detail ('error=' + $run.Error + '; events=' + ($run.Events -join ','))
 
-$engine = New-EngineState -AppliedMigrations 4 -Installed
-$engine.History.Add([pscustomobject]@{ Version = 5; Name = '005_future.sql'; Checksum = ('D' * 64) })
+$engine = New-EngineState -AppliedMigrations 5 -Installed
+$engine.History.Add([pscustomobject]@{ Version = 6; Name = '006_future.sql'; Checksum = ('D' * 64) })
 $run = Invoke-Complete -Engine $engine
 Assert-True -Name 'newer database history -> rejected without downgrade' -Condition (
     $run.Error -cmatch '^Database has unknown/newer migrations' -and ($run.Events -join ',') -ceq 'LOCK,HISTORY') -Detail ([string]$run.Error)
@@ -390,7 +406,7 @@ Assert-True -Name 'intermediate module failure -> no later module, grant, metada
 Assert-Equal -Name 'intermediate module failure -> rollback requested' -Expected 'Begin,Rollback,Dispose' -Actual ($run.Transactions -join ',')
 
 # The transaction outcome is asserted on its own so a changed error text cannot hide it.
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 $engine.FailOn = 'CATALOG'
 $run = Invoke-Complete -Engine $engine
 Assert-True -Name 'strict catalog failure -> rollback without commit' -Condition (
@@ -400,7 +416,7 @@ Assert-True -Name 'strict catalog failure -> safe error without fake engine text
     $run.ErrorSqlNumber -is [int] -and $run.ErrorSqlNumber -eq 0 -and -not $run.ErrorHasInner -and
     -not $run.Error.Contains('Fake catalog failure')) `
     -Detail ('sqlNumber=' + $run.ErrorSqlNumber + '; inner=' + $run.ErrorHasInner + '; error=' + $run.Error)
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 $engine.FailOn = 'CATALOG'
 $engine.FailNumber = 51001
 $run = Invoke-Complete -Engine $engine
@@ -437,7 +453,7 @@ Add-TestResult -Name 'three-space CREATE header observed on SQL Server 17.0.5005
 
 # ---- Declaration and release history.
 # A source change whose manifest entry alone was updated is refused before any database command:
-# 004 and the strict catalog still name the old bundle (SQL-STRUCTURE-06 recurrence path).
+# Current 005 and the strict catalog still name the old bundle (SQL-STRUCTURE-06 recurrence path).
 $partialRoot = New-DatabaseFixture -Name 'changed-source-manifest-only'
 Edit-FixtureText -Path (Join-Path $partialRoot 'modules/procedures/read_admission.sql') -Find '    SET NOCOUNT ON;' `
     -Replace "    SET NOCOUNT ON;`n    -- reviewed wording change"
@@ -447,13 +463,13 @@ $partialCause = '^Module source structure violation: .*"Kind":"CatalogSourceChec
 Assert-Throws -Name 'changed source with only its manifest entry updated -> refused at the source stage' `
     -Pattern $partialCause -Action { Read-ModuleBundle -DatabaseRoot $partialRoot }
 
-# The reviewed change with every derived consumer aligned (manifest, 004, catalog) reaches the declaration check.
+# The reviewed change with current consumers aligned (manifest, 005, catalog) reaches the declaration check.
 $fixtureRoot = New-DatabaseFixture -Name 'changed-source'
 Edit-FixtureText -Path (Join-Path $fixtureRoot 'modules/procedures/read_admission.sql') -Find '    SET NOCOUNT ON;' `
     -Replace "    SET NOCOUNT ON;`n    -- reviewed wording change"
 Sync-FixtureHashConsumers -Root $fixtureRoot
 $changedBundle = Read-ModuleBundle -DatabaseRoot $fixtureRoot
-$run = Invoke-Runner -Engine (New-EngineState -AppliedMigrations 4 -Installed) -Action {
+$run = Invoke-Runner -Engine (New-EngineState -AppliedMigrations 5 -Installed) -Action {
     $transaction = $script:Connection.BeginTransaction()
     Invoke-ModuleBundle -Connection $script:Connection -Transaction $transaction -Bundle $changedBundle `
         -AllowFirstInstall $false -ReleaseAlreadyApplied $true
@@ -463,14 +479,14 @@ Assert-True -Name 'changed source bundle without a new declaration -> rejected b
     -Detail ('error=' + $run.Error + '; events=' + ($run.Events -join ','))
 
 $futureBundle = [pscustomobject]@{
-    ReleaseVersion = 5
+    ReleaseVersion = 6
     ManifestChecksum = $changedBundle.ManifestChecksum
     Modules = $changedBundle.Modules
     Permissions = $changedBundle.Permissions
 }
-$engine = New-EngineState -AppliedMigrations 4 -Installed
-$engine.History.Add([pscustomobject]@{ Version = 5; Name = '005_module_release.sql'; Checksum = ('E' * 64) })
-$engine.Releases.Add([pscustomobject]@{ Version = 5; ManifestChecksum = $changedBundle.ManifestChecksum })
+$engine = New-EngineState -AppliedMigrations 5 -Installed
+$engine.History.Add([pscustomobject]@{ Version = 6; Name = '006_module_release.sql'; Checksum = ('E' * 64) })
+$engine.Releases.Add([pscustomobject]@{ Version = 6; ManifestChecksum = $changedBundle.ManifestChecksum })
 $run = Invoke-Runner -Engine $engine -Action {
     $transaction = $script:Connection.BeginTransaction()
     Invoke-ModuleBundle -Connection $script:Connection -Transaction $transaction -Bundle $futureBundle `
@@ -479,15 +495,18 @@ $run = Invoke-Runner -Engine $engine -Action {
 $changed = @(@($engine.Recorded | Where-Object ObjectName -CEQ 'dh.ReadAdmission')[0].SourceChecksum)
 Assert-True -Name 'new declaration -> only the changed module is re-applied, grants and all metadata follow' -Condition (
     $null -eq $run.Error -and (@($run.Events | Where-Object { $_ -like 'DDL:*' }) -join ',') -ceq 'DDL:dh.ReadAdmission' -and
-    @($run.Events | Where-Object { $_ -ceq 'GRANTS' }).Count -eq 1 -and @($run.Events | Where-Object { $_ -like 'META:*' }).Count -eq 18 -and
+    @($run.Events | Where-Object { $_ -ceq 'GRANTS' }).Count -eq 1 -and
+    @($run.Events | Where-Object { $_ -like 'META:*' }).Count -eq 20 -and
     $changed[0] -ceq @($futureBundle.Modules | Where-Object ObjectName -CEQ 'dh.ReadAdmission')[0].SourceChecksum) `
     -Detail ('error=' + $run.Error + '; events=' + ($run.Events -join ','))
 # ToArray avoids a Windows PowerShell 5.1 binder failure when @() wraps this generic list.
 $releaseRows = $engine.Releases.ToArray()
-Assert-True -Name 'new declaration -> previous release row retained' -Condition ($releaseRows.Count -eq 2 -and $releaseRows[0].Version -eq 4)
+Assert-True -Name 'new declaration -> previous release rows retained' -Condition (
+    $releaseRows.Count -eq 3 -and $releaseRows[0].Version -eq 4 -and $releaseRows[1].Version -eq 5
+)
 
 $engine = New-EngineState -AppliedMigrations 3
-$engine.Releases.Add([pscustomobject]@{ Version = 4; ManifestChecksum = $script:Bundle.ManifestChecksum })
+$engine.Releases.Add([pscustomobject]@{ Version = 5; ManifestChecksum = $script:Bundle.ManifestChecksum })
 $run = Invoke-Runner -Engine $engine -Action {
     $transaction = $script:Connection.BeginTransaction()
     Invoke-ModuleBundle -Connection $script:Connection -Transaction $transaction -Bundle $script:Bundle -AllowFirstInstall $true -ReleaseAlreadyApplied $false
@@ -496,7 +515,7 @@ Assert-True -Name 'release declaration without its SchemaVersion row -> rejected
     $run.Error -cmatch '^Module release history has an unknown, missing-schema or malformed declaration' -and
     ($run.Events -join ',') -ceq 'RELEASES') -Detail ('error=' + $run.Error)
 
-$run = Invoke-Runner -Engine (New-EngineState -AppliedMigrations 4 -Installed) -Action {
+$run = Invoke-Runner -Engine (New-EngineState -AppliedMigrations 5 -Installed) -Action {
     Invoke-ModuleBundle -Connection $script:Connection -Transaction $null -Bundle $script:Bundle
 }
 Assert-True -Name 'module deployment without the caller transaction -> rejected before any command' `
@@ -516,7 +535,7 @@ $run = Invoke-Complete -Engine (New-EngineState -AppliedMigrations 1) -Contract 
 Assert-True -Name 'Complete for a different database -> rejected before any command' -Condition (
     $run.Error -cmatch '^Supply the explicit exact approved database' -and $run.CommandCount -eq 0)
 
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 $engine.FailOn = 'CATALOG'
 $run = Invoke-Runner -Engine $engine -Action {
     $transaction = $script:Connection.BeginTransaction()
@@ -525,7 +544,7 @@ $run = Invoke-Runner -Engine $engine -Action {
 Assert-True -Name 'caller-supplied transaction -> runner neither commits nor rolls back it' -Condition (
     $null -ne $run.Error -and ($run.Transactions -join ',') -ceq 'Begin') `
     -Detail ('tx=' + ($run.Transactions -join ',') + '; error=' + $run.Error)
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 $engine.FailOn = 'CATALOG'
 $engine.FailNumber = 51001
 $run = Invoke-Runner -Engine $engine -Action {
@@ -798,7 +817,7 @@ foreach ($shape in $rejectedShapes.Keys) {
 
 # The catalog drift checks of Test-Database run Invoke-Migrations inside the test's own transaction. The fake catalog
 # fails with the fixture's 51004; the Contract is supplied here so the offline runner reaches the catalog.
-$engine = New-EngineState -AppliedMigrations 4 -Installed
+$engine = New-EngineState -AppliedMigrations 5 -Installed
 $engine.FailOn = 'CATALOG'
 $engine.FailNumber = 51004
 $script:Engine = $engine
