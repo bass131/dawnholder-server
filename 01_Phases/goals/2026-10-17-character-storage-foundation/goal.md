@@ -5,7 +5,7 @@
 기존 개발 데이터는 옮기지 않습니다. 데이터가 있는 DB는 변경을 거부하고 새 개발·시연 DB를 준비합니다.
 첫날 저장 API 계약을 고정해 World·Content가 별도 승인 뒤 병행할 수 있게 합니다. Core 저장 완료와 화면 전체 흐름 완료는 구분합니다.
 
-**상태: PR 전 신규 독립44 계약 준비를 마쳤다.** 전체PR 정적 실사와 기존PS 시험 보완·8진입 재검증을 새 Opus에 맡긴다. 기존C#/SQL은35 독립실측과같은bytes임을대조해근거를검토하며이번WSL/실DB는재실행하지않는계획이다. writer43 자체성공·DB보존은유지하고독립차단해소·PR완료는아직판정하지않는다.
+**상태: 독립44는 판정 보류·새 결함0으로 정산·종료했다.** 강 필수 독립보완0·현재C#/SQL미실행·기존container82 d가 사유다. 8PS 각1회는 common exit1/나머지7개 exit0이며 자원반환을 메인이 접수했다. 리드는 고정127/허용시험17/과거근거22 불일치0·실패82행 이름/상세일치를 대조했다. 원문 prereview-ready-44/reviewer/report.md·settlement.md·lead-final-audit.json. 다음은 Main의 O1 처리와 최소 독립보완/실행 범위 판정이며 새worker·추가실행·PR0이다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -379,6 +379,44 @@ PR 발급 뒤 실제 번호를 병합 단계에 붙인다.
 World msg_aa083c106e80 질문4건에는 world-api-reply-v0.1.md로 답했다. Core canonical descriptor 준비 접점, host 미결 create 소유/복구 handoff, 명시 시작모드 주입은 v2 후보로 메인에 전달했다. 현재 API v1 bytes와 작업자 입력은 보존하며 현재 선행시험 정산 뒤 새 계약에 적용한다. 패킷49..54/v22는 World 제안, 승인/예약/구현 결과 아님.
 
 ## 재개 지점
+
+**현재 첫 일 — 독립44 정산 뒤 Main의 최소 다음 범위 판정을 처리한다.** 판정 원문 전문·context·실행/분류·고정입력/과거근거를 대조했다. Task task_c96201c9417b / Dispatch ctx_7c6aa247d08e는 failed settled, release는 external_terminal retained였으나 동일incarnation·fresh최초Task·idle를 확인하고 정확pane만 닫았다. 새 결함0이며35 #1/#2/#3 각1회는 유지한다. 근거 `prereview-ready-44/settlement.md`·`lead-final-audit.json`이다.
+
+Main 결정 초안은 `prereview-ready-44/decision-request-44.md`다. O1(선택 Close 예산 뒤 영구 추적)은 후속 권고, 기존C#시험의 독립보완과 현재B1/B3 실행 범위를 제안하며 역사35/43 실측 수용 범위는 추정하지 않는다. 기존container82는 d/PR귀속아님을 보존하고 별도안정화 권고다. 강 필수/완료조건을 낮추거나 새DB·실행창 권한을 추정하지 않는다. 답변 전 새worker/제품수정/WSL/SQL/상시poll·wait0이다.
+
+운영 원문에는 timer8개 자기보고(285/170/290×5/280)와 리드가 직접 관측한 sleep/draft 범위를 구분했다. answered뒤pending·전달지연·lastEntry조정·TEMP공유편차와 영향완전배제불가를 보존한다. 기존helper28신호/초과10구간/max527초에는 공식질문대기1993초가 포함되므로 모두 활동위반으로 계산하지 않는다. 실제반환03:08:46Z/Main접수 뒤 추가실행0·실DB보존이며 PR/goal완료는 아직 아니다.
+
+### 이전 재개 기록
+
+**현재 첫 일 — 독립44 실제 진입 보고와 Main의 lastEntry 조정 답변을 처리한다.** 공식답변은answered였으나worker의pending/B0보고가계속돼현재화면을한정대조했다. sleep290 background/턴종료·미제출확인draft를관측해위반/전달지연을Main에즉시보고하고원시보존·자기helper정리/새timer금지교정을전달했다. text+Enter의정확한태그확인안내로같은세션turn_started를확인했으며실제시험진입증명과구분한다.
+
+원시는 `prereview-ready-44/window-delivery-observation.md`와연결receipt/screen이다. 전달지연에따라반환03:13:46Z를유지한채lastEntry만5분뒤로조정해달라고Main에요청했으나답변전기존03:03:46Z·중단기준03:07:46Z/자동연장0이다. 아직리드는실제B첫진입/결과를받지않았고source/HEAD/commit변경0·상시poll/wait없이자연wake에서잇는다.
+
+
+
+**현재 첫 일 — 독립44 B의 진입 원시·실제 자원반환을 처리한다.** Main의fresh res-check/실제30분창을같은공식ask에회신했다. T02:43:46Z/lastEntry03:03:46Z/반환03:13:46Z·common중단기준03:07:46Z와소유identity한정조건/권한거부우회0/자기fixture DACL만을전달했다. 원문과답변/현재IDs는 `prereview-ready-44/main-window-authority.md`, `reply-window-approved.json`, `pending-execution-window.md`에있다.
+
+실제진입직전고정입력/실제host/모든lock/자원은검증자가재관측한다. source/HEAD/commit은바꾸지않고leadgoal만진행기록,actual자기child·잔여0과창반환을판정해석보다먼저Main에보고한다. 현재리드는진입/시험결과를아직수신하지않았으며상시poll/wait없이자연wake에서잇는다.
+
+
+
+**현재 첫 일 — 독립44 실제 시작 메일을 같은 공식ask에 회신한다.** Main은Content B70→Level preflight15분→Core44 30분순서와자기fixture DACL·소유identity/현재parentchain한정중단조건을접수했다. 아직fresh res-check/T/lastEntry/반환메일이없어B0이다. 승인원문/보충v2·pending ask·argv선검토는 `prereview-ready-44/main-queue-and-boundary-authority.md`, `execution-supplement-v2.md`, `pending-execution-window.md`, `argv-permission-preflight.json`에있다.
+
+기존8entry/Claude최초명령의ExecutionPolicy·권한skip플래그0을Main에선보고했고검증자에게Claude자동승인분류기거부시재시도·인자/경로우회0·원문보존즉시보고와저장소순서/형식가드의안내대응을구분해전달했다. 실제창전SQL/시험0·source/HEAD/commit변경0·상시poll/wait없이자연wake에서잇는다.
+
+
+
+**현재 첫 일 — Main의 독립44 실행창 답변을 같은 공식ask에 회신한다.** A READY·context·고정입력과기존8진입 argv/부작용을대조해Main에새30분창을요청했다. READY·중단/fixture DACL 보충안·요청원문과pending ask는 `prereview-ready-44/lead-ready-review.json`, `execution-supplement-v1-proposed.md`, `main-execution-window-request.json`, `pending-execution-window.md`에있다. 실제T/lastEntry/반환전B0이며창답변뒤만진행한다.
+
+검증자보완0은강필수충족/PASS로선승인하지않고요구·기존독립사례/원시연결이부족하면판정을보류한다. common중단요청은숫자PID만이아닌시작/직전identity와현재parentchain으로증명된자기process만의조건을Main에제출했다. 기존adapter의자기임시fixture DACL과외부/전역ACL을구분하며실제SQL/사용자프로필/서비스는변경하지않는다. verifier활성중source/HEAD/commit변경0·leadgoal만진행기록,상시poll/wait없이자연wake에서이어간다.
+
+
+
+**현재 첫 일 — 독립44의 A 준비 결과와 실행 READY를 처리한다.** 신규 외부 Opus를 리드 아래 새 split에 R5/R6로 기동해 첫화면·경로·준비·최초명령을 대조하고 최초 Task에 연결했다. 현재는 정적 실사·허용 기존PS 시험 보완만, 실제PS·SQL·WSL/빌드/서버는0이다. READY뒤 정확 argv/필수검증 충분성을 대조해 Main의 별도30분 창을 요청한다.
+
+기동·현재 Task/Dispatch/terminal/incarnation·모델 관측·외부 terminal resource와 종료 경계는 `prereview-ready-44/launch-observation.json`, 계약/입력/byte 대조와 원시는 같은 폴더에 있다. 실제 backend는unknown이며 attach의null모델값을실제모델로쓰지않는다. 검증자쓰기종료전source/HEAD/commit변경0·leadgoal진행만예외이며 추가상시poll/wait없이자연wake에서이어간다.
+
+
 
 **현재 첫 일 — 신규 독립44의 A 정적 준비를 시작하고 READY 뒤 실제 PS 실행창을 요청한다.** 기존 승인 PR전 신규 Opus 절차를 잇는다. 계약·전체PR110파일/128입력·기존PS시험17쓰기·8진입 계획과 이전실측byte 대조를 `prereview-ready-44/`에 준비했다. C#/SQL 제품변경0·35 독립시험14인스턴스hash동일을 근거로 이전1885/25PASS raw를 직접 실사하며, 이번 미실행을 현재실행으로 합산하지 않는다. 실제 B는 PS5.1/pwsh7 기존8진입·짧은catalog44 경로·별도30분 창 계획이고 Main 실제창 전0이다.
 
