@@ -1,4 +1,5 @@
 #nullable enable
+using Dawnholder.Client.Network;
 using Dawnholder.Client.State;
 using TMPro;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace Dawnholder.Client.UI
         [SerializeField] TMP_Text?   _member1Text;
 
         CanvasGroup? _rootGroup;
-        bool _subscribed;
+        PartyState? _partySource;
         bool _appearanceInitialized;
 
         // **자기-비활성 함정 회피**: _root는 이 컴포넌트가 붙은 GameObject(Party_Info) 자신이다.
@@ -58,30 +59,46 @@ namespace Dawnholder.Client.UI
 
         void Update()
         {
-            if (!_subscribed) TryBind();
+            TryBind();
+            // Transport close precedes the owner's queued mirror reset; do not present that roster as current.
+            if (UnityClientSession.Instance != null && UnityClientSession.Instance.IsClosed) SetVisible(false);
         }
 
         void TryBind()
         {
-            if (_subscribed || PartyState.Instance == null) return;
-            PartyState.Instance.OnPartyUpdated += Refresh;
-            _subscribed = true;
+            PartyState? source = PartyState.Instance;
+            if (ReferenceEquals(_partySource, source)) return;
+            Unbind();
+            _partySource = source;
+            if (source != null) source.OnPartyUpdated += Refresh;
             Refresh();
         }
 
         void OnDisable()
         {
-            if (_subscribed && PartyState.Instance != null)
-                PartyState.Instance.OnPartyUpdated -= Refresh;
-            _subscribed = false;
+            Unbind();
+            SetVisible(false);
+        }
+
+        void OnDestroy() => Unbind();
+
+        void Unbind()
+        {
+            // The old mirror may already be a destroyed Unity object; detach from its managed event.
+            if (!ReferenceEquals(_partySource, null)) _partySource.OnPartyUpdated -= Refresh;
+            _partySource = null;
         }
 
         void Refresh()
         {
-            PartyState ps = PartyState.Instance;
-            if (ps == null) return;
+            PartyState? ps = _partySource;
+            if (ps == null)
+            {
+                SetVisible(false);
+                return;
+            }
 
-            bool inParty = ps.InParty;
+            bool inParty = ps.InParty && (UnityClientSession.Instance == null || !UnityClientSession.Instance.IsClosed);
             SetVisible(inParty);
             if (!inParty) return;
 

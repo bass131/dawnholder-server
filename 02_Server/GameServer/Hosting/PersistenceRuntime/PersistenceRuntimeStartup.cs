@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Dawnholder.Server.GameServer.Persistence;
 using Dawnholder.Server.GameServer.Persistence.Admission;
+using Dawnholder.Server.GameServer.Persistence.Catalog;
 using Dawnholder.Server.GameServer.Persistence.Sql;
 
 namespace Dawnholder.Server.GameServer.Hosting.PersistenceRuntime;
@@ -19,12 +20,14 @@ internal sealed class PersistenceRuntimeStartup : IDisposable
 
     internal CharacterAdmissionServices Services { get; }
 
-    internal static async Task<PersistenceRuntimeStartup?> CreateAsync(string[] args, CancellationToken cancellationToken)
+    internal static async Task<PersistenceRuntimeStartup?> CreateAsync(string[] args, CancellationToken cancellationToken,
+        SafeDefaults? defaults = null)
     {
         if (args.Length == 0)
             return null;
         if (args.Length != 2 || args[0] != "--persistence-profile" || string.IsNullOrWhiteSpace(args[1]))
             throw new ArgumentException("Select one public persistence profile.");
+        ArgumentNullException.ThrowIfNull(defaults);
         PersistenceOptions options = await ReadOptionsAsync(args[1], cancellationToken).ConfigureAwait(false);
         using CancellationTokenSource secretBudget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         secretBudget.CancelAfter(TimeSpan.FromSeconds(5));
@@ -34,15 +37,12 @@ internal sealed class PersistenceRuntimeStartup : IDisposable
         try
         {
             SqlCharacterRepository repository = new(options, factory.CreateConnection);
+            SqlCharacterCatalogRepository catalogRepository = new(options, factory.CreateConnection);
             PersistenceDeadline deadline = PersistenceDeadline.FromBudget(TimeProvider.System, TimeSpan.FromSeconds(5));
-            ReadAdmissionResult admission = await repository.ReadAdmissionAsync(
-                new ReadAdmissionRequest(options.Identity), deadline, cancellationToken).ConfigureAwait(false);
-            if (admission.Status != ReadAdmissionStatus.Probe || admission.Admission is not { } probe ||
-                !probe.SchemaCompatible || !probe.BindingMatches)
+            if (!await catalogRepository.PreflightAsync(deadline, cancellationToken).ConfigureAwait(false))
                 throw new InvalidOperationException("Persistence preflight failed.");
-            CharacterAdmissionServices services = new(
-                new PersistenceAccountSelector(options.PersistedAccountName, options.AccountId), options.Identity,
-                repository, TimeProvider.System);
+            CharacterCatalogService catalog = new(catalogRepository, repository, defaults, TimeProvider.System);
+            CharacterAdmissionServices services = new(catalog, TimeProvider.System);
             return new PersistenceRuntimeStartup(factory, services);
         }
         catch
@@ -68,7 +68,7 @@ internal sealed class PersistenceRuntimeStartup : IDisposable
             throw new InvalidDataException("Persistence profile is invalid.");
         using JsonDocument document = JsonDocument.Parse(bytes.AsMemory(0, length));
         SqlPersistenceSnapshot.Keys(document.RootElement,
-            "persistedAccountName", "database", "serverEndpoint", "slotId", "accountId", "characterId");
+            "profileVersion", "database", "serverEndpoint");
         JsonSerializerOptions serializer = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,

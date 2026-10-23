@@ -448,7 +448,8 @@ namespace Dawnholder.Client.Tests.PlayMode
                     int order = smithCanvas.sortingOrder;
                     smithPanel.anchorMin = guildPanel.anchorMin;
                     smithPanel.anchorMax = guildPanel.anchorMax;
-                    smithPanel.anchoredPosition = guildPanel.anchoredPosition;
+                    // Offset shared header captions so the covering window cannot redraw the same glyphs in place.
+                    smithPanel.anchoredPosition = guildPanel.anchoredPosition + new Vector2(8f, -8f);
                     smithCanvas.sortingOrder = guildCanvas.sortingOrder + 1;
                     return () =>
                     {
@@ -491,11 +492,17 @@ namespace Dawnholder.Client.Tests.PlayMode
         [UnityTest]
         public IEnumerator NegativeControl_EmptiedButtonCaption_TheMissingCaptionIsReported()
         {
+            TMP_Text caption = null;
             yield return NegativeControl("negative-emptied-button-caption",
-                (pair, expected) => new[] { Find(expected, pair.Guild, "Label").Name },
+                (pair, expected) =>
+                {
+                    caption = Label(ActionButton(pair.Guild), "Label");
+                    LabelExpectation[] found = expected.Where(item => ReferenceEquals(item.Text, caption)).ToArray();
+                    Assert.AreEqual(1, found.Length, "fixture: exactly one expected text for the action button caption");
+                    return new[] { found[0].Name };
+                },
                 pair =>
                 {
-                    TMP_Text caption = Label(pair.Guild, "Label");
                     string before = caption.text;
                     caption.text = string.Empty;
                     return () => caption.text = before;

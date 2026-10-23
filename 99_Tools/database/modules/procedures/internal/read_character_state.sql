@@ -31,7 +31,8 @@ BEGIN
     SET @hp = NULL;
     SET @storedMaxHp = NULL;
     SET @bossUnlocked = NULL;
-    SELECT @accountPresent = 1 FROM dh.Account WITH (UPDLOCK, HOLDLOCK) WHERE AccountId = @boundAccount;
+    -- Account identity is immutable; an update lock here would serialize different characters of one account.
+    SELECT @accountPresent = 1 FROM dh.Account WHERE AccountId = @boundAccount;
     SELECT @characterPresent = 1,
         @storedAccount = AccountId,
         @storedClass = Class,

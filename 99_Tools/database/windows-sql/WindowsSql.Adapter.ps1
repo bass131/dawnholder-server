@@ -7,14 +7,26 @@
 . (Join-Path $PSScriptRoot 'WindowsSql.Verify.ps1')
 
 function New-WindowsSqlAdapter {
-    param($Plan, [string]$RuntimePath)
-    $runtime = Read-WindowsSqlRuntime -Plan $Plan -Relative $RuntimePath
+    param($Plan, [string]$RuntimePath, $ResumeContext = $null)
+    $executionPlan = $Plan
+    if ($null -ne $ResumeContext) {
+        $ResumeContext = Read-WindowsSqlResumeContext -BindingPath $ResumeContext.BindingPath `
+            -BindingHash $ResumeContext.BindingHash -EntryPath $ResumeContext.EntryPath `
+            -Mode $ResumeContext.Mode -Approval $ResumeContext.Approval
+        if ($Plan.PlanHash -cne $ResumeContext.OwnershipPlan.PlanHash -or
+            $RuntimePath -cne $ResumeContext.Binding.RuntimePath) { throw 'WINDOWS_SQL_RESUME_BINDING_CHANGED' }
+        $Plan = $ResumeContext.OwnershipPlan
+        $executionPlan = $ResumeContext.ExecutionPlan
+    }
+    $runtime = Read-WindowsSqlRuntime -Plan $executionPlan -Relative $RuntimePath
     Assert-WindowsSqlExecutor -Plan $Plan -Runtime $runtime
     $sourceRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..')).TrimEnd('\', '/')
     if ($Plan.SourceRoot -ine $sourceRoot) { throw 'WINDOWS_SQL_SOURCE_ROOT_MISMATCH' }
     $adapter = [pscustomobject]@{
         Kind = 'WindowsLocal'
         Plan = $Plan
+        ExecutionPlan = $executionPlan
+        ResumeContext = $ResumeContext
         Runtime = $runtime
         RuntimePath = $RuntimePath
         Lease = $null
@@ -35,11 +47,13 @@ function New-WindowsSqlAdapter {
             # Durable journal, not abandonment, decides whether a new operation is safe.
         }
         if (-not $adapter.MutexOwned) { throw 'WINDOWS_SQL_BUSY' }
-        $paths = @($Plan.SourceRoot, $Plan.PrivateRoot) + @($Plan.Inputs | ForEach-Object {
+        $paths = @($Plan.SourceRoot, $Plan.PrivateRoot) + @($executionPlan.Inputs | ForEach-Object {
                 Join-Path $Plan.SourceRoot $_.Path
             })
+        if ($null -ne $ResumeContext) { $paths += @($ResumeContext.Artifacts.Path) }
         $adapter.DirectoryLease = Open-WindowsSqlDirectoryLease -Paths $paths
-        $adapter.Lease = Open-WindowsSqlInputLease -Plan $Plan -RuntimePath $RuntimePath
+        $adapter.Lease = Open-WindowsSqlInputLease -Plan $executionPlan -RuntimePath $RuntimePath
+        if ($null -ne $ResumeContext) { Open-WindowsSqlResumeLease -Adapter $adapter }
         Assert-WindowsSqlPrivateAcl -Path $Plan.PrivateRoot -Sid $runtime.ExecutorSid
         $childEnvironment = @{
             TEMP = $Plan.PrivateRoot
@@ -51,7 +65,7 @@ function New-WindowsSqlAdapter {
             (Join-Path $PSScriptRoot 'Read-WindowsSqlSources.ps1')) -Environment $childEnvironment
         $adapter.Sources = ConvertFrom-Json -InputObject $output -Depth 30
         if ($adapter.Sources.Version -ne 1 -or $adapter.Sources.PowerShellVersion -notmatch '^5\.1\.' -or
-            $adapter.Sources.Sources.Count -ne 4 -or $adapter.Sources.Bundle.ReleaseVersion -ne 4) {
+            $adapter.Sources.Sources.Count -ne 5 -or $adapter.Sources.Bundle.ReleaseVersion -ne 5) {
             throw 'WINDOWS_SQL_SOURCE_READER_FAILED'
         }
         Assert-WindowsSqlProfile -Adapter $adapter
@@ -80,10 +94,12 @@ function Invoke-WindowsSqlNativeOperation {
     param($Adapter, [string]$Operation, $Request)
     Assert-WindowsSqlExecutor -Plan $Adapter.Plan -Runtime $Adapter.Runtime
     $plan = $Adapter.Plan
+    $resume = Get-WindowsSqlField -Object $Adapter -Name 'ResumeContext'
     if ($Operation -ceq 'WriteLifecycleState') {
         if ($Request.PlanHash -cne $plan.PlanHash -or $Request.LifetimeId -cne $plan.LifetimeId) {
             throw 'WINDOWS_SQL_RECEIPT_MISMATCH'
         }
+        if ($null -ne $resume) { Assert-WindowsSqlResumeProvenance -Adapter $Adapter -State $Request }
         Write-WindowsSqlPrivateJson -Adapter $Adapter -Name 'lifecycle.json' -Value $Request
         return [pscustomobject]@{ Completed = $true }
     }
@@ -111,7 +127,7 @@ function Invoke-WindowsSqlNativeOperation {
         'VerifyTargetCatalog' {
             if ($null -eq $Adapter.LastTls) { throw 'WINDOWS_SQL_TLS_VERIFY_FAILED' }
             Assert-WindowsSqlCatalog -Adapter $Adapter
-            return [pscustomobject]@{ CatalogMatches = $true; SchemaVersion = 4 }
+            return [pscustomobject]@{ CatalogMatches = $true; SchemaVersion = 5 }
         }
         'SaveConfigurationSnapshot' {
             Assert-WindowsSqlRegistryUnchanged -Adapter $Adapter
@@ -135,8 +151,17 @@ function Invoke-WindowsSqlNativeOperation {
             $journal = Read-WindowsSqlPrivateJson -Adapter $Adapter -Name 'lifecycle.json'
             if ($null -eq $journal -or $journal.Status -cne 'Applying' -or
                 $journal.PendingOperation -cne $Operation) { throw 'WINDOWS_SQL_JOURNAL_REQUIRED' }
-            Assert-WindowsSqlApproval -Plan $plan
-            Assert-WindowsSqlInputs -Plan $plan
+            $executionPlan = Get-WindowsSqlExecutionPlan -Adapter $Adapter
+            Assert-WindowsSqlApproval -Plan $executionPlan
+            Assert-WindowsSqlInputs -Plan $executionPlan
+            if ($null -ne $resume) {
+                Assert-WindowsSqlResumeProvenance -Adapter $Adapter -State $journal
+                $allowed = if ($resume.Mode -ceq 'Resume') { @('ApplyMigrations', 'CreateRuntimeLogin') }
+                elseif ($resume.Mode -ceq 'Cleanup') {
+                    @('RemoveRuntimeLogin', 'RemoveDatabase', 'RestoreConfiguration', 'RestartService')
+                } else { @() }
+                if ($Operation -cnotin $allowed) { throw 'WINDOWS_SQL_RESUME_OPERATION_INVALID' }
+            }
             Assert-WindowsSqlRegistryUnchanged -Adapter $Adapter
             if ($Operation -cin @('CreateDatabase', 'ApplyMigrations', 'CreateRuntimeLogin',
                     'RemoveRuntimeLogin', 'RemoveDatabase')) {

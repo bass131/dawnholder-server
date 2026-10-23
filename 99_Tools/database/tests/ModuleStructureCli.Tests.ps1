@@ -90,16 +90,18 @@ $compliant = Invoke-StructureCheck -Root $compliantRoot
 $compliantStrict = Invoke-StructureCheck -Root $compliantRoot -Strict
 Assert-Equal -Name 'compliant tree -> status' -Expected 'compliant' -Actual $compliant.Result.Status
 Assert-Equal -Name 'compliant tree -> ViolationCount' -Expected 0 -Actual $compliant.Result.ViolationCount
-# 19 module/permission files and 4 migrations for placement, plus the three hash consumers MSSQL.md requires.
+# Release 5: 21 module/permission files and 5 migrations, plus manifest and three registered consumers.
 $structureFiles = @(
     Get-ChildItem -LiteralPath (Join-Path $compliantRoot 'modules') -Filter '*.sql' -File -Recurse
     Get-ChildItem -LiteralPath (Join-Path $compliantRoot 'migrations') -Filter '*.sql' -File
 ) | ForEach-Object { $_.FullName.Substring($compliantRoot.Length + 1).Replace('\', '/') }
-$expectedChecked = @($structureFiles) + @('modules/manifest.json', 'verify-schema.sql', 'Module.Common.ps1')
-Assert-Equal -Name 'compliant tree -> checked files (23 structure files + manifest, catalog, Module.Common)' `
+$expectedChecked = @($structureFiles) + @(
+    'modules/manifest.json', 'verify-schema.sql', 'Module.Common.ps1', 'ModuleHash.Common.ps1'
+)
+Assert-Equal -Name 'compliant tree -> checked files (26 SQL files + manifest and three consumers)' `
     -Expected ((@($expectedChecked) | Sort-Object) -join '|') `
     -Actual ((@($compliant.Result.CheckedFiles) | Sort-Object) -join '|')
-Assert-Equal -Name 'compliant tree -> checked file count' -Expected 26 -Actual @($compliant.Result.CheckedFiles).Count
+Assert-Equal -Name 'compliant tree -> checked file count' -Expected 30 -Actual @($compliant.Result.CheckedFiles).Count
 Assert-Equal -Name 'compliant tree -> warning exit' -Expected 0 -Actual $compliant.ExitCode
 Assert-Equal -Name 'compliant tree -> Strict exit' -Expected 0 -Actual $compliantStrict.ExitCode
 Assert-True -Name 'compliant tree -> machine fields' -Condition (
@@ -518,11 +520,12 @@ $root = New-DatabaseFixture -Name 'text-mode-violation'
 Write-FixtureText -Path (Join-Path $root 'modules/procedures/extra_lookup.sql') `
     -Text "CREATE OR ALTER PROCEDURE dh.ExtraLookup`nAS`nBEGIN`n    SET NOCOUNT ON;`nEND;`n"
 $textViolation = Invoke-StructureCheck -Root $root -Text
-# The host may wrap long warning lines when output is redirected; compare whitespace-normalized text.
+# The host localizes the warning prefix and may wrap long redirected lines; preserve the diagnostic contract.
+# Unicode regex escapes keep the localized prefix intact when Windows PowerShell reads BOM-less UTF-8 as ANSI.
 $textOutput = ($textViolation.StdOut + $textViolation.StdErr).Trim() -replace '\s+', ' '
 Assert-True -Name 'text mode violation -> status line and file:line warning with fix' -Condition (
     $textViolation.ExitCode -eq 0 -and $textOutput -cmatch 'Module structure: violation\.' -and
-    $textOutput -cmatch 'WARNING: modules/procedures/extra_lookup\.sql:1: .*Fix: Move the known object') `
+    $textOutput -cmatch '(?:WARNING|\uacbd\uace0): modules/procedures/extra_lookup\.sql:1: .*Fix: Move the known object') `
     -Detail $textOutput
 
 Complete-TestSuite

@@ -64,11 +64,11 @@ namespace Dawnholder.Client.Tests
             Assert.IsFalse(closed.TakesClicks, "req5 closing stops clicks: " + closed.Describe());
         }
 
-        // req5: the open window takes raycasts only on its controls, so its background is no attack-blocking board; the
-        // button is a uGUI raycast target under the window's own GraphicRaycaster, which GameplayPointerInput can see.
+        // C8: the open panel shields gameplay clicks outside its controls; text remains a non-target.
+        // The action button stays a uGUI raycast target under the window's own GraphicRaycaster.
         [TestCase(GuildWindowDriver.Guild)]
         [TestCase(GuildWindowDriver.Blacksmith)]
-        public void OpenWindow_TakesRaycastsOnlyOnItsControls(string kind)
+        public void OpenWindow_PanelAndControlsShieldGameplayClicks(string kind)
         {
             using var window = new GuildWindowDriver(kind);
             var model = new GuildModelDriver();
@@ -83,7 +83,10 @@ namespace Dawnholder.Client.Tests
                 ? buttonGraphic.canvas.rootCanvas.GetComponent<GraphicRaycaster>()
                 : null;
 
-            Assert.IsEmpty(outsideControls, "req5 only controls take raycasts; background and texts let input through");
+            CollectionAssert.AreEquivalent(
+                new[] { kind == GuildWindowDriver.Guild ? "Guild (Image)" : "Blacksmith (Image)" },
+                outsideControls, "C8 the open panel shields gameplay clicks outside controls; text is not a raycast target");
+            Assert.IsTrue(window.View().TakesRaycasts, "C8 the open window's visible canvas and groups permit raycast blocking");
             Assert.IsTrue(buttonIsTarget, "req5 the action button is a uGUI raycast target");
             Assert.IsNotNull(raycaster, "req5 the window's canvas has a GraphicRaycaster for the pointer gate");
         }

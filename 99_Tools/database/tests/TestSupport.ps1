@@ -151,14 +151,14 @@ function New-DatabaseFixture {
         [switch]$WithoutMigrations
     )
     # Byte-exact copy of the reviewed module and migration sources; product files stay read-only.
-    # The structure check also reads these two files as registered hash consumers (MSSQL.md offline check).
+    # The structure check reads all three registered consumers, including the immutable historical release pin.
     $root = Join-Path $script:SuiteRoot $Name
     [void][IO.Directory]::CreateDirectory($root)
     Copy-Item -LiteralPath (Join-Path $script:ToolRoot 'modules') -Destination $root -Recurse
     if (-not $WithoutMigrations) {
         Copy-Item -LiteralPath (Join-Path $script:ToolRoot 'migrations') -Destination $root -Recurse
     }
-    foreach ($consumer in @('verify-schema.sql', 'Module.Common.ps1')) {
+    foreach ($consumer in @('verify-schema.sql', 'Module.Common.ps1', 'ModuleHash.Common.ps1')) {
         Copy-Item -LiteralPath (Join-Path $script:ToolRoot $consumer) -Destination (Join-Path $root $consumer)
     }
     return $root
@@ -254,8 +254,8 @@ function Sync-FixtureHashConsumers {
     )
     # Fixture preparation for intended compliant or structure-only cases and for isolating one stimulus.
     # Derived consumers are recomputed by the helpers above, never by product hash functions:
-    # manifest entries -> raw manifest identity -> 004 declaration -> catalog module, migration and release rows.
-    # The Preserve switches keep a deliberate manifest or 004 stimulus while its unrelated dependents are aligned.
+    # manifest entries -> raw manifest identity -> current 005 declaration -> catalog module/migration/release rows.
+    # Immutable 004 and its historical pin stay byte-exact; Preserve keeps a deliberate current-release stimulus.
     $manifest = Read-FixtureManifest -Root $Root
     if (-not $PreserveManifestEntries) {
         $changed = $false
@@ -274,12 +274,12 @@ function Sync-FixtureHashConsumers {
     }
     $identity = Get-Sha256Hex -Bytes ([IO.File]::ReadAllBytes((Join-Path $Root 'modules/manifest.json')))
 
-    $releasePath = Join-Path $Root 'migrations/004_module_release.sql'
+    $releasePath = Join-Path $Root 'migrations/005_character_catalog.sql'
     if (-not $PreserveReleaseDeclaration) {
         $release = Read-FixtureText -Path $releasePath
         $releaseLiteral = @{
             Text = $release
-            Pattern = "VALUES\(4, '(?<Value>[0-9A-F]{64})'\)"
+            Pattern = "VALUES\(5, '(?<Value>[0-9A-F]{64})'\)"
             Value = $identity
             Location = $releasePath
         }
@@ -303,7 +303,8 @@ function Sync-FixtureHashConsumers {
         }
     }
     $migrationNames = @(
-        '001_initial.sql', '002_persistence_metadata.sql', '003_module_metadata.sql', '004_module_release.sql'
+        '001_initial.sql', '002_persistence_metadata.sql', '003_module_metadata.sql', '004_module_release.sql',
+        '005_character_catalog.sql'
     )
     for ($index = 0; $index -lt $migrationNames.Count; $index++) {
         $name = $migrationNames[$index]

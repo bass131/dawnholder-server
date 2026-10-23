@@ -14,6 +14,107 @@ namespace Dawnholder.Server.GameServer.Tests.Persistence;
 public sealed class CharacterPersistenceOwnerSettlementTests
 {
     [Theory]
+    [InlineData(PersistenceResultCode.Busy)]
+    [InlineData(PersistenceResultCode.StaleFence)]
+    [InlineData(PersistenceResultCode.Conflict)]
+    [InlineData(PersistenceResultCode.IdentityMismatch)]
+    [InlineData(PersistenceResultCode.InvalidClass)]
+    [InlineData(PersistenceResultCode.CancelledBeforeApply)]
+    [InlineData(PersistenceResultCode.SequenceMismatch)]
+    [InlineData(PersistenceResultCode.IntegrityFailure)]
+    public async Task AcquireRejected_PreservesItsCode_WithoutAssigningItToQueuedWork(PersistenceResultCode code)
+    {
+        CharacterPersistenceOwnerHarness lane = new();
+        PersistenceSubmission acquire = lane.Owner.TrySubmitAcquire(7, CharacterClass.Knight, Defaults(), lane.Budget(), OperationA);
+        var call = await lane.Repository.NextAcquireAsync();
+        PersistenceSubmission queued = lane.Owner.TrySubmitCheckpoint(KnightSafe(), lane.Budget());
+        call.Complete(AcquireAndLoadResult.Rejected(code));
+
+        PersistenceWorkResult result = await Within(acquire.Completion!);
+        Assert.Equal(PersistenceWorkStatus.Rejected, result.Status);
+        Assert.Equal(code, result.Code);
+        Assert.Null(result.LoadedClass);
+        PersistenceWorkResult cancelled = await Within(queued.Completion!);
+        Assert.Equal(PersistenceWorkStatus.NotDispatched, cancelled.Status);
+        Assert.Null(cancelled.Code);
+        Assert.Equal(OperationA, call.Request.Operation.OperationId);
+        Assert.Empty(lane.Owner.UnfinishedOperationIds);
+        Assert.Equal(PersistenceCloseStatus.NotHeld, (await Within(lane.Owner.CloseAsync(Ticket(), lane.Budget()))).Status);
+        Assert.Equal(new[] { Repo.Acquire }, lane.Repository.Calls);
+    }
+
+    [Theory]
+    [InlineData(PersistenceResultCode.Busy)]
+    [InlineData(PersistenceResultCode.StaleFence)]
+    [InlineData(PersistenceResultCode.Conflict)]
+    [InlineData(PersistenceResultCode.IdentityMismatch)]
+    [InlineData(PersistenceResultCode.InvalidClass)]
+    [InlineData(PersistenceResultCode.CancelledBeforeApply)]
+    [InlineData(PersistenceResultCode.SequenceMismatch)]
+    [InlineData(PersistenceResultCode.IntegrityFailure)]
+    public async Task AcquireResolvedNotApplied_PreservesItsCodeAndConfirmedUnchangedAuthority(PersistenceResultCode code)
+    {
+        CharacterPersistenceOwnerHarness lane = new();
+        PersistenceSubmission acquire = lane.Owner.TrySubmitAcquire(7, CharacterClass.Knight, Defaults(), lane.Budget(), OperationA);
+        var call = await lane.Repository.NextAcquireAsync();
+        call.Complete(AcquireAndLoadResult.AcquireUnknown());
+        var query = await lane.Repository.NextResolveAsync();
+        Assert.Equal(call.Request.Operation, query.Request.Operation);
+        Assert.Equal(ResolveMode.QueryOnly, query.Request.Mode);
+        query.Complete(ResolveOperationResult.NotApplied(code, Observed(Free(7), null, null)));
+
+        PersistenceWorkResult result = await Within(acquire.Completion!);
+        Assert.Equal(PersistenceWorkStatus.NotApplied, result.Status);
+        Assert.Equal(code, result.Code);
+        Assert.Null(result.LoadedClass);
+        Assert.Empty(lane.Owner.UnfinishedOperationIds);
+        Assert.Equal(PersistenceCloseStatus.NotHeld, (await Within(lane.Owner.CloseAsync(Ticket(), lane.Budget()))).Status);
+        Assert.Equal(new[] { Repo.Acquire, Repo.Resolve }, lane.Repository.Calls);
+    }
+
+    [Fact]
+    public async Task AcquireNotAppliedWithChangedFence_PreservesFenceLostDespiteTheRejectionCode()
+    {
+        CharacterPersistenceOwnerHarness lane = new();
+        PersistenceSubmission acquire = lane.Owner.TrySubmitAcquire(7, CharacterClass.Knight, Defaults(), lane.Budget());
+        var call = await lane.Repository.NextAcquireAsync();
+        call.Complete(AcquireAndLoadResult.AcquireUnknown());
+        var query = await lane.Repository.NextResolveAsync();
+        query.Complete(ResolveOperationResult.NotApplied(PersistenceResultCode.StaleFence, Observed(Free(9), null, null)));
+
+        PersistenceWorkResult result = await Within(acquire.Completion!);
+        Assert.Equal(PersistenceWorkStatus.FenceLost, result.Status);
+        Assert.Equal(PersistenceResultCode.StaleFence, result.Code);
+        Assert.Null(result.LoadedClass);
+        Assert.Equal(PersistenceCloseStatus.FenceLost, (await Within(lane.Owner.CloseAsync(Ticket(), lane.Budget()))).Status);
+        Assert.Equal(new[] { Repo.Acquire, Repo.Resolve }, lane.Repository.Calls);
+    }
+
+    [Fact]
+    public async Task AcquireNotAppliedForAnotherIdentity_RemainsUnresolvedWithoutPublishingThatCode()
+    {
+        CharacterPersistenceOwnerHarness lane = new();
+        PersistenceSubmission acquire = lane.Owner.TrySubmitAcquire(7, CharacterClass.Knight, Defaults(), lane.Budget());
+        var call = await lane.Repository.NextAcquireAsync();
+        call.Complete(AcquireAndLoadResult.AcquireUnknown());
+        var query = await lane.Repository.NextResolveAsync();
+        PersistenceAuthority foreign = new(new(1, Guid.NewGuid(), Guid.NewGuid()), PersistenceOwnerKind.Free, null, 7, 0);
+        query.Complete(ResolveOperationResult.NotApplied(PersistenceResultCode.IdentityMismatch, new(foreign, null, null)));
+        var seal = await lane.Repository.NextResolveAsync();
+        Assert.Equal(call.Request.Operation, seal.Request.Operation);
+        Assert.Equal(ResolveMode.SealIfAbsent, seal.Request.Mode);
+        seal.Complete(ResolveOperationResult.StillUnknown());
+
+        PersistenceWorkResult result = await Within(acquire.Completion!);
+        Assert.Equal(PersistenceWorkStatus.Unresolved, result.Status);
+        Assert.Null(result.Code);
+        Assert.Null(result.LoadedClass);
+        Assert.Contains(call.Request.Operation.OperationId, lane.Owner.UnfinishedOperationIds);
+        Assert.Equal(PersistenceCloseStatus.Unresolved, (await Within(lane.Owner.CloseAsync(Ticket(), lane.Budget()))).Status);
+        Assert.Equal(new[] { Repo.Acquire, Repo.Resolve, Repo.Resolve }, lane.Repository.Calls);
+    }
+
+    [Theory]
     [InlineData("otherOperation")]
     [InlineData("otherSequence")]
     [InlineData("otherFence")]

@@ -1,6 +1,7 @@
 #nullable enable
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Input;
+using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
 using Shared.GameData;
 using Shared.Protocol;
@@ -36,10 +37,18 @@ namespace Dawnholder.Client.UI
         [SerializeField] Image? _eIconImage;
         [SerializeField] TMP_Text? _eCooldownText;
 
+        [Header("Actual slot roots and key labels")]
+        [SerializeField] GameObject? _qSlotRoot;
+        [SerializeField] GameObject? _eSlotRoot;
+        [SerializeField] TMP_Text? _qKeyText;
+        [SerializeField] TMP_Text? _eKeyText;
+
         [Header("스킬 아이콘 매핑 에셋")]
         [SerializeField] SkillIconSet? _iconSet;
 
-        // 세션 내 고정 — 클래스는 로그인 후 바뀌지 않으므로 Start에서 1회 결정.
+        // Presentation cache only; the connection owner still owns class authority.
+        CharacterClass? _renderedClass;
+        bool _hasResolvedClass;
         SkillId _qSkill;
         SkillId _eSkill;
 
@@ -56,6 +65,7 @@ namespace Dawnholder.Client.UI
 
         void OnDestroy()
         {
+            ClassLoadout.AuthorityChanged -= ResolveSkillSlots;
             if (Instance == this) Instance = null;
         }
 
@@ -64,34 +74,65 @@ namespace Dawnholder.Client.UI
             ResolveSkillSlots();
         }
 
-        void OnEnable() => ClassLoadout.AuthorityChanged += ResolveSkillSlots;
-        void OnDisable() => ClassLoadout.AuthorityChanged -= ResolveSkillSlots;
+        void OnEnable()
+        {
+            ClassLoadout.AuthorityChanged -= ResolveSkillSlots;
+            ClassLoadout.AuthorityChanged += ResolveSkillSlots;
+            ResolveSkillSlots();
+        }
 
-        // 선택 클래스 → Q/E 스킬 결정. ClientSkillCatalog.SkillKeyMap이 단일 진실.
+        void OnDisable()
+        {
+            ClassLoadout.AuthorityChanged -= ResolveSkillSlots;
+            ApplySlots(SkillId.None, SkillId.None);
+            _hasResolvedClass = false;
+        }
+
+        static CharacterClass? CurrentClass()
+        {
+            var session = UnityClientSession.Instance;
+            if (session != null && (session.IsClosed || !session.CharacterLoad.IsSuccess)) return null;
+            return ClassLoadout.ServerClass;
+        }
+
+        // Only confirmed authority selects skills; menu intent never fills a slot.
         void ResolveSkillSlots()
         {
-            if (!ClassLoadout.ServerClass.HasValue) return;
-            CharacterClass myClass = (CharacterClass)ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
-
-            if (ClientSkillCatalog.SkillKeyMap.TryGetValue(myClass, out (SkillId q, SkillId e) qe))
+            _renderedClass = CurrentClass();
+            _hasResolvedClass = true;
+            if (_renderedClass.HasValue &&
+                ClientSkillCatalog.SkillKeyMap.TryGetValue(_renderedClass.Value, out (SkillId q, SkillId e) qe))
             {
-                _qSkill = qe.q;
-                _eSkill = qe.e;
+                ApplySlots(qe.q, qe.e);
             }
             else
             {
                 // 미등록 클래스 방어 — 슬롯 전부 None.
-                _qSkill = SkillId.None;
-                _eSkill = SkillId.None;
+                ApplySlots(SkillId.None, SkillId.None);
             }
+        }
 
-            // None 슬롯(Knight E)은 즉시 숨김 — GameObject 비활성으로 레이아웃에서도 제거.
-            if (_eCooldownImage != null) _eCooldownImage.gameObject.SetActive(_eSkill != SkillId.None);
-            if (_eCooldownText != null) _eCooldownText.gameObject.SetActive(_eSkill != SkillId.None);
+        void ApplySlots(SkillId q, SkillId e)
+        {
+            _qSkill = q;
+            _eSkill = e;
+            ApplyIcon(_qIconImage, q);
+            ApplyIcon(_eIconImage, e);
+            SetSlotVisible(_qSlotRoot, _qCooldownImage, _qCooldownText, _qKeyText, q != SkillId.None, "Q");
+            SetSlotVisible(_eSlotRoot, _eCooldownImage, _eCooldownText, _eKeyText, e != SkillId.None, "E");
+        }
 
-            // 아이콘 적용 — _iconSet 미할당이면 sprite null → enabled false(빈 칸).
-            ApplyIcon(_qIconImage, _qSkill);
-            ApplyIcon(_eIconImage, _eSkill);
+        static void SetSlotVisible(GameObject? root, Image? cooldown, TMP_Text? timer, TMP_Text? key,
+            bool visible, string keyName)
+        {
+            if (root != null) root.SetActive(visible);
+            if (cooldown != null) cooldown.gameObject.SetActive(visible);
+            if (timer != null) timer.gameObject.SetActive(visible);
+            if (key != null)
+            {
+                key.text = keyName;
+                key.gameObject.SetActive(visible);
+            }
         }
 
         // SkillIconSet에서 sprite를 꺼내 icon Image에 적용. 매핑 없으면 Image 숨김.
@@ -105,6 +146,8 @@ namespace Dawnholder.Client.UI
 
         void Update()
         {
+            // The owner's reset has no event, and transport close precedes its main-thread cleanup.
+            if (!_hasResolvedClass || _renderedClass != CurrentClass()) ResolveSkillSlots();
             LocalPlayerMovement? movement = LocalPlayerMovement.Instance;
             if (movement == null) return;
 

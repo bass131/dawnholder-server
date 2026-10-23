@@ -24,9 +24,9 @@ WITH SCHEMABINDING
 AS
 BEGIN
     -- Kind: 1 Acquire, 2 Checkpoint, 3 ReleaseRuntime, 4 Recover, 5 ReleaseRecovery.
-    -- OwnerKind: 0 Free, 1 Runtime, 2 Recovery. PayloadVersion/SlotId remain 1.
+    -- OwnerKind: 0 Free, 1 Runtime, 2 Recovery. PayloadVersion remains 1; SlotId is an account display position.
     -- Wide transport arguments prevent truncation/conversion before validation.
-    IF @Kind IS NULL OR @Kind NOT IN (1, 2, 3, 4, 5) OR @SlotId IS NULL OR @SlotId <> 1
+    IF @Kind IS NULL OR @Kind NOT IN (1, 2, 3, 4, 5) OR @SlotId IS NULL OR @SlotId NOT BETWEEN 1 AND 3
         OR @AccountId IS NULL OR @CharacterId IS NULL OR @OwnerId IS NULL
         OR @AccountId = '00000000-0000-0000-0000-000000000000'
         OR @CharacterId = '00000000-0000-0000-0000-000000000000'

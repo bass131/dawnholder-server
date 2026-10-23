@@ -477,6 +477,20 @@ function Get-NetFirewallRule {
 function Invoke-WindowsSqlChild {
     param([string]$FileName, [string[]]$Arguments, [string]$InputText = '', [hashtable]$Environment = @{},
         [int]$TimeoutSeconds = 45)
+    # Empty exclusions and the usual high dynamic range leave this fixture's low port available.
+    if ($FileName -ceq 'C:\Windows\System32\netsh.exe') {
+        $command = $Arguments -join ' '
+        if ($TimeoutSeconds -ne 15 -or $command -cnotin @(
+                'int ipv4 show excludedportrange protocol=tcp', 'int ipv6 show excludedportrange protocol=tcp',
+                'int ipv4 show dynamicport tcp', 'int ipv6 show dynamicport tcp')) {
+            Add-WorldViolation -Text 'unexpected netsh arguments'
+            throw 'FAKE_CHILD_UNEXPECTED'
+        }
+        if ($Arguments[3] -ceq 'excludedportrange') {
+            return "TCP exclusions`nStart Port    End Port`n----------    --------`n* - Managed exclusions."
+        }
+        return "TCP dynamic range`n-----------------`nStart Port: 49152`nNumber of Ports: 16384"
+    }
     $a = @($Arguments)
     if ($FileName -ceq 'C:\Windows\System32\wsl.exe' -and $a.Count -eq 5 -and $a[3] -ceq 'wslinfo') {
         return 'mirrored'
@@ -570,20 +584,15 @@ function New-DependentScenario {
     [void][IO.Directory]::CreateDirectory((Join-Path $source '.backups\evidence'))
     $private = Join-Path $env:LOCALAPPDATA ('Dawnholder\' + $lifetime)
     New-WindowsSqlPrivateDirectory -Path $private -Sid $script:ExecutorSid
-    $accountId = [Guid]::NewGuid().ToString('D')
-    $characterId = [Guid]::NewGuid().ToString('D')
     Write-JsonFile -Path (Join-Path $source 'profile.json') -Value ([ordered]@{
-            persistedAccountName = 'fixture_user'
+            profileVersion = 2
             database = 'Dawnholder_DependentFixture'
             serverEndpoint = ('tcp:localhost,' + $script:FixturePort)
-            slotId = 1
-            accountId = $accountId
-            characterId = $characterId
         })
     [IO.File]::WriteAllText((Join-Path $source 'public-ca.pem'),
         "dependent-service public fixture, not a certificate`n")
     Write-JsonFile -Path (Join-Path $source 'runtime.json') -Value ([ordered]@{
-            Version = 1
+            Version = 2
             LifetimeId = $lifetime
             ExecutorSid = $script:ExecutorSid
             ServiceAccount = ('NT Service\' + $script:InstanceService)
@@ -592,8 +601,6 @@ function New-DependentScenario {
             NetworkMode = 'Mirrored'
             WslSubnet = $null
             WslDistribution = 'Ubuntu'
-            AccountId = $accountId
-            CharacterId = $characterId
             PublicCaPath = 'public-ca.pem'
             CredentialPath = (Join-Path $private 'runtime.clixml')
             CertificateReceiptHash = ('C' * 64)
@@ -620,7 +627,7 @@ function New-DependentScenario {
             Port = $script:FixturePort
             Database = 'Dawnholder_DependentFixture'
             RuntimeLogin = 'dh_dependent_fixture'
-            SchemaVersion = 4
+            SchemaVersion = 5
             CertificateThumbprint = $script:FixtureThumbprint
             Encrypt = 'Mandatory'
             TrustServerCertificate = $false

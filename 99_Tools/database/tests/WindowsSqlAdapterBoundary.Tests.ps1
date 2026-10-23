@@ -165,7 +165,7 @@ function New-PlanDocument {
         Port = $script:FixturePort
         Database = 'Dawnholder_VerifierFixture'
         RuntimeLogin = 'dh_verifier_fixture'
-        SchemaVersion = 4
+        SchemaVersion = 5
         CertificateThumbprint = $script:FixtureThumbprint
         Encrypt = 'Mandatory'
         TrustServerCertificate = $false
@@ -522,12 +522,13 @@ Assert-True -Name 'IND-READER-01 product child runs the PS5.1 source reader from
 $script:Sources = $null
 if ($null -ne $readerText) {
     $script:Sources = ConvertFrom-Json -InputObject $readerText -Depth 30
-    Assert-True -Name 'IND-READER-02 reader returns four migrations, release 4 bundle and catalog' -Condition (
+    Assert-True -Name 'IND-READER-02 reader returns five migrations, release 5 bundle and catalog' -Condition (
         $script:Sources.Version -eq 1 -and $script:Sources.PowerShellVersion -match '^5\.1\.' -and
-        @($script:Sources.Sources).Count -eq 4 -and $script:Sources.Bundle.ReleaseVersion -eq 4 -and
+        @($script:Sources.Sources).Count -eq 5 -and $script:Sources.Bundle.ReleaseVersion -eq 5 -and
         [string]$script:Sources.Catalog -ne '') -Detail $script:Sources.PowerShellVersion
-    Assert-Equal -Name 'IND-READER-03 reader migration names are 001..004 in order' `
-        -Expected '001_initial.sql|002_persistence_metadata.sql|003_module_metadata.sql|004_module_release.sql' `
+    Assert-Equal -Name 'IND-READER-03 reader migration names are 001..005 in order' `
+        -Expected ('001_initial.sql|002_persistence_metadata.sql|003_module_metadata.sql|' +
+        '004_module_release.sql|005_character_catalog.sql') `
         -Actual (@($script:Sources.Sources | ForEach-Object Name) -join '|')
 }
 $pwshReaderError = Get-CaughtMessage {
@@ -636,7 +637,7 @@ function Reset-FakeWorld {
     $script:Sql = @{
         DbExists = $false; DbGuid = $null; DbOwner = $null; Versions = [Collections.Generic.List[object]]::new()
         Binding = $null; LoginExists = $false; LoginSid = $null; UserExists = $false; Password = $null
-        FailMarker = $null; BindingMismatch = $false
+        FailMarker = $null; UserAuthorityMismatch = $false
     }
     $script:Wsl = @{
         Mode = $Mode.ToLowerInvariant()
@@ -786,6 +787,20 @@ function ConvertTo-FakeWslPath {
 function Invoke-WindowsSqlChild {
     param([string]$FileName, [string[]]$Arguments, [string]$InputText = '', [hashtable]$Environment = @{},
         [int]$TimeoutSeconds = 45)
+    # Public netsh observations are fixture inputs; never run the real command from an offline scenario.
+    if ($FileName -ceq 'C:\Windows\System32\netsh.exe') {
+        $command = $Arguments -join ' '
+        if ($TimeoutSeconds -ne 15 -or $command -cnotin @(
+                'int ipv4 show excludedportrange protocol=tcp', 'int ipv6 show excludedportrange protocol=tcp',
+                'int ipv4 show dynamicport tcp', 'int ipv6 show dynamicport tcp')) {
+            $script:Violations.Add('unexpected netsh arguments')
+            throw 'FAKE_CHILD_UNEXPECTED'
+        }
+        if ($Arguments[3] -ceq 'excludedportrange') {
+            return "TCP exclusions`nStart Port    End Port`n----------    --------`n* - Managed exclusions."
+        }
+        return "TCP dynamic range`n-----------------`nStart Port: 49152`nNumber of Ports: 16384"
+    }
     if ($FileName -cne 'C:\Windows\System32\wsl.exe') {
         $script:Violations.Add('unexpected child ' + $FileName)
         throw 'FAKE_CHILD_UNEXPECTED'
@@ -936,12 +951,9 @@ function Invoke-FakeSql {
         if ($script:Sql.Versions.Count -eq 0) { return '[]' }
         return ConvertTo-Json -InputObject @($script:Sql.Versions.ToArray()) -Compress
     }
-    if ($sql.Contains("'Binding mismatch.'")) {
-        if ($script:Sql.BindingMismatch -or $null -eq $script:Sql.Binding -or
-            $script:Sql.Binding.Account -ne [Guid]$p.account -or
-            $script:Sql.Binding.Character -ne [Guid]$p.character -or
-            -not $script:Sql.UserExists) {
-            throw 'FAKE_SQL_51207'
+    if ($sql.Contains("'Unexpected user authority.'")) {
+        if ($script:Sql.UserAuthorityMismatch -or -not $script:Sql.UserExists) {
+            throw 'FAKE_SQL_51208'
         }
         return -1
     }
@@ -1127,16 +1139,13 @@ function New-FlowScenario {
     $accountId = [Guid]::NewGuid().ToString('D')
     $characterId = [Guid]::NewGuid().ToString('D')
     Write-JsonFile -Path (Join-Path $source 'profile.json') -Value ([ordered]@{
-            persistedAccountName = 'fixture_user'
+            profileVersion = 2
             database = 'Dawnholder_VerifierFixture'
             serverEndpoint = ('tcp:' + $tlsName + ',' + $script:FixturePort)
-            slotId = 1
-            accountId = $accountId
-            characterId = $characterId
         })
     [IO.File]::WriteAllText((Join-Path $source 'public-ca.pem'), "verifier public fixture, not a certificate`n")
     Write-JsonFile -Path (Join-Path $source 'runtime.json') -Value ([ordered]@{
-            Version = 1
+            Version = 2
             LifetimeId = $lifetime
             ExecutorSid = $script:ExecutorSid
             ServiceAccount = ('NT Service\MSSQL$' + $script:FixtureInstance)
@@ -1145,8 +1154,6 @@ function New-FlowScenario {
             NetworkMode = $Mode
             WslSubnet = $(if ($Mode -ceq 'Nat') { '172.28.16.0/20' } else { $null })
             WslDistribution = 'Ubuntu'
-            AccountId = $accountId
-            CharacterId = $characterId
             PublicCaPath = 'public-ca.pem'
             CredentialPath = (Join-Path $private 'runtime.clixml')
             CertificateReceiptHash = ('C' * 64)
@@ -1278,14 +1285,15 @@ Assert-True -Name 'IND-FLOW-12 firewall rule is exact: inbound TCP port, WSL sub
     $rule[0].EdgeTraversalPolicy -ceq 'Block' -and $rule[0].Description.Contains($main.Plan.PlanHash)) `
     -Detail ($rule | ConvertTo-Json -Compress)
 $moduleInvoke = @($script:ModuleCalls | Where-Object Kind -CEQ 'Invoke')
-Assert-True -Name 'IND-FLOW-13 migrations 001..004, module bundle and binding commit in one owned transaction' `
+Assert-True -Name 'IND-FLOW-13 migrations 001..005 and release 5 commit without game identity in one transaction' `
     -Condition (
     (@($script:Sql.Versions | ForEach-Object Name) -join '|') -ceq
-    '001_initial.sql|002_persistence_metadata.sql|003_module_metadata.sql|004_module_release.sql' -and
+    ('001_initial.sql|002_persistence_metadata.sql|003_module_metadata.sql|' +
+    '004_module_release.sql|005_character_catalog.sql') -and
     $moduleInvoke.Count -eq 1 -and $moduleInvoke[0].Transaction -and $moduleInvoke[0].SameConnection -and
     $moduleInvoke[0].AllowFirstInstall -and -not $moduleInvoke[0].ReleaseAlreadyApplied -and
-    $null -ne $script:Sql.Binding -and $script:Sql.Binding.Account -eq [Guid]$main.AccountId -and
-    $script:Sql.Binding.Character -eq [Guid]$main.CharacterId -and $script:Sql.DbOwner -ceq $main.Plan.LifetimeId) `
+    $moduleInvoke[0].ReleaseVersion -eq 5 -and $null -eq $script:Sql.Binding -and
+    $script:Sql.DbOwner -ceq $main.Plan.LifetimeId) `
     -Detail ($moduleInvoke | ConvertTo-Json -Compress)
 $password = [string]$script:Sql.Password
 Assert-True -Name 'IND-FLOW-14 runtime login password is generated (>=16, policy shape) and not reused' `
@@ -1354,11 +1362,11 @@ foreach ($case in @(
 $script:Wsl.HostOutput = '{"Status":"Verified","Transport":"TCP","Encrypted":true,"CertificateValidated":true,' +
 '"RuntimeExecuteGrants":5,"DirectDmlDenied":true}'
 $script:Wsl.HostFails = $false
-$script:Sql.BindingMismatch = $true
+$script:Sql.UserAuthorityMismatch = $true
 $message = Get-CaughtMessage { Invoke-Step -Scenario $main -Step 'Verify' }
-Assert-True -Name 'IND-FLOW-24 Verify rejects a catalog/binding mismatch on the owned database' `
+Assert-True -Name 'IND-FLOW-24 Verify rejects unexpected runtime user authority on the owned database' `
     -Condition ($message -ceq 'WINDOWS_SQL_CATALOG_VERIFY_FAILED') -Detail ([string]$message)
-$script:Sql.BindingMismatch = $false
+$script:Sql.UserAuthorityMismatch = $false
 
 $script:Mutations.Clear()
 $script:RegistryWrites.Clear()
@@ -1397,7 +1405,7 @@ $message = Get-CaughtMessage { Invoke-Step -Scenario $partial -Step 'Apply' }
 $journal = Read-PrivateFile -Scenario $partial -Name 'lifecycle.json'
 Assert-True -Name 'IND-FAIL-01 interrupted SetTcpPort records Failed with the pending operation and no rollback' `
     -Condition (
-    $message -ceq 'WINDOWS_SQL_APPLY_FAILED' -and $journal.Status -ceq 'Failed' -and
+    $message -ceq 'WINDOWS_SQL_APPLY_FAILED_SET_TCP_PORT' -and $journal.Status -ceq 'Failed' -and
     $journal.FailedOperation -ceq 'SetTcpPort' -and $journal.PendingOperation -ceq 'SetTcpPort' -and
     (@($journal.CompletedChanges) -join '|') -ceq 'SetMixedAuthentication' -and
     (Get-RegistryValue $ipAll 'TcpDynamicPorts') -ceq '') -Detail ([string]$message)
@@ -1418,7 +1426,7 @@ $script:Sql.FailMarker = 'CREATE SCHEMA dh AUTHORIZATION dbo'
 $message = Get-CaughtMessage { Invoke-Step -Scenario $dbFail -Step 'Apply' }
 $journal = Read-PrivateFile -Scenario $dbFail -Name 'lifecycle.json'
 Assert-True -Name 'IND-FAIL-04 failed database ownership step is journaled as CreateDatabase failure' -Condition (
-    $message -ceq 'WINDOWS_SQL_APPLY_FAILED' -and $journal.FailedOperation -ceq 'CreateDatabase' -and
+    $message -ceq 'WINDOWS_SQL_APPLY_FAILED_CREATE_DATABASE' -and $journal.FailedOperation -ceq 'CreateDatabase' -and
     $script:Sql.DbExists -and $null -eq $script:Sql.DbOwner) -Detail ([string]$message)
 $script:Mutations.Clear()
 $message = Get-CaughtMessage { Invoke-Step -Scenario $dbFail -Step 'Cleanup' }
@@ -1432,7 +1440,7 @@ $script:Sql.FailMarker = "N'CREATE LOGIN '"
 $message = Get-CaughtMessage { Invoke-Step -Scenario $loginFail -Step 'Apply' }
 $loginCredential = Join-Path $loginFail.Private 'runtime.clixml'
 Assert-True -Name 'IND-FAIL-06 login failure after credential persistence keeps the orphan credential' -Condition (
-    $message -ceq 'WINDOWS_SQL_APPLY_FAILED' -and -not $script:Sql.LoginExists -and
+    $message -ceq 'WINDOWS_SQL_APPLY_FAILED_CREATE_RUNTIME_LOGIN' -and -not $script:Sql.LoginExists -and
     [IO.File]::Exists($loginCredential)) -Detail ([string]$message)
 $cleanupLogin = Get-CaughtMessage { $script:LoginCleanup = Invoke-Step -Scenario $loginFail -Step 'Cleanup' }
 $loginReceipt = Read-PrivateFile -Scenario $loginFail -Name 'resources.json'
@@ -1451,7 +1459,7 @@ $script:Faults.AfterWrite = @{ Name = 'lifecycle.json'; Pending = 'SetMixedAuthe
     } }
 $message = Get-CaughtMessage { Invoke-Step -Scenario $foreign -Step 'Apply' }
 Assert-True -Name 'IND-FAIL-09 concurrent configuration change stops Apply before the first registry write' -Condition (
-    $message -ceq 'WINDOWS_SQL_APPLY_FAILED' -and $script:RegistryWrites.Count -eq 0 -and
+    $message -ceq 'WINDOWS_SQL_APPLY_FAILED_SET_MIXED_AUTHENTICATION' -and $script:RegistryWrites.Count -eq 0 -and
     (Read-PrivateFile -Scenario $foreign -Name 'lifecycle.json').Status -ceq 'Failed') -Detail ([string]$message)
 $script:Mutations.Clear()
 $message = Get-CaughtMessage { Invoke-Step -Scenario $foreign -Step 'Cleanup' }
@@ -1480,15 +1488,18 @@ $script:Faults.AfterWrite = @{ Name = 'snapshot.json'; Pending = $null; Action =
     } }
 $message = Get-CaughtMessage { Invoke-Step -Scenario $acl -Step 'Apply' }
 Assert-True -Name 'IND-FAIL-11 permissive private store blocks the journal and every mutation' -Condition (
-    $script:AclHookApplied -and $message -ceq 'WINDOWS_SQL_APPLY_FAILED' -and
+    $script:AclHookApplied -and $message -ceq 'WINDOWS_SQL_APPLY_FAILED_WRITE_LIFECYCLE_STATE_WRITE_FAILURE_JOURNAL' -and
     $script:Mutations.Count -eq 0 -and $script:RegistryWrites.Count -eq 0 -and
     -not [IO.File]::Exists((Join-Path $acl.Private 'lifecycle.json'))) `
     -Detail ([string]$message + '; hook=' + $script:AclHookApplied)
 Set-TestDirectoryRule -Path $acl.Private -Remove
+$snapshotBeforeRetry = Get-FileSha256 -Path (Join-Path $acl.Private 'snapshot.json')
 $message = Get-CaughtMessage { Invoke-Step -Scenario $acl -Step 'Apply' }
 Assert-True -Name 'IND-FAIL-12 retry after the store is repaired refuses to replace the existing snapshot' -Condition (
-    $message -ceq 'WINDOWS_SQL_APPLY_FAILED' -and $script:Mutations.Count -eq 0 -and
-    $script:RegistryWrites.Count -eq 0) -Detail ([string]$message)
+    $message -ceq 'WINDOWS_SQL_APPLY_FAILED_SAVE_CONFIGURATION_SNAPSHOT' -and $script:Mutations.Count -eq 0 -and
+    $script:RegistryWrites.Count -eq 0 -and
+    (Get-FileSha256 -Path (Join-Path $acl.Private 'snapshot.json')) -ceq $snapshotBeforeRetry -and
+    -not [IO.File]::Exists((Join-Path $acl.Private 'lifecycle.json'))) -Detail ([string]$message)
 
 # ---- A foreign process takes the port between the plan and SetTcpPort.
 $port = New-FlowScenario -Name 'port-race'
@@ -1497,7 +1508,7 @@ $script:Faults.AfterWrite = @{ Name = 'lifecycle.json'; Pending = 'SetTcpPort'; 
     } }
 $message = Get-CaughtMessage { Invoke-Step -Scenario $port -Step 'Apply' }
 Assert-True -Name 'IND-FAIL-13 port conflict at mutation time stops before the TCP port is written' -Condition (
-    $message -ceq 'WINDOWS_SQL_APPLY_FAILED' -and
+    $message -ceq 'WINDOWS_SQL_APPLY_FAILED_SET_TCP_PORT' -and
     @($script:RegistryWrites | Where-Object Name -CIn @('TcpPort', 'TcpDynamicPorts', 'Enabled')).Count -eq 0 -and
     (Read-PrivateFile -Scenario $port -Name 'lifecycle.json').FailedOperation -ceq 'SetTcpPort') `
     -Detail ([string]$message)

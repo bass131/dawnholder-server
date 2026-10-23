@@ -262,7 +262,8 @@ function Test-ModuleHashConsumers {
         }
     }
     $migrationNames = @(
-        '001_initial.sql', '002_persistence_metadata.sql', '003_module_metadata.sql', '004_module_release.sql'
+        '001_initial.sql', '002_persistence_metadata.sql', '003_module_metadata.sql', '004_module_release.sql',
+        '005_character_catalog.sql'
     )
     $activeFile = 'modules/manifest.json'
     try {
@@ -278,7 +279,7 @@ function Test-ModuleHashConsumers {
         }
         $manifestHash = Get-MigrationHash -Sql $manifestText
         $manifest = $manifestText | ConvertFrom-Json
-        if ($manifest.FormatVersion -ne 1 -or $manifest.ReleaseVersion -ne 4 -or
+        if ($manifest.FormatVersion -ne 1 -or $manifest.ReleaseVersion -ne 5 -or
             $manifest.SourceEncoding -cne 'UTF-8; no BOM; CRLF->LF' -or
             $manifest.DefinitionEncoding -cne 'UTF-16LE; no BOM; LF; actual CR removed' -or
             $manifest.Entries -isnot [Array]) {
@@ -286,9 +287,9 @@ function Test-ModuleHashConsumers {
         }
         $expectedPaths = @($Contract.Path) + @('modules/permissions.sql')
         $registered = @($manifest.Entries.Path)
-        if ($Contract.Count -ne 18 -or $registered.Count -ne $expectedPaths.Count -or
+        if ($Contract.Count -ne 20 -or $registered.Count -ne $expectedPaths.Count -or
             (($registered | Sort-Object) -join '|') -cne (($expectedPaths | Sort-Object) -join '|')) {
-            throw 'Manifest hash target registration has missing, duplicate or unknown paths; expected 19 entries.'
+            throw 'Manifest hash target registration has missing, duplicate or unknown paths; expected 21 entries.'
         }
         $values = @{}
         foreach ($entry in $manifest.Entries) {
@@ -312,7 +313,7 @@ function Test-ModuleHashConsumers {
         $catalog = Get-MigrationText -Path (Join-Path $DatabaseRoot $activeFile)
         $modulePattern = "\('(?<Name>\w+)',\s*'(?<Kind>FN|P)',\s*(?<Bytes>\d+),\s*" +
         "0x(?<Definition>[0-9A-F]{64}),\s*'(?<Source>[0-9A-F]{64})'\)"
-        $moduleBlock = Get-ModuleHashRows -Text $catalog -Table 'modules' -Pattern $modulePattern -Count 18
+        $moduleBlock = Get-ModuleHashRows -Text $catalog -Table 'modules' -Pattern $modulePattern -Count 20
         $seen = @{}
         foreach ($row in $moduleBlock.Rows) {
             $name = $row.Groups['Name'].Value
@@ -340,11 +341,11 @@ function Test-ModuleHashConsumers {
             }
         }
         $migrationPattern = "\((?<Version>\d+),\s*'(?<Name>\d{3}_[a-z_]+\.sql)',\s*'(?<Value>[0-9A-F]{64})'\)"
-        $migrationBlock = Get-ModuleHashRows -Text $catalog -Table 'migrations' -Pattern $migrationPattern -Count 4
+        $migrationBlock = Get-ModuleHashRows -Text $catalog -Table 'migrations' -Pattern $migrationPattern -Count 5
         $seen = @{}
         foreach ($row in $migrationBlock.Rows) {
             $version = [int]$row.Groups['Version'].Value
-            if ($version -notin 1..4 -or $seen.ContainsKey($version) -or
+            if ($version -notin 1..5 -or $seen.ContainsKey($version) -or
                 $row.Groups['Name'].Value -cne $migrationNames[$version - 1]) {
                 throw 'Missing, duplicate or unknown catalog migration hash registration.'
             }
@@ -367,18 +368,29 @@ function Test-ModuleHashConsumers {
         $releasePattern = "r\.ManifestChecksum\s+COLLATE\s+Latin1_General_100_BIN2\s*=\s*'(?<Value>[0-9A-F]{64})'"
         $activeFile = 'migrations/004_module_release.sql'
         $releaseText = Get-MigrationText -Path (Join-Path $DatabaseRoot $activeFile)
+        # The immutable v4 declaration keeps its historical bundle identity, not the current v5 hash.
+        $historicalManifest = 'C529392B46BB0F02D7A863201D74B9CC60187842365B1DBDCF8953CEE714A731'
         $consumers = @(
             @{
                 File = 'verify-schema.sql'
                 Text = $catalog
                 Pattern = $releasePattern
                 Kind = 'CatalogManifestIdentity'
+                Expected = $manifestHash
             }
             @{
                 File = 'migrations/004_module_release.sql'
                 Text = $releaseText
                 Pattern = "VALUES\s*\(4,\s*'(?<Value>[0-9A-F]{64})'\)"
                 Kind = 'ReleaseManifestIdentity'
+                Expected = $historicalManifest
+            }
+            @{
+                File = 'migrations/005_character_catalog.sql'
+                Text = Get-MigrationText -Path (Join-Path $DatabaseRoot 'migrations/005_character_catalog.sql')
+                Pattern = "VALUES\s*\(5,\s*'(?<Value>[0-9A-F]{64})'\)"
+                Kind = 'ReleaseManifestIdentity'
+                Expected = $manifestHash
             }
         )
         foreach ($consumer in $consumers) {
@@ -394,10 +406,17 @@ function Test-ModuleHashConsumers {
                 Kind = $consumer.Kind
                 Source = 'modules/manifest.json (raw UTF-8 bytes)'
                 Observed = $literalMatches[0].Groups['Value'].Value
-                Expected = $manifestHash
+                Expected = $consumer.Expected
             }
             $targets.Add((New-ModuleHashTarget @parameters))
         }
+        $hashSource = [IO.File]::ReadAllText((Join-Path $DatabaseRoot 'ModuleHash.Common.ps1'))
+        $historicalLiteral = [regex]::Match($hashSource, "\`$historicalManifest = '(?<Value>[0-9A-F]{64})'")
+        if (-not $historicalLiteral.Success) { throw 'Historical release pin is missing.' }
+        $targets.Add((New-ModuleHashTarget -File 'ModuleHash.Common.ps1' -Text $hashSource `
+                    -Offset $historicalLiteral.Groups['Value'].Index -Kind 'HistoricalManifestPin' `
+                    -Source 'Immutable release 4 bundle identity' -Observed $historicalLiteral.Groups['Value'].Value `
+                    -Expected $historicalManifest))
         $activeFile = 'Module.Common.ps1'
         $moduleCommon = [IO.File]::ReadAllText((Join-Path $DatabaseRoot $activeFile))
         $baselinePattern = "\`$index -eq 0 -and \`$hash -cne '(?<Value>[0-9A-F]{64})'"
@@ -416,8 +435,8 @@ function Test-ModuleHashConsumers {
             Expected = Get-MigrationHash -Sql $baselineSql
         }
         $targets.Add((New-ModuleHashTarget @parameters))
-        # Fixed reviewed release: permissions source + 18*3 manifest + 18*3 catalog + 4 migrations + 2 release + 001.
-        if ($targets.Count -ne 116) { throw "Hash target count $($targets.Count) differs from the registered 116." }
+        # Permissions + 20*3 manifest + 20*3 catalog + 5 migrations + 3 release + historical pin + baseline.
+        if ($targets.Count -ne 131) { throw "Hash target count $($targets.Count) differs from the registered 131." }
         $unregistered = @(Test-ModuleHashLiteralRegistration -Texts $inputInspection.Texts -Targets $targets.ToArray())
         [pscustomobject]@{
             Complete = $true

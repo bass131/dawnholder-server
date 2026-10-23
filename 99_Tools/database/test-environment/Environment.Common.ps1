@@ -383,11 +383,13 @@ function Assert-TestEnvironmentManifest(
             throw 'Invalid recorded created database identity.'
         }
     }
+    # Lifecycle schema v2 records the current SQL release; it does not freeze SQL at migration 004.
     $migrationNames = @('001_initial.sql', '002_persistence_metadata.sql',
-        '003_module_metadata.sql', '004_module_release.sql')
+        '003_module_metadata.sql', '004_module_release.sql', '005_character_catalog.sql')
     $versions = @()
     foreach ($migration in @($Manifest.MigrationManifest)) {
-        if ($migration.Version -isnot [int] -or $migration.Version -lt 1 -or $migration.Version -gt 4 -or
+        if ($migration.Version -isnot [int] -or $migration.Version -lt 1 -or
+            $migration.Version -gt $migrationNames.Count -or
             $migration.Version -in $versions -or $migration.Name -cnotmatch '^\d{3}_[a-z0-9_]+\.sql$' -or
             [int]$migration.Name.Substring(0, 3) -ne $migration.Version -or
             $migration.Checksum -cnotmatch '^[0-9A-F]{64}$') {
@@ -399,8 +401,10 @@ function Assert-TestEnvironmentManifest(
         }
         $versions += $migration.Version
     }
-    if (($Manifest.State -ceq 'Baseline001' -and $versions.Count -ne 1) -or
-        ($Manifest.State -cin @('Installed', 'Bound', 'PrincipalsReady') -and $versions.Count -ne 4)) {
+    if (($Manifest.State -ceq 'Planned' -and $versions.Count -ne 0) -or
+        ($Manifest.State -ceq 'Baseline001' -and $versions.Count -ne 1) -or
+        ($Manifest.State -cin @('Installed', 'Bound', 'PrincipalsReady') -and
+        $versions.Count -ne $migrationNames.Count)) {
         throw (
             'Lifecycle state does not match the recorded SQL migration boundary; lifecycle schema version is two.'
         )
@@ -608,6 +612,7 @@ function Get-TestEnvironmentStopReason(
         'Expected the complete database JSON row array, including [] for no rows.'
         'File security is outside the exact lifecycle contract.'
         'Held/mismatched binding or temporary trigger remains; cleanup does not release/drop it.'
+        'Historical release pin is missing.'
         'Immutable 001 source checksum drift; restore the reviewed baseline.'
         'Incomplete migration history after application.'
         'Incomplete module bundle; no module may be silently omitted.'
@@ -635,7 +640,7 @@ function Get-TestEnvironmentStopReason(
         'Lifecycle state does not match the recorded SQL migration boundary; lifecycle schema version is two.'
         'Manifest already exists; this one-time lifetime cannot be restarted.'
         'Manifest changed after review.'
-        'Manifest hash target registration has missing, duplicate or unknown paths; expected 19 entries.'
+        'Manifest hash target registration has missing, duplicate or unknown paths; expected 21 entries.'
         'Manifest identity requires UTF-8 without BOM, LF and a final newline.'
         'Migration files must be the reviewed contiguous version/name set; reject holes, duplicates and extras.'
         'Migration history has a hole, unknown name/version or checksum drift; do not rewrite applied history.'
@@ -653,7 +658,7 @@ function Get-TestEnvironmentStopReason(
         'Pending manifest remains; preserve it for coordinator inspection.'
         'Permissions entry must not register an engine definition hash.'
         'Permissions must be the final single bundle entry without an engine definition.'
-        'Permissions source must contain only the nine reviewed individual EXECUTE grants.'
+        'Permissions source must contain only the reviewed individual EXECUTE grants.'
         'Preserved evidence hash mismatch.'
         'Private and child directories must have separate ACL boundaries.'
         'Private and identity directories must be below the current user LocalAppData Dawnholder root.'

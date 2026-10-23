@@ -62,6 +62,7 @@ namespace Dawnholder.Client.Combat
                 BuildQuestState,
                 BuildInventoryState,
                 BuildInventoryPanel,
+                BuildGuildUi,
                 BuildPartyInvitePopup,
                 BuildNpcDialogPanel,
                 BuildMinimapCamera,
@@ -150,6 +151,8 @@ namespace Dawnholder.Client.Combat
         void BuildInventoryState() => InventoryState.EnsureInstance();
 
         void BuildInventoryPanel() => InventoryPanel.BuildRuntime(transform);
+
+        void BuildGuildUi() => GuildUiController.BuildRuntime(transform);
 
         void BuildDungeonClearRewardWindow() => DungeonClearRewardWindow.BuildRuntime(transform);
 

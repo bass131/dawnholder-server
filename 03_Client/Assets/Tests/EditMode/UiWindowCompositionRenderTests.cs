@@ -32,8 +32,8 @@ namespace Dawnholder.Client.Tests
     // L  Hide, dispose, rebind and singleton boundaries are read through the same capture and raycast.
     // D  Controls run the same observers on fixture objects: plain colour, foreign sprite, halved border, tint,
     //    a decoration over a button and an opaque piece over text must each be reported. On the scene HUD canvas a
-    //    raycastTarget probe and an untouched scene graphic must be hit; an empty hit list counts only where the
-    //    observer is shown to see that point.
+    //    raycastTarget probe must be hit while the reconstructed HUD's decoration stays noninteractive; an empty
+    //    hit list counts only where the observer's explicit positive probe is shown to see that point.
     // Switching a product canvas from Overlay to ScreenSpaceCamera is part of the fixture: these captures are not the
     // game screen and not a before/after pair. PNGs are written only when DAWNHOLDER_UI_KIT_EVIDENCE_DIR is set.
     public sealed class UiWindowCompositionRenderTests
@@ -468,9 +468,16 @@ namespace Dawnholder.Client.Tests
             Button reject = h.Popup.transform.Find("Panel/RejectButton").GetComponent<Button>();
             Vector2 acceptCentre = Centre(rig, (RectTransform)accept.transform);
 
+            TMP_Text title = h.Popup.GetComponentsInChildren<TMP_Text>(true).Single(text => text.name == "Title");
+            Assert.IsFalse(string.IsNullOrWhiteSpace(title.text), "the existing Title is popup content");
+            Assert.IsNull(title.GetComponent<Image>(), "the content Title is not a decoration Image");
+            GameObject panel = h.Popup.transform.Find("Panel").gameObject;
+            GameObject inviteText = h.Popup.transform.Find("Panel/InviteText").gameObject;
+            // Existing TMP content catches the pointer like the body. Header artwork still must not catch it.
             string[] decorationHits = DecorationPoints(rig, h.Popup.transform)
-                .SelectMany(point => HitNames(rig, raycaster, point)
-                    .Where(name => name != "Panel" && name != "InviteText")).ToArray();
+                .SelectMany(point => Hits(rig, raycaster, point)
+                    .Where(hit => hit.gameObject != panel && hit.gameObject != inviteText && hit.gameObject != title.gameObject)
+                    .Select(hit => hit.gameObject.name)).ToArray();
             bool bodyTakesRaycast = HitNames(rig, raycaster, Centre(rig, (RectTransform)h.Popup.transform.Find("Panel"))).Length > 0;
             Press press = PointerEnter(rig, raycaster, acceptCentre);
             string hoverShown = ShownPiece(TargetImage(accept))?.Name;
@@ -528,9 +535,9 @@ namespace Dawnholder.Client.Tests
         {
             SerializedRefsKeepSceneFileIds,
             ApprovedPiecesDrawnAtBothSizes,
-            SceneRaycastTargetKept,
+            SceneHudDecorationsTakeNoRaycast,
             SameCanvasProbeSeenByObserver,
-            ShownPanelTakesRaycastOverCentre,
+            ShownPanelAllowsGameplayRaycast,
             MemberInsetsTakeNoRaycast,
             OneInsetPerMemberRow,
             RebindAddsNoSecondInsetSet,
@@ -559,15 +566,16 @@ namespace Dawnholder.Client.Tests
                 case PartyHudCheck.ApprovedPiecesDrawnAtBothSizes:
                     Assert.IsEmpty(run.PerSize, "R Panel_Default and Inset_* rows drawn per spec with readable member texts at both sizes");
                     break;
-                case PartyHudCheck.SceneRaycastTargetKept:
-                    Assert.IsTrue(run.RootRaycastBefore && run.RootRaycastAfter, "P Party_Info keeps the scene's raycastTarget 1");
+                case PartyHudCheck.SceneHudDecorationsTakeNoRaycast:
+                    Assert.IsFalse(run.RootRaycastBefore || run.RootRaycastAfter, "P Party_Info is noninteractive before and after init");
                     break;
                 case PartyHudCheck.SameCanvasProbeSeenByObserver:
                     Assert.IsEmpty(run.ProbeFailures,
                         "D on the HUD canvas a raycastTarget probe is hit over the panel, shown and after leaving; raycastTarget-off and never-shown probes are not");
                     break;
-                case PartyHudCheck.ShownPanelTakesRaycastOverCentre:
-                    Assert.IsTrue(run.BodyTakesRaycast, "P the shown member panel takes the raycast over its centre");
+                case PartyHudCheck.ShownPanelAllowsGameplayRaycast:
+                    Assert.IsEmpty(run.ProbeFailures, "D the same-canvas positive and negative raycast controls work");
+                    Assert.IsFalse(run.BodyTakesRaycast, "P the shown member panel does not block gameplay input");
                     break;
                 case PartyHudCheck.MemberInsetsTakeNoRaycast:
                     Assert.IsEmpty(run.InsetHits, "P member row insets take no raycast");
@@ -586,9 +594,9 @@ namespace Dawnholder.Client.Tests
                     break;
                 case PartyHudCheck.LeftPartyTakesNoRaycast:
                     Assert.IsEmpty(run.LeftHits, "L after leaving the party the panel takes no raycast");
-                    // Leaving blocks the panel's own graphics; that is visible only if they were seen while shown.
-                    RequireObservable(run.PanelSeenWhileShown && run.ProbeSeenAfterLeaving,
-                        "L after leaving: the shown panel was not seen at its centre, or the same-canvas probe is not hit there after leaving");
+                    // HUD artwork takes no raycast even while shown; the explicit probe proves the observer works.
+                    RequireObservable(run.ProbeFailures.Count == 0 && run.ProbeSeenAfterLeaving,
+                        "L after leaving: the same-canvas shown/left positive and negative probes were not observed");
                     break;
                 case PartyHudCheck.LeftPartyDrawsNothing:
                     Assert.AreEqual(0, run.LeftDrawn, "L after leaving the party the panel draws nothing");
@@ -630,8 +638,9 @@ namespace Dawnholder.Client.Tests
                 raw.AddRange(RegistryRows("1 on the fixture camera, before product init", hudCanvas, root));
                 raw.AddRange(RaycastStages("1 Party_Info centre, before product init", rig, raycaster, rootImage, centre));
                 var sceneGraphics = Census("1 before product init", rig, raycaster, hudCanvas, raw);
-                if (!sceneGraphics.Any(row => row.OnScreen && row.Hit && !row.Graphic.transform.IsChildOf(root)))
-                    failures.Add("1 before product init: no scene raycast graphic outside Party_Info is hit at its centre");
+                if (sceneGraphics.Any(row => row.OnScreen && row.Hit && !row.Graphic.transform.IsChildOf(root)
+                    && row.Graphic.GetComponentInParent<Button>() == null))
+                    failures.Add("1 before product init: a HUD decoration outside Party_Info catches the pointer");
                 SameCanvasProbes probes = AddSameCanvasProbes(hudCanvas);
                 ProbeControls("1 before product init", rig, raycaster, probes, centre, raw, failures);
 
@@ -657,7 +666,7 @@ namespace Dawnholder.Client.Tests
                 Log("party hud controls failed", failures);
             }
             Assert.IsEmpty(failures,
-                "D the HUD canvas probe and an untouched scene graphic are hit, raycastTarget-off and never-shown probes are not; L the scene file is not written");
+                "D the HUD canvas positive probe is hit, HUD decoration/off/never-shown probes are not; L the scene file is not written");
         }
 
         // ---------------------------------------------------------------------------------------------------------

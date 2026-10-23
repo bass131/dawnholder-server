@@ -1,4 +1,6 @@
 CREATE OR ALTER PROCEDURE dh.RecordOperationReceipt
+    @CharacterId uniqueidentifier,
+    @SlotId int,
     @OperationId uniqueidentifier,
     @Kind int,
     @payload varbinary(512),
@@ -15,6 +17,7 @@ BEGIN
     (
         OperationId,
         SlotId,
+        CharacterId,
         Kind,
         PayloadVersion,
         Payload,
@@ -26,7 +29,8 @@ BEGIN
     VALUES
     (
         @OperationId,
-        1,
+        @SlotId,
+        @CharacterId,
         @Kind,
         1,
         @payload,

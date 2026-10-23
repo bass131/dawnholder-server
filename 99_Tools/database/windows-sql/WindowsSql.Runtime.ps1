@@ -1,4 +1,11 @@
 # Production-only input binding. The v1 decision core remains usable with offline observations.
+function Get-WindowsSqlExecutionPlan {
+    param($Adapter)
+    $execution = Get-WindowsSqlField -Object $Adapter -Name 'ExecutionPlan'
+    if ($null -ne $execution) { return $execution }
+    return $Adapter.Plan
+}
+
 function Assert-WindowsSqlLocalPath {
     param([string]$Path, [switch]$AllowMissing)
     $full = Get-WindowsSqlFullPath -Path $Path
@@ -31,15 +38,15 @@ function Read-WindowsSqlRuntime {
     param($Plan, [string]$Relative)
     $runtime = ConvertFrom-WindowsSqlPlanBytes -Bytes (Read-WindowsSqlInputBytes -Plan $Plan -Relative $Relative)
     $fields = @('Version', 'LifetimeId', 'ExecutorSid', 'ServiceAccount', 'EndpointAddress', 'TlsServerName',
-        'NetworkMode', 'WslSubnet', 'WslDistribution', 'AccountId', 'CharacterId', 'PublicCaPath',
+        'NetworkMode', 'WslSubnet', 'WslDistribution', 'PublicCaPath',
         'CredentialPath', 'CertificateReceiptHash', 'ProfilePath', 'VerifyHostFiles')
     if (-not (Test-WindowsSqlShape -Object $runtime -Fields $fields) -or
-        -not (Test-WindowsSqlInteger -Value $runtime.Version) -or $runtime.Version -ne 1 -or
-        $runtime.LifetimeId -cne $Plan.LifetimeId -or $Plan.SchemaVersion -ne 4) {
+        -not (Test-WindowsSqlInteger -Value $runtime.Version) -or $runtime.Version -ne 2 -or
+        $runtime.LifetimeId -cne $Plan.LifetimeId -or $Plan.SchemaVersion -ne 5) {
         throw 'WINDOWS_SQL_RUNTIME_INVALID'
     }
     foreach ($name in @('ExecutorSid', 'ServiceAccount', 'EndpointAddress', 'TlsServerName', 'NetworkMode',
-            'WslDistribution', 'AccountId', 'CharacterId', 'PublicCaPath', 'CredentialPath',
+            'WslDistribution', 'PublicCaPath', 'CredentialPath',
             'CertificateReceiptHash', 'ProfilePath')) {
         if (-not (Test-WindowsSqlText -Value $runtime[$name])) { throw 'WINDOWS_SQL_RUNTIME_INVALID' }
     }
@@ -63,12 +70,6 @@ function Read-WindowsSqlRuntime {
         ($runtime.NetworkMode -ceq 'Mirrored' -and
         ($runtime.EndpointAddress -cne '127.0.0.1' -or $null -ne $runtime.WslSubnet))) {
         throw 'WINDOWS_SQL_NETWORK_CHANGED'
-    }
-    foreach ($name in @('AccountId', 'CharacterId')) {
-        $id = [Guid]::Empty
-        if (-not [Guid]::TryParseExact($runtime[$name], 'D', [ref]$id) -or $id -eq [Guid]::Empty) {
-            throw 'WINDOWS_SQL_RUNTIME_INVALID'
-        }
     }
     $credential = Get-WindowsSqlFullPath -Path $runtime.CredentialPath
     if ($credential -cne (Join-Path $Plan.PrivateRoot 'runtime.clixml')) {
@@ -180,10 +181,18 @@ function Invoke-WindowsSqlChild {
     $info.RedirectStandardInput = $true
     $info.RedirectStandardOutput = $true
     $info.RedirectStandardError = $true
+    # netsh redirects UTF-8; an inherited ANSI reader can consume punctuation after localized labels.
+    if ($FileName -ieq 'C:\Windows\System32\netsh.exe') {
+        $info.StandardOutputEncoding = [Text.UTF8Encoding]::new($false, $true)
+    }
     foreach ($argument in $Arguments) { $info.ArgumentList.Add($argument) }
     foreach ($name in $Environment.Keys) { $info.Environment[$name] = $Environment[$name] }
     $process.StartInfo = $info
     try {
+        # Windows PowerShell must rebuild its module path without inheriting PowerShell 7 module paths.
+        if ($info.FileName -ieq 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe') {
+            [void]$info.Environment.Remove('PSModulePath')
+        }
         if (-not $process.Start()) { throw 'WINDOWS_SQL_CHILD_FAILED' }
         $started = $true
         $stdout = $process.StandardOutput.ReadToEndAsync()

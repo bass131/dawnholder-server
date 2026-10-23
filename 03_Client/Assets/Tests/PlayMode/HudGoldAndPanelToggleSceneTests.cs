@@ -73,12 +73,15 @@ namespace Dawnholder.Client.Tests.PlayMode
         {
             yield return ReadySyncedTown();
             LocalPlayerMovement player = _fixture.Player;
+            yield return HudOverlapProbe.WaitForHudAndSettledPanel();
             Vector2 useSpot = InventoryPanelProbe.ScreenPoint(InventoryPanelProbe.Use(1));
+            LogPanelClickState("coordinate captured", useSpot);
             bool shownAtEntry = InventoryPanelProbe.Group.alpha > 0f;
             bool raycastsAtEntry = InventoryPanelProbe.Group.blocksRaycasts;
 
             yield return InventoryPanelProbe.AttackReady(player);
             int attacks = _fixture.Peer.Count(PacketID.C_Attack);
+            LogPanelClickState("before closed click", useSpot);
             yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, useSpot);
             yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_Attack) == attacks + 1,
                 "a click on the closed panel's Use spot attacks", 3);
@@ -89,8 +92,13 @@ namespace Dawnholder.Client.Tests.PlayMode
             bool shownAfterI = InventoryPanelProbe.Group.alpha > 0f;
             yield return InventoryPanelProbe.AttackReady(player);
             int attacksBeforeOpenClick = _fixture.Peer.Count(PacketID.C_Attack);
+            LogPanelClickState("before open click", useSpot);
             yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, useSpot);
-            yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_ItemUse) == 1, "the open panel's Use", 3);
+            try
+            {
+                yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_ItemUse) == 1, "the open panel's Use", 3);
+            }
+            finally { LogPanelClickState("open Use wait ended, including a timeout", useSpot); }
             yield return _fixture.Frames(4);
             int attacksByOpenClick = _fixture.Peer.Count(PacketID.C_Attack) - attacksBeforeOpenClick;
             _fixture.Peer.Send(new S_ItemUseResult { result = (byte)InventoryResult.Success, itemId = (int)ItemId.CoinPouch, revision = 2 }.Write());
@@ -124,24 +132,136 @@ namespace Dawnholder.Client.Tests.PlayMode
         public IEnumerator RealPauseMenu_KeepsIFromTogglingThePanel_UntilResumed()
         {
             yield return ReadySyncedTown();
-            bool shownBeforePause = InventoryPanelProbe.Group.alpha > 0f;
-            _fixture.Keys(Key.Escape);
-            yield return MapEntryPlayFixture.Wait(() => Time.timeScale == 0f, "Escape opens the pause menu", 3);
-            _fixture.Keys();
-            yield return _fixture.Frames(3);
-            yield return PressI();
-            bool shownWhilePaused = InventoryPanelProbe.Group.alpha > 0f;
+            // Town readiness does not wait for additive UI; press Escape only after its real controller is active.
+            yield return MapEntryPlayFixture.Wait(() =>
+            {
+                PauseMenuController pause = UnityEngine.Object.FindAnyObjectByType<PauseMenuController>();
+                return pause != null && pause.isActiveAndEnabled;
+            }, "fixture: active additive pause menu controller", 10);
+            LogPauseInput("before Escape");
+            try
+            {
+                bool shownBeforePause = InventoryPanelProbe.Group.alpha > 0f;
+                _fixture.Keys(Key.Escape);
+                yield return MapEntryPlayFixture.Wait(() => Time.timeScale == 0f, "Escape opens the pause menu", 3);
+                _fixture.Keys();
+                yield return _fixture.Frames(3);
+                yield return PressI();
+                bool shownWhilePaused = InventoryPanelProbe.Group.alpha > 0f;
 
-            _fixture.Keys(Key.Escape);
-            yield return MapEntryPlayFixture.Wait(() => Time.timeScale == 1f, "Escape closes the pause menu", 3);
-            _fixture.Keys();
-            yield return _fixture.Frames(3);
-            yield return PressI();
-            bool shownAfterResume = InventoryPanelProbe.Group.alpha > 0f;
+                _fixture.Keys(Key.Escape);
+                yield return MapEntryPlayFixture.Wait(() => Time.timeScale == 1f, "Escape closes the pause menu", 3);
+                _fixture.Keys();
+                yield return _fixture.Frames(3);
+                yield return PressI();
+                bool shownAfterResume = InventoryPanelProbe.Group.alpha > 0f;
 
-            Assert.IsFalse(shownBeforePause, "R5 precondition: the panel starts closed");
-            Assert.IsFalse(shownWhilePaused, "R7 I changes nothing while the pause menu is open");
-            Assert.IsTrue(shownAfterResume, "R7 control: after resuming, I opens the panel");
+                Assert.IsFalse(shownBeforePause, "R5 precondition: the panel starts closed");
+                Assert.IsFalse(shownWhilePaused, "R7 I changes nothing while the pause menu is open");
+                Assert.IsTrue(shownAfterResume, "R7 control: after resuming, I opens the panel");
+            }
+            finally { LogPauseInput("after Escape scenario, including a timeout"); }
+        }
+
+        // Observe the original click without settling layout or changing its stored position. Logging can still
+        // affect wall-clock timing; queried raycast hits are observations, not proof of a dispatched button event.
+        void LogPanelClickState(string stage, Vector2 capturedSpot)
+        {
+            try
+            {
+                HudController hud = HudController.Instance;
+                InventoryPanel panel = InventoryPanel.Instance;
+                CanvasGroup group = panel == null ? null : panel.GetComponent<CanvasGroup>();
+                Transform use = panel == null ? null : panel.transform.Find("Inventory/Slot2/Use");
+                Component button = use == null ? null : use.GetComponents<Component>()
+                    .FirstOrDefault(component => component != null && component.GetType().FullName == "UnityEngine.UI.Button");
+                PlayerInput input = _fixture.Player == null ? null : _fixture.Player.GetComponent<PlayerInput>();
+                string actions = input?.currentActionMap == null ? "unavailable: no current map" :
+                    string.Join(", ", input.currentActionMap.actions.Select(action => $"{action.name}:{action.enabled}/{action.phase}"));
+                string devices = input == null ? "unavailable: no PlayerInput" :
+                    string.Join(", ", input.devices.Select(device => $"{device.name}#{device.deviceId}"));
+                var ui = UnityEngine.SceneManagement.SceneManager.GetSceneByName("UI");
+                Debug.Log($"[HUD panel click] {stage}: frame {Time.frameCount}, realtime {Time.realtimeSinceStartupAsDouble:R}, "
+                    + $"screen {Screen.width}x{Screen.height}, stored {capturedSpot.ToString("F3")}, "
+                    + $"UI valid {ui.IsValid()} loaded {ui.isLoaded}, HUD exists {hud != null} active {hud?.isActiveAndEnabled}, "
+                    + $"HUD id {hud?.GetEntityId()}, panel id {panel?.GetEntityId()} active {panel?.isActiveAndEnabled}; "
+                    + $"Use [{PanelClickRect(use as RectTransform, capturedSpot)}], "
+                    + $"panel [{PanelClickRect(panel == null ? null : panel.transform.Find("Inventory") as RectTransform, capturedSpot)}], "
+                    + $"character_status [{PanelClickRect(hud == null ? null : hud.transform.Find("character_status") as RectTransform, capturedSpot)}]; "
+                    + $"group alpha {group?.alpha} interactable {group?.interactable} blocksRaycasts {group?.blocksRaycasts}, "
+                    + $"button interactable {(button == null ? "unavailable: no button" : InventoryPanelProbe.Interactable(button).ToString())}, "
+                    + $"session panelOpen unavailable: internal property, canSend {_fixture.Session?.CanSendGameplay} "
+                    + $"entry {_fixture.Session?.Entry.State}, transition {_fixture.Loader?.IsTransitioning}, "
+                    + $"player canAttack {_fixture.Player?.CanAttack} actionLocked {_fixture.Player?.IsActionLocked}; "
+                    + $"fixture mouse {_fixture.Mouse?.name}#{_fixture.Mouse?.deviceId} added {_fixture.Mouse?.added} "
+                    + $"enabled {_fixture.Mouse?.enabled} position {_fixture.Mouse?.position.ReadValue()} left {_fixture.Mouse?.leftButton.isPressed}, "
+                    + $"current mouse {Mouse.current?.name}#{Mouse.current?.deviceId} position {Mouse.current?.position.ReadValue()} "
+                    + $"left {Mouse.current?.leftButton.isPressed}, "
+                    + $"fixture keyboard {_fixture.Keyboard?.name}#{_fixture.Keyboard?.deviceId} I {_fixture.Keyboard?.iKey.isPressed}, "
+                    + $"current keyboard {Keyboard.current?.name}#{Keyboard.current?.deviceId} I {Keyboard.current?.iKey.isPressed}, "
+                    + $"player map {input?.currentActionMap?.name} scheme {input?.currentControlScheme} devices [{devices}] actions [{actions}], "
+                    + $"input update {InputSystem.settings.updateMode} focus {Application.isFocused} timeScale {Time.timeScale}; "
+                    + $"packets attack {_fixture.Peer?.Count(PacketID.C_Attack)} use {_fixture.Peer?.Count(PacketID.C_ItemUse)}; "
+                    + $"queried hits [{PanelClickHits(capturedSpot)}]");
+            }
+            catch (Exception error)
+            {
+                // A missing diagnostic must not replace the original scenario's assertion or timeout.
+                Debug.Log($"[HUD panel click] {stage}: observation unavailable: {error.GetType().Name}: {error.Message}");
+            }
+        }
+
+        static string PanelClickRect(RectTransform rect, Vector2 capturedSpot)
+        {
+            if (rect == null) return "unavailable: no RectTransform";
+            Canvas canvas = rect.GetComponentInParent<Canvas>();
+            if (canvas == null || canvas.rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
+                return $"unavailable: expected overlay canvas, actual {canvas?.rootCanvas.renderMode}";
+            Rect screen = ScreenUiProbe.ScreenRect(rect);
+            return $"active {rect.gameObject.activeInHierarchy}, screen {screen.ToString("F3")}, "
+                + $"center {screen.center.ToString("F3")}, containsStored {screen.Contains(capturedSpot)}";
+        }
+
+        static string PanelClickHits(Vector2 capturedSpot)
+        {
+            Type eventSystemType = Type.GetType("UnityEngine.EventSystems.EventSystem, UnityEngine.UI");
+            object current = eventSystemType?.GetProperty("current")?.GetValue(null);
+            if (current == null) return "unavailable: no current EventSystem";
+            try
+            {
+                // ScreenUiProbe.RaycastHits asserts fixture readiness; this diagnostic must also observe its absence.
+                Type pointerType = Type.GetType("UnityEngine.EventSystems.PointerEventData, UnityEngine.UI");
+                Type resultType = Type.GetType("UnityEngine.EventSystems.RaycastResult, UnityEngine.UI");
+                if (pointerType == null || resultType == null) return "unavailable: uGUI raycast types";
+                object pointer = Activator.CreateInstance(pointerType, current);
+                pointerType.GetProperty("position").SetValue(pointer, capturedSpot);
+                var results = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(resultType));
+                eventSystemType.GetMethod("RaycastAll").Invoke(current, new[] { pointer, results });
+                var gameObject = resultType.GetProperty("gameObject");
+                GameObject[] hits = results.Cast<object>().Select(result => (GameObject)gameObject.GetValue(result))
+                    .Where(hit => hit != null).ToArray();
+                return $"EventSystem {((Component)current).GetEntityId()}, count {hits.Length}, "
+                    + string.Join(" | ", hits.Select(hit => $"{hit.scene.name}:{ScreenUiProbe.PathOf(hit.transform, hit.transform.root, true)}#{hit.GetEntityId()}"));
+            }
+            catch (Exception error)
+            {
+                return $"unavailable: raycast {error.GetType().Name}: {error.Message}";
+            }
+        }
+
+        void LogPauseInput(string stage)
+        {
+            PauseMenuController pause = UnityEngine.Object.FindAnyObjectByType<PauseMenuController>();
+            InputActionReference reference = pause == null ? null : MapEntryPlayFixture.Field<InputActionReference>(pause, "_togglePauseAction");
+            InputAction action = reference == null ? null : reference.action;
+            PlayerInput player = _fixture.Player == null ? null : _fixture.Player.GetComponent<PlayerInput>();
+            string controls = action == null ? "none" : string.Join(", ", action.controls.Select(control => control.path));
+            Debug.Log($"[HUD pause input] {stage}: controller {pause != null}, active {pause?.isActiveAndEnabled}, "
+                + $"action {action?.actionMap?.name}/{action?.name}, enabled {action?.enabled}, phase {action?.phase}, controls [{controls}], "
+                + $"fixture keyboard {_fixture.Keyboard?.name} Escape {_fixture.Keyboard?.escapeKey.isPressed}, "
+                + $"current keyboard {Keyboard.current?.name}, same PlayerInput asset {action != null && player != null && ReferenceEquals(action.actionMap?.asset, player.actions)}, "
+                + $"player map {player?.currentActionMap?.name}, scheme {player?.currentControlScheme}, update {InputSystem.settings.updateMode}, "
+                + $"NPC dialogue {Dawnholder.Client.Gameplay.NpcDialogPanel.IsShown}, timeScale {Time.timeScale}");
         }
 
         IEnumerator ReadySyncedTown()

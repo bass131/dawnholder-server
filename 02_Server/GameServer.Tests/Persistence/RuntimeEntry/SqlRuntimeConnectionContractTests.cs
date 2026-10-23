@@ -146,13 +146,55 @@ public sealed class SqlRuntimeConnectionContractTests
     [Fact]
     public void BindingThatDoesNotIdentifyTheConfiguredAccount_IsRefusedAtConfiguration()
     {
-        // api-contract v2: the configured name's UUIDv5 must equal AccountId; slot 1 only; both GUIDs non-empty.
+        // The compatibility constructor binds values; the catalog profile's startup gate is a separate contract.
         Assert.ThrowsAny<ArgumentException>(() => new PersistenceOptions(
             AdmissionTestWorld.PersistedName, Database, Endpoint, 1, AdmissionTestWorld.OtherAccountId, CharacterId));
+    }
+
+    [Theory]
+    [InlineData((byte)1)]
+    [InlineData((byte)2)]
+    [InlineData((byte)3)]
+    public void CompatibilityBinding_KeepsEachAccountSlotAndValidatedIdentity(byte slotId)
+    {
+        PersistenceOptions options = new(
+            AdmissionTestWorld.PersistedName, Database, Endpoint, slotId, AdmissionTestWorld.PersistedAccountId, CharacterId);
+
+        Assert.Equal(slotId, options.SlotId);
+        Assert.Equal(AdmissionTestWorld.PersistedAccountId, options.AccountId);
+        Assert.Equal(CharacterId, options.CharacterId);
+        Assert.Equal(AdmissionTestWorld.PersistedName, options.PersistedAccountName);
+        Assert.Equal(Database, options.Database);
+        Assert.Equal(Endpoint, options.ServerEndpoint);
+    }
+
+    [Theory]
+    [InlineData((byte)0)]
+    [InlineData((byte)4)]
+    [InlineData((byte)255)]
+    public void CompatibilityBinding_RejectsSlotsOutsideTheThreeAccountSlots(byte slotId)
+    {
         Assert.ThrowsAny<ArgumentException>(() => new PersistenceOptions(
-            AdmissionTestWorld.PersistedName, Database, Endpoint, 2, AdmissionTestWorld.PersistedAccountId, CharacterId));
+            AdmissionTestWorld.PersistedName, Database, Endpoint, slotId, AdmissionTestWorld.PersistedAccountId, CharacterId));
+    }
+
+    [Fact]
+    public void CompatibilityBinding_RejectsEmptyAccountId()
+    {
+        Assert.ThrowsAny<ArgumentException>(() => new PersistenceOptions(
+            AdmissionTestWorld.PersistedName, Database, Endpoint, 1, Guid.Empty, CharacterId));
+    }
+
+    [Fact]
+    public void CompatibilityBinding_RejectsEmptyCharacterId()
+    {
         Assert.ThrowsAny<ArgumentException>(() => new PersistenceOptions(
             AdmissionTestWorld.PersistedName, Database, Endpoint, 1, AdmissionTestWorld.PersistedAccountId, Guid.Empty));
+    }
+
+    [Fact]
+    public void CompatibilityBinding_RejectsDatabaseNamesWithLeadingWhitespace()
+    {
         Assert.ThrowsAny<ArgumentException>(() => new PersistenceOptions(
             AdmissionTestWorld.PersistedName, " " + Database, Endpoint, 1, AdmissionTestWorld.PersistedAccountId, CharacterId));
     }

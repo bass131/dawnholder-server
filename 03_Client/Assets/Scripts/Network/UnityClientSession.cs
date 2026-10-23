@@ -16,6 +16,7 @@ using Dawnholder.Client.State;
 using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.Network.Handlers.CharacterMenu;
 using Dawnholder.Client.Network.Handlers.Combat;
+using Dawnholder.Client.Network.Handlers.Guild;
 using Dawnholder.Client.Network.Handlers.Inventory;
 using Dawnholder.Client.Network.Handlers.Party;
 using Dawnholder.Client.Network.Handlers.Quest;
@@ -52,10 +53,12 @@ namespace Dawnholder.Client.Network
         bool _loginAccepted;
         public bool IsClosed => Volatile.Read(ref _closed) != 0 || IsDisconnected;
         bool CanApply => !IsClosed && _isCurrent();
+        internal bool IsCurrentConnection => CanApply;
         public MapEntryCoordinator Entry { get; }
         public CharacterLoadAuthority CharacterLoad { get; } = new CharacterLoadAuthority();
         public event Action<CharacterLoadStatus> CharacterLoadRejected;
         public InventoryRequestController Inventory { get; }
+        public GuildRequestController Guild { get; }
         public CharacterMenuClient CharacterMenu { get; private set; }
         // Client presentation, owned by this connection: InventoryPanel changes it on I input.
         // New sessions start closed; map entries keep it, and Cleanup unpublishes the finished session.
@@ -135,6 +138,8 @@ namespace Dawnholder.Client.Network
                 { PacketID.S_PortalLocked,       new PortalLockedHandler() },
                 { PacketID.S_QuestUpdate,        new QuestUpdateHandler() },
                 { PacketID.S_InventorySnapshot,  new InventorySnapshotHandler() },
+                { PacketID.S_GuildSnapshot,      new GuildSnapshotHandler() },
+                { PacketID.S_GuildActionResult,  new GuildActionResultHandler() },
                 { PacketID.S_ItemUseResult,      new ItemUseResultHandler() },
                 { PacketID.S_DungeonClearResult, new Handlers.Dungeon.DungeonClearResultHandler() },
             };
@@ -158,6 +163,7 @@ namespace Dawnholder.Client.Network
             RosterBuffer = new RosterTransitionBuffer(() => CanApply);
             // Response time and simulated transmission are independent execution boundaries.
             Inventory = new InventoryRequestController(this, postInventoryTimeout);
+            Guild = new GuildRequestController(this);
             Entry.Ready += OnEntryReady;
         }
 
@@ -381,6 +387,7 @@ namespace Dawnholder.Client.Network
             CharacterLoadRejected = null;
             Entry.Ready -= OnEntryReady;
             Inventory.Dispose();
+            Guild.Dispose();
             if (_sceneLoader != null && _sceneRequestId != 0) _sceneLoader.CancelRequest(_sceneRequestId);
             _sceneRequestId = 0;
             _entryPlayer = null;
@@ -399,7 +406,11 @@ namespace Dawnholder.Client.Network
         /// LocalPlayerMovement가 C_MoveIntent를 이 경로로 보냄.
         /// 다른 패킷(Ping 등)은 그대로 Send 직통 — RTT 측정 시 latency 영향 분리 가능.
         /// </summary>
-        public void SendIntent(ArraySegment<byte> buf)
+        public void SendIntent(ArraySegment<byte> buf) => SendIntent(buf, null);
+
+        // Guild requests observe both immediate and simulated delayed send failures. Existing callers
+        // retain their exception behavior, and every delayed intent keeps the current connection/epoch gate.
+        internal void SendIntent(ArraySegment<byte> buf, Action<Exception> onSendError)
         {
             // handshake 통과 전 송신은 drop (헌법 #2 first-packet). 정상 흐름에선 C_Handshake →
             // S_HandshakeResult OK가 첫 Update tick 안에 박혀 영향 X. race window에서만 발동.
@@ -416,12 +427,18 @@ namespace Dawnholder.Client.Network
                 long epoch = Entry.Epoch;
                 _postDelayed(() =>
                 {
-                    if (CanSendGameplay && Entry.Epoch == epoch) Send(captured);
+                    if (CanSendGameplay && Entry.Epoch == epoch) SendIntentPacket(captured, onSendError);
                 }, SimulatedLatencyMs / 1000f);
                 return;
             }
 #endif
-            Send(buf);
+            SendIntentPacket(buf, onSendError);
+        }
+
+        void SendIntentPacket(ArraySegment<byte> buffer, Action<Exception> onSendError)
+        {
+            try { Send(buffer); }
+            catch (Exception error) when (onSendError != null) { onSendError(error); }
         }
 
         public override void OnConnected(EndPoint endPoint)
