@@ -1,8 +1,8 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **구독자 정확3종의 승인 단정과 뒤 requests·Ending을 포함한 Inventory 전체 case가 실제 Passed다. 이번 full-play1회는140=121통과/8실패/11Skipped(Explicit2·Ignored9), v4대비 같은140이름·기존Pass→새Fail0·Inventory Fail→Pass1, 원ArtPlay22 모두Pass다. 전체suite NOTPASS이며 남은8은 기존AudioListener b분류로 원시실패 공개·Main 비차단 조건을 유지한다. 소유잔여0·prefs137/Binary7·Settings29 정확복귀를 먼저 통지받아09:26:51Z Main에 창 반환했고, Main이09:27:11Z 재관측으로 창을 닫았다. 작업자 최종2301개/입력2384/READY35를 실제hash차이0으로 인수했고 쓰기종료09:41:50.6643077Z·worker_done succeeded(작업완료, suite NOTPASS)를 수락한뒤 release/정확pane종료/reclaimable0을 확인했다. PR직전 신규Opus1회는 남아 있으며 goal미완이다.**
+상태: **Main msg_16762b50c9c4(2026-10-23T10:58:03Z)가 신규 Opus의 현재 기술 판독을 HUD PR 한정 통과로 조건부 수용했다. 운영 이탈1건·생존 초과2구간(364/644초) 정정·seal 뒤 완료 receipt 별도 hash를 원판정 옆에 묶으며 원 verdict/manifest/seal/.cmp-a를 보존한다. HUD-F03 주석 수치는 이 PR에서 고치지 않고 다음 Art PR 첫 수정으로 기록한다. 실제 full Play140=121통과/Audio8 기존 실패/11Skipped·전체suite NOTPASS·Opus 직접실행0을 유지한다. 구현자와 검증자는 정산 종료·재사용0이며 현재 PR 발행 준비, goal미완이다.**
 
-**다음 첫 일:** 최신main과 실제PR head/base 기준을 정리해 승인된 경량경로의 PR직전 신규Opus1회 계약을 준비한다. 완료한 task_e56768aa7769/ctx_a2d37b8ebec0/term0b76d873는 재사용하지 않는다. W=.backups/verification/2026-10-13-demo-video-art/hud-reconstruction-pr/hud-subscriber-set-01/lead-result-review.md가 인수 원문이며 execution-report E1043C29…B80D/final manifest2301·78295850B B8E0379C…5F8E/final-seal C4570072…7A86·실제마지막쓰기09:41:50.6643077Z를 직접대조했다. lead-final-artifacts-intake/lead-final-inputs-intake acceptedtrue, 최종2301/현재2384/READY35차이0·사용자Minimap/draft2보호hash그대로다. worker_done msg_148c65d1990f는 승인작업완료/suiteNOTPASS·독립PR판정미완으로수락했고 공식release retained/external_terminal/processActionnone→fresh동일inc/leafidle빈prompt·새사용자Enter없음/Root우편함ACK→정확child close ptyKilledtrue→reclaimable[]/Root동일incconnected를확인했다. 생존helper11신호over6구간317/340/1776(승인된Core창idle)/378/364/432초는기준그대로원시·한줄사유를보존했고추가구간감사/제품실패증가0이다. 새raw140=121/8/11·Inventory고정3종/requests/Ending전체Passed·원Art22모두Passed/기존Pass→Fail0이며source InventoryCA30527B…FB1FA/GuildA5E99E4F…0092E다. 원Edit103이번미실행·제외13/skip11을PASS합산하지않는다. Audio8비차단은Main조건1판단이며PR직전actualhead/base24경로diff0재확인·원8실패공개가필수,달라지면Main재판정요청이다. 독립Opus의판정/실제진입·미실행은후속계약으로구분하며새Main배정없는Unity/자원조회0을유지한다. 현재branchHEADd7c19ae5/통합base8a4bea49이며dirty는허용시험2+goal과보호Minimap/draft2뿐(보호2commit제외)이다. Root제품쓰기/Git변경0이며이제담당리드Git안전지점을정리한다. 이후새Codex는10-19라우팅/Fast명시·첫thread_settings priority원문확인,Opus에는Fast미적용이다.
+**다음 첫 일:** 메인 결정 원문과 pr-final-review-02/lead-main-acceptance-addendum.md를 연결한 뒤 최신 main 확인→리드 commit·push→PR 생성→모든 CI 확인→Main에 PR번호·정확 head40자·CI결과를 전달한다. 병합은 하지 않는다. 판독 source head6e69eb87769cca0d0b42f31e92015dc95beb9868/base8a4bea491aac3f174e9ce6a322aedf383fb18f46이며 후속 리드 goal 기록 커밋과 구분한다. 원15산출물/4713입력/구독3종·requests·Ending Passed 및 원Art22 Passed 근거를 보존한다. 보호 Minimap/draft2는 원hash 그대로 commit제외다. HUD-F03은 다음 Art PR(발판·지형 또는 촬영 전 손질)의 첫 수정이며 BACKLOG로 넘기거나 자동 착수하지 않는다. 병합 승인 요청에 「남은 결함: HUD-F03 주석 수치, Audio8 기존 실패 8」을 표시한다. Opus task_a9f0e4342324/ctx_d5300a3612dd의 정산 종료·직접실행0과 user A 실행Codex/판정Opus 한계, Audio24 actualhead/base diff0 재확인 조건을 유지한다. 새 Unity/자원조회/세션0이다.
 
 **병렬 전경 제작 완료:** 승인 공동안 v3의 같은 구도·글자 없는 레벨1/잠김·레벨2/열림 원PNG 두 장과 출처·배치를 `guild-housing-assets-01/`에 보존하고 제작 세션을 정산했다. Main은 두 원본을 직접 확인하고 Content에 인계를 알린다고 했다. 생산용 호출은 2/3회이며 남은 1회는 쓰지 않는다. 미리보기 제외·709/802/1920 확인·Content 제품 import/meta/UI/Git 단독·PR2 main 뒤 별도 PR·Unity 90분 경계는 v3 그대로다.
 
@@ -624,6 +624,18 @@ Main `msg_3d254c772f7a`(2026-10-18T16:16:30Z)는 메인 pane에 Enter로 제출�
 - **실행과 미실행 구분**: 이미지 생성, Unity 가져오기·컴파일·EditMode, 실화면 캡처, Play 모드 녹화, CI를 각각 따로 기록한다. 서버·DB는 이 goal에서 쓰지 않는다.
 
 ## 적용 중인 메인 범위 판단
+
+### 2026-10-23 — PR 판독 조건부 수용·HUD-F03 다음 Art PR 첫 수정
+
+Main msg_16762b50c9c4(10:58:03Z, thread msg_611b6972b74b)는 판정 원문과 리드 자료를 직접 읽고 현재 기술 판독을 HUD PR 한정 통과로 수용했다. task-context SKILL.md:55의 메인 결정이며 사용자 병합 승인과 구분한다. 메인 표본은 verdict SHA/통과·F03·Audio24 문구, W 안 .cmp-a의2980B/path-hash CSV, 현행 주석, base8a4bea49..head6e69eb87의27경로(A11/M16), Audio fixture2 diff0·UI scene Camera/Listener 전후0이다. 전수 검증을 수행했다는 뜻은 아니다.
+
+허용 산출물 이름·종류 밖 .cmp-a 쓰기1건은 제품·시험·입력4713 차이0/원 manifest 공개/기술 결론 영향0을 이유로 조건부 수용한다. 원 .cmp-a·manifest·verdict·seal은 그대로 두고 생존 초과 원문1건→실제2구간364/644초 정정과 seal 뒤 완료 receipt 별도 hash를 이 메인 msg ID에 묶는다. 원판정 「적용 규칙 위반 없음」은 고치지 않고 리드 정정을 옆에 단다. 제품 확정 실패·NOTPASS로 더하지 않는다. 원문은 hud-reconstruction-pr/pr-final-review-02/main-conditional-acceptance-original.json, 옆 정정은 lead-main-acceptance-addendum.md와 별도 연결 JSON이다.
+
+HUD-F03은 HudGoldFitsGoldBarSceneTests.cs:103~105의 낮은 주석 수치 결함으로 이 PR에서는 수정하지 않는다. 완료조건을 막지 않으며 새 작업자/새 독립 판독 비용과10-28 경량 경로를 고려한 판단이다. **Art 다음 PR(발판·지형 또는 촬영 전 손질)의 첫 수정 항목**으로 고정하며 BACKLOG로 넘기지 않고 자동 착수하지 않는다. 병합 승인 요청에는 **「남은 결함: HUD-F03 주석 수치, Audio8 기존 실패 8」**을 보인다. full Play140=121/8/11·전체suite NOTPASS와 Opus 직접실행0을 유지한다.
+
+정산 종료 뒤 최신 main 확인→담당 리드 commit/push→PR 생성→모든 CI→Main PR번호/정확 head40자/CI결과 보고를 승인했다. 메인이 그 head로 R-2 재대조와 사용자 병합 승인을 맡는다. 리드 병합0이다.
+
+후속 기록 첫 검사에서 리드가 봉인 입력인 pr-final-review-02/lead-context.md에 덧붙인 메모1개를 발견했다. 검증자 종료 뒤의 리드 쓰기였으며 추가 블록만 제거해 원4015B/SHA4B214772…F2873로 정확 복구했고 새 맥락은 lead-main-pr-context.md로 분리했다. 첫 검사 실패·복구 원시를 lead-context-preservation-correction.json에 보존하고 재검사4713 bytes/hash차이0·제품/시험변경0을 확인했다. Main msg_bcc1fce47edf로 즉시 공개했다. 원판정/원입력manifest를 새 기준으로 고치지 않았고 이탈을 제품 확정 실패로 더하지 않는다.
 
 ### 2026-10-23 — 신규 작업자 모델 배정 적용 오류와 창 대기
 
@@ -1288,6 +1300,8 @@ Main의 사용자 결정2건과 라우팅/페이싱 전문을 아래 적용 중 
 - 메인·Core·Content·Rules·World에 실제 종료/자원반환·Art 중량실행/예약0·추가실행허가0을 알렸다. 다음 중량 실행은 해당 리드가 새로 조율한다. 구현자는 보존·제품 최종 감사와 보고만 마무리하며, 현재 상태를 worker_done/독립PASS/전체 UI 창 완료로 취급하지 않는다. 신규 Opus 검증은 아직 미기동·미예약이다.
 - 실제 import 소요시간은 측정됐으나 최고메모리 raw 값은 null로 미측정이다. 새 제품은 구현자 소유 untracked이며 리드는 goal만 기록한다. 완료 보고를 읽고 실제 diff와 보존·운영 간격 원시를 대조한 뒤 정산한다.
 ## 다음 계획 후보
+
+- **다음 Art PR 첫 수정 — HUD-F03 주석 수치:** Main msg_16762b50c9c4에 따라 다음 발판·지형 또는 촬영 전 손질 PR에서 HudGoldFitsGoldBarSceneTests.cs:103~105의 옛 수치를 바로잡는다. 현재 HUD PR에서 수정0, BACKLOG 이관0, 다음 작업 자동 착수0이다. 원 판정·실측 출처를 확인하고 새 작업자/독립 판독은 당시 계약으로 발행한다. 현재 병합 승인 요청에는 HUD-F03과 Audio8 기존 실패8을 남은 결함으로 공개한다.
 
 - HUD-F02 — cold 첫 case의 `Town binding before HP` timeout: Main msg_5277671976f8 판단에 따른 HUD PR 비차단·범위 밖·Content 시험 신뢰성 후보다. 원천은 `hud-reconstruction-pr/final-review-01/verdict.md`와 `rerun-closedpanel-alone`, `rerun-npc-rebuild`, `rerun-reward-rebuild`의 원 test-results.xml이다. 본문 미도달 3회/raw 실패를 보존하고 PR 알려진 실패에 공개한다. 위 세 조건 중 하나면 차단으로 재분류하며 새 작업은 자동 착수하지 않는다.
 
