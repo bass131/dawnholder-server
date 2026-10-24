@@ -2,13 +2,13 @@
 
 ## 재개 지점
 
-사용자가 범위 초안 v1의 권고 범위를 승인했다. 최초 잠금 결정 원문을 대조하고 최신 `origin/main`에서 `docs/ops-candidate-canon-20261025`를 만들었다. Sol의 정본 세 파일과 메인 CLAUDE 쓰기는 끝났고 첫 신규 Astra 실사는 리드 계약 원문 누락 #1·goal 후보 인용 #2로 차단했다. 원래 고정판/계약/판정을 보존하고 리드 소유 계약·goal을 보완한다. 다음은 보완 원문과 수정한 일곱 문서를 신규 Astra가 재실사하는 것이다. 새 고정 뒤 판정/PR/head 관측은 E에 두며 실제 lock/Library 삭제·게임 실행은 하지 않는다.
+다음 첫 일은 [PR263 - 운영 계약·원시 보존·실행 정산 규칙 정본화](https://github.com/bass131/dawnholder-server/pull/263)의 최종 head·독립 판정 원문을 메인이 R-2로 대조하고 사용자에게 정확 head 병합 승인을 받는 것이다. 일곱 문서의 신규 Astra 재실사는 통과했다. 이 단계 결과 기록의 독립 대조와 최종 head·CI 관측은 E/`admin-review/` 및 최종 인계 근거에 연결한다. 현재 PR은 미병합이며 Codex는 병합하지 않는다. 실제 병합 뒤 Gardener·종료 기록 PR·종료 점검·최신 main 정리로 이어간다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`
 - branch: `docs/ops-candidate-canon-20261025`, base `cf207c1f355ced664e62119152e8b0686b0ec051`. fetch/clean/분기 원시는 E/`git-fetch-start.txt`·`branch-start-state.json`이다.
 - 근거 E: 이 checkout의 Git 제외 `.backups/verification/2026-10-25-ops-candidate-canon/`. `lead-context.md`는 초안 전, `lead-approved-context-v1.md`는 승인 뒤 대상 쓰기 전 맥락이다.
 - 현재 Rules Run `run_543efc26689e`, 회신 `run:run_543efc26689e`. handle/Task/Dispatch는 기동 때 현재 receipt로 확인하며 이 기록만으로 실행 권한을 인정하지 않는다.
-- 승인 전 초안 `scope-draft-v1.md` 18250B/SHA256 `EF0871EFE2389465ACE8B98B06C7E34F74833042BC1E5834F9699CBFFD0061EC`는 보존한다. 아직 독립 PASS·commit/push·PR·병합은 없다.
+- 승인 전 초안 `scope-draft-v1.md` 18250B/SHA256 `EF0871EFE2389465ACE8B98B06C7E34F74833042BC1E5834F9699CBFFD0061EC`는 보존한다. 초안 작성 당시에는 독립 PASS·commit/push·PR·병합이 없었다.
 
 ## 진척 단계
 
@@ -16,8 +16,8 @@
 - [x] 목표·브랜치 등록
 - [x] 정본 문서 작성
 - [x] 메인 문구 반영
-- [>] 독립 문서 실사
-- [ ] 문서 PR 병합
+- [x] 독립 문서 실사
+- [>] PR263 병합
 - [ ] 종료 점검
 - [ ] 종료 PR 병합
 - [ ] 최신 기준 복귀
@@ -118,6 +118,10 @@ Main msg_e7752a20e30b(10-24 18:25:03Z)가 전달한 사용자 원문은 「대�
 - **첫 검증자 정산:** 판정 원시 명단14파일의 bytes/SHA 차이0(자기manifest 포함15)이다. 기존helper의 검증자 신호10개 최대99초/초과0/질문대기0·exit0이며 첫신호전/완료뒤는 미측정이다. release retainedexternal→동일incarnation/idle/빈draft→정확pane close ptyKilled=true·부모리드1개를 확인하고 완료묶음을 ack했다(E/`review/{lead-actual-audit-v1.json,liveness-result-v1.json,release-v1.json,close-v1.json,after-close-terminals-v1.json}`). 재사용하지 않는다.
 - **리드 소유 보완 1회:** 두 결함은 리드 계약/행정 귀속이므로 Sol 제품 확정 실패·라우팅 신호5에 합산하지 않는다. 원계약/첫 고정판/판정을 보존한 E/`correction/contract-rule-supplement-v1.1.md`에 누락절 원문 전체·출처SHA·관련성·향후 적용단계를 명시했다. 완료된 Sol에게 보충을 전달했다거나 당시 원문 준수를 소급 수리했다고 하지 않는다. 신규 재실사는 이 명시 버전 보충과 현재 산출물로 독립 판단한다.
 - **후보 인용 보완:** 리드 goal의 ID 세개에 정본 BACKLOG 인용을 붙이고 후보가 아닌 비채택 선언은 일반 문단으로 바꿨다. 같은 기존 helper는 전 policy-violation/exit1·참조없음2/후보3 → 후 allowed/exit0·참조없음0/후보2·중복ID0/unknown0이다(E/`review/raw/candidates-01.*`·`correction/candidates-after-v1.*`). 검사기/정책·안정ID를 바꾸지 않았다. 보완 후 새 일곱 문서 입력을 `review-02/`에 고정하며 독립 해소/PASS는 아직이다.
+- **신규 독립 재실사 통과:** 이후 새 Astra의 E/`review-02/verdict.md` 전문을 직접 읽고 현재 #1·#2 해소와 문서 실사 통과를 인수했다. 실제 Task/Dispatch·succeeded done, 자기 명단16파일(자기manifest 포함17)의 bytes/SHA 차이0·고정46입력 차이0을 대조했다. 일곱 문서·일곱 양식 사용사례/30초 탐색·변경 로컬 링크22개 미해결0·동일 후보helper exit0/진단0이다. O1(H1 원문 탐색)·과거 원문 누락·최초 작성자 주입 전문/backend 모델 미확인은 보존하며 제품/삭제/게임/DB/CI 실행 통과로 확대하지 않는다. 판정·원시·인수는 E/`review-02/`에 있다.
+- **재실사 신호 형식 처분:** 초기 HB 두 건의 태그 붙은 alive/빈본문은 실제 body-tag 위반이다. 검증자가 발견했고 리드도 최초 수신에서 이를 놓쳤다. 두 원문/기존helper 위반 결과를 보존하고 이후 정확 alive로 교정했다. 메인 `msg_9c7fc4dc26eb`(23:08:44Z)은 현재 identity 일치·문서/측정/원시를 바꾸는 내용 없음·자기발견/교정을 이유로 **이번 두 건만 문서 판정과 분리해 비차단** 처리했다. 원문보존·교정·리드누락공개·판정의 출처/영향없음/한계 기록 조건을 최종 판정에서 확인했다. 사용자 결정·소급무위반·새일반예외가 아니며 원문은 E/`hb-disposition/main-disposition-original-v1.json`이다. 다른 세션 재발은 메인 지시대로 규칙 후보로 올리되 이번에 새 반복규칙을 만들지 않았다.
+- **재실사 정산과 PR 발행:** 기존helper는 재실사 신호8개 최대224초·300초초과0/exit0을 반환했다(형식위반은 별도 보존, 첫신호전/완료뒤 미측정). release·동일 incarnation/idle·정확 pane 종료/부모리드1개와 완료 ack를 확인했다. 검수한 일곱 파일과46입력은 그대로인 상태에서 메인 CLAUDE만 별도 commit, 나머지 문서를 다음 commit으로 담아 PR263을 생성했다. 최초 발행 head는 `a091ae8b003a35e9ae85a02976beb1e08efc068c`이며 2commit·7파일 +177/-4, OPEN/미병합이다. 생성 뒤 관측한 CI4종은 당시 실행 중이었으며 최종 head·CI는 E의 새 관측으로 확인한다.
+- **단계 결과 기록:** 최초 고정판·계약·판정은 E snapshot으로 보존한다. 독립 실사 완료와 PR 발행으로 단계가 바뀌어 goal/CURRENT의 리드 소유 두 문서에 결과·다음 행동을 기록하고 해당 행정 diff를 신규 Astra가 별도로 실사한다. 정본 세파일/CLAUDE/BACKLOG는 이 기록에서 바꾸지 않는다. 추가 기록 commit의 자기 head를 미리 적지 않고 최종 정확 head/CI와 판정 원문은 E 및 메인 보고로 연결한다. 메인 R-2·각 PR 승인/병합과 전체 종료는 아직 남았다.
 
 ## 다음 계획 후보
 
