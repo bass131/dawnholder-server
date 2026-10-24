@@ -100,9 +100,9 @@ namespace Dawnholder.Client.Tests.PlayMode
 
         // The label as it is drawn now: ForceMeshUpdate lays it out with its current settings, auto size included, so
         // the read does not depend on when batch renders the canvas. Ink is each visible glyph's drawn quad
-        // (characterInfo bottomLeft/topRight). isTextOverflowing and textBounds are not used: this font's line is taller
-        // than the label (34.35 against 14.92 at size 32) and both count the line's ascender and descender, so they
-        // report overflow for every amount (goal 「R10의 알려진 함정」).
+        // (characterInfo bottomLeft/topRight). isTextOverflowing and textBounds also count the line's ascender and
+        // descender rather than just the visible glyph ink, so they do not answer whether the drawn digits fit inside
+        // Gold_bar (goal 「R10의 알려진 함정」).
         static GoldLayout Measure(TMP_Text gold, RectTransform goldBar, int amount, string panelText)
         {
             gold.ForceMeshUpdate();
