@@ -17,7 +17,7 @@ Main `msg_e035d61029d5`(2026-10-24T22:44:19Z)가 메인pane Enter 제출22:4xZ �
 결정항목 효과는 「메인이 이 답을 그대로 파트에 전달하고, 파트는 이 초안대로 goal을 시작한다.」이다. 승인 원문은 `main-v2-approval-original.json`, 승인범위 원문은 `scope-draft-v2.md`21884B/SHA256 `1265651EC5D9EECA67129EEA18374B778EBADE4B5D63C479ADCF12EE5B8E5058`에 고정한다. 아래는 그 범위의 실행 분할이며 새 기능/품목/예산 추가가 아니다.
 
 - 이전 Main `msg_742782c8674d`: 석재는 기본atlas15+companion1~3의4종. 지형 생성0, 흙/전환칩은 기록 보존·새사용목록 제외, 새벽돌B/추가2회는 닫힘. 움직임7종은 등불·Tree01·Tree02·Bush01·Bush02·Sunflower03·Stall천끝. Wooden7frame 보존은 별도 필수다.
-- Main `msg_994f99a0734a`의 사용자C 「프레임이 많아야 자연스러울 것 같은데, 힘드려나?」는 질문이며 v2승인 전의 보충요청이다. 프레임 보충은 `frame-count-cost-supplement-v1.md`16384B/SHA `DE54349931EE72F6B7E2737591986564A34C0293B0A85A10016199317447C217`. 현재 A4장/13회와 추천B선별42frame/15회 중 답 대기다. 프레임 의존 C는 미발행, A/B 정적 제작은 승인대로 진행한다.
+- Main `msg_994f99a0734a`의 사용자C 「프레임이 많아야 자연스러울 것 같은데, 힘드려나?」는 질문이며 v2승인 전의 보충요청이다. 프레임 보충은 `frame-count-cost-supplement-v1.md`16384B/SHA `DE54349931EE72F6B7E2737591986564A34C0293B0A85A10016199317447C217`. 그 시점에는 A4장/13회와 추천B선별42frame/15회 답을 기다렸으며, 뒤의 b6d5가 B를 확정했다. C는 아직 미발행이고 A/B 정적 제작은 승인대로 진행한다.
 - Main이 PNG child Art전체1·직전 실제OS6GiB·소유process1GiB표본cap/250ms 조건을 수용했다. Unity/import/플레이는 별도Main창이다. Codex크레딧을10-28까지 아끼지 말라는 사용자지시가 있다고 이번Main이 전달했으며 과거리셋전95%/잔량을 현재값으로 쓰지 않는다. 전역 설정을 바꾸지 않는다.
 
 ### 프레임B·끊김 품질 기준 승인
