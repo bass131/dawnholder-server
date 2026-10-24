@@ -10,6 +10,7 @@
 - 생산 코드는 AGENTS.md 라우팅대로 Codex 작업자가 쓴다. 사용자가 Claude에게 직접 작성을 지시했을 때만 메인 Claude가 쓰고, 보고에 실제 작성 모델을 적는다.
 - Claude 서브에이전트(Agent 도구)는 읽기 전용 조사·요약에만 쓴다. AGENTS.md가 요구하는 독립 검증이나 Orca 실행 증거를 대신하지 않는다.
 - 예외: 메인 개인 도구 폴더(`C:/Dev/DawnHolder_Dashboard`)의 쓰기는 사용자 결정마다 서브에이전트에 맡길 수 있다. 메인은 결과를 직접 확인한다. 저장소 파일과 다른 파트 영역에는 적용하지 않는다.
+- 목업 생성 같은 메인의 잡일은 작업마다 새 보조 세션을 열어 맡기며 수는 제한하지 않는다([사용자 결정](01_Phases/goals/2026-10-25-ops-candidate-canon/goal.md#잡일의-태스크별-보조세션)). 절차는 [보조 세션 스킬](.agents/skills/dawnholder-helper-session/SKILL.md)을 따르고 쓰기 범위는 위 예외와 같다.
 - 사용자 요청 없이 Codex 영역을 수정하지 않는다: `AGENTS.md`, `.agents/`, Codex CLI 설정.
 - Codex 세션과 같은 checkout을 쓰면, 쓰기 전에 Orca 메시지로 파일 소유를 나누고 상대의 쓰기 종료를 확인한다.
 
