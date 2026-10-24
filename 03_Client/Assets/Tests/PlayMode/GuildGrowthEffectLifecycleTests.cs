@@ -56,6 +56,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         Scene _scene;
         GameObject _eventSystem;
         GameObject _parent;
+        GameObject _ownedAudioListener;
 
         [UnitySetUp]
         public IEnumerator Setup()
@@ -64,6 +65,12 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual(1f, Time.timeScale, "fixture: scaled and real seconds agree");
             Assert.IsTrue(Screen.width > 0 && Screen.height > 0, "fixture: a screen to draw on");
             _previousActive = SceneManager.GetActiveScene();
+            // Keep our fallback in the previous scene so unloading the effect's scene does not remove it mid-test.
+            if (!UnityEngine.Object.FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                .Any(listener => listener.isActiveAndEnabled))
+            {
+                _ownedAudioListener = new GameObject("GuildGrowthEffectFixtureAudioListener", typeof(AudioListener));
+            }
             _scene = SceneManager.CreateScene("GuildGrowthEffectFixture_" + Guid.NewGuid().ToString("N"));
             SceneManager.SetActiveScene(_scene);
             _eventSystem = new GameObject("GuildGrowthEffectTestEventSystem");
@@ -86,6 +93,11 @@ namespace Dawnholder.Client.Tests.PlayMode
             Restore(() => TMP_Text.OnMissingCharacter -= RecordMissingCharacter);
             Restore(() => { if (_parent != null) UnityEngine.Object.Destroy(_parent); });
             Restore(() => { if (_eventSystem != null) UnityEngine.Object.Destroy(_eventSystem); });
+            Restore(() =>
+            {
+                if (_ownedAudioListener != null) UnityEngine.Object.Destroy(_ownedAudioListener);
+                _ownedAudioListener = null;
+            });
             yield return null;
             Restore(() => { if (_previousActive.IsValid() && _previousActive.isLoaded) SceneManager.SetActiveScene(_previousActive); });
             if (_scene.IsValid() && _scene.isLoaded)
