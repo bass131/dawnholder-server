@@ -1,8 +1,8 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **Main msg_30b80937b805가 R-2 불일치0·Opus04 PASS를 수용했다. #4 시계 기록 수단 차이는 성향28/26에 따른 메인 결정으로 비차단이며 첫 쓰기 자기기록 한계는 남는다. 후속4건·봉인 원문을 보존하고 승인된 효과 배치 보완 PR의 commit/push·PR 생성·CI 확인을 진행한다. Opus04 정산·정확pane종료 완료, 병합·전체 goal 완료 전이다.**
+상태: **효과 배치 보완 [PR262](https://github.com/bass131/dawnholder-server/pull/262)를 발행했다. Main R-2/Opus04 PASS 수용·Edit42/Play34, 판정된13파일 commit/push 완료다. GitHub 충돌 없음·CI4종 진행 중이며 PR 연결 재개 기록 뒤 최종 head의 CI를 확인한다. 보호 MinimapRT/기존 concept 초안은 제외·잔류·불변이고 병합/전체 goal 완료 전이다.**
 
-**다음 첫 일:** 검증된 제품/시험10파일·효과 계획·goal/CURRENT만 commit/push하고 PR을 생성한다. CI 완료 뒤 정확40자 head·결과·원문/인수 경로를 Main에 보고한다. MinimapRT와 기존 사용자 concept 초안은 변경·되돌림 없이 제외하고 PR에 「작업트리 잔류, 범위 밖」을 명시한다. #1~#3은 이번 PR에서 고치지 않으며 새 실행·다음 goal·병합을 자동 착수하지 않는다. 새 Main 실행창 통지의 Git0 조건을 지킨다.
+**다음 첫 일:** PR262 최종 head의 code-rules·dotnet-tests·module-boundaries·architecture-tests 완료 결과와 정확40자 head를 Main에 보고한다. 판정 원문·R2 addendum·관측 한계와 비차단후속4건을 함께 넘긴다. 사용자 정확 head 한 줄 승인 전 병합하지 않으며 새 실행·다음 goal·후속 수정은 자동 착수하지 않는다. 새 Main 실행창 통지의 Git0를 지킨다.
 
 **병렬 전경 제작 완료:** 승인 공동안 v3의 같은 구도·글자 없는 레벨1/잠김·레벨2/열림 원PNG 두 장과 출처·배치를 `guild-housing-assets-01/`에 보존하고 제작 세션을 정산했다. Main은 두 원본을 직접 확인하고 Content에 인계를 알린다고 했다. 생산용 호출은 2/3회이며 남은 1회는 쓰지 않는다. 미리보기 제외·709/802/1920 확인·Content 제품 import/meta/UI/Git 단독·PR2 main 뒤 별도 PR·Unity 90분 경계는 v3 그대로다.
 
@@ -14,6 +14,11 @@
 - 완료조건·PR 경계: 이미지1회 제작·실제 원본/사본 경로·SHA256·bytes·크기·구도 확인과 Main 전달을 마쳤다. Main msg_52f6a03326b2의 사용자 「대시보드 결정 응답: 1) 길드 화면 「거점 전경 + 하우징」 콘셉트 디자인 확인 → A 이 방향으로 승인」은 디자인 방향 승인이다. 원문은 `guild-housing-concept-01/design-direction-approval-original.md`, 사본은 같은 폴더 guild-housing-concept-v1.png다. 글자의 「길」 뭉개짐은 게임 글꼴로 새로 쓰며, 제품/독립 PASS와 구분한다. 기존10/10·잔여0, 지금 commit/PR0이다. Art 에셋/해상도·Content 데이터/버튼·보존 접점·PR·시간/10-28 가능·Unity 창을 맞춘 공동안을 한 번 승인받은 뒤 제품 쓰기를 시작한다.
 
 ## 재개 지점
+
+- **PR262 발행·CI 대기:** Main msg_391f17f0479d는 사용자10-21 결정A(0B·10분 초과·git.exe0)에 따라 메인이 정확 art-active index.lock을03:58:23Z에 제거/부재 확인했다고 전달하고13파일 whitelist 통합을 재개시켰다. 잠금 생성 주체는 unknown이며 상태줄/판정 중 읽기는 후보만 남긴다. 리드는 잠금을 지우지 않았다.
+  승인된13파일의 staging 목록·blob/필터된 작업트리 대조·공백검사와 제품/시험10개·보호2개 bytes/SHA 불변을 확인하고 제품 commit `1b7692e3de6e5e2ebaa63a8af316f7e7386435ee`를 push했다. [PR262](https://github.com/bass131/dawnholder-server/pull/262)를2026-10-24T03:59:32Z에 생성했고 GitHub의 후속 조회에서 mergeable true·merged false다. 이 합성 merge ref는 실제 병합이 아니다. CI4종은 진행 중이며 이번 재개 기록을 반영한 최종 head로 확인한다. 로컬 근거는 `effect-layout-verdict-04/lead-pr-stage-audit-v1.json`·commit/push 원문·`lead-pr262-creation-receipt-v1.json`이다.
+  PR 본문에 MinimapRT 「작업트리 잔류, 범위 밖」과 이전 concept 초안 제외·보존, effect 계획 포함을 명시했다. 제품/시험·봉인 산출물 추가 수정0, 새 Unity/DB 실행0이며 원래42/34와 독립 판정의 관측 한계·비차단후속4건을 유지한다. CI 완료 후 정확40자 head와 결과를 Main에 올리고 사용자 승인/메인 병합을 기다린다.
+
 
 - **Main R-2 수용·효과 보완 PR 발행 승인:** Main msg_30b80937b805(2026-10-24T03:48:51Z)가 최종 verification/context 전문과 원시 Edit42/Play34·F source·View/Lifecycle 표본을 대조해 불일치0으로 Opus04 PASS를 수용했다. 봉인 판정은 고치지 않으며 새 인수 `effect-layout-verdict-04/lead-main-r2-acceptance-addendum-v2.json`에 결정·영향·남은 한계를 기록했다.
   #4는 Get-Date의 실제 +09:00 출력이 UTC로 정확히 환산되므로 시점 관측은 유지되고 template date.exe-u라는 수단 문장만 다른 기록 층이라는 메인 판단이다. 근거 성향28(합격선은 관측 가능성)·26(층위 귀속), 노트 `C:/Dev/Second_Brain/20_Areas/Engineering/개발-성향.md`다. 첫 쓰기 시점은 자기 기록으로만 지지된다는 한계를 유지한다. 이번 첫 발생을 기록하고 두 번째부터 시계 명령 grep을 반복 규칙 후보로 올리며 지금 새 guard는 만들지 않는다. #1 EditTests 낡은 주석·#2 두Lifecycle 새CS0618·#3 View 가드 가독성은 비차단 후속 후보로만 남긴다. F/N7 약어 오기는 기존 별도 addendum 처리로 수용했고 실제 원문11행·봉인 불변이다.
@@ -1275,7 +1280,7 @@ Main의 현황판 관측을 Art가 모든 과거 장면/화면 원시를 재조�
 
 ## 진척 단계
 
-- **현재:** 효과 배치 보완은 구현·실제 Edit42/Play34 실행·독립 Opus04 판정과 Main R-2 수용까지 완료했다. 승인된 별도 PR 발행·CI·사용자 정확 head 병합 승인을 기다린다. 아래 이전 준비 인계 메모는 당시 범위의 역사다.
+- **현재:** 효과 배치 보완 PR262 발행·CI4종 확인 중이다. 구현·실제 Edit42/Play34 실행·독립 Opus04 판정·Main R-2 수용은 완료했고 사용자 정확 head 병합 승인 전이다. 아래 이전 준비 인계 메모는 당시 범위의 역사다.
 
 - **준비 인계 마감:** 현재 Opus의 준비 인계 완료만 수락하고 정확 pane을 정산·종료했다. 실제 Unity·컴파일·Registry·독립 최종 판정은 수행하지 않았다. 저장 생존 신호의 300초 초과와 대기/준비 사유 및 보고 표현 정오표는 `f01-independent-review-02/settlement-note.md`에 남겼다. 원제품 NOTPASS/F01 차단은 그대로다. Main에 같은 리드 대화 재개 packet과 중간 종료 준비를 전달하며 전체 goal 종료·최신 main 이동과 구분한다.
 
