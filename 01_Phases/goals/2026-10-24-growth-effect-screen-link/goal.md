@@ -1,6 +1,6 @@
 # 길드 성장 효과 화면 연결
 
-상태: **Main 범위 대조 확정·표준 TDD 선행 시험 준비 중.** Main msg_a13d797a8b70이 v3 C1C425BC…49DA를 사용자 원문/원천과 대조해 승인했다. 제품 쓰기는 선행시험 작성·실제red·쓰기 종료/정산 뒤 신규 구현자부터다. Core 종료 통지와 별도30분 창 전 Unity실행은0이다.
+상태: **원작성자 failed 정산·종료 완료, 미실행시험 보존/신규Opus 정적수정 준비.** Main msg_a13d797a8b70이 v3 C1C425BC…49DA를 사용자 원문/원천과 대조해 승인했다. 제품 쓰기는 선행시험 작성·실제red·쓰기 종료/정산 뒤 신규 구현자부터다. Core 종료는 통지됐고 Main이40분을수락했으나실제시각배정/실행보충전 Unity실행은0이다.
 
 
 근거 기준: E는 프로젝트 root의 .backups/verification/2026-10-24-growth-effect-screen-link, U는 .backups/verification/2026-10-24-character-entry-prep다. 이 goal의 범위/소비계약 자료·이름만 적힌 로컬 JSON/Markdown은 E 아래 원문을 가리킨다. 원래 승인초안 goal-draft-v3.md/consumer-contract-v3.md와 Main 원문 mail-wake-04.json은 고정 보존한다.
@@ -9,9 +9,9 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 claude-opus-5-5 선행시험 작성자에게 승인 계약·고정입력을 발행해 C9 요구사항 시험과 실제 red 실행 READY를 받는다. Core 창 닫힘 뒤 Main에게 30분 창을 요청하고 실제 red·보호/자원반환을 확인한다. UI B는 World최종main/API·DLL 대기를 유지하며 UI지정7은 이전branch의 로컬checkpoint2215d47a69455dd547a882842d5aee9dfd43a2a7에 보존돼 있다. 제품/시험 구현을 리드가 대신하지 않는다.
+**다음 첫 일:** 현재지정시험4/goal을로컬checkpoint한뒤새Opus에GiCache빈폴더한곳수정/격리fixture·새창선행계약을발행한다. 원Task2f/ctxcadd는worker_done8e9 failed와report/raw를대조했고release→정확pane종료완료다. 19not-run/Unity0/미완료RED를유지한다. Core10:50~11:50Z동안새세션도정적수정/Parser·checker코드준비까지만하며실제fixture/Unity0이다. 차기창은Core실제반환뒤Level/C9 READY순서로Main에요청한다. UI B는 World최종main/API·DLL 대기를 유지하며 UI지정7은 이전branch의 로컬checkpoint2215d47a69455dd547a882842d5aee9dfd43a2a7에 보존돼 있다. 제품/시험 구현을 리드가 대신하지 않는다.
 
-Main의 Core 합동 창07:44:04~08:44:04Z가 진행 중이다. Main 닫힘 통지 전 Unity/dotnet/WSL/build/memory host/fixture·DB/7777 사용과 core-active/world-active 접근은0이다. 자기 worktree Git/파일·gh조회만 한다. 하우징 사용자 직접 플레이45분의 기존 순서는 보존하며 배정이 겹치면 Main에 우선순서를 확인한다.
+Main msg_e0e26521a469(08:45:12Z)이 Core 합동 창 종료(정산08:42:57Z)를 통지했다. Level두번째창은09:45:14Z에실제반환됐고Main msg_38055f6dbeae(09:58:12Z)이Level시험정렬WSL창10:00:00~returnBy10:35:00Z를새로배정했다. 그동안C9 Unity/dotnet/WSL/build/fixture/DB/7777실행0이며정적작성/문서/Git은계속한다. C9는Level실제반환뒤다음첫순서의별도창을요청한상태다. 이전Ubuntu/wslhost허용은과거특정상태이며새배정시fresh자원/정확기존identity를다시확정한다. 미소유WSL종료·재시작이나Core격리pwsh대역예외의C9확대는0이다. 실제source복사/snapshot/공유beforecapture도고정실행보충/창전0이다. 작성자 READY·실행원문/반환계획 뒤 읽기전용 res-check 결과와 함께 Main에 요청해 시작·lastEntry·returnBy를 배정받는다. Unity/dotnet/WSL/build/fixture·DB/7777은 배정된 창 안에서만 실행하며 core-active/world-active 접근0·보호Minimap commit/revert0은 유지한다. World 리드는 열리지 않아 캐릭터UI B는 계속 대기다. 기존 하우징45분 순서와 겹칠 배정은 Main이 조율한다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -72,11 +72,11 @@ Art 코드·atlas·Resources 경로는 그대로 읽어 소비한다. 소비만�
 
 ## 검증·Unity 창 예산과 촬영 전 전망
 
-강 등급으로 확정됐다(소유/구독·실패 수명·실제 Unity/표시 경로). 신규 goal의 표준 TDD 기준으로 아래 **3창/총135분**을 추정한다. 모두 Main의 비중첩 배정과 실제 자동 관문 통과가 필요하며 아직 실행/창 요청은0이다.
+강 등급으로 확정됐다(소유/구독·실패 수명·실제 Unity/표시 경로). 신규 goal의 표준 TDD 기준으로 아래 **3창/총145분**을 추정한다. 모두 Main의 비중첩 배정과 실제 자동 관문 통과가 필요하며 아직 실행/창 요청은0이다.
 
 | 순서 | 제안 창 | 하는 일 | 미확정/비용 기준 |
 |---|---:|---|---|
-| 1 | 선행 시험30분 | 신규 Opus의 요구사항 시험·기존 연결 부재 red | 기존 actual Unity import/시험 625초는 다른 입력의 역사값이며 이시간의 보증이 아님 |
+| 1 | 선행 시험40분(Main e36 수락) | 신규 Opus의 요구사항 시험·기존 연결 부재 red | 기존 actual Unity import/시험 625초는 다른 입력의 역사값이며 이시간의 보증이 아님 |
 | 2 | 구현자45분 | 신규 Astra xhigh 구현 뒤 compile·Edit/Play 자체 확인·정상 반환 | 제품/시험 고정입력·실행명령은 실제 계약에서 고정 |
 | 3 | 독립60분 | 신규 Opus 독립 검증의 강 검증·실제 통합 진입·수명/입력·두 해상도(1920×1080/1280×720)·resize/두효과 관측 | 실서버 관측을 포함할지는 계정·서버 입력/소유·창을 Main과 고정. 확보 못하면 실게임 완료조건 남음 |
 
@@ -117,3 +117,90 @@ Art msg_cb262ccef2a6가 지적한 v2 독립검증 표의 「세 해상도/두효
 ### 역할·모델 배정
 
 선행시험은신규 claude-opus-5-5, 구현은신규 gpt-6-astra xhigh, 독립검증은구현자와별도의신규 claude-opus-5-5다. 구현배정은 implementer-routing.md 신호2(확정이벤트순서·source/scene수명)와4(새다파일화면/레이아웃판단)를적용했으며, Astra구현의독립검증은모델시범에따라Opus다. Main이확정한강등급·선행30/구현45/독립60분경로를유지하고선행Opus세션을독립검증에재사용하지않는다. Codex새세션에는service_tier fast를붙이고최초thread_settings priority를확인한다. 현재제품/시험쓰기·새Unity실행0이다. 기록시각 2026-10-24T08:28:09Z (date -u).
+
+### 선행 시험 작성자 연결
+- 신규 [Content 검증자] Opus5.5 / task_2f1241700289 / ctx_caddcf093b2c / term_7fca9d9d-4855-44c1-a1ed-3fedc1f520ce. 계약은 E/pretest-v1/contract-v1.md SHA256 93A353C9D18073508BE524F75B2A6287C2BA9163BE603726D920629D966A2236, 입력은 path-input-manifest-v1.json의 고정 hash다. 요구 원문 goal-frozen.md를 따로 보존해 리드 상태 갱신과 분리했다.
+- R5 wait satisfied·R6 Opus5.5 xhigh 일반prompt·실제 input_accepted/turn_started를 확인했고 최초실행/화면/backend unknown을 active-assignment-v1.json에 구분했다. 선행세션은 독립검증자로 재사용하지 않는다.
+- 현재 권한은 신규시험4파일과 W 근거/정적 harness 준비까지다. 제품쓰기/새Unity실행0이며 Core실제닫힘+Main30분창·실행보충 전에는 source복사/외부before capture도0이다.
+- Main msg_4954de3f9586의 TestResults CAS3갈래 승인은 E/mail-after-ack-04.json에 보존했다. 승인 원v1(일본어)은 보존하고 같은 방침을 execution-protection-plan-v2-ko.md로 한국어 전사했다. Prefs11/Registry·GiCache 메타4 기존정책은 유지한다.
+- 연결 기록시각 2026-10-24T08:37:48Z (date -u)
+
+### 선행 READY v1 실사와 남은 실행계획
+작성자 W/ready.md SHA256 51802749396525459FCA63153327D0904C0B3CD8F0BB9FDD1FB16F702C14E87F는 신규시험4파일·Play16/Edit3 작성과 미실행을 보고했다. 리드는 시험·case/harness/template 원문과 실제hash를 대조했으며 단계A의 시험작성을 인수하고 실행계획은5항목 보완으로 반환했다. 공식ask msg_a710b3b02eb4의 답 msg_10ae02223cca와 사전메모/고정사본은 E/pretest-v1/lead-review-v1에 있다. guardEdit3/기존HUD후속사람판정·P16 Warning/Error기록방법은 수용했고 선택적기존대조군8 추가는이번선행창에서제외했다. 자동화밖8항목과실게임완료조건은남는다. 예측16red/3pass를실제결과로보고하지않는다.
+
+작성자의pwsh Parser기동2회 뒤홈 StartupProfileData-NonInteractive mtime변경후보는before/정확writer증거부재로귀속미확정이다. 되돌리기/전역설정변경0을유지했고 Main msg_a2e4d00374a9로원문경로와판단요청을보고했다. 답전작성자는새pwsh기동·추정restore/외부capture없이텍스트/Node정적보완만한다. 이관측을숨기거나통과로정산하지않고Main판단/남은한계를후속에연결한다.
+- 기록시각 2026-10-24T09:34:23Z (date -u)
+
+### 첫 발생: pwsh 공유 자동 cache 판단
+- 관측 원문은 작성자 W/ready.md 6·9절 및 W/plan/pwsh-home-side-effect.txt이고, 리드 보고는 msg_a2e4d00374a9다. 정확writer/before가 없어 작성자 귀속은 미확정이다.
+- Main msg_4499b8adfa28(2026-10-24T09:34:09Z, 원문 E/pretest-v1/lead-review-v1/mail-after-ack-18b.json)은 StartupProfileData-NonInteractive를 「도구 자동 부산물」로 허용하고 계약의 홈쓰기금지는 작업자가 의도해서 쓰는 파일에 적용한다고 판단했다. 존재·bytes·mtime 관측만 남기고 「미확정(공유 자동 cache)」으로 적는다. 삭제/되돌리기/추정restore0, 위반·제품결함으로집계하지않는다.
+- 같은성격의새자동cache도같은방식으로기록하되 profile/settings/config 설정파일변경은즉시중단·보고한다. 이번goal첫발생으로만기록하고새반복정본을만들지않으며 두번째발생때정본담당에요청한다.
+- 이판단으로작성자의새pwsh정적구문검사기동보류만해제한다. 실제Unity/실행용snapshot·외부before capture는Main창/고정실행보충전0이다. 실행계획v2실사·Level실제반환뒤C9다음첫순서도유지한다.
+- 판단반영 시각 2026-10-24T09:34:54Z (date -u)
+
+### 선행 실행계획 v2 실사와 창/자원 요청
+- W/ready-v2.md SHA256 1B895C996AB1CC8DE154581869A980B4CE08D968266BBE26489075BD26212509, c9-harness-v2.ps1 39AABA1FB96C996E4183AC0DB363ABB10D087D1284B75EA5C3B94C96633AB8D4, template47B76729DE3DE9A785AFD8CB8EF82A8B58A7A37797BA22F349A174B9A1D0057E의원문/실제hash와5보완·기존process입력을대조했다. E/pretest-v1/lead-review-v2에사본·사전메모·input-path-audit-v2.json을보존했다. 신규시험4/DLL2/Minimap7pin과기존37입력drift0이며실제harness/Unity실행은0이다.
+- Play16→Edit3순서를수용하고선택적대조군은추가하지않는다. generatedAllowed=[]/정책불일치시보류,cp는정산뒤별도정리까지보존,프로세스ExecutionPolicy Bypass는실제정책차단때만근거기록으로선택했다. 실제red/컴파일·fixture/환경/중단분류와최종독립·자동화밖8항목은미실행으로남는다.
+- Main msg_8d8c3f4b0249로기존선행30분에서40분(+10)을요청했다. T+28 lastEntry/T+32 reserve/T+40 returnBy·Play1200/Edit360초는미측정제안/미승인이다. 기본표준30/45/60배정을조용히바꾸지않고Main답을후속고정plan에연결한다.
+- 요청시fresh res-check10:04:22Z는물리17.95GiB/commit15.25GiB/C36.65GiB/runtime0/7777listen0/ownindex.lock0이었다. C36.65<제안40GiB라자원미충족을숨기지않고40유지+정리소유/범위Main판단을추천했다. 시작13.5/8/C40GiB·실행4/2GiB3연속10초하한도C9확정값이아닌제안이다. 리드/작성자의임의과거snapshot삭제/기준하향0이며요청원문은window-request-v2.md/raw res-check-request-v2.json이다.
+- 작성자공식ask msg_ef658ff2e037은msg_ad8aa79810fc로정적방법에답하고Main창/자원·실행보충전대기를인계했다. 같은Task/Dispatch는계속유효하고worker_done/쓰기종료/제품구현은아직아니다.
+- 기록시각 2026-10-24T10:06:21Z (date -u)
+
+### Main 확정: C9 40분·자원값, 실제 시각은 사용자 순서 뒤
+Main msg_e36ed481250d(2026-10-24T10:10:40Z)은요청원문4018B/SHA256 42C8AE73696456D3D96E3F6F0DD0E1BA8C9ADA1600C4B34563E722C2676CAFC7를직접대조했다. Content도실제bytes/hash일치를확인해lead-review-v2/main-resource-source-check-v1.json에남겼다. Main이실측한메인Library3.37GiB(51482파일)/원천약0.41GiB·첫import/로그5GiB안이라는근거로startCFree20GiB를확정했다. 이는Main관측/판단이며Content실측으로적지않는다. 정리·삭제는하지않는다.
+
+확정은startAvailable13.5GiB(14495514624)/startCommitFree8GiB(8589934592)/startCFree20GiB(21474836480),실행중available4GiB/commit2GiB하한3연속10초표본에서자기Unity루트만정확종료다. 40분/lastEntry T+28/reserve T+32/returnBy T+40·Play1200/Edit360초·generatedAllowed=[]·Return뒤snapshot보존도수락됐다. 최초Main a13의표준TDD30/45/60중이번선행창만40분으로조정한현재배정이며강등급/역할분리/최종완료조건은같다.
+
+Main은사용자에게Core60분과C9의순서를묻고있다. 답뒤T/기존processidentity를fresh res-check로배정하며C9먼저면Level실제반환뒤,Core먼저면Core반환뒤다. 예정10:35/11:35를실행허가로쓰지않는다. 준비본E/pretest-v1/execution-v2/plan-prewindow-v2.json은RESOURCE_CONFIRMED_AWAITING_WINDOW_NOT_EXECUTABLE/window4null/allowedExisting null이며harness관문통과불가상태다. 원Main은main-resource-decision-v1.json에보존했다. 고정시각/최종실행보충전복사/snapshot/공유capture/Unity0이다.
+- 반영시각 2026-10-24T10:12:27Z (date -u)
+
+### Main 실제 창과 직전 process 관문
+Main msg_74675f4b3319(10:15:21Z)은Level실제닫힘10:14:24Z 뒤기존사용자순서C9→Core60분으로T10:18/lastEntry10:46/reserve10:50/return10:58Z를배정했다. 사용자에게Core먼저변경답이없어기존결정을적용했다고보고했으며새사용자승인으로격상하지않는다. 허용기존PID22808/23556/28508/5448·새WSL은C9소유아님/각진입1회retry연장0·반환먼저보고를따른다.
+
+직전fresh10:16:02Z는물리16.90/commit13.36/C35.83GiB/7777·indexlock0/source65ac/cp부재였지만old wslhost23556/28508이사라지고new25500/14576(둘다parent5448,10:15:41Z시작)이있었다. C9 WSL기동0이며Main의허용목록에없어임의허용/종료하지않고msg_1fcade6a389a로보고·판단요청했다. 원시는E/pretest-v1/execution-v2/res-check-window-v2.json이다.
+
+window값을채운plan-window-pending-process-v2.json은AWAITING_PROCESS_IDENTITY_CONFIRMATION_NOT_EXECUTABLE/allowedExisting null로두고실행보충초안도미발행으로표시했다. 작성자msg_4db9e122565e에hold를전달했고현재복사/snapshot/공유beforecapture/Unity실행0이다. 새Main판단없이현재창을연장하거나허용baseline을바꾸지않는다.
+- 기록시각 2026-10-24T10:17:51Z (date -u)
+
+### Main 동적 WSL 출처 규칙과 v2.1 한정 보완
+Main msg_583b924a9adf(10:17:32Z)은wslhostPID가10:13:39/10:15:41/10:16:42관측에서계속바뀜을확인해고정PID관문을출처조건으로바꿨다. name wslhost.exe·경로 C:/Program Files/WSL/wslhost.exe·parent5448·commandline --vm-id {3b5956a3-f153-4a7d-b0aa-2cce12be7265}가모두맞을때만PID/birth와무관하게허용하며C9소유로세지않는다. 고정vmmem22808/service5448허용/사라짐정상·그밖새wsl/dotnet/testhost/GameServer/다른VM·7777은진입전보류/진입중보고·어떤WSL도종료0을유지한다. 메인은C9동안wsl.exe조회하지않는다.
+
+기존harness39AABA1F는고정PID만지원하므로작성자같은Task/Dispatch에W/plan의v2.1필요부·순수in-memory분류대조만발행했다(msg_9207ec5842fb,계약E/pretest-v1/execution-v2/rule-patch-contract-v2.1.md). 원v2/템플릿·시험4/case19·제품은보존하며재설계/리드직접구현0이다. Main인수보고는msg_6dfc00dd5d23이다.
+
+Main원문은main-dynamic-rule-v1.json,규칙data는runtime-rule-approved-v1.json에보존했다. 규칙은확정됐으나새harness실사/최종plan은미발행이므로currentExecutionAuthorized=false를유지하고실제Unity/공유capture/snapshot/복사0이다. T10:18/lastEntry10:46/reserve10:50/returnBy10:58Z·각진입1회retry연장0은바꾸지않는다.
+- 기록시각 2026-10-24T10:19:59Z (date -u)
+
+### 최종 v2.1 실행보충 발행
+작성자 READYv2.1 017C58A96D0A9106A33D30890B6258FF1181219EFF5C2CF0DFE0213EA110BBE5·harness D21AEDC2722D498C9FB807C41AD042E65A3C1A2E7F371884D56AB3DFA1EFDD32·template F5E8DD53FA7951E41F0644399385611E1E151183872839A6B6B5E4CE2288C432와실제diff를대조했다. 순수checker원시는cases25/failed[]/ruleMatchesMain true/exit0,vm-id검사제거변이는different9/exit1이다. 이는순수분류확인이고실제Unity/RED성공이아니다.
+
+fresh10:33:41Z 물리18.77/commit15.96/C35.84GiB/runtimeclear·7777/indexlock0/cp·raw부재·7pin/37입력일치를확인했다. 실제남은고정service5448만exactidentity로넣고vmmem/동적WSL의자동소멸은Main정상조건대로분리했다. 원시는E/pretest-v1/execution-v2/final-preflight-v2.1.json이다.
+
+최종plan-final-v2.1.json SHA256 B7BB90623DBDA261F0817C41001DB781F78F44247D0A1581F86DDE332C7D82C5/state APPROVED_FOR_STAGE_B와execution-supplement-final-v2.1.md SHA256 A10605FA18AC06DC637698997AD067B5E74613097DBE9BD8C4D04FFC4A64D3A8을고정하고10:35:13Z 공식ask답msg_ef6e24708b89로현재Task남은B/C를인계했다. Main보고는msg_4ce759e2320b이며원문/receipt는같은execution-v2폴더에있다.
+
+Play16→Edit3각1회,입력/시간/자원·동적출처관문·freshbefore/부분반환·정확case분류를일괄승인하되10:50reserve가cap보다먼저오면자기root종료/aborted로남긴다. retry/연장0·입력관문즉석완화0이며필수미실행을통과로보고하지않는다. Return자원/잔류/미반환status를결과분석보다먼저인계하도록했다. 발행시실제Unityentry는미확인/원시대기이며시험작성완료와실제RED확인을구분한다.
+- 기록시각 2026-10-24T10:35:48Z (date -u)
+
+### 실제 단계 실패: 빈 GiCache 메타 합계
+Pin exit0(10:36:13~18Z)·Prepare exit0(10:36:26~10:37:01Z,2292복사/차이0)뒤CaptureBefore가10:37:10Z exit1로끝났다. Save-GiCacheMeta의빈파일Measure-Object 결과가null인데StrictMode3에서.Sum을읽어실패했다. Prefs/Registrybefore는저장됐으나GIbefore메타는없다. 순수동적WSLchecker가덮는범위밖이었고리드정적실사도이빈폴더분기를놓쳤다.
+
+Unity Play/Edit launching/root/결과XML은0,19case전부not-run이다. Read exit0·Return exit1(10:40:11Z)이며failedParts giCache만남았다. Return원문은launched[]/unreturned[]/sharedWriteHolds[]/7777[]·새잔류0,Prefs11/11·Registry before동일/쓰기0·TestResults none/쓰기0·원본Minimap pin동일/snapshotLeft true다. 이를전체Return PASS나실제RED로바꾸지않는다.
+
+리드fresh10:45:34Z도service5448만/7777 0·물리18.40/commit15.49/C35.16GiB를확인했고GI4메타는존재/파일0/bytes0/최신null이었다. 실제GI내용hash/복사/삭제/restore0이고후관측을이전before성공으로쓰지않는다. 원문E/pretest-v1/worker/raw/return-summary.json·native-return.json·ledger/twocounts와execution-v2/lead-return-source-sample-v1.json을직접읽었다.
+
+Main msg_13cf8cab37cf로실행자원을먼저반환했고원작성자공식ask7d0c에는msg_1919e9d73de4로B/not-run·failed정산을지시했다. 현재창retry/연장0·oldcp보존/재사용0이며수정/재진입은같은목표안새Opus/새계약·경로/창으로이어간다. 차기진입초안은E/pretest-retry-v1/entry-draft-v1.md다. 하네스실행실패1건으로남기고제품확정실패3회/실제행동RED실패로집계하지않는다.
+- 기록시각 2026-10-24T10:48:25Z (date -u)
+
+### Main C9 닫힘·Core 사용자창과 첫 발생 교정
+Main msg_385e2fd8af83(10:47:43Z)은fresh10:47:06~11Z의Unity/dotnet/wsl/wslhost/vmmem/GameServer/git0·WSL두배포Stopped·7777/indexlock0·물리18.36/commit15.30/C35.16GiB를확인하고C9창을10:47:06Z로닫았다. 남은wslservice5448과상시sqlservr20952(MSSQL$SQLEXPRESS,Auto)는C9기동/종료대상이아니다. Main이관측한값을리드실측으로쓰지않는다.
+
+Main은새Opus의한곳수정·빈/비빈fixture검증계획을받았고oldcp는정산뒤별도지시까지보존한다. Core사용자60분창10:50:00~returnBy11:50:00Z에는C9 Unity/dotnet/WSL/build/fixture/DB/7777실행0이며정적작성/문서/Git만계속한다. 새Opus도처음에는정적수정·fixture코드준비/Parser만하고실제fixture는별도허용창전실행하지않는다. 다음창은Core실제반환뒤Level독립검증과C9중READY먼저온쪽이므로C9고정우선을추정하지않는다.
+
+**첫 발생/교정층:** 리드정적실사가Save-GiCacheMeta의빈폴더null.Sum분기를놓쳤다. 원문은worker/raw/cmd-CaptureBefore.stderr.txt·return-summary.json/ledger,Main기록요청은msg_385e2fd8af83이다. 교정은문서규칙추가가아닌**테스트**를선택한다. 신규Opus가실제함수에없는root·빈root·고정바이트/mtime파일root를넣어수정전실패/수정후동일명령의리터럴메타기대를확인하도록계약한다. GI실물내용hash/복사/삭제/복원0과격리W내출력분리를보존한다. 첫발생은이goal에만남기고새반복규칙/전역설정변경은하지않는다.
+- 기록시각 2026-10-24T10:49:34Z (date -u)
+
+### 원선행 Task 정산·종료
+worker_done msg_8e9fdd87cf7c(10:49:47Z)의currentfrom·Task2f/ctxcadd·명시failed·report/변경4파일을대조했고worker-show settled/failed·실제raw와일치했다. 승인참조질문44eff/실제답ef6e를연결하고원report를보존했다. 결과는하네스실행실패/19not-run·Unity0/제품확정실패0이다.
+worker-release는retained/external_terminal/processAction none이었다. 프로젝트R5에따라정확term_7fca9d9d-4855-44c1-a1ed-3fedc1f520ce/incarnation8a3f05dc-fbf7-4c3f-9581-0095197f4534의완료일반prompt·draft없음을확인해close/ptyKilled true·postlist oldhandle부재를확인했다. 현재Dispatch는reclaimable아니다. 원문은E/pretest-v1/execution-v2/failed-worker-intake-v2.json·worker-release-v1/terminal-close-v1/관련show/read/list다.
+기존생존helper 원시64msg/신호38집계는over/exit1·초과5구간/최대454초다. 각구간/실제created_at/이유·공식ask대기4제외는liveness-report-v1.json·liveness-accounting-v1.md에있다. 자가기록1초차이는원시를정본으로하며within으로바꾸지않는다.
+다음계약전로컬보존은지정시험4와goal만이다. E/pretest-retry-v1/checkpoint-v1.json에실제commit/파일집합/지문을기록한다. .backups/oldcp·사용자Minimap은stage/commit/revert0,remote push/PR0이다. 신규Opus는원세션재사용이아니며Core창중정적준비만한다.
+- 기록시각 2026-10-24T10:54:51Z (date -u)
