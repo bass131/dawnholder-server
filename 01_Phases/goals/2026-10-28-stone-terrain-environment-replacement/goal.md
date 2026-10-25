@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 독립검증 `task_2a4c9989acae`/`ctx_aa35904f95c1`의 독립 test/runner, 입력 202개·보호 5개, 자원 관문과 정확한 argv를 실사하고 공식 G0를 판단한다. 현재 G0는 미개방이다. 첫 두 후속의 실제 수신·동일 delivery ACK는 확인했다. 초기 202개 장부의 보호 key 오류·0개 표시는 보존됐고, 작업자가 별도로 작성한 보호5/P3/D8의 16행과 Root의 현재 207개 핀을 실제 대조해 일치했다(`pins-pre-g0-protected.json`, `static-preview-review-current-207-observation-v1.json`). 그 뒤 보낸 후속 `msg_13fe069666cb`의 실제 수신·ACK는 확인해야 한다. 사전 Node 실행의 원천 대조와 절차 PASS 보류는 아래 단계 기록에 남겼다. 영향 없는 작성과 정상 G0 뒤 승인된 검증은 계속하며, 고정 계약·207개 핀과 새 Chest 제안 실행 금지는 유지한다.
+**다음 첫 일:** 신규 독립검증 `task_2a4c9989acae`/`ctx_aa35904f95c1`의 독립 test/runner, 입력 202개·보호 5개, 자원 관문과 정확한 argv를 실사하고 공식 G0를 판단한다. 현재 G0는 미개방이다. 첫 세 후속의 실제 수신·동일 delivery ACK를 확인했다(세 번째는 `check-07.json`/`check-08-ack.json`). 초기 202개 장부의 보호 key 오류·0개 표시는 보존됐고, 작업자가 별도로 작성한 보호5/P3/D8의 16행과 Root의 현재 207개 핀을 실제 대조해 일치했다(`pins-pre-g0-protected.json`, `static-preview-review-current-207-observation-v1.json`). 사전 Node 실행의 원천 대조와 절차 PASS 보류는 아래 단계 기록에 남겼다. 영향 없는 작성과 정상 G0 뒤 승인된 검증은 계속하며, 고정 계약·207개 핀과 새 Chest 제안 실행 금지는 유지한다. 별도 후속 준비표 `static-reference-sealing-readiness-v1.md/.json`은 현재 검증 입력에 넣지 않은 미봉인 자료다.
 
 직전 비교/data납품 `msg_3a366ba8f025` succeeded는 최종보고11530B/SHAEF75DE99…EB4179B·목록79410B/SHAEE3AB97D…FC82643,114항목+별도5마감/자체·실제119집합/current62pin을 전수대조했다. release/exactidleclose·postclose변화0·Root생존·reclaimable0과 표준liveness7신호/max299초/초과0·공식질문대기120초, 별도수동HB302초(+2)사유는 `static-preview-lead-settlement-intake-v1.json` 및 `static-preview-liveness-observation-v1.md`에 보존한다. CPV-01 실측ROI/힌지·SPV-01작은꽃다발 가독성·B후보선택은 미완료이며 original17유형/C42/3PR범위를 유지한다.
 
@@ -111,6 +111,7 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 
 ## 결정과 단계 결과
 
+- 실제 정적 출력과 후속 목적지의 준비표를 작성했다(`static-reference-sealing-readiness-v1.md/.json`, 계산 원문 `static-reference-sealing-readiness-build-v1.py`). 기존 참조35행·비교 각29시트35프레임과 석재4칩을30개 PNG 후보/39시각 프레임으로 연결했고, 중복 발판을 별도 목적지로 더하지 않았다. 현재60개 PNG의 bytes/SHA와 완료마커3개는 manifest와 맞으며 원본/수선 차이는5쌍이다. 정적 봉인·실제 목적 PNG/meta·Unity는0이고, 상자/꽃다발·후보선택·후속 권한·독립 판정이 남는다. 이 Root 준비표는 현재 검증의 고정 입력과 예상 판정으로 주지 않았다.
 - 신규 비교 검증 Task에서 G0 전 버전 Node 1회·빈 Python 1회의 자기 공개를 기록했다. 원본 Bash 도구 기록 156/158을 대조해 `node -v` 출력 폐기·빈 Python·echo/manifest head 명령과 기록 시각을 확인했으나, 개별 exit와 OS 자원은 unknown이다. Node 0회 준수를 소급 PASS하지 않고 Main `msg_e3b22d888ff2`에 즉시 보고했다. 정상 G0 준비와 절차 PASS 관문을 구분한다(`static-preview-review-pre-g0-node-observation-v1.json`, `static-preview-review-pre-g0-source-audit-v1.json`). 자동 HB V1 재발이나 제품 확정 실패로 자동 집계하지 않는다.
 - Root가 상자 원화 1774×887에 기존 crop 7개와 미실행 절단 후보만 SVG로 겹쳐 좌표를 대조했다. target y45가 초기 source y239/제안 y240을 고르는 주소 차이는 명세의 기하 계산이며 실제 RGBA 차이나 힌지 성공을 측정한 결과가 아니다. `chest-roi-geometry-observation-v1.json`, `chest-roi-observations-v1.md`, `chest-roi-browser-overlay.png`에 남겼으며 현재 검증의 고정 입력이나 예상 정답으로 주입하지 않았다.
 
