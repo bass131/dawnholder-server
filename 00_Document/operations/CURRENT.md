@@ -10,7 +10,7 @@
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 
-- Art: [석재 지형·환경물 자체 교체와 움직임7종](../../01_Phases/goals/2026-10-28-stone-terrain-environment-replacement/goal.md#재개-지점) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active · feat/stone-environment-replacement-20261025 — v2·프레임B 승인. A/B 원본5회 인수·정산 완료, alpha/작은규격 품질은 보류. PNG 패킹 선행RED 봉인·신규Sol 구현 준비. 총15회 중5사용·지형생성0, C42frame은 봉인reference 뒤. Level후속배치·촬영뒤제품병합/독립검증·기존견본별도정산.
+- Art: [석재 지형·환경물 자체 교체와 움직임7종](../../01_Phases/goals/2026-10-28-stone-terrain-environment-replacement/goal.md#재개-지점) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active · feat/stone-environment-replacement-20261025 — v2·프레임B 승인. A/B 원본5회 인수·정산 완료, alpha/작은규격 품질은 보류. 패킹 구현92/30·원본7검사/석재출력 성공, 구현자 정산·봉인 후 신규Opus 강검증 준비. 총15회 중5사용·지형생성0, C42frame은 봉인reference 뒤. Level후속배치·촬영뒤제품병합/독립검증·기존견본별도정산.
 
 - Rules: [Art·Level 정식 파트 운영 규칙](../../01_Phases/goals/2026-10-22-art-level-formal-parts/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/art-level-formal-parts-closeout-20261022` · PR257 병합·Gardener 완료, 종료 기록 실사 중 · [공용 실행 잠금은 10-28 뒤까지 보류·기존 NOT PASS 유지](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#재개-지점) · [기존 PR2 가드는 동결까지 보류](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점)
 
