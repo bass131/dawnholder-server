@@ -12,7 +12,7 @@
 
 - Art: [석재 지형·환경물 자체 교체와 움직임7종](../../01_Phases/goals/2026-10-28-stone-terrain-environment-replacement/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active` · `feat/stone-environment-replacement-20261025`
 
-- Rules: [Art·Level 정식 파트 운영 규칙](../../01_Phases/goals/2026-10-22-art-level-formal-parts/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/art-level-formal-parts-closeout-20261022` · PR257 병합·Gardener 완료, 종료 기록 실사 중 · [공용 실행 잠금은 10-28 뒤까지 보류·기존 NOT PASS 유지](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#재개-지점) · [기존 PR2 가드는 동결까지 보류](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점)
+- Rules: [운영 사례의 계약·정산 경계 정본화](../../01_Phases/goals/2026-10-25-ops-candidate-canon/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/ops-candidate-canon-20261025` · 문서 재실사 통과·PR263 발행, 메인 R-2/정확 head 승인 대기 · [공용 실행 잠금은 10-28 뒤까지 보류·기존 NOT PASS 유지](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#재개-지점) · [기존 PR2 가드는 동결까지 보류](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점)
 
 Content goal의 상태·결정·남은 일은 위 상대 링크의 재개 지점에서 확인하며, 작업은 해당 Content worktree에서 이어간다. CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
 
