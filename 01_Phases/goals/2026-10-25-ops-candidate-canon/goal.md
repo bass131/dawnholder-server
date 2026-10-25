@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-다음 첫 일은 Gardener 결과를 연결한 종료 기록 세 문서를 신규 Astra가 독립 실사하는 것이다. Gardener는 보고서 한 파일·후보 두 건을 남겼고 정산·pane 종료를 마쳤다. 후보는 BACKLOG에 제안·근거로만 도착시켰으며 채택·구현·새 goal 착수는 없다. 재부팅 뒤 최신 `origin/main` merge 통합은 `Already up to date`/exit0이었다. [PR263 - 운영 계약·원시 보존·실행 정산 규칙 정본화](https://github.com/bass131/dawnholder-server/pull/263)는 메인이 2026-10-25T06:45:00Z에 병합했고 정확 head CI 네 종도 성공했다. 종료 기록 PR 발행·사용자 정확 head 승인·메인 병합·종료 점검·최신 main 복귀/R-8은 아직 남았다.
+다음 첫 일은 [PR264 - 운영 사례 정본화 종료 기록과 후보 연결](https://github.com/bass131/dawnholder-server/pull/264)의 최종 head·독립 판정 원문·C1 보충을 메인이 R-2로 대조하고 사용자 정확 head 승인을 받는 것이다. 종료 기록 세 문서의 신규 Astra 실사는 통과했다. 이 추가 단계 기록의 독립 대조와 최종 head·CI는 E/`closeout/admin-review/` 및 최종 인계 근거로 연결한다. PR264는 미병합이며 Codex는 병합하지 않는다. Gardener 한 번과 후보 두 건의 채택 전 기록은 끝났고, 실제 PR264 병합 뒤 종료 점검·최신 main 복귀/R-8이 남는다. 다음 goal은 자동 착수하지 않는다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`
 - 현재 종료 branch: `docs/ops-candidate-closeout-20261025`, base `4b69059a05b032f59582f74a9800120cbebf209b`. clean·최신 origin/main 분기는 E/`closeout/branch-start-v1.json`이다. PR1 branch `docs/ops-candidate-canon-20261025`의 base는 `cf207c1f355ced664e62119152e8b0686b0ec051`이며 당시 원시 `git-fetch-start.txt`·`branch-start-state.json`은 보존한다.
@@ -11,7 +11,7 @@
 - 승인 전 초안 `scope-draft-v1.md` 18250B/SHA256 `EF0871EFE2389465ACE8B98B06C7E34F74833042BC1E5834F9699CBFFD0061EC`는 보존한다. 초안 작성 당시에는 독립 PASS·commit/push·PR·병합이 없었다.
 - 같은 대화 재개 ID: `CODEX_SESSION_ID=01a16fce-620b-7ea0-9166-849a911964f0`. 지정 이름만 읽어 확인한 시각은 `2026-10-25T06:49:38Z`이며 E/`closeout/reboot-context-v1.md`에 시계 원문과 읽기 기준을 남겼다. 메인은 R-8의 같은 대화 재개 절차를 쓰며 이 ID나 옛 handle만으로 실행 권한을 인정하지 않는다.
 - 재부팅 전 열린 작업은 없었고 과거 작업자는 모두 정산·pane 종료했다(E/`closeout/terminals-before-reboot-v1.json`). 당시 Gardener의 E/`closeout/gardener/contract-v1.md`·23입력 pin은 **미발행**이었다. 예전 pin/계약은 보존하고 재개 뒤 현재 입력의 새 판으로 발행한다. 현재 Task/Dispatch와 실제 기동 여부는 E의 새 receipt로 확인하며 옛 handle·Task를 실행 권한으로 쓰지 않는다.
-- 임시 경로: 재부팅 전 준비한 `.backups/tmp/rcg1`은 당시 빈 provider TEMP 부모였고, 재개 뒤 Gardener의 provider 자동 기록이 생겼다. 이를 수동 수정·삭제하지 않으며 새 게임 실행/임시 Unity 사본은 만들지 않았다. 기존 타인 경로와 원시는 보존한다. 현재 종료 기록은 독립 실사 전이며 PR2 통과/병합/목표 종료가 아니다.
+- 임시 경로: 재부팅 전 준비한 `.backups/tmp/rcg1`은 당시 빈 provider TEMP 부모였고, 재개 뒤 Gardener의 provider 자동 기록이 생겼다. 이를 수동 수정·삭제하지 않으며 새 게임 실행/임시 Unity 사본은 만들지 않았다. 기존 타인 경로와 원시는 보존한다. 종료 세 문서 실사와 추가 단계 기록 대조를 구분하며 PR264 병합/목표 종료는 아직이다.
 
 ## 진척 단계
 
@@ -21,8 +21,8 @@
 - [x] 메인 문구 반영
 - [x] 독립 문서 실사
 - [x] PR263 병합
-- [>] 종료 기록 준비
-- [ ] 종료 PR 병합
+- [x] 종료 기록 준비
+- [>] PR264 병합
 - [ ] 종료 점검
 - [ ] 최신 기준 복귀
 
@@ -140,6 +140,16 @@ Main msg_e7752a20e30b(10-24 18:25:03Z)가 전달한 사용자 원문은 「대�
 기존 helper의 Gardener 신호는 13개·최대454초·초과1이다: 공식 ask `08:16:20Z` → heartbeat `08:23:54Z`, 출력명 충돌 질문/보충 대기이며 실제 답변은 `08:22:39Z`다. helper의 questionWaits는 빈 배열이고 실제454초에서 대기시간을 빼지 않았다. 첫신호전/완료뒤는 미측정이다. release retained/external 뒤 동일 incarnation·완료/빈 draft를 대조했고 종료 화면의 선택적 auto-mode 안내에는 입력하지 않은 채 정확 작업 pane만 닫아 ptyKilled=true·부모리드1개를 확인했다. 정산·보고 hash·개별경로 pin 대조·가드 원시는 E/`closeout/gardener/`에 있다.
 
 정리 제안은 아래 두 BACKLOG 연결로 모았다. 빈 생존 신호는 6개 goal·12통 이상 기록 중 이번2통만 원시 확인, 메모 이름 충돌은 3사건 기록 중 이번1건만 guard 원시 확인이다. 과거 사례는 goal 기록 수준이며 중복 한 건 판별은 추론이다. 보고서가 지적한 CI 원시의 head_sha 부재는 보고 원형을 보존하고 리드의 별도 GitHub Actions run4개 조회로 보강했다. E/`closeout/ci-run-<run ID>-raw-v1.json` 네 원시가 모두 PR263 최종 head `6e3180032d8914e5f3f03f7ab0ddd30aa775bab5`·completed/success를 확인한다. 새 CI/제품/게임/DB/삭제 실행은 없었다. O1·과거 계약 누락/제출 전문 clipping·backend unknown과 미실행 한계는 유지한다.
+
+## 종료 기록 실사와 PR
+
+신규 Astra의 E/`closeout/review-01/verifier/verdict.md`(18705B/SHA256 `D4C40704FA0798BE4EB53BA2560154FCF60797C5AC2BD0B34AD328E4E165475B`) 전문을 읽고 실제 Task/Dispatch·succeeded done·18파일/manifest 포함19·당시 고정49입력과 추가4입력 bytes/SHA 불일치0을 인수했다. 세 문서 +27/-6·변경 로컬 링크7개 미해결0·후보175ID/4도착/진단0·타파트행/보류ID 보존을 대조했다. Gardener의 역사30입력도 당시 snapshot 기준의 경로별 검증과 현재 입력을 구분했다. 이는 문서 실사이며 제품/게임/DB/Unity/빌드·새 CI 실행을 하지 않았다.
+
+실사 중 #C1은 리드의 E/`closeout/gardener/liveness-command-v2.json` command 문자열에서 E 접두부를 빠뜨린 기록 오류였다. 원기록/기존49입력은 보존하고 명시 보충 v1.1로 당시 같은 대화·call ID의 자동 기록 두 항목을 제공해 호출 근거 보류를 해소했다. 실제 PowerShell 표현은 E 절대 root를 만든 뒤 입력을 Join-Path로 전달했으며, 같은 출력의13신호/454초/초과1과 helper exit1·wrapper exit0을 직접 대조했다. 오류를 소급 무오류로 고치거나 새 helper 실행으로 복구하지 않았고 별도 OS argv 직접 계측은 없다. 판정과 E/`closeout/review-01/execution-evidence-supplement-v1.1.md`·동일 call 원시 둘을 함께 인수해야 한다. #C1과 Gardener 거부 사건은 Sol 제품 확정 실패로 합산하지 않는다.
+
+종료 검증자의 신호는 기존 helper로8개·최대242초·초과0이며 실제 질문/답변 시각은 원시에 따로 남겼다. 첫신호전/완료뒤는 미측정이다. release·동일 incarnation/idle/빈 draft·정확 pane 종료/부모리드1개와 완료 delivery ack를 확인했다. 검수판을 유지한 상태에서 결과 commit/push 후 PR264를 생성했으며 최초 head는 `12bf8012bbdc535304a6c21ba93200812f4a8f42`, base `4b69059a05b032f59582f74a9800120cbebf209b`, 2commit/3파일 +27/-6·OPEN/미병합이다. 최초 CI4종은 당시 in_progress/null이며 최종 기록 head·CI는 별도 E 관측으로 확인한다. 원시는 E/`closeout/review-01/`과 E/`closeout/pr2-create-receipt-v1.json`·`closeout/pr2-info-initial-v1.json`·`closeout/pr2-workflows-initial-v1.json`이다.
+
+이후 실제 실사 완료와 PR264 발행에 맞춰 리드 소유 goal/CURRENT 두 문서만 단계 기록을 추가하고, 해당 delta를 새 독립 세션에 고정한다. 기존 판정/원시/고정판과 BACKLOG 후보 두 기록은 그대로다. 추가 기록 commit의 자기 head를 미리 쓰지 않으며 최종 정확 head/CI·행정 판정은 E 및 메인 인계로 연결한다. 사용자 정확 head 승인·메인 병합과 전체 종료는 남았다.
 
 ## 다음 계획 후보
 

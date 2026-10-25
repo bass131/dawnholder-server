@@ -12,7 +12,7 @@
 
 - Art: [10-28 시연 아트](../../01_Phases/goals/2026-10-13-demo-video-art/goal.md) — [PR262](https://github.com/bass131/dawnholder-server/pull/262) 발행·CI4종 확인 중. 효과 배치/fixture Edit42·Play34·Opus04 PASS/Main R-2 수용 완료. 후속4건·관측 한계/보호2파일 잔류 보존, 사용자 정확 head 병합 승인 전.
 
-- Rules: [운영 사례의 계약·정산 경계 정본화](../../01_Phases/goals/2026-10-25-ops-candidate-canon/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/ops-candidate-closeout-20261025` · PR263 병합·CI4종 성공, Gardener 완료/후보2 기록·종료 문서 독립 실사 준비 · [공용 실행 잠금은 10-28 뒤까지 보류·기존 NOT PASS 유지](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#재개-지점) · [기존 PR2 가드는 동결까지 보류](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점)
+- Rules: [운영 사례의 계약·정산 경계 정본화](../../01_Phases/goals/2026-10-25-ops-candidate-canon/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/ops-candidate-closeout-20261025` · 종료 문서 실사 통과·PR264 발행, 메인 R-2/정확 head 승인 전 · [공용 실행 잠금은 10-28 뒤까지 보류·기존 NOT PASS 유지](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#재개-지점) · [기존 PR2 가드는 동결까지 보류](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점)
 
 Content goal의 상태·결정·남은 일은 위 상대 링크의 재개 지점에서 확인하며, 작업은 해당 Content worktree에서 이어간다. CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
 
