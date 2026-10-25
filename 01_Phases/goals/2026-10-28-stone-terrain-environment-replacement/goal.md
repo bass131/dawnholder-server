@@ -4,9 +4,11 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 재부팅 뒤 메인이 같은 Codex 대화로 재개하면 runtime·handle/incarnation·worktree와 Run 바인딩을 새로 확인한다. **그다음 이 branch에 최신 `origin/main`을 merge로 통합**하고(PR263 포함, Main 지시 당시 `4b69059a05b032f59582f74a9800120cbebf209b`), 통합한 새 운영 정본을 읽는다. rebase/강제 push0, 사용자·미커밋 파일 보존, 충돌 시 중단/보고다. 통합 뒤 현재 SHA/규칙으로 미발행 보고 실사 계약·핀을 다시 고정해 새 외부 Opus를 열고 원래 CPV-01·비율/팔레트 교정을 잇는다. 재부팅 전 실행 창·handle·승인은 재사용하지 않는다.
+**다음 첫 일:** 재부팅 후 최신 main 통합과 PR263 정본 확인을 마쳤다. 현 SHA/새 규칙으로 미발행 보고 실사 계약·핀을 새 버전으로 고정한 뒤 신규 외부 Opus의 보고v2 내용·화면 독립 실사를 발행한다. 그다음 CPV-01·비율/팔레트의 구체적 선택 재료와 새 외부 품질 교정을 잇는다. 기존 Task/Dispatch/완료 세션은 재사용하지 않고 Unity·WSL·DB·서버 실행 창은 Main 새 배정 전0이다.
 
-**재부팅 준비:** Main `msg_554ecf36e984`·`msg_34a781cae039`가 사용자 원문을 전달했다. 새 작업자/검증자 발행을 재부팅 뒤로 미뤘으며 이번 보고 실사는 **미기동**이다. 열린 Task/Dispatch/ask는0, 이전 검증자들은 정산·종료했고 재사용0이다. Root 보고v2는38935B/SHA555DBD3D…B0B237로 작성·자체 QA를 끝냈으나 독립 판정 전이다. v1 미발행 계약/127+5핀과 비어 있는 `static-preview-report-review/`·`.backups/tmp/art-report-review-01/`는 준비 자료이며 재부팅 뒤 그대로 발행하지 않는다. 정확한 CODEX_SESSION_ID·기존/신규 runtime 경계·원문/임시 사본·재개 순서는 `reboot-preparation-intake-v1.json`에 보존한다. `.backups` 파일은 로컬 보존이며 원격에 올라갔다고 보고하지 않는다. Unity/WSL/DB 창은 Main의 재측정·새 배정 뒤에만 연다.
+**재부팅 후 진입:** Main `msg_93006d4efa75`가 재부팅 완료와 새 Main handle을 전달했고 현재 runtime `e4bd633d-6bcd-4106-b18b-33dac20df620`·Root/Main incarnation을 새로 대조했다. Run은 새 Root에서 `run-use`로 인수(consumer_generation6), 회신 `run:run_6ae742140ce9`를 `msg_2f74bc180bf5`로 알렸다. fetch/merge exit0, head `a6d7dd36cf60b531df337b7c209146573219ba73`에 최신 main `4b69059a05b032f59582f74a9800120cbebf209b`/PR263을 통합했고 충돌0·보호5 변화0·사용자 초안 보존이다. 원시는 `postboot-main-*`, 적용 정본은 `postboot-PR263-read-and-application-v1.json`이다. 새 검증자는 아직0이고 보고v2는 작성·자체 QA 완료/독립 판정 전이다. native goal은 사용자 재활성화로 이어가며 재부팅 대기 blocked 기록은 당시 상태로 보존한다.
+
+**재부팅 전 준비자료:** 당시 Main `msg_554ecf36e984`·`msg_34a781cae039`가 사용자 원문을 전달했다. 새 작업자/검증자 발행을 재부팅 뒤로 미뤘으며 이번 보고 실사는 **미기동**이다. 열린 Task/Dispatch/ask는0, 이전 검증자들은 정산·종료했고 재사용0이다. Root 보고v2는38935B/SHA555DBD3D…B0B237로 작성·자체 QA를 끝냈으나 독립 판정 전이다. v1 미발행 계약/127+5핀과 비어 있는 `static-preview-report-review/`·`.backups/tmp/art-report-review-01/`는 준비 자료이며 재부팅 뒤 그대로 발행하지 않는다. 정확한 CODEX_SESSION_ID·기존/신규 runtime 경계·원문/임시 사본·재개 순서는 `reboot-preparation-intake-v1.json`에 보존한다. `.backups` 파일은 로컬 보존이며 원격에 올라갔다고 보고하지 않는다. Unity/WSL/DB 창은 Main의 재측정·새 배정 뒤에만 연다.
 
 보고v2의 최신 Main A 상태/102핀·23링크·고정 CSS/JS·실제 1502×857/DPR1.125 렌더는 `static-preview-report-v2-static-check-v4.json`·`static-preview-report-v2-browser-qa/A-final-metrics.json`에 둔다. 보고·generator·자료의 Root 쓰기는 06:47:10Z 종료했으며 검증 발행 없이 재부팅 준비로 전환했다. 17유형/석재4생성0/C42/3PR·생성7/15·Assets/Unity/제품PR0은 그대로다.
 
@@ -67,6 +69,12 @@ Main `msg_779bdd92253a`(2026-10-25T06:43:41Z)는 요청 `msg_2b29a34e0a71`에 A�
 공개3회·사설21/21·PNG58 byte 재현·시각실사·207핀 일치는 다음 CPV-01·비율·팔레트 품질 교정의 근거로만 인정한다. 최종 reference는 교정 뒤 새 독립 검증이 판정한다. G0 전 Node2·생존신호300초초과5구간·첫 시험 쓰기 전 check 누락·0B native 출력1누락과 절차 failed를 유지하며 제품 확정 실패 자동 가산0이다. metadata helper3개의 사전 제시 누락은 절차 이탈로 기록하되 납품 판정 영향 없음으로 처분했다. Main의 읽기 도구 허용목록/G0 금지 범위 정비는 Rules 후보이며 현 계약을 바꾸지 않는다. 사용자가 B를 선택하면 새 Opus로 같은 범위를 재검증한다.
 
 보고v2 자체 QA에서는 100핀/22상대링크/29card literal·PNG58 보존, 좁은 문서 client/scroll417px 일치·1/2/4배 local scroll·7group/filter/3배경과 목차 가림 교정을 확인했다. 보고서는 내용/표시 실사 전 초안이며 제품·PNG·Assets·Unity 변경0이다. 원시와 미측정은 `static-preview-report-v2-browser-qa/summary.json`·`static-preview-report-v2-static-check-v3.json`에 둔다. 같은 보고전용 산출물의 교정3회 뒤 Main A 새 상태 반영이 네 번째 수정이므로 Main 체크포인트를 별도 알리고 독립 판정 전 PASS로 쓰지 않는다.
+
+### 재부팅 후 최신 main 통합과 새 정본
+
+Main `msg_93006d4efa75`(08:07:50Z)의 현재 재개 지시에 따라 같은 대화·새 handle에서 Run을 인수했다. 사용자 재부팅/최신 main 통합 원문은 이전 전달과 현재 Main 전달을 구분해 `postboot-main-resume-intake-v1.json`에 보존한다. 현 branch에 최신 origin/main을 merge했고 rebase/강제push·main checkout/PR병합은0이다. 합류 commit `a6d7dd36cf60b531df337b7c209146573219ba73`, parent653952f2/4b69059a, 보호5 전후같음이다.
+
+PR263의 관문 적용 런타임 명시·수동/provider TEMP 분리·성공/실패 원시 보존·표본cap/최종peak/미측정·HB/Return 별도정산·잠금/Library/선택창 경계를 읽었다. 기존 failed·봉인 입력·미발행v1은 소급 변경하지 않는다. 새 보고 실사 계약/핀은 현재 규칙·SHA로 다시 고정하고 이전 준비 폴더는 보존한다. 현재 실행 창은 미배정이며 보고 실사 외 제품/PNG/Unity 실행을 통합 성공으로 대신하지 않는다.
 
 ## 범위
 
