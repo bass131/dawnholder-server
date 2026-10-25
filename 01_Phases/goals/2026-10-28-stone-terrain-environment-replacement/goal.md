@@ -1,10 +1,10 @@
 # 석재 지형·환경물 자체 교체와 움직임7종
 
-상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 알파/작은크기 품질판정 보류. 규격 가공 선행시험 진행.** 현재전체생성상한15회·지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작한다.
+상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 알파/작은크기 품질판정 보류. 규격 가공 선행시험 정산·봉인 완료, 새 Sol 구현 준비.** 현재전체생성상한15회·지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작한다.
 
 ## 재개 지점
 
-**다음 첫 일:** 발행한 task-local PNG 패킹 선행시험의 요구사항별 RED와 실행 원시를 확인한 뒤 신규 Sol 구현으로 넘긴다. A3회/B2회 원본5개는 byte동일 사본·규격·장부를 인수했고 작업자를 정산/종료했다. native 인수 성공을 제품 적합/독립PASS로 세지 않는다. A 꽃다발경계/상자정렬과 B 나무·식생 halo는 actual alpha/작은규격 가공 뒤 신규실사로 판단한다. 새 가공코드는 선행시험→신규Sol→독립Opus 순서이며 실제 crop/봉인reference 뒤 C42frame을 시작한다. Unity/import/실제플레이는 Main 배정 창 전0이다.
+**다음 첫 일:** 봉인한 선행시험으로 신규 Sol max에 PNG 가공기 구현을 발행한다. 첫 일반 후속 메일의 실제 수신·FIFO ACK를 G0에서 대조한 뒤 제품 코드를 쓰게 한다. A3회/B2회 원본5개는 byte동일 사본·규격·장부를 인수했고 작업자를 정산/종료했다. native 인수 성공을 제품 적합/독립PASS로 세지 않는다. A 꽃다발경계/상자정렬과 B 나무·식생 halo는 actual alpha/작은규격 가공 뒤 신규실사로 판단한다. 새 가공코드는 선행시험→신규Sol→독립Opus 순서이며 실제 crop/봉인reference 뒤 C42frame을 시작한다. Unity/import/실제플레이는 Main 배정 창 전0이다.
 
 기준main `cf207c1f355ced664e62119152e8b0686b0ec051`, branch `feat/stone-environment-replacement-20261025`, checkout `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active`. 근거 root는 `.backups/verification/2026-10-28-stone-terrain-environment-replacement/`다. 현재 리드 회신은 `run:run_6ae742140ce9`; 실행 권한은 이번 승인과 현재 Dispatch로 확인하며 옛Task를 재사용하지 않는다.
 
@@ -101,6 +101,17 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 - task-local 가공 경계는 `static-packing-design-v1.md`, 쓰기전근거는 `context-packing-dispatch.md`다. 좁은codec변경없이재사용하고 명시crop/최근접/RGBA복사·직접포즈sheet만만든다. Alpha실측/새실행harness는강등급·외부선행시험과독립판정 전통과0, 실제Sprite/Unity완료로표현0이다.
 
 - 패킹 선행시험은 신규 외부 Opus에 발행했고 `worker-start`의 ready/turn_started, 최초 명령·화면, 계약 전문/해시 일치 회신을 관측했다. 상세 Task/Dispatch·경로·실행 소유는 `packing-pretest-worker-start-original.json`과 `resume.json`에 둔다. 테스트와 실행 harness만 작성하며 리드/선행시험 작성자의 제품 구현은0이다.
+
+- 선행시험의 실제 출력 형식 질문에 공식 회신 A로 답해 manifest·실제 alpha 통계·마지막 완료 표식과 입력 거부/기존 결과 보존을 고정했다. 기존 계약과 입력 hash는 바꾸지 않았으며 `packing-output-schema-supplement-v1.json`과 `packing-pretest-output-schema-reply-original.json`이 남은 단계의 보충 근거다.
+- 승인된 기존 석재 두 atlas를 현재 goal 근거로 byte 그대로 복사했고 옛 inventory와 SHA가 같았다. 기본15번/companion1~3번의 네 칩과 발판 후보 plan을 준비했으며 생성·decode·실제 crop은0이다. 근거는 `source-stone-snapshot/source-manifest.json`과 `static-packing-plans/stone-terrain-v1.json`이다.
+- 실제 serialized source에서 발판은32×26·PPU32·pivot(0,1), 상자는7고유포즈를 사용하는 Open9key/Close8key·Opened포즈5임을 확인했다. 기존 타이밍·기준점 보존에 연결하고 source 줄바꿈을 포함해 대조했다. `platform-serialized-baseline-v1.json`, `chest-serialized-baseline-v1.json`, `asset-integration-handoff-draft-v1.md`는 후속 계약 준비이며 실제 Unity·world·physics 판정이 아니다.
+
+- 실제 선행시험은 두 실행 모두 API 부재의 명시 단언92건 RED·다른 실패/skip0을 기록했다. 검사기 자체점검3건과 실제 CLI 미실행30건을 구분한다. 첫 실행의 표본간격258.7ms 초과는 보존했고 두번째는126.4ms·초과0, child 실제최대RSS71,593,984B·직전최소OS16,587,333,632B였다. 근거 `static-packing-tests/raw/pretest-01/02/run-summary.json`. 이후 완료보고/쓰기 종료와 공식정산을 대조했으며, 독립판정·실제source가공은 아직 미완료다.
+
+- 선행시험의 manifest212파일+목록자체1·실행코드8·입력/보호19pin을 리드가 실제 재계산했고 모두 일치했다. `packing-pretest-lead-mechanical-intake-v1.json`과 `packing-pretest-seal-v1.json`에 봉인했고 작업자를 release 뒤 정확한 pane으로 닫았다. 최종harness는pretest-03/entry-01의실행SHA와같다. 이것은TDD인수이며제품/독립PASS가아니다.
+- 이번 첫 수신 처리 사건: 작성자의 「dispatch주소라후속메일이안보임」 설명은 저장한check01~05의동일미ACK delivery 재생과맞지않았다. 원본보고를보존하고 `pretest-mailbox-source-reconciliation-v1.json`으로대조해Main `msg_8af1b9c84499`에즉시알렸다. 중단메일은최종실행뒤늦게읽혔으며소급승인0이다. 후속계약에기존FIFO전량처리/ACK와첫후속실제수신증거를명시한다(`followup-receipt-contract-v1.md`). 새공용가드/Orca변경은하지않는다.
+
+- 선행시험 생존신호는 기존helper의서버시각으로17신호·최대377초·300초초과4구간(377/312/354/365초), 질문대기48초를확인했다. 작성자보고의명령시작시각과구분했고사유는 `packing-pretest-heartbeat-over-gaps-v1.md`, 원시는 `packing-pretest-liveness-result.json`이다. 초과만으로상세대화감사를확대하지않았다.
 
 ## 10-19 모델 라우팅 전달 원문
 
