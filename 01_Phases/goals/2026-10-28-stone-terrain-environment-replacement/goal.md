@@ -1,10 +1,14 @@
 # 석재 지형·환경물 자체 교체와 움직임7종
 
-상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 신규 Opus 독립검증의 실제1~7단계와 종료99pin 일치를 대조했다. 최종 보고·정산이 남아 있고 자동 heartbeat 계약 위반 처리 전 통과 보류다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
+상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 패킹 독립검증은 자동 heartbeat 위반으로 failed 정산·종료했다. Main은 제품 실행 근거만 다음9source 검사·원본/수선29sheet35frame 비교에 한정 인정했고 새 정적 비교 작업을 준비한다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
 
 ## 재개 지점
 
-**다음 첫 일:** 현재 Opus의 단계8 자기쓰기 감사와 최종 `verification.md` 전문/명시worker_done을 인수한다. 종료99pin은 개별값과 현재 파일의 bytes/SHA/leaf를 대조해 모두 일치했다. 자동 heartbeat 2건은 현재 계약 내 절차 위반이며 Main `msg_647d8542c09a`로 보고했다. 최종 도구 통과와 다음 정적 PNG 실행은 수정 또는 Main의 처리 결정 전 보류한다. 정상 마감·원시 인수는 계속하며 완료 세션을 재사용하지 않는다. 승인단계1~7의 실제원시를 대조했고 고정92/30/3, 의도된hash-mismatch(child0), 독립31API와real53/E모형13(62pass·3관찰·1권한환경불가), 원본7inspect·석재2PNG 진입, 독립alpha/stone67check·P불변을 확인했다. 근거는 `packing-review-step1-lead-intake-v1.json`, step2/3/4/56/7의 같은 인수파일이다. 아직 최종도구/절차·그림품질PASS가 아니다. D gap은loop구간만이고 R의 -1.2ms exit시각 관측1건·symlink미실행·주입대역4건·단계5/6사이메일check누락을 구분한다. 초기 무의미Node2/PNG시험import0·HB373/324초도 소급PASS없이 남긴다. Opus는 current exact live이며 PNGlease는 아직이작업전용이다. Source수선48owner+native2·26pin 인수/정산·정확pane종료는 완료했고 실제browser합성에서 원본/S3/S4의 넓은wash는 재현되지않았지만 색/형상·작은크기품질은미판정이다. 도구독립판정/정산 뒤 새Sol이9source검사/원본·수선비교29sheet35그림·ChestCPV01 고정본체/힌지data를 가공하고 새독립실사뒤reference를봉인한다. 그뒤C42frame과Main배정Unity·3PR로이어가며Assets/Unity/제품병합은아직0이다.
+**다음 첫 일:** Main `msg_86b66c238315`의 패킹 판정 A를 반영한 정식 비교 계약·입력 snapshot/pin·실제 경로 검사를 고정하고 신규 Sol max를 발행한다. 초안 `contracts/static-preview-execution-draft-v2.md`, 실제 후보46pin/보호5·출력13경로 대조는 `static-preview-execution-preflight-v1.json`이다. 새 작업자는 첫 실제수신/ACK와 G0 뒤 조건부 P/D로9source 검사와 원본·수선29sheet35frame 비교만 실행한다. 제품/Assets 반입·최종 병합의 독립 근거로 확대하지 않는다.
+
+이전 검증 Task064는 `msg_9a056a7b4417`로 failed를 제출했고 최종 보고40991B/SHA9AF949EC…71D2D7를 Root가 전문으로 대조했다. 실제 목록1457 중1456 일치·누락0Btmp1·명시마감/목록자체9를 구분했고 입력99pin은 현재 모두 일치했다. release retained external 뒤 정확한 idle pane을 닫았고 Root 생존도 확인했다. 자동HB24/25·V-5/V-7 checkpoint 공백·symlink환경불가·관찰3·주입대역과 누락을 보존하며 원래 판정의 절차PASS를 소급하지 않는다. 다음 어느세션도 기존 자동HB wrapper를 실행/재사용하지 않고 새 검증 계약에 짧은 절차 점검표를 붙인다.
+
+전체 범위는17유형·석재4 생성0·7loop42직접frame·3PR 그대로다. 비교 뒤 Chest CPV-01 고정본체/힌지와 원본/수선 선택을 새 독립실사로 확인한 후 reference를 봉인한다. 그뒤C42와 실제fps/원축척 재생·Main 배정 Unity/physics·3PR로 이어간다. 실제 생성7/15(정적7/7,움직임0/8), Assets/Unity/제품병합0이다.
 
 기준main `cf207c1f355ced664e62119152e8b0686b0ec051`, branch `feat/stone-environment-replacement-20261025`, checkout `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active`. 근거 root는 `.backups/verification/2026-10-28-stone-terrain-environment-replacement/`다. 현재 리드 회신은 `run:run_6ae742140ce9`; 실행 권한은 이번 승인과 현재 Dispatch로 확인하며 옛Task를 재사용하지 않는다.
 
@@ -33,6 +37,18 @@ Main msg_106909d4094e(22:49:43Z)가 메인pane22:5xZ Enter 추가사용자원문
 > 추가적으로 너무 끊겨 보여서 퀄리티 낮게만 안보이게 하면 돼
 
 메인해석은 B에추가한품질기준이며상한/프레임수재변경이아니다. C계약/독립판정은정지sheet가아닌실제fps·원래크기의loop재생에서반복이음새튐·색/모양깜빡임·한frame위치이탈·고르지않은박자를실패로본다. Unity반입전7종sheet/fps/시간표와원축척(필요시2배병기)미리보기재료를Main에전달한다. 리드가보고용미리보기를작성하거나Main의보조세션으로재료를인계하며Sol에보고서HTML구현을맡기지않는다. Unity clip시간배치/왕복은움직임에맞게검토하되완성한전체주기8포즈에무조건왕복을덧붙이지않고끝점중복/박자변화를구분한다. 끊김이면진폭/박자교정을먼저하고남으면실제상태/감축을Main에올린다. 약속한8/6을몰래4로줄이거나끊김상태로완료보고0이다. 원문두통은 `main-frame-b-and-quality-original.json`이다. 이pane직접사용자입력으로격상하지않는다.
+
+### 패킹 판정 A — Main의 제품 실행 근거 한정 인정
+
+Main `msg_86b66c238315`(2026-10-25T02:48:26Z), Root 요청 `msg_081374678cbf`에 대한 회신이다. **Main 결정이며 사용자 결정이 아니다.** Main은 최종 판정40991B/SHA9AF949EC…71D2D7, D/raw/review-01의92unit/30CLI/3inspector, R/raw/review-01의31unit/66사례를 직접 R-2 대조했다고 기록했다. 원본 메시지는 `main-packing-review-A-decision-message.json`, Root 수신/권한 대조는 `main-packing-review-A-lead-intake-v1.json`이다.
+
+1. 제품 실행 근거만 유효로 인정한다. 검증자의 자동HB 계약 위반 V-1 때문에 원래 세션의 failed 정산은 유지하고 절차PASS로 소급하지 않는다.
+2. V-1, tasks/bjugp2oa8.output 누락, 관찰3·환경불가1과 미실행 한계를 goal과 최종 기록에 남긴다.
+3. 조건부 P/D 사용은 다음9source 검사와 원본·수선29sheet35frame 비교에만 한정한다. 최종 반입·병합 판정은 새 독립 검증을 거치며 기존 실패 판정의 제품 근거로 대신하지 않는다.
+4. 기존 g0-ask-wait.sh·run-step.sh의 자동HB 절차를 어느세션에서도 다시 쓰지 않는다. 다음 검증자 계약에 금지 절차의 짧은 점검표를 넣는다.
+5. 같은 위반이 다시 나오면 Rules 후보로 올린다. 후보는 Main이 Night Shift 기록에 이미 남겼고 Root가 규칙/가드나 새 goal을 자동 구현하지 않는다.
+
+Main은 제품 결함0·실행 원시 보존과 다음 비교 단계의 되돌릴 수 있는 한정을 선택 이유로 밝혔다. 아침에 사용자가 B를 고르면 신규 Opus로 같은 범위를 재검증한다는 조건도 보존한다. 이 결정은 원래17유형/C42/3PR·이미지예산·Git/병합 승인 경계를 바꾸지 않는다.
 
 ## 범위
 
@@ -92,6 +108,14 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 - [ ] 종료 정산
 
 ## 결정과 단계 결과
+
+- 패킹 검증 `task_064dc1791ca9`는 제품 차단 결함0·V-1 절차 위반으로 outcome failed(`msg_9a056a7b4417`) 정산했다. 최종판정40991B/SHA9AF949EC…71D2D7는 Root 전문/전체 변경 대조본과 byte동일하다. 파일목록373956B/BB778453…52531C8의1457항목 중1456이 actual type/bytes/SHA/link와 맞고, 목록상0B·emptySHA인 T/tasks/bjugp2oa8.output 1개는 현재 없다. 원인은 미확정이며 재생성하지 않았다. 명시된 마감check/done·목록자체9개는 별도 hash로 기록했고 선언밖추가0·scan오류0·현재99pin 일치다. `packing-review-lead-settlement-intake-v1.json`. 이 메타 차이도 Main081374에 즉시 보고했고 전량 완전 일치로 쓰지 않는다.
+
+- failed 납품을 한계와 함께 인수한 뒤 worker-release retained external_terminal, exact incarnation idle pane만 terminal close하여 ptyKilled와 Root running을 확인했다. `packing-review-release-original.json`, `packing-review-final-close-original.json`. 재사용0·reclaimable0이다. V-1은 검증자 절차 귀속이며 구현자 제품 확정실패 횟수에 가산0이다.
+
+- 표준 생존 helper의 실제 서버 집계는 transport48신호·HB38·max373초/초과2건이다. 자동2건을 제외한 manual46신호도 max373초/초과2건이며 G0 질문대기518초를 분리한다. 373초는 작성자의 압축/이전명령검색 지연 사유가 있고324초는 구체사유 미기록으로 남긴다. 원시 자동신호를 수동활동으로 세거나 어느결과도within으로 쓰지 않았다. `packing-review-liveness-observation-v1.md`, transport/manual-result.json.
+
+- Main 패킹판정A를 실제수신/출처·thread로 대조하고 ACK했다. 제품 실행 근거의 다음9source·29sheet35frame 비교 한정 인정이며 원래 검증 failed/위반·누락·한계를 보존한다. 위 「패킹 판정 A」가 현재 다음단계 권한이다. 새 비교 계약 v2는 미발행 준비본이며 발행 직전 현재 goal/결정/코드/입력·새경로를 다시 고정한다.
 
 - 검증자의 자동 heartbeat 첫 불일치를 현재 계약 내 절차 위반으로 기록한다. `msg_79bb2a4d3fb4` 통지와 실제 `g0-ask-wait.sh`/`run-step.sh`를 대조했고, G0 대기 중 240초 반복문이 heartbeat24·25를 발행한 서버 원시를 확인했다. 계약21행 「자동 HB loop0」와 다르며 G0에 자동 반복임을 알리지 않았다. 제품 결함과 구분하고 두 이벤트는 원시에 보존하되 정상 수동 생존·절차 통과로 세지 않는다. Root는 Main `msg_647d8542c09a`로 즉시 통지했고, 분류·정상 마감 지시 `msg_2137b11c17c9`의 실제 check22/같은 delivery ACK를 확인했다. `packing-review-autohb-observation-v1.json`. 교정 층은 이번 위임 계약의 준수·공개·최종 판정이며 새 공용 규칙/가드를 만들지 않는다. 처리 전 최종 통과·다음 PNG 실행은 보류한다.
 
