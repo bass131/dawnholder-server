@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 현재 Opus 코드 검증의 독립 runner/계획·실제 해시와 G0 근거를 대조한다. 고정74입력·첫 후속 전량ACK는 이미 확인했으며 PNG 실행은 공식 reply 전0이다. Source 수선 Sol은 S3/S4 각1회 반환·21입력/보호5·native/사본2쌍을 대조했고 G1에서 제한적 후보 납품 마감을 열었다. 완료보고·manifest·worker_done을 인수한 뒤 정산/정확 pane 종료한다. raw view의 넓은 wash는 원본/S3 후보의 실제 브라우저 alpha 합성(격자/흰색/어두운 배경)에서 재현되지 않아 실제 결함 확정을 보류했다. S4도 흰색/어두운 배경에서 넓은 외부 wash가 재현되지 않았다. 두 후보의 픽셀분포·형상/팔레트 보존·작은규격 적합은 아직 미확인이다. 상세는 resume.json과 각 원시/진단 보고에 둔다. 구현자 최종 보고·268파일·입력38/보호5·실행3코드/3run 인수와 정산/종료는 완료다. 원본7검사·석재출력의 실행 성공을 source 품질/도구 독립PASS·Unity 완료로 세지 않는다. A 꽃다발경계/상자정렬도 실제 가공 뒤 신규실사한다. 실제 crop/봉인reference 뒤 C42frame을 시작하고 Unity/import/실제플레이는 Main 배정 창 전0이다.
+**다음 첫 일:** 현재 Opus 코드 검증의 독립 runner/계획·실제 해시와 G0 근거를 대조한다. 고정74입력·첫 후속 전량ACK는 이미 확인했으며 PNG 실행은 공식 reply 전0이다. Source 수선 Sol은 S3/S4 각1회 반환·21입력/보호5·native/사본2쌍을 대조했고 G1에서 제한적 후보 납품 마감을 열었다. 최종보고9262B 전문·owner48파일·native2개·입력21/보호5를 전수 인수했고 worker_done 뒤 release/정확 pane 종료까지 완료했다. raw view의 넓은 wash는 원본/S3 후보의 실제 브라우저 alpha 합성(격자/흰색/어두운 배경)에서 재현되지 않아 실제 결함 확정을 보류했다. S4도 흰색/어두운 배경에서 넓은 외부 wash가 재현되지 않았다. 두 후보의 픽셀분포·형상/팔레트 보존·작은규격 적합은 아직 미확인이다. 상세는 resume.json과 각 원시/진단 보고에 둔다. 구현자 최종 보고·268파일·입력38/보호5·실행3코드/3run 인수와 정산/종료는 완료다. 원본7검사·석재출력의 실행 성공을 source 품질/도구 독립PASS·Unity 완료로 세지 않는다. A 꽃다발경계/상자정렬도 실제 가공 뒤 신규실사한다. 실제 crop/봉인reference 뒤 C42frame을 시작하고 Unity/import/실제플레이는 Main 배정 창 전0이다.
 
 기준main `cf207c1f355ced664e62119152e8b0686b0ec051`, branch `feat/stone-environment-replacement-20261025`, checkout `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active`. 근거 root는 `.backups/verification/2026-10-28-stone-terrain-environment-replacement/`다. 현재 리드 회신은 `run:run_6ae742140ce9`; 실행 권한은 이번 승인과 현재 Dispatch로 확인하며 옛Task를 재사용하지 않는다.
 
@@ -92,6 +92,12 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 - [ ] 종료 정산
 
 ## 결정과 단계 결과
+
+- 실제 browser CSS crop 진단을29sheet/35그림으로 작성해8PNG·41img 로드를확인했다. viewport에서 상자7 wholepose의 하부/발 차이가 보여 기존미봉인 fixed-body/hinge 요건(CPV-01)을 다음가공의 명시ROI/data-plan 보정 단계에 연결했다. `static-crop-layout-observations-v1.md`와 `static-crop-layout-chest7-viewport.png`. 실제packer/PNG수정/새생성0이며공통64canvas만으로봉인하지않는다. Source/작업자 확정실패로세지않고기존pose5/timing을보존한다.
+
+- 도구 독립판정 후 비교할 원본 previewv2와 수선B 대안plan을 준비했다. `static-preview-repair-candidate-v1.json`은29sheet/35frame·Chest64×64×7을 원본과 동일하게 두고 B두source의 실제경로/bytes/SHA만 바꾼다. source9개 inspect plan과 `contracts/static-preview-execution-draft-v1.md`도 미발행/미실행 상태다. 선택·정적봉인·PNG실행/새세션0이며 최종작은크기 적합/새독립실사 후 C42frame으로 연결한다.
+
+- Source 수선 Task는 제한적 후보납품 succeeded로 완료됐다. 최종보고9262B/SHA89C2C763…1E38DCE 전문·47leaf+목록자체1·root포함4dir·native2쌍·26pin이 실제집합/bytes/SHA와 일치했다. `source-b-repair-lead-settlement-intake-v1.json`. release retained external 뒤 exact incarnation idle pane만 닫아 ptyKilled와 Root 생존을 확인했다(`source-b-repair-final-close-original.json`). 기존 생존 helper는 서버신호15·일반최대159초·초과0, 질문대기275/176초를 분리했다. native 인수만 완료이며 자원절차 전체/최종source 품질·제품·독립 PASS는 아니다.
 
 - Source 수선 S3/S4 각1회가 모두 반환됐고 실제 제출2/반환2·정적7/7·전체7/15·움직임0/8을 장부에 반영했다. S4는 보류 안내01:26Z 이전01:24:36.951Z 발행·01:25:07.372Z 반환됐고 실제 check/같은 delivery ACK도 확인했다. native/사본2쌍과 입력21/보호5를 Root가 실제 재계산해 일치했다. `source-b-repair-g1-lead-audit-v1.json`, `generation-budget-v1.json`.
 - 기본 view의 wash 관찰만으로 B 원본/수선 후보 결함을 확정한 해석을 교정했다. 실제 브라우저 img 합성의 격자·흰색·어두운 배경에서는 원본/S3 후보의 넓은 외부 wash가 재현되지 않았다. 숨은RGB 표시 가능성은 추정이고 실제 alpha분포·형상/색 보존·작은규격 적합은 미판정이다. S3 정정은 `source-alpha-display-observation-v1.md`·실제 screenshot을 Main `msg_54ead950ed89`로 전달했다. S4의 후속 대조는 `undergrowth-alpha-display-observation-v1.md`와 실제 screenshot에 기록했다. 기존 원시/시각 관찰을 지우지 않고 원인 미확정으로 분리한다.
