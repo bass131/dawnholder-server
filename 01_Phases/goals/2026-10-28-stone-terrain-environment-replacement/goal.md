@@ -93,6 +93,8 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 
 ## 결정과 단계 결과
 
+- 후속 PNG 경로/원본참조 후보표를 준비했다(`asset-path-reference-map-draft-v1.json/.md`). 기존두atlas meta의actualSHA와35개internalID를대조했고 제안30PNG/각meta 경로는현재모두없다. 새GUID/fileID는null이며실제반입/충돌검증을대신하지않는다. Ground_1/_4의별도TileGUID/SpritefileID를보존해surface/fill을추정배정하지않았고Assets/Unity쓰기0이다.17유형·35부품상태행과재사용석재4의시각행수를구분한다.
+
 - 실제 browser CSS crop 진단을29sheet/35그림으로 작성해8PNG·41img 로드를확인했다. viewport에서 상자7 wholepose의 하부/발 차이가 보여 기존미봉인 fixed-body/hinge 요건(CPV-01)을 다음가공의 명시ROI/data-plan 보정 단계에 연결했다. `static-crop-layout-observations-v1.md`와 `static-crop-layout-chest7-viewport.png`. 실제packer/PNG수정/새생성0이며공통64canvas만으로봉인하지않는다. Source/작업자 확정실패로세지않고기존pose5/timing을보존한다.
 
 - 도구 독립판정 후 비교할 원본 previewv2와 수선B 대안plan을 준비했다. `static-preview-repair-candidate-v1.json`은29sheet/35frame·Chest64×64×7을 원본과 동일하게 두고 B두source의 실제경로/bytes/SHA만 바꾼다. source9개 inspect plan과 `contracts/static-preview-execution-draft-v1.md`도 미발행/미실행 상태다. 선택·정적봉인·PNG실행/새세션0이며 최종작은크기 적합/새독립실사 후 C42frame으로 연결한다.
