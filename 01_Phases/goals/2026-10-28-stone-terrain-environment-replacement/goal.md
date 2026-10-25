@@ -1,10 +1,10 @@
 # 석재 지형·환경물 자체 교체와 움직임7종
 
-상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 패킹 독립검증은 자동 heartbeat 위반으로 failed 정산·종료했다. Main은 제품 실행 근거만 다음9source 검사·원본/수선29sheet35frame 비교에 한정 인정했고 새 정적 비교 작업을 준비한다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
+상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 패킹 독립검증은 자동 heartbeat 위반으로 failed 정산·종료했다. Main은 제품 실행 근거만 다음9source 검사·원본/수선29sheet35frame 비교에 한정 인정했다. 신규 Sol max 비교 작업자의 실제 첫수신/ACK·고정62pin·실행명령을 대조하고 G0를 열었으며 실제3단계 결과를 기다린다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
 
 ## 재개 지점
 
-**다음 첫 일:** Main `msg_86b66c238315`의 패킹 판정 A를 반영한 정식 비교 계약·입력 snapshot/pin·실제 경로 검사를 고정하고 신규 Sol max를 발행한다. 초안 `contracts/static-preview-execution-draft-v2.md`, 실제 후보46pin/보호5·출력13경로 대조는 `static-preview-execution-preflight-v1.json`이다. 새 작업자는 첫 실제수신/ACK와 G0 뒤 조건부 P/D로9source 검사와 원본·수선29sheet35frame 비교만 실행한다. 제품/Assets 반입·최종 병합의 독립 근거로 확대하지 않는다.
+**다음 첫 일:** 신규 정적 비교 Task `task_ffdd68388f18`/Dispatch `ctx_5e6ecf047108`의 native G0 reply 실제 수신과 `stat-inspect-01`→`stat-orig-01`→`stat-repair-01` 실행 원시·결과를 확인한다. 정식 계약 `contracts/static-preview-execution-v1.md`30213B/SHA3D9673…A83B7, 입력 manifest57개·보호5개와 현재62pin/P3/D8·신규run/build/fixture12경로를 실제 대조했다. 첫후속 `msg_78d5bdc22ba5`의 실제 전량1수신·같은delivery49e7 ACK/반환0을 확인했고 공식질문 `msg_af1f1bba0593`에 `msg_ec9b002172cb`(03:06:27Z)로 초기 고정3plan G0를 열었다. 근거는 `static-preview-first-followup-lead-intake-v1.json`, `static-preview-g0-lead-audit-v1.json`, `static-preview-g0-reply-original.json`이다. 현재 권한은9source 검사와 원본·수선 각29sheet35frame 비교뿐이며 새plan은 미실행JSON안으로 받는다. 실제PNG 실행 완료·그림품질·reference봉인·제품/Assets 반입·최종 병합의 독립 근거는 아직 없다.
 
 이전 검증 Task064는 `msg_9a056a7b4417`로 failed를 제출했고 최종 보고40991B/SHA9AF949EC…71D2D7를 Root가 전문으로 대조했다. 실제 목록1457 중1456 일치·누락0Btmp1·명시마감/목록자체9를 구분했고 입력99pin은 현재 모두 일치했다. release retained external 뒤 정확한 idle pane을 닫았고 Root 생존도 확인했다. 자동HB24/25·V-5/V-7 checkpoint 공백·symlink환경불가·관찰3·주입대역과 누락을 보존하며 원래 판정의 절차PASS를 소급하지 않는다. 다음 어느세션도 기존 자동HB wrapper를 실행/재사용하지 않고 새 검증 계약에 짧은 절차 점검표를 붙인다.
 
