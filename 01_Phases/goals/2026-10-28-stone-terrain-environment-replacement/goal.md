@@ -1,10 +1,10 @@
 # 석재 지형·환경물 자체 교체와 움직임7종
 
-상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 패킹 독립검증은 자동 heartbeat 위반으로 failed 정산·종료했다. Main은 제품 실행 근거만 다음9source 검사·원본/수선29sheet35frame 비교에 한정 인정했다. 신규 Sol max 비교 작업자의 G0 뒤 초기3단계가 실제 exit0으로 끝났고9source검사·원본/수선각29sheet35frame/29PNG를 만들었다. Root가58PNG 해시·완료마커를 대조하고 실제비교 초안을 작성·표시했다. 비교/data납품 succeeded를114항목·별도5마감/current62pin으로 인수하고 release·정확pane종료했다. 신규 Opus5.5 독립검증 Task2a4c/ctxaa359를 연결해 실제턴시작을 확인했고 첫수신/G0를 기다린다. Chest CPV-01과 꽃다발 가독성은 미확정이다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
+상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 패킹 독립검증은 자동 heartbeat 위반으로 failed 정산·종료했다. Main은 제품 실행 근거만 다음9source 검사·원본/수선29sheet35frame 비교에 한정 인정했다. 신규 Sol max 비교 작업자의 G0 뒤 초기3단계가 실제 exit0으로 끝났고9source검사·원본/수선각29sheet35frame/29PNG를 만들었다. Root가58PNG 해시·완료마커를 대조하고 실제비교 초안을 작성·표시했다. 비교/data납품 succeeded를114항목·별도5마감/current62pin으로 인수하고 release·정확pane종료했다. 신규 Opus5.5 독립검증 Task2a4c/ctxaa359의 실제첫수신/ACK를 확인했고 G0를 준비한다. G0 전 버전Node1 자기공개는 Main에 보고해 절차PASS 처리를 보류한다. Chest CPV-01과 꽃다발 가독성은 미확정이다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 독립검증 Task `task_2a4c9989acae`/Dispatch `ctx_aa35904f95c1`의 첫 계약hash·Root후속 `msg_a4bbe1695c3d` actual수신/전량처리/동일deliveryACK와 G0를 확인한다. native `claude-opus-5-5 --autocompact 250000` 명령·첫화면Opus5.5/xhigh·readytrue·input_accepted/turn_started observed와 currentlive/exact를 확인했다. Task행의 실제deps는 쓰기종료·정산한 구현 `task_ffdd68388f18`이다. 정식 `contracts/static-preview-independent-review-v1.md`35111B/SHA36D9C789…BA34F15·입력202/보호5/current207pin·신규14경로를 고정했고 G0 전 Node/PNG/시험0이다. 신규검증은 고정3plan 실제재진입·독립fixture/출력시험·실제그림/Root보고 내용·표시를 맡으며 새Chest제안 실행·최종reference/Assets/Unity/physics/C42 권한은 없다. 근거는 `static-preview-review-worker-start-original.json`, `static-preview-review-task-row-original.json`, `static-preview-review-contract-v1.json`이다.
+**다음 첫 일:** 신규 독립검증 `task_2a4c9989acae`/`ctx_aa35904f95c1`의 독립 test/runner, 입력 202개·보호 5개, 자원 관문과 정확한 argv를 실사하고 공식 G0를 판단한다. 현재 G0는 미개방이다. 첫 두 후속의 실제 수신·동일 delivery ACK는 확인했다. 초기 202개 장부의 보호 key 오류·0개 표시는 보존됐고, 작업자가 별도로 작성한 보호5/P3/D8의 16행과 Root의 현재 207개 핀을 실제 대조해 일치했다(`pins-pre-g0-protected.json`, `static-preview-review-current-207-observation-v1.json`). 그 뒤 보낸 후속 `msg_13fe069666cb`의 실제 수신·ACK는 확인해야 한다. 사전 Node 실행의 원천 대조와 절차 PASS 보류는 아래 단계 기록에 남겼다. 영향 없는 작성과 정상 G0 뒤 승인된 검증은 계속하며, 고정 계약·207개 핀과 새 Chest 제안 실행 금지는 유지한다.
 
 직전 비교/data납품 `msg_3a366ba8f025` succeeded는 최종보고11530B/SHAEF75DE99…EB4179B·목록79410B/SHAEE3AB97D…FC82643,114항목+별도5마감/자체·실제119집합/current62pin을 전수대조했다. release/exactidleclose·postclose변화0·Root생존·reclaimable0과 표준liveness7신호/max299초/초과0·공식질문대기120초, 별도수동HB302초(+2)사유는 `static-preview-lead-settlement-intake-v1.json` 및 `static-preview-liveness-observation-v1.md`에 보존한다. CPV-01 실측ROI/힌지·SPV-01작은꽃다발 가독성·B후보선택은 미완료이며 original17유형/C42/3PR범위를 유지한다.
 
@@ -110,6 +110,9 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 - [ ] 종료 정산
 
 ## 결정과 단계 결과
+
+- 신규 비교 검증 Task에서 G0 전 버전 Node 1회·빈 Python 1회의 자기 공개를 기록했다. 원본 Bash 도구 기록 156/158을 대조해 `node -v` 출력 폐기·빈 Python·echo/manifest head 명령과 기록 시각을 확인했으나, 개별 exit와 OS 자원은 unknown이다. Node 0회 준수를 소급 PASS하지 않고 Main `msg_e3b22d888ff2`에 즉시 보고했다. 정상 G0 준비와 절차 PASS 관문을 구분한다(`static-preview-review-pre-g0-node-observation-v1.json`, `static-preview-review-pre-g0-source-audit-v1.json`). 자동 HB V1 재발이나 제품 확정 실패로 자동 집계하지 않는다.
+- Root가 상자 원화 1774×887에 기존 crop 7개와 미실행 절단 후보만 SVG로 겹쳐 좌표를 대조했다. target y45가 초기 source y239/제안 y240을 고르는 주소 차이는 명세의 기하 계산이며 실제 RGBA 차이나 힌지 성공을 측정한 결과가 아니다. `chest-roi-geometry-observation-v1.json`, `chest-roi-observations-v1.md`, `chest-roi-browser-overlay.png`에 남겼으며 현재 검증의 고정 입력이나 예상 정답으로 주입하지 않았다.
 
 - 패킹 검증 `task_064dc1791ca9`는 제품 차단 결함0·V-1 절차 위반으로 outcome failed(`msg_9a056a7b4417`) 정산했다. 최종판정40991B/SHA9AF949EC…71D2D7는 Root 전문/전체 변경 대조본과 byte동일하다. 파일목록373956B/BB778453…52531C8의1457항목 중1456이 actual type/bytes/SHA/link와 맞고, 목록상0B·emptySHA인 T/tasks/bjugp2oa8.output 1개는 현재 없다. 원인은 미확정이며 재생성하지 않았다. 명시된 마감check/done·목록자체9개는 별도 hash로 기록했고 선언밖추가0·scan오류0·현재99pin 일치다. `packing-review-lead-settlement-intake-v1.json`. 이 메타 차이도 Main081374에 즉시 보고했고 전량 완전 일치로 쓰지 않는다.
 
