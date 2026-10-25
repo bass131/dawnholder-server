@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**재부팅 대기다.** 다음 첫 일은 같은 Codex 대화를 재개한 뒤 실제 경로·새 runtime/handle/incarnation을 확인하고 기존 Run을 인수해 메인에게 현재 회신 주소를 알리는 것이다. 그다음 fetch한 최신 `origin/main`을 자기 branch에 **merge**로 통합하며 rebase·강제 push는 하지 않는다. 미커밋/타 파트 파일을 보존하고 충돌이 나면 멈춰 메인에 보고한다. 통합 뒤 PR263의 새 운영 정본을 읽고, 미발행 Gardener 계약/입력의 새 버전을 고정하여 신규 Opus Gardener부터 종료 기록 절차를 계속한다. [PR263 - 운영 계약·원시 보존·실행 정산 규칙 정본화](https://github.com/bass131/dawnholder-server/pull/263)는 메인이 2026-10-25T06:45:00Z에 병합했고 정확 head CI 네 종도 성공했다. 종료 기록의 독립 실사·PR·사용자 정확 head 승인·메인 병합·종료 점검·최신 main 복귀/R-8은 아직 남았다. 다음 goal과 보류 후보는 자동 착수하지 않는다.
+다음 첫 일은 Gardener 결과를 연결한 종료 기록 세 문서를 신규 Astra가 독립 실사하는 것이다. Gardener는 보고서 한 파일·후보 두 건을 남겼고 정산·pane 종료를 마쳤다. 후보는 BACKLOG에 제안·근거로만 도착시켰으며 채택·구현·새 goal 착수는 없다. 재부팅 뒤 최신 `origin/main` merge 통합은 `Already up to date`/exit0이었다. [PR263 - 운영 계약·원시 보존·실행 정산 규칙 정본화](https://github.com/bass131/dawnholder-server/pull/263)는 메인이 2026-10-25T06:45:00Z에 병합했고 정확 head CI 네 종도 성공했다. 종료 기록 PR 발행·사용자 정확 head 승인·메인 병합·종료 점검·최신 main 복귀/R-8은 아직 남았다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`
 - 현재 종료 branch: `docs/ops-candidate-closeout-20261025`, base `4b69059a05b032f59582f74a9800120cbebf209b`. clean·최신 origin/main 분기는 E/`closeout/branch-start-v1.json`이다. PR1 branch `docs/ops-candidate-canon-20261025`의 base는 `cf207c1f355ced664e62119152e8b0686b0ec051`이며 당시 원시 `git-fetch-start.txt`·`branch-start-state.json`은 보존한다.
@@ -10,8 +10,8 @@
 - 현재 Rules Run `run_543efc26689e`, 회신 `run:run_543efc26689e`. handle/Task/Dispatch는 기동 때 현재 receipt로 확인하며 이 기록만으로 실행 권한을 인정하지 않는다.
 - 승인 전 초안 `scope-draft-v1.md` 18250B/SHA256 `EF0871EFE2389465ACE8B98B06C7E34F74833042BC1E5834F9699CBFFD0061EC`는 보존한다. 초안 작성 당시에는 독립 PASS·commit/push·PR·병합이 없었다.
 - 같은 대화 재개 ID: `CODEX_SESSION_ID=01a16fce-620b-7ea0-9166-849a911964f0`. 지정 이름만 읽어 확인한 시각은 `2026-10-25T06:49:38Z`이며 E/`closeout/reboot-context-v1.md`에 시계 원문과 읽기 기준을 남겼다. 메인은 R-8의 같은 대화 재개 절차를 쓰며 이 ID나 옛 handle만으로 실행 권한을 인정하지 않는다.
-- 열린 작업: 실행 중 작업자 Task/Dispatch·공식 ask는 없다. 과거 작업자는 모두 정산·pane 종료했고 현재 worktree에는 리드 pane만 관측됐다(E/`closeout/terminals-before-reboot-v1.json`). Gardener의 E/`closeout/gardener/contract-v1.md`·23입력 pin은 준비했지만 **미발행**이다. 지금 재개 기록으로 입력이 바뀌므로 예전 pin/계약은 보존하고 새 판으로 다시 고정한다.
-- 임시 경로: 이번 종료 준비가 만든 `.backups/tmp/rcg1`은 빈 provider TEMP 부모이며 새 실행/임시 Unity 사본은 만들지 않았다. 기존 타인 경로와 원시는 보존한다. 현재 종료 기록은 독립 실사 전 체크포인트이며 PR2 통과/병합/목표 종료가 아니다.
+- 재부팅 전 열린 작업은 없었고 과거 작업자는 모두 정산·pane 종료했다(E/`closeout/terminals-before-reboot-v1.json`). 당시 Gardener의 E/`closeout/gardener/contract-v1.md`·23입력 pin은 **미발행**이었다. 예전 pin/계약은 보존하고 재개 뒤 현재 입력의 새 판으로 발행한다. 현재 Task/Dispatch와 실제 기동 여부는 E의 새 receipt로 확인하며 옛 handle·Task를 실행 권한으로 쓰지 않는다.
+- 임시 경로: 재부팅 전 준비한 `.backups/tmp/rcg1`은 당시 빈 provider TEMP 부모였고, 재개 뒤 Gardener의 provider 자동 기록이 생겼다. 이를 수동 수정·삭제하지 않으며 새 게임 실행/임시 Unity 사본은 만들지 않았다. 기존 타인 경로와 원시는 보존한다. 현재 종료 기록은 독립 실사 전이며 PR2 통과/병합/목표 종료가 아니다.
 
 ## 진척 단계
 
@@ -131,10 +131,21 @@ Main msg_e7752a20e30b(10-24 18:25:03Z)가 전달한 사용자 원문은 「대�
 - **종료 기록 착수:** PR1 병합 뒤 clean·최신 origin/main에서 기존 PR2용 branch를 만들고 이 로컬 결과를 기록했다. 정본 세파일/CLAUDE·제품/설정/기존 원시는 그대로다. 현재 goal·R-8의 「제품 PR 병합·로컬 결과 기록 → Gardener → 결과 포함 종료 기록 PR 하나 → 종료 점검 → R-8」을 따라 신규 Opus Gardener를 준비한다. 후보는 최대 두 개 제안만 하며 채택·구현·다음 goal 발행은 하지 않는다. 종료 기록 실사/PR·승인/병합·최종 복귀는 아직이다.
 - **재부팅 인계:** 메인 `msg_afe65d9491e1`(06:48:38Z)은 사용자 페이지 파일 결정 전달에 따른 재부팅 준비를 지시했다. 새 작업자/검증자 발행은 재부팅 뒤로 미루고 재개점·대화 ID·기록 commit/push 또는 미커밋 목록을 07:40Z 전 보고한다. Rules의 Gardener·종료 PR도 뒤로 미루며 리드 pane 교체는 종료 PR 병합 뒤 R-8로 한다는 지시다. 현재 Gardener 발행0·새 작업자0이며 준비계약/고정판을 E에 보존한다. 이 기록의 체크포인트 commit/push는 보존 작업이고 신규 독립 판정/PR2 발행은 재부팅 뒤다. 재부팅 자체와 페이지 파일/시스템 설정은 Rules가 실행·변경하지 않는다.
 - **재개 순서 보충:** 메인 `msg_e6bf2e452178`(06:49:23Z)이 전달한 사용자 원문은 「그러면 모든 파트 재부팅 이후에 최신 Main 받고 전부 이어서 진행하는거로 진행」이다. 새 identity/Run 확인 → 최신 origin/main merge 통합 → 새 운영 정본 적용 → 기존 일 재개의 순서를 위 재개점에 반영했다. 재부팅 전 통합/실행창 승인을 재사용하지 않으며 Unity·WSL·DB 창과 메모리 관문은 메인이 재관측·재배정한다. Rules의 문서 종료 작업이 제품 실행 권한으로 넓어지지 않는다.
+- **재부팅 뒤 재개:** 같은 대화 ID를 새 live pane·runtime으로 대조하고 첫 consumer_fenced 뒤 `run-use`로 기존 Run의 consumer_generation2를 인수했다. 메인에 새 회신 주소를 `msg_3520f69e426c`로 알렸다. clean인 f333e56a61a2003cef86dd3ea9435334561175a2에서 fetch한 최신 origin/main4b69059a05b032f59582f74a9800120cbebf209b를 `git merge --no-edit origin/main`으로 통합했고 `Already up to date`/exit0·충돌0이다. PR263의 원시보존/실행관문·표본cap·생존신호/잠금·Library·선택창 정본 변경을 다시 읽었다. CLI1.4.240에 맞는 가이드·기동 문맥도 새로 확인했다. 원시는 E/`closeout/resume-20261025/`에 두고 이전 계약/판정/원시는 보존한다. 제품 실행·설정 변경·새 goal은 없다.
+
+## 종료 Gardener
+
+신규 Opus Gardener의 E/`closeout/gardener/gardener-context-report.md` 전문을 읽고 실제 succeeded done·한 파일 쓰기·30입력 bytes/SHA 불일치0을 인수했다. 첫 출력명 `report.md`는 memo-first 가드에 거부돼 원계약/거부/공식 ask를 보존하고 보충 v2.1로 `gardener-context-report.md` 한 파일에 첫 사전메모부터 쓰도록 교정했다. 추가 메모 파일·가드/설정 변경·Bash 우회는 없었다. 보고서의 별도 `check | grep` 시도도 mailbox-output-loss 가드가 실행 전에 막았고 정상 무파이프 check로 교정했다. 두 거부와 실제 메모 쓰기 원시를 보존해 메인에 공개했으며 소급무위반이나 새 일반 면제로 쓰지 않는다. 보고 완료와 종료 기록의 독립 통과는 별개다.
+
+기존 helper의 Gardener 신호는 13개·최대454초·초과1이다: 공식 ask `08:16:20Z` → heartbeat `08:23:54Z`, 출력명 충돌 질문/보충 대기이며 실제 답변은 `08:22:39Z`다. helper의 questionWaits는 빈 배열이고 실제454초에서 대기시간을 빼지 않았다. 첫신호전/완료뒤는 미측정이다. release retained/external 뒤 동일 incarnation·완료/빈 draft를 대조했고 종료 화면의 선택적 auto-mode 안내에는 입력하지 않은 채 정확 작업 pane만 닫아 ptyKilled=true·부모리드1개를 확인했다. 정산·보고 hash·개별경로 pin 대조·가드 원시는 E/`closeout/gardener/`에 있다.
+
+정리 제안은 아래 두 BACKLOG 연결로 모았다. 빈 생존 신호는 6개 goal·12통 이상 기록 중 이번2통만 원시 확인, 메모 이름 충돌은 3사건 기록 중 이번1건만 guard 원시 확인이다. 과거 사례는 goal 기록 수준이며 중복 한 건 판별은 추론이다. 보고서가 지적한 CI 원시의 head_sha 부재는 보고 원형을 보존하고 리드의 별도 GitHub Actions run4개 조회로 보강했다. E/`closeout/ci-run-<run ID>-raw-v1.json` 네 원시가 모두 PR263 최종 head `6e3180032d8914e5f3f03f7ab0ddd30aa775bab5`·completed/success를 확인한다. 새 CI/제품/게임/DB/삭제 실행은 없었다. O1·과거 계약 누락/제출 전문 clipping·backend unknown과 미실행 한계는 유지한다.
 
 ## 다음 계획 후보
 
 - 작은 읽기 일반 면제는 BACKLOG `small-read-resource-gate-boundary`에 두며 이번 현행 계약 명시와 구분한다.
 - heartbeat 간격/helper 변경은 BACKLOG `heartbeat-interval-review`, 잠금 재발 원인은 BACKLOG `index-lock-recurrence-cause`, 선택창 권한 정책은 BACKLOG `claude-modal-permission-policy`에 원천/보류 조건을 연결했다. 상세 후보는 [BACKLOG](../../../00_Document/operations/BACKLOG.md) 한 곳이며 새 구현 채택은 없다.
+- 종료 Gardener의 빈 생존 신호 송신 형식 제안은 BACKLOG `empty-heartbeat-tagged-subject`에 채택 전 원천으로 도착시켰다.
+- 종료 Gardener의 한 파일 출력명/메모 순서 사례는 BACKLOG `single-output-role-memo-first` 기존 행에 확인 수준별 근거만 갱신했다. 정책·가드·역할별 정본 수정과 다음 goal은 별도 판단 전이다.
 
 Art H1의 하드 제한 구현·R-3 일반reply 예외·규칙 전면분할은 이번에 자동 채택/착수하지 않는다.
