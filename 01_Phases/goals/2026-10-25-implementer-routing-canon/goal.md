@@ -2,10 +2,10 @@
 
 ## 재개 지점
 
-**다음 첫 일은 문서 head를 고정한 뒤 병합 전 Opus Gardener를 발행하는 것이다.** 상태는 **독립 NOT PASS 1회 + 메인 한정 처분**이다. 메인 `msg_a98913eb5019`가 승인7문서의 다음 단계 진행을 허용했고 `msg_ccf55ac3c1ff`가 R03 신규 실사 금지를 확정했다. 원판정/91입력·61산출물은 보존한다. Gardener·종료 기록 재실사·PR·사용자 정확 head 병합 승인은 아직이다.
+**재개 시 먼저 B 판정 원문과 같은 branch의 PR 유무를 대조한다.** 승인7문서는 **독립 NOT PASS 1회 + 메인 한정 처분**, 종료 A는 **NOT PASS(C01) 1회 + 별도 메인 한정 처분**을 보존한다. 메인 `msg_c4734c67eec2`가 C01 하나의 차단을 풀고 남은 B만 새 Sol xhigh에 맡긴 뒤 PR을 만들도록 했다. B 판정 정본은 E/`closeout-review-B-01/reviewer/verdict.md`이며 생성 전에는 미완료다. 통과 뒤 같은 branch의 문서 PR 하나를 만들고 실제 PR/head/CI·두 원판정·두 처분을 메인에 보고한다. 이미 PR이 있으면 중복 생성하지 않는다. 사용자 정확 head 병합 승인 전이고 Codex는 병합하지 않는다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch: `docs/implementer-routing-canon-20261025`; 최신 origin/main에서 분기한 base/HEAD `d16bd388dcb2650559d9857a6c8be305df7ce169`.
+- branch: `docs/implementer-routing-canon-20261025`; 최신 origin/main에서 분기한 base `d16bd388dcb2650559d9857a6c8be305df7ce169`. 최초 문서 고정 head는 `0900999b76e0a5f36dd72fed76d4eeaf7aa9a6ff`이며 B의 최종 local head는 해당 고정 manifest/실제 Git, PR head는 후속 원격 metadata/메인 승인 묶음으로 대조한다.
 - 사전 맥락: 로컬 Git 제외 `.backups/verification/2026-10-25-implementer-routing-canon/lead-context-v1.md`. 원천 실제 bytes/SHA·시계·허용 경계는 그 메모에 둔다.
 - 승인 전 초안은 E/`scope-draft-v1.md`에23582B/SHA256 `4D6A6A923641FA0574E626808303BACF5E2B1D00649D1351D362CD1F71DACC57` 그대로 보존했다. E는 위 로컬 근거 root다. 승인 뒤 메모는 E/`lead-approved-context-v1.md`, 승인 수신은 E/`approval-inbox-v1.json`이다. 이전 goal의 Run/Task/Dispatch는 사용하지 않는다.
 - 현재 Run은 `run_372d7a4244be`, 회신 주소 `run:run_372d7a4244be`다. 작성자 신원·Task/Dispatch·실제 pending 상태는 E/lead/implementation-start-v1.json 및 implementation-start-unknown-show-v1.json을 읽는다. 리드 같은 대화 ID는 `01a17287-9b3b-7560-a86d-92dc82021c89`이며 새 복구 때 현재 runtime/handle을 다시 대조한다.
@@ -13,16 +13,16 @@
 
 ## 진척 단계
 
-- [x] 원천 대조
-- [x] 범위 승인
-- [x] 계약 준비
-- [x] 작성자 기동
-- [x] 정본 작성
-- [x] 독립 실사 — NOT PASS 1회, 메인 한정 처분으로 다음 단계
-- [>] 종료 점검
-- [ ] 문서 PR 제출
+| 단계 | 실제 결과·확인 정본 |
+|---|---|
+| 원천 대조·범위 승인·계약·정본 작성 | 완료. 아래 승인 원천·실제7문서와 작성자 원문 |
+| 독립 실사 | 원 NOT PASS1·메인 msg_a98913eb5019 한정 처분 |
+| 병합 전 Gardener | 완료·후보2/채택0·정산 종료. 아래 보고서·메인 처분 |
+| 종료 A | NOT PASS1(C01)·메인 msg_c4734c67eec2 한정 처분·B미진입/정산 종료 |
+| 남은 B | E/closeout-review-B-01/reviewer/verdict.md의 실제 판정. 원문 생성 전 미완료이며 A를 다시 판정하지 않음 |
+| 문서 PR·CI·병합 | B 뒤 한 PR. 실제 번호/head/CI는 후속 승인 묶음으로 대조하고 사용자 정확 head 승인 전 병합 금지 |
 
-실제 PR 번호가 생기면 병합 단계는 `PR번호 병합`으로 적는다. 초안 작성 완료를 독립 통과나 목표 완료로 표시하지 않는다.
+이 문서는 B용 최종 검토 기록이다. B 뒤 PR을 만드는 순서라 이 검토본에는 실제 번호를 미리 적지 않는다. 발행/원격 확인은 E/lead의 PR receipt와 메인 승인 묶음으로 남기며, B 뒤 추가 tracked 기록이 필요하면 먼저 메인에 보고하고 새 실사 없이 승인 묶음에 올리지 않는다. 문서 작성·후보 등록을 목표 완료나 독립 PASS로 바꾸지 않는다.
 
 ## 요구사항 원천과 확인 수준
 
@@ -201,6 +201,38 @@
 메인 `msg_ccf55ac3c1ff`(11:57:05Z)는 기존 검증자 종료 뒤 새 R03 후속 세션을 열지 않도록 했다. 새 세션 생성0이며 미발행 초안은 원형보존한다. **계약 누락을 고치는 문서가 아니라 실제 최초 기동 관측 자료**는 E/`lead/launch-command-observation-v1.md`와 `lead/review-01-R03-native-launch-calls-v1.json`이다. 원91입력 불변/61산출물 hash 대조는 `lead/review-01-post-end-pin-audit-v1.json`·`review-01-intake-audit-v1.json`, 변경 전9문서 snapshot은 `inputs/review-01-final-tracked-snapshot/`과 `lead/review-01-tracked-snapshot-v1.json`에 보존한다.
 
 R01·R03의 필수 계약 항목 누락 반복은 **미채택 후보** `delegation-contract-preflight`로 BACKLOG와 Gardener에 연결한다. 대상은 쓰거나 실행할 언어 작성절 원문·지정 모델/effort·최초 실행 명령 전문의 발행 전 점검이다. 새 규칙/guard/helper 채택·구현은 하지 않으며 사용자 판단을 기다린다. R02 harness 수리 후보는 이 goal에만 남긴다.
+
+### 병합 전 Gardener 결과와 미확인
+
+신규 Opus5.5 Gardener Task `task_d02c14be89b7`/Dispatch `ctx_32b1c0881f96`를 고정 head `0900999b76e0a5f36dd72fed76d4eeaf7aa9a6ff`에서 실행했다. 최초 명령 `claude --model claude-opus-5-5 --autocompact 250000`, 첫 화면 Opus5.5/xhigh, provider model필드 claude-opus-5-5, backend unknown이다. 실제 제출의 provider pasted_content5017자는 canonical5017자와 공백/줄바꿈까지 일치했다. 최초 비교는 spec중복/Claude wrapper미분리라는 리드 원천 오류였고 교정 전후를 E/`lead/gardener-01-submission-audit-v1.json`·`lead/gardener-01-submission-audit-v2.json`에 보존했다. 미발행 예시 경로 오기는 `lead/gardener-01-preflight-attempt1-failure.md`에 별도로 남긴다.
+
+유일 보고서 E/`gardener-01/gardener-context-report.md`는39345B/SHA256 `06E24924E2012B6C493D869ACECC63A619CAC6670434B59A666C6DE0658B098B`다. 전문을 읽었고 첫 사전메모·후보2/새ID0·관측/추론·미실행 구분을 확인했다. 32입력 불변·쓰기tool6회 모두 같은 보고서·tracked변경0·scratchpad hb1/check1부재를 대조했다(`lead/gardener-01-intake-audit-v1.json`, `lead/gardener-01-post-end-pins-v1.json`, `lead/gardener-01-native-tool-audit-v1.json`). lifecycle `worker_done`은 `msg_3c3d8aae7616` succeeded이며 제품/독립 PASS 선언이 아니다. release retained/external 뒤 동일inc/leaf를 확인해 정확pane를 닫았다. 완료 뒤 auto-mode 환경 안내 선택창은 무입력으로 보존하고 선택/설정변경 없이 종료했다. 원시/메인 보고는 `lead/gardener-01-before-close-*`·`lead/gardener-01-pane-close-v1.json`·`lead/gardener-01-close-main-v1.json`이다.
+
+| 제안 | 검사화 방법과 기존 후보 관계 | 이번 처리 |
+|---|---|---|
+| 1 - 계약 필수 칸 | 최초 실행 명령 L1·허용 언어와 CODE 작성절 L2 lint/fixture. 기존 `contract-context-check`와 연결하고 `lead-launch-command-source` 재사용 검토 | BACKLOG `delegation-contract-preflight`의 보강 제안으로만 보존. 기존 행 통합/규칙 채택/구현0 |
+| 2 - 허용 실행과 세션 셸 | 효과 기준/셸별 열거를 구분한 lint·읽기/쓰기/출력손실 fixture. 과거 F2 문서 반영과의 관계 대조 | BACKLOG `verification-readonly-bootstrap-bundle`의 보강 제안. 모델 계열만으로 셸을 고정하는 제안은 실제 tool/host 관측이 더 필요하며 채택0 |
+
+Gardener 실행 해석의 요청은 E/`lead/gardener-01-main-intake-decision-v1.json`, 메인 최종 처분 원문은 `lead/run-mail-47.json`의 `msg_1d5f9b8979ac`(2026-10-25T12:23:44Z)다. 원보고서/실행을 사후 수정하지 않는다.
+
+- **차단된 시도2:** 메모 전 scratchpad HB/check 출력 쓰기1은 memo-first, HB JSON→grep 파이프1은 mailbox-output-loss가 PreToolUse에서 거부했다. 두 실행0은 native tool/result와 대조했다. 첫 시도는 계약 밖 수동임시 쓰기 계획이며 실행0이라 메인은 추가 처분을 두지 않았다. 두 번째는 파이프를 뺀 정상 HB로 이어졌고, 메인은 출력손실을 피하는 정상 형식 복구여서 우회·공식ask 필요 사례가 아니라고 판정했다. 원차단과 후속실행은 각각 보존한다.
+- **허용 문구 해석:** 계약43행은 파일읽기/검색/경로/hash/metadata 효과 문장과 PS cmdlet 열거를 함께 썼다. Gardener는 Claude Git Bash coreutils를 효과 기준으로 해석해 사용했고 pin대조1명령의 프로세스 치환3개 표현 및 `/dev/stdout`2명령이 raw에 있다. 메인은 실제 파일쓰기 효과가 없다는 원시 대조와 계약43행을 표본 확인하고 이번 계약의 효과 기준 허용 안이라고 판정했다. 리드의 셸 대응 불명확 문구는 bootstrap 후보의 근거로만 연결한다. Art 원 이탈을 소급 면제하거나 공용 효과 기준 허용을 채택한 것이 아니다.
+
+메인 `msg_d83767ca1cf1`(12:24:26Z)은 작업 완료 뒤 auto-mode 안내의 무입력 종료를 인수했다. 12:24:10Z의 stat 읽기에서 사용자/저장소 Claude 설정4개가 오늘 변경되지 않았고 rules-active 설정local은 부재였다고 관측했다. 내용 전수 대조가 아닌 mtime 표본이다. 종료 명령 본문의 curly apostrophe 파싱 실패는 실행0, 문구 수정 뒤 별도close성공으로 보존한다. 생존 helper는10신호/최대224초/초과0이며 첫신호 전/마지막 후·연속전체를 측정한 것이 아니다(`lead/liveness-gardener-01-v1.json`).
+
+Gardener 당시9문서 snapshot은 E/`inputs/gardener-01-final-tracked-snapshot/`과 `lead/gardener-01-tracked-snapshot-v1.json`에 보존했다. 이 뒤 변경은 리드 종료 기록이며 다음 신규 독립 실사 대상으로 분리한다. CI/PR/게임·Unity·WSL·DB·dotnet은 아직 미실행이고 코드/설정/경고억제 변경0이다.
+
+### 종료 A 독립 판정
+
+신규 Sol xhigh 종료 기록 검증 Task `task_5ebdd3bfc24d`/Dispatch `ctx_bd38c5fdd946`는 **A NOT PASS(C01) / B 미진입**으로 끝났다. 원문 E/`closeout-review-01/reviewer/verdict.md`9481B/SHA256 `8C4D50E5CEE51114F40709F07B44646D0EF7565E4D6C494A801A84542E4AE91C`, report8449B/SHA256 `D1673F4DAB320B2DE54ED03E0D2765F717BB714FCAD01C99F9D3A848A351EB75`다. 본검토·4문서 시나리오에서 **C01 외 새 내용·참조·권한 결함 없음**이며 B의 실제 PR/head/CI는 미진입이다. 이전 산출물 NOT PASS1과 이번 리드 운영기록 A NOT PASS1을 구분한다.
+
+C01은 E/`lead-closeout-context-v1.md` 최초 통합·Gardener 차례에 당시 실제 clock 명령/출력이 빠진 **리드 운영기록 결함**이다. 사전 메모 자체 부재나 실제 첫 쓰기 선후 위반까지 확정한 것은 아니다. 뒤12:27:42Z나 다른 차례10:55:12Z·CreationTimeUtc로 소급 치유하지 않는다. 구현 Task가 없는 리드 기록이며 R02 작성자 실패1에 합산하지 않는다. 메인 `msg_1213e9026bd4`는 원계약대로 A 최종 판정을 끝내고 R-2 뒤 별도 처분하도록 했다. 조건부 처분 방향은 검증자에게 전달하지 않았다. 최종 R-2 전달은 E/`lead/closeout-review-01-final-main-R2-v1.json`이다.
+
+메인 최종 처분 `msg_c4734c67eec2`(2026-10-25T12:43:29Z, E/`lead/run-mail-54.json`)는 원문 verdict 전문·관련4문서/C01 원천의 hash와 누락을 직접 표본 대조한 뒤 **C01 하나의 A 차단을 메인 한정 처분으로 풀었다**. 사후 수정으로 치유할 수 없는 시각 누락이라 원 A NOT PASS1은 보존한다. 소급 PASS·사용자 결정이 아니다. 독립 판정은 원 NOT PASS1(R01/R03리드·R02작성자)과 종료 A NOT PASS1(C01리드)이며 같은 계약/같은 결함 번호 반복3회 조건이 아니다. 리드 귀속 세 사건과 두 한정 처분을 PR본문/메인 사용자 보고에 함께 보인다. B는 원계약의 남은 추적 기록·최종head 대조만 신규 Sol xhigh에 맡기고 A를 재판정하지 않는다.
+
+쓰기 종료·`msg_ba45dd2667d3`의 worker_done failed를 현재 신원/Task/Dispatch·reportPath/45파일과 대조했다. inventory44+write-end=실제45의 bytes/SHA·집합 불일치0, A51입력 불일치0이다(`lead/closeout-review-01-intake-audit-v1.json`, `lead/closeout-review-01-post-end-pins-v1.json`). release retained/external 뒤 동일inc/leaf·완료prompt를 확인해 정확pane를 닫았고 부모생존을 확인했다. 원A 입력9문서는 `inputs/closeout-review-01-tracked-A-snapshot/`에 보존하며 이 뒤 후보/종료 기록은 새 B 입력으로 분리한다.
+
+메인 지시에 따라 기존 BACKLOG `delegation-contract-preflight`에 C01 원천을 추가했다. 리드 자신의 차례 clock 선행 검사까지 포함할지는 검토 질문이며 기존 `contract-context-check`·`lead-memo-audit-field-check`와 관계를 대조할 후보로만 둔다. R01·R03·C01 세 리드 귀속 사건과 한정 처분 내역을 메인의 사용자 병합 보고에 함께 보인다. 원메모·원판정·가드/규칙을 바꾸지 않았고 후보 채택/구현0이다. 다음 차례의 실제 사전 시계 기록은 E/`lead-post-A-context-v1.md`·`lead-B-context-v1.md`이며 C01의 사전 기록을 대체하지 않는다. A 생존 helper는8신호/최대221초/초과0의 표본이다(`lead/liveness-closeout-review-01-v1.json`).
 
 ## 다음 계획 후보
 
