@@ -1,10 +1,10 @@
 # 석재 지형·환경물 자체 교체와 움직임7종
 
-상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 신규 Opus 독립검증의 실행 G0 준비 중.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
+상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 신규 Opus 독립검증의 G0를 열었으며 실제 실행/판정을 기다리는 중.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
 
 ## 재개 지점
 
-**다음 첫 일:** 현재 Opus 코드 검증의 독립 runner/계획·실제 해시와 G0 근거를 대조한다. 고정74입력·첫 후속 전량ACK는 이미 확인했으며 PNG 실행은 공식 reply 전0이다. Source 수선 Sol은 S3/S4 각1회 반환·21입력/보호5·native/사본2쌍을 대조했고 G1에서 제한적 후보 납품 마감을 열었다. 최종보고9262B 전문·owner48파일·native2개·입력21/보호5를 전수 인수했고 worker_done 뒤 release/정확 pane 종료까지 완료했다. raw view의 넓은 wash는 원본/S3 후보의 실제 브라우저 alpha 합성(격자/흰색/어두운 배경)에서 재현되지 않아 실제 결함 확정을 보류했다. S4도 흰색/어두운 배경에서 넓은 외부 wash가 재현되지 않았다. 두 후보의 픽셀분포·형상/팔레트 보존·작은규격 적합은 아직 미확인이다. 상세는 resume.json과 각 원시/진단 보고에 둔다. 구현자 최종 보고·268파일·입력38/보호5·실행3코드/3run 인수와 정산/종료는 완료다. 원본7검사·석재출력의 실행 성공을 source 품질/도구 독립PASS·Unity 완료로 세지 않는다. A 꽃다발경계/상자정렬도 실제 가공 뒤 신규실사한다. 실제 crop/봉인reference 뒤 C42frame을 시작하고 Unity/import/실제플레이는 Main 배정 창 전0이다.
+**다음 첫 일:** 현재 Opus의 승인된8단계 실제 결과·예기치않은 harness/관문 질문을 처리한다. G0 `msg_830bb4563c0c` 전 Root가 고정입력74/보호5/구현봉인20=99건·자기11파일·4묶음 실제ACK·최종PS구문/메모리·새경로를 대조했다. 요청/원시는 `packing-review-g0-lead-audit-v1.json`, `packing-review-g0-reply-original.json`이다. 고정92/30/3, 의도된hash-mismatch(child0), 독립31API와real53/E모형13, 원본7inspect/석재pack 및alpha/identity/종료감사의 실제결과와 판정전문을 인수한다. 실행을 제품/절차/그림품질PASS로 세지 않는다. 초기 무의미한Node2기동/PNG·시험import0와 HB자체관측373/324초는 소급PASS 없이 Main에 알렸고 실제원시/최종판정에 남긴다. 병행Source수선은48owner+native2·입력21/보호5 인수/정산·정확pane종료를 완료했고, 현재Art PNGlease는Opus만쓴다. rawview의 넓은wash는 원본/S3/S4 후보의 실제browser합성에서재현되지않았지만 픽셀분포·색/형상·작은크기품질은미판정이다. 도구 독립판정 뒤 새Sol이9source검사/원본·수선비교29sheet35그림·ChestCPV01 고정본체/힌지data를 가공하고새독립실사뒤reference를봉인한다. 그뒤C42frame과Main배정Unity·3PR로이어가며Assets/Unity/제품병합은아직0이다.
 
 기준main `cf207c1f355ced664e62119152e8b0686b0ec051`, branch `feat/stone-environment-replacement-20261025`, checkout `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active`. 근거 root는 `.backups/verification/2026-10-28-stone-terrain-environment-replacement/`다. 현재 리드 회신은 `run:run_6ae742140ce9`; 실행 권한은 이번 승인과 현재 Dispatch로 확인하며 옛Task를 재사용하지 않는다.
 
@@ -92,6 +92,8 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 - [ ] 종료 정산
 
 ## 결정과 단계 결과
+
+- 독립Opus G0를 공식reply `msg_830bb4563c0c`로열었다. 최종runner48496B/D6E8…E17393의전체표본간격보완·단일child/격리경계를확인했고 Root가99pin/11selfhash·4ACK·14새경로부재·현재최종PS구문오류0과OS17231503360B를실측했다. `packing-review-g0-lead-audit-v1.json`. 요청8단계를허용하며예기치않은exit2/관문은원시/최소diff·새hash 공식ask후처리한다. 초기Node무의미기동2·PNG/시험import0, HB자체관측373/324초와거절2건의해결경로를소급PASS없이보존하고 Main `msg_0f34e3ccfdd3`에정정/공개했다. 실제실행/독립제품·그림품질판정은별도다.
 
 - 후속 PNG 경로/원본참조 후보표를 준비했다(`asset-path-reference-map-draft-v1.json/.md`). 기존두atlas meta의actualSHA와35개internalID를대조했고 제안30PNG/각meta 경로는현재모두없다. 새GUID/fileID는null이며실제반입/충돌검증을대신하지않는다. Ground_1/_4의별도TileGUID/SpritefileID를보존해surface/fill을추정배정하지않았고Assets/Unity쓰기0이다.17유형·35부품상태행과재사용석재4의시각행수를구분한다.
 
