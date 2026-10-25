@@ -1,10 +1,14 @@
 # 석재 지형·환경물 자체 교체와 움직임7종
 
-상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 패킹 독립검증은 자동 heartbeat 위반으로 failed 정산·종료했다. Main은 제품 실행 근거만 다음9source 검사·원본/수선29sheet35frame 비교에 한정 인정했다. 신규 Sol max 비교 작업자의 G0 뒤 초기3단계가 실제 exit0으로 끝났고9source검사·원본/수선각29sheet35frame/29PNG를 만들었다. Root가58PNG 해시·완료마커를 대조하고 실제비교 초안을 작성·표시했다. 비교/data납품 succeeded를114항목·별도5마감/current62pin으로 인수하고 release·정확pane종료했다. 신규 Opus5.5 독립검증 Task2a4c/ctxaa359에 공식 G0를 열었고 같은 질문 재개로 실제 답 수신을 확인했다. 공개 진입3회는 exit0·재현PNG58개 byte동일이다. private01의 TAP 집계 실패exit2를 보존한 채 G1 최소수정 뒤 private02가 실제exit0·TAP21/21로 끝났다. Root가 수신본문·원시·39표본/207핀을 대조했다. 시각 실사 완료 자기보고 뒤 metadata 끝 감사01이 열린 자기 stderr 해시 접근으로 exit1을 반환했다. 원시·최소수정·현재207핀을 대조해 허가한 끝 감사02도 실제exit0으로 끝났고 답의 실제수신/207핀 재대조 일치를 확인했다. 감사 당시 열린 자기 출력3개의 null/hashError는 보존하며 최종 독립판정·쓰기 집합 정산은 아직 미인수다. G0 전 버전조회·메일JSON 읽기 Node 공개2건을 원천 대조하고 Main에 보고해 절차PASS 처리를 보류한다. Chest CPV-01과 꽃다발 가독성은 미확정이다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
+상태: **승인 v2·프레임B 범위 진행 중. 정적 A/B·수선 원화와 규격 비교 납품을 인수했고 생성7/15(정적7/7·움직임0/8)이다. 신규 Opus5.5 독립검증은 공개3회 exit0·사설02 TAP21/21·PNG58개 byte 재현·시각 실사·207핀 일치, 납품 결함0으로 보고했다. 검증자 절차1–4의 Main 판정 대기 때문에 failed/보류를 인수·종료했으며 절차PASS를 소급하지 않는다. 최종 정적 reference는 CPV-01·종횡비·수선 팔레트·SPV-01 결정과 실제 반입 검증이 남아 미준비다.** 석재4 생성0·17유형·움직임7loop42직접frame·3PR을 유지한다. C는 봉인 reference 뒤 시작하며 Assets/Unity/제품병합은0이다.
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 독립검증 `task_2a4c9989acae`/`ctx_aa35904f95c1`의 시각 실사·최종 판정·쓰기 집합/생존 정산과 worker_done을 인수한다. 끝 감사01 자기 stderr 해시 접근 실패 질문 `msg_6517fc797fcd`에 새 helper9760B/SHA07ADDF38…1E4FD의 metadata 실행 한 번만 공식 답 `msg_262ac55eda9f`(05:57:48Z)으로 허가했고 실제수신본문 byte일치·05:58:16.616~22.684Z 끝 감사02 outerexit0/stderr0을 원시와 대조했다. 감사207핀과 ownCode2는 현재/기준 일치, fixture6/lock 부재다. 당시 열린 stdout/stderr와 tasks/bqn5ohq4l.output 3개의 null/hashError는 최종 목록에서 보충/시점 예외를 구분한다. 숫자PID27496의 현재 Orca.exe 관찰은 원래 Node child 생존이 아니다. 실패01과 원시/실사·전량ACK·명령 근거는 `static-preview-review-end-audit-lead-audit-v1.json` 및 `static-preview-review-end-audit-run02-intake-v1.json`에 보존했다. 실행 성공은 최종 그림/절차 판정이 아니다. 같은 세션의 현재 live/exact를 확인했으며 대기 poll/terminal wait는 열지 않는다. G1 질문 `msg_9deeded80401`의 답 `msg_73d4a00360ae`는 작업자 raw/run-d-ask.json의 실제수신본문이 byte동일했다. `output-review-02` outerexit0/childexit0/TAP21개21pass0fail을 원시와 대조했고, 39표본(35poll)의 UTC/단조 최대간격121.4ms·250ms초과0·잔여/orphan0, 현재207핀/자기코드 일치를 확인했다(`static-preview-review-private-run02-lead-intake-v1.json`). 이 근거는 시험 범위의 실행 결과이며 최종 그림 품질·독립 판정·브라우저/전역 연속 자원 보장을 대신하지 않는다. 공개3회는 반복하지 않았으며 재현PNG58개 납품과 byte동일 근거와 private01 exit2/harness-stop 원시를 보존한다. 미작성 visual 생성기·새 Chest 실행은 승인하지 않았다. 원래17유형/C42/3PR·생성7/15·Assets/Unity/제품병합0을 유지한다. Node 공개2건과 리드 terminal wait22 위반은 Main 절차 처리 전 보류하며 영향 없는 승인 작업은 계속한다.
+**다음 첫 일:** Root 비교 보고v2에서 반환된 HTML #1–#4를 고치고 CPV-01·비율/팔레트의 구체적 선택 재료를 준비한다. Main에는 이번 검증의 절차 처리와 제품 실행 근거의 다음 단계 한정 사용 여부를 올린다. 현재 결과를 최종 참조 승인으로 승격하지 않으며, 제품·가공 수정과 독립 재검증은 새 외부 세션으로 발행한다. 정산한 Task2a4c/ctxaa359를 다시 기다리거나 재사용하지 않는다.
+
+신규 독립검증의 `worker_done msg_f3f29cdab269`(06:17:54Z) failed 원문은 `static-preview-review/verification.md`29312B/SHA60217448…737E0이며165행 전문을 읽었다. 목록1141파일 중1140 일치·불일치0·0B/null native output1 누락, 명시마감/목록자체6개를 별도 인수했다. release retained external 뒤 정확한 done pane을 닫았고 ptyKilled=true·종료후1146파일 변화0·현재207핀 일치·Root생존·reclaimable0이다. 표준생존신호42개/max1104초/300초초과5구간(348/1104/473/381/322)과 공식질문639/537/156초를 분리했다. 원시와 리드 정산은 `static-preview-review-lead-settlement-intake-v1.json`/`.md`에 둔다.
+
+공개3회와 private02 실제 실행 근거는 기존 lead-intake에 유지한다. private01 TAP 관문 exit2와 끝 감사01 열린 stderr 접근 exit1을 보존했고, 승인 답의 실제수신 및 끝 감사02 exit0을 대조했다. 종료 감사의 null3개 중 stdout/stderr2개는 닫힌 뒤 보충, 당시0B인 native bqn출력과 목록 당시0B/null인 bfr출력의 소실은 원인미확정 예외로 보존한다. 숫자PID27496의 Orca.exe 관찰은 원래 Node 생존이 아니다. G0 전 Node2·HB/check 공백과 추가 metadata helper 사전제시 후보, 검증자 원 메모 #5의 최종정정을 Main 판단과 구분한다. 리드 terminal wait22 이탈도 기존 보고/보류를 유지한다. Main 중간보고 `msg_a33c42bd9d79`는 enqueue되었으며 실제 열람은 미확인이다.
 
 직전 비교/data납품 `msg_3a366ba8f025` succeeded는 최종보고11530B/SHAEF75DE99…EB4179B·목록79410B/SHAEE3AB97D…FC82643,114항목+별도5마감/자체·실제119집합/current62pin을 전수대조했다. release/exactidleclose·postclose변화0·Root생존·reclaimable0과 표준liveness7신호/max299초/초과0·공식질문대기120초, 별도수동HB302초(+2)사유는 `static-preview-lead-settlement-intake-v1.json` 및 `static-preview-liveness-observation-v1.md`에 보존한다. CPV-01 실측ROI/힌지·SPV-01작은꽃다발 가독성·B후보선택은 미완료이며 original17유형/C42/3PR범위를 유지한다.
 
@@ -110,6 +114,14 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 - [ ] 종료 정산
 
 ## 결정과 단계 결과
+
+### 신규 정적 비교 독립검증 failed 인수·종료(2026-10-25)
+
+- 판정1: 내용검사 전부 실행·납품 결함0이나 검증자 절차1–4 Main 판정 대기로 failed/보류. 판정2: 최종 정적 reference 미준비. 이것을 제품 확정 실패나 절차PASS로 자동 변환하지 않는다.
+- Root HTML #1–#4는 좁은 폭 상자 넘침·현행 snapshot 갱신·SPV-01/비율 규모 안내·canvas 경계/배율 안내다. 원래03:10 snapshot 상태 문장은 당시에는 사실이었으며 현재 보고용 갱신과 구분한다. 원 메모 #5의 D2 해석은 검증 판정64·66행의 정정이 우선하고 원문은 보존한다.
+- 준비도 잔여: CPV-01 본체/힌지와 열림 f4~f6 crop 경계, 비율 변화26/29(10% 초과)·20/29(25% 초과), 수선 B 팔레트 선택·SPV-01, world/Unity/physics 미실행. 고정 plan의 재현과 최종 그림 선택을 구분한다.
+- 원문·목록·생존신호·늦은/누락 native 출력·release/정확close/종료후 보존의 전수 근거는 `static-preview-review-lead-settlement-intake-v1.json`과 `.md`에 연결했다. 새 private helper3개의 전문/원천은 `static-preview-review-visual-helpers-source-audit-v1.json`이다. PNG 픽셀 처리/새 HTML 생성기가 아닌 metadata 작업이며 사전 제시 조항 적용 여부는 Main 판단 후보로 남긴다.
+
 
 - G1 답의 실제 수신본문byte일치와 private02 실행을 인수했다. 외부05:11:28Z~05:11:35Z exit0, innerplainNode의명시TAP21/21·childexit0,39표본/최대121.4ms/초과0·자원관문·잔여0·현재207핀을 원시 재계산과 연결했다. 새 PNG 재생성 없이 reporter 수정이 적용됐으며 failed01과 절차PASS 보류는 유지한다. 시각 실사·최종 독립판정과 참조 봉인은 남는다. `static-preview-review-private-run02-lead-intake-v1.json`.
 - 독립검증 G1의 최소 수정(명시 TAP reporter·UTF8 출력 디코딩·관련 주석, 7+/2-)을 전문 대조하고 새 private02 한 번을 공식reply73d4a00360ae로 승인했다. 기존 test/21개 집계·207핀은 불변이며 실패01 outerexit2/harness-stop·원시를 보존한다. 공개3회는 실제exit0이고 원본/수선58PNG가 납품본과 byte동일하므로 재실행하지 않는다. 승인만 완료했으며 실제수신/새실행/시각 최종판정은 미인수다. `static-preview-review-g1-runner-preread-v1.diff`, `static-preview-review-g1-official-source-v1.json`, `static-preview-review-g1-delivery-processing.md`, `static-preview-review-g1-reply-original.json`.
