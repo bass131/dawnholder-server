@@ -1,10 +1,10 @@
 # 석재 지형·환경물 자체 교체와 움직임7종
 
-상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 알파/작은크기 품질판정 보류. 규격 가공 선행시험 정산·봉인 완료. 새 Sol의 고정시험·원본7검사·석재출력 실행 성공을 확인했고 구현자 정산·봉인 완료, 신규 독립검증 준비.** 현재전체생성상한15회·지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작한다.
+상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 신규 Opus 독립검증의 실행 G0 준비 중.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
 
 ## 재개 지점
 
-**다음 첫 일:** 봉인한 패킹 구현을 신규 외부 Opus에 강등급 독립검증으로 발행한다. 구현자 최종 보고 전문·267개 산출+manifest1개·입력38/보호5·실행된3코드/실제3run을 대조했고 release/정확 pane 종료까지 완료했다. 원본7검사·석재4칩/발판은 실행 성공이며 source 품질/도구 독립PASS·Unity는 아직 미확인이다. A3회/B2회 원본5개는 byte동일 사본·규격·장부를 인수했고 작업자를 정산/종료했다. native 인수 성공을 제품 적합/독립PASS로 세지 않는다. A 꽃다발경계/상자정렬과 B 나무·식생 halo는 actual alpha/작은규격 가공 뒤 신규실사로 판단한다. 새 가공코드는 선행시험→신규Sol→독립Opus 순서이며 실제 crop/봉인reference 뒤 C42frame을 시작한다. Unity/import/실제플레이는 Main 배정 창 전0이다.
+**다음 첫 일:** 현재 Opus 코드 검증의 독립 runner/계획·실제 해시와 G0 근거를 대조한다. 고정74입력·첫 후속 전량ACK는 이미 확인했으며 PNG 실행은 공식 reply 전0이다. Source 수선 Sol은 S3/S4 각1회 반환·21입력/보호5·native/사본2쌍을 대조했고 G1에서 제한적 후보 납품 마감을 열었다. 완료보고·manifest·worker_done을 인수한 뒤 정산/정확 pane 종료한다. raw view의 넓은 wash는 원본/S3 후보의 실제 브라우저 alpha 합성(격자/흰색/어두운 배경)에서 재현되지 않아 실제 결함 확정을 보류했다. S4도 흰색/어두운 배경에서 넓은 외부 wash가 재현되지 않았다. 두 후보의 픽셀분포·형상/팔레트 보존·작은규격 적합은 아직 미확인이다. 상세는 resume.json과 각 원시/진단 보고에 둔다. 구현자 최종 보고·268파일·입력38/보호5·실행3코드/3run 인수와 정산/종료는 완료다. 원본7검사·석재출력의 실행 성공을 source 품질/도구 독립PASS·Unity 완료로 세지 않는다. A 꽃다발경계/상자정렬도 실제 가공 뒤 신규실사한다. 실제 crop/봉인reference 뒤 C42frame을 시작하고 Unity/import/실제플레이는 Main 배정 창 전0이다.
 
 기준main `cf207c1f355ced664e62119152e8b0686b0ec051`, branch `feat/stone-environment-replacement-20261025`, checkout `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active`. 근거 root는 `.backups/verification/2026-10-28-stone-terrain-environment-replacement/`다. 현재 리드 회신은 `run:run_6ae742140ce9`; 실행 권한은 이번 승인과 현재 Dispatch로 확인하며 옛Task를 재사용하지 않는다.
 
@@ -92,6 +92,19 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 - [ ] 종료 정산
 
 ## 결정과 단계 결과
+
+- Source 수선 S3/S4 각1회가 모두 반환됐고 실제 제출2/반환2·정적7/7·전체7/15·움직임0/8을 장부에 반영했다. S4는 보류 안내01:26Z 이전01:24:36.951Z 발행·01:25:07.372Z 반환됐고 실제 check/같은 delivery ACK도 확인했다. native/사본2쌍과 입력21/보호5를 Root가 실제 재계산해 일치했다. `source-b-repair-g1-lead-audit-v1.json`, `generation-budget-v1.json`.
+- 기본 view의 wash 관찰만으로 B 원본/수선 후보 결함을 확정한 해석을 교정했다. 실제 브라우저 img 합성의 격자·흰색·어두운 배경에서는 원본/S3 후보의 넓은 외부 wash가 재현되지 않았다. 숨은RGB 표시 가능성은 추정이고 실제 alpha분포·형상/색 보존·작은규격 적합은 미판정이다. S3 정정은 `source-alpha-display-observation-v1.md`·실제 screenshot을 Main `msg_54ead950ed89`로 전달했다. S4의 후속 대조는 `undergrowth-alpha-display-observation-v1.md`와 실제 screenshot에 기록했다. 기존 원시/시각 관찰을 지우지 않고 원인 미확정으로 분리한다.
+- Source의 보고서 text bytes/hash 출력01:28:17.9662962Z에서 계약 freshOS/자기WS 관측 누락을 공식 ask로 받았다. 초기 계약text hash 관측과 함께 소급PASS 없이 보존하며 기존 후보/증거의 납품 마감만 G1 reply로 열었다. `source-b-repair-g1-reply-original.json`; Main에 절차 관측을 전달했고 제품/시험·로컬PNG처리·추가생성0을 유지한다.
+
+- 배경 수선 G0에서 입력21/보호5 재계산과 실제 첫후속/check/같은 delivery 성공ACK·실제OS/메타shell·초기모델을 대조해 S3/S4 각1회의 순차편집/메타인수를 공식 reply로 열었다. 초기 계약text hash가 첫OS표본보다 앞선 사실은 미측정으로 보존하고 소급관문을 주장하지 않았다. `source-b-repair-g0-lead-input-audit-v1.json`, `source-b-repair-g0-reply-original.json`. 허가와실제제출을구분하며G0를열당시의관측장부는2준비/0제출이었다. 이후실제제출/반환은위결과로갱신했다.
+- Opus는 현재 exact live이며 권한거절흔적의 실제현재영향을 공식보고 요청/메인통지했다. 이후 bounded 화면은 고정시험코드를 읽는 작업을 보여 전체통신차단으로 단정하지 않는다. 우회/설정변경·대체/재기동/Node test실행0이고 진단과G0를 기다린다. `main-packing-review-permission-observation-original.json`, `parallel-continuation-03-reviewer-bounded-read-original.json`.
+
+- 배경 수선용 새 Sol max의 최초 명령/화면·준비·turn_started를 관측했다. 21입력/보호5를 기동 직전 재계산했고 그 기동 시점에는 실제 첫 후속 수신/ACK·G0가 대기였다. 이 작업은 cloud source/PNGchild0이며 현재 Opus의 원래74입력/로컬PNG lease를 보존한다. `source-b-repair-worker-start-original.json`, `source-b-repair-first-followup-original.json`, `generation-budget-v1.json` 기준 실제5제출·2예약/새호출0이다.
+
+- 당시 B 원본의 직접 보기와 실제 alpha 기록을 근거로 넓은 halo/색배경을 의심해 승인된 정적수선2회를 S3/S4 배경추출에 배분했다. 이후 실제 합성에서 넓은 wash가 재현되지 않은 정정은 위 결과에 기록한다. 새로운 Solmax cloud-only 작업은 원본/검증중74입력을 보존한 새 owner만 쓰고 PNGchild0이며 Opus PNG lease와 겹치지 않는다. 총15/정적7/움직임8 중 실제5사용·수선2예약으로 `generation-budget-v1.json`에 분리하고, 실제호출 전에는 사용량을 올리지 않는다. Source source품질/작은규격은 아직미통과다.
+
+- 미발행 축소 preview 준비 중 승인 원문:72와 대조해 Wooden64×64/7frame=448×64를 다시 확인했다. 이전 후보가 내부몸체34×40을 canvas로 혼동한 Root 계획 결함을 실행 전에 교정했다. `static-sprite-requirements-draft-v3.json`·`static-preview-candidate-v2.json`은64×64 안(15,24,34,40) body/pivot(0.5,0)을 명시하며 이전 후보는 미실행 역사로 보존했다. 첫 사례의 교정 층은 요구 데이터/plan이며 새 공용 규칙·추가 생성/Assets0, 새 승인 요구0이다.
 
 - 패킹 구현 완료보고 최종11115B와 전체267개 산출+manifest1개를 전수 byte/SHA·실제 leaf집합으로 인수했다. 실행3회의 productAtStart 코드가 현재3코드와 일치, 입력38/보호5/봉인시험 불변·JUnit92 실패/skip0·산출 marker hash 일치다. 새 구현2파일437행+변경 없는codec124행이며 강등급으로 신규 검증에 넘긴다. `packing-implementation-lead-settlement-intake-v1.json`, `packing-implementation-seal-v1.json`.
 - 구현 Task는 명시 succeeded로 완료됐고 release retained external_terminal 뒤 exact incarnation의 idle pane만 닫아 ptyKilled를 확인했다. Root pane은 생존했다. 기존 생존신호 helper는 서버신호11·최대207초·초과0·질문대기67초를 기록했다. 보고의 heartbeat만 로컬300.768907초와 정의를 구분하며 첫2건 형식 위반/교정은 보존한다. `packing-implementation-final-close-original.json`, `packing-implementation-liveness-result.json`, `packing-implementation-liveness-observation-v1.md`.
