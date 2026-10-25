@@ -1,10 +1,10 @@
 # 석재 지형·환경물 자체 교체와 움직임7종
 
-상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 신규 Opus 독립검증의 실제1~7단계를 대조했고 종료감사·최종판정이 남아 있다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
+상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 신규 Opus 독립검증의 실제1~7단계와 종료99pin 일치를 대조했다. 최종 보고·정산이 남아 있고 자동 heartbeat 계약 위반 처리 전 통과 보류다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
 
 ## 재개 지점
 
-**다음 첫 일:** 현재 Opus의 단계8 종료99pin·자기쓰기 감사와 최종 `verification.md` 전문/명시worker_done을 인수한다. 승인단계1~7의 실제원시를 대조했고 고정92/30/3, 의도된hash-mismatch(child0), 독립31API와real53/E모형13(62pass·3관찰·1권한환경불가), 원본7inspect·석재2PNG 진입, 독립alpha/stone67check·P불변을 확인했다. 근거는 `packing-review-step1-lead-intake-v1.json`, step2/3/4/56/7의 같은 인수파일이다. 아직 최종도구/절차·그림품질PASS가 아니다. D gap은loop구간만이고 R의 -1.2ms exit시각 관측1건·symlink미실행·주입대역4건·단계5/6사이메일check누락을 구분한다. 초기 무의미Node2/PNG시험import0·HB373/324초도 소급PASS없이 남긴다. Opus는 current exact live이며 PNGlease는 아직이작업전용이다. Source수선48owner+native2·26pin 인수/정산·정확pane종료는 완료했고 실제browser합성에서 원본/S3/S4의 넓은wash는 재현되지않았지만 색/형상·작은크기품질은미판정이다. 도구독립판정/정산 뒤 새Sol이9source검사/원본·수선비교29sheet35그림·ChestCPV01 고정본체/힌지data를 가공하고 새독립실사뒤reference를봉인한다. 그뒤C42frame과Main배정Unity·3PR로이어가며Assets/Unity/제품병합은아직0이다.
+**다음 첫 일:** 현재 Opus의 단계8 자기쓰기 감사와 최종 `verification.md` 전문/명시worker_done을 인수한다. 종료99pin은 개별값과 현재 파일의 bytes/SHA/leaf를 대조해 모두 일치했다. 자동 heartbeat 2건은 현재 계약 내 절차 위반이며 Main `msg_647d8542c09a`로 보고했다. 최종 도구 통과와 다음 정적 PNG 실행은 수정 또는 Main의 처리 결정 전 보류한다. 정상 마감·원시 인수는 계속하며 완료 세션을 재사용하지 않는다. 승인단계1~7의 실제원시를 대조했고 고정92/30/3, 의도된hash-mismatch(child0), 독립31API와real53/E모형13(62pass·3관찰·1권한환경불가), 원본7inspect·석재2PNG 진입, 독립alpha/stone67check·P불변을 확인했다. 근거는 `packing-review-step1-lead-intake-v1.json`, step2/3/4/56/7의 같은 인수파일이다. 아직 최종도구/절차·그림품질PASS가 아니다. D gap은loop구간만이고 R의 -1.2ms exit시각 관측1건·symlink미실행·주입대역4건·단계5/6사이메일check누락을 구분한다. 초기 무의미Node2/PNG시험import0·HB373/324초도 소급PASS없이 남긴다. Opus는 current exact live이며 PNGlease는 아직이작업전용이다. Source수선48owner+native2·26pin 인수/정산·정확pane종료는 완료했고 실제browser합성에서 원본/S3/S4의 넓은wash는 재현되지않았지만 색/형상·작은크기품질은미판정이다. 도구독립판정/정산 뒤 새Sol이9source검사/원본·수선비교29sheet35그림·ChestCPV01 고정본체/힌지data를 가공하고 새독립실사뒤reference를봉인한다. 그뒤C42frame과Main배정Unity·3PR로이어가며Assets/Unity/제품병합은아직0이다.
 
 기준main `cf207c1f355ced664e62119152e8b0686b0ec051`, branch `feat/stone-environment-replacement-20261025`, checkout `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active`. 근거 root는 `.backups/verification/2026-10-28-stone-terrain-environment-replacement/`다. 현재 리드 회신은 `run:run_6ae742140ce9`; 실행 권한은 이번 승인과 현재 Dispatch로 확인하며 옛Task를 재사용하지 않는다.
 
@@ -92,6 +92,10 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 - [ ] 종료 정산
 
 ## 결정과 단계 결과
+
+- 검증자의 자동 heartbeat 첫 불일치를 현재 계약 내 절차 위반으로 기록한다. `msg_79bb2a4d3fb4` 통지와 실제 `g0-ask-wait.sh`/`run-step.sh`를 대조했고, G0 대기 중 240초 반복문이 heartbeat24·25를 발행한 서버 원시를 확인했다. 계약21행 「자동 HB loop0」와 다르며 G0에 자동 반복임을 알리지 않았다. 제품 결함과 구분하고 두 이벤트는 원시에 보존하되 정상 수동 생존·절차 통과로 세지 않는다. Root는 Main `msg_647d8542c09a`로 즉시 통지했고, 분류·정상 마감 지시 `msg_2137b11c17c9`의 실제 check22/같은 delivery ACK를 확인했다. `packing-review-autohb-observation-v1.json`. 교정 층은 이번 위임 계약의 준수·공개·최종 판정이며 새 공용 규칙/가드를 만들지 않는다. 처리 전 최종 통과·다음 PNG 실행은 보류한다.
+
+- 단계8 종료 감사 `input-audit-end.json`의 개별99건과 현재 파일 bytes/SHA/leaf를 Root가 재계산해 모두 일치했다. 요약 `groupCounts`의 빈key99는 보존하고 실제 pin.group의74/5/20 재계수와 구분한다. 근거 SHA47106DE8…491E33C2와 결과는 `packing-review-autohb-observation-v1.json`이다. owner 쓰기 감사·최종 판정/worker_done은 아직 미인수이며 이 종료pin 성공을 전체 검증 통과로 쓰지 않는다.
 
 - 신규 독립Opus의 실제1~7단계 원시를 Root가 대조했다. 사전99pin 개별일치(요약groupCounts 빈key99는 실제74/5/20 재계수와 구분), 고정92unit/30CLI/3inspector, 의도된hash불일치exit2/child0·lease0, 독립31unit·real53/E13 중62pass/3관찰/1symlink환경불가다. source7와stone2 실제진입exit0, stonePNG2는이전산출과byte동일, 후속alpha7manifest일치·stone67check/P불변3검사는통과했다. `packing-review-step4-lead-intake-v1.json`, `packing-review-step56-lead-intake-v1.json`, `packing-review-step7-lead-intake-v1.json`. core76child의최소OS16744435712B·최대RSS173780992B·전체최대gap112ms/초과0이나exit후1.2ms음수관측1건을보존한다. D는loopgap만, symlink권한우회0, writefailure4건은E모형주입이며 실제OS실패가아니다.5/6사이후속check미실시도보존하고 최종end감사/판정전문은별도로인수한다.
 
