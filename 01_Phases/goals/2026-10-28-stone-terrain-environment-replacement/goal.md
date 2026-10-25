@@ -1,10 +1,10 @@
 # 석재 지형·환경물 자체 교체와 움직임7종
 
-상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 신규 Opus 독립검증의 G0를 열었으며 실제 실행/판정을 기다리는 중.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
+상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 신규 Opus 독립검증의 실제1~7단계를 대조했고 종료감사·최종판정이 남아 있다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
 
 ## 재개 지점
 
-**다음 첫 일:** 현재 Opus의 승인된8단계 실제 결과·예기치않은 harness/관문 질문을 처리한다. G0 `msg_830bb4563c0c` 전 Root가 고정입력74/보호5/구현봉인20=99건·자기11파일·4묶음 실제ACK·최종PS구문/메모리·새경로를 대조했다. 요청/원시는 `packing-review-g0-lead-audit-v1.json`, `packing-review-g0-reply-original.json`이다. 고정92/30/3, 의도된hash-mismatch(child0), 독립31API와real53/E모형13, 원본7inspect/석재pack 및alpha/identity/종료감사의 실제결과와 판정전문을 인수한다. 실행을 제품/절차/그림품질PASS로 세지 않는다. 초기 무의미한Node2기동/PNG·시험import0와 HB자체관측373/324초는 소급PASS 없이 Main에 알렸고 실제원시/최종판정에 남긴다. 병행Source수선은48owner+native2·입력21/보호5 인수/정산·정확pane종료를 완료했고, 현재Art PNGlease는Opus만쓴다. rawview의 넓은wash는 원본/S3/S4 후보의 실제browser합성에서재현되지않았지만 픽셀분포·색/형상·작은크기품질은미판정이다. 도구 독립판정 뒤 새Sol이9source검사/원본·수선비교29sheet35그림·ChestCPV01 고정본체/힌지data를 가공하고새독립실사뒤reference를봉인한다. 그뒤C42frame과Main배정Unity·3PR로이어가며Assets/Unity/제품병합은아직0이다.
+**다음 첫 일:** 현재 Opus의 단계8 종료99pin·자기쓰기 감사와 최종 `verification.md` 전문/명시worker_done을 인수한다. 승인단계1~7의 실제원시를 대조했고 고정92/30/3, 의도된hash-mismatch(child0), 독립31API와real53/E모형13(62pass·3관찰·1권한환경불가), 원본7inspect·석재2PNG 진입, 독립alpha/stone67check·P불변을 확인했다. 근거는 `packing-review-step1-lead-intake-v1.json`, step2/3/4/56/7의 같은 인수파일이다. 아직 최종도구/절차·그림품질PASS가 아니다. D gap은loop구간만이고 R의 -1.2ms exit시각 관측1건·symlink미실행·주입대역4건·단계5/6사이메일check누락을 구분한다. 초기 무의미Node2/PNG시험import0·HB373/324초도 소급PASS없이 남긴다. Opus는 current exact live이며 PNGlease는 아직이작업전용이다. Source수선48owner+native2·26pin 인수/정산·정확pane종료는 완료했고 실제browser합성에서 원본/S3/S4의 넓은wash는 재현되지않았지만 색/형상·작은크기품질은미판정이다. 도구독립판정/정산 뒤 새Sol이9source검사/원본·수선비교29sheet35그림·ChestCPV01 고정본체/힌지data를 가공하고 새독립실사뒤reference를봉인한다. 그뒤C42frame과Main배정Unity·3PR로이어가며Assets/Unity/제품병합은아직0이다.
 
 기준main `cf207c1f355ced664e62119152e8b0686b0ec051`, branch `feat/stone-environment-replacement-20261025`, checkout `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active`. 근거 root는 `.backups/verification/2026-10-28-stone-terrain-environment-replacement/`다. 현재 리드 회신은 `run:run_6ae742140ce9`; 실행 권한은 이번 승인과 현재 Dispatch로 확인하며 옛Task를 재사용하지 않는다.
 
@@ -92,6 +92,8 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 - [ ] 종료 정산
 
 ## 결정과 단계 결과
+
+- 신규 독립Opus의 실제1~7단계 원시를 Root가 대조했다. 사전99pin 개별일치(요약groupCounts 빈key99는 실제74/5/20 재계수와 구분), 고정92unit/30CLI/3inspector, 의도된hash불일치exit2/child0·lease0, 독립31unit·real53/E13 중62pass/3관찰/1symlink환경불가다. source7와stone2 실제진입exit0, stonePNG2는이전산출과byte동일, 후속alpha7manifest일치·stone67check/P불변3검사는통과했다. `packing-review-step4-lead-intake-v1.json`, `packing-review-step56-lead-intake-v1.json`, `packing-review-step7-lead-intake-v1.json`. core76child의최소OS16744435712B·최대RSS173780992B·전체최대gap112ms/초과0이나exit후1.2ms음수관측1건을보존한다. D는loopgap만, symlink권한우회0, writefailure4건은E모형주입이며 실제OS실패가아니다.5/6사이후속check미실시도보존하고 최종end감사/판정전문은별도로인수한다.
 
 - 독립Opus G0를 공식reply `msg_830bb4563c0c`로열었다. 최종runner48496B/D6E8…E17393의전체표본간격보완·단일child/격리경계를확인했고 Root가99pin/11selfhash·4ACK·14새경로부재·현재최종PS구문오류0과OS17231503360B를실측했다. `packing-review-g0-lead-audit-v1.json`. 요청8단계를허용하며예기치않은exit2/관문은원시/최소diff·새hash 공식ask후처리한다. 초기Node무의미기동2·PNG/시험import0, HB자체관측373/324초와거절2건의해결경로를소급PASS없이보존하고 Main `msg_0f34e3ccfdd3`에정정/공개했다. 실제실행/독립제품·그림품질판정은별도다.
 
