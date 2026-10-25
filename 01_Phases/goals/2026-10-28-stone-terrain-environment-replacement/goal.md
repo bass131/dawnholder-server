@@ -1,10 +1,10 @@
 # 석재 지형·환경물 자체 교체와 움직임7종
 
-상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 패킹 독립검증은 자동 heartbeat 위반으로 failed 정산·종료했다. Main은 제품 실행 근거만 다음9source 검사·원본/수선29sheet35frame 비교에 한정 인정했다. 신규 Sol max 비교 작업자의 G0 뒤 초기3단계가 실제 exit0으로 끝났고9source검사·원본/수선각29sheet35frame/29PNG를 만들었다. Root가58PNG 해시·완료마커를 대조하고 실제비교 초안을 작성·표시했으며 worker의 보정JSON안·끝감사/납품을 기다린다. Chest CPV-01은 미봉인이다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
+상태: **v2와 프레임B 사용자승인으로착수. 정적A/B 원화5회 인수·세션정산 완료, 배경 수선2회 반환으로 정적7/7·전체7/15 사용. 알파/작은크기 품질판정 보류. 규격 가공 선행시험·구현 정산과 봉인 완료, 패킹 독립검증은 자동 heartbeat 위반으로 failed 정산·종료했다. Main은 제품 실행 근거만 다음9source 검사·원본/수선29sheet35frame 비교에 한정 인정했다. 신규 Sol max 비교 작업자의 G0 뒤 초기3단계가 실제 exit0으로 끝났고9source검사·원본/수선각29sheet35frame/29PNG를 만들었다. Root가58PNG 해시·완료마커를 대조하고 실제비교 초안을 작성·표시했다. 비교/data납품 succeeded를114항목·별도5마감/current62pin으로 인수하고 release·정확pane종료했다. 새 Opus 비교·내용·표시 독립검증을 준비하며 Chest CPV-01과 꽃다발 가독성은 미확정이다.** 지형생성0, 나무2종/천8장·등불6장·작은식생4장·총42frame을생성기가직접그린다. 실제원축척/속도의재생에서끊김이없어야완료다. C는A/B봉인reference뒤시작하며 움직임8회는 미사용이다.
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 정적 비교 Task `task_ffdd68388f18`/Dispatch `ctx_5e6ecf047108`의 미실행 보정JSON·끝62pin/실제쓰기목록·완료보고를 인수하고 신규외부 독립검증으로 연결한다. G0 `msg_af1f1bba0593`→`msg_ec9b002172cb` 실제 native수신 뒤 고정 `stat-inspect-01`→`stat-orig-01`→`stat-repair-01`이 모두 entry exit0/error null로 끝났다. Root 실제대조 `static-preview-execution-lead-intake-v1.json`은9source검사/58PNG 전수bytes·SHA/IHDR·manifest/complete·자원원시를 연결한다. 두비교집합24PNG는byte동일·식생5개는다르다. `static-preview-comparison-v1.html`(33143B/SHA035BEBDC…61FEEB2)은85pin에 연결한Root독립검증전 초안이며, desktop/390nested 실제표시와CPV-01 하부차이 관찰은 `static-preview-comparison-observations-v1.md`에 있다. 현재worker는쓰기중이며 새plan실행0·최종그림선택/reference/Cframe0봉인0·Assets/Unity/physics/독립판정0을유지한다.
+**다음 첫 일:** 정산·종료한 정적 비교 Task `task_ffdd68388f18`의 산출과 Root의 실제PNG 비교 초안을 신규 Opus 독립검증에 발행한다. `msg_3a366ba8f025` succeeded의 최종보고11530B/SHAEF75DE99…EB4179B와 목록79410B/SHAEE3AB97D…FC82643을 대조해114항목(102file/12dir)·별도마감/목록자체5·실제119집합·현재62pin 전부일치했다. `static-preview-lead-settlement-intake-v1.json`, release/exactidleclose·postclose변화0·Root생존과reclaimable0 원시를 보존했다. 표준liveness는7신호/max299초/초과0·질문대기120초이며 수동HB-only302초(+2)의사유도 별도로 남겼다(`static-preview-liveness-observation-v1.md`). 신규검증은 고정3plan 실제재진입·독립시험·원본/수선 내용/표시·미실행JSON/규칙과보고수치를 확인한다. CPV-01의실측ROI/힌지·SPV-01작은꽃다발가독성·B후보선택과최종reference/Cframe0·Assets/Unity/physics/C42는미완료이며 새plan실행권한은현재없다.
 
 이전 검증 Task064는 `msg_9a056a7b4417`로 failed를 제출했고 최종 보고40991B/SHA9AF949EC…71D2D7를 Root가 전문으로 대조했다. 실제 목록1457 중1456 일치·누락0Btmp1·명시마감/목록자체9를 구분했고 입력99pin은 현재 모두 일치했다. release retained external 뒤 정확한 idle pane을 닫았고 Root 생존도 확인했다. 자동HB24/25·V-5/V-7 checkpoint 공백·symlink환경불가·관찰3·주입대역과 누락을 보존하며 원래 판정의 절차PASS를 소급하지 않는다. 다음 어느세션도 기존 자동HB wrapper를 실행/재사용하지 않고 새 검증 계약에 짧은 절차 점검표를 붙인다.
 
@@ -99,7 +99,7 @@ Ground_1/_4는32px·PPU32·ColliderType1(Sprite)·physicsShape[]/fallback이다.
 
 - [x] 승인 범위 고정
 - [x] 정적 원본 인수
-- [>] 규격 가공 준비
+- [>] 정적 규격 가공
 - [ ] 정적 독립 검증
 - [ ] 움직임 제작
 - [ ] 움직임 독립 검증
