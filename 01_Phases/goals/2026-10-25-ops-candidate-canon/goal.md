@@ -2,13 +2,16 @@
 
 ## 재개 지점
 
-다음 첫 일은 [PR263 - 운영 계약·원시 보존·실행 정산 규칙 정본화](https://github.com/bass131/dawnholder-server/pull/263)의 최종 head·독립 판정 원문을 메인이 R-2로 대조하고 사용자에게 정확 head 병합 승인을 받는 것이다. 일곱 문서의 신규 Astra 재실사는 통과했다. 이 단계 결과 기록의 독립 대조와 최종 head·CI 관측은 E/`admin-review/` 및 최종 인계 근거에 연결한다. 현재 PR은 미병합이며 Codex는 병합하지 않는다. 실제 병합 뒤 Gardener·종료 기록 PR·종료 점검·최신 main 정리로 이어간다.
+다음 첫 일은 [PR264 - 운영 사례 정본화 종료 기록과 후보 연결](https://github.com/bass131/dawnholder-server/pull/264)의 최종 head·독립 판정 원문·C1 보충을 메인이 R-2로 대조하고 사용자 정확 head 승인을 받는 것이다. 종료 기록 세 문서의 신규 Astra 실사는 통과했다. 이 추가 단계 기록의 독립 대조와 최종 head·CI는 E/`closeout/admin-review/` 및 최종 인계 근거로 연결한다. PR264는 미병합이며 Codex는 병합하지 않는다. Gardener 한 번과 후보 두 건의 채택 전 기록은 끝났고, 실제 PR264 병합 뒤 종료 점검·최신 main 복귀/R-8이 남는다. 다음 goal은 자동 착수하지 않는다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`
-- branch: `docs/ops-candidate-canon-20261025`, base `cf207c1f355ced664e62119152e8b0686b0ec051`. fetch/clean/분기 원시는 E/`git-fetch-start.txt`·`branch-start-state.json`이다.
+- 현재 종료 branch: `docs/ops-candidate-closeout-20261025`, base `4b69059a05b032f59582f74a9800120cbebf209b`. clean·최신 origin/main 분기는 E/`closeout/branch-start-v1.json`이다. PR1 branch `docs/ops-candidate-canon-20261025`의 base는 `cf207c1f355ced664e62119152e8b0686b0ec051`이며 당시 원시 `git-fetch-start.txt`·`branch-start-state.json`은 보존한다.
 - 근거 E: 이 checkout의 Git 제외 `.backups/verification/2026-10-25-ops-candidate-canon/`. `lead-context.md`는 초안 전, `lead-approved-context-v1.md`는 승인 뒤 대상 쓰기 전 맥락이다.
 - 현재 Rules Run `run_543efc26689e`, 회신 `run:run_543efc26689e`. handle/Task/Dispatch는 기동 때 현재 receipt로 확인하며 이 기록만으로 실행 권한을 인정하지 않는다.
 - 승인 전 초안 `scope-draft-v1.md` 18250B/SHA256 `EF0871EFE2389465ACE8B98B06C7E34F74833042BC1E5834F9699CBFFD0061EC`는 보존한다. 초안 작성 당시에는 독립 PASS·commit/push·PR·병합이 없었다.
+- 같은 대화 재개 ID: `CODEX_SESSION_ID=01a16fce-620b-7ea0-9166-849a911964f0`. 지정 이름만 읽어 확인한 시각은 `2026-10-25T06:49:38Z`이며 E/`closeout/reboot-context-v1.md`에 시계 원문과 읽기 기준을 남겼다. 메인은 R-8의 같은 대화 재개 절차를 쓰며 이 ID나 옛 handle만으로 실행 권한을 인정하지 않는다.
+- 재부팅 전 열린 작업은 없었고 과거 작업자는 모두 정산·pane 종료했다(E/`closeout/terminals-before-reboot-v1.json`). 당시 Gardener의 E/`closeout/gardener/contract-v1.md`·23입력 pin은 **미발행**이었다. 예전 pin/계약은 보존하고 재개 뒤 현재 입력의 새 판으로 발행한다. 현재 Task/Dispatch와 실제 기동 여부는 E의 새 receipt로 확인하며 옛 handle·Task를 실행 권한으로 쓰지 않는다.
+- 임시 경로: 재부팅 전 준비한 `.backups/tmp/rcg1`은 당시 빈 provider TEMP 부모였고, 재개 뒤 Gardener의 provider 자동 기록이 생겼다. 이를 수동 수정·삭제하지 않으며 새 게임 실행/임시 Unity 사본은 만들지 않았다. 기존 타인 경로와 원시는 보존한다. 종료 세 문서 실사와 추가 단계 기록 대조를 구분하며 PR264 병합/목표 종료는 아직이다.
 
 ## 진척 단계
 
@@ -17,9 +20,10 @@
 - [x] 정본 문서 작성
 - [x] 메인 문구 반영
 - [x] 독립 문서 실사
-- [>] PR263 병합
+- [x] PR263 병합
+- [x] 종료 기록 준비
+- [>] PR264 병합
 - [ ] 종료 점검
-- [ ] 종료 PR 병합
 - [ ] 최신 기준 복귀
 
 ## 요구사항 원천과 적용 결정
@@ -122,10 +126,36 @@ Main msg_e7752a20e30b(10-24 18:25:03Z)가 전달한 사용자 원문은 「대�
 - **재실사 신호 형식 처분:** 초기 HB 두 건의 태그 붙은 alive/빈본문은 실제 body-tag 위반이다. 검증자가 발견했고 리드도 최초 수신에서 이를 놓쳤다. 두 원문/기존helper 위반 결과를 보존하고 이후 정확 alive로 교정했다. 메인 `msg_9c7fc4dc26eb`(23:08:44Z)은 현재 identity 일치·문서/측정/원시를 바꾸는 내용 없음·자기발견/교정을 이유로 **이번 두 건만 문서 판정과 분리해 비차단** 처리했다. 원문보존·교정·리드누락공개·판정의 출처/영향없음/한계 기록 조건을 최종 판정에서 확인했다. 사용자 결정·소급무위반·새일반예외가 아니며 원문은 E/`hb-disposition/main-disposition-original-v1.json`이다. 다른 세션 재발은 메인 지시대로 규칙 후보로 올리되 이번에 새 반복규칙을 만들지 않았다.
 - **재실사 정산과 PR 발행:** 기존helper는 재실사 신호8개 최대224초·300초초과0/exit0을 반환했다(형식위반은 별도 보존, 첫신호전/완료뒤 미측정). release·동일 incarnation/idle·정확 pane 종료/부모리드1개와 완료 ack를 확인했다. 검수한 일곱 파일과46입력은 그대로인 상태에서 메인 CLAUDE만 별도 commit, 나머지 문서를 다음 commit으로 담아 PR263을 생성했다. 최초 발행 head는 `a091ae8b003a35e9ae85a02976beb1e08efc068c`이며 2commit·7파일 +177/-4, OPEN/미병합이다. 생성 뒤 관측한 CI4종은 당시 실행 중이었으며 최종 head·CI는 E의 새 관측으로 확인한다.
 - **단계 결과 기록:** 최초 고정판·계약·판정은 E snapshot으로 보존한다. 독립 실사 완료와 PR 발행으로 단계가 바뀌어 goal/CURRENT의 리드 소유 두 문서에 결과·다음 행동을 기록하고 해당 행정 diff를 신규 Astra가 별도로 실사한다. 정본 세파일/CLAUDE/BACKLOG는 이 기록에서 바꾸지 않는다. 추가 기록 commit의 자기 head를 미리 적지 않고 최종 정확 head/CI와 판정 원문은 E 및 메인 보고로 연결한다. 메인 R-2·각 PR 승인/병합과 전체 종료는 아직 남았다.
+- **행정 기록 재실사와 최종 고정:** 첫 행정 판정의 #A1은 재개 안내의 현재형 부정이 새 완료 상태와 충돌한 리드 기록 결함이었다. 11행을 초안 작성 당시 사실로 한정한 한 문장 교정 뒤 신규 Astra의 E/`admin-review-02/verifier/verdict.md`(16945B/SHA256 `D7EFD7B380D329843D3B222EE177D23CB88FE003B1C8F957D4CDBAF3CA261862`)에서 해소·통과했다. 현재32입력·자기9파일/manifest 포함10 차이0을 인수하고 실제 done·신호5개/최대165초/초과0·release/동일 pane 종료를 대조했다. 첫신호전/완료뒤는 미측정이며 이전46입력 전체와 이번32입력을 같은 실적으로 쓰지 않는다. 시작 전 draft 미확인 세션은 메인 `msg_484332799776`에 따라 abandon/close해 확정 실패에 세지 않았고, 새600자 pointer는 실제 시작·양 원문 hash/읽기를 확인했으나 제출 전문은 transcript clipping으로 미확인이다. 기존 한계와 첫 실패판정/원시는 보존한다.
+- **PR1 병합 확인:** 메인 `msg_34fb18c2c550`(06:45:57Z)은 사용자가 메인 창에 `병합 승인: PR263 head 6e3180032d8914e5f3f03f7ab0ddd30aa775bab5`를 제출한 뒤 메인이 병합했다고 보고했다. 이 pane의 직접 사용자 승인으로 격상하지 않는다. GitHub 원천 E/`pr-info-merged-v1.json`에서 merged=true·merged_at `2026-10-25T06:45:00Z`·merge commit `4b69059a05b032f59582f74a9800120cbebf209b`·최종 head 일치를 별도 확인했다. 최종3commit/7파일 +181/-4이며 CLAUDE 한 줄은 메인 작성 별도 commit이다. `pr-workflows-final-head-completed-v1.json`의 code-rules·module-boundaries·architecture-tests·dotnet-tests 네 run은 모두 completed/success다. 문서 실사와 원격 CI 결과이며 실제 lock/Library 삭제·게임/Unity/WSL/DB/빌드를 새로 실행한 실적은 없다.
+- **종료 기록 착수:** PR1 병합 뒤 clean·최신 origin/main에서 기존 PR2용 branch를 만들고 이 로컬 결과를 기록했다. 정본 세파일/CLAUDE·제품/설정/기존 원시는 그대로다. 현재 goal·R-8의 「제품 PR 병합·로컬 결과 기록 → Gardener → 결과 포함 종료 기록 PR 하나 → 종료 점검 → R-8」을 따라 신규 Opus Gardener를 준비한다. 후보는 최대 두 개 제안만 하며 채택·구현·다음 goal 발행은 하지 않는다. 종료 기록 실사/PR·승인/병합·최종 복귀는 아직이다.
+- **재부팅 인계:** 메인 `msg_afe65d9491e1`(06:48:38Z)은 사용자 페이지 파일 결정 전달에 따른 재부팅 준비를 지시했다. 새 작업자/검증자 발행은 재부팅 뒤로 미루고 재개점·대화 ID·기록 commit/push 또는 미커밋 목록을 07:40Z 전 보고한다. Rules의 Gardener·종료 PR도 뒤로 미루며 리드 pane 교체는 종료 PR 병합 뒤 R-8로 한다는 지시다. 현재 Gardener 발행0·새 작업자0이며 준비계약/고정판을 E에 보존한다. 이 기록의 체크포인트 commit/push는 보존 작업이고 신규 독립 판정/PR2 발행은 재부팅 뒤다. 재부팅 자체와 페이지 파일/시스템 설정은 Rules가 실행·변경하지 않는다.
+- **재개 순서 보충:** 메인 `msg_e6bf2e452178`(06:49:23Z)이 전달한 사용자 원문은 「그러면 모든 파트 재부팅 이후에 최신 Main 받고 전부 이어서 진행하는거로 진행」이다. 새 identity/Run 확인 → 최신 origin/main merge 통합 → 새 운영 정본 적용 → 기존 일 재개의 순서를 위 재개점에 반영했다. 재부팅 전 통합/실행창 승인을 재사용하지 않으며 Unity·WSL·DB 창과 메모리 관문은 메인이 재관측·재배정한다. Rules의 문서 종료 작업이 제품 실행 권한으로 넓어지지 않는다.
+- **재부팅 뒤 재개:** 같은 대화 ID를 새 live pane·runtime으로 대조하고 첫 consumer_fenced 뒤 `run-use`로 기존 Run의 consumer_generation2를 인수했다. 메인에 새 회신 주소를 `msg_3520f69e426c`로 알렸다. clean인 f333e56a61a2003cef86dd3ea9435334561175a2에서 fetch한 최신 origin/main4b69059a05b032f59582f74a9800120cbebf209b를 `git merge --no-edit origin/main`으로 통합했고 `Already up to date`/exit0·충돌0이다. PR263의 원시보존/실행관문·표본cap·생존신호/잠금·Library·선택창 정본 변경을 다시 읽었다. CLI1.4.240에 맞는 가이드·기동 문맥도 새로 확인했다. 원시는 E/`closeout/resume-20261025/`에 두고 이전 계약/판정/원시는 보존한다. 제품 실행·설정 변경·새 goal은 없다.
+
+## 종료 Gardener
+
+신규 Opus Gardener의 E/`closeout/gardener/gardener-context-report.md` 전문을 읽고 실제 succeeded done·한 파일 쓰기·30입력 bytes/SHA 불일치0을 인수했다. 첫 출력명 `report.md`는 memo-first 가드에 거부돼 원계약/거부/공식 ask를 보존하고 보충 v2.1로 `gardener-context-report.md` 한 파일에 첫 사전메모부터 쓰도록 교정했다. 추가 메모 파일·가드/설정 변경·Bash 우회는 없었다. 보고서의 별도 `check | grep` 시도도 mailbox-output-loss 가드가 실행 전에 막았고 정상 무파이프 check로 교정했다. 두 거부와 실제 메모 쓰기 원시를 보존해 메인에 공개했으며 소급무위반이나 새 일반 면제로 쓰지 않는다. 보고 완료와 종료 기록의 독립 통과는 별개다.
+
+기존 helper의 Gardener 신호는 13개·최대454초·초과1이다: 공식 ask `08:16:20Z` → heartbeat `08:23:54Z`, 출력명 충돌 질문/보충 대기이며 실제 답변은 `08:22:39Z`다. helper의 questionWaits는 빈 배열이고 실제454초에서 대기시간을 빼지 않았다. 첫신호전/완료뒤는 미측정이다. release retained/external 뒤 동일 incarnation·완료/빈 draft를 대조했고 종료 화면의 선택적 auto-mode 안내에는 입력하지 않은 채 정확 작업 pane만 닫아 ptyKilled=true·부모리드1개를 확인했다. 정산·보고 hash·개별경로 pin 대조·가드 원시는 E/`closeout/gardener/`에 있다.
+
+정리 제안은 아래 두 BACKLOG 연결로 모았다. 빈 생존 신호는 6개 goal·12통 이상 기록 중 이번2통만 원시 확인, 메모 이름 충돌은 3사건 기록 중 이번1건만 guard 원시 확인이다. 과거 사례는 goal 기록 수준이며 중복 한 건 판별은 추론이다. 보고서가 지적한 CI 원시의 head_sha 부재는 보고 원형을 보존하고 리드의 별도 GitHub Actions run4개 조회로 보강했다. E/`closeout/ci-run-<run ID>-raw-v1.json` 네 원시가 모두 PR263 최종 head `6e3180032d8914e5f3f03f7ab0ddd30aa775bab5`·completed/success를 확인한다. 새 CI/제품/게임/DB/삭제 실행은 없었다. O1·과거 계약 누락/제출 전문 clipping·backend unknown과 미실행 한계는 유지한다.
+
+## 종료 기록 실사와 PR
+
+신규 Astra의 E/`closeout/review-01/verifier/verdict.md`(18705B/SHA256 `D4C40704FA0798BE4EB53BA2560154FCF60797C5AC2BD0B34AD328E4E165475B`) 전문을 읽고 실제 Task/Dispatch·succeeded done·18파일/manifest 포함19·당시 고정49입력과 추가4입력 bytes/SHA 불일치0을 인수했다. 세 문서 +27/-6·변경 로컬 링크7개 미해결0·후보175ID/4도착/진단0·타파트행/보류ID 보존을 대조했다. Gardener의 역사30입력도 당시 snapshot 기준의 경로별 검증과 현재 입력을 구분했다. 이는 문서 실사이며 제품/게임/DB/Unity/빌드·새 CI 실행을 하지 않았다.
+
+실사 중 #C1은 리드의 E/`closeout/gardener/liveness-command-v2.json` command 문자열에서 E 접두부를 빠뜨린 기록 오류였다. 원기록/기존49입력은 보존하고 명시 보충 v1.1로 당시 같은 대화·call ID의 자동 기록 두 항목을 제공해 호출 근거 보류를 해소했다. 실제 PowerShell 표현은 E 절대 root를 만든 뒤 입력을 Join-Path로 전달했으며, 같은 출력의13신호/454초/초과1과 helper exit1·wrapper exit0을 직접 대조했다. 오류를 소급 무오류로 고치거나 새 helper 실행으로 복구하지 않았고 별도 OS argv 직접 계측은 없다. 판정과 E/`closeout/review-01/execution-evidence-supplement-v1.1.md`·동일 call 원시 둘을 함께 인수해야 한다. #C1과 Gardener 거부 사건은 Sol 제품 확정 실패로 합산하지 않는다.
+
+종료 검증자의 신호는 기존 helper로8개·최대242초·초과0이며 실제 질문/답변 시각은 원시에 따로 남겼다. 첫신호전/완료뒤는 미측정이다. release·동일 incarnation/idle/빈 draft·정확 pane 종료/부모리드1개와 완료 delivery ack를 확인했다. 검수판을 유지한 상태에서 결과 commit/push 후 PR264를 생성했으며 최초 head는 `12bf8012bbdc535304a6c21ba93200812f4a8f42`, base `4b69059a05b032f59582f74a9800120cbebf209b`, 2commit/3파일 +27/-6·OPEN/미병합이다. 최초 CI4종은 당시 in_progress/null이며 최종 기록 head·CI는 별도 E 관측으로 확인한다. 원시는 E/`closeout/review-01/`과 E/`closeout/pr2-create-receipt-v1.json`·`closeout/pr2-info-initial-v1.json`·`closeout/pr2-workflows-initial-v1.json`이다.
+
+이후 실제 실사 완료와 PR264 발행에 맞춰 리드 소유 goal/CURRENT 두 문서만 단계 기록을 추가하고, 해당 delta를 새 독립 세션에 고정한다. 기존 판정/원시/고정판과 BACKLOG 후보 두 기록은 그대로다. 추가 기록 commit의 자기 head를 미리 쓰지 않으며 최종 정확 head/CI·행정 판정은 E 및 메인 인계로 연결한다. 사용자 정확 head 승인·메인 병합과 전체 종료는 남았다.
 
 ## 다음 계획 후보
 
 - 작은 읽기 일반 면제는 BACKLOG `small-read-resource-gate-boundary`에 두며 이번 현행 계약 명시와 구분한다.
 - heartbeat 간격/helper 변경은 BACKLOG `heartbeat-interval-review`, 잠금 재발 원인은 BACKLOG `index-lock-recurrence-cause`, 선택창 권한 정책은 BACKLOG `claude-modal-permission-policy`에 원천/보류 조건을 연결했다. 상세 후보는 [BACKLOG](../../../00_Document/operations/BACKLOG.md) 한 곳이며 새 구현 채택은 없다.
+- 종료 Gardener의 빈 생존 신호 송신 형식 제안은 BACKLOG `empty-heartbeat-tagged-subject`에 채택 전 원천으로 도착시켰다.
+- 종료 Gardener의 한 파일 출력명/메모 순서 사례는 BACKLOG `single-output-role-memo-first` 기존 행에 확인 수준별 근거만 갱신했다. 정책·가드·역할별 정본 수정과 다음 goal은 별도 판단 전이다.
 
 Art H1의 하드 제한 구현·R-3 일반reply 예외·규칙 전면분할은 이번에 자동 채택/착수하지 않는다.
