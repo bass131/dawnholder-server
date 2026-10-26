@@ -10,9 +10,9 @@
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 
-- Art: [10-28 시연 아트 — UI 창·성장 효과·발판 교체](../../01_Phases/goals/2026-10-13-demo-video-art/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active` · `feat/demo-video-art-hud-reconstruction-20261022`
+- Art: [10-28 시연 아트](../../01_Phases/goals/2026-10-13-demo-video-art/goal.md) — [PR262](https://github.com/bass131/dawnholder-server/pull/262) 발행·CI4종 확인 중. 효과 배치/fixture Edit42·Play34·Opus04 PASS/Main R-2 수용 완료. 후속4건·관측 한계/보호2파일 잔류 보존, 사용자 정확 head 병합 승인 전.
 
-- Rules: [Art·Level 정식 파트 운영 규칙](../../01_Phases/goals/2026-10-22-art-level-formal-parts/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/art-level-formal-parts-closeout-20261022` · PR257 병합·Gardener 완료, 종료 기록 실사 중 · [공용 실행 잠금은 10-28 뒤까지 보류·기존 NOT PASS 유지](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#재개-지점) · [기존 PR2 가드는 동결까지 보류](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점)
+- Rules: [구현자 배정 정본 정렬과 검증 계약 후보 연결](../../01_Phases/goals/2026-10-25-implementer-routing-canon/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/implementer-routing-canon-20261025` · 원·종료 A NOT PASS 각1회/메인 한정 처분 보존·최종 B 원문 대조 후 PR/승인 · [공용 실행 잠금은 10-28 뒤까지 보류·기존 NOT PASS 유지](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#재개-지점) · [기존 PR2 가드는 동결까지 보류](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점)
 
 Content goal의 상태·결정·남은 일은 위 상대 링크의 재개 지점에서 확인하며, 작업은 해당 Content worktree에서 이어간다. CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
 

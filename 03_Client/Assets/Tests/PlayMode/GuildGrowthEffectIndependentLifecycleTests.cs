@@ -45,6 +45,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         Scene _previousActive;
         Scene _scene;
         GameObject _parent;
+        GameObject _ownedAudioListener;
 
         [UnitySetUp]
         public IEnumerator Setup()
@@ -52,6 +53,12 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.IsTrue(Application.isPlaying, "this lane must execute real Unity Play Mode");
             Assert.AreEqual(1f, Time.timeScale, "fixture: real and scaled seconds agree");
             _previousActive = SceneManager.GetActiveScene();
+            // Keep our fallback in the previous scene so unloading the effect's scene does not remove it mid-test.
+            if (!UnityEngine.Object.FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                .Any(listener => listener.isActiveAndEnabled))
+            {
+                _ownedAudioListener = new GameObject("GuildGrowthEffectIndependentFixtureAudioListener", typeof(AudioListener));
+            }
             _scene = SceneManager.CreateScene("GuildGrowthEffectIndependent_" + Guid.NewGuid().ToString("N"));
             SceneManager.SetActiveScene(_scene);
             _parent = new GameObject("GuildGrowthEffectIndependentParent");
@@ -71,6 +78,11 @@ namespace Dawnholder.Client.Tests.PlayMode
             }
             Restore(() => TMP_Text.OnMissingCharacter -= RecordMissingCharacter);
             Restore(() => { if (_parent != null) UnityEngine.Object.Destroy(_parent); });
+            Restore(() =>
+            {
+                if (_ownedAudioListener != null) UnityEngine.Object.Destroy(_ownedAudioListener);
+                _ownedAudioListener = null;
+            });
             yield return null;
             Restore(() => { if (_previousActive.IsValid() && _previousActive.isLoaded) SceneManager.SetActiveScene(_previousActive); });
             // The scene-unload case has already unloaded its scene.
