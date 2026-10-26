@@ -167,16 +167,16 @@ Orca 1.4.221(2026-10-06)에서 **활성 Dispatch 없는 발신자**의 `escalati
 **Unity MCP opt-in:** Unity MCP는 필요한 세션만 켠다. 시트는 1개이므로 사용 전 메인에게 요청하고, 메인이 보유 세션을 현황판에 적은 뒤 기동한다. 그 세션이 닫히면 시트가 풀린다. 필요한 Claude 세션에만 아래 최초 실행 명령에 `--mcp-config C:/Users/bass1/.unity/claude-mcp.json`을 붙인다. 이 설정은 저장소 밖 파일이며 전역 등록이 아니다.
 
 1. 설치된 `orca-cli`·`orchestration` 스킬로 CLI를 선택하고 버전 일치 가이드를 읽는다. 현재 runtime·담당 리드 handle·승인된 checkout을 확인한다.
-2. 같은 worktree는 `orca terminal split --terminal <리드-handle> --direction vertical`, 다른 worktree 작업자는 `orca terminal create --worktree <선택자>`로 빈 받침 pane 없이 바로 연다. 두 명령의 `--command`는 배정에 따라 Sol이면 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, Astra면 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`다. 독립 검증자는 [시범 배정](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지)에 따라 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh` 또는 `claude --model claude-opus-5-5`다. 시작 경로가 다르면 승인 checkout을 명시하고 실제 경로를 확인한다. 지정 모델 부재는 대체 없이 메인에 보고한다. capacity 예외는 [정본](#capacity-retry)을 따른다. Claude `--command` 앞에 PowerShell로 TEMP·TMP를 절대 경로 `.backups/tmp/<짧은 이름>/`로 정한다. [Git Bash `/tmp`는 그대로다](../../01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#기동-시험).
+2. 같은 worktree는 `orca terminal split --terminal <리드-handle> --direction vertical`, 다른 worktree 작업자는 `orca terminal create --worktree <선택자>`로 빈 받침 pane 없이 바로 연다. 두 명령의 구현자 `--command`는 [배정](../../.agents/skills/dawnholder-goal-loop/references/implementer-routing.md)에 따라 Sol이면 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, Astra면 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`다. 리드의 Sol xhigh 기동은 R-1을 유지한다. 독립 검증자는 [시범 배정](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지)에 따라 일반 문서·강약·로컬 DB 도구 카드에는 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, 위험 신호 구현·DB 등과 기존 Opus 예외에는 `claude --model claude-opus-5-5 --autocompact 250000`이다. 시작 경로가 다르면 승인 checkout을 명시하고 실제 경로를 확인한다. 지정 모델 또는 구현자 `max`가 첫 기동 화면에 없으면 대체 없이 메인에 보고한다. capacity 예외는 [정본](#capacity-retry)을 따른다. Claude `--command` 앞에 PowerShell로 TEMP·TMP를 절대 경로 `.backups/tmp/<짧은 이름>/`로 정한다. [Git Bash `/tmp`는 그대로다](../../01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#기동-시험).
 3. `orca terminal wait --terminal <새-handle> --for tui-idle --timeout-ms 90000`의 `satisfied`를 확인하고 [R-6](#r6-first-screen) 및 [세션 준비 절차](../../.agents/skills/dawnholder-session-handoff/SKILL.md#신규-prompt-준비-확인)를 따른다. timeout·busy·불명확한 화면에 작업을 주입하지 않는다.
-4. 준비된 **신규 세션의 최초 작업**을 `orca orchestration worker-start --terminal <새-handle> --worktree <확인한-작업-공간>`에 `--task <현재-Task>` 또는 `--spec <작업-계약>`을 붙여 연결한다. `--terminal`과 `--model`을 함께 쓰지 않는다. 모델 근거는 최초 실행 명령과 화면 표시이며 attach의 null launch 모델값을 실제 모델로 해석하지 않는다. 확인할 수 없는 backend는 `unknown`이다. 현재 Run·Task·Dispatch와 `input_accepted`·`turn_started` receipt를 구분해 기록한다.
+4. 준비된 **신규 세션의 최초 작업**을 `orca orchestration worker-start --terminal <새-handle> --worktree <확인한-작업-공간>`에 `--task <현재-Task>` 또는 `--spec <작업-계약>`을 붙여 연결한다. `--terminal`과 `--model`을 함께 쓰지 않는다. 모델 근거는 최초 실행 명령과 화면 표시이며 attach의 null launch 모델값을 실제 모델로 해석하지 않는다. 계약의 지정 모델·effort와 첫 화면·rollout 설정의 관측값을 구분하고 확인할 수 없는 backend는 `unknown`이다. 현재 Run·Task·Dispatch와 `input_accepted`·`turn_started` receipt를 구분해 기록한다.
    `turn_start_unobserved`이면 화면 tail만으로 판정하지 않고 [공식 계약 draft 복구](#official-contract-draft)의 JSON draft·계약·동일성 조건을 확인한다.
 5. 기동·연결 실패는 `failedStage`·`residualResources`·화면·receipt를 보존하고 메인에 대리 기동을 요청한다. 결과나 주입 여부가 불명확하면 중복 발행하지 않고 공식 recovery를 따른다. 미사용 pane 종료도 대상 동일성과 정산 상태를 확인한 뒤 수행한다. 대리 기동 뒤에는 실제 새 pane의 경로·runtime·incarnation·준비를 다시 확인하고 최초 연결한다.
 
 <a id="capacity-retry"></a>
 ### capacity 재시도와 신규 작업자 예외
 
-작업자 화면에 `Selected model is at capacity`가 관측되면 **같은 세션·같은 task에서 1→2→5→10분 간격**으로 재시도한다. 첫 capacity 관측부터 누적 30분에도 Sol 배정 작업자 `gpt-6.1-sol` xhigh가 계속 실패하면 기존 작업자를 공식 정산·종료하고 신규 `gpt-6-astra` xhigh **작업자**를 열 수 있다. Astra 배정은 재시도만 한다. 기존 세션을 실행 중에 모델 변경하지 않는다. 파트 리드 직접 구현은 금지이고, capacity로 막힌 독립 검증자는 지정 모델로 재시도만 하며 대체하지 않는다. 다른 모델 부재·권한 확인을 이 예외로 우회하지 않는다.
+작업자 화면에 `Selected model is at capacity`가 관측되면 **같은 세션·같은 task에서 1→2→5→10분 간격**으로 재시도한다. 첫 capacity 관측부터 누적 30분에도 Sol 배정 작업자 `gpt-6.1-sol` max가 계속 실패하면 기존 작업자를 공식 정산·종료하고 신규 `gpt-6-astra` xhigh **작업자**를 열 수 있다. Astra 배정은 재시도만 한다. 기존 세션을 실행 중에 모델 변경하지 않는다. 파트 리드 직접 구현은 금지이고, capacity로 막힌 독립 검증자는 지정 모델로 재시도만 하며 대체하지 않는다. 다른 모델 부재·권한 확인을 이 예외로 우회하지 않는다.
 
 요청 모델·최초 실행/launch·화면 관측·backend 실제 모델 또는 `unknown`, 최초 관측/재시도 시각·누적 시간·전환 사유·사용자 결정 출처를 기록한다. Opus 검증자에게 `Opus 5.5's safeguards flagged this session` 선택창이 뜨면 창에서 고르지 않는다(자동 전환 금지). 산출물은 근거 폴더에 두고 막힌 시각·화면 문구를 남겨 정산·종료한다. 같은 계약의 신규 `gpt-6-astra` xhigh 검증자를 새 Task·Dispatch로 열고 R-5·R-6을 따른다. 새 검증자가 독립 재판정한다. 메인에 status 한 통(막힌 시각·새 handle·모델 표시)을 보낸다. 실행 중 모델 변경이 아니라 세션 교체다.
 
@@ -217,7 +217,7 @@ accepted 뒤 침묵만으로 새 텍스트를 전송하거나 abandon하지 않�
 <a id="r7-fable-pilot"></a>
 ### R-7 — Fable 구현 전 설계 검토 한정 시범
 
-실패 수명·보호 집합·오류 분류·비용 상한의 **4범주에 닿는 작업 2~3개 한정 시범**으로 신규 `claude-fable-5-1`이 Sol 구현 계약 발행 전에 설계를 검토한다. 정식 기본 모델 라우팅·Sol xhigh와 [확정 실패3회 뒤 Fable Advisor](#confirmed-failures)를 대체하지 않는다. 메인이 승인한 시범 목표에서만 다음 순서로 수행한다.
+실패 수명·보호 집합·오류 분류·비용 상한의 **4범주에 닿는 작업 2~3개 한정 시범**으로 신규 `claude-fable-5-1`이 Sol 구현 계약 발행 전에 설계를 검토한다. 정식 [구현자 배정](../../.agents/skills/dawnholder-goal-loop/references/implementer-routing.md)의 Sol max 기본·조건부 Astra xhigh와 [확정 실패3회 뒤 Fable Advisor](#confirmed-failures)를 대체하지 않는다. 메인이 승인한 시범 목표에서만 다음 순서로 수행한다.
 
 1. 목표·범위·완료조건을 담은 `goal.md`를 commit한다.
 2. 신규 `claude-fable-5-1` 읽기 전용 세션에 검토를 맡기고 유일한 출력인 해당 목표의 `goal-review.md`에 「불변식 목록 + 전제 [소스]/[추론]/[미측정]」를 쓴다. 제품·테스트·goal은 쓰지 않는다.
