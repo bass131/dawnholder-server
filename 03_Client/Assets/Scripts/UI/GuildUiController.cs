@@ -1,7 +1,9 @@
 #nullable enable
+using System;
 using Dawnholder.Client.Gameplay;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.State;
+using Shared.GameData;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -21,6 +23,10 @@ namespace Dawnholder.Client.UI
         BlacksmithWindow _smith = null!;
         Button _entrance = null!;
         TownBlacksmithPrompt? _prompt;
+        GuildGrowthEffectView? _growthEffect;
+        Action<GuildChangeKind>? _growthConfirmed;
+        object? _growthBinding;
+        bool _areaFailureReported;
         bool _dirty = true;
         (long epoch, MapEntryState state, bool ready, bool input, bool alive, bool town) _renderedGate;
 
@@ -46,7 +52,15 @@ namespace Dawnholder.Client.UI
             controller._entrance = GuildWindowLayout.Entrance(root.transform, "GuildEntrance", "길드 · G", new Vector2(-16f, 16f));
             controller.EnsureWindows();
             if (root.scene.name == "Town")
+            {
                 controller._prompt = TownBlacksmithPrompt.BuildRuntime(root.transform, controller);
+                // This independent canvas shares the bootstrap lifetime, never the entrance canvas's scaler.
+                try { controller._growthEffect = GuildGrowthEffectView.BuildRuntime(parent); }
+                catch (Exception error)
+                {
+                    Debug.LogError($"Guild growth effect creation failed: {error}", controller);
+                }
+            }
             root.SetActive(true);
             return controller;
         }
@@ -82,6 +96,7 @@ namespace Dawnholder.Client.UI
             UnbindSources();
             if (_guild != null) Destroy(_guild.gameObject);
             if (_smith != null) Destroy(_smith.gameObject);
+            if (_growthEffect != null) Destroy(_growthEffect.gameObject);
         }
 
         void Update()
@@ -93,6 +108,13 @@ namespace Dawnholder.Client.UI
             if (_dirty || gate != _renderedGate) Render();
             if (CanOpenWindows && Keyboard.current != null && Keyboard.current.gKey.wasPressedThisFrame)
                 ToggleGuild();
+        }
+
+        void LateUpdate()
+        {
+            // Use the existing scene owner for gate/resize observation; no queued confirmation survives a closed gate.
+            if (!CanPurchase()) _growthEffect?.CancelAll();
+            UpdateGrowthArea();
         }
 
         void EnsureWindows()
@@ -153,12 +175,21 @@ namespace Dawnholder.Client.UI
         {
             UnityClientSession? session = UnityClientSession.Instance;
             if (session != null && !session.IsCurrentConnection) session = null;
-            if (!ReferenceEquals(_session, session))
+            GuildRequestController? requests = session?.Guild;
+            if (!ReferenceEquals(_session, session) || !ReferenceEquals(_requests, requests))
             {
-                if (_requests != null) _requests.Changed -= SourceChanged;
+                DetachRequests();
                 _session = session;
-                _requests = session?.Guild;
-                if (_requests != null) _requests.Changed += SourceChanged;
+                _requests = requests;
+                if (requests != null && session != null)
+                {
+                    requests.Changed += SourceChanged;
+                    var binding = new object();
+                    _growthBinding = binding;
+                    // Capture this binding, including its identity across disable/re-enable of the same session.
+                    _growthConfirmed = kind => OnGrowthConfirmed(session, requests, binding, kind);
+                    requests.GrowthConfirmed += _growthConfirmed;
+                }
                 _guild.SetOpen(false);
                 _smith.SetOpen(false);
                 _model.SetGuild(null);
@@ -175,7 +206,7 @@ namespace Dawnholder.Client.UI
 
         void UnbindSources()
         {
-            if (_requests != null) _requests.Changed -= SourceChanged;
+            DetachRequests();
             if (!ReferenceEquals(_inventory, null)) _inventory!.OnInventoryChanged -= SourceChanged;
             _requests = null;
             _session = null;
@@ -183,6 +214,84 @@ namespace Dawnholder.Client.UI
             _model.SetGuild(null);
             _model.SetBlacksmith(null);
             _dirty = true;
+        }
+
+        void DetachRequests()
+        {
+            // Invalidate first: an already captured invoke-list can still call the old delegate after removal.
+            _growthBinding = null;
+            if (_requests != null)
+            {
+                _requests.Changed -= SourceChanged;
+                if (_growthConfirmed != null) _requests.GrowthConfirmed -= _growthConfirmed;
+            }
+            _growthConfirmed = null;
+            if (_growthEffect != null) _growthEffect.CancelAll();
+        }
+
+        void OnGrowthConfirmed(UnityClientSession session, GuildRequestController requests, object binding,
+            GuildChangeKind kind)
+        {
+            if (!ReferenceEquals(_growthBinding, binding) || !ReferenceEquals(_session, session) ||
+                !ReferenceEquals(_requests, requests) || !ReferenceEquals(UnityClientSession.Instance, session) ||
+                !session.IsCurrentConnection) return;
+            if (!CanPurchase())
+            {
+                if (_growthEffect != null) _growthEffect.CancelAll();
+                return;
+            }
+
+            // Correlation and deduplication belong to GuildRequestController; read the confirmed value at arrival.
+            int level;
+            switch (kind)
+            {
+                case GuildChangeKind.StrongholdUpgrade: level = requests.State.StrongholdLevel; break;
+                case GuildChangeKind.WeaponEnhance: level = requests.State.WeaponLevel; break;
+                default: return;
+            }
+            if (_growthEffect == null)
+            {
+                Debug.LogError($"Guild growth effect is unavailable for {kind}, level {level}.", this);
+                return;
+            }
+            // The canvas may not have completed its first layout when a server event arrives.
+            Canvas.ForceUpdateCanvases();
+            if (!UpdateGrowthArea()) return;
+            try
+            {
+                if (_growthEffect.TryPlayConfirmed(kind, level)) return;
+                _growthEffect.CancelAll();
+                Debug.LogWarning($"Guild growth effect refused {kind}, level {level}.", this);
+            }
+            catch (Exception error)
+            {
+                _growthEffect.CancelAll();
+                Debug.LogError($"Guild growth effect playback failed for {kind}, level {level}: {error}", this);
+            }
+        }
+
+        bool UpdateGrowthArea()
+        {
+            if (_growthEffect == null) return false;
+            try
+            {
+                if (GuildWindowLayout.TryGetGrowthArea((RectTransform)_growthEffect.transform, out Rect area) &&
+                    _growthEffect.TrySetAvailableArea(area))
+                {
+                    _areaFailureReported = false;
+                    return true;
+                }
+                RecordAreaFailure("No valid available rectangle was accepted.");
+            }
+            catch (Exception error) { RecordAreaFailure(error.ToString()); }
+            return false;
+        }
+
+        void RecordAreaFailure(string reason)
+        {
+            if (_growthEffect != null) _growthEffect.CancelAll();
+            if (!_areaFailureReported) Debug.LogError($"Guild growth effect layout failed: {reason}", this);
+            _areaFailureReported = true;
         }
 
         void SourceChanged() => _dirty = true;
@@ -249,6 +358,7 @@ namespace Dawnholder.Client.UI
             _dirty = false;
             GuildDisplayProjection.Apply(_model, _requests, _session?.CharacterLoad.LoadedClass);
             bool purchase = CanPurchase();
+            if (!purchase && _growthEffect != null) _growthEffect.CancelAll();
             bool refresh = CanOpenWindows && _requests != null && !_requests.IsPending;
             string result = GuildDisplayProjection.Result(_requests);
             _guild.SetConnectionStatus(GuildDisplayProjection.Status(_requests, _renderedGate.ready,

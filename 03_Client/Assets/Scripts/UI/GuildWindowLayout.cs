@@ -9,14 +9,30 @@ namespace Dawnholder.Client.UI
     internal sealed class GuildWindowLayout
     {
         const float Width = 440f;
-        const float Height = 566f;
+        const float CompactHeight = 310f;
+        const float HousingHeight = 566f;
+        // Content reserves lower-left/central panels; the growth effect plays over them in the screen centre
+        // (user request 10-27: level-ups read as a centred celebration, and the effect never takes input).
+        // These are layout proportions, not measurements of or a query into the HUD's private hierarchy.
+        static readonly Rect s_windowArea = Rect.MinMaxRect(0.02f, 0.17f, 0.78f, 0.60f);
+        static readonly Rect s_growthArea = Rect.MinMaxRect(0.15f, 0.12f, 0.85f, 0.88f);
+        // The housing window is tall enough for its scenery, so it takes a left column instead of a half of
+        // the window area. The column runs down into the empty lower-left corner and stops below the
+        // character status at the top left.
+        static readonly Rect s_housingArea = Rect.MinMaxRect(0.02f, 0.02f, 0.40f, 0.82f);
         readonly RectTransform _canvasRect;
         readonly RectTransform _panel;
         readonly CanvasGroup _group;
         readonly TMP_FontAsset? _font;
+        readonly Rect _slot;
+        readonly float _height;
 
-        internal GuildWindowLayout(GameObject root, string panelName, string title, bool right)
+        internal GuildWindowLayout(GameObject root, string panelName, string title, bool right, bool housing = false)
         {
+            float half = s_windowArea.width * 0.5f;
+            _slot = housing ? s_housingArea
+                : new Rect(s_windowArea.xMin + (right ? half : 0f), s_windowArea.yMin, half, s_windowArea.height);
+            _height = housing ? HousingHeight : CompactHeight;
             var canvas = root.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 12; // Above HUD(10), below dungeon rewards(15), menu(20) and fades.
@@ -30,12 +46,12 @@ namespace Dawnholder.Client.UI
             // Use the same project font/global Korean fallback as InventoryPanelView.
             _font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
             _panel = UiWindowAppearance.CreatePanel(panelName, root.transform, raycastTarget: true).rectTransform;
-            Place(_panel, new Vector2(Width, Height), Vector2.zero);
-            _panel.anchorMin = _panel.anchorMax = new Vector2(right ? 0.75f : 0.25f, 0.5f);
+            Place(_panel, new Vector2(Width, _height), Vector2.zero);
+            _panel.anchorMin = _panel.anchorMax = Vector2.zero;
             _panel.pivot = new Vector2(0.5f, 0.5f);
             Place(UiWindowAppearance.CreateHeader("Header", _panel).rectTransform,
-                new Vector2(304f, 40f), new Vector2(12f, -10f));
-            TMP_Text heading = Label("Title", 12f, 40f, width: 290f);
+                new Vector2(132f, 40f), new Vector2(12f, -10f));
+            TMP_Text heading = Label("Title", 12f, 36f, width: 132f);
             heading.text = title;
             heading.fontStyle = FontStyles.Bold;
             heading.color = new Color(1f, 0.90f, 0.35f);
@@ -50,12 +66,13 @@ namespace Dawnholder.Client.UI
 
         internal Button ActionButton(string name, string caption)
         {
-            return Button(name, caption, new Vector2(240f, 52f), new Vector2(100f, -500f));
+            // Share the header with the title/close control to free effect height without shrinking body text.
+            return Button(name, caption, new Vector2(152f, 42f), new Vector2(160f, -8f));
         }
 
         internal Button CloseButton() => Button("Close", "닫기", new Vector2(100f, 40f), new Vector2(324f, -10f));
 
-        internal Button RefreshButton() => Button("Refresh", "새로고침", new Vector2(130f, 40f), new Vector2(294f, -452f));
+        internal Button RefreshButton() => Button("Refresh", "새로고침", new Vector2(130f, 34f), new Vector2(294f, -240f));
 
         internal void Inset(float top, float height)
         {
@@ -78,10 +95,41 @@ namespace Dawnholder.Client.UI
             float width = _canvasRect.rect.width;
             float height = _canvasRect.rect.height;
             if (width <= 0f || height <= 0f) return;
-            // Reserve half the screen for each window so opening both does not cover either action.
-            float scale = Mathf.Max(0.01f, Mathf.Min(1f, (width * 0.5f - 24f) / Width, (height - 24f) / Height));
+            float slotWidth = width * _slot.width;
+            float scale = Mathf.Max(0.01f, Mathf.Min(1f, (slotWidth - 12f) / Width,
+                height * _slot.height / _height));
             _panel.localScale = new Vector3(scale, scale, 1f);
+            _panel.anchoredPosition = new Vector2(width * _slot.center.x, height * _slot.center.y);
         }
+
+        internal static bool TryGetGrowthArea(RectTransform effectRoot, out Rect area)
+        {
+            area = default;
+            Rect root = effectRoot.rect;
+            if (Screen.width <= 0 || Screen.height <= 0 || !ValidRect(root)) return false;
+            Rect screen = Rect.MinMaxRect(Screen.width * s_growthArea.xMin, Screen.height * s_growthArea.yMin,
+                Screen.width * s_growthArea.xMax, Screen.height * s_growthArea.yMax);
+
+            // Screen pixels -> this actual canvas's local coordinates -> normalized local rect.
+            // In particular, neither CanvasScaler.referenceResolution nor a fixed pixel divisor is the canvas size.
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(effectRoot, screen.min, null, out Vector2 min) ||
+                !RectTransformUtility.ScreenPointToLocalPointInRectangle(effectRoot, screen.max, null, out Vector2 max))
+                return false;
+            float left = Mathf.Clamp01((min.x - root.xMin) / root.width);
+            float bottom = Mathf.Clamp01((min.y - root.yMin) / root.height);
+            float right = Mathf.Clamp01((max.x - root.xMin) / root.width);
+            float top = Mathf.Clamp01((max.y - root.yMin) / root.height);
+            area = Rect.MinMaxRect(left, bottom, right, top);
+            return ValidRect(area) && (double)area.x + area.width <= 1d && (double)area.y + area.height <= 1d;
+        }
+
+        static bool ValidRect(Rect rect)
+        {
+            return Finite(rect.x) && Finite(rect.y) && Finite(rect.width) && Finite(rect.height) &&
+                rect.width > 0f && rect.height > 0f;
+        }
+
+        static bool Finite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
 
         internal static string AvailabilityText(GuildActionAvailability availability)
         {
@@ -107,7 +155,7 @@ namespace Dawnholder.Client.UI
 
         TMP_Text Text(string name, Transform parent, Vector2 size, Vector2 position)
         {
-            RectTransform rect = Rect(name, parent, size, position);
+            RectTransform rect = CreateRect(name, parent, size, position);
             var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
             if (_font != null) text.font = _font;
             text.fontSize = 22f;
@@ -141,7 +189,7 @@ namespace Dawnholder.Client.UI
             Place(rect, new Vector2(144f, 44f), position);
             rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
             rect.pivot = new Vector2(1f, 0f);
-            RectTransform labelRect = Rect("Label", rect, rect.sizeDelta, Vector2.zero);
+            RectTransform labelRect = CreateRect("Label", rect, rect.sizeDelta, Vector2.zero);
             var label = labelRect.gameObject.AddComponent<TextMeshProUGUI>();
             label.font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
             label.fontSize = 21f;
@@ -152,7 +200,7 @@ namespace Dawnholder.Client.UI
             return button;
         }
 
-        static RectTransform Rect(string name, Transform parent, Vector2 size, Vector2 position)
+        static RectTransform CreateRect(string name, Transform parent, Vector2 size, Vector2 position)
         {
             var child = new GameObject(name, typeof(RectTransform));
             child.transform.SetParent(parent, worldPositionStays: false);
