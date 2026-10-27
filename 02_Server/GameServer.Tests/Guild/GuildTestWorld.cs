@@ -38,7 +38,7 @@ internal sealed class GuildTestWorld : IDisposable
 
     const int TownToHuntingGroundPortalId = 1;
     const int HuntingGroundToBossRoomPortalId = 1;
-    static readonly Vector2 TownPortalPosition = new(20, 0);
+    static readonly Vector2 TownPortalPosition = new(25, 0);
     static readonly IPEndPoint Endpoint = new(IPAddress.Loopback, 0);
 
     readonly GameWorld _world = new(MapData());

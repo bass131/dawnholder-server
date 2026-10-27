@@ -30,7 +30,7 @@ public class FreezeSmoke
     // ResumeObserveWindow: 옛 freeze 만료 후 재개 관측 창. M4.15에서는 불필요하나 보스 후처리 대기용 보존.
     static readonly TimeSpan ResumeObserveWindow = TimeSpan.FromMilliseconds(1500);
 
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const int TownPortalId = 1;
     const float HGPortalX = 25f;
     const int HGPortalId = 1;

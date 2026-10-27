@@ -29,7 +29,7 @@ namespace Dawnholder.Server.GameServer.Tests.Maps;
 /// **테스트 전략**:
 ///   - TestMigrationSession: GetMap(current) + ResolveDestination(current, id, dest) override로 GameWorld 없이 두 맵 주입
 ///   - portal 근접 조건: player 위치를 portal 좌표(±1.5unit) 안으로 수동 세팅
-///   - Town portal: portalId=1, position x=20, dest=HuntingGround, destSpawn (2,0)
+///   - Town portal: portalId=1, position x=25, dest=HuntingGround, destSpawn (2,0)
 ///   - HuntingGround portal: portalId=1, position x=25, dest=BossRoom, destSpawn (22,0)
 /// </summary>
 [Collection("ConsoleSerial")]

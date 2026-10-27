@@ -27,7 +27,7 @@ public class TeleportSmoke
     static readonly TimeSpan SkillArrivalTimeout = TimeSpan.FromSeconds(5);
     static readonly TimeSpan SnapshotSettleTimeout = TimeSpan.FromSeconds(3);
 
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const int TownPortalId = 1;
     const byte TeleportSkillId = (byte)SkillId.Teleport;
 

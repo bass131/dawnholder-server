@@ -327,10 +327,10 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
         return session;
     }
 
-    // Town portal 1 at x=20 leads to HuntingGround (PortalTable); the move completes within Settle.
+    // Town portal 1 at x=25 leads to HuntingGround (PortalTable); the move completes within Settle.
     GameMap MoveToHuntingGround(ProbeSession session)
     {
-        StandAt(_world.Map, session, 20f);
+        StandAt(_world.Map, session, 25f);
         EnterPortal(session, portalId: 1);
         Settle();
         InstanceKey key = _world.Party.GetPartyByEntity(session.EntityId) is { } party
