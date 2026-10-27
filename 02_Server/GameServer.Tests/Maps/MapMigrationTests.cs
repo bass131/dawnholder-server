@@ -40,10 +40,10 @@ public class MapMigrationTests : IDisposable
     readonly StringWriter _consoleCapture;
     readonly TextWriter _originalOut;
 
-    // Town portal: portalId=1, position (20, 0), dest=HuntingGround, destSpawn (2, 0)
+    // Town portal: portalId=1, position (25, 0), dest=HuntingGround, destSpawn (2, 0)
     const int PortalId = 1;
-    static readonly Vector2 TownPortalPos = new Vector2(20f, 0f);   // Town portal 위치
-    static readonly Vector2 NearTownPortal = new Vector2(20f - 1.5f, 0f); // 근처 (1.5 unit 안)
+    static readonly Vector2 TownPortalPos = new Vector2(25f, 0f);   // Town portal 위치
+    static readonly Vector2 NearTownPortal = new Vector2(25f - 1.5f, 0f); // 근처 (1.5 unit 안)
 
     // HuntingGround portal: portalId=1, position (25, 0)
     static readonly Vector2 NearHgPortal = new Vector2(25f - 1.5f, 0f);
