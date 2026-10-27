@@ -4,7 +4,7 @@
 
 - Core: [흐름 전체 DB 표와 캐릭터 저장 연결](../../01_Phases/goals/2026-10-17-character-storage-foundation/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `docs/character-storage-closeout-20261023` · PR259 병합·종료 기록 진행
 
-- <a id="content-worktree"></a>Content: [길드 성장 효과 화면 연결](../../01_Phases/goals/2026-10-24-growth-effect-screen-link/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/content-growth-effect-screen-link-20261024`
+- <a id="content-worktree"></a>Content: [길드 성장 효과 화면 연결·Claude 인계 재개 카드](../../01_Phases/goals/2026-10-24-growth-effect-screen-link/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/content-growth-effect-screen-link-20261024`
 
 - World: [길드 서버 — 클리어 보상에서 거점·무기 성장까지](../../01_Phases/goals/2026-10-14-guild-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `docs/guild-server-closeout-20261018`
 

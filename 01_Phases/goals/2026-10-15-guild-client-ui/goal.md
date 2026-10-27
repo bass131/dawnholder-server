@@ -538,6 +538,12 @@ World의 승인된 비화면 CharacterMenu 선행 정확 파일은 리드 소유
 | 시험·문서 | `03_Client/Assets/Tests/EditMode/`·`PlayMode/`의 신규 요구/회귀 시험과 필요한 기존 fixture. `00_Document/domains/client.md`·`FEATURE_MAP.md`의 길드 소비자 계약, CURRENT의 Content 한 줄, 본 goal. 새 Unity 파일의 `.meta`를 포함한다. |
 | Player 측정 하네스 한정 공간 | 사용자 허용 `msg_abf585f75e2d`의 `C:/dh/content/probe` 및 p·o·e·t/b·t/p·w만. 정적 준비는 e·w, snapshot/빌드/child TEMP는 새 Main 실행 창에서만 쓴다. 판정 원문은 기존 G 아래에도 SHA256과 함께 복사하고 R은 goal 종료까지 삭제·정리하지 않는다. |
 
+**2026-10-25 KST 보존 예외 추가:** Main `msg_afd8507eaab2`가 전달·대조한 새 사용자 결정 A에 따라, R 안의 Unity `Library` 11곳(L18~L28)만 분류표의 정확 절대 경로로 삭제한다. 나머지 R은 goal 종료까지 보존한다. 승인된 목록은 `.backups/verification/2026-10-24-growth-effect-screen-link/storage-classification-v1/classification-v1.json`의 해당 ID이며 SHA256은 `6C39C6B570846F06ED3657F83CBC9089076D47CE50CEEC0AD62B482D56D87CE7`이다. 이 문장은 과거 보존 지시를 소급 변경하지 않는 새 예외 기록이며 실제 항목별 삭제 결과는 같은 폴더에 따로 남긴다.
+
+> 사용자 결정 원문(메인 pane Enter 제출, Main 전달): 「대시보드 결정 응답: 1) C 드라이브 정리 - 파트 리드가 시험용 Unity 복사본을 분류해 안 쓰는 것만 지울지 → A 리드 분류 뒤 삭제」
+
+실제 정리 결과(2026-10-24T18:16:13.3492902Z): R의 L18~L28 Library11곳 모두 성공·각 잔여0으로 삭제했고 나머지 R은 유지했다. 전체 허가28곳의 개별 결과와 보존 감사는 `.backups/verification/2026-10-24-growth-effect-screen-link/storage-classification-v1/deletion-report-v1.md` 및 같은 폴더의 `Lxx-result-v1.json`에 있다. Level T18:20Z 전에 정리를 마쳤고 실패/명령 재시도0이다.
+
 Art가 쓰는 기존 네 창·`NpcDialogPanel`·공유 표시 helper는 읽기만 한다. 꼭 같은 파일이 필요해지면 기존 쓰기 종료와 범위 안 소유 이전을 리드끼리 확정한 뒤 계약에 넣는다. World의 DLL 사본은 서버 PR main에 포함된 정본을 소비하며 Content가 별도 생성/복사하지 않는다.
 
 ### 하지 않을 것
