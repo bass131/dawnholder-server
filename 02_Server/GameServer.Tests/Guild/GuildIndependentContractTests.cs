@@ -469,9 +469,9 @@ internal sealed class IndependentGuildWorld : IDisposable
     const int BossRoomPortalId = 1;
     const int BossUnlockKills = 20;
     static readonly Vector2 TownPortalPosition = new(25f, 0f);
-    static readonly Vector2 BossRoomPortalPosition = new(25f, 0f);
+    static readonly Vector2 BossRoomPortalPosition = new(56f, 1f);
 
-    // Only the boss room has map data: its one boss, far from the arrival point x = 22. Town and the hunting
+    // Only the boss room has map data: its one boss, far from the arrival point x = 30. Town and the hunting
     // ground stay empty as before.
     readonly GameWorld _world = new(new Dictionary<MapId, (MapTerrain?, MapContent?)>
     {

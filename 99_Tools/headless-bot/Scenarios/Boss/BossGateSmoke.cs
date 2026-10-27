@@ -29,10 +29,10 @@ public class BossGateSmoke
 
     const float TownPortalX = 25f;
     const int TownPortalId = 1;
-    const float HGPortalX = 25f;
+    const float HGPortalX = 56f;
     const int HGPortalId = 1;
 
-    const float BossRoomDestSpawnX = 22f;
+    const float BossRoomDestSpawnX = 30f;
     const float SpawnXTolerance = 0.01f;
 
     public class Result

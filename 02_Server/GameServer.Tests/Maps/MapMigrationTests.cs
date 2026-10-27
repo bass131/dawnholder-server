@@ -30,7 +30,7 @@ namespace Dawnholder.Server.GameServer.Tests.Maps;
 ///   - TestMigrationSession: GetMap(current) + ResolveDestination(current, id, dest) override로 GameWorld 없이 두 맵 주입
 ///   - portal 근접 조건: player 위치를 portal 좌표(±1.5unit) 안으로 수동 세팅
 ///   - Town portal: portalId=1, position x=25, dest=HuntingGround, destSpawn (2,0)
-///   - HuntingGround portal: portalId=1, position x=25, dest=BossRoom, destSpawn (22,0)
+///   - HuntingGround portal: portalId=1, position (56,1), dest=BossRoom, destSpawn (30,0)
 /// </summary>
 [Collection("ConsoleSerial")]
 public class MapMigrationTests : IDisposable
@@ -45,8 +45,8 @@ public class MapMigrationTests : IDisposable
     static readonly Vector2 TownPortalPos = new Vector2(25f, 0f);   // Town portal 위치
     static readonly Vector2 NearTownPortal = new Vector2(25f - 1.5f, 0f); // 근처 (1.5 unit 안)
 
-    // HuntingGround portal: portalId=1, position (25, 0)
-    static readonly Vector2 NearHgPortal = new Vector2(25f - 1.5f, 0f);
+    // HuntingGround portal: portalId=1, position (56, 1)
+    static readonly Vector2 NearHgPortal = new Vector2(56f - 1.5f, 1f);
 
     // --- nested session 클래스들 ---
 

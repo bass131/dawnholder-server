@@ -42,13 +42,13 @@ public class MapTransitionSmoke
     static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
 
     const float TownPortalX = 25f;
-    const float HGPortalX = 25f;
-    const float BossRoomPortalX = 35f;
+    const float HGPortalX = 56f;
+    const float BossRoomPortalX = -9.5f;
     const float EndingPortalX = 5f;
     const int PortalId = 1;
 
     const float HGDestSpawnX = 2f;
-    const float BossRoomDestSpawnX = 22f;
+    const float BossRoomDestSpawnX = 30f;
     const float EndingDestSpawnX = 0f;
     const float TownDestSpawnX = 0f;
 

@@ -28,11 +28,11 @@ namespace Dawnholder.Server.GameServer.Tests.Maps;
 [Collection("ConsoleSerial")]
 public class BossPortalGateTests : IDisposable
 {
-    // HuntingGround → BossRoom portal: portalId=1, position x=25, destSpawn (22, 0)
+    // HuntingGround → BossRoom portal: portalId=1, position (56, 1), destSpawn (30, 0)
     // PortalTable.HuntingGroundPortals 정합.
     const int HgToBossPortalId = 1;
-    static readonly Vector2 HgPortalPos = new Vector2(25f, 0f);
-    static readonly Vector2 NearHgPortal = new Vector2(25f - 1.5f, 0f); // 1.5 unit 안 — 근접검증 통과
+    static readonly Vector2 HgPortalPos = new Vector2(56f, 1f);
+    static readonly Vector2 NearHgPortal = new Vector2(56f - 1.5f, 1f); // 1.5 unit 안 — 근접검증 통과
 
     // Town → HuntingGround portal: portalId=1, position x=25
     // 역방향 게이트 미적용 검증용 (Town portal Dest=HuntingGround).
