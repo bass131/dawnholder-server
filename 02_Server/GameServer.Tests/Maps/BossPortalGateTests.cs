@@ -34,9 +34,9 @@ public class BossPortalGateTests : IDisposable
     static readonly Vector2 HgPortalPos = new Vector2(25f, 0f);
     static readonly Vector2 NearHgPortal = new Vector2(25f - 1.5f, 0f); // 1.5 unit 안 — 근접검증 통과
 
-    // Town → HuntingGround portal: portalId=1, position x=20
+    // Town → HuntingGround portal: portalId=1, position x=25
     // 역방향 게이트 미적용 검증용 (Town portal Dest=HuntingGround).
-    static readonly Vector2 NearTownPortal = new Vector2(20f - 1.5f, 0f);
+    static readonly Vector2 NearTownPortal = new Vector2(25f - 1.5f, 0f);
 
     readonly GameMap _huntingGround;
     readonly GameMap _bossRoom;

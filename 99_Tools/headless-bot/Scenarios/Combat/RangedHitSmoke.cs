@@ -19,7 +19,7 @@ public class RangedHitSmoke
     static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(15);
     static readonly TimeSpan ProjectileArrivalTimeout = TimeSpan.FromSeconds(5);
 
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const int TownPortalId = 1;
 
     public class Result

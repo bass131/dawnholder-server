@@ -18,7 +18,7 @@ public static class DungeonClearSmoke
     const int TownMapId = 0;
     const int HuntingGroundMapId = 1;
     const int BossRoomMapId = 2;
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const float HuntingGroundPortalX = 25f;
     const int ForwardPortalId = 1;
 
