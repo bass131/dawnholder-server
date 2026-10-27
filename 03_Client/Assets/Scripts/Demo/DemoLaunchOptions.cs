@@ -1,0 +1,49 @@
+#nullable enable
+using System;
+
+namespace Dawnholder.Client.Demo
+{
+    public enum DemoRole
+    {
+        Knight,
+        Mage,
+    }
+
+    // Command-line switch for the scripted demo run (user decision 21A, 10-28: record a two-client play
+    // without human input). A player launched without -demo-role behaves exactly like the shipped build.
+    //   Dawnholder.exe -demo-role knight -demo-account demo_knight
+    public sealed class DemoLaunchOptions
+    {
+        public DemoRole Role { get; }
+        public string Account { get; }
+
+        DemoLaunchOptions(DemoRole role, string account)
+        {
+            Role = role;
+            Account = account;
+        }
+
+        internal static DemoLaunchOptions? Parse(string[] args)
+        {
+            string? role = ValueAfter(args, "-demo-role");
+            if (role == null) return null;
+
+            DemoRole parsed;
+            if (string.Equals(role, "knight", StringComparison.OrdinalIgnoreCase)) parsed = DemoRole.Knight;
+            else if (string.Equals(role, "mage", StringComparison.OrdinalIgnoreCase)) parsed = DemoRole.Mage;
+            else return null;
+
+            string account = ValueAfter(args, "-demo-account") ?? (parsed == DemoRole.Knight ? "demo_knight" : "demo_mage");
+            return new DemoLaunchOptions(parsed, account);
+        }
+
+        static string? ValueAfter(string[] args, string name)
+        {
+            for (int i = 0; i + 1 < args.Length; i++)
+            {
+                if (string.Equals(args[i], name, StringComparison.OrdinalIgnoreCase)) return args[i + 1];
+            }
+            return null;
+        }
+    }
+}
