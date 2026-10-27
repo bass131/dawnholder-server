@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
@@ -55,11 +56,29 @@ namespace Dawnholder.Client.Demo
         // PlayerInput pairs a keyboard.
         void Start()
         {
+            if (_options.Muted) AudioListener.volume = 0f;
+            if (_options.NoMusic) MuteMusic();
             _keys = DemoKeyboard.Install();
             StartCoroutine(Run());
         }
 
         void OnDestroy() => _keys?.ReleaseAll();
+
+        // The in-game music tracks have no recorded source, so the video keeps effects only. Muting the
+        // sources, rather than AudioManager.SetBgmVolume, leaves this PC's saved volume settings untouched.
+        static void MuteMusic()
+        {
+            AudioManager? audio = AudioManager.Instance;
+            if (audio == null)
+            {
+                Debug.LogWarning("[Demo] no AudioManager to mute music");
+                return;
+            }
+            foreach (AudioSource source in audio.GetComponentsInChildren<AudioSource>(true))
+            {
+                if (source.name.StartsWith("BGM_", StringComparison.Ordinal)) source.mute = true;
+            }
+        }
 
         IEnumerator Run()
         {

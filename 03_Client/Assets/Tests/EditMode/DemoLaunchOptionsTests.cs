@@ -33,5 +33,17 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(DemoRole.Mage, mage!.Role);
             Assert.AreEqual("mage_two", mage.Account);
         }
+
+        [Test]
+        public void SoundSwitches_AreOptInPerPlayer()
+        {
+            DemoLaunchOptions plain = DemoLaunchOptions.Parse(new[] { "Dawnholder.exe", "-demo-role", "knight" })!;
+            DemoLaunchOptions knight = DemoLaunchOptions.Parse(new[] { "Dawnholder.exe", "-demo-role", "knight", "-demo-no-bgm" })!;
+            DemoLaunchOptions mage = DemoLaunchOptions.Parse(new[] { "Dawnholder.exe", "-demo-role", "mage", "-demo-mute" })!;
+
+            Assert.IsFalse(plain.Muted || plain.NoMusic);
+            Assert.IsTrue(knight.NoMusic && !knight.Muted);
+            Assert.IsTrue(mage.Muted && !mage.NoMusic);
+        }
     }
 }
