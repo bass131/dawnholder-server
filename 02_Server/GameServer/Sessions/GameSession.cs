@@ -545,7 +545,7 @@ public class GameSession : PacketSession
 #if DEBUG
     // [시연 디버그 치트] C_CheatCommand 처리. 유일 호출자=CheatCommandHandler(둘 다 #if DEBUG).
     //   Release에는 부재(치트 사슬 빌드타임 봉합, 헌법 #3 / SN-02).
-    //   행위자=_entityId 강제(패킷에 대상 필드 없음). cheatType 0 = 퀘스트 즉시완료.
+    //   행위자=_entityId 강제(패킷에 대상 필드 없음). cheatType 0 = 퀘스트 즉시완료, 1 = 길드 금고 +거점 비용.
     internal void SubmitCheatCommand(byte cheatType)
     {
         if (_entityId < 0) return; // EnterGameWorld 미완료 race 방어
@@ -554,6 +554,11 @@ public class GameSession : PacketSession
         if (world == null) return; // shutdown race
 
         int entityId = _entityId;
+        if (cheatType == 1) // 길드 금고 지급(거점 레벨업 확인용). 길드 store의 world tick 큐로만 바꾼다.
+        {
+            world.Guild.EnqueueDebugTreasuryGrant(this, entityId);
+            return;
+        }
         world.Quest.EnqueueJob(() =>
         {
             if (!world.IsActiveSession(this, entityId)) return;
