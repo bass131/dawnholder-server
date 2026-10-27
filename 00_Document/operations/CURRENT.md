@@ -8,7 +8,7 @@
 
 - World: [길드 서버 — 클리어 보상에서 거점·무기 성장까지](../../01_Phases/goals/2026-10-14-guild-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `docs/guild-server-closeout-20261018`
 
-- Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
+- Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#리드-인계-재개-카드) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-demo-20261026` · 사용자 직접 점검 기록/리드 인계 대기·활성작업자0, 앱 종료뒤반환 미확인(자동T1·독립PASS 아님)
 
 - Art: [10-28 시연 아트](../../01_Phases/goals/2026-10-13-demo-video-art/goal.md) — [PR262](https://github.com/bass131/dawnholder-server/pull/262) 발행·CI4종 확인 중. 효과 배치/fixture Edit42·Play34·Opus04 PASS/Main R-2 수용 완료. 후속4건·관측 한계/보호2파일 잔류 보존, 사용자 정확 head 병합 승인 전.
 
