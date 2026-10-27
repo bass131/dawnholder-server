@@ -1,4 +1,5 @@
 #nullable enable
+using System.Linq;
 using Dawnholder.Client.Demo;
 using NUnit.Framework;
 
@@ -44,6 +45,20 @@ namespace Dawnholder.Client.Tests
             Assert.IsFalse(plain.Muted || plain.NoMusic);
             Assert.IsTrue(knight.NoMusic && !knight.Muted);
             Assert.IsTrue(mage.Muted && !mage.NoMusic);
+        }
+
+        [Test]
+        public void CameraZoom_IsOptIn_AndIgnoresValuesOutsideOneToThree()
+        {
+            float ZoomOf(params string[] extra) =>
+                DemoLaunchOptions.Parse(new[] { "Dawnholder.exe", "-demo-role", "knight" }.Concat(extra).ToArray())!.CameraZoom;
+
+            Assert.AreEqual(1f, ZoomOf());
+            Assert.AreEqual(1.4f, ZoomOf("-demo-zoom", "1.4"), 1e-5f);
+            Assert.AreEqual(1f, ZoomOf("-demo-zoom", "0.5"));
+            Assert.AreEqual(1f, ZoomOf("-demo-zoom", "5"));
+            Assert.AreEqual(1f, ZoomOf("-demo-zoom", "1,4"));
+            Assert.AreEqual(1f, ZoomOf("-demo-zoom"));
         }
     }
 }

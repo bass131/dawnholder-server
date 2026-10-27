@@ -40,6 +40,7 @@ namespace Dawnholder.Client.Demo
         LocalPlayerMovement? _me;
         float _progressX = float.NaN;
         float _progressCheckedAt;
+        Camera? _zoomedCamera;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Boot()
@@ -63,6 +64,17 @@ namespace Dawnholder.Client.Demo
         }
 
         void OnDestroy() => _keys?.ReleaseAll();
+
+        // -demo-zoom (trailer takes): each scene's main camera is drawn closer once, so the recording shows
+        // the characters larger at native resolution instead of being enlarged in the edit.
+        void LateUpdate()
+        {
+            if (_options.CameraZoom <= 1f) return;
+            Camera? camera = Camera.main;
+            if (camera == null || camera == _zoomedCamera || !camera.orthographic) return;
+            camera.orthographicSize /= _options.CameraZoom;
+            _zoomedCamera = camera;
+        }
 
         // The in-game music tracks have no recorded source, so the video keeps effects only. Muting the
         // sources, rather than AudioManager.SetBgmVolume, leaves this PC's saved volume settings untouched.
