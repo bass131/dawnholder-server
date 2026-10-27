@@ -44,7 +44,7 @@ public class EnemyAiSmoke
     const byte StatePatrol = 1;
     const byte StateChase = 2;
 
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const int TownPortalId = 1;
 
     const float SamePlaneTolerance = 1.5f;

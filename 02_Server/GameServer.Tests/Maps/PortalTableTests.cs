@@ -47,10 +47,10 @@ public class PortalTableTests
     [Fact]
     public void Town_Portal_Position_IsRightEdge()
     {
-        // Town 우측 끝 (x=20). 마을 구역 경계.
+        // Town 출정문 (x=25). v3 마을 오른쪽 벽 안쪽.
         // 값 변경 시 이 테스트 즉시 실패 → 의도치 않은 좌표 변경 감지.
         Portal p = PortalTable.GetPortalsFor(MapId.Town)[0];
-        Assert.Equal(20f, p.Position.X);
+        Assert.Equal(25f, p.Position.X);
         Assert.Equal(0f, p.Position.Y);
     }
 
@@ -91,8 +91,8 @@ public class PortalTableTests
         Assert.Equal(MapId.Town, rev.Dest);
         // Position x=5 (좌측 입구 안쪽 — Town 도착 x=2와 거리 3).
         Assert.Equal(5f, rev.Position.X);
-        // DestSpawn x=17 (Town 정방향 포탈 x=20 안쪽 3 — 재겹침 방지).
-        Assert.Equal(17f, rev.DestSpawn.X);
+        // DestSpawn x=21 (Town 정방향 포탈 x=25 안쪽 4 — 재겹침 방지).
+        Assert.Equal(21f, rev.DestSpawn.X);
     }
 
     [Fact]

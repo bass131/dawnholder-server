@@ -14,7 +14,7 @@ namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 public class InventorySmoke
 {
     const int TownPortalId = 1;
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const byte GolemKind = 2;
     const int CoinPouchId = 2;
     static readonly TimeSpan StepTimeout = TimeSpan.FromSeconds(10);

@@ -31,7 +31,7 @@ public class PartyQuestSmoke
     const int SeedKillCount = 2;
     const int ExpectedTargetCount = 20;
 
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const int TownPortalId = 1;
 
     public class Result

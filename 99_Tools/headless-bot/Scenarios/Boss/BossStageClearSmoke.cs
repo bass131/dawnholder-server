@@ -46,9 +46,9 @@ public class BossStageClearSmoke
     }
 
     // portal 좌표 상수 — 서버 PortalTable.cs와 정합. 변경 시 양쪽 동기화 의무(불일치=전환 실패).
-    // Town portal: x=20 → HuntingGround destSpawn x=2.
+    // Town portal: x=25 → HuntingGround destSpawn x=2.
     // HuntingGround portal: x=25 → BossRoom destSpawn x=22.
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const int TownPortalId = 1;
     const float HGPortalX = 25f;
     const int HGPortalId = 1;

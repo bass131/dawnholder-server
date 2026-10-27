@@ -8,7 +8,7 @@ namespace Dawnholder.Server.GameServer.Maps;
 //   Portal은 순수 데이터 운반체(로직 없음, identity 없음) → record(불변 + 값 비교) 적합.
 //
 // **좌표 기준**: 3-zone 경계 좌표 계승.
-//   Town 우측 portal = x=20 (마을 끝 / 전투구역 경계).
+//   Town 우측 portal = x=25 (v3 마을 출정문 / 오른쪽 벽 x=29 안쪽).
 //   HuntingGround 우측 portal = x=25 (전투구역 끝 / 보스방 경계 — boss는 x=30).
 //   DestSpawn은 목적지 맵의 좌측 입구 지점 (플레이어가 오른쪽에서 진입하는 자연스러운 흐름).
 //
@@ -39,7 +39,7 @@ public record Portal(int PortalId, Vector2 Position, MapId Dest, Vector2 DestSpa
 ///
 /// <para>
 /// <b>현재 portal 흐름:</b><br/>
-/// Town          → HuntingGround: Town 우측(x=20) → HuntingGround 좌측 spawn(x=2)<br/>
+/// Town          → HuntingGround: Town 출정문(x=25) → HuntingGround 좌측 spawn(x=2)<br/>
 /// HuntingGround → BossRoom:      HuntingGround 우측(x=25) → BossRoom 좌측 spawn(x=22)<br/>
 /// BossRoom      → Ending:        BossRoom 우측(x=35) → Ending spawn(x=0) [결과 화면]<br/>
 /// Ending        → Town:          Ending 우측(x=5) → Town 좌측 spawn(x=0) [루프]<br/>
@@ -47,7 +47,7 @@ public record Portal(int PortalId, Vector2 Position, MapId Dest, Vector2 DestSpa
 ///
 /// <para>
 /// <b>역방향 portal (M5 B1, portalId=2):</b><br/>
-/// HuntingGround → Town:          HuntingGround 좌측(x=5) → Town spawn(x=17)<br/>
+/// HuntingGround → Town:          HuntingGround 좌측(x=5) → Town spawn(x=21)<br/>
 /// BossRoom      → HuntingGround: BossRoom 좌측(x=18) → HuntingGround spawn(x=22)<br/>
 /// 도착 spawn은 정방향 포탈 안쪽이되 근접(2)보다 떨어뜨려 재겹침/무한왕복 방지.
 /// </para>
@@ -63,12 +63,12 @@ public static class PortalTable
     static readonly IReadOnlyList<Portal> Empty = Array.Empty<Portal>();
 
     // Town portal: 우측 끝 → HuntingGround 좌측 spawn.
-    // x=20: M3 3-zone 기준 마을 구역 끝 경계.
+    // x=25: v3 마을 출정문. 오른쪽 벽(x=29) 안쪽.
     // DestSpawn x=2: HuntingGround 진입 직후 좌측 — Normal enemy(x=10)와 충분한 거리.
     static readonly IReadOnlyList<Portal> TownPortals = new[]
     {
         new Portal(PortalId: 1,
-                   Position: new Vector2(20f, 0f),
+                   Position: new Vector2(25f, 0f),
                    Dest: MapId.HuntingGround,
                    DestSpawn: new Vector2(2f, 0f)),
     };
@@ -86,11 +86,11 @@ public static class PortalTable
                    DestSpawn: new Vector2(22f, 0f)),
         // 역방향(M5 B1): HuntingGround → Town. portalId=2.
         // Position x=5: 좌측 입구 안쪽 — Town 도착 spawn(x=2)과 거리 3(>근접2)으로 재겹침 방지, enemy(x=10)와 거리 5.
-        // DestSpawn x=17: Town 정방향 포탈(x=20) 안쪽 3 — 도착 즉시 정방향 재겹침 방지.
+        // DestSpawn x=21: Town 정방향 포탈(x=25) 안쪽 4 — 도착 즉시 정방향 재겹침 방지.
         new Portal(PortalId: 2,
                    Position: new Vector2(5f, 0f),
                    Dest: MapId.Town,
-                   DestSpawn: new Vector2(17f, 0f)),
+                   DestSpawn: new Vector2(21f, 0f)),
     };
 
     // BossRoom portal: 보스 클리어 후 Ending으로.

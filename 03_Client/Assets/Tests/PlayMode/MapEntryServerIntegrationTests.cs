@@ -45,7 +45,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreSame(session, _fixture.Session);
             Assert.AreEqual(entityId, session.LocalEntityId);
             Assert.Greater(session.Entry.Epoch, epoch);
-            Assert.AreEqual(17f, session.Entry.SpawnX);
+            Assert.AreEqual(21f, session.Entry.SpawnX);
             Assert.AreEqual(0f, session.Entry.SpawnY);
             yield return MapEntryPlayFixture.Wait(() => RemoteEntityRegistry.Instance.TryGetTransform(companionId, out _), "Town roster restored");
             yield return _fixture.AssertHud();

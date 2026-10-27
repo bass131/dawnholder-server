@@ -14,7 +14,7 @@ namespace Dawnholder.Server.GameServer.Tests.Maps;
 // 시험이 고정하는 입력은 맵 데이터와 퀘스트 적립 수뿐이고, 기대값은 이 입력의 리터럴이나 실제 질의의 전후 비교로 둔다.
 internal sealed class InstanceMapTestWorld : IDisposable
 {
-    // 마을 기본 입장 지점. 사냥터 포탈 2의 도착점(x=17)·원점과 달라야 「좌표 생략 = 기본 입장 지점」을 구별한다.
+    // 마을 기본 입장 지점. 사냥터 포탈 2의 도착점(x=21)·원점과 달라야 「좌표 생략 = 기본 입장 지점」을 구별한다.
     internal const float TownSpawnX = 7f;
 
     // 사냥터 적은 비선공 Normal이고 포탈·도착 지점(x 2~25)에서 멀어 시험 플레이어를 건드리지 않는다.
