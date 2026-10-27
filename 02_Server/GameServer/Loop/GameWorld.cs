@@ -332,12 +332,15 @@ public class GameWorld
         // prepared guild credit together, before the World drains ordinary guild requests.
         Action<IReadOnlyList<(int EntityId, GameSession Session)>> onClear =
             recipients => _inventory.EnqueueDungeonClear(recipients, _guild);
+        EnemyRespawnPlacement placement = id == MapId.HuntingGround
+            ? EnemyRespawnPlacement.HuntingGround
+            : EnemyRespawnPlacement.Default;
         if (_mapData.TryGetValue(id, out var pair))
         {
-            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content, onKill, key,
+            return new GameMap(placement, id, NextEntityId, pair.Terrain, pair.Content, onKill, key,
                 readAttackBonus: _inventory.ReadAttackBonus, onDungeonCleared: onClear);
         }
-        return new GameMap(id, NextEntityId, onEnemyKilled: onKill, instanceKey: key,
+        return new GameMap(placement, id, NextEntityId, onEnemyKilled: onKill, instanceKey: key,
             readAttackBonus: _inventory.ReadAttackBonus, onDungeonCleared: onClear);
     }
 

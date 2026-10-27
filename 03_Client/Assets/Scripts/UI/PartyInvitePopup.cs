@@ -92,7 +92,7 @@ namespace Dawnholder.Client.UI
             PartyState state = PartyState.Instance;
             if (!state.HasPendingInvite) return;
 
-            string className = ((CharacterClass)state.PendingInviterClass).ToString();
+            string className = PartyMemberHud.ClassName(state.PendingInviterClass);
             if (_inviteText != null)
                 _inviteText.text = $"{className} 파티 초대";
 
