@@ -43,6 +43,325 @@ printf '%s\n' "$DOTNET"
     return $dotnetPath
 }
 
+function Initialize-PersistenceOutputCapture {
+    if ('Dawnholder.PersistenceLauncherOutput' -as [type]) { return }
+
+    # Readers own only redirected child output. They never invoke PowerShell or touch operator stdin.
+    Add-Type -TypeDefinition @'
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Dawnholder
+{
+    public sealed class PersistenceOutputLine
+    {
+        public string Stream { get; }
+        public DateTime Utc { get; }
+        public string Text { get; }
+
+        public PersistenceOutputLine(string stream, string text)
+        {
+            Stream = stream;
+            Utc = DateTime.UtcNow;
+            Text = text;
+        }
+    }
+
+    public sealed class PersistenceOutputCounts
+    {
+        public long Excluded { get; internal set; }
+        public long Overlong { get; internal set; }
+        public long QueueDropped { get; internal set; }
+        public long DecodeErrors { get; internal set; }
+        public long ReaderErrors { get; internal set; }
+    }
+
+    public sealed class PersistenceLauncherOutput
+    {
+        public const int MaximumLineCharacters = 4096;
+        public const int MaximumPendingLines = 32;
+        public const int DrainMilliseconds = 5000;
+
+        private static readonly ConditionalWeakTable<Process, PersistenceLauncherOutput> captures = new();
+        private readonly object gate = new();
+        private readonly Queue<PersistenceOutputLine> pending = new();
+        private readonly CancellationTokenSource cancellation = new();
+        private readonly Stream stdout;
+        private readonly Stream stderr;
+        private readonly Task readers;
+        private readonly PersistenceOutputCounts stdoutCounts = new();
+        private readonly PersistenceOutputCounts stderrCounts = new();
+        private bool finalized;
+        private bool clean;
+
+        private PersistenceLauncherOutput(Process process)
+        {
+            stdout = process.StandardOutput.BaseStream;
+            stderr = process.StandardError.BaseStream;
+            // Exactly two readers drain both pipes even when the delivery queue is full.
+            readers = Task.WhenAll(
+                Task.Run(() => ReadStreamAsync(stdout, "stdout", stdoutCounts)),
+                Task.Run(() => ReadStreamAsync(stderr, "stderr", stderrCounts)));
+        }
+
+        public static void Start(Process process)
+        {
+            if (captures.TryGetValue(process, out _))
+                throw new InvalidOperationException("Output capture already belongs to this process.");
+            captures.Add(process, new PersistenceLauncherOutput(process));
+        }
+
+        public static PersistenceLauncherOutput Find(Process process)
+        {
+            return captures.TryGetValue(process, out var capture) ? capture : null;
+        }
+
+        public bool ReadersCompleted => readers.IsCompleted;
+        public bool Finalized => finalized;
+        public bool Clean => clean;
+
+        private static bool IsAllowed(string stream, string text)
+        {
+            // Exact whole-line source strings from GameServer/Program.cs; provider text is never forwarded.
+            return stream == "stdout"
+                ? text == "Listening on 0.0.0.0:7777. Press Enter to stop." || text == "Server stopped."
+                : text == "Persistence startup failed. Check the approved public profile and runtime access." ||
+                  text == "Server shutdown is incomplete; persistence release is not confirmed.";
+        }
+
+        private void AcceptLine(string stream, StringBuilder line, bool overlong, PersistenceOutputCounts counts)
+        {
+            if (overlong)
+                return;
+            string text = line.ToString();
+            lock (gate)
+            {
+                if (!IsAllowed(stream, text))
+                    counts.Excluded++;
+                else if (pending.Count == MaximumPendingLines)
+                    counts.QueueDropped++;
+                else
+                    pending.Enqueue(new PersistenceOutputLine(stream, text));
+            }
+        }
+
+        private void AppendCharacter(StringBuilder line, char character, ref bool overlong, PersistenceOutputCounts counts)
+        {
+            if (overlong)
+                return;
+            if (line.Length == MaximumLineCharacters)
+            {
+                lock (gate) { counts.Overlong++; }
+                line.Clear();
+                overlong = true;
+            }
+            else
+                line.Append(character);
+        }
+
+        private async Task ReadStreamAsync(Stream stream, string name, PersistenceOutputCounts counts)
+        {
+            var line = new StringBuilder(MaximumLineCharacters, MaximumLineCharacters);
+            var characters = new char[512];
+            bool overlong = false;
+            bool pendingCarriageReturn = false;
+            try
+            {
+                using var reader = new StreamReader(stream, new UTF8Encoding(false, true), false, 1024, true);
+                int length;
+                while ((length = await reader.ReadAsync(characters.AsMemory(), cancellation.Token)
+                    .ConfigureAwait(false)) != 0)
+                {
+                    for (int index = 0; index < length; index++)
+                    {
+                        char character = characters[index];
+                        if (character == '\n')
+                        {
+                            AcceptLine(name, line, overlong, counts);
+                            line.Clear();
+                            overlong = false;
+                            pendingCarriageReturn = false;
+                        }
+                        else
+                        {
+                            // Delay one CR so a CRLF terminator does not consume the 4096-character line budget.
+                            if (pendingCarriageReturn)
+                                AppendCharacter(line, '\r', ref overlong, counts);
+                            pendingCarriageReturn = character == '\r';
+                            if (!pendingCarriageReturn)
+                                AppendCharacter(line, character, ref overlong, counts);
+                        }
+                    }
+                }
+                if (overlong || line.Length > 0)
+                    AcceptLine(name, line, overlong, counts);
+            }
+            catch (DecoderFallbackException)
+            {
+                lock (gate) { counts.DecodeErrors++; }
+                // Decoding is uncertain after a malformed byte. Discard, but keep draining this pipe.
+                await DiscardStreamAsync(stream, counts).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+            catch (ObjectDisposedException) when (cancellation.IsCancellationRequested) { }
+            catch (Exception)
+            {
+                lock (gate) { counts.ReaderErrors++; }
+            }
+        }
+
+        private async Task DiscardStreamAsync(Stream stream, PersistenceOutputCounts counts)
+        {
+            var bytes = new byte[1024];
+            try
+            {
+                while (await stream.ReadAsync(bytes.AsMemory(), cancellation.Token).ConfigureAwait(false) != 0) { }
+            }
+            catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+            catch (ObjectDisposedException) when (cancellation.IsCancellationRequested) { }
+            catch (Exception)
+            {
+                lock (gate) { counts.ReaderErrors++; }
+            }
+        }
+
+        public PersistenceOutputLine[] TakeLines()
+        {
+            lock (gate)
+            {
+                var lines = pending.ToArray();
+                pending.Clear();
+                return lines;
+            }
+        }
+
+        public PersistenceOutputCounts Counts(string stream)
+        {
+            lock (gate)
+            {
+                var source = stream == "stdout" ? stdoutCounts : stderrCounts;
+                return new PersistenceOutputCounts
+                {
+                    Excluded = source.Excluded,
+                    Overlong = source.Overlong,
+                    QueueDropped = source.QueueDropped,
+                    DecodeErrors = source.DecodeErrors,
+                    ReaderErrors = source.ReaderErrors
+                };
+            }
+        }
+
+        public void WaitForReaders(int milliseconds)
+        {
+            readers.Wait(milliseconds);
+        }
+
+        public void Finish(Process process, bool drained)
+        {
+            if (finalized)
+                return;
+            finalized = true;
+            if (!drained)
+                cancellation.Cancel();
+            // Closing owned output pipes cancels a stalled reader, never the child process.
+            try { stdout.Dispose(); } catch { }
+            try { stderr.Dispose(); } catch { }
+            lock (gate)
+            {
+                clean = drained && readers.IsCompleted &&
+                    stdoutCounts.Overlong + stderrCounts.Overlong == 0 &&
+                    stdoutCounts.QueueDropped + stderrCounts.QueueDropped == 0 &&
+                    stdoutCounts.DecodeErrors + stderrCounts.DecodeErrors == 0 &&
+                    stdoutCounts.ReaderErrors + stderrCounts.ReaderErrors == 0;
+            }
+            if (readers.IsCompleted)
+            {
+                cancellation.Dispose();
+                captures.Remove(process);
+            }
+            else
+            {
+                _ = readers.ContinueWith(_ =>
+                {
+                    cancellation.Dispose();
+                    captures.Remove(process);
+                }, TaskScheduler.Default);
+            }
+        }
+
+        public void RetainWhileChildIsUncertain(Process process)
+        {
+            finalized = true;
+            clean = false;
+            // Keep draining an uncertain live child without closing its output pipes or stopping it.
+            // The continuation retains process identity and owns cleanup after both pipe readers return.
+            _ = readers.ContinueWith(_ =>
+            {
+                try { stdout.Dispose(); } catch { }
+                try { stderr.Dispose(); } catch { }
+                cancellation.Dispose();
+                captures.Remove(process);
+                process.Dispose();
+            }, TaskScheduler.Default);
+        }
+    }
+}
+'@
+}
+
+function Receive-PersistenceOutput {
+    param([Parameter(Mandatory)][Diagnostics.Process]$Process)
+
+    if (-not ('Dawnholder.PersistenceLauncherOutput' -as [type])) { return }
+    $capture = [Dawnholder.PersistenceLauncherOutput]::Find($Process)
+    if ($null -eq $capture) { return }
+    foreach ($line in $capture.TakeLines()) {
+        Write-Host ('[Persistence {0} {1:o}] {2}' -f $line.Stream, $line.Utc, $line.Text)
+    }
+}
+
+function Complete-PersistenceOutputCapture {
+    param(
+        [Parameter(Mandatory)][Diagnostics.Process]$Process,
+        [switch]$ChildStillRunning
+    )
+
+    # Existing isolated shutdown tests can own a process with no launcher output capture.
+    if (-not ('Dawnholder.PersistenceLauncherOutput' -as [type])) { return $true }
+    $capture = [Dawnholder.PersistenceLauncherOutput]::Find($Process)
+    if ($null -eq $capture) { return $true }
+    if ($capture.Finalized) { return $capture.Clean }
+    if ($ChildStillRunning) {
+        $capture.RetainWhileChildIsUncertain($Process)
+        Write-Host 'Persistence output readers remain owned while child-process state is uncertain.'
+        return $false
+    }
+
+    $drain = [Diagnostics.Stopwatch]::StartNew()
+    $drainBudget = [Dawnholder.PersistenceLauncherOutput]::DrainMilliseconds
+    while (-not $capture.ReadersCompleted -and $drain.ElapsedMilliseconds -lt $drainBudget) {
+        Receive-PersistenceOutput -Process $Process
+        $remaining = $drainBudget - [int]$drain.ElapsedMilliseconds
+        if ($remaining -gt 0) { $capture.WaitForReaders([Math]::Min(50, $remaining)) }
+    }
+    $readersDrained = $capture.ReadersCompleted
+    Receive-PersistenceOutput -Process $Process
+    $capture.Finish($Process, $readersDrained)
+    foreach ($stream in @('stdout', 'stderr')) {
+        $counts = $capture.Counts($stream)
+        Write-Host (('Persistence output {0}: excluded={1}, overlong={2}, queueDropped={3}, ' +
+            'decodeErrors={4}, readerErrors={5}, drained={6}.') -f $stream, $counts.Excluded, $counts.Overlong,
+            $counts.QueueDropped, $counts.DecodeErrors, $counts.ReaderErrors, $readersDrained)
+    }
+    return $capture.Clean
+}
+
 function Wait-PersistenceShutdownRequest {
     param([Parameter(Mandatory)][Diagnostics.Process]$Process)
 
@@ -50,6 +369,7 @@ function Wait-PersistenceShutdownRequest {
     Write-Host 'Persistence server process launched; press Enter to request normal shutdown'
     if (-not [Console]::IsInputRedirected) {
         while (-not $Process.HasExited) {
+            Receive-PersistenceOutput -Process $Process
             if ([Console]::KeyAvailable -and [Console]::ReadKey($true).Key -eq [ConsoleKey]::Enter) {
                 Write-Host
                 return $true
@@ -93,6 +413,7 @@ namespace Dawnholder
     $inputStream = [Console]::OpenStandardInput()
     try {
         while (-not $Process.HasExited) {
+            Receive-PersistenceOutput -Process $Process
             $availableBytes = [uint32]0
             if ($inputType -eq 3) {
                 $peeked = [Dawnholder.PersistenceLauncherInput]::PeekNamedPipe(
@@ -183,6 +504,8 @@ try {
         $trustArguments = @('env', "SSL_CERT_FILE=$caWsl", "SSL_CERT_DIR=$caDirectoryWsl")
     }
 
+    Initialize-PersistenceOutputCapture
+
     # Import-Clixml decrypts only in the approved current-user Windows DPAPI context.
     # Keep provider/DPAPI errors out of the console, including the exception's inner text.
     try {
@@ -210,7 +533,11 @@ try {
         $startInfo.UseShellExecute = $false
         $startInfo.CreateNoWindow = $true
         $startInfo.RedirectStandardInput = $true
+        $startInfo.RedirectStandardOutput = $true
+        $startInfo.RedirectStandardError = $true
         $startInfo.StandardInputEncoding = $utf8
+        $startInfo.StandardOutputEncoding = $utf8
+        $startInfo.StandardErrorEncoding = $utf8
         $childArguments = @('-d', 'Ubuntu', '--cd', $runtimeRoot, '--exec') + $trustArguments +
         @($dotnetPath, $serverDll, '--persistence-profile', $profileWsl)
         foreach ($argument in $childArguments) {
@@ -221,6 +548,7 @@ try {
         if (-not $runtimeProcess.Start()) {
             throw 'Persistence server process did not start.'
         }
+        [Dawnholder.PersistenceLauncherOutput]::Start($runtimeProcess)
         $runtimeProcess.StandardInput.NewLine = "`n"
         $runtimeProcess.StandardInput.WriteLine($payload)
         $runtimeProcess.StandardInput.Flush()
@@ -251,9 +579,15 @@ try {
         }
     }
     $runtimeProcess.StandardInput.Close()
-    $runtimeProcess.WaitForExit()
+    while (-not $runtimeProcess.WaitForExit(100)) {
+        Receive-PersistenceOutput -Process $runtimeProcess
+    }
+    $outputComplete = Complete-PersistenceOutputCapture -Process $runtimeProcess
     if ($runtimeProcess.ExitCode -ne 0) {
         throw 'Persistence server failed or shutdown is incomplete; inspect only safe server diagnostics.'
+    }
+    if (-not $outputComplete) {
+        throw 'Persistence server output is incomplete; confirm reader diagnostics before another approved attempt.'
     }
 } catch {
     # Do not retry or kill a child on an uncertain handoff/close. EOF lets an unstarted server refuse startup.
@@ -262,5 +596,16 @@ try {
     }
     throw 'Persistence launcher did not complete; confirm child-process state before another approved attempt.'
 } finally {
-    if ($null -ne $runtimeProcess) { $runtimeProcess.Dispose() }
+    if ($null -ne $runtimeProcess) {
+        try {
+            if ($runtimeProcess.HasExited) {
+                $null = Complete-PersistenceOutputCapture -Process $runtimeProcess
+                $runtimeProcess.Dispose()
+            } else {
+                $null = Complete-PersistenceOutputCapture -Process $runtimeProcess -ChildStillRunning
+            }
+        } catch {
+            Write-Host 'Persistence output cleanup could not confirm reader state.'
+        }
+    }
 }
