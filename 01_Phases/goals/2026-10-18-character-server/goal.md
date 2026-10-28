@@ -6,11 +6,15 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태: 10-28에는 검증을 통과한 만큼 보여 주고 미완료는11-06 제출까지 다듬는다. 신규 World 제품 묶음은 현재 밤 두 번째 빌드 후보이며, Core B1·최종 독립 실DB 인계 뒤 World 최종 강검증·제품 PR 순서를 유지한다.** 다음 Core B0 시각·최종 인계 F가 미정이므로18:00 포함을 확약하지 않는다. 기존 생성API·필수시험은 유지하고 생성 화면 실연 유예는 그대로다. 미커밋26경로/기존 입력을 보존했으며 이전 자체회귀838P는 당시 결과이고 현재 합동/최종 독립/Unity·실DB 전체 판정은 남았다.
+**상태(10-29 07:2x KST): PR270 head `4755f807aeda8d35df20f98699a28245e43735e0`의 World C1~C9 강 독립 검증이 합동 실DB 창까지 마쳐 PASS다. 메인 R-2 표본 대조와 사용자 병합 승인을 기다린다.** 아래 줄은 10-27 당시 상태다.
+
+**이전 상태: 10-28에는 검증을 통과한 만큼 보여 주고 미완료는11-06 제출까지 다듬는다. 신규 World 제품 묶음은 현재 밤 두 번째 빌드 후보이며, Core B1·최종 독립 실DB 인계 뒤 World 최종 강검증·제품 PR 순서를 유지한다.** 다음 Core B0 시각·최종 인계 F가 미정이므로18:00 포함을 확약하지 않는다. 기존 생성API·필수시험은 유지하고 생성 화면 실연 유예는 그대로다. 미커밋26경로/기존 입력을 보존했으며 이전 자체회귀838P는 당시 결과이고 현재 합동/최종 독립/Unity·실DB 전체 판정은 남았다.
 
 ## 재개 지점
 
-**다음 첫 일(10-29 02:1x KST, `[World 리드 Opus]`):** World 독립 검증자(`task_3ccc9d4a5f98`)가 시험 쓰기를 마쳤다. 쓴 파일은 서버 시험 2파일과 Unity 시험 3파일이고, 해시는 `verify-pr270-01/worker/raw/test-write-frozen-1.json`과 5/5 일치한다. 그 5파일과 이 기록을 한 commit으로 넣어 새 head를 검증자에게 보충한다. V2(WSL 전체)는 실패 0이다. V3(Unity 전체 EditMode)는 1337건 중 82건이 실패했다. 82건은 `-nographics`의 그래픽 장치 부재 81건과 긴 snapshot 경로(268자)의 native DLL 로드 실패 1건으로, 검증자 분류는 환경 누락(b)이다. 그래서 짧은 snapshot `.backups/unity-character-menu-06`에서 `-nographics` 없이 전체를 다시 돈다. 이 Unity 창은 시작 전에 메인에 알린다. 합동 창 순서표 v3에는 S6a(Content 2단)를 넣고, 사용자 결정 36 A·37 A를 반영해 Core가 작성한다. 아래는 직전 단계 기록이다.
+**다음 첫 일(10-29 07:2x KST, `[World 리드 Opus]`):** 합동 실DB 창(T 2026-10-28T20:50:00Z, 순서표 v3)이 S8까지 끝났다. World 독립 검증자(`task_3ccc9d4a5f98`)는 PR270 head `4755f807aeda8d35df20f98699a28245e43735e0`의 C1~C9 강 판정을 PASS로 냈고(`msg_5e6ea692c90f`), succeeded로 정산해 pane을 닫았다. 판정 원문은 `verify-pr270-01/worker/report.md`의 「합동 창 뒤 최종 판정」이다. 결정 28 A의 기존 시험 분류표는 `verify-pr270-01/worker/existing-test-classification.md`다. 이 기록 commit은 goal 1파일만 바꾸므로 제품과 시험은 4755f807과 같다. 메인에 판정 원문 경로와 새 head를 반환 보고하고, 메인의 R-2 표본 대조와 사용자 병합 승인을 기다린다. 서버 창(`term_307f908f-2776-4070-afb4-da2ad15f8600`)은 건드리지 않으며 닫을 때는 메인이 사용자에게 알린다. 비차단 관찰 O1(`CharacterMenuRequestReader.cs:53`의 낡은 주석)과 O2(selector 호환 세션 설명)는 후속 후보다. 창 결과는 아래 「2026-10-29 합동 실DB 창 결과」 절에 있다. 그 아래는 직전 단계 기록이다.
+
+**이전 다음 첫 일(10-29 02:1x KST, `[World 리드 Opus]`):** World 독립 검증자(`task_3ccc9d4a5f98`)가 시험 쓰기를 마쳤다. 쓴 파일은 서버 시험 2파일과 Unity 시험 3파일이고, 해시는 `verify-pr270-01/worker/raw/test-write-frozen-1.json`과 5/5 일치한다. 그 5파일과 이 기록을 한 commit으로 넣어 새 head를 검증자에게 보충한다. V2(WSL 전체)는 실패 0이다. V3(Unity 전체 EditMode)는 1337건 중 82건이 실패했다. 82건은 `-nographics`의 그래픽 장치 부재 81건과 긴 snapshot 경로(268자)의 native DLL 로드 실패 1건으로, 검증자 분류는 환경 누락(b)이다. 그래서 짧은 snapshot `.backups/unity-character-menu-06`에서 `-nographics` 없이 전체를 다시 돈다. 이 Unity 창은 시작 전에 메인에 알린다. 합동 창 순서표 v3에는 S6a(Content 2단)를 넣고, 사용자 결정 36 A·37 A를 반영해 Core가 작성한다. 아래는 직전 단계 기록이다.
 
 **이전 다음 첫 일(10-29 01:3x KST, `[World 리드 Opus]`):** World 독립 검증자(Astra xhigh) 계약을 발행한다. 검증 head는 `93c4b41b` 위에 이 기록을 넣은 commit이다. 수정 구현자(`task_68e496a2acdf`)는 succeeded로 정산·종료했고 전체 서버 시험은 실패 0이다. 남은 것은 Unity EditMode 세 파일(`GuildProtocolCompatibilityTests`·`InventoryProtocolCompatibilityTests`·`GuildAdmissionPacketCompatibilityTests`)의 버전 21·패킷 48 기대다. Content 동의(`msg_884bd7016495`에 대한 답)를 받으면 검증자 쓰기를 보충으로 연다. 검증자 WSL+Unity는 시작 전에 메인에 알린다. 아래는 직전 단계 기록이다.
 
@@ -59,6 +63,25 @@ Core B1은 사용자 결정 A에 따라 **10-26 23:30 KST까지 시작하면 진
 사용자가 「잘게」라고 한 뒤에도 메인이 사용자손없는 창을 밤새 배정하며, World는 같은 READY/T·정산 절차로 진행한다. credential·다운로드·범위 변경·병합 승인처럼 사용자 손이 필요한 것은 메인의 아침 대기열에 둔다. 병합은 기존대로 사용자 승인 뒤 메인만 수행하며, 자는 동안 병합하지 않고 World는 PR번호/정확head/독립판정원문을 준비한다. 현재임시예외동안새Claude는열지않고꼭필요하면기동전이유를메인에보낸다. 새독립검증자기동때현재모델/예외를알리고메인보류통지를따른다. 밤운영원문은 `approval-01/rehearsal-resume-01/inbox-wake-05.json`, 모델보충은 `inbox-wake-09.json`이다. 이전제안은아래당시기록으로보존한다.
 
 **Content 밤 B 예외는 조건부 승인·현재 미발동이다.** Main `msg_5a9770fb2ff9`에 따라 World PR 강판정 뒤 H40/PDL·Generated·protocol22/실제양쪽DLL hash/판정원문을 한 묶음으로 Main과 Content에 함께 보낸다. 이후H변경은둘에즉시알린다. Main이네조건을대조하고별도「안1발동」을보내기전시작하지않으며하나라도빠지면아침병합뒤시작이다. 현재최종H/강PASS는없다. 준비/보존경계는`approval-01/rehearsal-resume-01/conditional-content-handoff-preparation-v1.md`다. World실행순서/범위는변경없다.
+
+### 2026-10-29 합동 실DB 창 결과
+
+순서표 v3(Core 작성·World 합의, sha256 `7D90ADB1055F1AB11D2E7B389140D840D9F9AF2F9650B949B87975E276712DD8`)대로 한 번에 진행했다. 단계별 원천 경로는 World 판정 원문의 「S1~S8의 실제 수행과 원천」 표에 있다.
+
+| 단계 | 결과(UTC) |
+|---|---|
+| S1 | World 20:38:10Z 통과(head·clone·봇 DLL·양쪽 7777 0·Unity 0). Core 20:52:23Z 통과 |
+| S2 | 사용자가 서버 1을 시작했다. Listening 21:11:55Z, PID 500 |
+| S3 | 봇 before exit 0(21:15:23Z~21:15:26Z). 새 캐릭터 `d1dd8569-8456-4762-848c-75072dda67e2`(칸 2·Wcreate1029·Knight)를 만들었고, 기존 Mage와 새 Knight가 각각 선택→48→입장했다. 리드가 원시에서 ID를 따로 읽어 검증자 값과 대조했다 |
+| S4·S5 | 사용자 Enter로 서버 1 종료(21:23:07Z). 서버 2 Listening 21:24:50Z, PID 506. boot·clone·argv·profile은 서버 1과 같다 |
+| S6 | 봇 after exit 0(21:29:29Z~21:29:32Z). 두 캐릭터의 ID·직업·이름·칸이 보존됐고 각각 54→48→3이다 |
+| S6a | Content 2단. World 실행 0이며 판정은 Content 몫이다 |
+| S7 | 사용자 Enter로 서버 2 종료. Server stopped 22:03:17Z, 22:03:41Z에 PID 506 부재·7777 0 |
+| S8 | Core 22:04:06Z 반환 통과. World 22:07:07Z 양쪽 7777 0, 봇·GameServer·testhost 0 |
+
+S7의 사용자 손은 Main `msg_b6e464b955e9`(22:03:40Z 송신)가 전달한 사용자 원문 「대시보드 결정 응답: 1) 42 - 합동 창 서버 2 끄기(Enter 한 번, 마지막 손) → A 꺼짐: Server stopped. 뒤 입력 화면으로 돌아왔다」로 받았다. DB 쓰기는 결정 29 A·36 A 범위 안이며 삭제·DDL·직접 SQL은 0이다. WSL boot ID는 S2와 S5가 같고 S1·S8과는 다르다. 그래서 재기동 보존의 근거는 같은 boot 안의 서로 다른 서버 PID와 before/after 응답이다.
+
+World 최종 판정은 PASS다. 서버 시험은 2550 통과/0 실패/28 건너뜀, Unity EditMode는 1337 전부 통과, 4755f807의 CI 네 workflow는 모두 성공이다. 제품 차단 결함은 0이다. 검증 중 생긴 새 시험 기대 오류(VTEST-01), Unity 실행 환경 누락(VENV-01·02), 검증자 실행 보조 코드 오류(VEXEC-01·02)는 원시와 함께 판정 원문에 보존했고 제품 결함으로 세지 않는다. Unity PlayMode·화면 메뉴→Town·Player build는 이 계약 밖이라 실행하지 않았다.
 
 ### 최종 리드 정산 재개 카드
 
@@ -392,6 +415,14 @@ Main `msg_82a65eb6e78b`의 메인 판단이다. 지금부터새B0창14:05~14:35Z
 Main `msg_61970f13bc49`의 **메인 판단**이며사용자원문으로기록하지않는다. 기간은2026-10-27 09:00KST까지다. 작업자/검증자의300초초과앞뒤HB명령·환경·exit·분리stdout/stderr원시가보존되고target실행이탈0이면절차실패로세지않고같은세션을계속한다. ORCAheartbeat-accounting의5분기준·초과구간/사유한줄정산과실제간격은유지한다. 같은세션재초과는자동실패가아니지만다음단계전메인에먼저보고한다. 원시누락·구기록기·미저장script가함께있으면적용하지않고공식질문한다. 원문은`approval-01/rehearsal-resume-01/inbox-wake-14.json`, 적용준비는`heartbeat-night-disposition-v1.md`이며회신메일0/정본수정0이다.
 
 ## 적용 중인 사용자 결정
+
+### 2026-10-29 합동 창을 05:50 KST로 앞당김
+
+Main `msg_2e56bbf749ba`(2026-10-28T20:34:14Z 송신)가 전달한 사용자 원문이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 지금 해도 괜찮아
+
+**메인 적용:** 메인이 05:25 KST에 기상 시각을 물은 데 대한 답이다. 결정 32 B의 취지(사용자가 깨어 있을 때 한 번에)와 결정 37 A(한 번에, 착석 약 55분)는 그대로이고 시각만 앞당긴다. T는 05:50 KST(2026-10-28T20:50:00Z), S6a 멈춤 T+80은 07:10 KST(22:10:00Z), 창 한도 T+90은 07:20 KST(22:20:00Z)다. 순서표는 v3 그대로다. 사용자 손 요청은 Core 리드 한 곳에서 메인으로 간다. 결과는 「재개 지점」의 「2026-10-29 합동 실DB 창 결과」 절에 있다.
 
 ### 2026-10-29 결정 36 A·37 A — 합동 창 S6a의 새 시험 로그인과 한 번에 하는 창
 
