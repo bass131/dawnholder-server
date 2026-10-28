@@ -3,7 +3,7 @@ using System;
 
 namespace Dawnholder.Client.UI
 {
-    /// <summary>Display input only. The controller owns the current client, character IDs and reply interpretation.</summary>
+    /// <summary>Display input only. CharacterMenuPresenter owns the current client, character IDs and reply interpretation.</summary>
     internal sealed class CharacterMenuViewState
     {
         readonly Slot?[] _slots;

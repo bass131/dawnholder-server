@@ -102,6 +102,39 @@ namespace Dawnholder.Client.Tests
             Assert.IsEmpty(_problems, $"{width}x{height}: every text whole, inside its rect and the screen, and apart");
         }
 
+        // The texts the connected menu adds (CharacterMenuPresenter): a created character, a send the client refused,
+        // and the longest approved refusal, OutcomeUnknown, which ends the connection. Same checks as above.
+        [TestCase(1920, 1080)]
+        [TestCase(1280, 720)]
+        public void ConnectedMenuTexts_StayWholeOnScreenAndApart(int width, int height)
+        {
+            var knight = new Slot("가람", 0);
+            var created = new Slot("새벽지기", 1);
+            _root = new GameObject("Character menu capture", typeof(RectTransform));
+            _view = new CharacterMenuView(_root, slot => _selections.Add(slot),
+                (slot, classId, name) => _creations.Add((slot, classId, name)), () => { }, () => { });
+            Camera camera = AttachCamera(width, height);
+            string directory = Environment.GetEnvironmentVariable(CaptureDirectoryVariable);
+
+            _view.Render(new CharacterMenuViewState(Phase.Ready, knight, slot3: created,
+                message: "슬롯 3: 캐릭터를 만들었습니다. 입장할 캐릭터를 선택하세요."));
+            Check(camera, "5-created", directory);
+
+            Click("Slot2");
+            NameInput().text = "새벽지기";
+            Click("Submit");
+            _view.Render(new CharacterMenuViewState(Phase.Ready, knight, slot3: created,
+                message: "슬롯 2: 요청을 보내지 못했습니다. 입력을 확인하고 다시 시도해 주세요."));
+            Check(camera, "6-not-sent", directory);
+
+            _view.Render(new CharacterMenuViewState(Phase.Disconnected, knight, slot3: created,
+                message: "슬롯 2: 결과를 확인하지 못해 연결을 끊습니다. 다시 접속해 목록을 먼저 확인해 주세요."));
+            Assert.AreEqual("연결이 종료되었습니다. 메뉴로 돌아가 다시 접속하세요.", Label("Status").text);
+            Check(camera, "7-outcome-unknown", directory);
+
+            Assert.IsEmpty(_problems, $"{width}x{height}: every text whole, inside its rect and the screen, and apart");
+        }
+
         Camera AttachCamera(int width, int height)
         {
             _cameraObject = new GameObject("Capture camera (fixture)") { hideFlags = HideFlags.DontSave };

@@ -269,7 +269,8 @@ namespace Dawnholder.Client.UI
             _details.gameObject.SetActive(!creating);
             _selectedTitle.text = selected ? $"슬롯 {_selectedSlot} · {(creating ? "새 캐릭터" : "선택")}" : "캐릭터를 선택하세요";
             _details.text = character == null ? "기존 캐릭터를 고르거나\n빈 슬롯에 새 캐릭터를 만드세요." :
-                character.Name + "\n직업: " + ClassCaption(character.ClassId) + "\n입장하려면 선택 버튼을 누르세요.";
+                character.Name + "\n직업: " + ClassCaption(character.ClassId) + (_state.CurrentPhase == Phase.Entering
+                    ? "\n이 캐릭터로 입장을 기다리는 중입니다." : "\n입장하려면 선택 버튼을 누르세요.");
             _submitLabel.text = creating ? "캐릭터 생성" : "선택하고 입장";
         }
 

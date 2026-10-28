@@ -321,6 +321,21 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual("a", _creations[0].Name, "the server, not the view, judges the name");
         }
 
+        [Test]
+        public void EntryWait_DetailsStopAskingForTheSelectButton()
+        {
+            var knight = new Slot("가람", 0);
+            _view.Render(new CharacterMenuViewState(Phase.Ready, knight));
+            Click("Slot1");
+            Assert.AreEqual("가람\n직업: Knight\n입장하려면 선택 버튼을 누르세요.", Label("Details").text);
+            Click("Submit");
+            _view.Render(new CharacterMenuViewState(Phase.Selecting, knight));
+            _view.Render(new CharacterMenuViewState(Phase.Entering, knight));
+
+            Assert.AreEqual("가람\n직업: Knight\n이 캐릭터로 입장을 기다리는 중입니다.", Label("Details").text);
+            Assert.IsFalse(Control("Submit").interactable);
+        }
+
         Button Control(string path) => Panel.Find(path).GetComponent<Button>();
 
         TMP_Text Label(string path) => Panel.Find(path).GetComponent<TMP_Text>();
