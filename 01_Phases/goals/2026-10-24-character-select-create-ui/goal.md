@@ -373,3 +373,18 @@ PR 번호가 정해지면 병합 단계 이름을 해당 PR번호와 병합으�
 - 2a로 넘긴 것: 완료조건 4의 「같은 character ID」를 볼 곳이 없다. 화면은 ID를 보이지 않고, 클라 로그와 서버 로그(`CharacterMenuCatalogSession` 70·214행)에도 ID가 없다. 그래서 연결 담당 타입이 결과마다 칸·ID·이름·직업을 Editor 로그에 한 줄 남기게 한다.
 - 근거: `.backups/verification/2026-10-24-character-entry-prep/impl-post-merge-v2/`(report.md, context.md, 결과 XML, 로그, `png-1/`, `final-hashes.txt`). 정산 원시는 같은 상위 폴더의 `lead-opus-20261029/`에 있다.
 - 정산: 구현자 pane을 닫았다. worker-release는 retained/external_terminal이었다. 복사본 `.backups/tmp/cmi2u/03_Client/Library`(3,142,611,114 bytes)만 지웠고, C: 여유는 61.07GiB에서 64.06GiB가 됐다.
+
+### 2a 결과 — ID 관측 로그와 합동 창 복사본
+
+- 왜: 완료조건 4의 「같은 character ID」를 합동 창 S6a에서 볼 곳이 없었다. 메인이 범위 안으로 봤다(`msg_297412c47ce6`). 조건은 화면·전송 동작을 바꾸지 않고 로그에 비밀·자격을 넣지 않는 것이다.
+- 구현자: 신규 `[Content 구현 Opus]`(claude-opus-5-5 xhigh, backend 실제 모델 unknown)다. Task `task_303dd18fe287`, Dispatch `ctx_f12dd77a8436`이고, 2026-10-28T18:49:39Z에 worker_done을 보냈다. 계약 2a v1의 sha256은 `ea736abd…3190`다. 구현자 자체 확인이다.
+- 바뀐 것: `CharacterMenuPresenter.Apply`가 응답마다 `UnityEngine.Debug.Log`로 한 줄을 남긴다. 상태·문구·요청은 그대로다. 형식(판정 기준):
+  - `[CharacterMenu] 50 목록 성공: 1=<id>/<name>/<class> 2=빈칸 3=…`
+  - `[CharacterMenu] 52 생성 성공: 슬롯 <n> <id>/<name>/<class>`
+  - `[CharacterMenu] 54 선택 성공: 슬롯 <n> <id>`
+  - `[CharacterMenu] <50|52|54> 거절: 슬롯 <n> 결과 <r>/<f>`(목록은 슬롯 0, 12·16 포함)
+  - 시험은 로그 5메서드 10사례를 더했다(연결 담당 시험 41건).
+- 실행: 메인 사전 허가 창 03:36~03:46 KST에 `.backups/tmp/cmi3u/03_Client`를 만들고 batchmode EditMode 전체를 1회 돌렸다. 리드가 원시 XML을 직접 읽어 1431/1431 통과를 확인했다. 반환 때 Unity·dotnet은 0이었다.
+- 복사본 기준: 목록은 `impl-2a/cmi3u-manifest-copy.txt`·`cmi3u-manifest-after.txt`(각 2,339파일)이다. 원본과의 차이는 Unity가 바꾼 `ProjectSettings/ProjectSettings.asset` 한 파일(Standalone define `SENTIS_ANALYTICS_ENABLED` 제거)뿐이다. cmi3u의 Library(3,142,820,998 bytes)는 아침 S6a까지 보존한다.
+- 남은 위험: 줄은 Player 빌드 로그에도 남는다(character ID·캐릭터 이름, 계정·주소·자격 없음). 줄 형식을 바꾸면 S6a 판정 기준이 깨진다.
+- 근거: `.backups/verification/2026-10-24-character-entry-prep/impl-2a/`(report.md, context.md, 결과 XML, 로그, 목록). checkpoint는 `8974e758`이다.
