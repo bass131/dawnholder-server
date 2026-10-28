@@ -902,8 +902,8 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
 - **10-29 World 구현자 Stored 생성 작업(`task_e1dc91317495`) — failed 정산:**
   - 할 일 1~3과 보충 1(CI 공백 수정)을 파일로 마쳤다. 리드가 그 11파일을 commit했다.
   - WSL 전체 시험은 실패 18·통과 2517·건너뜀 28이었다. 새 통합 시험 3건은 통과했다. 비교로 기준 브랜치 `627c9915`의 CI는 1952건 전부 통과다.
-  - 실패 세 묶음은 모두 이 브랜치가 들인 회귀다. 버전 21·패킷 48 기대 6건, Stored의 직업만 고르는 선택 거절이 selector 경로를 막은 3건, 병렬 Integration의 GameWorld 단일 인스턴스 충돌 9건이다.
-  - 서식 검사 `format-check.ps1`은 이 PC Windows에 SDK 10.0.301이 없어 실행하지 못했다. 계약에서 명령을 잘못 고른 리드 책임이다. 서식은 PR CI의 Linux `format-check.sh`로 확인한다.
+  - 실패는 세 묶음이다. 버전 21·패킷 48 기대 6건과 Stored의 직업만 고르는 선택 거절이 selector 경로를 막은 3건은 이 브랜치가 들인 회귀다. 병렬 Integration의 GameWorld 단일 인스턴스 충돌 9건은 원인 미확정이다. 이 브랜치가 더한 GameWorld 생성 시험은 모두 비병렬 `GameWorldRegistryTests` collection에 있다. 기준 브랜치에 있던 collection 없는 시험이 원인이면 기존 불안정으로 분류하고 근거를 분류표에 적는다(메인 `msg_490cba1c911e`).
+  - 서식 검사 `format-check.ps1`은 이 PC Windows에 SDK 10.0.301이 없어 실행하지 못했다. 계약에서 명령을 잘못 고른 리드 책임이다. 「로컬 미실행, CI로 대체」로 기록한다. 서식은 PR CI의 Linux `format-check.sh`로 확인한다. head `77591936`의 PR CI 서식 check 2건은 통과했다(10-29 00:47 KST 조회).
   - 원시는 `impl-stored-create-01/worker/raw/`, 보고는 같은 폴더의 `report.md`다. 정산·종료는 `worker/release-01.json`(retained·external_terminal), `worker/close-01.json`이다.
 - **selector 경로 수정 기준 — Core 동의:** 거절 기준을 `Catalog is not null`로 좁히는 World 수정안(`msg_163753b34afb`)에 Core가 동의했다(`msg_37ff61c16407`). Core 요청은 GameSession 거절 술어를 `CharacterAdmissionServices.CreateLifetime`과 같게 두고, 주석에서 그 규칙을 가리키는 것이다. 실제 서버 기동은 Catalog 생성자만 쓰므로 C6은 유지된다. 사용자 결정 28 A의 「selector 경로 시험은 유지」를 지키는 수정이다.
 
