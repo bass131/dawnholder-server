@@ -10,7 +10,9 @@ Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확�
 
 ## 재개 지점
 
-**현재 Sol 리드는 안전 지점에서 정산·정지하며 메인의 pane 종료를 기다린다.** Main `msg_0a6a1432302c`에 따라 새 Task·worker·실행 창0, 후보 제품/미추적 변경을 보존하고 기록 파일만 로컬 commit한다. 후임 Claude는 아래 **「최종 리드 정산 재개 카드」**에서 이어받는다. goal 전체 완료나 최종 강검증 PASS가 아니다.
+**다음 첫 일(10-28 23:4x KST, `[World 리드 Opus]`):** 결정 27 반영 범위 v2와 결정 28 A·29 A가 승인됐다(Main `msg_5642ff7de0f4`). 순서는 리드의 후보 commit·main 통합·draft PR → 구현자 Opus의 Stored 생성 봇·selector 시험·WSL 자동 시험 → World·Core 독립 검증자 실사·시험 보완 → 합동 실DB 한 창 → Unity → 판정·PR이다. 실행 창은 Core와 순서를 맞춘 뒤 메인에 시각을 요청한다. 범위 초안 송신은 Main `msg_78570cdf06a1`이었다. 초안은 근거 폴더 `scope-draft-decision27-v2.md`(sha256 `da1b7492…`)다. Core 리드와 경계·순서·결정 문구를 맞췄다(Core `msg_a4bad38aab8c`·`msg_2084821e8a09`, World `msg_a89f446847b2`·`msg_ec2dd52491d3`). 합의 요지는 합동 실DB 한 창을 두 파트 독립 검증자의 실제 경로 실행으로 쓰고, 그 창의 World head를 PR head로 삼는 것이다. 진입 READY는 Main `msg_6113ac3af997`다. Run은 `run_90d18490c825`를 이어받았다. 미커밋 후보 25경로는 10-26 기록 hash와 25/25 일치한다. 근거는 `.backups/verification/2026-10-18-character-server/lead-opus-entry-20261028/`이다. 아래 Sol 리드 기록은 인계 당시 상태다.
+
+**인계 당시: 현재 Sol 리드는 안전 지점에서 정산·정지하며 메인의 pane 종료를 기다린다.** Main `msg_0a6a1432302c`에 따라 새 Task·worker·실행 창0, 후보 제품/미추적 변경을 보존하고 기록 파일만 로컬 commit한다. 후임 Claude는 아래 **「최종 리드 정산 재개 카드」**에서 이어받는다. goal 전체 완료나 최종 강검증 PASS가 아니다.
 
 중단 전 작업의 다음 조건은 **Core B0→B1 우선→최종 독립 실DB의 실제 반환·결과·최종 입력/쓰기 종료를 받아 새 입력을 재고정하고 WSL READY를 Main에 보내는 것**이다. 마지막 확인된 동결 해제는 `msg_271c2c81e324` 송신04:29:52Z다. 제품 입력 기준은 PR266 main4ab를 기계 통합한 `299e99a001f2b55d2fc723df1aa87c85059969fe`이며 이 뒤 이번 commit은 기록 파일뿐이다. 새 리드는 현재 Main/Core 지시와 실제 HEAD를 다시 확인하고 옛 예약·HEAD5ade/manifest를 권한/현재 결과로 재사용하지 않는다.
 
@@ -385,6 +387,42 @@ Main `msg_61970f13bc49`의 **메인 판단**이며사용자원문으로기록하
 
 ## 적용 중인 사용자 결정
 
+### 2026-10-28 결정 27 반영 범위 v2 승인·결정 28 A·29 A
+
+Main `msg_5642ff7de0f4`(2026-10-28T14:37:03Z 송신)가 전달한 사용자 원문이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 28 - 기존 저장 시험의 기대값을 새 캐릭터 메뉴 동작에 맞춰 바꿀지 → A 바꾼다: 시험 조정을 World PR에 넣는다 · 2) 29 - 개발 DB에 시험 계정의 새 캐릭터를 실제로 만들어 확인할지 → A 허용: 시험 계정에 새 캐릭터 행을 만든다 · 3) 계획 검토 - World 결정 27 반영 범위 초안 v2 (World·Core 저장 서버 마무리) → A 승인 (초안 msg_78570cdf06a1) · 4) 계획 검토 - Core 결정 27 반영 범위 초안 v2 (Core 재기동·불러오기 마무리) → A 승인 (초안 msg_49aaf725e21b)
+
+**승인된 범위:** 근거 폴더 `lead-opus-entry-20261028/scope-draft-decision27-v2.md`(Main 송신본 sha256 `da1b74924cedd6425d1891adcf20fef8ef981f41c945f4bc8a427504ba2410af`)다. 요지는 아래 「결정 27 반영 범위」 절에 둔다. 결정 28은 초안의 결정 가, 29는 결정 나다.
+
+**메인 적용 조건:**
+- 결정 28 A: World 독립 검증자는 고친 기존 시험마다 바뀐 이유를 분류한 표를 판정 원문에 남긴다. 메인은 병합 승인 요청 전에 그 표를 표본 대조한다. selector 경로 시험은 유지한다.
+- 결정 29 A: 이 PC의 기존 개발 DB 하나, 시험 계정 한정 새 캐릭터 행 생성, 삭제 없음, DB 구조 변경 없음.
+- 실행 창은 두 리드가 순서를 맞춘 뒤 메인에 시각을 요청한다. 합동 실DB 창은 사용자 착석이 필요하므로 준비 예상 시각을 미리 알린다. 두 초안의 합동 창 어림(World 30~40분, Core 45~60분)은 계약에서 하나로 맞춘다.
+- Content 리드를 열어 가짜 응답으로 화면을 먼저 만들지는 아직 사용자 답이 없다. 리드는 World·Core 둘뿐이다.
+
+### 2026-10-28 결정 27 A — 선택·생성 창을 11-06 범위에 넣는다
+
+Main `msg_808f6bedb0da`(2026-10-28T14:14:11Z 송신)가 전달한 사용자 원문이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 27 - 캐릭터 선택·생성 창을 11-06 범위에 남길지 → A 넣는다: 저장 서버 후보를 마무리하고 선택·생성 창을 만든다
+
+같은 메시지가 함께 전달한 앞선 원문은 다음과 같다.
+
+> 그럼 A로 가되 어차피 캐릭터 선택창도 만들어야되니까, 캐릭터 선택창 및 캐릭터 생성쪽도 28일에 면담 이후에 만들어보자
+
+(10-27 결정 14)
+
+> 프로젝트 개발은 이제 기능적으로 만들어진거 더 다듬고 외관작업해야 될 거 같은데
+
+(10-28 면담 뒤 방향)
+
+**메인 처분:** 메인 추천은 B(뺀다)였고 사용자가 A를 골랐다. 최종 제출은 11-06이다. 이 goal을 재개한다. World·Core가 저장 서버 후보를 검증·병합까지 마무리하고, 그 서버 계약 위에서 Content가 클라이언트 선택·생성 창을 만든다. Content 리드는 서버 계약이 정해지면 메인이 연다. World의 첫 일은 READY와 「결정 27 반영 범위 초안」(①남은 완료조건·최단 경로 ②선택·생성 창을 위한 서버 추가 일 ③World·Core 소유 경계 ④PR 경계 ⑤Content 시작 조건 ⑥실행 창·시간 ⑦하지 않을 것)이며, 메인이 사용자 승인을 받으면 새 범위를 시작한다. 이미 승인된 goal 범위 안의 file-only 작업은 초안과 함께 이어 갈 수 있다. 범위 A의 「생성 실연 유예」를 풀지는 범위 초안에서 다룬다. 실행 창은 World·Core가 순서를 맞춘 뒤 메인에 시각을 요청한다. Unity 작업과 「Windows dotnet 0」 관문 실행은 겹치지 않는다. 카드의 「World Unity를 Level Town보다 먼저」는 PR266 병합으로 끝난 조건이다.
+
+### 2026-10-28 리드·구현 Claude Opus, 독립 검증 Astra xhigh 적용
+
+같은 `msg_808f6bedb0da`가 아래 10-27 결정 4 원문과 답 A(리드까지 전부 Claude)를 다시 전달하며 적용을 지시했다. 리드는 신규 `claude-opus-5-5` xhigh·`[World 리드 Opus]`, 구현자는 `claude --model claude-opus-5-5 --effort xhigh`·`[World 구현 Opus]`, 독립 검증·리뷰는 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`·`[World 검증자]`, 이미지 생성만 신규 Sol max 예외다. AGENTS 라우팅 정본 반영 전이므로 이 원문으로 적용한다. 메인이 23:19 KST에 관측한 새 리드 첫 화면은 「Opus 5.5 with xhigh effort · Claude Max」이며 backend 실제 모델은 unknown이다. 사용량은 메인 전달 기준 Claude 주간 6%, Codex 주간 90%(16시간 전 값)이고 Astra 크레딧 단가는 Sol의 5배다. 독립 검증은 완료조건에 필요한 것만 열고 Codex 한도에 막히면 대체하지 않고 메인에 보고한다.
+
 ### 2026-10-27 리드 정리·인계 지점 확보
 
 Main `msg_0a6a1432302c`가 전달한 사용자 원문(19:4xKST 메인 pane 제출)이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
@@ -755,6 +793,15 @@ Content가 보존한 메인 전달 전문 `msg_623c6ff92c9b`(2026-10-17T14:41:45
 | C7 | 새 wire가 양쪽에서 동일하게 해석되고 기존 ID1..48이 보존된다. | byte 고정 프레임·최대길이·잘린/홀수/과대/잘못된 UTF-16·reserved/중복ID·명시 LE·GUID D형, PDL 재생성 diff·정확 버전 handshake·서버/봇/Unity 소비·실제 DLL hash와 Unity 컴파일. |
 | C8 | 기존 길드·개인·공동 상태의 수명을 유지한다. | 같은 계정의 다른 캐릭터 재접속으로 seed 추가0, 실제 입장 이후 등록, 기존 개인 연결 수명/공동 프로세스 수명·던전 보상·강화 회귀. |
 | C9 | 신규 독립 검증자가 강 등급의 diff·근거·시험·현재 실제 경로 실행을 판정한다. | 원시/새 독립 시험/실제 서버 수신→Core adapter→응답/입장 경로, 실제 Core DB 저장→재접속 접점, 양쪽 소비자 확인. 미실행은 판정 보류이며 문서·대역만으로 전체 통과하지 않는다. |
+
+### 결정 27 반영 범위 — 2026-10-28 승인
+
+위 C1~C9와 PR 경계를 유지하고 아래를 더한다. 승인 원천은 「적용 중인 사용자 결정」의 `msg_5642ff7de0f4`, 원문은 근거 `lead-opus-entry-20261028/scope-draft-decision27-v2.md`다.
+
+- **만들 것:** headless-bot의 Stored 생성 시나리오(새 캐릭터 생성 → 목록 반영 → 선택 → 48 → 입장 → 서버 재기동 뒤 같은 ID·직업). 범위 A의 「생성 실연 유예」를 푼다. packet-contract 문서에 Content용 이름 규칙(Core `CreateDescriptor.Name`: NFC 뒤 2~12자, 한글 음절·영문·숫자, 영문 대소문자 무시 유일, 판정은 서버 invalidField)·빈 계정 시작·Legacy 호스트의 `LegacyFlowOnly` 응답 처리를 적는다.
+- **건드릴 곳:** 기존 World 소유에 더해, Core 확인(`msg_a4bad38aab8c` 3a·3b)을 받은 `Persistence/Admission/CharacterAdmissionServices.cs`의 동작 없는 2줄과 `GameServer.Tests/Persistence/RuntimeEntry/` 시험 조정을 World PR에 넣는다. selector 경로 시험은 되살린다. `99_Tools/Start-PersistenceServer.ps1`은 Core 소유 입력으로 sha256 `F27EEC2D9DE7C92D872F49ACFCBDB65B7006CFD179A91A77179BA2C7C9B604C6`에 핀하고 World commit에서 뺀다.
+- **하지 않을 것:** 캐릭터 삭제·이름 변경·게임 중 교체·외형, 패킷 49~54 외 새 패킷, DB 구조 변경, Shared 이름 규칙 상수, selector 생성자 삭제 같은 Core 정리, 화면 제작.
+- **완료조건 보충:** C1·C2·C9의 실제 DB 근거에 생성 경로를 넣는다. 재기동 전후 목록에 기존 Mage(Core 지정 ID `959c259f-5cad-4fd3-9840-5c1cd39fea79`)와 새 캐릭터가 같은 ID·직업으로 나오고 각각 선택 → 48에 성공해야 한다. 합동 실DB 한 창을 World·Core 독립 검증자의 실제 경로 실행으로 같이 쓰며(Core `msg_2084821e8a09`), 그 창의 World head가 PR head다. 그 뒤 World 제품이 바뀌면 다시 돌릴 범위를 그때 정한다.
 
 ## 패킷·API 계약의 현재 제안
 
