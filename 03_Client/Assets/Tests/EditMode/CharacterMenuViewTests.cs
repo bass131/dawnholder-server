@@ -300,6 +300,27 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(TMP_InputField.CharacterValidation.None, NameInput().characterValidation);
         }
 
+        [Test]
+        public void CreateForm_KeepsTheNameRuleUnderTheInputAndStillSendsARuleBreakingName()
+        {
+            _view.Render(new CharacterMenuViewState(Phase.Ready));
+            Click("Slot2");
+            NameInput().text = "a";
+            _view.Render(new CharacterMenuViewState(Phase.Ready,
+                message: "슬롯 2: 이미 쓰는 이름입니다. 다른 이름을 입력해 주세요."));
+
+            TMP_Text rule = Label("CreateForm/NameRule");
+            Assert.IsTrue(rule.gameObject.activeInHierarchy, "the rule stays visible after a refused create");
+            Assert.AreEqual("2~12자, 한글·영문·숫자. 영문은 대소문자만 다르면 같은 이름", rule.text.Replace('\n', ' '));
+            var ruleCorners = new Vector3[4];
+            var inputCorners = new Vector3[4];
+            rule.rectTransform.GetWorldCorners(ruleCorners);
+            ((RectTransform)NameInput().transform).GetWorldCorners(inputCorners);
+            Assert.LessOrEqual(ruleCorners[1].y, inputCorners[0].y + 0.001f, "the rule's top is under the input's bottom");
+            Click("Submit");
+            Assert.AreEqual("a", _creations[0].Name, "the server, not the view, judges the name");
+        }
+
         Button Control(string path) => Panel.Find(path).GetComponent<Button>();
 
         TMP_Text Label(string path) => Panel.Find(path).GetComponent<TMP_Text>();

@@ -4,15 +4,15 @@
 
 ### 현재 재개 카드 — 2026-10-28 결정 31 반영 범위 승인
 
-**다음 첫 일:** World 병합 전 단계(가짜 응답 화면)의 구현자 Opus 계약을 쓰고, 메인에 Unity 창 30~40분을 요청한다. 창 배정 뒤 구현자를 연다. 리드는 `[Content 리드 Opus]`(claude-opus-5-5 xhigh)이고 회신 주소는 `run:run_5ff5a7b7de60`다.
+**다음 첫 일:** World PR270의 병합을 기다린다. 병합되면 그 merge SHA를 이 branch에 통합하고, 실제 연결 단계의 신규 구현자 Opus 계약을 쓴다. 그 계약에는 Legacy 전환, 오류 문구 연결, 입장 대기 상세 문구 정정을 넣는다. 그다음 Unity+서버 창을 메인에 요청한다. 병합 전 단계는 끝났다([결과](#병합-전-단계-결과--가짜-응답-화면)). 리드는 `[Content 리드 Opus]`(claude-opus-5-5 xhigh)이고 회신 주소는 `run:run_5ff5a7b7de60`다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 사용자 결정 31 A·33 A·34 A와 범위 초안 v1([적용 중인 사용자 결정](#적용-중인-사용자-결정)). 초안 원문은 `.backups/verification/2026-10-24-growth-effect-screen-link/lead-opus-entry-20261028/scope-draft-decision31-v1.md`(sha256 `3781850098b0035384f0407c52644a86284ba85aa97d2e7ad7fb086653157399`)다. |
 | branch | 이 branch에 최신 main(`627c9915`)을 통합했고 10-28에 처음 push한다. 화면 1단계 `2215d47a`의 6파일은 그대로다. |
-| 병합 전 단계 | 화면 1단계 위에 오류 문구표·이름 규칙 안내·Legacy 전환 표시를 더한다. 화면 상태와 결과 번호를 직접 넣는 시험으로 배치·버튼·문구를 확인하고 1920×1080·1280×720 캡처를 남긴다. World 타입은 참조하지 않는다. |
+| 병합 전 단계 | 10-29 01:00 KST에 끝났다. 오류 문구 매핑, 이름 규칙 안내, 배치 다듬기, 두 해상도 캡처를 했고 EditMode 1122/1122가 통과했다. Legacy 전환은 Network·컨트롤러를 건드려야 해서 병합 뒤 단계로 넘겼다. 독립 판정은 아직이다. |
 | 병합 뒤 단계 | World 통신 부품에 잇고, DB 있는 서버로 생성·선택·입장·재접속과 마을 풀 HP를 확인한다. 사용자 직접 플레이와 병합 승인은 아침에 묶어 요청한다(메인 `msg_9624bb2949f7`). |
-| 실행 창 | Core launcher 회귀(Windows dotnet)가 01:30 KST 무렵까지, World 검증자 WSL+Unity가 03:00~04:00 KST 무렵이다. Content Unity 창은 시작 전 메인에 요청한다. |
+| 실행 창 | 병합 전 Unity 창은 00:42~00:57 KST에 쓰고 반환했다. 메인 순서로는 World 수정 구현자 WSL, World 검증자 WSL+Unity가 앞에 있다. 다음 Content 창은 시작 전 메인에 요청한다. |
 | 이전 goal | 길드 성장 효과 화면 연결은 결정 33 A로 닫았다([처분](#이전-goal-처분--길드-성장-효과-화면-연결)). |
 
 아래 「당시 재개」는 10-24 기록이며 현재 실행 권한이 아니다.
@@ -327,3 +327,16 @@ PR 번호가 정해지면 병합 단계 이름을 해당 PR번호와 병합으�
 
 - 새 리드 `[Content 리드 Opus]`가 메인 `msg_d956d0851017`로 진입해 `run_5ff5a7b7de60`을 run-use로 이어받았다. 범위 초안 v1을 `msg_0b0739cd53fb`로 보냈고 `msg_9624bb2949f7`로 승인받았다.
 - 이 branch에 최신 main `627c9915`를 통합했다(충돌 0). 근거 원문은 `.backups/verification/2026-10-24-growth-effect-screen-link/lead-opus-entry-20261028/`에 있다.
+
+### 병합 전 단계 결과 — 가짜 응답 화면
+
+- 구현자: 신규 `[Content 구현 Opus]`(claude-opus-5-5 xhigh, backend 실제 모델 unknown)다. Task `task_2f3ac4808409`, Dispatch `ctx_1c73a25dc67f`이고, 2026-10-28T16:00:32Z에 worker_done(succeeded)을 보냈다. 계약 v1의 sha256은 `e51c34bb…ab8d`다. 구현자 자체 확인이며 독립 판정이 아니다.
+- 바뀐 것: 신규 `CharacterMenuResultText.cs`가 결과 번호를 [승인 문구표](#10-28-승인으로-더한-것)의 문구로 바꾼다. 화면에는 이름 규칙 안내 줄을 더했다. 한글 대체 글꼴의 줄 높이에 맞춰 글자칸 높이를 다시 잡았고, 버튼 글자는 `Midline` 정렬로 바꿨다. 시험은 기존 화면 시험 1건 추가, 문구표 리터럴 대조 28건, 두 해상도 캡처 2건이다.
+- 실행: 메인이 배정한 Unity 창(00:42~01:22 KST) 안에서 복사본 batchmode EditMode 전체를 두 번 돌렸다.
+  - 1차는 1122건 중 1120건이 통과했다. 실패 2건은 새 캡처 시험의 판정기 결함이었다. 판정기가 그려지지 않는 대체 글꼴 줄 상자까지 쟀기 때문이다.
+  - 판정기를 실제 글자 상자 기준으로 고친 뒤 2차에서 1122/1122가 통과했다. 반환 때 Unity·dotnet은 0이었다.
+  - 리드는 판정기 수정이 시험을 약하게 만들지 않았다고 판단했다(메인 `msg_7dfe89fbc202`의 확인 요청). 글자 손실 검사(`isTextTruncated`)와 겹침·화면 이탈 검사는 그대로 남았다. 같은 항목을 PR 직전 Astra 독립 검증의 확인 대상에 넣는다.
+- 설계 결정 둘(사용자 확인 전): 표 밖 값은 「서버 오류로 처리하지 못했습니다(코드 N)」을 쓴다. 이름 안내는 승인 원문을 두 줄로 나눠 보인다.
+- 다음 단계로 넘긴 것: Legacy 16 전환, 컨트롤러에 문구 매핑 잇기, 입장 대기 상태에서 상세 문구 「입장하려면 선택 버튼을 누르세요.」가 남는 어긋남 정정.
+- 근거: `.backups/verification/2026-10-24-character-entry-prep/impl-pre-merge-v1/`에 report.md, 결과 XML 2개, 로그, PNG `png-1/`·`png-2/`가 있다. 리드 검토와 PNG SHA256은 `.backups/verification/2026-10-24-character-entry-prep/lead-opus-20261029/`의 `lead-review-impl-pre-merge-v1.md`·`png-sha256.txt`에 있다. 2차 PNG 8장은 아침 사용자 확인 묶음에 넣는다.
+- 정산: 구현자 pane을 닫았다. 복사본 `.backups/tmp/cmi1u/03_Client/Library`(2.88GiB, 파일 50,277개)만 지웠고, C: 여유는 73.29GiB에서 76.24GiB가 됐다.

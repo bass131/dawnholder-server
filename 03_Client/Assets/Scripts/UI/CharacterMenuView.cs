@@ -11,6 +11,9 @@ namespace Dawnholder.Client.UI
     /// <summary>Scene-owned menu geometry and temporary input. No connection, character identity or entry authority.</summary>
     internal sealed class CharacterMenuView : IDisposable
     {
+        // The goal's approved wording of the server's name rule. The server judges names; the view only states it.
+        const string NameRule = "2~12자, 한글·영문·숫자.\n영문은 대소문자만 다르면 같은 이름";
+        static readonly Color s_secondaryText = new(0.8f, 0.8f, 0.8f);
         readonly GameObject _canvasRoot;
         readonly CanvasGroup _group;
         readonly TMP_Text _status;
@@ -66,48 +69,57 @@ namespace Dawnholder.Client.UI
             _canvasRoot.AddComponent<GraphicRaycaster>();
             _group = _canvasRoot.AddComponent<CanvasGroup>();
 
+            // Heights reserve the Korean fallback font's line box (about 1.9 em per line, 3.9 em for two):
+            // under Ellipsis, TMP drops a line that does not fit instead of clipping it.
             RectTransform panel = UiWindowAppearance.CreatePanel("Panel", _canvasRoot.transform, raycastTarget: true).rectTransform;
             Place(panel, new Vector2(760f, 430f), Vector2.zero);
             panel.anchorMin = panel.anchorMax = panel.pivot = new Vector2(0.5f, 0.5f);
             Place(UiWindowAppearance.CreateHeader("Header", panel).rectTransform,
-                new Vector2(720f, 40f), new Vector2(20f, -10f));
-            TMP_Text title = Label("Title", panel, new Vector2(696f, 40f), new Vector2(32f, -10f), font);
+                new Vector2(720f, 46f), new Vector2(20f, -8f));
+            TMP_Text title = Label("Title", panel, new Vector2(696f, 46f), new Vector2(32f, -8f), font);
             title.text = "캐릭터 선택";
-            title.fontSize = 25f;
+            title.fontSize = 22f;
             title.fontStyle = FontStyles.Bold;
-            _status = Label("Status", panel, new Vector2(720f, 48f), new Vector2(20f, -54f), font);
+            _status = Label("Status", panel, new Vector2(720f, 38f), new Vector2(20f, -58f), font);
 
             for (byte slot = 1; slot <= 3; slot++)
             {
                 byte chosenSlot = slot;
-                Button button = MakeButton("Slot" + slot, panel, new Vector2(312f, 66f),
-                    new Vector2(20f, -106f - (slot - 1) * 74f), string.Empty, font, out TMP_Text label);
+                Button button = MakeButton("Slot" + slot, panel, new Vector2(312f, 72f),
+                    new Vector2(20f, -100f - (slot - 1) * 80f), string.Empty, font, out TMP_Text label);
                 label.alignment = TextAlignmentOptions.MidlineLeft;
-                Place(label.rectTransform, new Vector2(288f, 62f), new Vector2(12f, -2f));
+                label.fontSize = 16f;
+                Place(label.rectTransform, new Vector2(288f, 68f), new Vector2(12f, -2f));
                 button.onClick.AddListener(() => OnSlotClicked(chosenSlot));
                 _slotButtons[slot - 1] = button;
                 _slotLabels[slot - 1] = label;
             }
 
             Place(UiWindowAppearance.CreateInset("DetailsBackground", panel).rectTransform,
-                new Vector2(392f, 214f), new Vector2(348f, -106f));
-            _selectedTitle = Label("SelectedTitle", panel, new Vector2(368f, 34f), new Vector2(360f, -110f), font);
+                new Vector2(392f, 232f), new Vector2(348f, -100f));
+            _selectedTitle = Label("SelectedTitle", panel, new Vector2(368f, 38f), new Vector2(360f, -104f), font);
             _selectedTitle.fontStyle = FontStyles.Bold;
-            _details = Label("Details", panel, new Vector2(368f, 164f), new Vector2(360f, -146f), font);
-            RectTransform form = Rect("CreateForm", panel, new Vector2(368f, 170f), new Vector2(360f, -146f));
+            _details = Label("Details", panel, new Vector2(368f, 182f), new Vector2(360f, -146f), font);
+            RectTransform form = Rect("CreateForm", panel, new Vector2(368f, 184f), new Vector2(360f, -146f));
             _form = form.gameObject;
-            Label("NameLabel", form, new Vector2(368f, 24f), Vector2.zero, font).text = "이름";
+            Label("NameLabel", form, new Vector2(48f, 40f), Vector2.zero, font).text = "이름";
             _nameInput = CreateNameInput(form, font);
-            _knight = MakeButton("Knight", form, new Vector2(178f, 40f), new Vector2(0f, -74f),
+            TMP_Text nameRule = Label("NameRule", form, new Vector2(368f, 66f), new Vector2(0f, -42f), font);
+            nameRule.text = NameRule;
+            nameRule.fontSize = 16f;
+            nameRule.color = s_secondaryText;
+            _knight = MakeButton("Knight", form, new Vector2(178f, 40f), new Vector2(0f, -110f),
                 "Knight", font, out _knightLabel);
-            _mage = MakeButton("Mage", form, new Vector2(178f, 40f), new Vector2(190f, -74f),
+            _mage = MakeButton("Mage", form, new Vector2(178f, 40f), new Vector2(190f, -110f),
                 "Mage", font, out _mageLabel);
             _knight.onClick.AddListener(() => OnClassClicked(0));
             _mage.onClick.AddListener(() => OnClassClicked(1));
-            Label("Hint", form, new Vector2(368f, 44f), new Vector2(0f, -120f), font).text =
-                "생성 후 입장할 캐릭터를\n다시 선택해주세요.";
+            TMP_Text hint = Label("Hint", form, new Vector2(368f, 32f), new Vector2(0f, -152f), font);
+            hint.text = "생성 후 입장할 캐릭터를 다시 선택해주세요.";
+            hint.fontSize = 15f;
+            hint.color = s_secondaryText;
 
-            _result = Label("Result", panel, new Vector2(720f, 50f), new Vector2(20f, -324f), font);
+            _result = Label("Result", panel, new Vector2(720f, 38f), new Vector2(20f, -336f), font);
             _result.color = new Color(1f, 0.88f, 0.55f);
             _back = MakeButton("Back", panel, new Vector2(134f, 40f), new Vector2(20f, -378f),
                 "뒤로", font, out _);
@@ -300,14 +312,14 @@ namespace Dawnholder.Client.UI
         static TMP_InputField CreateNameInput(Transform parent, TMP_FontAsset font)
         {
             Image background = UiWindowAppearance.CreateInset("Name", parent);
-            Place(background.rectTransform, new Vector2(368f, 40f), new Vector2(0f, -26f));
+            Place(background.rectTransform, new Vector2(312f, 40f), new Vector2(56f, 0f));
             background.raycastTarget = true;
-            RectTransform viewport = Rect("Viewport", background.transform, new Vector2(348f, 40f), new Vector2(10f, 0f));
+            RectTransform viewport = Rect("Viewport", background.transform, new Vector2(292f, 40f), new Vector2(10f, 0f));
             viewport.gameObject.AddComponent<RectMask2D>();
-            TMP_Text text = Label("Text", viewport, new Vector2(348f, 40f), Vector2.zero, font);
+            TMP_Text text = Label("Text", viewport, new Vector2(292f, 40f), Vector2.zero, font);
             text.textWrappingMode = TextWrappingModes.NoWrap;
             text.overflowMode = TextOverflowModes.Overflow;
-            TMP_Text placeholder = Label("Placeholder", viewport, new Vector2(348f, 40f), Vector2.zero, font);
+            TMP_Text placeholder = Label("Placeholder", viewport, new Vector2(292f, 40f), Vector2.zero, font);
             placeholder.text = "캐릭터 이름";
             placeholder.color = new Color(0.75f, 0.75f, 0.75f);
             var input = background.gameObject.AddComponent<TMP_InputField>();
@@ -361,7 +373,8 @@ namespace Dawnholder.Client.UI
             Place((RectTransform)button.transform, size, position);
             label = Label("Label", button.transform, size, Vector2.zero, font);
             label.text = caption;
-            label.alignment = TextAlignmentOptions.Center;
+            // Midline centres the drawn glyphs; Center would centre the fallback's tall line box and sit Korean low.
+            label.alignment = TextAlignmentOptions.Midline;
             return button;
         }
     }
