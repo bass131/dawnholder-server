@@ -7,6 +7,13 @@
 **이전 상태: O3 요구 단언 범위 PASS·World 한 파일 동일 바이트 반영 완료. E8/v7 B0는 Pre→Tests→Post 각1회, 실제3outer/5payload native0·RETURNED, Pre/Post WindowsCLEAR·Inputs829MATCHED, Tests54단언/실패0·observer23+publication2 전25사례를 확인했다.** B0 실행 자원 반환·Task succeeded·정확 작업자 pane 종료와 최종 정산을 마쳤다. 운영 신호 초과2구간은 별도 기록했다. B1 정적 준비 Task는 인수·정산·pane 종료를 마쳤으며, 새 source19의 noDB 실제 회귀와 최종 독립 강·실제 B1·저장 goal은 미완료다.
 
 ## 적용 중인 사용자 결정
+### 2026-10-29 합동 창 시각 앞당김 — T 05:50 KST
+메인 전달 사용자 원문(Main msg_804a4e7c863d, 2026-10-28T20:34:14Z, 메인 pane Enter 제출. 이 Core pane 직접 입력으로 격상하지 않는다): 「지금 해도 괜찮아」
+- 메인이 05:25 KST에 「기상 시각을 알려 주거나 일어나서 말해 달라」고 물은 데 대한 답이다. 결정 32 B의 취지(사용자가 깨어 있을 때 한 번에)와 결정 37 A는 그대로이며 시각만 앞당긴다.
+- T = 2026-10-28T20:50:00Z(05:50 KST), 한도 T+90 = 07:20 KST, S6a 멈춤 T+80 = 07:10 KST. 순서표 v3 그대로다.
+- 사용자 서버 창은 `term_307f908f-2776-4070-afb4-da2ad15f8600`(world-active 탭 「합동 창 서버」)이며 사용자만 입력한다. 사용자 손 요청은 Core 리드 한 곳에서 메인으로 보낸다.
+- 서버 창 화면은 Listening·Server stopped·실패 문구 줄만 발췌하고, 자격 경로 입력 줄은 원시·메시지에 옮기지 않는다. Core 검증자 보충은 `core-review/contract-v1-window-supplement.md`다.
+
 ### 2026-10-29 결정 36 A·37 A — 합동 창 S6a에 새 시험 로그인 하나, 한 번에
 메인 전달 사용자 원문(Main msg_b785517f3a81, 2026-10-28T17:08:58Z, 메인 pane Enter 제출. 이 Core pane 직접 입력으로 격상하지 않는다): 「대시보드 결정 응답: 1) 36 - 합동 창에서 새 로그인 이름(빈 계정)으로 첫 접속부터 볼지 → A 허용: 새 시험 로그인 하나를 쓴다 · 2) 37 - 합동 창 착석이 약 30분에서 약 50분으로 늘어도 될지 → A 한 번에 한다: 착석 약 50분」
 - 합동 창 S6(봇 after) 뒤·S7(서버 2 종료) 전에 Content 단계 S6a를 둔다. 자리와 같은 시험 계정 기본안은 Main msg_dab283acb29c다.
