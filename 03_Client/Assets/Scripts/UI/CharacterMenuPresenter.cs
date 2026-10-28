@@ -11,6 +11,7 @@ namespace Dawnholder.Client.UI
     /// Only this type holds the listed character IDs; the view gets names and classes. Reply bytes become a view
     /// phase in <see cref="Apply"/> and player text in <see cref="CharacterMenuResultText"/>. It subscribes to one
     /// client at a time, and <see cref="Observe"/> drops that subscription when the connection changes or ends.
+    /// Each applied result, IDs included, also goes to the Editor log as one line (<see cref="LogResult"/>).
     /// </summary>
     internal sealed class CharacterMenuPresenter : IDisposable
     {
@@ -140,6 +141,7 @@ namespace Dawnholder.Client.UI
             _handledReply = reply;
             byte slot = _requestSlot;
             _requestSlot = 0;
+            LogResult(reply, slot);
             if (reply.Result == (byte)CharacterMenuResult.LegacyFlowOnly)
             {
                 // A legacy host never moves this connection to the class flow: it closes, and the scene's class
@@ -218,6 +220,37 @@ namespace Dawnholder.Client.UI
             CharacterMenuResultText.TryGetFailureText(reply.Result, reply.InvalidField, out string text);
             return slot == 0 ? text : $"슬롯 {slot}: {text}";
         }
+
+        // The only place a run shows character IDs: the view gets names and classes, and neither the client's
+        // network code nor the server logs IDs. The joint-window check (goal completion row 4) reads these lines to
+        // match IDs across a reconnect, so the wording is that check's contract. Apply calls this once per reply
+        // before anything else, so 12 and 16 get their line too. Account names, addresses and credentials stay out.
+        static void LogResult(CharacterMenuReply reply, byte slot) =>
+            UnityEngine.Debug.Log("[CharacterMenu] " + ResultLine(reply, slot));
+
+        static string ResultLine(CharacterMenuReply reply, byte slot)
+        {
+            if (reply.Result == (byte)CharacterMenuResult.Success)
+            {
+                switch ((PacketID)reply.PacketId)
+                {
+                    case PacketID.S_CharacterListResult:
+                        return $"50 목록 성공: 1={Row(reply.Slots[0])} 2={Row(reply.Slots[1])} 3={Row(reply.Slots[2])}";
+                    case PacketID.S_CharacterCreateResult:
+                        // The server's slot, where Apply keeps the new ID; the client accepts it only if it is the
+                        // requested one.
+                        return $"52 생성 성공: 슬롯 {reply.Character!.Slot} {Row(reply.Character)}";
+                    case PacketID.S_CharacterSelectResult:
+                        return $"54 선택 성공: 슬롯 {slot} {reply.SelectedCharacterIdD}";
+                }
+            }
+            // Every other result is a refusal. A list names no slot; a create or select names the one it asked for.
+            byte named = reply.PacketId == (ushort)PacketID.S_CharacterListResult ? (byte)0 : slot;
+            return $"{reply.PacketId} 거절: 슬롯 {named} 결과 {reply.Result}/{reply.InvalidField}";
+        }
+
+        static string Row(CharacterMenuCharacter? character) =>
+            character == null ? "빈칸" : $"{character.CharacterIdD}/{character.Name}/{character.ClassId}";
 
         void EndConnection()
         {

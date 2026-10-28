@@ -29,6 +29,9 @@ namespace Dawnholder.Client.Tests
         static readonly Saved s_mage = new(MageId, "한별", 1);
         static readonly Saved s_third = new(ThirdId, "세번째", 1);
         static readonly Saved s_created = new(CreatedId, "새벽", 1);
+        // The log line of a list holding s_knight and s_mage, which several log cases open with.
+        const string KnightMageListLine = "[CharacterMenu] 50 목록 성공: 1=00112233-4455-6677-8899-aabbccddeeff/가람/0 " +
+            "2=11112233-4455-6677-8899-aabbccddeeff/한별/1 3=빈칸";
 
         readonly List<CharacterMenuViewState> _states = new();
         readonly List<string> _calls = new();
@@ -430,6 +433,75 @@ namespace Dawnholder.Client.Tests
             }
         }
 
+        // The Editor log line per applied reply, the only place a run shows character IDs (goal 「병합 뒤 1단 결과」,
+        // the ID check of completion row 4). Expected lines are the lead contract's literal format with the IDs of
+        // the constants above.
+        [Test]
+        public void ListSuccessLog_NamesEachSlotsIdNameAndClassAndMarksEmptySlots()
+        {
+            using var log = new MenuLogCapture();
+
+            OpenWithList(s_knight, null, s_third);
+
+            log.AssertLines("[CharacterMenu] 50 목록 성공: 1=00112233-4455-6677-8899-aabbccddeeff/가람/0 2=빈칸 " +
+                "3=22112233-4455-6677-8899-aabbccddeeff/세번째/1");
+        }
+
+        [Test]
+        public void CreateSuccessLog_NamesTheNewCharactersSlotIdNameAndClass()
+        {
+            using var log = new MenuLogCapture();
+            OpenWithList(s_knight);
+
+            _presenter.Create(2, 1, "새벽");
+            _connection.Reply(Created(_connection.LastId, 2, s_created));
+
+            log.AssertLines("[CharacterMenu] 50 목록 성공: 1=00112233-4455-6677-8899-aabbccddeeff/가람/0 2=빈칸 3=빈칸",
+                "[CharacterMenu] 52 생성 성공: 슬롯 2 33112233-4455-6677-8899-aabbccddeeff/새벽/1");
+        }
+
+        [Test]
+        public void SelectSuccessLog_NamesTheSelectedSlotAndTheConfirmedId()
+        {
+            using var log = new MenuLogCapture();
+            OpenWithList(s_knight, s_mage);
+
+            _presenter.Select(2);
+            _connection.Reply(Selected(_connection.LastId, MageId));
+
+            log.AssertLines(KnightMageListLine,
+                "[CharacterMenu] 54 선택 성공: 슬롯 2 11112233-4455-6677-8899-aabbccddeeff");
+        }
+
+        [TestCase(11, 0, "[CharacterMenu] 50 거절: 슬롯 0 결과 11/0")]
+        [TestCase(1, 1, "[CharacterMenu] 50 거절: 슬롯 0 결과 1/1")]
+        [TestCase(16, 0, "[CharacterMenu] 50 거절: 슬롯 0 결과 16/0")]
+        public void RefusedListLog_NamesSlotZeroWithTheResultAndField(int result, int field, string expected)
+        {
+            using var log = new MenuLogCapture();
+            Assert.IsTrue(_connection.Client.TryList(), "fixture: the facade's first list");
+            _presenter.Observe(_connection.Client, true);
+
+            _connection.Reply(ListRefused(_connection.LastId, (byte)result, (byte)field));
+
+            log.AssertLines(expected);
+        }
+
+        [TestCase(51, 3, 6, 0, "[CharacterMenu] 52 거절: 슬롯 3 결과 6/0")]
+        [TestCase(51, 3, 1, 2, "[CharacterMenu] 52 거절: 슬롯 3 결과 1/2")]
+        [TestCase(51, 3, 12, 0, "[CharacterMenu] 52 거절: 슬롯 3 결과 12/0")]
+        [TestCase(53, 1, 8, 0, "[CharacterMenu] 54 거절: 슬롯 1 결과 8/0")]
+        public void RefusedCreateOrSelectLog_NamesTheRequestedSlotWithTheResultAndField(int request, int slot,
+            int result, int field, string expected)
+        {
+            using var log = new MenuLogCapture();
+            OpenWithList(s_knight, s_mage);
+
+            SendAndRefuse(request, (byte)slot, (byte)result, (byte)field);
+
+            log.AssertLines(KnightMageListLine, expected);
+        }
+
         void OpenWithList(Saved slot1 = null, Saved slot2 = null, Saved slot3 = null)
         {
             Assert.IsTrue(_connection.Client.TryList(), "fixture: the facade's first list");
@@ -577,6 +649,31 @@ namespace Dawnholder.Client.Tests
             {
                 Assert.IsTrue(CharacterMenuReplyReader.TryRead(frame, out CharacterMenuReply reply), "fixture: valid reply");
                 Assert.IsTrue(Client.TryReceive(reply), "fixture: the client takes the reply to its pending request");
+            }
+        }
+
+        // The presenter's [CharacterMenu] log lines and levels, in order, while it is alive. The presenter logs on
+        // the test's thread, so each line is recorded before the call that applied the reply returns.
+        sealed class MenuLogCapture : IDisposable
+        {
+            readonly List<string> _lines = new();
+            readonly List<LogType> _levels = new();
+
+            internal MenuLogCapture() => Application.logMessageReceivedThreaded += Record;
+
+            public void Dispose() => Application.logMessageReceivedThreaded -= Record;
+
+            internal void AssertLines(params string[] expected)
+            {
+                CollectionAssert.AreEqual(expected, _lines, "one line per applied reply, nothing else");
+                Assert.IsTrue(_levels.All(level => level == LogType.Log), "plain log level");
+            }
+
+            void Record(string message, string stackTrace, LogType type)
+            {
+                if (!message.StartsWith("[CharacterMenu]", StringComparison.Ordinal)) return;
+                _lines.Add(message);
+                _levels.Add(type);
             }
         }
     }
