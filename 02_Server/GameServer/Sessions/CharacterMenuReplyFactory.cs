@@ -138,40 +138,40 @@ internal static class CharacterMenuReplyFactory
     // fields, including class zero; there is no independent reserved field in these replies.
     static S_CharacterListResult EmptyList(uint requestId, CharacterMenuResult result,
         CharacterMenuInvalidField invalidField = CharacterMenuInvalidField.None) => new()
-    {
-        requestId = requestId,
-        result = (byte)result,
-        invalidField = (byte)invalidField,
-        occupiedMask = 0,
-        slot1CharacterIdD = string.Empty,
-        slot1Name = string.Empty,
-        slot1ClassId = 0,
-        slot2CharacterIdD = string.Empty,
-        slot2Name = string.Empty,
-        slot2ClassId = 0,
-        slot3CharacterIdD = string.Empty,
-        slot3Name = string.Empty,
-        slot3ClassId = 0,
-    };
+        {
+            requestId = requestId,
+            result = (byte)result,
+            invalidField = (byte)invalidField,
+            occupiedMask = 0,
+            slot1CharacterIdD = string.Empty,
+            slot1Name = string.Empty,
+            slot1ClassId = 0,
+            slot2CharacterIdD = string.Empty,
+            slot2Name = string.Empty,
+            slot2ClassId = 0,
+            slot3CharacterIdD = string.Empty,
+            slot3Name = string.Empty,
+            slot3ClassId = 0,
+        };
 
     static S_CharacterCreateResult EmptyCreate(uint requestId, CharacterMenuResult result,
         CharacterMenuInvalidField invalidField = CharacterMenuInvalidField.None) => new()
-    {
-        requestId = requestId,
-        result = (byte)result,
-        invalidField = (byte)invalidField,
-        slot = 0,
-        characterIdD = string.Empty,
-        name = string.Empty,
-        classId = 0,
-    };
+        {
+            requestId = requestId,
+            result = (byte)result,
+            invalidField = (byte)invalidField,
+            slot = 0,
+            characterIdD = string.Empty,
+            name = string.Empty,
+            classId = 0,
+        };
 
     static S_CharacterSelectResult EmptySelect(uint requestId, CharacterMenuResult result,
         CharacterMenuInvalidField invalidField = CharacterMenuInvalidField.None) => new()
-    {
-        requestId = requestId,
-        result = (byte)result,
-        invalidField = (byte)invalidField,
-        selectedCharacterIdD = string.Empty,
-    };
+        {
+            requestId = requestId,
+            result = (byte)result,
+            invalidField = (byte)invalidField,
+            selectedCharacterIdD = string.Empty,
+        };
 }

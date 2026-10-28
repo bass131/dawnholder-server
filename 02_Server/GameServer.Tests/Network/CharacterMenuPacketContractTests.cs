@@ -199,9 +199,14 @@ public sealed class CharacterMenuPacketContractTests
             string[] parts = fields[index].Split(' ');
             Type expectedType = parts[0] switch
             {
-                "bool" => typeof(bool), "byte" => typeof(byte), "ushort" => typeof(ushort),
-                "int" => typeof(int), "uint" => typeof(uint), "long" => typeof(long),
-                "float" => typeof(float), "string" => typeof(string),
+                "bool" => typeof(bool),
+                "byte" => typeof(byte),
+                "ushort" => typeof(ushort),
+                "int" => typeof(int),
+                "uint" => typeof(uint),
+                "long" => typeof(long),
+                "float" => typeof(float),
+                "string" => typeof(string),
                 _ => throw new InvalidOperationException("Unsupported frozen PDL type: " + parts[0]),
             };
             Assert.True(actual[index].Name == parts[1] && actual[index].FieldType == expectedType,

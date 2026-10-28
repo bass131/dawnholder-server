@@ -102,6 +102,24 @@ public class BotSession : PacketSession
         return true;
     }
 
+    // A refusal carries slot 0, two empty strings and class 0; success carries one canonical created summary.
+    internal static bool TryReadCharacterCreate(ArraySegment<byte> buffer, out S_CharacterCreateResult packet)
+    {
+        packet = new();
+        if (!HasMenuHeader(buffer, PacketID.S_CharacterCreateResult, 16, 112)) return false;
+        ReadOnlySpan<byte> bytes = buffer.AsSpan();
+        bool success = bytes[8] == (byte)CharacterMenuResult.Success;
+        int offset = 11;
+        if (!SkipMenuText(bytes, ref offset, success ? 72 : 0) ||
+            !SkipMenuText(bytes, ref offset, success ? 24 : 0) ||
+            offset != bytes.Length - 1) return false;
+        packet.Read(buffer);
+        return success
+            ? packet.slot is >= 1 and <= 3 && IsCanonicalCharacterId(packet.characterIdD) &&
+                packet.name.Length is >= 2 and <= 12 && packet.classId <= (byte)CharacterClass.Mage
+            : packet.slot == 0 && packet.classId == 0;
+    }
+
     internal static bool TryReadCharacterSelection(ArraySegment<byte> buffer, out S_CharacterSelectResult packet)
     {
         packet = new();

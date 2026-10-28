@@ -11,10 +11,17 @@ sealed class PersistenceCharacterProbe : ProbeBase
     readonly CharacterClass _intent;
     readonly string? _characterIdD;
     readonly string _phase = "";
+    readonly string? _session;
+    readonly IReadOnlyList<ListedCharacter> _expectedListing = [];
+    readonly NewCharacter? _create;
     bool _enteredWithoutAuthority;
     StoredStage _storedStage;
     CharacterClass? _storedClass;
     string? _storedFailure;
+    uint _requestId;
+    byte _createSlot;
+    string[] _listedIds = [];
+    string? _createdCharacterIdD;
 
     internal PersistenceCharacterProbe(string accountName, CharacterClass intent)
     {
@@ -23,10 +30,28 @@ sealed class PersistenceCharacterProbe : ProbeBase
     }
 
     internal PersistenceCharacterProbe(string accountName, string characterIdD, string phase)
+        : this(accountName, characterIdD, phase, session: null, expectedListing: [], create: null)
+    {
+    }
+
+    /// <param name="expectedListing">Other characters the list must show with exactly these values before
+    /// selection.</param>
+    /// <param name="create">Requested in the lowest empty listed slot after listing and before selection.</param>
+    internal PersistenceCharacterProbe(string accountName, string characterIdD, string phase, string? session,
+        IReadOnlyList<ListedCharacter> expectedListing, NewCharacter? create)
     {
         _name = accountName;
         _characterIdD = characterIdD;
         _phase = phase;
+        _session = session;
+        _expectedListing = expectedListing;
+        _create = create;
+    }
+
+    /// <summary>The validated ID from a successful create result; null until then.</summary>
+    internal string? CreatedCharacterIdD
+    {
+        get { lock (Gate) return _createdCharacterIdD; }
     }
 
     protected override string AccountName => _name;
@@ -65,32 +90,46 @@ sealed class PersistenceCharacterProbe : ProbeBase
         if (failure is not null) return failure;
         if (LoginResult != Shared.GameData.LoginResult.Accepted) return $"Account login was refused: {LoginResult}.";
 
-        lock (Gate)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            if (_storedFailure is not null || IsDisconnected) return _storedFailure ?? "Disconnected before list request.";
-            _storedStage = StoredStage.ListRequested;
-            LogStored("list-request", "packet=49 requestId=1");
-            Session!.Send(new C_CharacterListRequest { requestId = 1, reserved = 0 }.Write());
-        }
+        failure = SendStored(StoredStage.ListRequested, "list request", "list-request", "",
+            id => new C_CharacterListRequest { requestId = id, reserved = 0 }, cancellationToken);
+        if (failure is not null) return failure;
         failure = await WaitStoredAsync(() => _storedStage >= StoredStage.ListObserved, "list result", cancellationToken);
         if (failure is not null) return failure;
-        lock (Gate)
+        if (_create is { } create)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            if (_storedFailure is not null || IsDisconnected) return _storedFailure ?? "Disconnected before ID selection.";
-            _storedStage = StoredStage.SelectRequested;
-            LogStored("select-request", "packet=53 requestId=2");
-            Session!.Send(new C_CharacterSelectRequest
-            {
-                requestId = 2, reserved = 0, characterIdD = _characterIdD!,
-            }.Write());
+            byte slot;
+            lock (Gate) slot = _createSlot;
+            failure = SendStored(StoredStage.CreateRequested, "create request", "create-request",
+                $" slot={slot} class={create.Class} name={create.Name}",
+                id => new C_CharacterCreateRequest
+                {
+                    requestId = id,
+                    slot = slot,
+                    classId = (byte)create.Class,
+                    reserved = 0,
+                    rawName = create.Name,
+                }, cancellationToken);
+            if (failure is not null) return failure;
+            failure = await WaitStoredAsync(() => _storedStage >= StoredStage.CreateObserved, "create result",
+                cancellationToken);
+            if (failure is not null) return failure;
         }
+        failure = SendStored(StoredStage.SelectRequested, "ID selection", "select-request", "",
+            id => new C_CharacterSelectRequest { requestId = id, reserved = 0, characterIdD = _characterIdD! },
+            cancellationToken);
+        if (failure is not null) return failure;
         failure = await WaitStoredAsync(() => _storedStage >= StoredStage.SelectAccepted, "selection result", cancellationToken);
         if (failure is not null) return failure;
         failure = await WaitStoredAsync(() => _storedStage >= StoredStage.LoadAccepted, "stored class", cancellationToken);
         if (failure is not null) return failure;
         return await WaitStoredAsync(() => _storedStage == StoredStage.Entered, "map entry", cancellationToken);
+    }
+
+    /// <summary>Requests the normal close and records it in the same Stored line format.</summary>
+    internal void CloseStored()
+    {
+        Disconnect();
+        LogStored("close-requested", "");
     }
 
     protected override bool ValidatePacket(ArraySegment<byte> buffer)
@@ -146,7 +185,8 @@ sealed class PersistenceCharacterProbe : ProbeBase
         {
             case PacketID.S_CharacterListResult:
                 if (_storedStage != StoredStage.ListRequested ||
-                    !BotSession.TryReadCharacterList(buffer, out S_CharacterListResult list) || list.requestId != 1)
+                    !BotSession.TryReadCharacterList(buffer, out S_CharacterListResult list) ||
+                    list.requestId != _requestId)
                 {
                     FailStored("Malformed, uncorrelated or out-of-order list result.");
                     return;
@@ -158,21 +198,22 @@ sealed class PersistenceCharacterProbe : ProbeBase
                     FailStored($"List request refused: {(CharacterMenuResult)list.result}.");
                     return;
                 }
-                _storedClass = list.slot1CharacterIdD == _characterIdD ? (CharacterClass)list.slot1ClassId :
-                    list.slot2CharacterIdD == _characterIdD ? (CharacterClass)list.slot2ClassId :
-                    list.slot3CharacterIdD == _characterIdD ? (CharacterClass)list.slot3ClassId : null;
-                if (_storedClass is null)
+                ObserveListing(list);
+                break;
+            case PacketID.S_CharacterCreateResult:
+                if (_storedStage != StoredStage.CreateRequested ||
+                    !BotSession.TryReadCharacterCreate(buffer, out S_CharacterCreateResult created) ||
+                    created.requestId != _requestId)
                 {
-                    FailStored("The explicit character ID is absent from this account's list.");
+                    FailStored("Malformed, uncorrelated or out-of-order create result.");
                     return;
                 }
-                _storedStage = StoredStage.ListObserved;
-                LogStored("listed-character", $"storedClass={_storedClass}");
+                ObserveCreated(created);
                 break;
             case PacketID.S_CharacterSelectResult:
                 if (_storedStage != StoredStage.SelectRequested ||
                     !BotSession.TryReadCharacterSelection(buffer, out S_CharacterSelectResult selection) ||
-                    selection.requestId != 2)
+                    selection.requestId != _requestId)
                 {
                     FailStored("Malformed, uncorrelated or out-of-order selection result.");
                     return;
@@ -221,6 +262,96 @@ sealed class PersistenceCharacterProbe : ProbeBase
         _enteredWithoutAuthority = load is null || load.Value.Status != CharacterLoadStatus.Success;
     }
 
+    // Called under Gate. The selected ID's listed class becomes the authority later checked against 48.
+    void ObserveListing(S_CharacterListResult list)
+    {
+        (string Id, string Name, byte ClassId)[] slots =
+        [
+            (list.slot1CharacterIdD, list.slot1Name, list.slot1ClassId),
+            (list.slot2CharacterIdD, list.slot2Name, list.slot2ClassId),
+            (list.slot3CharacterIdD, list.slot3Name, list.slot3ClassId),
+        ];
+        int target = Array.FindIndex(slots, slot => slot.Id == _characterIdD);
+        if (target < 0)
+        {
+            FailStored("The explicit character ID is absent from this account's list.");
+            return;
+        }
+        _storedClass = (CharacterClass)slots[target].ClassId;
+        foreach (ListedCharacter expected in _expectedListing)
+        {
+            int index = Array.FindIndex(slots, slot => slot.Id == expected.CharacterIdD);
+            if (index < 0)
+            {
+                FailStored($"Expected character {expected.CharacterIdD} is absent from this account's list.");
+                return;
+            }
+            LogStored("listed-expected", $"listedCharacterId={expected.CharacterIdD} slot={index + 1} " +
+                $"name={slots[index].Name} class={(CharacterClass)slots[index].ClassId}");
+            if (slots[index].Name != expected.Name || slots[index].ClassId != (byte)expected.Class)
+            {
+                FailStored($"Listed character {expected.CharacterIdD} differs from the expected name or class.");
+                return;
+            }
+        }
+        if (_create is not null)
+        {
+            // occupiedMask bit0..2 is slot1..3; a valid Knight is also class 0, so only the mask marks an empty slot.
+            int empty = Enumerable.Range(0, slots.Length)
+                .FirstOrDefault(slot => (list.occupiedMask & (1 << slot)) == 0, -1);
+            if (empty < 0)
+            {
+                FailStored("No empty slot is listed for the new character.");
+                return;
+            }
+            _createSlot = (byte)(empty + 1);
+            _listedIds = slots.Where(slot => slot.Id.Length != 0).Select(slot => slot.Id).ToArray();
+        }
+        _storedStage = StoredStage.ListObserved;
+        LogStored("listed-character", $"storedClass={_storedClass}");
+    }
+
+    // Called under Gate. Only a fully checked success prints createdCharacterId, which the after phase takes as input.
+    void ObserveCreated(S_CharacterCreateResult created)
+    {
+        LogStored("create-result", $"packet=52 requestId={created.requestId} " +
+            $"result={(CharacterMenuResult)created.result} " +
+            $"invalidField={(CharacterMenuInvalidField)created.invalidField} slot={created.slot} " +
+            $"characterIdD={created.characterIdD} name={created.name} class={(CharacterClass)created.classId}");
+        if (created.result != (byte)CharacterMenuResult.Success)
+        {
+            FailStored($"Create request refused: {(CharacterMenuResult)created.result}.");
+            return;
+        }
+        if (created.slot != _createSlot || created.name != _create!.Name || created.classId != (byte)_create.Class ||
+            _listedIds.Contains(created.characterIdD))
+        {
+            FailStored("Create succeeded with a different slot, name or class, or with an already listed ID.");
+            return;
+        }
+        _createdCharacterIdD = created.characterIdD;
+        _storedStage = StoredStage.CreateObserved;
+        LogStored("created-character", $"createdCharacterId={created.characterIdD} slot={created.slot} " +
+            $"name={created.name} class={(CharacterClass)created.classId}");
+    }
+
+    // Requests are sequential, so the handler of the next result accepts only the latest connection-local ID.
+    string? SendStored(StoredStage stage, string purpose, string observation, string details,
+        Func<uint, IPacket> request, CancellationToken cancellationToken)
+    {
+        lock (Gate)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (_storedFailure is not null || IsDisconnected)
+                return _storedFailure ?? $"Disconnected before {purpose}.";
+            IPacket packet = request(++_requestId);
+            _storedStage = stage;
+            LogStored(observation, $"packet={packet.Protocol} requestId={_requestId}{details}");
+            Session!.Send(packet.Write());
+            return null;
+        }
+    }
+
     async Task<string?> WaitStoredAsync(Func<bool> observed, string description, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -246,12 +377,17 @@ sealed class PersistenceCharacterProbe : ProbeBase
     }
 
     void LogStored(string observation, string details) =>
-        Console.WriteLine($"[Persistence Stored] utc={DateTime.UtcNow:O} phase={_phase} account={_name} " +
-            $"characterId={_characterIdD} event={observation} {details}");
+        Console.WriteLine($"[Persistence Stored] utc={DateTime.UtcNow:O} phase={_phase}" +
+            (_session is null ? "" : $" session={_session}") + $" account={_name} " +
+            $"characterId={_characterIdD} event={observation}" + (details.Length == 0 ? "" : $" {details}"));
+
+    internal sealed record ListedCharacter(string CharacterIdD, string Name, CharacterClass Class);
+
+    internal sealed record NewCharacter(string Name, CharacterClass Class);
 
     enum StoredStage
     {
-        Connecting, HandshakeReceived, LoginReceived, ListRequested, ListObserved,
+        Connecting, HandshakeReceived, LoginReceived, ListRequested, ListObserved, CreateRequested, CreateObserved,
         SelectRequested, SelectAccepted, LoadAccepted, Entered,
     }
 }

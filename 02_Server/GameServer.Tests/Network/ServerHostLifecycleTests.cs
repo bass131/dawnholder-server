@@ -103,7 +103,10 @@ public sealed class ServerHostLifecycleTests
                 {
                     await stream.WriteAsync(new C_CharacterCreateRequest
                     {
-                        requestId = 2, slot = 1, classId = 1, rawName = name,
+                        requestId = 2,
+                        slot = 1,
+                        classId = 1,
+                        rawName = name,
                     }.Write());
                     byte[] createFrame = await ReadFrame(stream);
                     Assert.Equal((ushort)52, BitConverter.ToUInt16(createFrame, 2));
@@ -127,7 +130,8 @@ public sealed class ServerHostLifecycleTests
 
                 await stream.WriteAsync(new C_CharacterSelectRequest
                 {
-                    requestId = 4, characterIdD = characterId.ToString("D"),
+                    requestId = 4,
+                    characterIdD = characterId.ToString("D"),
                 }.Write());
                 byte[] selectFrame = await ReadFrame(stream);
                 Assert.Equal((ushort)54, BitConverter.ToUInt16(selectFrame, 2));

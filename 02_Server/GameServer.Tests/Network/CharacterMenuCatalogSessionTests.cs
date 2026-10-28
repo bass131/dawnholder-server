@@ -33,7 +33,10 @@ public sealed class CharacterMenuCatalogSessionTests
         session.Clear();
         session.OnRecvPacket(new C_CharacterCreateRequest
         {
-            requestId = 2, slot = 2, classId = 1, rawName = "저장마법사",
+            requestId = 2,
+            slot = 2,
+            classId = 1,
+            rawName = "저장마법사",
         }.Write());
         await fixture.PumpUntilAsync(() => session.Packets.Any(packet => Id(packet) == 52));
         S_CharacterCreateResult created = new();
@@ -81,7 +84,10 @@ public sealed class CharacterMenuCatalogSessionTests
         CharacterMenuRequestSession session = fixture.LoggedIn();
         session.OnRecvPacket(new C_CharacterCreateRequest
         {
-            requestId = 1, slot = slot, classId = classId, rawName = name,
+            requestId = 1,
+            slot = slot,
+            classId = classId,
+            rawName = name,
         }.Write());
         fixture.Tick();
         byte[] reply = Assert.Single(session.Packets);
@@ -142,7 +148,10 @@ public sealed class CharacterMenuCatalogSessionTests
         await fixture.PumpUntilAsync(() => fixture.Catalog.ListAccounts.Count == 1);
         session.OnRecvPacket(new C_CharacterCreateRequest
         {
-            requestId = 11, slot = 1, classId = 0, rawName = "새캐릭터",
+            requestId = 11,
+            slot = 1,
+            classId = 0,
+            rawName = "새캐릭터",
         }.Write());
         session.OnRecvPacket(new C_CharacterListRequest { requestId = 10 }.Write());
         fixture.Tick();
@@ -203,7 +212,10 @@ public sealed class CharacterMenuCatalogSessionTests
         CharacterMenuRequestSession session = fixture.LoggedIn();
         session.OnRecvPacket(new C_CharacterCreateRequest
         {
-            requestId = 1, slot = 1, classId = 1, rawName = "미확정이름",
+            requestId = 1,
+            slot = 1,
+            classId = 1,
+            rawName = "미확정이름",
         }.Write());
         await fixture.PumpUntilAsync(() => session.IsClosing);
         Assert.Equal(Failure(51, 1, 12), Assert.Single(session.Packets));
@@ -232,7 +244,10 @@ public sealed class CharacterMenuCatalogSessionTests
         CharacterMenuRequestSession session = fixture.LoggedIn();
         session.OnRecvPacket(new C_CharacterCreateRequest
         {
-            requestId = 1, slot = 2, classId = 1, rawName = "저장마법사",
+            requestId = 1,
+            slot = 2,
+            classId = 1,
+            rawName = "저장마법사",
         }.Write());
         await fixture.PumpUntilAsync(() => session.Packets.Count == 1);
         S_CharacterCreateResult reply = new();

@@ -61,6 +61,30 @@ public sealed class CharacterAdmissionClassTests
         Assert.Equal("Active", RuntimeEntryApi.AdmissionState(session));
     }
 
+    // The selector-bound services constructor stays supported (decision 28 A, Core msg_a4bad38aab8c 3b): its
+    // non-persisted account makes no store call and enters with the menu class, without a 54 before 48.
+    [Theory]
+    [MemberData(nameof(MenuClasses))]
+    public async Task NonPersistedAccount_EntersWithTheMenuClass_WithoutAnyStoreCall(CharacterClass menuClass)
+    {
+        using AdmissionTestWorld fixture = new(attachPersistence: false);
+        object selector = RuntimeEntryApi.NewSelector(PersistedName, PersistedAccountId);
+        RuntimeEntryApi.AttachPersistence(fixture.World,
+            RuntimeEntryApi.NewServices(selector, PersistedIdentity, fixture.Repository, fixture.Clock));
+
+        EntrySession session = await fixture.EnterAsync(OtherName, menuClass);
+
+        (byte result, byte loadedClass) = SingleLoadResult(session);
+        bool classKnown = fixture.World.TryGetEntityClass(session.EntityId, out byte entityClass);
+        Assert.Empty(fixture.Repository.Calls);
+        Assert.Equal(Success, result);
+        Assert.Equal((byte)menuClass, loadedClass);
+        Assert.True(classKnown);
+        Assert.Equal((byte)menuClass, entityClass);
+        AssertEntryOrder(session, stored: false);
+        Assert.Equal("Active", RuntimeEntryApi.AdmissionState(session));
+    }
+
     // Without AttachPersistence the existing memory path stays, and the client still gets the same one result packet.
     [Theory]
     [MemberData(nameof(MenuClasses))]
