@@ -9,12 +9,10 @@ namespace Dawnholder.Server.GameServer.Tests.Persistence.RuntimeEntry;
 
 /// <summary>
 /// Requirement 3 (runtime-entry pretest contract; api-contract v2 「패킷과 공개 결과」「서버 입장·owner 출력·종료」;
-/// goal 「채택된 동작 기준」; technical-spec §5.1·§6): a non-persisted account makes no store call and enters with its
-/// menu class; the persisted account's stored class beats the opposite menu intent; a persisted-account failure refuses
-/// entry with class 255 and never falls back to memory play. Every success follows LoadResult → EnterMap → full HP.
-/// Where technical-spec §5.1 and api-contract v2 name different public statuses, the goal's fixed api-contract v2 mapping
-/// applies (lead msg_4b303c153958, contract-supplement-2): another current runtime owner is Busy, a historical-only
-/// acquired receipt and an incompatible schema are Unavailable.
+/// goal 「채택된 동작 기준」; technical-spec §5.1·§6): explicit Legacy makes no store call; a Stored host admits every
+/// account through its owned catalog ID, with stored class authority and no class-only fallback. The current catalog
+/// packet contract adds 54 before successful 48 → EnterMap → full HP. Refusals retain the no-entry requirement and
+/// use their catalog meaning in 54; the unchanged six-byte 48 wire has its own packet tests.
 /// </summary>
 [Collection("GameWorldRegistryTests")]
 public sealed class CharacterAdmissionClassTests
@@ -27,26 +25,52 @@ public sealed class CharacterAdmissionClassTests
         { CharacterClass.Mage, CharacterClass.Knight, KnightMaxHp },
     };
 
-    // Expected public status per api-contract v2 「패킷과 공개 결과」.
+    // Current packet-contract-v1/Core catalog meanings. Refused ID selection sends 54,
+    // with no successful 48 or memory entry; the old load-result wire is tested separately.
     public static TheoryData<string, byte> Refusals => new()
     {
-        { "probe read failed", Unavailable },
-        { "probe not dispatched", Unavailable },
-        { "recovery owner holds the slot", RecoveryRequired },
-        { "acquire conflict", Busy },
-        { "acquire rejected", Unavailable },
-        { "acquire not dispatched", Unavailable },
-        { "acquire unknown and unresolved", Unavailable },
-        { "another runtime owner holds the slot", Busy },
-        { "probe schema incompatible", Unavailable },
-        { "acquired receipt is only historical", Unavailable },
+        { "probe read failed", 11 },
+        { "probe not dispatched", 11 },
+        { "recovery owner holds the slot", 9 },
+        { "acquire conflict", 15 },
+        { "acquire rejected", 14 },
+        { "acquire not dispatched", 10 },
+        { "acquire unknown and unresolved", 12 },
+        { "another runtime owner holds the slot", 8 },
+        { "probe schema incompatible", 13 },
+        { "acquired receipt is only historical", 12 },
     };
 
     [Theory]
     [MemberData(nameof(MenuClasses))]
-    public async Task NonPersistedAccount_EntersWithTheMenuClass_WithoutAnyStoreCall(CharacterClass menuClass)
+    public async Task StoredOtherAccount_UsesItsCatalogClassWhileTheControlledStoreStaysFree(CharacterClass menuClass)
     {
         using AdmissionTestWorld fixture = new();
+
+        EntrySession session = await fixture.EnterAsync(OtherName, menuClass);
+
+        (byte result, byte loadedClass) = SingleLoadResult(session);
+        bool classKnown = fixture.World.TryGetEntityClass(session.EntityId, out byte entityClass);
+        Assert.Empty(fixture.Repository.Calls);
+        Assert.Equal(1, fixture.Catalog.OtherSelections);
+        Assert.Equal(Success, result);
+        Assert.Equal((byte)menuClass, loadedClass);
+        Assert.True(classKnown);
+        Assert.Equal((byte)menuClass, entityClass);
+        AssertEntryOrder(session);
+        Assert.Equal("Active", RuntimeEntryApi.AdmissionState(session));
+    }
+
+    // The selector-bound services constructor stays supported (decision 28 A, Core msg_a4bad38aab8c 3b): its
+    // non-persisted account makes no store call and enters with the menu class, without a 54 before 48.
+    [Theory]
+    [MemberData(nameof(MenuClasses))]
+    public async Task NonPersistedAccount_EntersWithTheMenuClass_WithoutAnyStoreCall(CharacterClass menuClass)
+    {
+        using AdmissionTestWorld fixture = new(attachPersistence: false);
+        object selector = RuntimeEntryApi.NewSelector(PersistedName, PersistedAccountId);
+        RuntimeEntryApi.AttachPersistence(fixture.World,
+            RuntimeEntryApi.NewServices(selector, PersistedIdentity, fixture.Repository, fixture.Clock));
 
         EntrySession session = await fixture.EnterAsync(OtherName, menuClass);
 
@@ -57,7 +81,7 @@ public sealed class CharacterAdmissionClassTests
         Assert.Equal((byte)menuClass, loadedClass);
         Assert.True(classKnown);
         Assert.Equal((byte)menuClass, entityClass);
-        AssertEntryOrder(session);
+        AssertEntryOrder(session, stored: false);
         Assert.Equal("Active", RuntimeEntryApi.AdmissionState(session));
     }
 
@@ -76,7 +100,7 @@ public sealed class CharacterAdmissionClassTests
         (byte result, byte loadedClass) = SingleLoadResult(session);
         Assert.Equal(Success, result);
         Assert.Equal((byte)menuClass, loadedClass);
-        AssertEntryOrder(session);
+        AssertEntryOrder(session, stored: false);
     }
 
     [Theory]
@@ -84,8 +108,14 @@ public sealed class CharacterAdmissionClassTests
     public async Task StoredClass_BeatsTheOppositeMenuIntent(CharacterClass menuClass, CharacterClass storedClass, int storedMaxHp)
     {
         using AdmissionTestWorld fixture = new();
-        (EntrySession session, Repo.PendingCall<AcquireAndLoadRequest, AcquireAndLoadResult> acquire) =
-            await fixture.LoadingAsync(menuClass);
+        EntrySession session = await fixture.LogInAsync(PersistedName);
+        session.Receive(new C_CharacterSelect { characterClass = (byte)menuClass });
+        await fixture.TickAsync();
+        Assert.Equal((Unavailable, NoClass), SingleLoadResult(session));
+        Assert.Empty(fixture.Repository.Calls);
+        int acceptedSelection = session.Mark;
+        var loading = await fixture.LoadingAsync(storedClass, session);
+        Repo.PendingCall<AcquireAndLoadRequest, AcquireAndLoadResult> acquire = loading.Acquire;
         long expectedFence = acquire.Request.Operation.ExpectedFence;
         CharacterClass intendedClass = acquire.Request.IntendedClass;
 
@@ -93,15 +123,15 @@ public sealed class CharacterAdmissionClassTests
         await fixture.TickUntilAsync(() => fixture.PlayerOf(session) is not null, "entry with the stored class");
 
         PlayerEntity player = fixture.PlayerOf(session)!;
-        (byte result, byte loadedClass) = SingleLoadResult(session);
+        (byte result, byte loadedClass) = SingleLoadResult(session, acceptedSelection);
         Assert.Equal(ProbedFence, expectedFence);
-        Assert.Equal(menuClass, intendedClass);
+        Assert.Equal(storedClass, intendedClass);
         Assert.Equal(storedClass, player.Stats.Class);
         Assert.Equal(storedMaxHp, player.MaxHp);
         Assert.Equal(player.MaxHp, player.Hp);
         Assert.Equal(Success, result);
         Assert.Equal((byte)storedClass, loadedClass);
-        AssertEntryOrder(session);
+        AssertEntryOrder(session, acceptedSelection);
         Assert.Equal("Active", RuntimeEntryApi.AdmissionState(session));
         Assert.Equal(new[] { Repo.Admission, Repo.Acquire }, fixture.Repository.Calls);
     }
@@ -112,22 +142,24 @@ public sealed class CharacterAdmissionClassTests
     {
         using AdmissionTestWorld fixture = new();
         EntrySession session = await fixture.LogInAsync(PersistedName);
-        session.Receive(new C_CharacterSelect { characterClass = (byte)CharacterClass.Knight });
+        fixture.SelectStored(session, CharacterClass.Knight);
 
         await AnswerAsRefusedAsync(fixture, refusal);
-        await fixture.TickUntilAsync(() => FirstIndexOf(session, LoadResultId) >= 0, $"{refusal}: the load result");
+        await fixture.TickUntilAsync(() => FirstIndexOf(session, 54) >= 0, $"{refusal}: the select result");
         await fixture.TicksAsync(3);
+        Assert.Equal(-1, FirstIndexOf(session, LoadResultId));
         string[] callsAtResult = fixture.Repository.Calls.ToArray();
         session.Receive(new C_CharacterSelect { characterClass = (byte)CharacterClass.Mage });
         await fixture.TicksAsync(3);
 
-        (byte result, byte loadedClass) = SingleLoadResult(session);
+        (byte result, byte invalidField) = SingleSelectFailure(session);
         string state = RuntimeEntryApi.AdmissionState(session);
         Assert.Equal(expectedStatus, result);
-        Assert.Equal(NoClass, loadedClass);
+        Assert.Equal((byte)0, invalidField);
+        Assert.DoesNotContain(session.Sent(), packet => packet.Id == LoadResultId && packet.Bytes[4] == 0);
         Assert.Equal(-1, FirstIndexOf(session, (ushort)PacketID.S_EnterMap));
         Assert.Empty(fixture.Players);
-        Assert.Contains(state, new[] { "Rejected", "Closed" });
+        Assert.Equal(expectedStatus == 12 ? "Closed" : "Selecting", state);
         Assert.Equal(callsAtResult, fixture.Repository.Calls);
     }
 
@@ -197,11 +229,16 @@ public sealed class CharacterAdmissionClassTests
     }
 
     // api-contract v2 「패킷과 공개 결과」 Success row: LoadResult → EnterMap → full HP.
-    static void AssertEntryOrder(EntrySession session)
+    static void AssertEntryOrder(EntrySession session, int fromMark = 0, bool stored = true)
     {
-        int load = FirstIndexOf(session, LoadResultId);
-        int enter = FirstIndexOf(session, (ushort)PacketID.S_EnterMap);
-        int hp = FirstIndexOf(session, (ushort)PacketID.S_PlayerHp);
+        int load = FirstIndexOf(session, LoadResultId, fromMark);
+        int enter = FirstIndexOf(session, (ushort)PacketID.S_EnterMap, fromMark);
+        int hp = FirstIndexOf(session, (ushort)PacketID.S_PlayerHp, fromMark);
+        if (stored)
+        {
+            int select = FirstIndexOf(session, 54, fromMark);
+            Assert.True(select >= 0 && select < load, "Stored ID success must precede the authoritative load result.");
+        }
         Assert.True(load >= 0, "no S_CharacterLoadResult was sent");
         Assert.True(load < enter, $"S_CharacterLoadResult at {load} is not before S_EnterMap at {enter}");
         Assert.True(enter < hp, $"S_EnterMap at {enter} is not before S_PlayerHp at {hp}");

@@ -13,7 +13,7 @@ namespace Dawnholder.Client.Tests
     // 2026-10-05-items-inventory-currency/goal.md and its PR1 acceptance): LittleEndian, 4-byte header
     // (ushort size including the header, ushort id), IDs 35..38 after 34, then the dungeon goal's 39·40
     // (01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md P1). Login 41·42 is v19;
-    // World 43..47 and the authoritative character-load result 48 advance the shared contract to v21.
+    // World 43..47 and authoritative character-load result 48 stay fixed; menu 49..54 advances the contract to v22.
     // They are written as literals here, never computed from the generator or the server.
     // The client handler side of S_InventorySnapshot is covered in depth by InventoryClientContractTests.
     public sealed class InventoryProtocolCompatibilityTests
@@ -28,9 +28,9 @@ namespace Dawnholder.Client.Tests
         }
 
         [Test]
-        public void ProtocolVersion_IsTwentyOne()
+        public void ProtocolVersion_IsTwentyTwo()
         {
-            Assert.AreEqual(21, ProtocolVersion.Current);
+            Assert.AreEqual(22, ProtocolVersion.Current);
         }
 
         // Looked up by name: the committed Shared.dll has no such PacketID members before the generator runs,

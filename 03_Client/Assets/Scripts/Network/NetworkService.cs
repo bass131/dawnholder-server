@@ -4,6 +4,7 @@ using System.Net;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Network.CharacterMenu;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Scenes;
 using Dawnholder.Client.State;
@@ -39,6 +40,8 @@ namespace Dawnholder.Client.Network
 
         // TCP/session 활성 상태이며, 씬 준비 완료를 의미하지 않는다.
         public bool IsConnected => _lifetime != null && _lifetime.IsConnected;
+        public CharacterMenuClient CharacterMenu =>
+            (_lifetime?.CurrentSession as UnityClientSession)?.CharacterMenu;
 
         void Awake()
         {
@@ -53,6 +56,7 @@ namespace Dawnholder.Client.Network
             _lifetime = new ClientConnectionLifetime(connector.BeginConnect,
                 MainThreadDispatcher.Enqueue, CreateSession, ResetSessionMirrors);
             _lifetime.LoginRejected += HandleLoginRejected;
+            _lifetime.CharacterMenuLoginAccepted += HandleCharacterMenuLoginAccepted;
         }
 
         /// <summary>현재 시도가 없을 때 endpoint/class를 고정하고 연결을 시작한다.</summary>
@@ -70,31 +74,55 @@ namespace Dawnholder.Client.Network
                 return;
             }
 
+            if (!TryPrepareConnection(hostOverride, out IPEndPoint endPoint, out string accountName)) return;
+            if (_lifetime.Connect(endPoint, (byte)classValue, accountName))
+            {
+                MainMenuNotice.Set("Loading character...");
+                Debug.Log($"[NetworkService] Connect 시도 → {endPoint} (class={classValue})");
+            }
+        }
+
+        /// <summary>로그인 뒤 목록을 요청하는 메뉴 접속. 로컬 직업 선택은 필요하지 않다.</summary>
+        public void ConnectCharacterMenu(string hostOverride = null)
+        {
+            if (_lifetime == null || _lifetime.State != ClientConnectionState.Disconnected) return;
+            if (!TryPrepareConnection(hostOverride, out IPEndPoint endPoint, out string accountName)) return;
+            if (_lifetime.ConnectCharacterMenu(endPoint, accountName))
+                Debug.Log($"[NetworkService] Character menu connect 시도 → {endPoint}");
+        }
+
+        bool TryPrepareConnection(string hostOverride, out IPEndPoint endPoint, out string accountName)
+        {
+            endPoint = null;
+            accountName = null;
             string host = hostOverride ?? PlayerPrefs.GetString(ServerHostPrefsKey, _serverHost);
             if (string.IsNullOrWhiteSpace(host)) host = _serverHost;
             if (!IPAddress.TryParse(host, out IPAddress ip) || _serverPort < 1 || _serverPort > 65535)
             {
                 Debug.LogWarning($"[NetworkService] 잘못된 서버 주소 '{host}:{_serverPort}' — MainMenu 복귀.");
                 ReturnToMainMenu();
-                return;
+                return false;
             }
 
-            if (!AccountNameRule.TryNormalize(AccountLoadout.SessionAccountName, out string accountName))
+            if (!AccountNameRule.TryNormalize(AccountLoadout.SessionAccountName, out accountName))
             {
                 MainMenuNotice.Set(MainMenuNotice.InvalidAccountName);
                 ReturnToMainMenu();
-                return;
+                return false;
             }
 
-            var endPoint = new IPEndPoint(ip, _serverPort);
+            endPoint = new IPEndPoint(ip, _serverPort);
             _reportedError = null;
             _accumSec = 0f;
             ClassLoadout.ResetServerClass();
-            if (_lifetime.Connect(endPoint, (byte)classValue, accountName))
-            {
-                MainMenuNotice.Set("Loading character...");
-                Debug.Log($"[NetworkService] Connect 시도 → {endPoint} (class={classValue})");
-            }
+            return true;
+        }
+
+        void HandleCharacterMenuLoginAccepted(IClientConnectionSession acceptedSession)
+        {
+            if (_lifetime == null || !ReferenceEquals(_lifetime.CurrentSession, acceptedSession) ||
+                !(acceptedSession is UnityClientSession session)) return;
+            if (session.BeginCharacterMenu()) session.CharacterMenu.TryList();
         }
 
         IClientConnectionSession CreateSession(Func<bool> current)
@@ -198,7 +226,11 @@ namespace Dawnholder.Client.Network
 
         void OnDestroy()
         {
-            if (_lifetime != null) _lifetime.LoginRejected -= HandleLoginRejected;
+            if (_lifetime != null)
+            {
+                _lifetime.LoginRejected -= HandleLoginRejected;
+                _lifetime.CharacterMenuLoginAccepted -= HandleCharacterMenuLoginAccepted;
+            }
             _lifetime?.Dispose();
             if (Instance == this) Instance = null;
         }

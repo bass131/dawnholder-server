@@ -14,7 +14,8 @@ namespace Dawnholder.Server.GameServer.Tests.Persistence.RuntimeEntry;
 /// <see cref="Wire"/> encoder, never from the generator. The ID and field tables are copied from PDL.xml at
 /// 6e398abe (SHA256 EDF7ED5F…0B1C) and the frozen World snapshot (SHA256 0EA439BC…1C99). The generated types are
 /// looked up by name, as in DungeonClearPacketContractTests, so this assembly compiles before the generator runs.
-/// The protocol version number is not asserted: Main fixes it by merge order (api-contract v2).
+/// The complete ID table and protocol 22 follow packet-contract-v1.md
+/// (01_Phases/goals/2026-10-18-character-server), preserving the original IDs 1..48.
 /// </summary>
 [Collection("GameWorldRegistryTests")]
 public sealed class CharacterLoadResultPacketTests
@@ -201,17 +202,27 @@ public sealed class CharacterLoadResultPacketTests
         Assert.Equal(Expected(source.Fields), PublicFields(type));
     }
 
-    // No reused, skipped or placeholder ID: 1..48 exactly, and 48 is the load result.
+    // packet-contract-v1.md: IDs 1..48 stay frozen; the six menu packets append at 49..54 with protocol 22.
     [Fact]
-    public void PacketIds_AreOneToFortyEight_WithTheLoadResultLast()
+    public void PacketIds_AreOneToFiftyFour_WithTheLoadResultStillFortyEight()
     {
         int[] ids = Enum.GetValues<PacketID>().Select(id => (int)id).Order().ToArray();
         string[] names = CorePackets.Concat(FrozenWorldPackets).Select(packet => packet.Name)
-            .Append("S_CharacterLoadResult").ToArray();
+            .Append("S_CharacterLoadResult")
+            .Concat(new[]
+            {
+                "C_CharacterListRequest",
+                "S_CharacterListResult",
+                "C_CharacterCreateRequest",
+                "S_CharacterCreateResult",
+                "C_CharacterSelectRequest",
+                "S_CharacterSelectResult",
+            }).ToArray();
         string[] actualNames = Enum.GetValues<PacketID>().OrderBy(id => (int)id).Select(id => id.ToString()).ToArray();
 
-        Assert.Equal(Enumerable.Range(1, 48), ids);
+        Assert.Equal(Enumerable.Range(1, 54), ids);
         Assert.Equal(names, actualNames);
+        Assert.Equal((ushort)22, ProtocolVersion.Current);
     }
 
     // Protective, holds today: 48 is a server-to-client packet; the server registers no handler for it, and a client

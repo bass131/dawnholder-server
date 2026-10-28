@@ -1,0 +1,939 @@
+# 캐릭터 목록·생성·선택 서버 처리
+
+로그인한 계정의 캐릭터 세 칸을 조회하고, 이름과 직업을 정해 만들고, 고른 캐릭터로 마을에 들어가는 서버 처리를 연결합니다.
+이름 검사와 실제 저장은 Core 기능을 사용하고, 화면 제작은 Content가 맡습니다.
+선택한 캐릭터의 직업은 저장된 서버 값으로 결정하며, 같은 계정의 길드 가입 보상이 중복되지 않게 유지합니다.
+Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
+Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
+
+**상태: 10-28에는 검증을 통과한 만큼 보여 주고 미완료는11-06 제출까지 다듬는다. 신규 World 제품 묶음은 현재 밤 두 번째 빌드 후보이며, Core B1·최종 독립 실DB 인계 뒤 World 최종 강검증·제품 PR 순서를 유지한다.** 다음 Core B0 시각·최종 인계 F가 미정이므로18:00 포함을 확약하지 않는다. 기존 생성API·필수시험은 유지하고 생성 화면 실연 유예는 그대로다. 미커밋26경로/기존 입력을 보존했으며 이전 자체회귀838P는 당시 결과이고 현재 합동/최종 독립/Unity·실DB 전체 판정은 남았다.
+
+## 재개 지점
+
+**다음 첫 일(10-29 02:1x KST, `[World 리드 Opus]`):** World 독립 검증자(`task_3ccc9d4a5f98`)가 시험 쓰기를 마쳤다. 쓴 파일은 서버 시험 2파일과 Unity 시험 3파일이고, 해시는 `verify-pr270-01/worker/raw/test-write-frozen-1.json`과 5/5 일치한다. 그 5파일과 이 기록을 한 commit으로 넣어 새 head를 검증자에게 보충한다. V2(WSL 전체)는 실패 0이다. V3(Unity 전체 EditMode)는 1337건 중 82건이 실패했다. 82건은 `-nographics`의 그래픽 장치 부재 81건과 긴 snapshot 경로(268자)의 native DLL 로드 실패 1건으로, 검증자 분류는 환경 누락(b)이다. 그래서 짧은 snapshot `.backups/unity-character-menu-06`에서 `-nographics` 없이 전체를 다시 돈다. 이 Unity 창은 시작 전에 메인에 알린다. 합동 창 순서표 v3에는 S6a(Content 2단)를 넣고, 사용자 결정 36 A·37 A를 반영해 Core가 작성한다. 아래는 직전 단계 기록이다.
+
+**이전 다음 첫 일(10-29 01:3x KST, `[World 리드 Opus]`):** World 독립 검증자(Astra xhigh) 계약을 발행한다. 검증 head는 `93c4b41b` 위에 이 기록을 넣은 commit이다. 수정 구현자(`task_68e496a2acdf`)는 succeeded로 정산·종료했고 전체 서버 시험은 실패 0이다. 남은 것은 Unity EditMode 세 파일(`GuildProtocolCompatibilityTests`·`InventoryProtocolCompatibilityTests`·`GuildAdmissionPacketCompatibilityTests`)의 버전 21·패킷 48 기대다. Content 동의(`msg_884bd7016495`에 대한 답)를 받으면 검증자 쓰기를 보충으로 연다. 검증자 WSL+Unity는 시작 전에 메인에 알린다. 아래는 직전 단계 기록이다.
+
+**이전 다음 첫 일(10-29 00:5x KST, `[World 리드 Opus]`):** World 수정 구현자(Opus) 계약을 발행한다. 할 일은 셋이다. ① `GameSession`의 직업만 고르는 선택 거절과 catalog 메뉴 연결의 기준을 `Mode == Stored`에서 `Catalog is not null`로 좁힌다. Core 동의는 `msg_37ff61c16407`이고, 술어와 주석은 Core `CharacterAdmissionServices.CreateLifetime`과 맞춘다. ② 버전 21·패킷 48을 기대하는 기존 시험 6건을 22·54로 고치고 분류표를 남긴다. ③ Integration 「GameWorld 단일 인스턴스」 9건을 진단해 고친다. 첫 단서는 collection 없는 `Guild/GuildDebugTreasuryCheatTests`다. 앞 구현자(`task_e1dc91317495`)는 failed로 정산·종료했고, 산출물은 리드 commit에 있다. 실행 창은 Content Unity 반환 뒤 메인에 요청한다. 그다음은 World 검증자다(계약 초안 `verify-pr270-01/contract-head-v1.md`). 서식 검사는 이 PC Windows에 SDK 10.0.301이 없어 PR CI의 `format-check.sh`로 확인한다. 아래는 직전 단계 기록이다.
+
+**이전 다음 첫 일(10-28 23:4x KST, `[World 리드 Opus]`):** 결정 27 반영 범위 v2와 결정 28 A·29 A가 승인됐다(Main `msg_5642ff7de0f4`). 순서는 리드의 후보 commit·main 통합·draft PR → 구현자 Opus의 Stored 생성 봇·selector 시험·WSL 자동 시험 → World·Core 독립 검증자 실사·시험 보완 → 합동 실DB 한 창 → Unity → 판정·PR이다. 실행 창은 Core와 순서를 맞춘 뒤 메인에 시각을 요청한다. 범위 초안 송신은 Main `msg_78570cdf06a1`이었다. 초안은 근거 폴더 `scope-draft-decision27-v2.md`(sha256 `da1b7492…`)다. Core 리드와 경계·순서·결정 문구를 맞췄다(Core `msg_a4bad38aab8c`·`msg_2084821e8a09`, World `msg_a89f446847b2`·`msg_ec2dd52491d3`). 합의 요지는 합동 실DB 한 창을 두 파트 독립 검증자의 실제 경로 실행으로 쓰고, 그 창의 World head를 PR head로 삼는 것이다. 진입 READY는 Main `msg_6113ac3af997`다. Run은 `run_90d18490c825`를 이어받았다. 미커밋 후보 25경로는 10-26 기록 hash와 25/25 일치한다. 근거는 `.backups/verification/2026-10-18-character-server/lead-opus-entry-20261028/`이다. 아래 Sol 리드 기록은 인계 당시 상태다.
+
+**인계 당시: 현재 Sol 리드는 안전 지점에서 정산·정지하며 메인의 pane 종료를 기다린다.** Main `msg_0a6a1432302c`에 따라 새 Task·worker·실행 창0, 후보 제품/미추적 변경을 보존하고 기록 파일만 로컬 commit한다. 후임 Claude는 아래 **「최종 리드 정산 재개 카드」**에서 이어받는다. goal 전체 완료나 최종 강검증 PASS가 아니다.
+
+중단 전 작업의 다음 조건은 **Core B0→B1 우선→최종 독립 실DB의 실제 반환·결과·최종 입력/쓰기 종료를 받아 새 입력을 재고정하고 WSL READY를 Main에 보내는 것**이다. 마지막 확인된 동결 해제는 `msg_271c2c81e324` 송신04:29:52Z다. 제품 입력 기준은 PR266 main4ab를 기계 통합한 `299e99a001f2b55d2fc723df1aa87c85059969fe`이며 이 뒤 이번 commit은 기록 파일뿐이다. 새 리드는 현재 Main/Core 지시와 실제 HEAD를 다시 확인하고 옛 예약·HEAD5ade/manifest를 권한/현재 결과로 재사용하지 않는다.
+
+**이번 연속 동결 준수·해제 후 처리:** `msg_259c07d44aea`가 첫 창 미진입 뒤 새 `msg_28332be5a910`(예정 T04:25Z/returnBy04:55Z)까지 동결을 해제 없이 연장했다. 이 지시는 동결 중 외부 로그에만 보존했고 Main의 위 해제 뒤 goal에 인수한다. goal은02:25:13.3018761Z 쓰기 이후 해제 뒤 첫 편집 전까지 hash `606F58B1E54687E6EA8287F36BEC25A4B155463C565941D33B4B95E25265FD74`를 유지했고 제품25경로도 drift0이었다. 예정 시각/미진입으로 스스로 해제하지 않았다. 해제 뒤 PR266 요청을 정적으로 점검하고, 사전 Main/Core 통지·백업·전체 변경 교집합0/충돌0/staged0/lock0 확인 뒤 main34경로만 로컬 merge했다. 상세는 아래 PR266 절과 외부 로그다.
+
+Main의05:00~06:35Z는 사용자 저장 확인 후보·운영툴 자리이며 World 실행 허가가 아니다. B1은 `msg_775930079a39`대로 B0 뒤 첫 순서이고 상태 관측에 따른 별도 동결이 가능하다. 새 최종 인계와 각 READY/T·자원 관문 전 WSL·서버·Unity·DB 실행0을 유지한다.
+
+**동결 중 준비한 현재 결정·최단 계획을 해제 뒤 인수했다.** `msg_775930079a39`·`msg_30ad9776df99`의 사용자 원문/메인 해석, 계약 보충 초안·최종 입력 체크리스트·PR 문안은 외부 로그에 보존했고 아래 현재 결정과 분류에 연결한다. **현재 리드는 Sol xhigh이며, `msg_d50edcfab607`에 따른20:00KST 이후 Opus 리드 교체는 메인이 수행한다. 독립 검증은 지금과20:00 이후 모두 신규 Astra xhigh/Fast off다.** 실제 기동 때 유효 모델 지시를 재확인한다. World WSL 반환 뒤 Unity READY/T를 따로 받고, **World Unity를 Level Town보다 먼저** 마친 뒤 제품 PR·CI를 Level 창 동안 잇는다. 메인 해제·전환 예고는 실행 허가나 런타임 모델 변경이 아니다.
+
+**이번 동결 준수:** `msg_5b20139f6311`의23:40Z부터 위00:04:13Z 해제까지 goal을 포함한 world-active 쓰기를 하지 않았다. goal 마지막 쓰기는23:25:38.7483491Z였고 해제 뒤 첫 편집 전 hash `770C7A9BD592AF0EA34F8B7B260595E7E39E589F9B91C00E81BC067277610E1B`가 그대로임을 확인했다. 원시·재계획은 기존 외부 단일 로그에만 추가했다. 예정00:45Z나 미진입을 자동 해제로 쓰지 않았다.
+
+**직전 동결 해제 기록 — 18:40:56Z, 위 새 동결로 대체:** Main `msg_baef7c58d2a3`는 Core E12 B0(T18:50Z)가 준비 하네스 결함·시간 부족으로 실제 진입 없이 닫혀, `msg_82a65eb6e78b`부터 이어 온 동결을 해제한다고 알렸다. 당시 승인된 목표 안의 file-only 작업·commit은 가능했고 push·PR·공유 실행 창 규칙은 유지했다. 앞선14:43Z 기록은 옛14:05~14:35Z 예정 창의 종료를 확인한 것이며, 동결의 명시 해제 시각은18:40:56Z로 정정했다. 그 사이에도 HEAD/branch/status26행과 제품 입력을 보존했다. 새 World 실행 허가나 Content 조건부 인계 발동으로 해석하지 않는다. 수신·ack·사전 메모·보존 대조는 `C:/Dev/DawnHolder_Project/.backups/verification/world-active-freeze-20261026-132005.txt`에 보존한다.
+
+정적 준비는 `approval-01/rehearsal-resume-01/world-scope-a-preparation-v1.md`, 현재 순서/시작조건은 `window-order-supplement-v2.md`다. Core B0→B1→최종 독립 실 DB→World WSL20~30분→World Unity25~35분→Level Town 순서다. World 두창 사용자손은없고 WSL의 Windowsdotnet0와 Unity/Burst 사용을 겹치지 않는다. 각 최종input/명령/계약·조건과 Main T 전 실행0이다. 범위 A의 기존 Mage/같은ID·Town/HP·정상저장/별도Program 장면과 생성실연유예/API·C1~C9/강검증 유지, 같은창 공동Opus 후보 미적용은 그대로다.
+
+**모델 전환 예고·현재 적용:** 새 독립 검증/리뷰는 DB·위험 배정도 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다. 옛 `temporary-verifier-routing-v1.md`의20:00까지 임시 배정은 역사 근거로 보존하며,`msg_d50edcfab607`에 따라 **20:00 이후에도 독립 검증은 Astra xhigh**다.20:00부터 신규 리드·구현자는 Opus xhigh이며 현재 Sol 리드의 종료·새 리드 기동은 메인이 수행한다. **단, `msg_e1a840a0219e`의 이미지 생성 작업은20:00 뒤에도 신규 Sol max·`--disable fast_mode` 작업자가 맡는 예외다.** World 현재 목표에 새 이미지 생성 할당은 없다.19:50까지 아래 재개 카드를 최신화하고,19:00 이후20:00을 넘길 새 Sol 구현자는 열지 않는다. 이미 실행 중인 작업자는 끝까지 마치고 정산하지만 현재 World 작업자·검증자는 없다. 강도·실제 진입·분리·각READY/T는 유지하고 문서 반영을 실제 모델 전환이나 ETA 개선 실측으로 표현하지 않는다.
+
+10-27 09:00KST까지였던 **메인 한정 HB처분은 만료됐다.** `heartbeat-night-disposition-v1.md`와 아래 당시 판단은 보존하지만 새 계약에 이월하지 않는다. 정상5분기준·실제초과정산·해당 관문 실패의 공식 질문을 유지한다. World 개별 적용 사례/새 기동0이다.
+
+**10-27 18:00은 첫 시연 빌드 목표다.** Main `msg_30ad9776df99`의 최신 해석에 따라 그때까지 검증을 통과하고 승인·병합된 것으로 빌드를 뽑고, 그 뒤 통과한 것은 가능하면 밤 두 번째 빌드에 넣는다. 10-28에 못 들어간 goal은 미완료로 두고11-06 최종 제출까지 다듬으며 독립 검증·승인 관문은 줄이지 않는다. **10-27 15:30 KST까지 「18:00 병합 가능/불가와 이유」 보고는 유지**하고 새 막힘·지연은 즉시 알린다. 지난10-26 23:30 PR준비 목표는 미충족·보고/인수됐다. 최신 조건부 ETA는 실제 Core 최종 인계와 필요한 해제를 모두 받은 F부터 World PR준비110~175분이며, 창 대기·수리/새 세션 재검증·CI·승인은 별도다. 18:00 포함이나 밤 완료를 현재 확약하지 않는다.
+
+**13:08Z 시각 기반 지연 전망:** 10-26 22:08:35KST에는23:30까지약81분이남았고World는Core B1/최종독립실DB 결과·반환·최종입력을아직받지못했다. 기존후속110~175분계획과비교해현계획상23:30이전PR준비가어렵다는전망을Main `msg_f8fe4a166991`로즉시보충했다. 소요실측/물리적불가능/새완료ETA로단정하지않고실제Core인계뒤재산정한다. 원시는 `approval-01/rehearsal-resume-01/pr-2330-delay-forecast-receipt.json`이며기존실행/범위·Content발동조건은그대로다.
+
+Core B1은 사용자 결정 A에 따라 **10-26 23:30 KST까지 시작하면 진행하고, 못 시작하면10-27아침으로 넘어간다**(Main `msg_c81e2ca9b6b1`). 이는World PR23:30준비경보기준과별개의B1시작상한이며World창/실행허가가아니다. World ETA는Core실제READY·반환·최종인계뒤에만재산정한다. 참고/회신불요인원문은 `approval-01/rehearsal-resume-01/inbox-wake-13.json`이다.
+
+당시 후속 Main `msg_82a65eb6e78b`는 B1의10-27아침 이관·시각 질문 중을 알렸다. 최신 `msg_baef7c58d2a3`는 **다음 메인 세션이 열린 뒤**로 안내했으며, 이전 아침 표현보다 이 안내를 우선한다. 새 World ETA를 지금 만들지 않고 실제 Core 반환 뒤 산정한다. 옛 B0 시간 배정·보호 정지 원문은 `approval-01/rehearsal-resume-01/inbox-wake-15.json`, 최신 해제 원문과 ack는 위 외부 단일 파일에 둔다.
+
+**11:16Z Core B0 예약 미진입:** Core `msg_d13fb656c39e`가 이번20:05~20:35예약에실제entry0/T전metadata관문경과·새불변w2메타준비요청을보고했다. 새창/ETA는없고아래예약은실행/반환근거가아니다. Main자원해제/새배정전다른실행허가로해석하지않는다. Core B1/최종실DB와World최종강은미완료이며World23:30준비위험·ETA미정을Main `msg_934f73606c11`로보충했다. 원문은 `approval-01/rehearsal-resume-01/inbox-wake-12.json`, receipt는 `b0-no-entry-main-receipt.json`이다.
+
+**10:53Z Core B0 예약:** Core `msg_bfc986c7602b`가20:05~20:35KST 독점창 예약과 full SHA 승인/R2 요청을 알렸다. 실제 승인·실행은 아직 없고, 반환 뒤 실제Stored B1·최종독립 실DB/판정인수가 남는다. Core최종인계와World PR의새ETA는계속미정이며20:30최종인계전제를쓰지않는다. World제품/시험/도구25hash와HEAD는보존상태다. 원문은 `approval-01/rehearsal-resume-01/inbox-wake-11.json`이다.
+
+**10:00Z 기존 ETA 철회:** Core `msg_a8510cf2aaf4`가 NR02 정적 PASS 인수·E11 capacity 후 같은 Task 재개를 보고했지만, 실제 B0/B1/DB·최종 독립 강은 아직 미완료다. capacity 지연으로 기존 Core 최종인계20:30~22:00 추정이 철회돼 **아래08:48의 World PR22:20~익일00:55도 현재 유효한 예상이 아니다.** Main `msg_78da891a4c65`로 철회를 알렸다. 새 ETA는 미정이며20:30/23:30위험은유지하고 실제 READY/인계전망 뒤 재산정한다. 원문은 `approval-01/rehearsal-resume-01/inbox-wake-10.json`, receipt는 `eta-withdrawal-main-receipt.json`이다.
+
+**08:48Z ETA 갱신:** Core `msg_a735beab540c`가 새 NR02/E11 정적 세션 시작과 최종인계20:30~22:00KST 추정을 알렸다. World후속110~175분을 더한 PR준비는 **10-26 22:20~10-27 00:55KST 추정**이며 CI/수리·재검증/창·모델·사용자대기는별도라더늦을수있다. 23:30이전준비를확약할수없어 Main `msg_88c4aae514fc`로즉시보충했다. Core모델관문/정적인수·B0/B1/최종실DB는아직미완료이고실제인계뒤재산정한다. 원문은 `approval-01/rehearsal-resume-01/inbox-wake-07.json`, receipt는 `critical-path-eta-main-receipt.json`이다.
+
+**08:31Z 앞선 위험 보고:** Core `msg_c19086b018bf`가 NR02 정적중단·메인재판단 대기와 기존 B0 READY17:45~18:30 추정 철회를 알렸고, 최종인계20:30KST 초과 위험이 생겼다. Main `msg_a37cf1097648`로 즉시 보고한 원문은 `approval-01/rehearsal-resume-01/inbox-wake-06.json`, receipt는 `critical-path-risk-main-receipt.json`이다. 당시미정이던ETA는위08:48기록으로보충됐으며기존실행관문은유지한다.
+
+사용자가 「잘게」라고 한 뒤에도 메인이 사용자손없는 창을 밤새 배정하며, World는 같은 READY/T·정산 절차로 진행한다. credential·다운로드·범위 변경·병합 승인처럼 사용자 손이 필요한 것은 메인의 아침 대기열에 둔다. 병합은 기존대로 사용자 승인 뒤 메인만 수행하며, 자는 동안 병합하지 않고 World는 PR번호/정확head/독립판정원문을 준비한다. 현재임시예외동안새Claude는열지않고꼭필요하면기동전이유를메인에보낸다. 새독립검증자기동때현재모델/예외를알리고메인보류통지를따른다. 밤운영원문은 `approval-01/rehearsal-resume-01/inbox-wake-05.json`, 모델보충은 `inbox-wake-09.json`이다. 이전제안은아래당시기록으로보존한다.
+
+**Content 밤 B 예외는 조건부 승인·현재 미발동이다.** Main `msg_5a9770fb2ff9`에 따라 World PR 강판정 뒤 H40/PDL·Generated·protocol22/실제양쪽DLL hash/판정원문을 한 묶음으로 Main과 Content에 함께 보낸다. 이후H변경은둘에즉시알린다. Main이네조건을대조하고별도「안1발동」을보내기전시작하지않으며하나라도빠지면아침병합뒤시작이다. 현재최종H/강PASS는없다. 준비/보존경계는`approval-01/rehearsal-resume-01/conditional-content-handoff-preparation-v1.md`다. World실행순서/범위는변경없다.
+
+### 최종 리드 정산 재개 카드
+
+- **인계 지시·정지 상태:** Main `msg_0a6a1432302c`(10-27 19:41:18KST)의 사용자 리드 정리 지시로 현 `[World 리드 Sol]`은 새 작업을 멈췄다.19:42:34KST 이후 직접 실사 기준 활성 작업자0/새 Task·Dispatch·창0이며 판정·제품 쓰기도 종료했다. 최종 기록 commit 뒤 메인에 한 통만 보고하고 턴을 끝낸다. pane은 메인이 닫으며 후임 Claude는 새 신원/현재 권한으로 진입한다.
+- **세션·checkout:** `CODEX_SESSION_ID=01a169ee-df8c-7083-b2cf-e881332f3514`, `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active`, branch `feat/character-server-20261018`다. 제품 기준 HEAD는 **`299e99a001f2b55d2fc723df1aa87c85059969fe`**, 마지막 통합 main은 **`4abcfbcb9138f576f06fe7cb00af2e63d8d90e4e`**다. 이번 기록 commit 뒤 최종40자 HEAD는 같은 checkout의 `git rev-parse HEAD`와 외부 최종 정산 원문으로 확인한다. 자기 commit의 hash를 문서에 소급 삽입해 재작성하지 않는다.
+- **현재 결과·미완료:** PR266의 main34경로를 무충돌 기계 통합했고 World 새 시험·봇26파일에 옛 Town20/도착17 좌표 가정은 찾지 못했다. 이는 리드 file-only 점검이다. Core B1·최종 독립 실DB 인계 F, World 신규 독립 강/양쪽 빌드·Unity/currentDB/실제Player·제품PR/CI·사용자 병합승인은 미완료다. 현재 최종 H/READY/실행창은 없다.838P/313P/SQLtesthost·Core옛E8은 현재 새 입력 판정이 아니다. 이 리드는15:30 정기 보고를 별도 발송하지 못했으며 실제 미완료를 최종 정산 한 통에 명시한다.
+- **보존할 후보 파일:** 기록 파일을 제외한 미커밋25경로는 추적 수정21+미추적4다. 서버 handlers/session/admission, Network·RuntimeEntry 시험, launcher와 headless-bot 변경을 임의 stage/commit/되돌리기하지 않는다. 미추적4는 `02_Server/GameServer.Tests/Network/CharacterMenuCatalogSessionTests.cs`, `CharacterMenuDatabaseInput.cs`, `02_Server/GameServer/Sessions/CharacterMenuCatalogResultMapper.cs`, `CharacterMenuCatalogSession.cs`다. 전체 원문 목록/현재hash와 기존25 rawbackup은 아래 근거에 있다.
+- **기록 commit·push 판단:** 이번에는 이 goal과 CURRENT World 링크만 stage/commit한다. 실제 원격 branch 조회 `git ls-remote --heads origin feat/character-server-20261018`는 native0/빈 결과였다. main4ab 이후 로컬37commit·제품경로49가 이미 들어 있어 branch push는 기록 외 미검증 후보 이력도 함께 공개한다. Main의 「push가 위험하면 commit만」 지시에 따라 **push하지 않고 로컬 기록 commit만** 남긴다. 후보 제품·미추적 파일을 새 commit에 넣지 않는다.
+- **Task·Dispatch·자원:** 최종 직접 Task목록31=completed22/failed7/역사blocked2이고 World pane은 현 리드1개뿐이다. 활성 외부 작업자/검증자0, 정산할 live Task/Dispatch/점유 창0이다. 역사 `task_b2cea658ca54`/`ctx_55f1a3b114fc`, `task_97f286a61fc1`/`ctx_ae03898fbb59`는 abandoned/failed·정확pane종료 근거가 있는 과거 기록이다. 마지막 통합 `task_2db501262dd8`/`ctx_e4da7778cf09`도 정산·release·pane종료된 과거 작업이다. 재사용하거나 상태를 임의 고치지 않는다.
+- **후임의 첫 한 단계:** 먼저 현재 Main/Core mailbox·goal과 실제 checkout을 대조해 새 동결/창/최종 인계가 생겼는지 읽기로 확인한다. 이 카드 작성 시 F는 미수신이며 옛05:00~06:35Z 후보도 현재 허가가 아니다. Core B1 우선→최종 독립 실DB 실제 반환/결과·최종 source/launcher/DLL·쓰기종료와 필요한 해제를 받은 뒤에만 새 HEAD/전체diff·25후보/코드 소유·양쪽protocol22/DLL/mapdata를 재핀하고 WSL READY를 보낸다. 독립 강은 신규 Astra xhigh/Fast off, WSL20~30분 반환 뒤 별도 Unity READY/T25~35분→Level 순서다. 각 새T·자원관문과 독립 시험/현재 실제 진입을 유지한다. World 사용자손0, Windowsdotnet0 WSL과 Unity/Burst는 겹치지 않는다.
+- **범위·일정·모델:** C1~C9 서버·전송/Unity소비·Stored봇을 한 제품PR로 마친다. 화면은 Content, 저장·DB는 Core 소유이며 생성API·필수시험을 보존한다. 신규 World는 밤 두 번째 빌드 후보, 미통과는 미완료로11-06까지 다듬는다. F+110~175분은 PR준비 추정으로 대기/수리·CI·승인 별도다.20:00 이후 리드/일반 구현 Opus xhigh, 독립 검증 Astra xhigh/Fast off, 이미지 생성만 신규 Sol max/Fast off 예외다. 오늘 밤 Town 외관·사냥터·보스방은 사용자+메인 직접 저작이라는 Main13A 요약을 따르며 **town-direct-20261027 worktree를 건드리지 않는다.** 새 scope/goal을 자동 시작하지 않는다.
+- **원문·백업·발행 전 초안:** 외부 `C:/Dev/DawnHolder_Project/.backups/verification/world-active-freeze-20261026-132005.txt`에 최신 Main 원문/ack, PR266 검색·merge/보존, 최종 Task/terminal/remote 조회·정산 전후 증거와 한 통 보고 receipt를 둔다. 로컬 `approval-01/rehearsal-resume-01/premerge-state.json`/`source-backup/`는25후보 rawbackup, 외부 `world-goal-pre-pr266-20261027-043722458.md`는 당시goal 원문이다. 요구 초안 `approval-01/scene9-resume-01/pr-final-opus-contract-draft-v2.md`와 외부 `Unissued final-validation supplement v3`/최단계획/PR문안을 재사용하되 옛모델·HEAD·경로·입력은 실제 후임 cwd에서 확인하고 최종 계약으로 재발행한다. 이 초안 자체는 실행 허가나 검증 판정이 아니다.
+- **유지할 권한:** 독립 검증 생략0, source/write-end·양쪽 입력·시험/실제진입·DB 원시 구분, Main READY/T·자원/소유 관문과 CI·정확head 사용자승인/메인 전용 병합을 유지한다. 새 final H를 Main·Content에 같은 묶음으로 인계하고 H변경은 둘에 즉시 알린다. 현재 리드는 보고 이후 추가 mail/작업 없이 기다린다.
+
+### 이전 20:00 전환 준비 카드 — 최종 정산 카드는 위 절
+
+- **현재 관측:**10-27 09:59:40KST Task조회 기준이다. 현재 `[World 리드 Sol]`·지정 Sol xhigh/backend unknown이며 전환은 아직 실행하지 않았다. `msg_d50edcfab607`에 따라19:50KST(10:50Z)까지 실제 변경을 반영하고,20:00KST(11:00Z)에 메인이 현 리드를 닫고 신규 `claude-opus-5-5` xhigh·`[World 리드 Opus]`를 연다. 진행 중 결과가 바뀌면 카드도 즉시 고친다. 후임은 현재 handle/Run을 재발견하고 진입·쓰기 전 지침을 확인한다.
+- **이미지 생성 예외:**10:34:28KST 수신 확인한 `msg_e1a840a0219e`를 추가했다. 이미지 생성(Codex image_gen)은20:00 이후에도 신규 GPT 작업자 **Sol max·`--disable fast_mode`**가 맡는다. 일반 리드·구현 Opus xhigh/독립 검증 Astra xhigh와 구분하며, 이 예외로 World 이미지 작업·새 파트·창/Task를 만들지 않는다. 현재 World 이미지 생성 할당/기동0이다. 이 추가를 위 Task목록의 재조회 시각으로 오인하지 않는다.
+- **목표·현재 분류:** 이 goal의 C1~C9 서버·전송/Unity소비·Stored봇을 한 제품PR로 마친다. 신규 World 묶음은 밤 두 번째 빌드 후보, 현재18:00 확정0이며 조기 통과하면 앞당긴다.10-28 미통과분은 미완료로11-06까지 다듬는다. 생성API·기존 필수시험은 보존하고 화면 제작은 Content, 저장·DB는 Core 소유다. 범위·관문을 줄이지 않는다.
+- **Git·입력:** branch `feat/character-server-20261018`, 현재 HEAD **`299e99a001f2b55d2fc723df1aa87c85059969fe`**, 마지막 통합 main **`4abcfbcb9138f576f06fe7cb00af2e63d8d90e4e`(PR266)**다.13:39:06KST 기계 통합 실사에서 main34경로 정확일치·충돌0·두 부모(old5ade/main4ab) 조상 exit0·staged0·미커밋26행 보존·제품25hash drift0을 확인했다. `approval-01/rehearsal-resume-01/premerge-state.json`의 기존25rawbackup과 외부의 현재goal pre-PR266 백업을 보존했다. 현재 HEAD는 최종 인계 H가 아니며 새 PR·push·최종 강판정은 없다. 옛489manifest/838P를 새 main의 검증으로 쓰지 않는다.
+- **Task·Dispatch·pane:** 이번 최종 강 Task/Dispatch는 아직 발행하지 않았다. 직접 Task목록31건은 completed22/failed7/blocked2, World 터미널은 리드1개뿐이다. 역사 blocked `task_b2cea658ca54`/`ctx_55f1a3b114fc`와 `task_97f286a61fc1`/`ctx_ae03898fbb59`는 과거 worker abandoned·Dispatch failed·정확pane종료 근거를 보존한 것이며 살아 있는 작업/재사용 대상이 아니다. 마지막 통합 `task_2db501262dd8`/`ctx_e4da7778cf09`는 과거 completed/succeeded·release/정확pane종료 정산이다. 역사 Task 상태를 임의 변경하지 않는다.
+- **창·차단:** World 실행창/READY/검증자0.`msg_16377c50a187`의02:35Z 동결은 `msg_259c07d44aea`로 연속 연장됐고, Main `msg_271c2c81e324` 송신04:29:52Z에 명시 해제됐다. 두 Core B0 창 미진입 종료·다음 시각 미정이며 다음 동결은 메인이 새로 알린다.05:00~06:35Z 사용자 저장 후보/운영툴 자리도 World 허가가 아니다. Core B1 우선→최종 독립 실DB·최종 source/launcher/DLL·쓰기종료를 기다린다. 옛 T/returnBy·HEAD5ade/기존manifest를 새 실행 권한·현재 통과로 쓰지 않는다.
+- **다음 한 단계:** Core 실제 최종 인계와 필요한 해제를 모두 받은 F를 고정하고 실제 파일/전체diff·계약 경로·소유를 대조해 WSL 「실행 READY」를 Main에 보낸다. 새 T 전 실행0. 그 뒤 신규 독립 Astra xhigh/Fast off의 강검증을 수행하며 WSL20~30분 반환→별도 Unity READY/T25~35분→Level Town 순서를 지킨다. World 사용자손0, WSL Windowsdotnet0와 Unity/Burst는 불겹침이다. F+110~175분은 PR준비 계획이며 창대기·수리/새세션·CI·승인은 별도다.
+- **인계 원문·준비:** 최신 해제/PR266 요청 `msg_271c2c81e324`, 이전 동결/연장 `msg_16377c50a187`·`msg_259c07d44aea`, 최신 결정 `msg_e1a840a0219e`·`msg_d50edcfab607`·`msg_30ad9776df99`·`msg_775930079a39`의 원문/ack와 직접조회·통합/정적 점검 원시는 `C:/Dev/DawnHolder_Project/.backups/verification/world-active-freeze-20261026-132005.txt`다. 같은 로그의 `World fastest permitted replan v1`·`Unissued final-validation supplement v3`·PR문안·`Classification v2`를 재사용하되 옛HEAD/모델/창순서를 실제 최종 인계로 대체해 발행한다. 기본 요구 초안은 `approval-01/scene9-resume-01/pr-final-opus-contract-draft-v2.md`다. PR266 main source·Town mapdata와 현재 protocol22/양쪽DLL 관계를 새 실행에서 재고정하고 포탈/맵 회귀의 포함을 검증 계약에 반영한다. 과거838P/313P/SQLtesthost·Core E8 결과는 현재 강/DB/Player PASS가 아니다.
+- **남은 관문·보고:** 독립 강·새 시험/현재 실제경로·양쪽DLL/프로토콜22·Core 실제DB/별도Program·자원/READY/T·CI·정확head 사용자승인/메인전용병합을 유지한다.19:00 이후20:00 넘길 새 Sol 구현자0, 현재 열린 작업자0이다.15:30KST18:00가능/불가와 이유 보고, 막힘/지연/H변경 즉시 Main 통지, 최종 H/원문·DLL 묶음 Main·Content 동시 인계 조건을 유지한다. 후임이 최종 H를 바꾸면 둘에 즉시 알린다.
+
+### PR266 - Town 포탈·도착 좌표 영향 점검과 main 통합
+
+Main `msg_271c2c81e324` 요청의 **리드 file-only 조사·기계 통합 결과이며 독립 강검증 PASS가 아니다.** 직전 통합 main3de4 이후 World의 committed/dirty/untracked 시험·봇26파일을 합쳐 조사했다. 새 코드에 Town 포탈x20·역방향 도착x17 가정은 찾지 못했고 PR266의 실제34경로와 World 전체diff+미커밋의 교집합도0이었다.
+
+- `99_Tools/headless-bot/Scenarios/ProbeBase.cs:137`은 portalX를 인자로 받고,235~245행은 서버 S_EnterMap/S_MapTransition의 spawnX를 그대로 따른다. `PersistenceCharacterProbe.cs:207`은 실제 entity/유한 spawn값만 검사하며20/17을 고정하지 않는다. `BotSession.cs` 변경은 메뉴/프레임 파싱이며 Town 좌표가 없다.
+- `02_Server/GameServer.Tests/Network/ServerHostLifecycleTests.cs:74`와 `CharacterMenuCatalogSessionTests.cs:366`은 Map.PlayerSpawnPosition에서 SafeDefaults를 구성한다.26파일에서 검색된17/20은 요청ID·패킷ID17/20·프레임길이17·미정의 result17·killCount20 주석의8건이며 좌표가 아니다. 특히 기존 패킷ID17/20은 변경하지 않는다.
+- 옛 기초 코드 `Maps/PortalTable.cs:71,93`의20/17과 `Scenarios/Movement/MapTransitionSmoke.cs:44`의TownPortalX20은 PR266 대상이었다. 직접 수정 대신 고정 main4ab를 자동 통합해 현재 포탈25/도착21·해당 bot25 및 PR266의 시험/맵데이터를 함께 받았다. ProbeBase/BotSession과 World 새 시험은 기계 통합으로도 바뀌지 않았다.
+
+로컬 merge HEAD는 `299e99a001f2b55d2fc723df1aa87c85059969fe`, 부모는old5ade와main4ab다. 사전 Main/Core 통지 `msg_88147c988a18`·`msg_bd816f65788e` 뒤, goal 원문은 외부 `world-goal-pre-pr266-20261027-043722458.md`에 백업했고 기존 제품25 rawbackup을 현재hash와 대조했다. native merge/commit0·정확staged34·상류34과 결과동일 exit0·양쪽 조상 exit0·미커밋26목록/25hash 보존을 확인했다. 추가 제품수정/작업자·push·새PR0이다. 계획 메모의 수기 예상35는 실제 Git34로 기계 확인 직후 정정했으며 최종 수치는34다.
+
+이후 실제 Core/World 계약은 새HEAD·main4ab mapdata와 최종source/launcher/DLL을 재고정하고, 포탈·맵·길드/아이템 관련 회귀를 최종 강검증에서 다룬다. 이번 WSL·빌드·봇·서버·Unity·DB 실행은0이고 기존 독립/READY/T/승인 관문을 유지한다. 상세 범위·검색8건·백업·각 Git명령/exit·실제 통합/보존 원시는 위 외부 단일 로그에 있다.
+
+### 2026-10-27 시연·제출 분류와 최단 경로
+
+출처는 Main `msg_30ad9776df99`·`msg_f376cd8a940e`이며 **현재 일정 계획과 미완료 분류이지 통과·병합 판정이 아니다.** Core B0가 진입0 종료했고 다음 시각/F가 없으므로 신규 World 항목을18:00 확정으로 표시하지 않는다.
+
+| World 필수 항목 | 현재 분류 | 남은 단계·어림 시각 |
+|---|---|---|
+| 목록·기존 저장 Mage 선택, 생성API 보존, 소유권·실패·Legacy 수명 C1~C6 | 밤 두 번째 빌드 후보 | Core B1/최종 실DB 인계→신규 독립 강검증→같은 제품PR/CI·승인. PR준비 F+110~175분, 절대시각 미정 |
+| 프로토콜22·양쪽DLL·Unity 소비 및 길드/경제 보존 C7~C8 | 밤 두 번째 빌드 후보 | 같은 PR의 WSL/Unity·현재 입력 판정. 위 항목과 분리 병합하지 않으며 같은 조건부 ETA |
+| Stored 봇·별도Program 재기동 후 같은ID/Mage 서버 근거 C9 | 밤 두 번째 빌드 후보 | 실제 Core B1/최종 독립DB 원시를 새 검증자가 실사. Content의 실제Town/HP·Player 관찰은 별도 소유이며 World 완료로 대체하지 않음 |
+
+현재 **신규 World 「18:00 빌드에 들어감」 확정 항목은0**이다. 기존 main 기능을 신규 목표 완료로 바꾸지 않는다. F·공유 창·강판정·CI·정확head 승인/병합이 일찍 충족되면18:00 첫 빌드로 앞당길 수 있어 즉시 Main에 알린다. 밤 후보는 밤 실행 허가나 완료 약속이 아니다. 10-28까지 통과하지 못한 위 동일 항목은 **11-06까지 이어서 다듬을 미완료 작업**으로 남기며 새 범위를 자동 착수하지 않는다.
+
+18:00 진입을 앞당길 **조건부 보수 배치안**은 F+0~25분 입력재고정 → +25~70 독립실사/시험보완 → **+70~100 WSL30분** → **+100~135 Unity35분** → +135~145 판정 → +145~175 PR준비다. 이는 기존110~175분 계획의 상단 배치이며 실측/강제 마감이 아니다. 예를 들어 F11:00KST이면 WSL12:10~12:40, Unity12:40~13:15, PR준비13:55까지가 산술 예시다. 실제F가 없으므로 현재 창예약·READY/T가 아니며 Core B0/사용자손 B1/최종실DB 시각은 Core·Main이 정한다. World 두 창 사용자손0, Windowsdotnet0 WSL과 Unity/Burst는 겹치지 않고 각 READY/새T·실제 반환을 지킨다. World Unity 반환 뒤 Level이 자기 창을 쓰는 동안 판정/PR·remoteCI를 병행할 수 있다. 다른 파트와 최종 빌드 시간을 World가 확정하지 않는다.
+
+계약 보충 초안·인계 체크리스트·PR본문을 미리 작성해 후속 개요작성을 반복하지 않는다. 독립 세션/시험·현재 실제진입·양쪽검증·Core 실제DB·READY/T·자원관문·CI·사용자 승인/메인병합은 줄이지 않는다. 이 계획/분류의 상세와 산술 자체대조는 외부 로그의 `World fastest permitted replan v1`·후속 분류 기록에 보존한다.
+
+### 2026-10-26 범위 A 확정 전 제안 — 기록
+
+**다음 첫 일: Main의 시연 제안 판단과 Core의 최신 사슬/최종 입력을 받아 Core 합동 원시→입력 재고정→신규 Opus 강검증→World 제품 PR→Content 화면 PR 순서를 확정한다.** `approval-01/rehearsal-resume-01/shortest-path-proposal-v1.md`에 최소 시연 모습·단계별 추정·실행 창/사용자 손·기한 불충족 대안을 적었다. 10-27 낮은 메인 제안 시한이며 확정 완료 약속이 아니다. 제안 승인 전 실행 창과 새 작업자/검증자는 열지 않는다.
+
+2026-10-26 재개 원문은 Main `msg_39a3838194ac`다. 대체된13:25 지시로 수행한 일은 없고, 현재 handle의 Run 회신 주소를 즉시 알렸다. 최신 main의 규칙/Art23경로를 충돌 없이 기계 통합했고 기존 미커밋26 hash는 모두 유지됐다. 이전489입력은 drift0, 추가 launcher 변경은 현재 Core와 같은 bytes이며 소유/후속 PR을 조율 중이다. 상세 head·백업·규칙 hash·현재78경로 PR 비교는 같은 폴더의 `merge-completion.json`·`source-and-rule-audit.json`·`premerge-state.json`·`pr-numstat.txt`다. push/새 중량 실행0이며 과거 blocked Task2 기록도 보존한다.
+
+Core `msg_53671c0bf69d`의 네 질문에는 `core-chain-response-v1.md`로 실제 SQL/자체회귀와 별도Program·Player 미실증을 구분해 답했다. 기존 launcher의 사용자 직접 두기동을 신규 Opus가 같은 합동창에서 독립 관측하는 대안도 Core/Main에 전달했다. 특정 NR02 하네스는 World 제품의 호출 의존은 아니지만 Core의 기존 관문·미확정 원인과 강검증은 유지하며, Main의 재계획 전 기존 순서를 바꾸거나 대안 실행을 시작하지 않는다.
+
+Core 최신 `msg_3df04308ece9`는 E10 B0의42통과/1실패/11미실행·noReturn 소유반환 원인 미확정, NR02 정적후보만/B1 미실행을 확인했다. 이전54통과를 이 후보의 통과로 쓰지 않는다. Content `msg_dce487f99b9a`에는 현재 API11입력 불변·main미포함/World22·bootstrap 서비스소유와 별도Enter API없음을 `content-api-current-handoff-v1.md`/동명audit로 인계했다. Content의 A로컬만/B실제연결 미작성과 Core 실패를 포함한 최종사슬을 Core가 묶고, 제품확정 시각은 아직 미정이다.
+
+### 2026-10-24 세션 마감 — 역사
+
+**세션 마감 기록 시각: `Sat Oct 24 06:47:04 UTC 2026` (`date -u` 원출력).** Main `msg_5aa1221906ff`가 전달한 사용자 원문 「일단 새로운 세션에서 이어서 진행하자」에 따라 이 리드는 마감한다. 새 작업자·검증자·단계·실행과 PR 생성은 시작하지 않는다. 원문과 마감 상태는 `approval-01/scene9-resume-01/inbox-closure-10.json`·`closure-state-before.json`·`closure-terminals.json`에 보존했다.
+
+**다음 첫 일: 새 메인 세션이 World를 재개하면 현재 goal·Git·Run 인수를 확인하고, 사용자 직접 Core 합동의 별도 Linux PID/birth·정상종료/재기동·같은 CharacterId/저장 Mage 목록·load 일치 원시와 쓰기 종료를 받는다.** 그 뒤 최종 입력을 다시 고정하고 메인의 새 실행창에서 준비한 PR 직전 신규 Opus 검증을 발행하며, 독립 판정 뒤 PR 순서로 잇는다. 오늘은 Opus 검증과 PR 생성을 시작하지 않는다. 사용자 A의 Town/풀 HP→Content 이관은 `joint-observation-a-decision.md`가 현재 기준이다. 489입력/인계v2를 변경하거나 B 보완 초안을 발행하지 않는다. 창은 `msg_841a5d075d08`로 반환했고 Main도 닫기를 확인했으므로 새 실행권한은 없다.
+
+**실행 중인 열린 Task·Dispatch 없음, World 작업자 pane 0.** 마지막 `task_2db501262dd8`/`ctx_e4da7778cf09`는 completed/succeeded·정산/정확 pane 종료 완료다. 단 레지스트리에는 과거 abandon한 `task_b2cea658ca54`/`ctx_55f1a3b114fc`, `task_97f286a61fc1`/`ctx_ae03898fbb59`의 Task 상태가 blocked로 남아 있다. 두 Dispatch는 failed·worker abandoned이고 과거 정확 pane 종료 근거가 있으며 현재 살아 있는 작업자는 아니다. 이를 Task 레지스트리 전체 완료로 보고하지 않는다. 마감 조회는 Task completed22/failed7/blocked2, Dispatch completed22/failed9, 현재 terminal은 리드 하나다. 원시는 `closure-tasks.json`·`closure-workers.json`·`closure-last-dispatch.json`이다.
+
+남은 사용자 경계는 Core 합동의 credential 소비·두 서버 직접 시작/Enter와 일정, 이후 Content 직접 플레이, PR별 정확 head 병합 승인이다. World의 새 범위 결정 요청은 없으며 Town/풀 HP의 A/B는 A로 끝났다. 이 세션의 대화 ID는 `CODEX_SESSION_ID=01a169ee-df8c-7083-b2cf-e881332f3514`, Run은 `run_90d18490c825`다. 기존 제품/시험 및 사용자 변경을 포함한 미커밋25경로를 보존하고 이번 마감 commit/push는 하지 않는다. 메인에 마감 보고 뒤 빈 프롬프트로 턴을 끝내며 pane 종료는 메인이 한다.
+
+Core `msg_05ac3f0f6233`는 기존 Import-Clixml 소비와 Enter가 사용자 직접실행 경계라고 확인했다. 새 A만으로 해제하지 않았다. Main `msg_16a09ed9313d`가 전달한 사용자 A에 따라 **아침 첫 사용자창은 Core 합동**, Content 하우징 직접플레이45분은 그 뒤다. Core `msg_3c79591bcf21`는 World 선통합 인계 전 최종pin/READY를 보류하며 기존 Mage 후보·새계정/생성/seed/다른ID/직접SQL0 경계를 유지한다. 합동 시작KST는 미정이며 과거04시KST 조건부 추정을 확정일정으로 쓰지 않는다.
+
+재개 근거는 `approval-01/scene9-resume-01/`다. 現 순서의 원문은 `inbox-wake-02.json`·`inbox-wake-02-ack.json`이며 `shortest-path-v1.md`의 합동먼저 순서는 대체됐다. 원본64경로의 stash/rawbackup을 보존했고 실제 UnityClientSession property 한 충돌은 신규Sol이 원본25복원으로 메뉴+Guild를 함께 유지했다. 리드가 복원25/보호82를 직접 대조한 뒤 로컬mergecommit을 만들었다. `merge-completion.json`의 새HEAD는 기존HEAD와main을 모두 조상으로 가지며 옛조상 손실0·unmerged0이다. PR병합/push가 아니며 컴파일/시험/독립PASS는 아직 없다.
+
+`integrated-source-inputs-v1.json`·동명pin에 새HEAD와 서버/Shared/ClientNet/봇/helper 등 실제489입력 rawhash를 고정했다. 이manifest의 정적시점 metadata는 당시사실이며 후속자체회귀/생성물은 v2인계에 연결했다. `lead-after-regression-source-audit.json`은 실제489/복원25/보호82 drift0, `lead-trx-direct-review.json`은 원TRX838행 전부Passed를 기록한다. helper종료·lock/자기잔여0 원시를 먼저 읽고 창반환했다. 신규Sol Task/Dispatch/준비/turn_started는 `integration-worker-*.json`에 있다. PR직전 계약은 `pr-final-opus-contract-draft-v2.md`로 준비했으며 합동원시/최종입력/새창을 채우기 전 발행하지 않는다.
+
+Core `msg_c0c6304a673e`의 Town/풀HP 관측 공백은 OBS-S9-01로 사용자 판단을 받았다. Main `msg_4d2fb8963ddc`의 사용자 A에 따라 Core 합동은 같은 ID·저장 Mage·별도 Program 재기동을 확인하고 Town/풀HP는 Content 실제 Unity 입장으로 넘긴다. 현재 봇 exit0/코드 정책을 Town/HP 실증으로 확대하지 않으며 489/인계v2는 불변이다. `observation-b-contract-draft-v1.md`는 미발행 초안으로 보존하며 제품 보완은 하지 않는다. 원문은 `inbox-after-b-draft.json`, 기술근거는 `lead-core-town-hp-findings.json`이다.
+
+최종정산은 `lead-settlement.md`다. 신규Sol의명시succeeded·실제25제품/시험+190근거쓰기·쓰기종료를대조하고release(external/retained)→동일incarnation완료idle→정확pane close/ptyKilled를확인했다. 리드생존·열린World작업자0·reclaimable0이다. 보고UTC열의KST시각오표기는Main에즉시정정했고원문/실제UTC를정산에보존했다. 생존신호8개·일반최대318초/초과1·공식질문대기537초는기존helper원시와연결했다. 이정산은전체goal/실DB/재기동/Unity/독립PASS가아니다.
+
+`content-api-handoff-v1.md`에 실제 화면 소비 API/공용2파일 소유를 정리했다. `preserved-files-before.json`은 기존63+goal1 원본 백업 불일치0·직전제품pin drift0을 기록한다. 현재main과 pending63 중38동일/25차이를 확인했으며 Core소비23 중22동일, 남은1은 AdmissionServices의 TimeProvider getter다. 상세는 `pending-main-comparison.json`·`main-integration-forecast.json`이다. 이 수치는 전체PR 파일수나 독립PASS가 아니다.
+
+Content는 화면전용파일을 승인goal 범위에서 준비하고 World는 wire/비화면소비자를 소유한다. Content `msg_db3d2774af59`가 인계11입력 bytes/hash 일치·현재 API 소비·54→48→기존 map entry 보존을 확인했으며, NetworkService/UnityClientSession·Core48은 World 최종통합 전 읽기만/공용변경 요청0으로 합의했다. World 제품PR→Content UI PR 의존도 유지한다. 원문은 `approval-01/scene9-resume-01/inbox-wake-01.json`이다. API 인계의 경로 오기는 실제파일/manifest로 정정했다. 입력/창/답 대기뿐이면 wait/sleep/반복조회 없이 종료준비를 Main에 보내고 턴을 끝낸다. 아래는 직전 리드의 준비·정산 당시 기록이다.
+
+### 2026-10-22 PR 직전 준비 — 역사
+
+**다음 첫 일: 메인이 Core 합동 결과로 World를 다시 열면 결과·쓰기 종료를 확인하고, 합동창 뒤 origin/main을 받은 뒤 `approval-01/pr-final-review-preparation-01/ready-input-v1.md`를 재고정해 신규 Opus 계약을 발행한다.** Main `msg_d8dcf761190d`가 main 받기의 시점을 합동창 뒤·READY 고정 전으로 명시했으며 지금은 합동 입력을 보존한다. 같은 폴더 `opus-contract-draft-v1.md`에 C1~C9·현재 전체 diff·독립 시험/실제 진입·양쪽 소비자·모델/권한/규칙 원문을 준비했다. WSL20분→Unity25분은 추정 계획이며 새 실행창은 아직 요청/배정하지 않았다. Core가 합동30분 창을 대표하고 World는 직접 참여하지 않는다. 검증자 기동·dotnet/WSL/DB/7777/Unity 실행0이며 과거 Task/Dispatch/창은 실행 권한이 아니다.
+
+**커밋 계획:** 초기 status51행은 실제63경로(기존58+봇5)다. 원시 `pending-classification-v1.json`에서 Core 소비23·Runtime 회귀11·Network 시험4·World 서버5·Unity 연결1·봇5의49경로와 upstream동일14를 구분했다. 이미 main과 같은 길드 의존13/Inventory1은 World 신규 변경에서 제외하고 로컬 보존한다. Core 선행PR 동일분도 최종 통합 때 흡수하고 World 고유 delta만 남긴다. 독립 검증 뒤 담당 리드가 Core 소비/회귀→World adapter/시험→Unity 연결→봇→문서 순서로 묶는 안이며 지금 stage/commit/push0이다. 정확 경로·포함/제외·선행 통합 조건은 `commit-plan-v1.md`다.
+
+main46커밋/76경로와의 교집합16을 `main-integration-conflict-forecast.json`에 정적 기록했다. 내용 충돌 검토 후보는 `CURRENT.md`·`UnityClientSession.cs` 두 파일이고 나머지14는 upstream동일(미추적13의 기계적 방해 포함)이다. 실제 merge/충돌 해결은 미수행이며 이 예측을 확정 충돌로 보고하지 않는다. main 통합 후 PR256의 진입 환경조회 금지도 다음 세션에 적용하고 규칙 사본 개별 편집0을 유지한다.
+
+이번 진입 원문/Run 인수·회신 주소·초기 Git/63파일 hash와 누적 diff 원시는 위 근거에 보존했다. 초기 누적 범위는 merge-base 기준 tracked88(+7840/-192, binary1)+untracked27(2304줄)=115파일이며 이번 goal 갱신 전 수치다. 단순 두 tip 비교의 타파트 삭제 표시는 PR 범위로 사용하지 않는다. 기존 고정63 hash는 직전 봇 READY와 drift0이며, 문서 준비를 독립 PASS로 해석하지 않는다. 결과 대기뿐이면 메인에 「종료 준비」를 보내고 wait/sleep/반복조회 없이 턴을 끝낸다.
+
+아래 합동 인계/정산은 직전 리드 당시 기록이다. 봇 최종 소스·두 client argv의 유효 입력은 `approval-01/stored-bot-extension-01/lead-ready-handoff-v1.md`이며 Core 결과의 실제 명령·소스와 대조한다.
+
+READY 뒤 World 최종 코드/hash·두 client argv와 기존 저장행 후보를 `run:run_1b758e0cc722`에 전달한다. Core의 새 리드가 공개 profile/CA의 World 공급·기존 launcher/정상종료·Linux 실제 새PID/birth·DB 입력/쓰기·정리를 닫고 합동30분 창을 대표 세 줄 요청한다. 기존 SQL 원시에는 같은 account/ID 재조회 성공이 있으나 현 DB 잔존은 미확인이므로 새생성/seed로 대체하지 않는다. 새 Main 시작T 전 실행0이고 credential 소비 실행은 사용자 직접 기본을 유지한다. 창/답 대기뿐이면 재개점을 쓰고 턴을 끝내며 우편함 wait/sleep/반복조회를 열지 않는다.
+
+**이번 정적 정산:** 신규 Sol max의 실제 5파일 +456/-29·보고 SHA·5개 before/after hash·자기쓰기26경로를 직접 대조했다. `git diff --check` exit0·보호58/고정11/예상외경로 drift0이며 보고와 실제 diff가 일치한다. release(external/retained) 뒤 같은 incarnation의 완료 idle을 확인해 정확 pane만 닫았고 리드 생존·열린 World 작업자0·reclaimable0이다. 저장 신호10개의 일반 최대332초/초과1은 정적 마감 구간이며 공식 질문 대기96초를 분리했다. 세부 원시는 같은 근거 폴더다. 정적 READY만으로 compile/실제 실패수명·Legacy 회귀/실DB/재기동/Unity/독립 PASS를 주장하지 않는다.
+
+### A/B 결정 전 준비안 — 역사
+
+**다음 첫 일: 메인이 사용자 A/B 답변과 적용 범위를 전달해 새 World 리드를 열면, 이 goal·현재 Git 상태를 대조하고 같은 Run을 인수한다.** 현재메인원문은 `approval-01/core-rejection-consumption-01/lead-inbox-wake-10.json`의 `msg_2287e8a62f08`다. 답시각은미정이며 A추천을승인으로해석하지않는다. 이리드/종료된작업자/반환창/과거handle은실행권한이아니다. 두갈래기록은준비안이고어느쪽도아직착수하지않는다.
+
+- **A — 기존 봇 Stored 최소확장 승인 시:** World 리드가 Protocol22·Stored 서버통합을 가진 기존 `feat/character-server-20261018` branch에서 신규 Sol max 한 명에게 `99_Tools/headless-bot/`의 기존 Program/BotSession·PersistenceRestart/Probe 접점을 읽혀, Stored 목록과 고정 characterId 선택만 최소 확장하는 새 계약을 발행한다. class-only seed/restore로대체하지않고 새하네스/불필요생성기능을넣지않는다. 정확파일범위는사용자답과현재diff를읽은뒤고정하며 World리드만commit/push한다. Core는메인이다시연새리드가같은World고정서버의공개profile·기존런처·정상종료/새PID재기동/DB입력을담당한다. 기존합의대로 **Core가 합동30분창을 대표 세 줄 요청**하며, 양쪽client/server정확argv·시험account/characterId·실제쓰기/정리와신규시작T가정해지기전실행0이다. 저장캐릭터입력이없으면임의seed/DDL/새비밀을만들지않고필요입력을메인에올린다. 기존credential을쓰는실행은사용자직접실행기본을유지한다.
+- **B — 합동 재기동 유예·현 증거로 PR직전 검증 승인 시:** World 리드가 같은branch의전체제품/시험diff·수리소비5파일/보호94·원TRX838P와실행원시·과거독립차단4건의처리근거를고정해 신규 `claude --model claude-opus-5-5 --autocompact 250000`의 PR직전 강검증 계약을 준비한다. 제품쓰기종료와검증자테스트소유를분리하고필요한실행창은World가세줄요청한다. 사용자답에서명시한유예만반영하며 별도Program재기동·실DB/Unity·양쪽DLL/CI등미실행을통과로바꾸거나C1~C9를조용히줄이지않는다. 판정원문/남은미실행/리스크를메인에전달한뒤PR·병합관문을따른다. 답전검증자기동/실행/봇수정0이다.
+
+아래는 A/B 결정 요청 전의 조율·완료 기록이다.
+
+**다음 첫 일: 메인이 합동 Stored driver 경로를 정하면 Core와 정확 client/server 명령·부작용·자원을 고정한다.** Core는 World checkout의 실제 Program 시작/정상종료/새PID 재기동, World는 같은account/characterId의 목록·생성·선택·입장·재조회 관찰을 맡고 Core가 대표 창요청을 모으기로 했다. 기존 `StoredMenuSqlEndToEnd`는 같은testhost 안의2host 재생성이므로 별도Program 재기동을 대신하지 못한다. World Unity에는 메뉴Network API가 있지만 현재실행가능한Stored조작driver는미확인이다. 기존서버런처는있어 통합인증제품분기부재만을유일막힘으로올리지않는다. Core대표공동보고는 Content실메뉴인계/사람조작우선, 미준비시기존봇Stored최소확장의명시범위판정이다. 새하네스/인증우회/실행/합동30분창요청0이며 논의대기뿐이면우편함대기없이턴을끝낸다. 근거는 `approval-01/core-rejection-consumption-01/lead-core-existing-entry-findings.json`, `lead-core-auth-and-driver-boundary.json`, `lead-core-joint-report-agreement.json`과수신원문이다.
+
+**이번 자체회귀·정산:** Main 배정창의 신규Sol max가 기존helper로 restore2/build2/test1을실행했고 SDK10.0.301·각74warning/0error·원exit0이다. 원TRX Counters와838행(모두Passed/실패·skip0), 실제Core facade11/13/14 및 acquire203→14를리드가직접대조했다. 제품/시험추가수정0·고정5/보호94차이0, 실제근거50경로와보고50경로차이0이다. 자원원시를먼저읽고Main에창반환한뒤TRX를분석했다. 자기실행잔여0과기반WSL3프로세스관측보존을구분했고kill/shutdown0이다. 최종보고/쓰기종료·명시succeeded를대조하고release(external/retained)→동일incarnation완료idle→정확pane종료·리드생존/작업자0/reclaimable0을확인했다. 신호6개/max313초·초과1은창반환뒤TRX/쓰기감사/최종보고정리구간으로기록했다. 원문은 `executor/report.md`, 정산/실사·원시는 `lead-executor-settlement.md`, `lead-execution-trx-review.json`과같은폴더다. 이것은자체회귀이며838개독립판정이나실DB/별도Program/Unity/전체PR통과가아니다.
+
+**직전 대기열 기록(회귀 완료): Main의 시작T를 받으면 신규 Sol max 실행자가 고정 소비5파일을 입력으로 기존 build→Network/RuntimeEntry 회귀를 수행한다.** `msg_274f81f76bd5`로20분·전용Ubuntu clone/SDK10.0.301/workspace lock의 창을 세 줄로 요청했다. Main `msg_673f1f7e9158`은 대기열1번·Art 실제반환(~04:23:39Z) 뒤 res-check/시작T 통지를 확인했고, 짧은 대기이므로 리드pane은 유지하되 우편함대기 없이 턴을 끝내라고 지시했다. 창은 아직 미배정이다. Windows dotnet/실DB/7777/Unity/원본DLL복사0이며 새 실행계약은 `approval-01/core-rejection-consumption-01/executor-contract-v1.md`다. 과거창/Task/Dispatch/handle은 실행권한이 아니다.
+
+**이번 정적 소비:** 신규Sol max의 실제5파일 +61/-29를 원본backup·diff·source-pin과 직접 대조했다. Core 제품3과 schema시험1의 after rawhash가 고정원천과 일치하고 admission시험은 승인된11→14 한행뿐이다. 보호94경로의 존재/불재와hash를 다시 읽어 차이0을 확인했다. 실행·독립PASS는 아니다. 맥락·고정계약·v1.1분류정정·v1.2창대기정산·리드실사는 `approval-01/core-rejection-consumption-01/`에 있다. 합동 별도프로세스 재기동→같은캐릭터불러오기 driver는 Core 재진입 뒤 조율하고, PR직전 신규Opus1회는 그 뒤다. 아래는 직전 종료 당시 기록이다.
+
+**이번 정산:** 정적작성자의 최종원문·명시succeeded·실제5+27경로·전체쓰기종료를 대조하고 정적READY만 정산했다. release(external/retained) 뒤 동일incarnation 완료idle을 확인해 정확pane만 닫았으며 리드생존·World작업자0·reclaimable0이다. 저장신호8개의 최대450초·초과1구간은 READY뒤 실행창대기에서 턴을 끝낸 구간으로 근거에 구분했다. 보고/실제수행 불일치0, 실행성공이나독립PASS가아니다. 원문은 `worker/report-final-v1.2.md`, 정산·시각/신호·종료원시는 같은근거의 `lead-settlement.md`와 연결파일이다. 종료된작성자는재사용하지않는다.
+
+**다음 첫 일: Core #1·#2의 새 고정 수리 원천이 도착하면 Main이 연 신규 World 리드가 같은 Run을 인수한다.** 최신 재개점 문서 checkpoint와 실제 Git 상태를 먼저 대조한다. 제품 기준 HEAD는 `fb6d7d53aaa42086f95515a870667207d2651596`, branch는 `feat/character-server-20261018`이며 문서 checkpoint의 정확 SHA는 `approval-01/pr-blocker-repair-01/lead-doc-checkpoint.json`에 둔다. 기존 제품·시험 미커밋을 보존하고, 새 외부 작업자 한 명에게 Core의 정확 파일·commit/hash와 World 보존 delta를 고정해 소비·자체 확인을 잇게 한다. #3도 새 Core commit의 해당 파일과 대조하되 원복하지 않는다. 네 차단을 정리한 뒤 명령·예상 시간·자원 세 줄로 새 실행창을 요청한다. 과거 창·정산된 Task/Dispatch/handle은 실행 권한이 아니며 새 goal을 자동 시작하지 않는다.
+
+**현재 정산:** `task_c435ed0f8741`/`ctx_cc0e317ecc4e`의 최종 원문 `worker/report-final-v1.2.md`(SHA256 `6AD7C3E2D8D0F269F198A502A5B41E8D1C5B99938ACAF64880DB4E3DAA69D902`)와 실제 시험2·근거16경로를 대조했다. 최종 전체쓰기 종료02:31:21Z, `msg_655a8d8ae9e3`의 succeeded는 #3/#4 정적 준비 범위만이다. release(external/retained) 뒤 동일 incarnation 완료 idle을 확인해 정확 작업자 pane을 닫았다. 리드 생존·World 작업자0·reclaimable0이며 원시와 한계는 같은 폴더 `lead-settlement.md`에 있다. #4 after1673D42D…4903·#3 after0799C042…0EF75·기존 facade91B0CAA3…46B4와 보호101경로 drift0을 확인했다.
+
+#3은 v1.1(02:12:28Z)에 따라02:16:12.2467439Z 한 번 소비됐다. Main 보류 원문 저장02:16:49.9432716Z·리드 중지전달02:17:24Z·작업자 자연check 최초수신02:19:59Z를 구분한다. Main `msg_d8e3d5fc0227`은02:24:27Z에 #3 보류가 메인 실수이며 실제 소비가 유효하다고 정정했고, 같은 작업자가 그 정정을 최종 보고에 반영했다. 이 운영 중지·정정을 제품 결함 확정 실패로 세지 않는다. 중지 수신 뒤 시험 추가쓰기·복원0이며 원본backup06009F…0771와 전후 원시는 보존한다. 미발행 복원 초안은 권한0이다.
+
+### 직전 독립 검증 창 — 반환 완료
+
+Main `msg_e12ee883003d`의 Art 반환 뒤 전용 WSL clone/SDK10.0.301/helper 창은 T=`2026-10-22T01:27:28Z`, lastEntry=`02:27:28Z`, 최종 반환기한=`02:42:28Z`였다. 공식 답 `msg_849e18217033`으로 전달한 실제 Core facade11/13/14 시험 보완과 Network/RuntimeEntry 회귀를 실행했고, 실DB1건은 명시 제외했다. 창은 Main `msg_8af7e2e67bb1`로 이미 반환했다. Windows dotnet/DB/7777/Unity/원본DLL복사0이며 이 기록은 새 실행 권한이 아니다. 실제 실패4건·정산·원시 한계는 아래 독립 검증 기록을 따른다.
+
+
+
+### 이번 리드 메타데이터 조회 정정
+
+진입 초기에 ORCA* 환경변수 전체를 조회해 hook token 필드가 도구 출력에 포함됐다. 값을 근거파일·회신으로 복제하거나 권한에 사용하지 않았고 DB/private credential 파일 읽기는0이다. 이 리드 세션 전체의 비밀열람0을 주장하지 않는다. Core 답변의 같은유형 공개를 읽으며 초기출력을 재인식한 시점에 Main에 별도 status로 정정 보고했다(`pr-blocker-repair-01/lead-main-metadata-correction.json`). 교정은 진입 메타데이터 선택층에서 명시한 비밀 아닌 필드만 조회하는 것으로 한정하며 새도구/전역설정/임의권한변경0이다. 기존 승인 규칙은 유지한다.
+### 이번 독립 검증 정산
+
+Opus `task_8ae3d20774bb`/`ctx_8c57ea2e7c11`는 원문 `worker/report.md`와 실제 diff/원TRX·쓰기종료를 대조해 failed로 정산했다. release(external/retained) 뒤 같은 incarnation 완료idle을 확인해 정확 검증자 pane만 닫았고 리드생존·작업자0·reclaimable0을 확인한 뒤 새 Sol을 열었다. 창은 자원 종료 근거를 먼저 읽고 Main `msg_8af7e2e67bb1`로 반환했으며 이후 runtime0이다. 원문·리드 감사·모델/해제·종료/생존 근거는 `approval-01/pr-verification-01/lead-settlement.md`와 같은 폴더다.
+
+실패4건은 전수 분류됐고 기존 기대 완화0이다. #1은 Core 소유 원code·목표 분류 조율, #2는 schema5 도구/검토literal 소비 보완, #3과 #4는 승인3슬롯/54패킷 계약으로 낡은 시험을 바꾸는 대상이다. #2/#3의 World 소비Task는 기존 구현자의 실제변경 목록으로 `task_b6adb19bd94f`에 연결했으며 Core 원저작 Task는 미확정이다. 같은계약·같은번호 확정실패3회 조건은 아직 성립하지 않았다.
+
+검증 보고의 Windows 반환 stderr 폐기와 scratchpad 관문추출3파일은 계약 대비 원시보존 한계로 Main `msg_cedda934ca99`에 공개했다. 폐기원문 복구·전범위PASS를 주장하지 않는다. 저장 생존신호12개·일반최대445초·초과4구간과 질문대기439초는 근거에 구분했다. 설계 관찰 O1/O2는 비차단 후속이며 새 후보·검사도구를 이번 범위에 늘리지 않는다. 실DB·Unity·별도 Program·양쪽 DLL/CI·C1~C9의 남은 미실행은 유지한다.
+### 직전 compile 리드 종료 기록
+
+**다음 첫 일: Content → Art 반환 뒤 Main이 새 World 리드를 열면 같은 Run을 인수하고 신규 Opus 검증 계약과 실행창을 준비한다.** 현재 HEAD는 `fb6d7d53aaa42086f95515a870667207d2651596`, branch는 `feat/character-server-20261018`, status는 goal 항목을 포함한 43줄이다. 제품·시험 54경로와 원본 Shared DLL을 합친 보호 55경로의 drift는 0이다. 이전 handle·Task·Dispatch·compile 창은 기록이며 새 실행 권한이 아니다.
+
+**이번 결과와 정산:** 기존 WSL build 1회는 `2026-10-22T00:28:56Z~00:29:33Z`, SDK `10.0.301`, exit 0, 최종 75 warning/0 error다. 실제 자원·잠금 반환 근거를 읽고 결과 해석 전에 Main에게 `msg_48fae090acaf`로 창을 반환했다. 실행자 관측의 기반 wslhost 2개와 Main 후속 res-check의 WSL 배포·wslhost 0을 구분해 보존했다. `task_afa5c3012eb7`/`ctx_3d27b15ae4b7`는 `msg_00ec0b6b4b97`의 succeeded·전체 쓰기 종료로 정산했다. 보고 9경로와 실제 9경로를 대조했고, release(external/retained) 뒤 같은 incarnation의 완료 idle을 확인해 정확 pane만 닫았다. 리드 생존·작업자 0·reclaimable 0이다. 저장된 생존 신호는 8개, 최대 일반 간격 248초·300초 초과 0이며 공식 질문 대기 1929초는 별도다. 요청·화면은 Sol max, backend는 unknown이다.
+
+**다음 창 요청과 재진입:** Main `msg_956b8af8837b`의 지시대로 `msg_3bfe5ab478f7`에 세 줄로 요청했다. Content 재검증(현재 예정 `01:13:10Z`까지) → Art HUD RED 반환 뒤, 신규 `claude --model claude-opus-5-5 --autocompact 250000` 한 명이 PR 직전 강검증 준비·Core 실제 facade 11/13/14 시험 보완·기존 Network/RuntimeEntry 전체 회귀를 함께 수행하는 안이다. 준비 포함 75분, lastEntry=T+60분, 반환=T+75분은 요청안이며 아직 승인되지 않았다. 전용 WSL clone·SDK10.0.301·동일 workspace lock·기존 helper build/test·기존 시험 확장만 요청했다. 새 harness·Windows dotnet·DB·7777·Unity·원본 DLL 복사는 0이다. 새 Opus와 새 검증 계약은 아직 없다. 새 리드는 현재 goal과 위 Main 원문·정산 근거를 읽고 사전 맥락, 관련 규칙 원문, 실제 경로 확인, 고정 입력을 담은 신규 계약을 발행한다. 검증자는 테스트만 쓰고 제품 결함을 번호로 반환한다. Main의 새 시작 T 없이 실행하지 않는다. 창 대기뿐이므로 재개점을 남기고 「종료 준비」를 보내며 우편함 wait·sleep·반복 조회를 열지 않는다.
+
+**다음 검증의 경계:** 기존 World literal 11/13 시험은 mapper seam이다. 실제 Core facade의 typed 읽기 실패→11, 유효 schema false→13, 구조·binding·identity 위반→14와 acquire·입장 금지를 실행해 확인해야 한다. Core 시험을 fixture 없이 복사하지 않는다. 기존 회귀의 모든 실패를 분류하고 현재 제품값에 맞춰 기대값을 바꾸지 않는다. O-CAT-REJECT-03, 별도 Program credential startup·프로세스 재시작, 양쪽 DLL·Unity와 C1~C9의 남은 미실행은 그대로다. 이번 compile이나 다음 WSL 범위만으로 전체 PR·독립 PASS를 선언하지 않는다.
+
+근거는 `.backups/verification/2026-10-18-character-server/approval-01/compile-resume-02/`의 `lead-context.md`, `lead-build-review.json`, `lead-input-and-gate-review.json`, `lead-settlement-review.json`, `lead-liveness.json`, 정산·종료 receipt다. 최종 `worker/report.md` SHA256은 `BC10183C21DE5F46E70EB82211BA4A53BC17B525216D301FBC6EA88D86257678`이다. 이번 세션의 제품·시험 직접 쓰기와 Git commit/push는 0이며 기존 미커밋을 보존한다. Main은 진입 메시지의 09:0x KST가 오기이고 최초 발송은 08:4x KST였다고 교정했다.
+
+### 이전 리드 종료 당시 기록
+**다음 첫 일: Content 실제 반환 뒤 Main이 연 새 World 리드에서 같은 Run을 인수하고, 새 시작 창·새 Sol max 실행자로 기존 WSL build1회를 수행한다.** Main `msg_5c994575a875`의 Content 창은22:49:28Z~2026-10-22T00:19Z이며 그 뒤 배정한다. `msg_2ac340ace025`로 준비포함15분·lastEntry=배정T+12분·최종반환=T+15분의3줄 요청을 보냈고 새시작은 아직없다. 자원은 전용 WSL clone/SDK10.0.301/workspace lock만, Windows dotnet/DB/7777/Unity/원본DLL복사0이다. 실제 새창의 시작/끝/lastEntry로 다시 고정하고 과거창·Task·보충을 권한으로 재사용하지 않는다. 회귀는 사용자A대로 PR직전 Opus에 합친다. 창대기뿐이므로 이 재개점을 local checkpoint한 뒤 종료준비를 보내고 Main이idle확인후 리드pane을 닫는다.
+
+**이번 실제 결과:** Core 고정 guard 제품 한 파일의 bytes·실제 +7/-2와 비대상 53경로 보존을 리드가 대조했다. source Task의 succeeded는 소비·다음 실행 준비 범위다. 그 정산과 compile 창이 겹쳐 새 실행자를 열었으나 준비 중 JS 평가 문법 오류 뒤 직전 관문이 시작 제한을 넘겼다. 빌드와 WSL은 시작하지 않았고 compiler 경고·오류는 미측정이다. 자기 runtime 시작 0·Windows 대상 process 0·7777 listen 0을 직접 읽고 창부터 반환했다. Linux lock 가용성은 미관측이다.
+
+**정산:** compile Task는 미실행 failed이며 제품 확정실패·독립 NOTPASS로 세지 않는다. 두 Task의 원문·쓰기 종료를 대조하고 release→동일 idle pane 종료·리드 생존·작업자 0을 확인했다. 요청/화면은 Sol max, backend는 unknown이다. 기존 54제품/시험 미커밋을 보존하며 새 하네스·규칙·제품 추가 수정은 없다. 전체 goal 완료·독립 PASS·병합이 아니다.
+
+근거는 `.backups/verification/2026-10-18-character-server/approval-01/core-probe-consumption-01/`의 `lead-context.md`, `worker/report.md`, `compile-worker/report.md`, `lead-source-settlement-review.json`, `lead-main-window-returned.json`과 각 close receipt다. 공식 질문 대기·조건부 안내 뒤 재개·생존 신호의 초과 구간과 부분 관측 한계, 리드 정산 답변의 경로 오기 교정도 이 근거에 남겼다.
+
+**Core 시험 소비 판단:** 기존 World literal11/13 시험은 mapper seam이고 이번 Core probe guard에 도달하지 않는다. Core 신규268행 시험은 Core fixture 전이 의존 때문에 World에 복사하지 않고 Core PR에서 검증한다. World PR 직전 신규 Opus는 기존 World session fixture로 실제 Core facade의 typed 읽기실패→11, 유효 schemafalse→13, 구조/binding/identity→14와 acquire/입장 금지를 보완한다. 이 판단에는 Core 답변·리드 재기동이 필수 아니며, 아직 실행·통과로 세지 않는다. O-CAT-REJECT-03 미해결과 기존 전체 완료조건은 유지한다. 아래는 직전 리드의 종료 인계 원문이다.
+
+**Core 고정수리 도착·새 세션 재개 준비: Main이 World를 다시 열면 같은 Run을 인수해 신규 작업자의 고정 제품 소비를 시작한다.** Core `msg_79a655b17a05`가 D-CAT-READ-01/SCHEMA-02의 고정 제품/신규시험 원천을 직접 인계했다. 원문은 `C:/Dev/DawnHolder_Project/.backups/verification/2026-10-17-character-storage-foundation/catalog-error-repair-29/world-source-handoff.md`다. 리드는 실제 두SHA와 World 현재 제품 대비 guard +7/-2를 확인했으나 아직 소비/실행하지 않았다. 제품 수리는 단일 CharacterSelectionHandle.cs 원천으로 확인됐고, 신규 시험 복사는 World에 없는 Core fixture 때문에 별도 소비 범위를 조율 중이다(`msg_0b7d276be9f9`). 시험 전이 의존을 임의로 복사하지 않는다. 현재 리드는 Main `msg_2e86c0b5d2d3`의 종료 준비를 보고한 기존 handle이며 새 세션 진입이 아니다. 작업자 정산·정확pane 종료를 마쳐 열린 World 작업자는 없고 제품/시험54파일 미커밋과 Git 제외 근거를 보존한다. 메인이 계획대로 닫고 새 World 리드를 열어 재개하며, 이 대기는 전체goal 완료/병합이 아니다.
+
+**재개 순서:** 현재 goal/실제 Git 상태·기존 report/context를 읽고 Core 인계의 고정 제품1파일을 신규 작업자에게 정확히 소비시킨다. 정산된 이전 Task/handle/창을 실행 권한으로 재사용하지 않는다. 신규268행 시험은 의존 소비 범위 회신 전 World에 복사하지 않고 Core 원본과 함께 보존한다. Core checkout은 readonly이고 World host 시계 getter 등 기존 소비 delta와 Content 통합을 보존한다. Core source-ready를 통과로 세지 않으며 O-CAT-REJECT-03의 원code/매핑은 알려진 미해결·새매핑 승인0으로 최종 검증에 전달한다. 그 뒤 PR 직전 신규 Opus 검증의 양쪽 소비/실제 진입·회귀 실행 계획을 정하고 Main에 「명령/시간/자원」 세 줄로 창을 요청한다. 현재 Content 창은~22:14Z(07:14KST)이고 World/Core build/test0이다. 사용자A(`msg_e50c0b6a4305`)에 따라 최신 Network8+RuntimeEntry6 회귀는 지금 다시 요청하지 않고 그 PR 직전 검증에 합친다. 다시 자동 검토에 막히면 우회하지 않고 정확 명령/거절 문구를 Main에 올려 사용자 직접 실행으로 잇는다. 승인 밖 DB쓰기는 짧은 실제 SQL/명령으로 결정 요청한다.
+
+정산: 전체쓰기종료21:29:22Z·공식 `msg_12debfe5c862`의 failed는 Main 지시에 따른 Core 인계 대기 종료이며 제품 확정실패/독립NOTPASS가 아니다. 공식/기록/실제 변경54경로 차이0·제품종료 뒤 파일쓰기0을 대조하고 같은 identity/idle→release(retained/external)→정확 worker pane close를 확인했다. 최종 원문은 기존 `report.md`, 정산은 `lead-settlement-review-final.json`이다. 기존 생존 helper의 저장40신호 부분 관측·초과9구간/전체cadence 미확인 한계는 `lead-liveness-final.json`·`lead-context.md`에 남겼다. Core 새 리드에는 `msg_0ff6eef96f2f`로 회신 Run과 World 보존 delta를 보냈다.
+
+Content `msg_c5e72e50367b`가20:42:56Z 실제 제품쓰기 종료·정산/세션종료와 공용 `UnityClientSession.cs`·`NetworkService.cs`의 고정 기준/diff0을 인계했다. 원시는 `content-active/.backups/verification/2026-10-15-guild-client-ui/live-player/handoff-session-network.json`·동명diff이며 다음 Content 계약은 재조율 전 두파일을 쓰지 않는다. 인계본이 참조하는 Guild controller/handler/reader/state6제품이 World에 없어 최소 의존 소비를 조율했다. Content `msg_4f515dacbbe7`가 Main `msg_f805de9a658b`의 「최소 Guild 의존 원천 조율은 리드끼리」라는 최신 지시와 정확 합의로 직전 추가 판정 대기를 대체했다. 신규6cs+각meta/Guild.meta(13경로)는 고정 원천 그대로, 기존 InventorySnapshotHandler는 revision 전달1행, 공용2파일은 기존 메뉴 hook/50·52·54 등록과 Guild 생성/44·47등록/current-generation CanApply/pending·revision/Dispose/session mirror cleanup을 보존하는 최소 통합만 허용한다. Content PR2 main 선통합을 새 전제로 두지 않는다. 같은 작업자 보충 계약은 현재 근거의 `task-supplement-client-integration-v1.md`, 원천은 Content live-player의 `lead-world-guild-dependency-proposal.json`·`lead-world-inventory-revision-consumption.diff`다. 실제 쓰기 시작/종료는 작업자 status로 확인하며 현재 compile/추가 runtime은 미실행이다. Content 실행은 기존v21/DLL로 종료됐고 World Shared22 checkpoint를 보존한다. 새 캐릭터 화면 목표·Content checkout/snapshot 쓰기·원천 정책 수정은 없으며 추가 전이 의존은 재조율한다. Core 분류 수리 시점은 Main 조율을 유지한다.
+
+**최소 소스 통합 결과:** 작업자 `msg_e61ba36410c3`·`msg_b77845d3ce9e`는21:07:15Z 쓰기 시작/21:10:28Z 종료를 보고했다. 리드는 원천13경로 bytes 동일·GUID7개 지정 위치 단일·실제 UnityClientSession +20/-3/Inventory +1/-0·NetworkService 무변경과 diff --check를 직접 확인했다. 메뉴와 Guild의 연결 수명을 함께 보존했고 worker 총54변경경로의 실제 준수 위치는 기존 `report.md`·`execution-raw/actual-compliance-locations.txt`에 있다. 최종 미커밋 기준/3파일 blob은 `lead-context.md`에 기록했다. 정적 소스 통합 결과이며 새 compile/Unity/서버/DB/회귀는 모두 미실행이다. 기존313·604·SQL1P를 이번 통합의 통과로 확대하지 않는다.
+
+후속 배치: Content에 `msg_4df11d4cb8c7`로 실제 쓰기 시작/종료·최종기준과 이번 통합 쓰기 소유 종료를 회신했다. Main `msg_fc19b463c61d`로 D-CAT-READ-01/SCHEMA-02의 같은 Core goal 좁은 수리 배치와 O-CAT-REJECT-03 분류 시점을 요청해 회신을 기다린다. 새 사용자 결정이나 실행 창을 중복 요청하지 않았으며 PR 직전 Opus는 아직 열지 않았다.
+
+현재 구현 근거는 `.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-implementation-01/`다. 첫 Task `task_97f286a61fc1`/`ctx_ae03898fbb59`는 literal tail만 남은 draft·시작 미관측으로 Main `msg_c1fdc3a66df3` 지시에 따라 시작0(제품/실행0)으로 공식 abandon하고 정확 idle pane을 닫았다. 짧은 계약 경로+hash 포인터로 새 Sol max Task `task_b6adb19bd94f`/`ctx_786c8a993cfc`를 발행해 `input_accepted/turn_started`·Working을 확인했다. 수동 Enter0이며 제품 확정실패/독립검증 실패가 아니다(`lead-recovery-summary.json`). 계약 v1.1은 Main의 경량/보이는 기반 방향과 Core `msg_5e4541ae66ed`의 실제 enum2 공급 완료·World checkout host 통합 허용을 반영한다. Main `msg_55f03baa7e49`의17:15Z~17:30Z 창에서 기존 helper를 실행했고, 최초 필터 인수 전달 exit127/TRX부재 뒤 `wsl --exec`로 같은 helper/필터를 실행했다. 최종 `execution-raw/trx/world-catalog-session-03.trx`의604통과와 기존589명 보존은 `lead-trx-review-v1.json`으로 직접 대조했다. 작업자가17:19:56Z에 자기 runtime0/lock 반환을 보고해 Main `msg_d3d90bca69b4`로 창부터 반환했으며 이후 실행0이다.
+
+기존 RuntimeEntry 시험의 fixed-identity `NewServices`+`C_CharacterSelect` 진입 준비는 현재 Stored ID선택 계약과 충돌할 가능성을 정적으로 확인했다(아직 미실행). 공식 답변 `msg_aeedab4ca06a`로 같은 작업자에게 해당 기존 helper/시험8파일만 보충했다. C6의 class-only 우회 차단과 tick 비동기·저장직업 권위·deadline·Close/owner해제·닫힌 등록0의 의미 단정을 보존하며 진입 준비를 전환한다. 실제 DB 최소 경로 준비가 우선이고, 새 harness·중간 검증 세션·부분 Task 정산은 하지 않는다.
+
+Main `msg_2593da0d706d`의 사용자A 승인과 `msg_2779e15facc5`의18:33Z~18:53Z 창에서 기존 WSL build→시험 산출물 복사→Windows vstest `StoredMenuSqlEndToEnd`1건을 실행했다. `execution-raw/sql/world-sql-01.trx`의1P/0F/0skip와 전체 StdOut의 phase0(목록/생성/선택), phase1(정상Close 뒤 새host/catalog의 같은계정/CharacterId 재조회/선택), 양쪽54→48(Mage)→3→44를 리드가 직접 대조했다(`lead-sql-trx-review-v1.1.json`). 원vstest는18:35:11Z~18:35:14Z/exit0, 최신 build75warning/0error다. 작업자의18:36:39Z 자기runtime0/lock반환·Shared보존 보고를 받아 Main `msg_bab37f60d4ba`로 창부터 반환했고 원시 자원 결과도 직접 읽었다. 같은 Windows testhost 안의 새host/관리자 통합 인증 시험이며 별도 Program credential startup·프로세스 재시작·최소권한/TLS·Unity 화면/플레이는 미실행이다. 앞의604통과는 후속 fixture·host 시계 수정 전 결과이고 최신 Network/RuntimeEntry 전체 회귀는 남아 있다. Core `msg_90880d980c49`와 `world-selection-error-contract-20261022.md`는 D-CAT-READ-01(경합 없는 typed 읽기실패=Unavailable), D-CAT-SCHEMA-02(schema불일치=SchemaMismatch)의 정적 계약 불일치를 확인했다. binding/identity/Probe 구조 위반은 IntegrityFailure이며 O-CAT-REJECT-03은 원래 거부 원인 소실로 일괄 Busy를 승인할 수 없는 관찰이다. 제품 수리는 아직 없고 시점은 Main과 조율한다. World 기대값을 현재 제품값에 맞춰 바꾸지 않으며 정적 판정을 실행 실패나 독립 확정실패로 세지 않는다.
+
+최신 회귀는 미실행이다. Main `msg_64f693dba14e`의18:59Z~19:09Z 창에서 기존 Windows DLL의 Network8+RuntimeEntry6클래스1회 실행을 요청했으나 자동 승인 검토가 `blocked by policy`로 거절했고 상세 이유는 제공하지 않았다. 작업자 `msg_d2e1f91ff75a`는 프로세스/log/TRX 생성0·Windows runtime0·Git동일과 재시도0을 보고해19:06:06Z에 창을 반환했다. Main에 `msg_f4e3c202702d`로 창 반환·차단을 먼저 전달했으며 제품/시험과 산출물을 보존한다. 이번 회귀 PASS/FAIL이나 Core/독립 확정실패 결과로 세지 않고, 리드 대체 실행·명령 포장·권한/전역설정 변경으로 우회하지 않는다. 이전 실제SQL1건 성공은 유지한다. 사용자 결정 A(`msg_e50c0b6a4305`)로 해당 회귀는 PR 직전 신규 Opus 검증에 합치며, 지금 재실행하지 않는다. 거절된 정확 명령은 `report.md`의 해당 절에, 통과한 SQL 명령과의 차이는 `lead-context.md`의 04:14 KST 절에 남겼다.
+
+정상 동작을 먼저 잇고 이를 막지 않는 추가 도구·문서·예외 보강은 뒤로 둔다. 현재 World가 실제 화면으로 확인한 전체 흐름은 없다. 단일 계정의 실제 DB 생성→선택→마을 입장 서버 경로는 작업자 복구·API 공급 뒤 약1~2시간(당시 잠정03:00~04:00 KST)으로 추정했고, 화면 시각은 Content 연결·실행 창 조율이 더 필요하다고 Main에 보고했다. 완료조건과 PR 직전 Opus 검증은 유지한다.
+
+### 이전 실행 정산과 경량 적용 경계 — 역사
+
+**다음 첫 일: Core 고정 API의 실제 enum 최소 소스 소비·쓰기 범위를 직접 조율하면서 신규 Sol max 한 명으로 mapper 구현을 시작한다.** Main `msg_65b7440b20e9`의 경량 경로에 따라 DB 전체 검증/최종 코드 인계를 기다리는 이전 조건은 mapper 착수에 적용하지 않는다. 실제 Core 타입/원천과 파일 소유는 보존하고 구현→배정 WSL 실행→자체 확인·결함 수정을 같은 작업자가 이어간다. 독립 Opus는 제품 PR 직전 한 번만 수행한다. 다음 문단은 이 결정 전 정산의 당시 경계다. Core `msg_518e1d92bcf6`는 APIv2/소스12개를 읽기 전용으로만 제공했고 최종 소비 가능 코드 인계는 아직 없다고 명시했다. 현재 World에 Core catalog 타입·mapper가 없으므로 미검증 복사나 가짜 Core로 이 선행조건을 우회하지 않는다. 후속은 mapper 한 책임부터 시작하고 서비스 adapter·tick/generation·handle Close·54→48→기존 입장은 별도 좁은 계약으로 잇는다. 이 goal은 진행 중이며 제품/전체 검증 완료나 병합이 아니다.
+
+이번 실행 근거 E는 `.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-pretest-03/`다. 새 세션이 Main `msg_832c4db2b8a5`로 같은 Run `run_90d18490c825`를 현재 handle로 인수한 뒤 새 Opus 실행자에게 제품·시험 readonly의 선행 실행을 발행했다. 현재 Task/Dispatch·모델/화면·고정 SHA와 정산 원시는 E의 `runtime-binding-v1.json`, `lead-worker-start-v1.json`, `lead-settlement-review-v1.json`을 따른다. 이전 handle·Task·창·clone·prepared/approval은 역사이며 다음 실행 권한이 아니다.
+
+- **실제 결과:** 기존 Capture A→B→C→D를 정확1회 실행해 A0/B0/C1/D0·retry/kill0이었다. 빌드 오류0·경고57로 T1/T2 컴파일 결함이 해소됐고, TRX589=407P/182F/skip0을 실제 발견했다. 기준6클래스407의 fullname/결과 누락·추가·변경0, 신규182의 모든 message/첫frame은 `CharacterMenuCatalogFailureMappingTestSupport.cs:25`의 mapper 타입 부재 RED로 일치했다. 뒤 Core 의존·서명·의미·wire 단정은 미관측이며 의미 통과/실패나 실제 회귀로 세지 않는다. 원문 `report.md`·`metadata.json`, 리드 전수 대조 `lead-trx-review-v1.json`과 실행 파일 `lead-review-trx-v1.ps1`에 연결했다.
+- **반환·정산:** D 자원/runtime0·동일lock 재획득·source/Plugins742·backup742·prepared580·승인16 보존을 먼저 읽고 Main `msg_16346dade28d`로 TRX 해석 전 창을 반환했다. 전체쓰기종료·정확 worker_done·보고/감사118 SHA차이0을 대조하고 completed·identity·idle→release(retained/external)→정확pane close(ptyKilled true)·리드 생존을 확인했다. 열린 World 작업자는 없다. 기존 helper의 보통 신호 간격 초과0이며 공식 질문 대기를 별도 분리했다(`lead-liveness-v1.json`). succeeded는 실행·분류 완료만 뜻하고 제품 PASS/전체 강 독립판정이 아니다.
+- **보고 정정:** 작성자의 경고 상세 parser가 대문자 코드만 추출해 xUnit11종을 누락했다. 원문92발생/46종을 전체114발생/57종으로 원시 재집계했고 기준 실행도 같은57종·신규/삭제0, 두 보완 시험 진단0이었다. 원문을 보존하고 `lead-diagnostic-correction-v1.1.json`·`lead-review-diagnostics-v1.1.ps1`에 정정했으며 불일치는 Main `msg_3e42988c378c`로 즉시 보고했다. 빌드 요약57warning/0error와 TRX 결과는 바뀌지 않는다. 이번 첫 관측은 결과/근거 기록으로 남기며 새 공용 규칙·도구를 만들지 않았다. 리드 자체 기록 형식 교정도 `lead-settlement-review-v1.json`에서 원문과 연결했다.
+- **Core 접점:** `msg_dc0e289ccd6d`로 현재 Run/Task·소비 상태를 보냈고 Core 고정 note/manifest SHA와 실제12파일 차이0을 확인했다(`lead-core-fixed-source-review-v1.json`). 최종인계 보류·Program/ServerHost/RuntimeStartup/AdmissionServices/Lifetime Core 소유·World session/menu 책임을 유지한다. `msg_2392c1cdb5cd`로 선행 RED·다음 좁은 계약 순서를 회신했다. 실제 Core API/DB 저장·재접속·실패 수명·새 wire/입장 통합은 남아 있으며 runtime19의 SQL 인증 기동 확인을 전체 Catalog/World 통과로 확대하지 않는다.
+- **다음 경계:** 이번 원본 제품·시험 변경0, DB/7777/Unity/DLL배포/역복사/설치/전역변경0, push/PR/merge0이다. 이후 실행은 현재 HEAD/goal·새 Task·고정 입력·새 Main 창으로 별도 승인하며 이번 approval을 다시 쓰지 않는다. Core 최종인계 전에는 읽기 전용 계약 조율만 진행하고 리드는 우편함 wait/sleep/반복 조회를 열지 않는다.
+
+### 2026-10-21 재실행 전 인계 — 당시 상태
+
+**다음 첫 일: 창이 열리면 메인이 연 새 리드 세션에서 고정 시험 SHA 재확인 → 새 실행자/현재 기준 입력 → A→B→C→D.** Main `msg_80a517f29947`의 사용자 결정에 따라 창을 기다리며 세션을 유지하지 않는다. 현재 시험 보완 작성자는 정산·종료했고 리드는 이 재개점과 사용자 결정 원문을 local commit한 뒤 메인에 종료 준비를 보고하고 턴을 끝낸다. 리드 pane은 메인이 idle을 확인해 닫는다. 다음 진입은 **같은 대화 이어 붙이기가 아닌 새 세션**이며 같은 Run `run_90d18490c825`를 현재 handle로 인수한다. 이 goal은 진행 중이며 완료/병합이 아니다.
+
+근거 W는 `.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-testfix-01/`다. 같은 노트북의 Git 제외 근거를 보존하며 이관은 필요 없다. 최종 local HEAD/goal SHA/현재 상태는 W의 `lead-window-wait-handoff-v1.json`과 실제 Git에서 확인한다.
+
+| 고정 인계 파일 | SHA256 |
+|---|---|
+| `ready-plan-v1.md` | `2C78076F3F8EAC1F3DC175C406BD14D69801B62280839758A2F4F5CFB747C0D7` |
+| `ready-hashes-v1.json` (승인 대상14) | `12EDDF2359CD8F5E614919AEF2A3464E1CDADE141B925B88525B2719D802D780` |
+| `prepared-inputs-v1.json` (575, 당시 기준) | `29E292B0EA2CDBFC8B760C52E105503663F56393719E97411110F24688BE17FF` |
+| `static-settlement-report-v1.md` | `DEAD6C4D384830121ECAAFC35E5FE796EDBADED23CECB5423C670531D98B80E5` |
+| `static-settlement-metadata-v1.json` | `95BF7E39CB156EC0FAD33FD86F5ADFA4B3E170372B6B3097647A00F3D721918E` |
+| `lead-settlement-review-v1.1.json` | `F56809970D2605F5530BED43E57052B0AEF452DB4C6D9A08C16576B8E7914F99` |
+
+- **수정과 실제 상태:** 새 선행시험 작성 Task `task_a9ab435a7e81`/Dispatch `ctx_c10a18413474`가 T1(get 안 `field`→`coreField`, 39·41줄)과 T2(switch8갈래 원소 `(decimal)` 명시,77~84줄)만 두 파일 +10/-10으로 보완했다. 역변환하면 두 전체 원본 SHA가 복구돼 이름·입력표·기대값·literal18·factory 전 단정·실제 typed Core 접점·mapper 먼저 부재 단정·undefined 탐색이 보존됨을 리드가 직접 대조했다. 수정 뒤 Tests SHA는 `5B5A454DF61579F339C234BB775DCD129AAEBA008B744FC14BD76E40C7B916AF`(208줄), Support SHA는 `7579A0474A4ED4EF599DE2E250AC1A10CEE49E097EB615A523CC40940459F21E`(120줄)다. 경로는 `02_Server/GameServer.Tests/Network/CharacterMenuCatalogFailureMappingTests.cs`와 `CharacterMenuCatalogFailureMappingTestSupport.cs`다.
+- **미실행 경계:** 수정 뒤 caller/backup/clone/WSL/dotnet/build/test는 모두0이며 compile·경고·발견수·RED/PASS/skip/TRX·기존407 전후는 미관측이다. 마지막 실제 실행은 아래 09:04~09:06Z의 컴파일 실패이고 과거407 GREEN을 현재 수정의 통과로 세지 않는다. 신규제품부재RED와 뒤 의미 단정도 아직 미관측이다. Core bridge/실제저장·선택/입장/Content·Guild와 전체PR 독립 강은 남아 있다.
+- **다음 새 실행자의 입력:** 위 고정 시험 SHA와 READY의 정적 결과를 인계받되 옛 Task/Dispatch/incarnation/창/lastEntry/clone을 권한으로 쓰지 않는다. 당시 READY는 HEAD `83dad1f65697f1123171a7bffbd3d1a34e0fb190`·두시험 M·당시 goal SHA에 고정돼 있다. **이번 goal 기록·checkpoint commit 뒤에는 이 config/prepared/approval을 그대로 실행할 수 없다.** 새 Task·현재 HEAD/branch/clean·현재 goal SHA로 새 버전 config·source inventory·prepared·승인을 만든다. 기존 Capture SHA `34D390970C1451409D37932735EB8274B1E6E8C97D89B87B1E6D9A4BE4DEED16`와 Bash SHA `EC2AE822B5C3D363C8EA64AB4601039076640535FF34D23C094C2B77784D1EB5`는 그대로 재사용한다. 실행자는 현재 배정표의 신규 Opus 선행 실행자이며 기존 작성자를 재사용하지 않는다. 입력 목록은 구조·count·기계 hash/차이만 확인하고 수백 행·전체 hash 로그·과거 대화를 반복 출력하지 않는다.
+- **기다리는 창 요청:** 새30분 WSL 창, lastEntry=start+240초, Unity0·unityOwner없음, owner는 새 실행 Task다. 메인이 새 리드/실행자 준비 여유가 있는 start/deadline/lastEntry를 진입 메시지에 함께 배정한다. fresh runtime/Run 인수·회신주소 통지·시험SHA/현재기준 재실사 후 그 창으로만 실행하며 이전 승인 파일은 없다. A1560/B1440/C1320/D120초·Windows6/4/40GiB·Linux4/12GiB/runtime0·같은lock·SDK10.0.301·새clone·단1회/restore-build-test각1/retry·kill0·원본보존 관문을 유지한다. 같은7클래스(기존407+오류매핑)로 실제발견/TRX·원실패/뒤의미미도달을 전수 분류하고 D 자원/runtime/동일lock/원본·준비SHA를 먼저 확인해 Main에 창을 반환한 뒤 TRX를 실사한다. DB/서버7777/Unity/DLL복사/역복사/설치/전역변경0이다.
+- **정산·종료:** Main 창대기 결정 전달 `msg_12cfc73ee709`, 정적범위 축소 보충 v1.1 `msg_f4a48ac34d9f`에 따라 작성자는 READY까지만 마쳤다. 전체쓰기종료09:46:13.697Z/worker_done `msg_8a8f967d7817`, 보고2·증거40·시험2 SHA와 prepared575 차이0, heartbeat11/최대274초/초과0을 리드가 원시 대조했다. 리드 비교의 시각 형식 자동변환 차이는 원시 v1을 보존하고 `lead-settlement-review-v1.1.json`에서 ISO 문자열로 다시 읽어 실제차이0으로 확인했다. completed·정확identity·idle→release(retained/external)→정확pane close(ptyKilled true)·리드생존을 확인했다. succeeded는 **정적 보완·READY 완료**이며 제품/시험/독립 판정 통과가 아니다. 열린 World 작업자 Task는 없다. push/PR/merge는 하지 않았다.
+
+아래 10-19 종료·10-21 첫 재개/실행 정산은 당시 기록이며 현재 실행 권한이 아니다.
+- **2026-10-21 재개 실행 정산:** Main 재진입 `msg_14ff7b5796bd`에 따라 origin/main `db0169350dfe54ba6ed247684caae4e498e24c72`를 자기 branch에 받았고 규칙파일변경0·충돌0이었다. 신규 Opus 선행 실행 Task `task_43cf9b016b36`/`ctx_dc45b62aa694`는 제품·시험 readonly로 A→B→C→D를 한 번 수행했다. caller09:04:47~09:06:11Z/83.626초·원exit1·retry/kill0, restore7/비시험프로젝트6은 성공했으나 GameServer.Tests가 새 시험 두 파일의 고유진단3·경고59로 Build FAILED였다. test/기존407 보존·신규제품부재RED/의미·TRX는 미관측이다. D 자원/runtime·같은lock·원본742/준비564/승인14 SHA차이0을 먼저 대조해 `msg_bd71772f2574`로 Main 창을 반환한 뒤 C를 실사했다. 원문은 `approval-01/catalog-failure-mapping-pretest-02/report.md` SHA256 `913A90876D2F3C76C331BEBF51B2206F5AE8298050715B7C98C4A6487164B9D8`, metadata `A2783C5604614F49922021CC223A1956D2A824630AC04D8D9475C329CAD7CCAD`, 리드 정산 `lead-settlement-review-v2.json`이다. 보고12/쓰기감사55/backup742 hash와 작성자 컴파일분류 차이0을 확인했다. **신호 초과0 보고는 원시18개의 실제 간격과 달라 최대318초/초과3으로 리드 정산에서 교정하고 `msg_84379646a7fe`로 Main에 즉시 보고했다.** 원문은 수정하지 않았다. 전체쓰기종료09:11:12Z/worker_done `msg_0eb1dbec4f8e` 뒤 completed·정확identity·idle을 대조하고 release(retained/external)→해당pane만close(ptyKilled true)·리드생존을 확인했다. succeeded는 실행·분류 작업 완료이며 제품/시험 통과가 아니다. 두 시험의 컴파일 결함은 첫 실제 발생으로 기록하고 기존 작성층에서 수정하며 새 반복 규칙·도구는 만들지 않는다. 전체 PR 독립 강은 후속이다.
+
+- **종료 원천과 Task 처리:** Main `msg_f67c2b23de92`(2026-10-18T22:32:57Z)가 사용자 귀환·노트북 종료 전 정리 지시를 전달했다. 오늘 WSL 창은 배정하지 않는다. `task_fb7b455f8af8`/`ctx_f2ce01b6eb0d`는 정적 READY만 완료한 상태에서 `msg_d5072c0251ad`로 정리 지시를 받아 전체쓰기를22:35:43Z에 종료했고 `msg_9d00cfdb53c0`으로 failed 정산했다. 이는 실행 미완료의 사용자 종료 사유이며 제품결함·독립NOTPASS·확정실패가 아니다. release 뒤 정확 identity/완료 idle을 확인해 해당 pane만 닫았다. 열린 World 작업 Task는 없으며 재개 때 새 Task를 만든다.
+- **마지막 완료와 보존:** 실행 완료 제품은 `fc2b2302b241e77c46d8422f46d5528f7cafc01f`의 응답 조립/기존요청407P·0F·0skip이며 아래 CI 정산 원문/TRX를 따른다. 현재 두 신규 시험은 +328/-0·제품/기존시험변경0의 미실행 선행 체크포인트로 로컬 commit한다. 준비543/558·원본742 보존을 확인한 기존 실사는 그대로 보존했고 종료 직전 승인13/두시험 hash도 차이0이었다. 이번 정리 commit으로 goal/CURRENT·HEAD·Git status 기준이 바뀌므로 옛 준비파일을 그대로 실행하지 않고 새 버전 입력을 만든다. 옛 원문/SHA/.backups는 수정·삭제하지 않는다.
+- **사용자·메인 대기:** 이어갈 머신·근거 이관/원격 전송 여부는 메인 별도 안내를 기다리며 push0이다. 실행 창/시각·lastEntry는 재개 때 새로 받는다. 실제 Core 소비 인계·소유 조율과 전체 PR 독립 강은 남아 있으며 대역 준비를 실제 저장/입장 통과로 해석하지 않는다. 다른 머신이면 Git 제외 `.backups` 근거도 별도로 보존·이관해야 한다.
+- **이번 밤 결정 기록:** 사용자 위임 원천 `msg_02a8258a3fc2`, Core 독립 선행 `msg_4dc4f7f5bdd5`, R5 한정 복구 `msg_645c6d8ebd9f`, Snapshot 관찰 보완 `msg_1c4aa90c0a9e`, 응답 조립 실행 창 `msg_3d910fa5eadd`는 이 goal의 적용 결정/단계 정산과 원문에 기록했다. 오류 매핑 창의 Content 우선 대기 `msg_fcc93dae7dd4`/`msg_56558bbe7ced`는 아래 근거의 mail-notification-03/04.json에 보존했다. 이번 사용자 종료 전달 `msg_f67c2b23de92`는 mail-notification-05.json과 이 재개점에 추가했다.
+
+근거 E는 `.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-pretest-01/`다. 최종 로컬 HEAD/상태·세션 ID·프로세스 확인은 E의 `lead-shutdown-final-state.json`에서 확인한다.
+
+| 고정 산출물 | SHA256 |
+|---|---|
+| `ready-plan-v1.md` | `B29EE62735808D873BA789C8BA105F5CCE77BD3A3D4872C36F3974257B850AA5` |
+| `prepared-inputs-v1.json` (558개) | `B2C501B6BF2EBB549577F98FBC5F40FF74D2244E092E7D65EFC2CFD8F7775D21` |
+| `task-spec-v1.0.md` | `B0E99F097846221B994D982D99F7751C0E1DE878BB56B296EB21944F2E78FF55` |
+| `manifest-v1.json` (543개) | `1B037DC15C92ED20E8EBCAF310C1F8919568695E346C31A7B53516089C141112` |
+| `shutdown-report.md` | `50225AA070C9D34353DD459CC270CBD402AC7EC6A6D679AC97B593199B799DAA` |
+| `shutdown-metadata.json` (승인13·시험2 SHA 포함) | `2234D6CC92C68DA99BFD5F88548F4A03C6685178E8C2C55CC2EC3D0139F19E0F` |
+
+보존한 [오류 의미 매핑 시험 계약](../../../.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-pretest-01/task-spec-v1.0.md)은 실제 Core CatalogStatus/InvalidField 두 enum의 typed API를 시험 helper에서만 늦게 바인딩한다. 가짜 Core enum/namespace·제품 string/object/reflection facade는 만들지 않는다. 직접 오류/사용자 필드·두 선택불가의 동일 외부 표현·Unknown12를 먼저 고정하며 NotApplied.Rejection·생성/선택 수명·실제 bridge는 후속이다. 실제 Core 타입 제품 구현은 검증된 인계 뒤다. 재개 시 Core API v2·최신 main/Content 소유 변화를 대조하고 전체 C1~C9·[전송 v1](packet-contract-v1.md)·[Core 소비 v1](core-consumer-contract-v1.md)·PR 경계를 유지한다.
+
+Core 최신 회신 `msg_9ffeac1a66ca`(21:30:11Z)은 새 소비 checkpoint/최종인계 없음·API v2/HEAD/공개signature·host 소유 불변을 재확인했다. 보고된 SQL5 LocalDB·Resume PS2 독립 대역97/97·기존360PASS는 서버저장API 소비 인계가 아니며 실제 Express/관리자 Resume/서버 저장재접속은 미실행이다. 리드는 이 별도 검증을 재실행하거나 World 통합 통과로 세지 않았다. 원문은 `approval-01/catalog-response-implementation-01/mail-notification-05.json`이며 Core 인계 대기 없이 공개 계약 기반 선행시험을 이어간다.
+
+- **응답 조립 제품 정산:** Astra xhigh Task `task_c4d748307ef8`/Dispatch `ctx_acfc9eb141f7`, 제품 신규1/기존1 +180/-39·시험변경0이다. 원문 `approval-01/catalog-response-implementation-01/report.md` SHA256 `4EB639272F12ADC6BE23E7D1759608FB9830E0ECE367447177EBCBD1EEA838F1`과 실제diff/준수·원시를 직접 읽고841산출물 hash차이0·작성자407행 전후 결과/message·stack 분류 차이0을 확인했다. TRX SHA256 `65336F156D37F642C21E8DFC88A2F8955FFF2F8616D924CE775D61B6562E8AC3`, 동일407P/0F/0skip·기존316 보존/신규91 타입부재RED→의미/byte 단정P·이름 누락/추가0이다. Main `msg_3d910fa5eadd` 창의 caller21:16:10~21:18:23Z/133.035초·원exit0/A0B0C0D0·backup740/restore-build-test각1회/retry·kill0/build57warning·0error다. D runtime0/Unity0/동일lock·원본740/준비834 보존을 먼저 대조해 `msg_77d419e0d130`로 TRX분석전 반환했다. succeeded/전체쓰기종료·release/정확pane종료·리드생존/reclaimable0이다. 신호7/max1994초·초과1/질문대기1900초는 Main `msg_c3029b3391ac`의 Content 독점창 대기와 연결되며 R5 Enter0이다. 절차상 콘솔표시/분류명령 교정과 미실행 한계는 같은 근거 `lead-settlement-context.md`에 보존했다. 실제 Core/DB/Stored/54→48·입장·전체독립강 통과가 아니다.
+
+- **응답 조립 선행시험 정산:** 신규 Sol xhigh Task `task_d819e71aa834`/Dispatch `ctx_6fb00f94b4fa`, 신규시험2파일+513/-0·제품/기존시험0이다. 원문 `approval-01/catalog-response-pretest-01/report.md` SHA256 `E400F8E3EEB979B85A3B089FCE2981599C1CB2763C3630D2574340D3ECC73A89`과 실제diff/준수·407명/91개 실패message·stack을 직접 읽고792artifact hash차이0·작성자 전수분류 차이0을 확인했다. TRX SHA256 `E1991647A6042D606097DDAD9EF62F4256CDFED0A459258A9014A21838AFAB87`, 407=기존316P/신규91제품부재RED/skip0이며 뒤 API/byte/오류거부 단정은 미도달이다. Main `msg_57bdb7d3f26a` 창의 caller20:18:25~20:20:57Z 원exit1/A0B0C1D0·backup739/restore-build-test각1회·retry/kill0·build57warning/0error다. 원본739/준비817·runtime/동일lock/자원 반환을 먼저 대조해 `msg_33f9b372765e`로 창을 반환했다. succeeded/전체쓰기종료·release/정확pane종료·리드생존/reclaimable0, 신호13/max188초/초과0·질문대기269초다. R5 복구·작성자의check누락1건/집계교정과 리드 콘솔그룹표시 정정은 같은 근거 `lead-settlement-context.md`에 보존하며 제품확정실패/독립NOTPASS로 세지 않는다.
+
+- **Snapshot 관찰 보완 정산:** 신규 Sol xhigh Task `task_5d22c932756a`/Dispatch `ctx_509981ae316c`, 시험1파일+8/-1·제품변경0이다. 원문 `approval-01/server-request-fixture-fix-01/report.md` SHA256 `8742D9141EEBB581B78CA13D4B1E0F23C9A6F0CB301D4B7DEB5F14C4B0F897AB`과 실제diff/준수·6행표를 직접 읽고88산출물hash차이0·동일316 fullname/결과를 대조했다. TRX SHA256 `DB248C609940B3BC37D176C43205AAFC12D11A56EA65F31E221E445C4E645C2E`, 316P/0F/0skip·기존310P/최초229P/224회귀 보존·6F→6P다. 요청없는 실제tick의 ID6 NotEmpty/개수 인과대조와 !=6 전체Single/byte·player/class/Guild 단정을 유지했다. Main `msg_84a56fb1136e` 창에서 caller19:32:52~19:35:21Z 원exit0/A0B0C0D0·backup737/restore-build-test각1회·retry/kill0, 원본737/준비800 보존·동일lock/runtime/자원을 먼저 대조해 `msg_11f21f9bd20f`로 반환했다. succeeded/쓰기종료·release/정확pane종료·리드생존/reclaimable0, 신호7/max285초/초과0·질문대기270초다. 빌드57warning/0error이며 신규 xUnit2031(시험252)은 후속 독립 검증 입력으로 남긴다. 자체 선행 시험 결과이며 Stored/실DB·전체독립강 통과가 아니다.
+
+- **서버 요청 제품 구현 정산:** Astra xhigh Task `task_870cb2cac067`/Dispatch `ctx_20655312d485`, 기존2/신규9제품+345/-0·시험변경0이다. 원문 `approval-01/server-request-implementation-01/report.md` SHA256 `20AFF2E14947A78AD3EC90103B4814AF620D5A3A9B9D40FA16453D5B5DA62467`과 실제diff/준수·원시를 읽고148산출물hash차이0·전후316명/결과·전체실패message/stack분류차이0을 대조했다. 현재310P/6F/0skip, 기존229P유지/81RED해소/6RED잔여이며 뒤Active응답/class/player/Guild 단정은 미도달이다. outcome failed를 보존했고 독립 제품 확정실패로 세지 않는다. 원caller PATHEXT누락exit2와 복구outer UTC재해석의 미시작을 구분해 원시를 보존했다. 새Main `msg_037148ecd578`의 실제복구19:00:40~19:03:01Z A0/B0/C1/D0·backup737/restore-build-test각최초1회·자동retry/kill0, D runtime0/동일lock·737원본/812보존을 먼저 확인해 `msg_2690b6fabd05`로 창을 반환했다. failed/settled·release/동일pane종료·리드생존/reclaimable0, 신호17/max475초·초과3구간/질문대기3건과 리드ACK지연교정은 같은 근거 `lead-settlement.md`에 남겼다.
+
+- **서버 요청 선행시험 정산:** 신규 Sol xhigh Task `task_d416fa466675`/Dispatch `ctx_a9c41920f0c9`는 시험3파일+825/-0·실제316=229P/87F/0skip을 완료했다. 원문 `approval-01/server-request-pretest-01/report.md` SHA256 `B98BA50386C4575B8616DD3A657834715D4C0EEBD4FBD31CA38589EBAF737487`를 직접 읽고 TRX316개 이름/결과·87실패 message/stack과 분류 차이0을 대조했다. 기존224회귀 전부P·신규5P, 등록부재63/World 수명 타입부재24의 뒤 semantic은 미도달이다. Main `msg_330fc47b3163` 안에서 caller17:52:31~17:54:54Z A0/B0/C1/D0·rawexit1, restore/build/test각1회/재시도·kill0이다. 원본728·준비767 drift0와 runtime0/동일lock 반환을 먼저 확인해 `msg_185772dc6f8d`로 창을 반환했다. completed/release·동일pane종료·리드생존/reclaimable0, 신호9/max407초·초과3구간/질문대기1건은 같은 근거 `lead-settlement.md`에 남겼다. 자체 선행 RED이며 제품GREEN·Stored/실DB·전체독립강 통과가 아니다.
+
+Core `msg_80f596e64e30`(17:01:21Z)은 검증된 제한 checkpoint 없음·API v2/HEAD 불변·Program/ServerHost/Admission 소유/예약 유지와 LocalDB 전체적용/후속 독립검증 뒤 인계를 보고했다. 이 인계는 실제 bridge/저장 통합의 전제이며 Core 독립 시험 발행의 전제가 아니다. 문의 `msg_89667aa993a5`는 해소됐고 원문은 근거 `approval-01/mail-notification-overnight-02.json`이다. Content `msg_139c3c8fe0e3`의451cbf4a UI 정산·공용2 추가예약0과 World 선구현→완성PR2 Guild보존 직렬통합 합의도 유지한다. network289/UI13의 각 자체 근거를 full PR2 인계로 해석하지 않는다.
+
+실제2단계 선행 작성 Task `task_d60dec8ebf76`/Dispatch `ctx_fe2fe54b151c`와 제품 연결·F1 시험 수정 세션은 모두 종료·정산했다. 추가38사례와 기존253/권위22 회귀는 동일313 필터에서 모두 통과했다. Core48 제품 파일·화면 변경은 포함하지 않았다. PR 전 전체 독립 강은 신규 외부 세션 한 번으로 별도 수행한다.
+
+- **F1 시험 수명 수정 정산:** 신규 Sol xhigh Task `task_34d29eeac61b`/Dispatch `ctx_624eee3a3e3b`, 원문 `approval-01/unity-session-fixture-fix-01/report.md` SHA256 `4DEECA62201D6519243CA3F4C34102156325514D2AAECDF7540436F395806A32`와 실제 준수·diff를 직접 읽었다. 시험 한 파일의 MenuFacadeProbe만 +32/-18이고 제품9·모든 단정/입력·313이름·meta를 보존했다. Main `msg_6ba0ffe52769` 창의 PS/Unity 각1회 rawexit0·XML313P/0F/0skip, 기존309 회귀0·F1 네실패→P를 원시 전수 비교했다. XML SHA256은 `16352E2A033148571689D90DFA9F8851F4B15DB969A5127EBDE21F3F9CD73B3E`다. 원본2100/meta1126·Prefs137 전체차이0·프로세스0을 먼저 확인해 Main `msg_1ddd9765f3b0`로 창을 반환했다. succeeded/release·정확pane종료·리드생존/reclaimable0이며 재사용0이다. 생존 초과1구간1259초는 승인 실행창 대기·턴 종료 지시에 따른 대기였고, 공식 질문 대기2건과 구분했다. 상세는 같은 근거 `lead-settlement.md`다. 실제 서버/DB·전체 독립 강·Content 통합·플레이/CI 통과로 확대하지 않는다.
+- **Unity 자동 사용자 캐시 정산 결정:** Main `msg_5e2263130930`(15:25:21Z)은 정확15argv 실행의 LocalLow/Unity/Caches/GiCache 자동 갱신을 통상 실행 부작용으로 분류해 현물을 보존하고 실패/범위위반으로 세지 않은313GREEN 정산을 지시했다. 디렉터리는 실행 전 존재했지만 before 내용/hash·이번 변경량은 unknown이며 외부cache 불변을 주장하지 않는다. 직접 수정/삭제/복원/재실행0, 추가감사·도구·전역설정·경로변경0이다. 원문은 같은 근거 `runtime-sideeffects-observation.json`·`lead-gi-cache-log-observation.json`·`settlement-supplement-v1.2.md`다. 다음 READY에 「Unity 사용자 캐시(LocalLow/Unity/Caches 아래 GiCache 등) 자동 갱신 — 관측만, 보존」을 포함한다. 성능JSON은 부재이며 성능측정 성공을 뜻하지 않는다.
+
+- **실제session 구현 정산:** Astra xhigh Task `task_a30c77e4802e`/Dispatch `ctx_071275baff63`, 원문 `approval-01/unity-session-implementation-01/report.md` SHA256 `1A990BB326B7F096389094F50F70BC5CC3FF27B5A1F9D810BBBBBC5E11A7062A`를 직접 읽고 제품9diff/실제Unity1회·XML313=309P/4F/skip0를 대조했다. 신규34가 통과로 바뀌었고 기존275/이름·결과는 보존됐다. F1 네실패는 fixture의 original Lifetime null→reflection TargetException이며 facade본문 미도달로 전체GREEN미충족 outcome failed 정산했다. 제품확정실패/독립NOTPASS 집계는0이다. Prefs137 전체차이0·원본2100/meta1126 보존/프로세스0을 먼저 확인해 Main `msg_e13c10e12ba9`로 창을 반환했다. failed/release·동일pane종료·리드생존/reclaimable0을 확인했다. 성능JSON 부재/과거기본LocalLow자동출력의 beforeunknown 한계·생존초과332초1구간은 같은 근거 `lead-settlement.md`에 남겼으며 성능측정 성공·전체통과는 주장하지 않는다.
+
+- **실제session 선행시험 정산:** 원문 `approval-01/unity-session-pretest-01/report.md` SHA256 `B08C08A42EB12A8471712FF68D7AE9008700614E9545993E9D5686E3B72CCED0`를 직접 읽고 원 XML313=275P/38F/0skip·전실패를 대조했다. 신규33은 session CharacterMenu getter,5는 facade ConnectCharacterMenu API 부재이며 이후 semantic 미도달이다. 기존253 fullname/결과 차이0, 별도 기존 결과48 authority22도 모두P다. 승인 `msg_6d44ce1ccef5`의 Unity13:00:23~13:10:47Z·caller rawexit2를 요구 RED와 구분했고, Prefs137 전체차이0·원본2093/meta1122·고정250 보존과 관련프로세스0을 확인해 XML 리드분류 전 Main `msg_d7a8ce88c97f`로 창을 반환했다. 완료/release·동일pane 종료·리드 생존·reclaimable0이며 재사용0이다. R1 통지 baseline 정적교정·liveness 초과4구간/이유와 실행·보존 원시는 같은 근거의 `lead-settlement.md`에 남겼다. 이 결과는 자체 선행 RED이며 독립 최종강·실DB·서버입장·실제접속/플레이/CI 통과가 아니다.
+
+- **원본 DLL 배포 정산:** 신규 Astra xhigh Task `task_e4378aa46242`/Dispatch `ctx_7264952668f1`, 원문 `approval-01/dll-deployment-01/report.md` SHA256 `1C77A1B18728DC9B1E39076FA8A4D3918F6DEEABF9DD84CBEADCFAB10A290151`을 직접 읽고 실제 PS7 진입1회 exit0·제품 DLL1binary diff를 대조했다. 원본Shared.dll은 P1 시험에 사용한 동일113664bytes/SHA256 `B8B2828E27A1A1667A2B5F703A2C7A97822F70FC47EF974C9F3694DCB5A4ECD3`이며 구본은 단일백업했다. 리드 현물 대조에서 고정159파일drift0, meta1122→1122/변화0이다. 보고 UTC 서식 교정은 원본·원시와 구분했고 제품/실행 재시도0이다. completed/release·정확pane종료·리드생존/reclaimable0, 생존7신호/max198초/초과0을 확인했다. 자체배포 완료이며 새빌드·Unity·WSL·DB·실제54→48·최종독립강/CI는 미실행이다. 상세는 같은 근거 `lead-settlement.md`다.
+
+- 후속 소비 계약은 [Unity 비화면 소비 v1](unity-consumer-contract-v1.md)이다.1단계 pure client/reader/Lifetime 최소 분기와2단계 실제 공용2파일/handler→48 연결을 구분해 선행 시험을 작성한다. Core `msg_45b43bc4ff25`/`msg_7d13fd6f7b61`은 API v2/host 미커밋·최종 독립강/인계0 유지와 DB Apply exit1·SQL Stopped/복구 준비를 보고했다. 환경 완료로 해석하지 않는다. Content `msg_f256203ca943`의 PR251 병합041bea25/PR2 착수·공용2파일 소유 유지도 대조했다. 최신 origin/main을 fetch해 실제041bea25와 신규 변경 경로를 확인했으며 이 계약의 PDL/버전/Lifetime/기존LifetimeTests와 중첩0이다. 현 World checkpoint dcf906a0은 유지하고 통합 전 최신main/Content/Core 인계는 다시 반영한다.
+- Unity 첫 시험 세션은 공식22088자 계약 대신 JSON draft에 CODE 부록 꼬리345자만 보여 전체제출을 확인하지 못했다. 메인 `msg_c40beb9591b3` 판단으로 Enter0·abandon/fence·정확pane종료했고 고정입력drift0/신규시험부재를 확인했다. 도구한계이며 확정실패/모델격상으로 세지 않는다. 리드가 LF제거exactsuffix를 기계결과읽기전에 보고한 오류는 실제false 원문 확인 뒤 `msg_054938d10286`으로 즉시정정했다. 원시와정산은 `approval-01/unity-pretest-01/lead-abandon-settlement.md`에보존했고 동일계약/모델의신규세션으로다시발행한다. 새검사도구/반복규칙은만들지않는다.
+
+- **Unity1단계 구현 정산:** 신규 Astra xhigh Task `task_3c45b744b364`/Dispatch `ctx_42bc4c8c5618`, 최종 원문 `approval-01/unity-implementation-01/report.md`와 `actual-compliance.md`를 직접 읽고 허용8제품파일·같은253 XML의227RED→P/기존26P유지·원본2093/시험/Plugins 보존을 대조했다. Shared 격리빌드·Unity최초1회·양쪽잔존/lock/prefs137복귀 뒤 메인 `msg_c83e21b8d4ff`로 실행창을 반환했다. H1은 PS capture의 VoidTaskResult 출력으로 원caller만실패한 결함이며 공개·원시보존·메인 사전승인 후두[void]억제/완료build-sync-backup반복0의남은caller로끝냈다. Windows SDK존재를확인없이전제한리드계약은정확WSL SDK로준비보충하고메인에정정했다. 제품확정실패/새검사도구0, 구현자완료·정확pane종료·리드생존을확인했다. 생존초과4구간·질문대기3건, package/licensing/종료로그미확정·일회근거script설정분리한계는 같은 근거 `lead-settlement.md`에 보존했다. 원본Shared21·실제session/handler48/서버DB·양쪽배포·플레이/Player/CI·전체독립강은남는다.
+
+- **Unity 선행 작성·실제 RED 정산:** Task `task_fdeff68e69e6`/Dispatch `ctx_7410f00e785e`, 원문 `approval-01/unity-pretest-02/report.md` SHA256 `5E56C67B8E2B6028C76F3E764D82E58D6D47E43C02B30E8E72F27C12F1BD025F`. 허용 시험5파일만 작성했고 메인 `msg_3b169e7b1d1e` 창에서09:35:42~09:45:39Z Unity6000.6.4f1/TF1.8.0을1회 실행했다. XML253=26P/227요구RED/0skip, 부재4그룹은 client48/reader161/reply1/Lifetime event17이며 이후 semantic assertion은 미도달이다. 원본2086파일·고정47입력 불변, 이전 Lifetime26케이스 통과다. prefs7 Binary 변화는 보존·공식ask 후 메인 `msg_c8887e153cb3`가 정확복귀를 승인했고137전체 차이0·Unity/Hub0을09:49:53Z 확인해 메인 `msg_5918f221b7fb`로 창을 반환했다. 완료 Dispatch 정산·정확pane종료·리드생존을 확인했다. suite Child집계32를 setup으로 잘못 명명한 분석과 빈 pipeline의 delta파일 부재는 원시/정정에 구분했고 시험·harness를 바꾸지 않았다. 신호 초과5구간/질문대기2건은 같은 근거 `liveness-result.json`과 `lead-settlement.md`에 한 줄 정산하며 제품 확정실패로 세지 않는다. 전체 강·Shared22양쪽배포·서버DB·2단계handler/48·플레이/Player/CI 통과가 아니다.
+
+- 전송 구현 정산: Task `task_3ae4e9a31fdb`/Dispatch `ctx_0f0348dd8a48`, 최종 원문 `approval-01/packet-implementation-01/report.md` SHA256 `F402D911BAB03EC1DB32BE5D1AE92189F6C05D92D467F75BB078C5A8A1658283`. 메인 `msg_1e9c1a8d8980` 창에서 실제08:20:39~08:22:29Z A/B/G/C/D0, 기존 generator→허용GenPackets1파일복사→동일필터217P/0F/0skip을 수행했다. 리드가 원TRX/이전행 전수 연결로49P유지·168RED→P를 확인했다. 보호720/백업723/고정30불변·복원0·D 잔존검사/lock 반환을 대조하고 메인 `msg_d25f596a6aa5`로 창을 반환했다. G빌드0경고/0오류·C빌드50경고/0오류이며50경고 기존여부는 미분류다. 완료 세션 정산·실제 pane 종료, 리드 생존을 확인했다. 패킷 green은 전체 강·실DB·서버 실제 입장·Unity/UI·양쪽DLL배포 통과가 아니다.
+
+- 실제 RED 정산: Task `task_1c9662d93c45`/Dispatch `ctx_b89364be768b`, 최종 원문 `approval-01/compile-red-02/report.md` SHA256 `025FF95D0D4E3B567ABB297A8F5EA1E89CD8BF01838503881D599F4041991C3F`. A0/B0/C1/D0, 보호723불변·복원0, WSL 잔존검사/lock 반환을 실사했다. 신규 요구168은 protocol22부재1/공개enum부재1/ID49..54부재166이며168개 별도 제품 결함으로 세지 않는다. SDK10.0.301/빌드50warnings·0errors를 실제 관측했으나 warnings의 기존 여부 전수 분석은 하지 않았다. 완료 세션 정산·실제 pane 종료, 리드 생존을 확인했다. 메인 `msg_9b7aca39f10a`로 실행창을 반환했으므로 다음 실행은 새 창이 필요하다. 이전 고정 goal은 같은 근거 `goal-frozen-at-settlement.md`에 보존했다.
+
+- 첫 실행 준비 정산: Task `task_5befbf9b9e27`/Dispatch `ctx_233962009f0f`, 실패 원문 `approval-01/compile-red-01/report.md`(SHA256 `F47C3FB8A68772B7B7C79C2F5A3D6F186676F91E582F2EC946084B54A67F4FF6`)와 `lead-settlement.md`. 결함은 기본 JSON 파서의 DateTime을 문자열 파싱해 KST로 재해석한 승인 시각32400초 차이다. 저장 harness/WSL/dotnet/compile/RED 실행0, 고정 입력·산출·source hash drift0, 실제 pane 종료 완료다. 메인은 신규 세션 수정·READY 보류와 자동 모델 격상/제품 확정 실패 집계 없음에 동의했다. 당시 goal 원본은 같은 근거 `goal-frozen-at-settlement.md`에 보존했다.
+
+- 사용자 선택은 **A — 이 범위로 지금 병행 착수**다. 승인 당시 goal 172줄과 메인 정리본은 근거 `approval-01/inputs/`에 같은 bytes로 보존했다. 기존 이름·슬롯·직업 정책과 C1~C9·PR 경계는 바꾸지 않았다.
+- 현재 작업 branch와 기준 main은 `.backups/verification/2026-10-18-character-server/entry-git.json`, 세션·Run·메시지 원시는 같은 근거 폴더에 있다. 이전 길드 goal의 Run·Task·Dispatch는 재사용하지 않는다.
+- Core는 API v2 미커밋 구현의 공개 선언을 재확인했으며 실제 DB·저장재접속·강 판정은 남아 있다. Content는 Unity 공유 파일의 길드 PR2 중첩과 전체 쓰기 종료 미정을 회신했다. API 문서·정적 회귀를 실제 DB/최종 통합 완료로 해석하지 않는다.
+
+## 요구사항 원천과 적용 결정
+
+- 진입·초안 작성 지시: 메인 `msg_bbdc401da68a`(2026-10-18T04:45:09Z). 메인 창에 제출된 다음 사용자 원문을 메인이 전달했으며, 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+  > 그리고 일단 지금은 빠르게 기반작업을 우선순위로 잡고, 기반 작업 마무리 되면 컨텐츠쪽 유지보수랑 추가사항 빠르게 찍어내자 / CORE: DB 테이블이랑 스키마 구성 / 나머지 파트 흐름 : 로그인화면 - 캐릭터 선택창(기존 캐릭터 선택 or 캐릭터 생성) -> 마을 진입(여기서 길드 거점 or 사냥터) -> 사냥터 진입 후 클리어 -> 재화로 길드 거점 성장 및 추가보상
+- 같은 전달의 사용자 결정: 「대시보드 결정 응답: 1) 기반 작업 - 마을에서 들어가는 길드 거점을 지금은 패널로 둘지, 별도 맵으로 바꿀지 → A 지금은 패널 · 2) 기반 작업 - Core DB를 흐름 전체 표로 설계하고, 서버 연결은 어디까지 먼저 할지 → A 캐릭터부터 연결」.
+- 메인 운영 판단: 서버 패킷 처리는 World, 화면은 Content, DB 표·저장 연결은 Core 목표다. 최초 허가는 범위 초안 작성이었고, 아래 사용자 A 승인 뒤 조건을 지켜 병행 착수한다.
+- Core의 기존 승인 기본값은 `01_Phases/goals/2026-10-17-character-storage-foundation/goal.md`의 원천을 따른다. 해당 문서는 현재 별도 `core-active`에서 읽으며 아직 이 main에 통합되지 않았다. 계정당 세 칸, 생성 시 이름·기사/마법사 선택, 이름 NFC 후 2~12자·한글 완성형/ASCII 영문·숫자·서버 전체 유일과 ASCII 대소문자 무시다. World가 이 정책을 변경하거나 별도 정규화하지 않는다.
+- 앞 리드 종료 원문: `.backups/verification/2026-10-14-guild-server/laptop-resume-20261017/closeout-01/final-closure-01/final-status.md`의 4항. PR250 병합 이후 새 리드로 진입했으며 역사 goal은 수정하지 않는다.
+- 새 branch는 최신 main에서 만들었다. 상세 SHA는 진입 근거에 두고, 계약 발행 때 최신 통합 기준을 다시 고정한다.
+- **사용자 범위·착수 승인:** 메인 `msg_fb6c227d3b39`(2026-10-18T05:35:50Z)가 전달한 사용자 원문은 「대시보드 결정 응답: 1) 계획 검토 - World World 다음 목표 - 캐릭터 목록·생성·선택 서버 처리 범위 승인과 착수 시점 → A 승인 (초안 msg_68890d486286)」다. 메인 pane 제출의 전달이며 이 pane 직접 입력으로 격상하지 않는다. 승인 대상은 초안 v0.1 172줄/hash `5ED02523858CCA4612046AA7F4FD007244FB0C2EDEB9CFF247E76962D1BB248A`와 사용자에게 제시된 A 「이 범위로 지금 병행 착수」다. 원문은 근거 `inbox-next-03.json`, 승인본과 메인 정리본은 `approval-01/inputs/`에 보존한다.
+- **착수 조건:** Unity 최소 수신 소유와 정확 파일은 Content 쓰기 종료·합의 뒤 계약 전 고정, 49..54/v22는 최신 main/타 파트 예약 대조 뒤 고정, Core 미검증 코드 복사0, 중량 실행은 메인 「실행 창 시작」 뒤다. 범위 승인만으로 이 조건을 생략하지 않는다.
+
+## 적용 중인 메인 운영 판단
+
+### World 연속 동결 해제·PR266 영향 점검 — 2026-10-27T04:29:52Z
+
+Main `msg_271c2c81e324`의 **메인 판단이며 사용자 결정이 아니다.** 새 B0 창 `msg_28332be5a910`도 미진입 종료해02:35Z부터의 동결을 이 메시지 송신04:29:52Z에 명시 해제했다. 다음 B0는 새 동결 통지 뒤다. Main은 PR266(main4ab,04:05:05Z 병합)의 Town 포탈20→25·역방향 도착17→21에 World 새 시험/봇 가정이 있는지 file-only 확인·파일/줄/처리안 보고를 지시했고, 범위 내 수정은 리드 판단·main 통합은 다음 안전 지점으로 뒀다. 현재의 무작업자·변경교집합0·충돌/staged/lock0을 안전 지점으로 판정해 사전통지·백업 뒤 기계 통합했다.05:00~06:35Z는 사용자 저장 확인 후보/운영툴 자리이며 WSL·서버 창은 메인 배정 전 실행하지 않는다. 실제 결과/제한은 위 PR266 절을 따른다.
+
+### 이전 동결 연장 — 2026-10-27T03:29:01Z, 해제 없이 이어짐
+
+Main `msg_259c07d44aea`는 첫 창 `msg_45735e6c8bd0` 미진입 종료 뒤 새 `msg_28332be5a910`(예정 T04:25Z/returnBy04:55Z)으로 바꾸면서02:35Z 동결을 풀지 않고 유지했다. HEAD·branch·status가 이전 보고와 다르면 즉시 알리도록 했다. 이때 직접 대조는 HEAD5ade/branch/26행·goal606F·제품25hash 모두 동일이었다. 동결 중 goal을 쓰지 않고 외부 overlay로 보존한 것을 위 명시 해제 뒤 인수했다.
+
+### 이전 World 파일·Git 동결 — 2026-10-27T02:35Z~04:29:52Z
+
+Main `msg_16377c50a187`(02:22:40Z)의 **메인 판단이며 사용자 결정이 아니다.** 새 Core B0 봉인이 Core·World HEAD·branch·status를 관측하므로02:35:00Z부터 World 파일·Git 쓰기를 모두 멈추며 읽기만 한다. 진행 중 쓰기는 그 전에 마치고 **HEAD·branch·status 원문과 마지막 쓰기 시각을 보고**해 Core가 관측하게 한다. Core 창 원문은 `msg_45735e6c8bd0`, 예정 T03:25Z·returnBy03:55Z다. B0 반환 뒤 메인이 새 메시지로 해제하며 창이 열리지 않아도 메인의 해제 안내가 필요하다. goal 쓰기 예외·예정 시각 자동 해제·World 실행 허가는 없다. 수신/ack·사전 메모·최종 Git 원문과 실제goal mtime은 외부 단일 로그에 보존한다.
+
+### 이전 World 동결 명시 해제 — 2026-10-27T00:04:13Z
+
+Main `msg_f376cd8a940e`의 **메인 판단이며 사용자 결정이 아니다.** Core E12 B0 창은 `msg_9b3a5d2c89eb`의 진입0 종료이며, 메인은23:40Z부터의 World 파일·Git 동결을 **이 메시지 송신시각00:04:13Z**에 명시 해제했다. 다음 Core B0는 Art Unity 뒤·시각 미정이고 필요 시 새 동결을 알린다. 큰 변경은 미리 알리고 다음 봉인 시점의 HEAD·branch·status와 일치시킨다. 현재 이번 쓰기는 goal 현재결정/상태 기록뿐이며 제품·시험·Git 변경/새 실행은0이다. 분류·ETA 보고 마감00:28Z는 유지한다. 이전 동결/해제 원시와 이번 ack를 외부 단일 로그에 보존한다.
+
+### World 파일·Git 쓰기 동결 — 23:40Z~00:04:13Z, 위 해제로 종료
+
+Main `msg_5b20139f6311`의 **메인 판단이며 사용자 결정이 아니다.** Core E12 B0 새 봉인이 Core·World HEAD·branch·status를 관측하므로23:40:00Z부터 world-active 파일·Git 쓰기를 모두 멈춘다. 읽기는 허용되지만 goal 쓰기 예외는 없다. 진행 중 쓰기는 그 전에 끝내고 HEAD·status를 그대로 둔다. Core 창 원문은 `msg_ae1db93df45b`, 예정 T는2026-10-27T00:15Z·returnBy는00:45Z다. **해제는 반환 뒤 메인의 새 메시지로만 받으며 창이 열리지 않아도 메인 해제를 기다린다.** 예정 반환 시각·다른 파트 상태를 자동 해제로 쓰지 않는다. 원문·ack와 사전 기록·보존 대조는 재개 지점의 외부 단일 로그에 보존한다.
+
+### 직전 World Git 상태 동결 해제 — 2026-10-26T18:40:56Z, 위 새 동결 전 기록
+
+Main `msg_baef7c58d2a3`의 **메인 판단이며 사용자 결정이 아니다.** Core E12 B0는 준비 하네스 결함·시간 부족으로 진입0 종료했다. 메인은 아래 `msg_82a65eb6e78b`부터 이어진 동결을 명시 해제했으며, 승인된 목표 범위의 file-only 작업·commit은 허용하고 push·PR·실행 창은 기존 규칙을 유지했다. Core 다음 B0는 Content B 뒤 새 봉인으로 World HEAD·branch·status를 다시 읽고, 동결이 필요하면 메인이 새 창과 함께 알린다. 새 동결 통지 전에는 동결이 없다. World의 Core 최종 인계·독립 강검증·READY/T 조건은 유지한다. 원문과 ack는 재개 지점의 외부 단일 로그에 보존했다.
+
+### 이전 Core B0 World Git 상태 목록 보호 정지 — 위 명시 해제로 종료
+
+Main `msg_82a65eb6e78b`의 메인 판단이다. 지금부터새B0창14:05~14:35Z의반환보고까지world-active의HEAD/branch/status--short목록을바꾸지않는다. commit·branch/reset/stash/checkout같은변경과현재status에없는경로수정/신규파일을금지한다. 이미수정상태인goal은고칠수있지만원래대로되돌려status행을없애지않는다. 새산출물은외부.backups기존근거폴더에둔다. 실제외부World하위폴더는없어새폴더를만들지않고기존verification의World전용단일파일을사용한다. 경로가정오류의실패/생성0과정정·정확26행일치도그파일에보존했다. B1은아침으로이관됐고시각은미정이다. 이판단은제품/검증실행허가나원래강검증순서변경이아니다.
+
+### 이전 밤 HB 300초 초과 한정 처분 — 10-27 09:00KST 만료
+
+Main `msg_61970f13bc49`의 **메인 판단**이며사용자원문으로기록하지않는다. 기간은2026-10-27 09:00KST까지다. 작업자/검증자의300초초과앞뒤HB명령·환경·exit·분리stdout/stderr원시가보존되고target실행이탈0이면절차실패로세지않고같은세션을계속한다. ORCAheartbeat-accounting의5분기준·초과구간/사유한줄정산과실제간격은유지한다. 같은세션재초과는자동실패가아니지만다음단계전메인에먼저보고한다. 원시누락·구기록기·미저장script가함께있으면적용하지않고공식질문한다. 원문은`approval-01/rehearsal-resume-01/inbox-wake-14.json`, 적용준비는`heartbeat-night-disposition-v1.md`이며회신메일0/정본수정0이다.
+
+## 적용 중인 사용자 결정
+
+### 2026-10-29 결정 36 A·37 A — 합동 창 S6a의 새 시험 로그인과 한 번에 하는 창
+
+Main `msg_4e853f45229b`(2026-10-28T17:08:57Z 송신)가 전달한 사용자 원문이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 36 - 합동 창에서 새 로그인 이름(빈 계정)으로 첫 접속부터 볼지 → A 허용: 새 시험 로그인 하나를 쓴다 · 2) 37 - 합동 창 착석이 약 30분에서 약 50분으로 늘어도 될지 → A 한 번에 한다: 착석 약 50분
+
+**메인 적용:** S6a(봇 after 뒤, 서버 2 종료 전의 Content 2단)에서 새 시험 로그인 이름 하나를 쓴다. 개발 DB에 계정 행 하나와 캐릭터 행 한두 개가 새로 생겨도 된다. 삭제·DDL 0은 그대로다. 로그인·캐릭터 이름은 Content가 정하고 시험용임이 드러나야 한다. 합동 창은 한 번에 하며 사용자 착석 약 50분, 창 목표 약 75분, 한도 약 90분이다. 막히면 리드가 S6a를 멈추고 S7로 서버를 닫는다. 순서표 v3는 Core 작성·World 합의이고, 확정본의 경로와 SHA256을 메인에 보낸다. Unity·WSL 병행은 S6a 안에서만, 물리 여유 6GiB·commit 여유 4GiB 이상일 때다(`msg_01d40e3c6119`).
+
+### 2026-10-28 결정 32 B — 합동 실DB 창은 사용자 기상 뒤
+
+Main `msg_853790fcdc0f`(14:46:57Z 송신)가 전달한 사용자 원문이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 32 - 합동 실DB 확인 창(사용자 착석 약 30분) 시각 → B 자고 일어나서 한다
+
+**메인 적용:** 밤사이 구현·자동 시험·독립 검증·Unity 시험까지 끝내고 합동 창 직전(S0)에서 head를 고정한 채 기다린다. 사용자가 일어나 메인 pane에 말하면 메인이 두 리드에 시작을 알린다. 밤사이 결함은 승인 범위 안에서 수정·재검증하며, 합동 창 입력(head·hash)이 바뀌면 S0 고정 기록을 새로 남기고 메인에 알린다. 실행 창 배정(`msg_50f2fa1abdc1`: 구현자 WSL 10-29 01:30~02:30 KST, 검증자 WSL+Unity 03:00~04:00 무렵, 각 시작 전 메인 통지)은 그대로다. 병합·사용자 착석·사용자 결정이 필요한 일은 아침까지 묶어 보낸다.
+
+### 2026-10-28 결정 27 반영 범위 v2 승인·결정 28 A·29 A
+
+Main `msg_5642ff7de0f4`(2026-10-28T14:37:03Z 송신)가 전달한 사용자 원문이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 28 - 기존 저장 시험의 기대값을 새 캐릭터 메뉴 동작에 맞춰 바꿀지 → A 바꾼다: 시험 조정을 World PR에 넣는다 · 2) 29 - 개발 DB에 시험 계정의 새 캐릭터를 실제로 만들어 확인할지 → A 허용: 시험 계정에 새 캐릭터 행을 만든다 · 3) 계획 검토 - World 결정 27 반영 범위 초안 v2 (World·Core 저장 서버 마무리) → A 승인 (초안 msg_78570cdf06a1) · 4) 계획 검토 - Core 결정 27 반영 범위 초안 v2 (Core 재기동·불러오기 마무리) → A 승인 (초안 msg_49aaf725e21b)
+
+**승인된 범위:** 근거 폴더 `lead-opus-entry-20261028/scope-draft-decision27-v2.md`(Main 송신본 sha256 `da1b74924cedd6425d1891adcf20fef8ef981f41c945f4bc8a427504ba2410af`)다. 요지는 아래 「결정 27 반영 범위」 절에 둔다. 결정 28은 초안의 결정 가, 29는 결정 나다.
+
+**메인 적용 조건:**
+- 결정 28 A: World 독립 검증자는 고친 기존 시험마다 바뀐 이유를 분류한 표를 판정 원문에 남긴다. 메인은 병합 승인 요청 전에 그 표를 표본 대조한다. selector 경로 시험은 유지한다.
+- 결정 29 A: 이 PC의 기존 개발 DB 하나, 시험 계정 한정 새 캐릭터 행 생성, 삭제 없음, DB 구조 변경 없음.
+- 실행 창은 두 리드가 순서를 맞춘 뒤 메인에 시각을 요청한다. 합동 실DB 창은 사용자 착석이 필요하므로 준비 예상 시각을 미리 알린다. 두 초안의 합동 창 어림(World 30~40분, Core 45~60분)은 계약에서 하나로 맞춘다.
+- Content 리드를 열어 가짜 응답으로 화면을 먼저 만들지는 아직 사용자 답이 없다. 리드는 World·Core 둘뿐이다.
+
+### 2026-10-28 결정 27 A — 선택·생성 창을 11-06 범위에 넣는다
+
+Main `msg_808f6bedb0da`(2026-10-28T14:14:11Z 송신)가 전달한 사용자 원문이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 27 - 캐릭터 선택·생성 창을 11-06 범위에 남길지 → A 넣는다: 저장 서버 후보를 마무리하고 선택·생성 창을 만든다
+
+같은 메시지가 함께 전달한 앞선 원문은 다음과 같다.
+
+> 그럼 A로 가되 어차피 캐릭터 선택창도 만들어야되니까, 캐릭터 선택창 및 캐릭터 생성쪽도 28일에 면담 이후에 만들어보자
+
+(10-27 결정 14)
+
+> 프로젝트 개발은 이제 기능적으로 만들어진거 더 다듬고 외관작업해야 될 거 같은데
+
+(10-28 면담 뒤 방향)
+
+**메인 처분:** 메인 추천은 B(뺀다)였고 사용자가 A를 골랐다. 최종 제출은 11-06이다. 이 goal을 재개한다. World·Core가 저장 서버 후보를 검증·병합까지 마무리하고, 그 서버 계약 위에서 Content가 클라이언트 선택·생성 창을 만든다. Content 리드는 서버 계약이 정해지면 메인이 연다. World의 첫 일은 READY와 「결정 27 반영 범위 초안」(①남은 완료조건·최단 경로 ②선택·생성 창을 위한 서버 추가 일 ③World·Core 소유 경계 ④PR 경계 ⑤Content 시작 조건 ⑥실행 창·시간 ⑦하지 않을 것)이며, 메인이 사용자 승인을 받으면 새 범위를 시작한다. 이미 승인된 goal 범위 안의 file-only 작업은 초안과 함께 이어 갈 수 있다. 범위 A의 「생성 실연 유예」를 풀지는 범위 초안에서 다룬다. 실행 창은 World·Core가 순서를 맞춘 뒤 메인에 시각을 요청한다. Unity 작업과 「Windows dotnet 0」 관문 실행은 겹치지 않는다. 카드의 「World Unity를 Level Town보다 먼저」는 PR266 병합으로 끝난 조건이다.
+
+### 2026-10-28 리드·구현 Claude Opus, 독립 검증 Astra xhigh 적용
+
+같은 `msg_808f6bedb0da`가 아래 10-27 결정 4 원문과 답 A(리드까지 전부 Claude)를 다시 전달하며 적용을 지시했다. 리드는 신규 `claude-opus-5-5` xhigh·`[World 리드 Opus]`, 구현자는 `claude --model claude-opus-5-5 --effort xhigh`·`[World 구현 Opus]`, 독립 검증·리뷰는 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`·`[World 검증자]`, 이미지 생성만 신규 Sol max 예외다. AGENTS 라우팅 정본 반영 전이므로 이 원문으로 적용한다. 메인이 23:19 KST에 관측한 새 리드 첫 화면은 「Opus 5.5 with xhigh effort · Claude Max」이며 backend 실제 모델은 unknown이다. 사용량은 메인 전달 기준 Claude 주간 6%, Codex 주간 90%(16시간 전 값)이고 Astra 크레딧 단가는 Sol의 5배다. 독립 검증은 완료조건에 필요한 것만 열고 Codex 한도에 막히면 대체하지 않고 메인에 보고한다.
+
+### 2026-10-27 리드 정리·인계 지점 확보
+
+Main `msg_0a6a1432302c`가 전달한 사용자 원문(19:4xKST 메인 pane 제출)이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> OK 일단 리드급들 정리좀 해줘, 인계지점 확보도 해주고
+
+**메인 정산 지시:** 안전 지점에서 쓰기/판단을 멈추고 새 Task·worker·창0, 활성 작업자는 계약대로 정산·정확 종료한다. 자기완결 재개 카드와 기록 파일만 commit/push하되 후보 제품·미추적 파일은 보존하고 push 위험 시 commit만 남긴다. CODEX_SESSION_ID·worktree·branch·HEAD40·push·미커밋·활성0·카드 위치를 한 통만 보고한 뒤 턴을 끝내고 메인의 pane 종료를 기다린다. 이 정산은 goal 완료가 아니다.4A 모델 전환과13A 사용자+메인의 오늘 밤 Town 외관/사냥터/보스 직접 저작은 이 메시지의 배경 요약이며 첨부되지 않은13A 사용자 원문을 새로 만들지 않는다.
+
+### 2026-10-27 이미지 생성은20:00 뒤에도 GPT 작업자
+
+Main `msg_e1a840a0219e`가 전달한 사용자 원문(10-27 10:3xKST 메인 pane 제출)이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 일단 20시 전까지는 GPT로 Art쪽 진행해줘, 그리고 이후에 클로드로 전환했을때 이미지 생성은 GPT만 가능하니까 그것도 고려하고
+
+**메인 적용 지시:**20:00 전환 예고의 한정 예외로 이미지 생성(Codex image_gen)은20:00 뒤에도 **신규 GPT 작업자 Sol max·`--disable fast_mode`**가 맡는다. 일반 리드·구현 Opus xhigh와 독립 검증 Astra xhigh의 배정은 유지한다. 이 예외를 재개 카드에 함께 남기며 지금 하던 일은 계속한다. World의 새 이미지 생성 범위·할당·기동 권한으로 확대하지 않는다. 현재 실제 모델/런타임 전환·이미지 생성0이다.
+
+### 2026-10-27 20:00부터 리드·구현 Opus, 독립 검증 Astra xhigh
+
+Main `msg_d50edcfab607`가 전달한 사용자 원문(10-27 09:5xKST 메인 pane 제출)이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 그리고 오늘 오후 20시에 클로드 사용량 리셋되면 모든 작업 클로드로 진행, 크로스 체크만 GPT Astra로 진행, 작업 진행에 에러사항이 너무 많고 지체되는게 너무 답답한게 이유야, 내가 둘다 비교해보니 작업 완수 능려의 차이가 너무 많이 나
+>
+> 대시보드 결정 응답: 1) 4 - 20:00 이후 Claude 전환에 리드도 포함하나 → A 리드까지 전부 Claude
+
+**메인 적용 지시:**20:00KST(11:00Z)부터 리드는 신규 `claude-opus-5-5` xhigh·`[World 리드 Opus]`, 구현자는 신규 같은 모델/effort·`[World 구현 Opus]`, 독립 검증은 신규 `gpt-6-astra` xhigh·`--disable fast_mode`·`[World 검증자]`다. 메인이 현재 Sol 리드를 닫고 새 리드를 연다. 지금 하던 일은 계속하며 이 예고를 즉시 런타임 전환으로 보고하지 않는다.19:50KST(10:50Z)까지 재개 카드에 실제 Task·Dispatch·창·원문과 다음 한 단계를 최신화한다.19:00 이후20:00을 넘겨 끝날 새 Sol 구현자는 열지 않고 기존 실행 중 작업자는 끝까지 마치고 정산한다. 독립 검증 생략0·메인 실행창·사용자 병합승인은 유지한다. AGENTS 라우팅 정본 반영은 시연 뒤 담당 파트 요청이며 이 goal만으로 전역/프로젝트 설정이나 정본을 바꾸지 않는다.
+
+### 2026-10-27 통과한 만큼10-28 시연·11-06 최종 제출까지 다듬기
+
+Main `msg_30ad9776df99`가 전달한 사용자 원문(10-27 08:59~09:00KST 메인 pane 제출, 순서대로)이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 이제 정말 시간이 없어 최대한 완성도 있게 빠르게 마무리 할 수 있는 방향으로 긴급하게 진행해야돼
+>
+> 28일날 최대한 보여줄 수 있는 부분은 보여주고 11/6 최종 제출전까지 다듬는 방향으로 가자
+
+**메인 해석:** 10-28 교수 면담에는 그때까지 검증을 통과한 것을 보여 준다. 첫 시연 빌드는18:00 목표로 통과한 것으로 뽑고, 이후 통과한 것은 가능하면 밤 두 번째 빌드로 넣는다. 미포함 항목은 버리지 않고11-06까지 다듬으며 독립 검증·승인 관문은 줄이지 않는다. 이 후속 안내가 아래 이전18:00 고정/범위 해석의 일정 부분을 보충한다. 신규 World 항목의 현재 분류·최단 경로는 재개 지점에 두고 지연은 즉시 보고한다.
+
+### 2026-10-27 B0 뒤 B1 우선·시연 필수 유지
+
+Main `msg_775930079a39`가 전달한 사용자 원문(10-27 08:57KST 메인 pane 제출)이다.
+
+> 대시보드 결정 응답: 1) 1 - 저장 시험 뒤 공유 창 순서 → A B1 저장 합동 시험 먼저 · 2) 2 - Town 새 레벨과 18:00 빌드 고정 → C 코멘트 「최대한 전부 빠르게 넣을 수 있는 방향을 진행」
+
+**메인 해석:** B0 뒤 첫 순서는 B1이며 Town을 포함한 시연 필수를 빼지 않고18:00을 목표로 가장 빠른 경로를 준비한다. 메인 전달을 직접 사용자 입력으로 격상하지 않는다. file-only 준비는 병행하되 명시적 World 동결은 지켰고, 관문 축소는 적용하지 않는다. 동결 중 원문/계획은 외부에 보존한 뒤 이번 해제 후 이곳에 반영했다.
+
+### Core B1 시점 후속 안내 — 다음 메인 세션 이후
+
+Main `msg_baef7c58d2a3`가 사용자 결정에 따른 B1 시점을 **다음 메인 세션이 열린 뒤**라고 전달했다. 이 메시지에는 사용자 결정 원문이 첨부되지 않았으므로 메인의 전달 요약으로 기록하고 이 pane의 직접 사용자 입력으로 격상하지 않는다. 정확 시각은 미정이며, 아래 이전23:30한도·아침 안내에 이 후속 시점 안내를 우선한다. World 실행 허가·독립 강검증 축소·새 ETA는 아니다.
+
+### 2026-10-26 Core B1 오늘 밤·23:30 시작 한도
+
+Main `msg_c81e2ca9b6b1`가 전달한 사용자 원문은 「대시보드 결정 응답: 1) 저장 합동 시험(B1) 시각 - 오늘 밤 23:30 시작 한도 vs 10-27 아침 → A 오늘 밤, 23:30 시작 한도」다. 10-26밤23:30KST까지B1을시작하면진행하고못하면아침으로넘긴다. 이참고결정은World실행허가/창배정이아니며World ETA는Core실제READY·반환·최종인계후산정한다. 원문은`approval-01/rehearsal-resume-01/inbox-wake-13.json`이고회신메일은보내지않는다.
+
+### 2026-10-26 새 독립 검증자 Astra xhigh 임시 전환
+
+Main `msg_847bf285cc8a`가 메인pane10-26 18:4xKST 제출로 전달한 사용자 원문은 「대시보드 결정 응답: 1) Claude 주간 사용량 - 새 검증자 Sol로 전환 vs Opus 유지 → C 코멘트 「검증자를 Astra xhigh로 임시 전환.」」이다. 새독립검증자/리뷰어는위험·DB배정도gpt-6-astra xhigh로열고정확명령은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다. 기한은10-27 20:00KST Claude초기화까지이며원배정복귀때메인별도통지를확인한다. 원문은`approval-01/rehearsal-resume-01/inbox-wake-09.json`이다.
+
+태그/첫화면모델·effort/backendunknown기록·독립강기준/역할분리를유지한다. 이미열린Opus는현재작업후정산/종료하고중간모델변경0,후속새재검증은Astra다. 새선행시험작성자도Astra라는것은같은Claude예산을근거로한메인해석으로사용자원문과구분한다. 새Claude가꼭필요하면기동전메인에이유를보내고Astra capacity는다른모델대체없이재시도만한다. 구현자Sol max/두번째독립불합격뒤Astra배정은바꾸지않는다. 현재World는새검증자미기동이며문서변경을런타임전환으로보고하지않는다.
+
+### 2026-10-26 병합 전 Content B 밤 작업 조건부 승인
+
+Main `msg_5a9770fb2ff9`가 메인pane10-26 17:5xKST 제출로 전달한 사용자 원문은 「대시보드 결정 응답: 1) World PR 병합 전 Content 캐릭터 화면 밤 작업 - 미리 허락 vs 아침까지 기다림 → A 조건부 미리 허락」이다. 대상은이번밤부터아침World병합까지Content B 목록·선택·입장하나이며,취침전정상병합이되면예외미사용이다. 원문은`approval-01/rehearsal-resume-01/inbox-wake-08.json`이다.
+
+네조건은World독립강완료,정확H40/PDL·Generated·v22·양쪽DLLhash묶음,Core소유경계예외확인,Content C9쓰기종료/보존후B작성자1명이다. Main이원천대조후「안1발동」을따로보내며그전시작0/하나라도누락이면아침World병합뒤시작이다. Content는H전체commit을기준으로UI만쓰고공용NetworkService/UnityClientSession·SharedDLL읽기전용·선복사/수정·v21/v22혼합0을유지한다. H/API/DLL변경·충돌은즉시중단/메인판단이며,아침main재고정후실제입장/신규독립강을수행하고Content PR은화면변경만담는다. 밤자체결과를아침재고정전최종PASS근거로쓰지않는다. World는조건2묶음을Main/Content에함께보내고이후H변경도둘에즉시통지한다. 이결정은World순서/범위·병합승인을바꾸지않는다.
+
+### 2026-10-26 최종 고정 10-27 18:00·밤새 진행
+
+Main `msg_a0b3236d8275`가 메인pane10-26 17:2xKST 제출로 전달한 사용자 원문은 「대시보드 결정 응답: 1) 최종 빌드 고정 시각 - 10-27 15:00 vs 18:00 → B 10-27 18:00 · 2) 밤사이 진행 - 메인이 밤새 창 배정 vs 밤엔 멈춤 → A 밤새 진행」이다. 18:00까지main병합된실행본으로리허설하며미합류goal은미완료다. 메인은10-27 16:00진척점검을하고World는15:30까지병합가능/불가·이유를보고한다. World PR을사용자취침전1회승인받는것이목표이고준비23:30초과전망은즉시알린다.
+
+「잘게」이후메인이사용자손없는Unity/WSL창을계속배정하지만credential·범위/다운로드·PR별정확head병합승인은아침대기열로두고자는동안병합하지않는다. 새Opus기동전통보와메인의95%근처보류통지는유지하며현행검증모델을바꾸지않는다. 이결정은기존창순서/실행관문·강검증을생략하는권한이아니다. 원문은`approval-01/rehearsal-resume-01/inbox-wake-05.json`이다.
+
+### 2026-10-26 저장 합동 우선·World Unity를 Level보다 먼저
+
+Main `msg_e2e91e15b074`가 메인pane10-26 16:4xKST 제출로 전달한 사용자 원문은 「대시보드 결정 응답: 1) 저장 합동 시험 시점 - 오늘 저녁 먼저 vs Level 다음 → A 오늘 저녁 먼저」다. 메인 선택지의 사용자 착석45~60분·Core 준비 뒤18:30~19:30 시작은 추정이고 현재 실행시각 확정이 아니다. 원문은 `approval-01/rehearsal-resume-01/inbox-wake-03.json`이다.
+
+메인은 Core B0→B1→Core최종독립실DB→WorldWSL, 이어 WorldUnity→LevelTown→Content캐릭터/길드→ArtTown→최종Player 순서로 보정했다. 이전16:2x의Level우선순서만대체하며 범위A/강검증은유지한다. World는각시작조건이갖춰진뒤실행READY를보내고각T를받는다. Unity뒤World제품PR/CI는Level창동안진행하되추가중량실행/자원관문을겹치지않는다.
+
+### 2026-10-26 10-28 시연 범위 A 확정
+
+Main `msg_7e521603b732`가 메인pane10-26 16:2xKST 제출로 전달한 사용자 원문은 「대시보드 결정 응답: 3) 10-28 시연 범위 - 핵심만 먼저 vs 전부 시도 → A 핵심만 먼저」다. 전달된 선택지 A는 저장시연·운영툴서버기동/텍스트로그·Town레벨/외관·길드성장화면을 먼저 끝내고, 하우징·사냥터/보스방새레벨·캐릭터생성시연은10-28뒤로미루어 해당goal을미완료로두는 것이다. 미룬장면은현재main모습으로보여준다. 전달원문은 `approval-01/rehearsal-resume-01/inbox-resume-audit-02.json`이다.
+
+Main은 Core 기존관문A를 채택했으며 World는CoreB1뒤최종강/제품PR을진행한다. 생성화면실연은필수에서빠지지만기존API/필수시험·C1~C9/강등급은삭제하지않는다. Unity창순서는LevelTown→World→Content캐릭터→Content길드→ArtTown→최종Player, WSL/SQL/7777은Core저장시험이먼저다. 창은메인이하나씩배정하며Windowsdotnet0관문과Unity/Burst를겹치지않는다. 목표는10-27저녁리허설이며범위축소비상안은새사용자판단전적용0이다.
+
+### 2026-10-26 실제 실행본 시연 재개
+
+Main `msg_39a3838194ac`가 전달한 사용자 원문은 「일단 오늘 or 내일 전체적으로 리허설 한번 해야돼」, 「28일날 교수 면담때 PPT랑 실제 실행본 보여줘야되니까 완성도도 중요하고」, 「지금 빠르게 외관적 완성도랑 서버 - DB 연결 마무리 하는 방향으로 가줘」, 「그다음에 빌드본 뽑고 운영툴로 서버 열어서 시연 한번 한바퀴 돌아보고」다. 같은 메인이 이번 새 세션을 사용자 「다음 세션 새로 켰을때 진입하자」의 진입 시점으로 해석해 기존 goal 재개·main merge·60분 내 최단 경로 제안을 지시했다. 전달 원문을 사용자 직접 입력으로 격상하지 않는다.
+
+기존 C1~C9·강검증·제품 PR 경계는 유지한다. 범위 변경과 PR별 정확 head 병합 승인은 사용자 판단이며 실행 창은 Main 배정 후만 사용한다. 새 계약의 생존 신호 두 줄과 Fast 비활성화는 최신 Main 전달을 반영한다. 구체 원문은 `approval-01/rehearsal-resume-01/entry-message.json`이며 이전10-24 마감은 역사로 보존한다.
+
+### 2026-10-24 아침까지 사용자 판단을 메인에 위임
+
+Main `msg_349bf4a0dbf4`가 메인 pane Enter 제출로 전달한 사용자 원문은 「나 이제 자러갈게, 나 자리 비울테니까 물어보지말고 메인 세션의 판단과 세컨드 브레인의 내 성향 기준으로 작업 마무리 이행해줘」다. 이 전달을 이 pane의 직접 사용자 입력으로 격상하지 않는다. 사용자가 돌아올 때까지 goal 안의 범위 판단·기존 시험 준비 코드/기대값 변경·관문/판정기 수리 방향은 메인이 개발 성향 노트를 근거로 결정한다. 필요한 판단은 사용자 대신 메인에 요청하고, 메인이 보내는 결정마다 이 위임 원문·결정 msg ID·근거 성향 번호를 goal에 연결한다. 이 위임만으로 리드가 독자적으로 범위나 시험 기준을 바꾸지 않는다.
+
+PR 병합의 사용자 「병합 승인」 한 줄, 사용자 손이 필요한 Core 서버 두 번 직접 기동·Content 하우징 직접 플레이, 전역 설정/권한 확인 우회, 새 파트·새 goal·승인 밖 공간은 계속 아침까지 보류한다. 실행 창은 메인이 READY 도착 순으로 하나씩 배정한다. 현재 World는 사용자 A의 489/인계v2·B 미발행을 유지하며, 사용자 직접 Core 합동 원시를 받은 뒤 신규 Opus를 발행하는 재개점은 그대로다. 위임 원문은 `approval-01/scene9-resume-01/inbox-wake-08.json`에 있다.
+
+### 2026-10-24 장면 9 포함·캐릭터 서버 재개
+
+Main `msg_4d2fb8963ddc`가전달한사용자원문은「대시보드 결정 응답: 1) Core 합동 확인 - 재접속 뒤 마을 입장·풀 HP까지 이번 합동에서 볼지, 직업 유지만 보고 마을·HP는 Content 실제 화면 확인으로 넘길지 → A 직업 유지만 보고 마을·HP는 Content로」다. Core완료조건2에서Town/풀HP관측을빼고같은CharacterId/저장Mage의목록·load일치와별도서버프로세스를확인한다. Town/풀HP는Content캐릭터화면goal의실제Unity입장확인으로넘긴다. 489고정/인계v2를유지하며B로그보완은하지않는다. 전달을이pane직접사용자입력으로격상하지않는다. 원문/적용보충은 `approval-01/scene9-resume-01/inbox-after-b-draft.json`·`joint-observation-a-decision.md`다.
+
+Main `msg_7abba1c89d1d`가 메인 pane Enter 제출로 전달한 사용자 원문은 「대시보드 결정 응답: 1) Core 다음 목표 - 저장·재접속 장면을 영상에 넣고 캐릭터 서버를 이어 갈지, 동결 뒤로 미룰지 → A 장면 9 넣고 캐릭터 서버 재개」와 「A로 가서 마무리 해야겠는데? 빨리 작업 진행해줘, 밤사이에 하면 되겠다」다. 장면9는 끊었다 다시 들어와도 직업이 유지되는 저장·재접속이며 10-28 시연 영상에 포함한다. 이 전달을 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+World는 기존 goal을 마무리하고 Core는 별도 서버 재기동·불러오기 새 goal, Content는 캐릭터 선택·생성 화면 새 goal을 맡는다. 밤사이 병합·새 사용자 결정·사용자 손·범위 확대는 Main이 아침 결정으로 올리며 실행창은 READY 도착순으로 하나씩 연다. 사용자는 Unity Editor를 열지 않는다. 10-22 경량 경로·보이는 기반 우선·기존시험 준비코드/기대값 변경의 사용자결정·10-19 Sol max/같은계약 두번째실패 Astra xhigh/DB·위험검증 Opus autocompact250000/그밖 Sol xhigh/Gardener Opus·새Codex fast 설정을 유지한다. 원문은 `approval-01/scene9-resume-01/entry-message-original.json`에 있다.
+
+Main `msg_800b1477516e`는 합동이 사용자 손 때문에 아침이 됐으므로 기존 합동뒤 main통합 지시를 대체해 **최신main merge→새manifest/hash Core 인계→아침 합동→PR직전Opus**로 바꿨다. 기존34커밋/보호63원본·hash를 보존하며 역사재작성 없이 merge하고 신규Sol max fast 한 명이 제품충돌을 해결한다. 자체회귀는 READY 뒤 Main의 새창 안에서만 한다. 타파트제품 의미/기존시험 준비·기대값의 새변경이 필요한 충돌은 중지·Main 보고다. 이 로컬main 통합은 사용자승인 없는 PR병합 권한을 만들지 않는다.
+
+Main `msg_16a09ed9313d`가 전달한 사용자 원문은 「대시보드 결정 응답: 1) 아침 사용자 손 일정 - 서버 두 번 직접 켜는 Core 합동 창과 Content 하우징 직접 플레이 창 중 무엇을 먼저 할지 → A Core 합동 창 먼저」다. 아침 첫 사용자창은 Core 합동이며 Content 하우징 직접플레이45분은 그 뒤다. 이 전달을 이 pane 직접입력으로 격상하지 않는다. Core `msg_3c79591bcf21`도 새통합입력 전 최종pin을 보류했다. 원문은 `approval-01/scene9-resume-01/inbox-wake-02.json`·`inbox-wake-02-ack.json`이다.
+
+이번 진입도 지침 재독 전 ORCA 환경 전체를 조회해 hook token 필드가 도구출력에 포함됐다. Main `msg_ba7fd4c67d21`에 보고했고 값의 파일복제/회신/권한사용0이며 비밀열람0을 주장하지 않는다. 이후 지정된 비밀 아닌 변수만 조회한다. 기존 같은 유형을 첫 발생으로 다시 세거나 새 규칙/검사/전역설정을 만들지 않는다.
+
+### 2026-10-22 PR 직전 준비의 새 World 리드 진입
+
+Main `msg_94e53ed97889`가 새 World 리드에게 실행 없는 계약·READY·미커밋 포함/제외·커밋 계획 준비를 할당했다. 사용자 원문 「병렬로 가능한 파트는 작업 촘촘하게 지시해줘」와 「대시보드 결정 응답: 1) 저장 캐릭터 재기동 확인 - 서버 두 번 켜기에 참여할 시각 → A 오늘 밤 Unity 창들 바로 뒤」를 전달했으며, 합동30분은 Core 대표·World 직접 참여0이다. 원문은 `approval-01/pr-final-review-preparation-01/entry-inbox-original.json`에 있다. 현재 모델 라우팅/사용량 페이싱 블록 원문은 아래 기존 기록과 문자열 전체 일치를 기계 확인했고 중복하지 않았다. 새 전달 원문/출처는 같은 폴더 `active-user-routing-original.md`·`rules-and-routing-check.json`에 보존한다. 경량 경로·창/답 대기 종료·비밀 사용자 직접 실행·규칙 사본 불변·독립 Opus PR 직전1회·병합 관문은 유지한다.
+
+같은 Main의 추가 `msg_d8dcf761190d`는 현재 main46커밋/76경로 차이와 PR256 적용 지연을 설명하며 「받는 시점은 Core 합동 창 뒤, READY 고정 전이다. 지금은 받지 마라(합동 창 입력이 바뀐다). 충돌이 예상되면 계획에 파일 목록으로 적어라.」라고 지시했다. 원문은 같은 근거 `inbox-before-closeout.json`에 있다. 현재 메인의 통합 시점 지시이며 사용자 직접 입력으로 격상하지 않는다.
+
+이번 진입도 메시지를 읽기 전 ORCA 환경 전체를 조회해 비밀 토큰 필드가 도구 출력에 포함됐고 Main `msg_4ccc6548ab0c`에 즉시 보고했다. 같은 유형의 반복이며 첫 발생으로 다시 세지 않는다. 값의 재열람/파일 복제/회신/사용0, 비밀열람0 주장은 하지 않는다. 이후 필요한 비밀 아닌 변수만 이름 지정 조회하고 검증 계약에도 금지를 넣었다. 교정은 현재 계약에 알려진 금지 원문을 적용하는 층에서 했으며 새 검사/규칙·전역설정 변경은 승인 범위 밖으로 만들지 않는다.
+
+### 2026-10-22 기존 봇 최소 확장 A 착수
+
+Main `msg_6ff250feb2c2`(2026-10-22T09:09:29Z)가 사용자 결정4 A를 전달했다. 원문은 「기존 서버 재기동 시험 봇(지금은 직업을 골라 접속)에 「저장된 캐릭터 목록을 받아 ID로 고르기」만 더한다. Sol 한 명이 1~2시간 쓰고, 30분 실행 창에서 서버 프로그램을 따로 켜고 끄며 같은 캐릭터가 다시 불러와지는지 본다. 네가 자는 동안에도 진행된다. 경량 경로의 「새 시험 도구 금지」에 대한 예외 하나가 된다.」이다. 예외는 기존 봇 Stored 목록·고정ID 선택/재조회 한 건이며 새 하네스·인증분기·PDL·SQL·생성기능으로 넓히지 않는다. 신규 Sol max 한 명·독립 Opus PR직전1회와 아래 모델 라우팅/사용량 원문·창대기 종료·비밀 사용자 직접실행·규칙사본 불변은 유지한다. 새 진입 전문과 적용중 블록의 원문/출처는 `approval-01/stored-bot-extension-01/entry-message-original.json`에 보존했다.
+
+이번 새 리드도 이 메시지를 읽기 전에 ORCA 환경변수를 일괄 조회해 hook token 값이 도구 출력에 포함됐다. Main `msg_871b56801e77`로 사실을 보고했으며 비밀열람0을 주장하지 않는다. 값을 파일/회신에 복제하거나 사용하지 않았고 이후에는 필요한 비밀 아닌 변수만 이름을 지정해 조회한다. 이전 같은유형 기록을 첫 발생으로 다시 세지 않으며 규칙 PR은 메인/Rules 소유다. 작업자 원문 계약에도 일괄 조회 금지를 포함했다.
+
+### 2026-10-22 새 World 리드 진입
+
+Main `msg_f4d6658430f8`는 아래에 이미 기록된 모델 라우팅·사용량 페이싱 원문과 경량 경로·보이는 기반·창대기 종료 결정을 유지했다. 진입 메시지 전문과 출처는 `approval-01/core-rejection-consumption-01/entry-inbox-original.json`에 보존한다. 새 작업자 지정은 Sol max이며 위험/DB·프로토콜 독립 검증은 신규 Opus다. 규칙 사본은 수정하지 않는다.
+
+이번 새 리드도 메시지 수신 전 `Get-ChildItem Env:ORCA*`를 실행해 hook token 필드가 도구출력에 포함됐다. 비밀열람0을 주장하지 않으며 값은 근거/회신으로 복제하지 않았다. 즉시 Main에 보고했고 Main은 오늘 네 번째 같은 유형이라고 확인했다. 기존 같은 유형을 첫 발생으로 다시 세지 않는다. 이름을 지정한 환경 조회만 적용하며 새 규칙·도구/전역설정 변경은 하지 않는다. Main의 지침 위치 판단은 메인 소유다. 보고/수신 원문은 위 근거 폴더와 `lead-before-launch-inbox.json`에 있다.
+
+### 2026-10-22 메타데이터 조회와 현재 수리 배정
+
+Main `msg_2702d8757098`의 현재 지시 원문: 「환경 식별에서 ORCA_* 전체를 조회하지 마라(env|grep ORCA, Get-ChildItem env:ORCA* 등). 그 안에 ORCA_AGENT_HOOK_TOKEN·ORCA_AGENT_LAUNCH_TOKEN 비밀 값이 있다. 필요한 값은 ORCA_TERMINAL_HANDLE처럼 이름을 지정해 읽어라. 이름만 필요하면 값 없이 이름만 출력하라.」 현재 작업자 v1.2에 같은 문장을 넣었고 향후 계약에도 적용한다. 규칙 사본/전역설정을 수정하지 않는다.
+
+Main `msg_9cd1c179f3be`는 203→14·Core 단일 Sol 수리와 D-CAT-LITERAL-04를 확인했다. 그때의 #2/#3 보류 중 #3은 Main `msg_d8e3d5fc0227`이 메인 실수로 정정했다. #3의 현재 고정 3슬롯 시험 소비는 유효하며 되돌리지 않는다. #2는 checksum 수리 원천을 기다린다. 운영 중지·정정을 제품 결함 확정 실패로 세지 않는다.
+
+Core raw201은 직접 Rejected 또는 검증된 NotApplied로 적용 안 됨이 확정됐으나 현재 소유를 확정할 수 없는 경우9 RecoveryRequired로 Core/World가 합의했다(Core msg_b4ab8eba6a8a). genuine FenceLost→12는 별도로 유지한다. Main `msg_d8e3d5fc0227`의 205→11은 사용자 직접 결정이 아닌 **메인 범위 판정**이다. [확정 무변경 seal 해석 메모](packet-code-seal-interpretation-v1.md)에 정확 문구와 기본 일곱 코드·205 예외를 기록했다. Core API 보충 문구와 ordinal 일치하며 API v1과 전송 계약 v1 원문은 유지한다. 실제 새 제품 소비·실행은 아직0이다.
+
+### 차단된 회귀를 PR 직전 검증에 합침 — 2026-10-22
+
+Main `msg_e50c0b6a4305`가 메인 pane Enter 제출(2026-10-22 04:12 KST)로 확인해 전달한 사용자 원문: 「대시보드 결정 응답: 1) World 회귀 시험이 자동 승인 검토에 막힘 — 어떻게 돌릴지 → A PR 직전 검증에 합치기」.
+
+지금 회귀를 다시 돌리지 않는다. PR 직전 신규 Opus 독립 검증을 열 때 같은 Network8+RuntimeEntry6클래스 회귀를 그 검증의 실행 창에서 함께 돌리고, 그때 Main에 「창 요청」을 보낸다. 거기서도 자동 승인 검토가 막히면 우회하지 않고 정확한 명령 한 줄과 거절 문구를 「결정 요청」으로 보내며 그때 사용자가 직접 실행한다. Core 분류 수리 반영과 PR 직전 검증은 보이는 결과를 막지 않는 순서로 진행한다. 이 전달을 현재 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+### 실제 DB·TCP 정상1건 시험자료 승인 — 2026-10-22
+
+Main `msg_2593da0d706d`가 메인 pane Enter 제출로 확인해 전달한 사용자 원문: 「대시보드 결정 응답: 1) World 실서버+실DB 정상 1건 시험 승인(시험 DB에 시험행 쓰기, 20분 창) → A 승인」.
+
+승인 범위는 결정 요청 `msg_fc4e3327389d`의 기존 WSL build→시험DLL 복사→Windows vstest `StoredMenuSqlEndToEnd`1건과 같은 흐름의 창 안 수정·재실행이다. 대상은 `tcp:localhost,15433`/`Dawnholder_Char_8256bcde8c80`, 기존 공개 `local-windows.json`의 Windows 통합 인증이다. 매 런 새 시험 계정1·캐릭터1과 해당 progress/authority/receipt만 쓰고 보존한다. DDL/login/grant·기존행삭제/cleanup·새비밀·Unity·7777·원본DLL배포0이며 다른 DB쓰기가 필요하면 정확한 결정 요청을 올린다. Content 창 반환 뒤 Main이 자원을 확인하고 실제 시작 한 통을 보내야 실행하며, 종료 때 창 반환부터 보낸다. 이 승인과 관리자 통합 인증 결과를 별도 서버 Program credential startup·최소권한/TLS·Unity 화면/플레이 완료로 합치지 않는다.
+
+### 보이는 기반 우선 — 2026-10-22
+
+Main `msg_8ba8ba647e7a`가 전달한 메인 pane Enter 제출 원문: 「빠르게 기반 먼저 만드는거를 목표로 해야돼, 지금 뭐 보여줄게 없어 우리」. 메인 해석은 실제로 화면으로 보여 줄 수 있는 기반을 먼저 연결하고, 이를 막지 않는 예외 보강·검증 도구·추가 근거·문서 정리는 10-28 뒤로 미룬다는 것이다. 기존 goal 범위를 넓히거나 완료조건을 조용히 줄이지 않는다. 완료조건 축소가 필요하면 메인에 결정 요청한다. 이후 보고에는 현재 실제로 보여 줄 것, 가장 빠른 다음 동작과 예상 KST, 막는 것 하나를 함께 적는다. 원문 메시지는 이번 구현 근거의 `core-and-visible-priority.json`에 보존했다.
+
+
+### 10-28까지 로컬 개발 경량 경로 — 2026-10-22
+
+Main `msg_65b7440b20e9`가 전달한 메인 pane Enter 제출 원문과 적용 결정이다. 이 pane의 직접 사용자 입력으로 격상하지 않는다. 10-28까지 충돌하는 규칙 사본·이전 goal 문구보다 아래 결정이 우선한다. 준비/실행/중간검증을 분리한 과거 기록은 당시 사실로 보존하고 다음 단계부터 작업자 한 명이 같은 제품 PR 범위의 구현·실행·자체 확인·수정을 잇는다. 독립 Opus는 PR 직전 한 번이다. 메일에는 짧은 결과와 다음만 쓰고 SHA·정산은 근거에 둔다. 이번부터 window JSON/hash/lastEntry 묶음을 새로 만들지 않는다.
+
+원문은 `.backups/verification/2026-10-18-character-server/approval-01/catalog-failure-mapping-implementation-01/main-light-path-decision.json`에도 보존했다.
+
+```text
+[메인 Claude] 사용자 결정: 10-28까지 로컬 개발 작업은 경량 경로
+사용자 원문(메인 pane Enter 제출, 2026-10-22 01:3x KST):
+- 문제 제기: 「이제 슬슬 좀 답답하네 / DB 테이블 생성하고, 스키마 짜고, 바로 컨텐츠 로직에 적용해보고, 최적화 측정하고 하는 이 일련의 과정이 사람이 직접 찾아서 하는거보다 너무 오래 걸리는거 같은데 / 어느 부분에서 이렇게 오래 걸리는거야? 지금 벌써 DB 초입 작업만 1~2주 한거 같은데」
+- 그 전: 「이럴거면 내가 직접 실행하는게 낫지 않나」
+- 결정: 「대시보드 결정 응답: 1) 10-28까지 로컬 개발 작업에 경량 경로를 쓸지 → A 10-28까지 경량 경로」
+메인이 보인 근거: Core 현재 브랜치 제품 코드 +2,380줄 대 시험 코드 +5,494줄, 근거 폴더 214개, 10-21 Core가 시험 계정 1개에 세션 약 10개, 막힘 4번이 모두 절차·도구 쪽, Content 측정 도구 정정 3시간 반.
+
+적용(2026-10-28 기능 동결까지, Rules 정본 반영 전에는 이 메시지가 기준이다. 충돌하는 AGENTS·ORCA·스킬·goal 문구보다 이 메시지가 우선한다):
+1. 작업 단위: 작업자 한 명이 같은 PR 범위 안에서 구현 → 실행(배정된 실행 창 안) → 자체 확인 → 결함 수정까지 이어서 한다. 단계마다 준비 전용·실행 전용·중간 검증 세션을 따로 열지 않는다. 작업자 문맥이 차거나 범위가 바뀔 때만 새 작업자를 연다.
+2. 독립 검증: PR을 올리기 직전 한 번만 신규 Opus가 한다. diff·실행 원시·화면 결과를 함께 본다. 중간 단계의 독립 판정, 준비 문서 독립 실사는 하지 않는다.
+3. 로컬 개발 DB(이 PC의 SQLEXPRESS, Dawnholder_* DB): 스키마·login·권한·시험 데이터 변경에 승인 문서·hash·만료·머신 SID/DB GUID 관문 묶음을 새로 만들지 않는다. 리드가 실제로 실행할 SQL·명령을 짧은 목록으로 메인에 보내고(제목 「결정 요청」), 메인이 사용자에게 한 번 보여 승인받는다. 비밀(자격 파일)을 새로 쓰는 명령은 사용자가 직접 실행하는 것을 기본으로 한다. 로컬 개발에서는 가능하면 Windows 통합 인증을 써서 비밀 자체를 만들지 않는다.
+4. 시험·측정 도구: 새 하네스를 만들거나 키우지 않는다. 기존 도구·단순 명령·사람 관찰로 바로 잰다. 도구 자체의 결함을 고치는 루프를 열지 않는다. 막히면 그 측정을 단순한 감독 실행으로 바꿔 메인에 알린다.
+5. 실행 창: 메모리 때문에 한 번에 하나, 배정은 메인이 계속한다. 창 요청은 명령·예상 시간·필요 자원 세 줄이면 된다. lastEntry 세부 관문·window JSON hash 고정은 하지 않는다.
+6. 보고: 메인에는 「한 일 / 결과 / 다음 / 결정 필요」만 짧게 보낸다. SHA·생존 신호·정산 세부는 goal과 근거 파일에만 두고 메일에 넣지 않는다.
+그대로 지키는 것: PR 병합은 사용자 한 줄 승인과 메인 실행, AI의 비밀 원문 열람 0, 전역 설정·권한 설정 불변, 자동 승인 검토 차단은 우회하지 않고 메인에 올림, main 보호·같은 파일 동시 쓰기 금지, 미실행을 통과로 보고하지 않음, PR별 독립 검증 1회, 모델 라우팅.
+기록: goal 「적용 중인 사용자 결정」에 위 원문 셋과 이 메시지 ID를 남겨라. 지금 진행 중인 작업자는 중간에 끊지 않고, 다음 단계부터 적용한다.
+
+World 첫 할 일:
+- Core의 실제 DB 확인이 끝나기를 기다리지 말고, Core가 고정한 API로 mapper 구현을 시작할 수 있는지 Core 리드와 직접 맞춰라. 가능하면 작업자 한 명으로 구현 → WSL 실행 → 자체 확인까지 잇고, 실행 창이 필요하면 「창 요청」으로 보내라.
+- 남은 일과 예상 시간을 「한 일 / 결과 / 다음 / 결정 필요」로 보내라.
+```
+
+### 실행 창 대기 중 세션 정산·종료 — 2026-10-21
+
+현재 메인 `msg_80a517f29947`(2026-10-21T09:18:15Z)이 전달한 사용자 원문과 적용 방식이다. 메인 pane Enter 제출 원문이며 이 pane의 직접 사용자 입력으로 격상하지 않는다. 실행 창 대기에 한해 ORCA R-8·현재 규칙 사본보다 이 결정이 우선하며 사본은 수정하지 않는다. 현재 작성 중이던 시험 보완은 중단하지 않고 READY 경계까지 진행했다. 이후 미배정 실행은 새 세션으로 이관하고 정적 작성자를 정산한다. 이 결정 원문은 mail-wake-23.json과 main-window-wait-decision-pending-goal.md에도 보존했다.
+
+````text
+[메인 Claude] 사용자 결정: 실행 창을 기다리는 동안에는 세션을 닫고, 창이 열리면 재개 지점으로 다시 연다
+사용자 원문(메인 pane Enter 제출, 2026-10-21 18:1x KST):
+「그리고 만약에 한 파트에서 이미 서버를 쓰고 있으면 다른 대기 파트에서 계속 리드나 작업자들이 우편확인 하는게 아니라 재개 지점 작성하고 세션을 종료하는 식으로 간다음 다시 열어서 재개하는 식으로 가자
+
+토큰 낭비가 심해」
+
+메인 적용 방식(Rules 정본 반영 전까지 이 메시지가 기준이다):
+1. 언제: 실행 창(Windows dotnet·WSL·Unity·SQL)을 요청했는데 메인이 「대기열」로 답했을 때. 또는 다른 파트가 창을 쓰는 동안 자기 파트에 실행 말고 남은 일이 없을 때.
+2. 작업자·검증자: READY와 고정 입력을 파일·SHA로 남기고 정산·종료한다. 창을 기다리며 check --wait·heartbeat·반복 조회로 세션을 살려 두지 않는다. 창이 열리면 리드가 새 실행자를 연다. 그래서 READY·승인 파일은 「같은 작업자·같은 incarnation」이 아니라 고정 파일·SHA로 실행할 수 있게 써라. 이미 같은 세션 조건이 박힌 READY는 다음 계약부터 고친다.
+3. 리드: goal 「재개 지점」에 기다리는 창 요청(READY 경로·SHA, 필요한 길이·lastEntry·Unity 수, 창이 열리면 할 첫 일)을 쓰고 local commit한다. 그다음 메인에 「재개 지점 기록·종료 준비」 status(goal SHA·commit 포함)를 보내고 턴을 끝낸다. pane은 메인이 idle을 확인하고 닫는다.
+4. 다시 열기: 창이 비면 메인이 그 파트 리드를 새 세션(같은 대화 이어 붙이기 아님)으로 열고 같은 Run을 run-use로 인수하게 한다. 진입 메시지에 창 배정을 함께 넣는다. 리드는 goal 재개 지점부터 읽는다.
+5. 하지 않는 것: 지금 작업 중인 작업자를 이 결정으로 중간에 끊지 않는다. 창을 기다리는 동안 상태 확인 메일을 서로 주고받지 않는다. 계획·계약 작성처럼 창이 필요 없는 일은 계속한다.
+6. 기록: goal 「적용 중인 사용자 결정」에 원문과 이 메시지 ID를 기록하라. ORCA R-8의 「목표 중간에 문맥을 비우려 수동 교체하지 않는다」는 실행 창 대기에 한해 이 사용자 결정이 우선한다.
+
+지금 파트별 적용:
+- Core: 보정 SQL 창(09:20Z~09:30Z)을 쓰는 중이라 해당 없음. 창을 반환한 뒤 다음 실행 창이 또 필요하면 이 방식으로 기다린다.
+- World: 새 시험 컴파일 결함 수정 READY가 나왔을 때 창이 차 있으면 이 방식으로 닫는다.
+- Content: 측정 도구 수정 작업자는 작업 중이라 계속한다. 그 뒤 Unity 창을 기다리게 되면 이 방식으로 닫는다.
+- Art: 효과 PR 계약·선행 시험 작성은 계속한다. Unity 창을 기다리게 되면 이 방식으로 닫는다.
+````
+
+### 2026-10-21 재진입 — 모델 라우팅과 사용량 페이싱
+
+현재 메인 `msg_14ff7b5796bd`(2026-10-21T07:33:53Z)가 같은 대화 재진입과 아래 사용자 결정 전문을 전달했다. 사용자 재개 입력은 메인 pane의 2026-10-21 16:29 KST 「이어서 진행해보자」이며 사용자 직접 입력으로 격상하지 않는다. 같은 노트북에서 이어가므로 근거 이관은 필요 없고, 자기 feature branch commit/push는 담당 리드가 goal 절차대로 판단한다. main push·PR 병합 권한은 없다.
+
+원문은 `.backups/verification/2026-10-18-character-server/resume-2026-10-21-01/main-entry-original.json`에 보존했다. 아래 블록은 전달 원문 그대로이며 자기 checkout의 AGENTS·ORCA·스킬 사본과 충돌하면 이 결정이 우선한다. 규칙 사본은 수정하지 않는다. **10-20 20:00 KST 전 새 Opus 금지와 과거 임시 Sol 선행시험 배정은 만료했다.** 현재 새 선행시험은 Opus, 일반·위험 신호 구현은 Sol max, 위험·DB·프로토콜·공유 DLL·보안 독립 검증은 Opus다. 실행 창은 메인이 직렬 배정하며 현재 새 창은 없다. Core→World와 Content 두 트랙·사용량 페이싱을 적용한다.
+
+````markdown
+# 리드 진입 메시지에 넣을 적용 중 사용자 결정 — 모델 라우팅 개선 구성과 사용량 페이싱
+
+이 파일은 메인이 리드 진입 메시지에 그대로 붙이는 전달 초안이다. 정본이 아니다. 정본 반영은 Rules 리드가 맡고, 반영 전까지는 각 리드가 자기 goal의 「적용 중인 사용자 결정」에 이 블록의 원문과 출처를 기록한다.
+
+## 출처
+
+- 사용자 원문(2026-10-19 메인 대화, Enter로 제출된 입력): 「OK A로 진행하되, 지금 워크트리로 규칙이 사본 형식 느낌으로 분산되어있어서 전부 적용하려면 시간이 좀 걸릴꺼 같은데」
+- A의 내용: 현황판 결정 「모델 라우팅 - 개선 구성 적용과 10-25 리셋까지 Codex 크레딧 사용량」의 A 「개선 구성 + 크레딧 절반」. 근거 스크립트 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-19/scripts/update-decision-routing-bundle-1400.cjs`.
+- 선례: Sol xhigh 전환처럼 사용자 결정에 따른 런타임 전환은 정본 병합을 기다리지 않는다. 자기 checkout의 AGENTS·ORCA·스킬 사본이 아래와 다르면 이 블록이 우선한다.
+
+## 라우팅
+
+| 역할 | 모델 · 실행 |
+|---|---|
+| 파트 리드 (Core 포함) | `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh` |
+| 구현자 일반 | `codex --model gpt-6.1-sol -c model_reasoning_effort=max` |
+| 구현자 위험 신호 (셸·보안·입력 경계, 시간·순서·동시성·수명, 런타임·언어 경계) | `codex --model gpt-6.1-sol -c model_reasoning_effort=max` |
+| 구현자 (같은 계약 두 번째 독립 불합격) | `codex --model gpt-6-astra -c model_reasoning_effort=xhigh` |
+| 위험 신호 구현의 독립 검증 | `claude --model claude-opus-5-5 --autocompact 250000` |
+| DB·영속 데이터·프로토콜·공유 DLL·보안 경계 독립 검증 | `claude --model claude-opus-5-5 --autocompact 250000` |
+| 그 밖의 독립 검증 (문서 실사, 약·강 등급, 로컬 DB 설치·기동 도구 카드) | `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh` |
+| 선행 시험 작성, Gardener | `claude --model claude-opus-5-5` (변화 없음) |
+| 확정 실패 3회 뒤 자문, 설계 검토 시범 | `claude-fable-5-1` (변화 없음) |
+
+- 「설계 판단이 남은 새 다파일 기능」 신호와 「애매하면 Astra」 규칙은 쓰지 않는다.
+- Sol 구현을 다른 새 Sol 세션이 검증하는 것을 허용한다. 구현자·검증자 분리, 작업 하나 뒤 종료, 독립 검증 생략 금지, 리드 직접 구현 금지는 그대로다.
+- 로컬 DB 도구 카드: 사용자 실행 카드에서 독립 검증이 놓친 결함이 한 번이라도 나오면 Opus 검증으로 되돌린다.
+- `max`가 첫 기동 화면에 없으면 대체하지 말고 메인에 보고한다. 계약에는 지정 모델·effort와 화면 관측값을 적는다.
+- capacity 예외(Sol 30분 실패 뒤 Astra xhigh 새 세션)와 Claude 첫 화면 처리는 그대로다.
+
+## 사용량 페이싱
+
+- 사용자 원문(2026-10-19 14:1x KST, 위 A의 크레딧 부분을 바꿈): 「크레딧은 최대한 아끼고 싶긴한데, 사용량이 부족하면 어쩔 수 없긴 하네 / Codex 사용량 절감은 최대한 플랜 주간 소모량 기준으로 잡고, 크레딧은 비상 상황에서만 쓰는거로 하ㅏ」
+- Codex는 플랜 주간 한도만 기준으로 나눠 쓴다. 주간 한도를 하루 약 14%p로 나눈다. 크레딧은 비상 상황에서만 쓴다.
+- Codex 주간 한도는 10-19 14:11 기준 95%이고 리셋은 10-25 05:40 KST다. 그 전까지 남은 약 5%(약 1,600 크레딧)를 넘어 쓰면 크레딧이 줄어든다.
+- 사용자 원문(2026-10-19 14:2x KST, 비상 사용 결정): 「음 어찌보면 지금이 그 비상상황같은데 일단 크레딧을 쓰느거로 할까, 대신에 라우팅 측정할때는 주간 사용량 기준으로만 체크하는 식으로 가고」
+- 그래서 10-25 05:40까지는 크레딧을 비상으로 쓴다. 쓰는 속도는 주간 한도 기준과 같게 맞춘다. 하루 약 14%p, 크레딧으로 약 4,600이다(주간 100% ≈ 3만 2천 크레딧, 10-18 측정 환산). 라우팅의 효과는 이 주간 환산 속도로만 판단한다.
+- 상한은 앞서 승인한 18,000 크레딧이다. 쓴 크레딧이 약 16,000에 닿으면 메인이 사용자에게 다시 묻는다.
+- 메인이 사용률을 목표선과 비교해 앞서면 우선순위가 낮은 파트부터 새 작업자 기동 보류를 지시하고, 뒤처지면 재개를 지시한다. 리드는 그 지시를 따른다.
+- 작업자 세션 하나의 크레딧이 크게 늘면(예: Sol max 구현이 세션당 200을 넘음) 리드가 메인에 알린다.
+
+## 리드가 할 일
+
+- 이 블록의 원문과 출처를 자기 goal.md 「적용 중인 사용자 결정」에 기록한다. 자동 압축 뒤에는 goal.md를 다시 읽고 이 결정을 따른다.
+- 작업자·검증자 위임 계약마다 위 표의 지정 모델·effort·실행 명령을 적고, 기동 뒤 화면 관측값을 함께 남긴다. 자기 checkout의 AGENTS·ORCA·스킬 사본과 다르면 이 블록을 따른다. worktree의 규칙 파일은 고치지 않는다.
+- 파트 배분: 동시에 두 트랙까지만 연다. 순서는 Core → World 한 트랙, 그다음 Content, 그다음 Art(PR253 병합 뒤)다. Rules·Management는 10-28 뒤다. 메인이 목표선에 따라 보류·재개를 지시한다.
+- 2026-10-20 20:00 KST 전에는 새 Opus 세션을 열지 않는다. Opus 검증이 필요한 단계(DB·영속 데이터·프로토콜·공유 DLL·보안 경계, 위험 신호 구현)는 그 뒤로 미루고, 그 전에는 Sol로 끝나는 단계만 진행한다.
+````
+
+### 취침 중 판단은 메인 위임 — 아침까지
+
+메인 `msg_02a8258a3fc2`(2026-10-18T16:57:21Z)가 전달한 사용자 원문(메인 pane Enter 제출,10-19 02:0x KST)은 「나 잘테니까, 이후 작업 판단을 메인 세션의 판단과 내 세컨드 브레인 정보로 이어서 진행해줘 / 전적으로 신뢰할게」다. 이 pane의 직접 사용자 입력으로 격상하지 않는다. 아침까지 범위·계획·우선순위 판단은 기존 결정과 속도·가역성·가장 싼 환경의 검증 기준에 따라 메인에게 status로 올리고 사용자 결정 대기로 멈추지 않는다. 이후 개별 판단은 **사용자 위임에 따른 메인 결정 + 이 원천 메시지 ID와 해당 결정 ID**로 기록한다.
+
+관리자/UAC·SQL Express 서비스/인증/로그인/방화벽 변경·PR 병합 승인 줄·전역설정·되돌릴 수 없는 삭제는 위임 밖이다. 이 일들은 아침에 바로 실행할 수 있는 명령·근거를 준비해 메인에 전달하며 직접 수행하지 않는다. GUI Unity는 메인 실행창 배정대로 진행하되 새 배정 없는 실행은 없다. 현재 World에는 사용자 판단 대기 안건이 없고, Core의 실제 검증·소비 타입/쓰기종료 인계 전제는 유지한다. Core의 별도 LocalDB 계획을 World의 실행/복사 허가나 실DB 통과로 해석하지 않는다. 원문은 근거 `approval-01/mail-notification-latest-01.json`이다.
+
+### 사용자 위임에 따른 메인 결정 — Core 독립 서버 선행시험 지금 발행
+
+메인 `msg_4dc4f7f5bdd5`(2026-10-18T17:04:26Z)는 위임 원문 `msg_02a8258a3fc2`에 따라 사용자 A 승인안의 「Core가 실제 DB 검증을 하는 동안 패킷 형식과 대역 시험을 먼저 준비」를 적용해 Core 인계 대기를 해제했다. Core 공개 API v2 문서만으로 고정할 수 있는 World 시험을 지금 발행하며, 실제 Core 타입은 인계 뒤 좁은 이음에서 연결한다. 미검증 Core 코드 복사0·번호 예약/재사용 금지·서버/Unity 양쪽 검증·대역과 실제 저장/재접속의 구분은 유지한다. 원문은 근거 `approval-01/mail-notification-overnight-03.json`이다.
+
+전송49..54/v22는 기존 예약 절차와 Core/Content 예약0 대조를 마쳤고 제품217GREEN·Unity313GREEN까지 진행했다. 새 번호/프로토콜 변경 없이 첫 묶음은 [서버 요청 경계·수명 v1](server-request-contract-v1.md)로 좁힌다. 실제 GameSession 요청 경계/Legacy 안내와 Core 없이 존재할 수 있는 World 요청 수명을 먼저 작성·RED·구현하며 Stored bridge/선택·Unknown/실제 입장·길드 전체 요구는 후속 묶음에 유지한다. Main 본문의 Opus 표기는 현재 사용자 임시 모델 결정과 이전 정정 `msg_239b72df7331`을 따라 **신규 Sol xhigh**로 적용하며 메인에 알린다. 새 사용자 승인 대기나 추가 독립 검증을 이 단계에 만들지 않는다.
+
+### 사용자 위임에 따른 메인 결정 — 정상 Snapshot 동반 시험 보완
+
+메인 `msg_1c4aa90c0a9e`(2026-10-18T19:07:49Z)는 사용자 위임 `msg_02a8258a3fc2`에 따라6건을 **(b) fixture/관찰 입력 누락**으로 분류했다. 실제 active메뉴 응답과 원래맵tick의Snapshot6이 함께 잡혀 전체Packets Single에서 실패했으며 정상snapshot을 제품에서 억제하지 않는다. 현재writer정산 뒤 신규Sol xhigh가 시험1파일만 보완한다.
+
+조건은 정확ID6만 분리·Single와 예상외패킷 거부 유지, 요청없는tick대조 또는 실제Snapshot/원상태대조의 **인과 단정 하나**, 응답전체byte/class/player/Guild 단정 보존·다음실행의 실제도달,6건 원실패 이름/message·분류b·변경줄 표의 다음계약/전체독립입력 포함이다. 새Main창·같은명령1회에서 검사하고 새제품결함은 번호로 반환한다. 원문은 `approval-01/server-request-fixture-fix-01/main-decision-original.json`에 보존했다. 이 결정은 선행시험 보완이며 제품전체/독립강 통과가 아니다.
+
+### 사용자 위임에 따른 메인 결정 — 현재 inline draft의 Enter 1회 복구
+
+메인 `msg_645c6d8ebd9f`(2026-10-18T19:55:02Z)는 사용자 위임에 따라 현재 `task_d819e71aa834`/`ctx_6fb00f94b4fa`의 placeholder 없는555자 inline draft에 텍스트 없는 Enter1회와 사후 제출 전문 대조를 허용했다. 사전에는 줄바꿈만 복원해 공식payload 끝부분과 대조하고, 사후 전문 불일치/식별불가는 정적중지 status와 경로·SHA만의 짧은 주입으로 정식계약을 다시 읽게 하는 조건이다. 다른 세션의 R5 예외로 확대하지 않는다.
+
+실전송Enter1 뒤 draft소멸/Working을 관측했고 실제Codex rollout의 user 제출을 식별했다. 공식6205자/제출6198자는7LF 차이이며 나머지 문자·공백은 일치하지만 ordinalfalse를 보존했다. 조건대로 중지 `msg_52637d300fab`/짧은pointer `msg_5eade9a1a9a3`를 보냈고 작성자는 쓰기0에서 정식계약 전문·SHA 재대조 `msg_66011af0c388` 뒤 재개했다. 당시 goal은516고정입력에 포함돼 원문을 먼저 `approval-01/catalog-response-pretest-01/main-inline-recovery-original.json`에 보존하고 전체쓰기종료 뒤 이 기록을 반영했다. 초반 잘못 붙인 wait-submit 옵션은 CLI local validation에서 전송0으로 거절됐으며 실제 Enter1과 구분했다. 미래 기술적 강제·공용 규칙 정비 완료를 뜻하지 않는다.
+
+### 동결까지 기능 산출물 우선
+
+메인 `msg_5c3dc59360f6`(2026-10-18T07:00:22Z)이 전달한 사용자 원문(메인 창 직접 입력,16:00 KST)은 「목표까지 일단 빠르게 빠르게 작업물 쳐내고 이후에 안정성 찾아가는거로 진행하자, 일단 좀 윤곽이 보여야 어떤걸 고쳐야 할지 보일 것 같아」다. 메인 전달이며 이 pane의 직접 입력으로 격상하지 않는다.
+
+메인 적용 기준은10-28까지 보이는 기능 산출물 우선, 감시·검사·운영도구 보강과 부가 경계 방어는 안정화 후보로 남김, 실제 제품/사용자 파일 손상 없는 도구 결함은 한계를 기록하고 진행이다. 사용자 파일은 실행 전 백업과 전후 존재/hash 대조·변경 시 복원/보고로 보호한다. 절차 위반은 기록하고 같은 세션에서 계속하며 승인 밖 쓰기/실행이 실제 발생할 때만 세션 교체한다. 독립 검증은 PR 전 한 번 유지하고 창마다 별도로 추가하지 않는다. 범위 안 판단은 리드가 하며 메인에는 사용자 결정·실행 창·완료조건 변경만 올린다. 수정3회 초과 체크포인트는 알림이며 작업 중단이 아니다. READY는 Task/Dispatch·정확 argv·예상 시간·백업 위치로 짧게 보낸다. 병합 승인·비밀정보/관리자/UAC/SQL서비스/방화벽·전역설정·동시쓰기·미실행 보고 경계는 유지한다.
+
+World는 UTC를 좁게 고치고 실제 관문 오프라인 확인만 한다. 새 감시/검사 helper를 만들지 않으며 compile/RED 뒤 서버 구현을 바로 잇는다. 첫 실행자 종료는 이 결정 전 정산이므로 되돌려 재사용하지 않는다. 다음 발행부터 이 기준을 적용한다.
+
+### WSL 병행 실행과 Unity 최소 소비 소유
+
+메인 `msg_ccd4007ebfec`(07:17:23Z)이 전달한 사용자16:17 KST 결정은 「대시보드 결정 응답: 1) World 서버 시험 - Content Unity 실행 중에도 WSL 시험을 같이 돌리도록 시험 시작 조건 한 줄을 좁힐지 → A 조건 좁혀서 지금 같이 돌리기」다. Win32_Process 단일 snapshot에서 Unity.exe 본체와 직접 부모가 그 Unity.exe인 dotnet.exe만 차단 대상에서 제외했다. 나머지 Windows/Linux 대상과 자원6/4/40GiB·실행시간 관문은 유지했다. 실제 RED는 이 승인 창 안에서 끝났고 반환했다. 이 결정은 Unity 실행 중복 허가가 아니다.
+
+Content `msg_e6e7c1e46014`·Core `msg_e715a95fb09f`와 메인 `msg_165321b60e07`(07:46:53Z)로 [정확 소유 제안 v0.1](../../../.backups/verification/2026-10-18-character-server/approval-01/server-implementation-draft-01/unity-consumer-ownership-proposal-v0.1.md)(SHA256 `A15881D4523A9715B7B8D78F791BD6A9A2E2591C5F8752A5A9BA8F25DE7E7C59`)의 선행 파일만 World 자기 checkout 쓰기를 허용했다. 신규 Network/CharacterMenu의 Client/Reply/ReplyReader3개, Handlers/CharacterMenu의 List/Create/Select 결과 handler3개·각 meta/두 폴더 meta, 신규 EditMode CharacterMenuClientTests/CharacterMenuPacketContractTests와 meta, 기존 ClientConnectionLifetime.cs/동명Tests.cs의 명시 메뉴·legacy 보존 최소 분기다. 경로 접두는 모두 `03_Client/Assets/`이며 세부 경로는 제안 원문을 따른다. 기존 meta/GUID는 보존한다.
+
+공용 UnityClientSession.cs·NetworkService.cs는 Content PR2 실제 쓰기 종료·기준/diff 인계 뒤 World가 갱신 기준에서 최소 접점을 잇는다. Core48 authority/handler와 모든 화면/폼/버튼·Content checkout/실행 snapshot은 제외한다. Core는 현재 연결/generation의 pending과 맞는54성공만 기존48선택 문맥을 열고54→48/main-thread 순서·연결당 첫48권위·class는48만 적용·입장 전 gameplay금지를 보존하는 의미에 동의했다. 구현 통과나 Core 통합 완료는 아니다. Unity 컴파일/EditMode는 별도 독점 창으로 요청한다. 메인은 승인 범위 안 리드 소유 합의는 리드끼리 확정하고 결과만 보고하도록 확인했다.
+
+### 신규 선행 시험·독립 검증의 임시 모델
+
+Content가 보존한 메인 전달 전문 `msg_623c6ff92c9b`(2026-10-17T14:41:45Z)의 사용자 원문은 「대시보드 결정 응답: 1) Claude 사용량 - 주간 리셋(화 20:00)까지 새로 여는 선행 시험·독립 검증 세션을 Codex로 돌릴지 → A 지금부터 Codex로」다. A의 설명은 **새 선행 시험·독립 검증 모두 gpt-6.1-sol xhigh**, 기존 Opus는 맡은 작업을 끝내고 **2026-10-20 20:00 KST(11:00 UTC) 리셋 뒤 새 세션부터 원래 배정 복귀**다. 리드·구현자·독립성·태그·권한 경계는 바꾸지 않는다. 원문 보존본은 `approval-01/inputs/content-main-decisions-originals.md`다.
+
+같은 전문의 `msg_e0ebcfcf3db5`(2026-10-17T14:42:35Z)의 추가 사용자 원문은 「대신 Sol의 성능이 빈얃하다고 느낄경우 Astra로 격상」, 「Astra로 격상시에는 Effort는 High로」다. 필수 관찰/실행 누락·원시와 다른 주장·반복 맥락 손실·범위 오해 쓰기 등 **이 작업의 실제 신호**를 리드/메인이 판단할 때 같은 작업의 **다음 새 세션만 gpt-6-astra high**로 올리고 근거를 보고한다. 실행 중 교체·다른 파트의 신호 차용은 하지 않는다.
+
+승인 전달에는 선행 시험을 Opus로 적은 문구가 있어, 원문의 적용 대상이 선행 시험까지 포함됨을 `msg_6e1c369d08c8`로 메인에 보고했다. 메인 `msg_239b72df7331`(2026-10-18T05:39:31Z)은 이 문구가 임시 결정을 놓친 것임을 확인하고 **World 예외 없이 이번 신규 선행/독립 모두 Sol xhigh**로 정정을 수용했다. 초안의 Opus 선행/검증 설명은 위 한시 사용자 결정에 맞춰 정정했다. 리셋 뒤 발행분은 그 시점 원래 배정과 다시 대조한다. AGENTS 정본 개정은 아니다.
+
+### 신규 계약의 우편함·자식 환경
+
+다음 두 결정의 원천은 `msg_bbdc401da68a`가 전달한 사용자 현황판 응답이다. 공용 규칙·helper 정본 반영은 10-28 뒤 Rules 작업이며, 이번 목표에서 운영 도구를 만들지 않는다.
+
+1. 「대시보드 결정 응답: 1) 운영 규칙 - 작업자가 우편함 확인을 다른 명령과 한 번에 묶는 일을 막는 교정을 언제 할지 → A 동결 뒤 Rules 첫 작업으로」. 이번 모든 신규 계약에는 아래 문장을 넣는다.
+   > 우편함 check·inbox의 반환은 그 결과만 받는 별도 도구 호출로 읽고 해석한 뒤에 다음 행동을 시작한다. check와 실행 명령을 한 셸 호출이나 한 batch로 묶지 않는다.
+2. 같은 전달의 「… 4) 운영 도구 - Windows PowerShell 5.1 자식 실행이 모듈 경로 함정에 걸리는 일을 막는 공용 helper를 언제 만들지 → A 동결 뒤 Rules 후보로」. 이번 모든 신규 계약에는 아래 문장을 넣는다.
+   > PowerShell 7 안에서 Windows PowerShell 5.1(powershell.exe)을 자식으로 띄울 때는 띄우기 직전 그 자식의 환경에서만 PSModulePath를 지운다. 현재 세션·사용자·시스템 환경 변수는 바꾸지 않는다.
+
+메인 전달 원문 전체는 근거 폴더 `inbox-before-run.json`에 보존한다. 첫 peek를 다른 읽기와 묶은 것은 이 결정을 수신하기 전이며 사전 메모와 READY에 공개했다. 수신 뒤에는 check·inbox를 단독 도구 호출로 처리한다. 공용 helper 구현이나 미래 세션의 기술적 강제를 완료했다고 주장하지 않는다.
+
+## 범위
+
+### 만들 것
+
+1. 로그인한 계정의 캐릭터 **목록·생성·ID 선택** 요청을 처리하는 World adapter. 서버가 보유한 계정 문맥으로 Core `CharacterCatalogService`를 호출하고 불변 결과를 World 큐에서 반영한다.
+2. 요청/응답 세 쌍의 전송 정의, 입력·길이 검사, 결과 코드의 의미별 매핑, 서버·봇·Unity의 양쪽 직렬화 계약 검증. 기존 번호·필드와 권위 직업 결과48은 보존한다.
+3. 연결당 요청 하나, 요청 상관값·세대·원래 deadline, 닫힌 연결·늦은 완료 폐기, 선택 handle 종료를 명시한 수명 처리. Core host의 미결 생성 소유권을 사용한다.
+4. 호스트 시작 시 고정된 Legacy/Stored 모드를 소비한다. 명시 Legacy만 기존 직업 선택 흐름을 허용하며 Stored 실패와 구버전 선택 요청으로 저장을 우회하지 못하게 한다.
+5. 선택 완료 → 기존 권위 직업 결과48 → 실제 입장 → inventory/guild 등록의 보존과 실제 서버 경로 검증. 계정 단위 길드 가입 seed와 기존 경제·강화 수명은 유지한다.
+
+### 건드릴 곳
+
+아래는 제안 소유 경계다. 작업자 발행 전에 실제 최신 경로·함수와 Core/Content 쓰기 종료를 대조해 좁은 파일 목록으로 고정한다. 디렉터리 표기는 그 안의 전면 수정 허가가 아니다.
+
+| 소유 | 제안 대상 | 경계 |
+|---|---|---|
+| World 제품 | `02_Server/GameServer/Handlers/Session/`, `Handlers/HandlerRegistry.cs`, `Sessions/GameSession.cs`와 같은 책임의 메뉴 adapter | 세션 경계·패킷 처리. 기존 세션에 모든 저장 책임을 합치지 않는다. 새 파일명은 책임에 맞춰 계약 때 확정한다. |
+| World/Core 접점 | `Loop/GameWorld.cs`, `Program.cs`의 소비·주입 부분 | Core가 전달한 host mode/catalog/admission 접점을 받는 최소 변경만. Core는 Program/ServerHost/RuntimeStartup/AdmissionServices/Lifetime을 소유한다. Core 쓰기 종료·통합 뒤 소비하며 동시 쓰기 금지. |
+| World 공유 계약 | `99_Tools/PacketGenerator/PDL.xml`, `98_Shared/Protocol/Generated/GenPackets.cs`, `ProtocolVersion.cs`, 같은 책임의 신규 공개 결과 enum | PDL에서 재생성한다. 생성기 자체 개선은 제외한다. 현재 generator는 manager 생성 생략이 기본이므로 존재하지 않는 manager를 추가하지 않는다. |
+| World 시험 | `02_Server/GameServer.Tests/`의 패킷·세션·입장 회귀, `99_Tools/headless-bot/`의 좁은 메뉴 시나리오·등록 | 선행 시험/독립 검증자와 제품 구현자 소유권을 분리한다. 관련 기존 실패를 전수 분류한다. |
+| Content 조율 | 위 정확 소유 제안의 Unity 메뉴 소비6파일·시험2파일·meta 및 ClientConnectionLifetime 최소 분기 | 한정 쓰기 확정. 공용 UnityClientSession.cs·NetworkService.cs는 Content PR2 종료/기준 인계 뒤 직렬 연결하며 Core48파일·화면은 제외한다. |
+| DLL·양쪽 빌드 | `98_Shared/Shared.csproj`, `04_ClientNet/`의 현 빌드 경로, Unity `Assets/Plugins/Shared/`·`ClientNet/` 산출물 | 프로젝트 설정을 바꾸는 뜻이 아니다. 실제 재생성/복사와 양쪽 해시·소비자 버전을 확인한다. 기존 `.meta`·GUID·직렬화 값을 보존한다. |
+| 리드 문서 | 이 goal, 승인 뒤 고정할 패킷 계약, `CURRENT.md`의 World 줄, 관련 기능·서버·protocol 계약 | 현재는 goal 초안과 CURRENT 자기 줄만 쓴다. 실제 계약 변화와 함께 필요한 현재 문서만 갱신한다. |
+
+### 하지 않을 것
+
+- DB schema·SQL·저장 repository·Core Catalog·복구 큐·host 미결 소유 로직의 구현. World는 전달된 접점을 소비하며 결함은 Core에 반환한다.
+- 캐릭터 선택/생성 화면·씬·버튼·미술·전체 UI 흐름 제작. 화면 작업과 목표는 Content가 별도로 승인받는다.
+- 삭제·이름 변경·비밀번호 인증·게임 중 캐릭터 교체·별도 취소 패킷, 계정 로그인 정책 변경.
+- 재화·인벤토리·무기·길드의 영속 저장 연결, 신규 보상/성장 수치·seed 수명 변경, 별도 길드 맵.
+- 패킷 번호 재사용, 기존 선택 패킷의 ID 선택 재해석, Stored 오류의 Legacy fallback, 무한 재시도·새 OperationId로 미확정 작업 재생성.
+- 생성기 기능 확장·list/새 binary GUID codec, TRX 집계 helper·봇 목록 드리프트 검사·공용 운영 규칙 정비. Gardener 후보는 이번에 채택하지 않는다.
+- 무관한 코드 정리, 전역 설정 변경, 승인 밖 DB·프로세스·Unity 실행, World의 병합 실행·자동 병합 예약.
+
+### 관찰 가능한 완료조건
+
+| 번호 | 조건 | 필요한 관측 |
+|---|---|---|
+| C1 | 목록은 빈 계정/1명/3명·슬롯 순서를 정확히 반환한다. 조회만으로 게임 행이나 player/owner를 만들지 않는다. | Core 대역 호출·결과/부작용0, 실제 Core 연동 빈 계정/생성 뒤 조회. 3명 초과·중복 슬롯·잘못된 class는 정상 목록으로 자르지 않는다. |
+| C2 | 생성은 서버 계정 문맥과 Core PrepareCreate의 descriptor를 사용한다. Core 오류의 의미를 보존하며 World가 이름 정규화/유일성 검사를 복제하지 않는다. | 입력 경계·이름/슬롯/직업 한도, Core 거부 매핑·동시/중복 요청, dispatch 전 host 소유 등록을 통과한 접점. 생성 성공만으로 입장/길드 등록0. |
+| C3 | 선택 ID는 그 계정 소유 캐릭터만 허용하고 저장된 class로 입장한다. | 없는ID/타계정ID의 같은 외부 거부·다른 내부 진단, 성공 응답 → 48 → 입장 → 길드 순서, 저장 class와 상반된 로컬 class가 권위에 영향0. |
+| C4 | 요청중/입장중/게임중/닫힘과 재접속 세대를 구분한다. | 동시 추가 요청이 원래 pending을 손상시키지 않음, 중복 requestId가 Core 새 작업을 만들지 않음, 종료 직전/직후 handle 수령·늦은 완료에서 player/inventory/guild 등록0. |
+| C5 | 미확정 결과를 확정 성공·실패로 바꾸지 않고 원래 ID/descriptor/deadline을 보존한다. | Unknown/StillUnknown·송신 실패·닫힘 시험. 최종 미확정 안내 뒤 종료와 Core host 소유 지속, 새 5초·새ID·임의 rollback0. 실제 DB 복구 내부 안전성은 Core 독립 판정도 필요하다. |
+| C6 | 시작 모드가 고정되며 Stored 실패의 우회 입장이 없다. | Legacy 정상 흐름, Stored 초기화 실패·실행 오류·기존 직업 선택 요청, 허위 빈 성공 목록/fallback0. |
+| C7 | 새 wire가 양쪽에서 동일하게 해석되고 기존 ID1..48이 보존된다. | byte 고정 프레임·최대길이·잘린/홀수/과대/잘못된 UTF-16·reserved/중복ID·명시 LE·GUID D형, PDL 재생성 diff·정확 버전 handshake·서버/봇/Unity 소비·실제 DLL hash와 Unity 컴파일. |
+| C8 | 기존 길드·개인·공동 상태의 수명을 유지한다. | 같은 계정의 다른 캐릭터 재접속으로 seed 추가0, 실제 입장 이후 등록, 기존 개인 연결 수명/공동 프로세스 수명·던전 보상·강화 회귀. |
+| C9 | 신규 독립 검증자가 강 등급의 diff·근거·시험·현재 실제 경로 실행을 판정한다. | 원시/새 독립 시험/실제 서버 수신→Core adapter→응답/입장 경로, 실제 Core DB 저장→재접속 접점, 양쪽 소비자 확인. 미실행은 판정 보류이며 문서·대역만으로 전체 통과하지 않는다. |
+
+### 결정 27 반영 범위 — 2026-10-28 승인
+
+위 C1~C9와 PR 경계를 유지하고 아래를 더한다. 승인 원천은 「적용 중인 사용자 결정」의 `msg_5642ff7de0f4`, 원문은 근거 `lead-opus-entry-20261028/scope-draft-decision27-v2.md`다.
+
+- **만들 것:** headless-bot의 Stored 생성 시나리오(새 캐릭터 생성 → 목록 반영 → 선택 → 48 → 입장 → 서버 재기동 뒤 같은 ID·직업). 범위 A의 「생성 실연 유예」를 푼다. packet-contract 문서에 Content용 이름 규칙(Core `CreateDescriptor.Name`: NFC 뒤 2~12자, 한글 음절·영문·숫자, 영문 대소문자 무시 유일, 판정은 서버 invalidField)·빈 계정 시작·Legacy 호스트의 `LegacyFlowOnly` 응답 처리를 적는다.
+- **건드릴 곳:** 기존 World 소유에 더해, Core 확인(`msg_a4bad38aab8c` 3a·3b)을 받은 `Persistence/Admission/CharacterAdmissionServices.cs`의 동작 없는 2줄과 `GameServer.Tests/Persistence/RuntimeEntry/` 시험 조정을 World PR에 넣는다. selector 경로 시험은 되살린다. `99_Tools/Start-PersistenceServer.ps1`은 Core 소유 입력으로 sha256 `F27EEC2D9DE7C92D872F49ACFCBDB65B7006CFD179A91A77179BA2C7C9B604C6`에 핀하고 World commit에서 뺀다.
+- **하지 않을 것:** 캐릭터 삭제·이름 변경·게임 중 교체·외형, 패킷 49~54 외 새 패킷, DB 구조 변경, Shared 이름 규칙 상수, selector 생성자 삭제 같은 Core 정리, 화면 제작.
+- **완료조건 보충:** C1·C2·C9의 실제 DB 근거에 생성 경로를 넣는다. 재기동 전후 목록에 기존 Mage(Core 지정 ID `959c259f-5cad-4fd3-9840-5c1cd39fea79`)와 새 캐릭터가 같은 ID·직업으로 나오고 각각 선택 → 48에 성공해야 한다. 합동 실DB 한 창을 World·Core 독립 검증자의 실제 경로 실행으로 같이 쓰며(Core `msg_2084821e8a09`), 그 창의 World head가 PR head다. 그 뒤 World 제품이 바뀌면 다시 돌릴 범위를 그때 정한다.
+
+## 패킷·API 계약의 현재 제안
+
+기준 main의 제품 코드는 protocol21·PDL48개다. `domains/protocol.md`에는 역사 v20 설명이 남아 있으므로 현재 값은 실제 `ProtocolVersion.Current`와 PDL/생성 enum을 기준으로 한다. 이번 제품 변화 시 현재 설명을 함께 맞춘다.
+
+| 제안 ID | 제안 이름 | 핵심 내용 |
+|---|---|---|
+| 49/50 | `C_CharacterListRequest` / `S_CharacterListResult` | requestId와 고정3슬롯·occupiedMask |
+| 51/52 | `C_CharacterCreateRequest` / `S_CharacterCreateResult` | slot·rawName·class와 Core가 만든 summary |
+| 53/54 | `C_CharacterSelectRequest` / `S_CharacterSelectResult` | CharacterId 선택과 선택 결과. 직업 입력 없음 |
+
+초안의 **49..54와 차기 protocol22는 승인 후 재대조를 거쳐 이 목표에 배정했다.** 최신 origin/main은 여전히21/48개이며 메인 `msg_239b72df7331`의 6개 checkout 관측, Core `msg_66dc4898461f`와 Content `msg_85481145274c`의 사용/예약0을 확인했다. 필드/번호/결과/FQN은 [전송 계약 v1](packet-contract-v1.md)에 고정했다. 제품은 아직21/48개이며 문서로 생성·배포되지 않았다. 새 충돌은 재사용하지 않고 새 계약으로 조정한다. 기존 ID/필드·equality handshake와 양쪽 소비자 검증은 보존한다.
+
+- 보존 패킷 초안은 이전 근거 `character-packet-draft-01/packet-contract-v0.2.md`다. hash는 이번 `input-manifest.json`에 실제 파일에서 계산해 보존했다. 현재 계약은 별도 v1이며 과거 초안을 고치지 않았다. 고정 입력 목록과 hash는 `approval-01/packet-pretest-01/contract-input-manifest-v1.json`에 둔다.
+- 전송 제안: 4바이트 header·숫자 explicit LE·UInt16 **바이트** 길이+UTF-16LE string, ID는 non-empty GUID D문자열, 목록은 고정3칸이다. 큰 문자열 할당/업무 호출 전에 구조·상한을 검사한다. 새로운 wire enum은 Core ordinal cast 대신 의미로 매핑한다.
+- 서버의 계정/operation/session/generation/owner/fence/SQL은 wire에 싣지 않는다. NotFound/NotOwned는 외부 선택불가로 통합하고, 서버가 만든 계정·OperationId 입력 오류는 내부 진단을 보존한 IntegrityFailure로 구분한다.
+- requestId는 nonzero·연결 내 재사용 금지, uint 끝에서 wrap하지 않고 새 연결을 사용한다. 화면의 `(연결, 종류, requestId)` 상관 처리 구현은 Content와 고정한다.
+- 선택 성공 응답은 플레이 준비 완료가 아니다. Stored 성공은 **54 → 48의 저장 class → 실제 맵 입장 패킷 → 길드 가입/44** 순서다. 실패는 성공48/입장/등록을 만들지 않는다.
+- Core API v2는 PrepareCreate/불변 descriptor, dispatch 전 host 미결 생성 소유권, 불변 Legacy/Stored를 고정한 **구현 계약**이다. 실제 코드·DB·독립 강 검증 완료 여부는 회신/새 근거로 확인한다.
+
+## 파트 접점과 선행 조건
+
+| 담당 | 필요한 인계 | 현재 상태/World 행동 |
+|---|---|---|
+| Core | API v1+v2의 의미·버전/hash, mode/catalog/admission 주입 타입, host 미결 생성/close 소유, 새 profile preflight, 실제 DB/독립 판정·PR 기준 | `msg_66dc4898461f`로 v2 hash·의미 불변, 실제 공개 선언·소유 경계·예약0을 재확인했다. [소비 접점 v1](core-consumer-contract-v1.md)에 연결했다. 실제 SQL/저장재접속/강 판정·main 인계는 남았다. |
+| Content | 신규 UI 목표 시점, Unity wire 소비자/상관값 경계 소유, 새 패킷 제안 이견·번호 예약 여부 | `msg_85481145274c`: v0.2 추가 변경 요구/예약0, 비화면 책임 의견 일치. UnityClientSession/NetworkService는 현재 쓰지 않지만 길드 PR2에도 필요해 소유 이전 아님. 전체 종료/한정 이전은 미정. 기존48 입장 파일은 Core/메인 배정도 필요하다. |
+| 메인 | 사용자 범위·착수 승인, 두 파트의 공유 파일 경계, 중량 실행 창, R-7 시범 해당 여부 | A 승인 완료. R-7 미적용 확정. 공유 실행 큐는 전달 기준 Art → Content → Core DB. World의 새 실행 창은 아직 없다. |
+
+Core main 통합 전에는 고정 API 대역으로 패킷/수명 요구를 준비할 수 있다. 제품 branch에 Core 미검증 변경을 복사해 독자 저장 구현을 만들지 않는다. 최종 통합 때는 승인된 Core 결과와 최신 main에서 새 기준·충돌·실행 계약을 고정한다.
+
+Core 회신 기준 실제 소비 접점은 `CharacterCatalogService(ICharacterCatalogRepository, ICharacterRepository, SafeDefaults, TimeProvider, int capacity=128)`, `CharacterAdmissionServices(CharacterCatalogService, TimeProvider)`의 `Mode/Catalog`, `ServerHost.StorageMode/CharacterCatalog`다. Startup의 profile2 preflight 뒤 Program이 host 생성 전 `world.AttachPersistence(Services)`를 호출한다. 선택 handle의 `Completion/Close(SafeCheckpoint?)`, lease의 `Checkpoint`, host의 `FlushAsync`를 사용한다. Core는 Sessions/GameWorld/PDL을 변경하지 않았다고 보고했다. World는 이 보고를 계약 입력으로 삼되 새 통합판에서 직접 대조한다.
+
+Core는 생성 `_pending.Add` 뒤 dispatch, 기본 capacity128, host 복구는 원ID/descriptor로 1회·최대5초라고 보고했다. 이는 Core 코드 관측 보고이며 실제 SQL 실패 수명 증명은 아니다. 사용자 deadline과 별도 복구 예산을 혼동하지 않는다. **초기 전달의 「Core 실제 DB 검증 중」은 현재 상태가 아니다.** 회신 시점에는 관리자 별도 승인 전·DB 실행0이며 실제 인계 시점은 미정이다. 정적 시험 수치 원시를 World가 다시 실행/실사한 주장은 하지 않는다.
+
+## PR 경계와 예상 단계
+
+**제품 PR 한 개**로 전송 정의·버전·서버 adapter·봇/시험·양쪽 wire 소비자와 DLL 근거를 함께 검토한다. PDL/버전만 따로 병합해 기존 클라이언트가 먼저 끊기는 중간 배포는 하지 않는다. Content 화면 PR은 별도 목표이며 이 PR에서 전체 화면/플레이 완료를 주장하지 않는다. Core 제품 PR은 Core 소유다.
+
+Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면, 양쪽 준비 전 배포되지 않는 합류점·완료조건을 메인과 먼저 재계획한다. 아직 PR 번호는 없으며 생기면 진척 단계에 실제 `PR번호 병합`을 적는다. 종료에는 규칙에 따른 Gardener·결과 포함 종료 기록 PR 하나·종료 점검을 별도로 둔다.
+
+| 단계 | 예상 소요 | 선행·점검 |
+|---|---|---|
+| 범위 승인·파트 계약 | 0.5~1작업일 | API/번호/소비자 소유·실행 조건 고정. 승인 초안과 대조 뒤 다음 단계. |
+| 새 선행 시험 | 0.5~1작업일 | 코드 goal TDD. 별도 세션에서 요구·보존 시험과 구현 전 실패 원시. 발행 시 임시 모델 결정을 적용한다. |
+| 전송·World 연결 | 1~2작업일 | 고정 대역과 Core 인계 기반. wire/수명·오류·등록 경계, 쓰기 종료 확인. |
+| 강 독립 검증·수정 | 1~2작업일 | 신규 Opus의 양쪽 소비자/실제 경로/DB 접점. 범위 안 결함 수정·재검증은 새 세션. |
+| PR·CI·통합·종료 | 0.5~1작업일 | 각 PR 사용자 head 승인·메인 병합. Gardener·종료 기록/점검. |
+
+독립 가능한 준비를 겹친 **총 경과 3~5작업일은 일정 추정**이며 각 행을 단순 합산한 작업량과 다르다. Core가 10-20~21에 검증 결과를 전달하고 World/Content wire 소유가 일찍 정해지면 10-23~24 연결 검증을 목표로 한다. 10-25~27은 수정·리허설 여유로 보고 10-28 기능 동결 전 완료 여부를 점검한다. Core 지연·공유 자원 창 부족·강 검증 보류는 이 일정을 밀 수 있으며 10-21 촬영 완료를 약속하지 않는다.
+
+중간 점검은 계약 고정 뒤와 최종 Core 통합 뒤다. 완료조건을 막는 범위 안 결함만 고치며, 같은 산출물 수정이 3회를 넘으면 메인 체크포인트를 알린다. 별도 확정 실패 집계와 섞지 않는다.
+
+## 검증과 위임 계획
+
+- **등급: 강.** 서버 권위·영속 경계·프로토콜/공유 DLL·입력 해석·시간/종료 수명을 바꾸기 때문이다. 현재 제품 diff0이며 변경 파일/줄 수는 아직 미측정이다. 계약/구현 뒤 실제 diff 원시로 기록한다.
+- 구현자는 난이도 신호1~4에 따라 **신규 gpt-6-astra xhigh**다. 선행 시험과 독립 검증은 원래 신규 Opus 배정이지만 **위 한시 결정 기간에 새로 여는 세션은 각각 신규 gpt-6.1-sol xhigh**를 적용한다. 제품·시험 소유를 분리하고 발행 시각과 실제 화면 모델을 기록한다. 전송·서버 수명·Unity 소비자는 정확 소유권을 고정한 좁은 계약으로 나눈다. 리드는 제품 구현·테스트 작성·검증 판정을 대신하지 않는다.
+- R-7의 실패 수명/오류 분류/비용 상한에 닿지만 **이번 목표의 시범은 미적용**이다. 메인 `msg_355be9930592`와 `msg_fb6c227d3b39`가 시범 한도 사용을 근거로 결정했다. Fable 세션을 열지 않으며 확정 실패3회 뒤 Advisor 규칙은 그대로다.
+- 계약에는 사전 맥락·실제 경로 검사·CODE_CONVENTION 관련 절 원문·고정 입력/hash·원시 수치·쓰기 종료·한 작업 뒤 정산/종료·재사용 금지와 위 사용자 결정 두 문장을 넣는다. 같은 파일을 동시에 쓰지 않는다.
+- 실행 순서안은 정적 입력/PDL/버전 대조 → 신규 선행 시험 실패 → 구현/생성 → SDK10.0.301 서버/Shared/ClientNet 빌드·회귀 → 현재 서버와 봇 경로 → 승인된 Core DB 저장/재접속 접점 → 격리 Unity6000.6.4f1 소비자/컴파일·관련 EditMode/회귀다. 정확 명령·입력·환경·hash·메모리·프로세스/포트·DLL 복사·정리 관문은 계약 발행 때 고정한다. 이 표는 실행 허가가 아니다.
+- Unity·WSL 전체 시험·서버·DB 실증은 메인의 **「실행 창 시작」** 배정 후 승인된 단계 묶음으로만 실행한다. 원본 자산·DLL 부작용과 WSL/Windows 산출물 차이를 명시한다. 다른 파트 실행 창을 사용하지 않는다.
+- 신규 독립 검증자는 실제 diff·보고·원시부터 실사하고 독립 테스트를 작성/보완·실행한다. 대역으로 실행한 실제 서버 진입, 실DB 접점, Unity 컴파일/시험, 실제 UI 플레이·Player build·CI를 각각 구분한다. 전체 PASS는 완료조건별 근거가 있을 때만 가능하다. DB/UI/Player 미실행을 과거 결과로 채우지 않는다.
+- 이전 길드 검증의 ENV-D01 한 줄 설정 차이는 당시 한정 수락이다. 새 실행에 자동 적용하지 않으며 정확 변경·원본 보존·실행 wrapper/실제 결과와 미입증 범위를 기록해 메인에게 판단받는다.
+
+## 진척 단계
+
+- [x] 범위 초안
+- [x] 범위 승인
+- [x] 서버 계약
+- [x] 전송·소비 선행시험 — 패킷/Unity 최초 RED 완료, 서버 adapter 시험은 연결 단계에 남음
+- [x] 클라이언트 계약 — 소비 v1 확정, 공용2파일 실제 인계는 연결 단계에 남음
+- [>] 전송·서버 연결 — 전송217·Unity 실제session313 GREEN, 서버/Core·Content 통합 남음
+- [ ] 독립 강 검증
+- [ ] 제품 병합
+- [ ] 종료 기록
+- [ ] 종료 점검
+
+## 결정과 단계 결과
+
+- 새 리드의 읽기→사전 맥락→새 branch/Run→READY를 수행했다. 진입 시 추적 변경0, 최신 main과 새 HEAD의 diff0을 확인했다. 사전 맥락은 `.backups/verification/2026-10-18-character-server/context-entry.md`, 원 지시는 `inbox-before-run.json`이다.
+- Core/Content에는 준비 상태와 기술 경계만 문의했고, 둘 다 현재 작업 중인 화면을 확인해 터미널 입력을 넣지 않았다. Core 회신으로 실제 준비·host 접점·미실행을 구분했고 Content는 회신 대기다. 작업자·검증자0, 제품/시험/PDL/DLL 변경0, 중량 실행0이다.
+- 이 초안 자체점검은 내용·로컬 원천·현재 Git/PDL의 정적 대조다. 독립 문서 통과·코드/DB 검증·목표 완료를 뜻하지 않는다. 승인된 산출물의 독립 세션 절차는 생략하지 않는다.
+- 사용자 A 승인 뒤 원본 입력을 동결하고 승인 원문·R-7 미적용·임시 모델 원문과 진척 단계를 반영했다. 승인 기록 commit과 실제 준수·자기 쓰기 감사는 근거 `approval-01/`에 둔다. Content 회신의 합의 방향은 근거 `coordination-note-01.md`이며 Unity 파일 쓰기 배정은 아직 없다.
+- 승인 기록 commit `2bf2206621d31ee3675af1ee74b67348abe46d90`은 goal/CURRENT 두 파일만 포함하며 제품 diff0이다. 이어 서버 전송·Core 소비 접점을 각각 v1 문서로 작성하고 패킷 시험 작성 계약을 발행했다. 계약 고정과 작성 완료는 문서 실사·강 검증 통과를 뜻하지 않는다.
+- 메인 `msg_0b519c7ab848`(2026-10-18T05:49:03Z)은 Unity 소유 관문이 Unity 쓰기/소비자 동작을 정하는 계약에만 적용된다고 확인했다. 준비된 패킷 시험 **작성만**의 발행을 허용하며 실제 compile/RED는 실행 창 뒤 별도 계약으로 둔다. 원문은 근거 `approval-01/inbox-next-04.json`이다. 기존 v1 spec을 보존하고 권한 확인만 반영한 새 발행 버전/입력 manifest를 만든다. 전체 목표의 C1~C9·강 판정/PR 경계는 바꾸지 않는다.
+- **패킷 시험 작성 결과:** 신규 외부 Sol xhigh가 `CharacterMenuPacketContractTests.cs`와 `CharacterMenuPacketFixtures.cs`를 작성했다. 기존1..48 보존·새6패킷/공개enum·독립 byte/offset fixture를 요구로 검사하며 새 타입 부재는 reflection assertion으로 남긴다. 코드/보고·실제 diff·입력/출력 해시를 리드가 정적으로 대조하고 `worker_done succeeded`를 **작성 준비 완료만**으로 정산했다. 실제 실행·독립 판정은 미수행이다. 원문과 Task/Dispatch·수치/해시는 근거 `approval-01/packet-pretest-01/report.md`, `lead-post-settlement-audit.json`, `lead-settlement.md`에 있다.
+- **정산·종료:** 완료 Dispatch를 release한 뒤 외부 pane 유지 반환을 구분하고 정확 작성자 pane만 닫았다. 리드 생존·현재 worktree에 리드 pane만 남음·reclaimable0을 확인했다. 생존 신호 helper의 초과 구간은 이유 미기록으로 정산 원시에 남겼으며 질문 대기와 분리했다. 신호 초과만을 이유로 추가 대화 감사를 만들지 않았다. 제품 확정 실패와 섞지 않는다.
+- **CONTRACT-PS01(첫 발생):** 리드가 근거/harness 작성을 허용하면서 PowerShell 언어절 제외 이유를 쓰기0으로 적어 실제 일회성 정적 점검 script 작성/실행과 차이가 생겼다. 작성자의 자진 공식 질문 뒤 메인 `msg_dd0cf0173e26`에 보고하고 실행 원본·원시를 동결했다. 정산 보충1.2에 관련 규칙 원문 전체를 제공했지만 사전 누락을 소급 준수로 만들지 않았다. 후속 메모에 가독성 지적·미검토를 남겼고 script는 공용도구로 채택/재사용하지 않는다. 교정은 이번 리드 계약의 원문 선택·제외 설명 층에서 처리했다. 공용 검사 구현은 승인 범위 밖이며 첫 발생 기록이므로 새 반복 규칙을 만들지 않았다.
+- **10-29 World 구현자 Stored 생성 작업(`task_e1dc91317495`) — failed 정산:**
+  - 할 일 1~3과 보충 1(CI 공백 수정)을 파일로 마쳤다. 리드가 그 11파일을 commit했다.
+  - WSL 전체 시험은 실패 18·통과 2517·건너뜀 28이었다. 새 통합 시험 3건은 통과했다. 비교로 기준 브랜치 `627c9915`의 CI는 1952건 전부 통과다.
+  - 실패는 세 묶음이다. 버전 21·패킷 48 기대 6건과 Stored의 직업만 고르는 선택 거절이 selector 경로를 막은 3건은 이 브랜치가 들인 회귀다. 병렬 Integration의 GameWorld 단일 인스턴스 충돌 9건은 원인 미확정이다. 이 브랜치가 더한 GameWorld 생성 시험은 모두 비병렬 `GameWorldRegistryTests` collection에 있다. 기준 브랜치에 있던 collection 없는 시험이 원인이면 기존 불안정으로 분류하고 근거를 분류표에 적는다(메인 `msg_490cba1c911e`).
+  - 서식 검사 `format-check.ps1`은 이 PC Windows에 SDK 10.0.301이 없어 실행하지 못했다. 계약에서 명령을 잘못 고른 리드 책임이다. 「로컬 미실행, CI로 대체」로 기록한다. 서식은 PR CI의 Linux `format-check.sh`로 확인한다. head `77591936`의 PR CI 서식 check 2건은 통과했다(10-29 00:47 KST 조회).
+  - 원시는 `impl-stored-create-01/worker/raw/`, 보고는 같은 폴더의 `report.md`다. 정산·종료는 `worker/release-01.json`(retained·external_terminal), `worker/close-01.json`이다.
+- **selector 경로 수정 기준 — Core 동의:** 거절 기준을 `Catalog is not null`로 좁히는 World 수정안(`msg_163753b34afb`)에 Core가 동의했다(`msg_37ff61c16407`). Core 요청은 GameSession 거절 술어를 `CharacterAdmissionServices.CreateLifetime`과 같게 두고, 주석에서 그 규칙을 가리키는 것이다. 실제 서버 기동은 Catalog 생성자만 쓰므로 C6은 유지된다. 사용자 결정 28 A의 「selector 경로 시험은 유지」를 지키는 수정이다.
+- **10-29 World 수정 구현자(`task_68e496a2acdf`) — succeeded 정산:**
+  - `GameSession`의 두 기준을 `_persistence?.Catalog is not null`로 좁혔다. 버전·패킷 기대 시험 6건을 22·54로 고쳤고, 구버전 길드 거절 사례에 v21을 더했다. 이름 둘을 바꿨다(`ProtocolVersion_IsTwentyTwo_AndTheHandshakeRejectsTwentyOne`, `ProtocolVersion_Is22`).
+  - `GuildAdmissionCommitBoundaryTests`의 한 시험은 준비 단계만 selector 경로로 되돌렸다(구현자 질문 `msg_f42515102900`, 리드 회신 A `msg_c3cb5545cdac`). 이 브랜치 commit `213809ca`가 공용 `AdmissionTestWorld` 기본값을 Catalog로 바꿔 경로가 옮겨 가 있었다. 단정은 바꾸지 않았다. 분류는 b(fixture)다.
+  - Integration 9건의 원인은 기준 브랜치에서 온 `GuildDebugTreasuryCheatTests`의 collection 누락이다. 좁힌 실행에서 같은 충돌이 반대 방향으로 재현됐고, `[Collection("GameWorldRegistryTests")]` 한 줄 뒤 사라졌다. 분류는 「기존 불안정」이다(메인 동의 `msg_361ff017f349`).
+  - 마지막 전체 `sync-wsl.sh test`는 실패 0·통과 2536·건너뜀 28이다. 같은 명령의 전 실적은 실패 18·통과 2517·건너뜀 28이었다. WSL 창은 01:07:35~01:20:10 KST다.
+  - 리드가 7파일을 commit `00441ff4`로 넣었다. 서식은 로컬 미실행, CI로 대체한다. 원시·보고는 `impl-fix-01/worker/`, 정산은 `worker/release-01.json`(retained·external_terminal)·`close-01.json`이다.
+  - 열린 항목은 셋이다. Unity EditMode 세 파일의 21·48 기대(Content에 동의 요청 `msg_884bd7016495`, Content 동의 `msg_c4c3978d3187`, 메인 확인 `msg_dfb08ed64c6a`. World 독립 검증자가 버전·개수 literal, 길드 시험의 이름 목록 끝 49~54, 그 주석만 고치고 28 A 표에 a로 남긴다), selector 호스트의 메뉴 응답이 `LegacyFlowOnly`가 된 점과 packet-contract 99행 「Stored 서버는 이 결과를 보내지 않는다」의 대조, Catalog 호스트 거절 literal이 두 시험에 나뉜 점이다. 셋 다 독립 검증자가 판정한다.
+- **기준 브랜치 받기 — PR271(CLAUDE.md 결정 4A 절):** 메인 `msg_0261be43b203`의 지시로, 실행 창·작업자가 없는 안전 지점에 `540172a4`를 받았다(merge commit `93c4b41b`). 바뀐 파일은 CLAUDE.md 하나다. 새 절 「결정 4A 적용 기간의 Claude 리드·구현자」를 읽었고, 지금까지의 운영과 내용이 같다.
+
+## 보류와 남은 우려
+
+전송217GREEN·Unity 실제session313GREEN과 원본Shared22 배포는 완료했다. World 자기 기준의 공용2파일·최소handler 연결은 끝났고 Content 완성PR2의 Guild 의존성과 함께 직렬통합해야 한다. Core 실제DB/최종통합·강판정과 실제 서버54→48/입장·양쪽 전체 소비자 검증이 남는다. 후속 중량 실행은 사용자 캐시 자동 갱신의 관측·보존을 포함한 새 READY/실행창이 필요하고 현재 단계 GREEN과 DLL 배포 자체점검은 C7전체·C1~C9의 독립 강 판정을 대신하지 않는다.
+
+TRX helper와 봇 등록/회귀 목록 드리프트는 앞 목표 Gardener의 미채택 후보이며 새로 채택하지 않는다. 기존 BACKLOG와의 통합 판단은 메인에게 남긴다. 범위 밖 후보 장부나 운영 규칙 정비를 이번 초안에서 늘리지 않는다.
+
+
+## 안정화 후보
+
+- 10-28 뒤: 감시·검사·운영 도구의 공통화/보강, receipt 자동 검사와 기능 완료조건을 막지 않는 부가 경계 사례 방어. 지금은 알려진 한계로 기록하고 기능 산출물을 잇는다(msg_5c3dc59360f6).

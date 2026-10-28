@@ -12,7 +12,7 @@ namespace Dawnholder.Client.Tests
     // 2026-10-14-guild-server (G7, technical contract v1 「패킷 필드와 결과」). Expected bytes are written out by hand
     // from that table: LittleEndian, [ushort size incl. header][ushort id], 43 = 5, 45 = 46 = 8, 44 = 66 + name bytes
     // with the UInt16 name byte length at offset 64, 47 = 26, guild name 「새벽 길드」 as UTF-16LE. IDs 1..42 are the
-    // order of PDL.xml at main 5c16194; guild 43..47 stay fixed, and admission adds 48 in v21. Nothing uses the generator
+    // order of PDL.xml at main 5c16194; guild 43..47 and admission 48 stay fixed, and menu 49..54 adds v22. Nothing uses the generator
     // or the server. The final test also checks Content's consumer without weakening the raw framing contract.
     public sealed class GuildProtocolCompatibilityTests
     {
@@ -28,6 +28,8 @@ namespace Dawnholder.Client.Tests
             "C_Login", "S_LoginResult",
             "C_GuildRequest", "S_GuildSnapshot", "C_StrongholdUpgrade", "C_WeaponEnhance", "S_GuildActionResult",
             "S_CharacterLoadResult",
+            "C_CharacterListRequest", "S_CharacterListResult", "C_CharacterCreateRequest", "S_CharacterCreateResult",
+            "C_CharacterSelectRequest", "S_CharacterSelectResult",
         };
 
         UnityClientSession _session;
@@ -40,13 +42,13 @@ namespace Dawnholder.Client.Tests
         }
 
         [Test]
-        public void ProtocolVersion_IsTwentyOne()
+        public void ProtocolVersion_IsTwentyTwo()
         {
-            Assert.AreEqual(21, ProtocolVersion.Current);
+            Assert.AreEqual(22, ProtocolVersion.Current);
         }
 
         [Test]
-        public void PacketIds_OneToFortyEight_FollowTheContractOrder()
+        public void PacketIds_OneToFiftyFour_FollowTheContractOrder()
         {
             for (int i = 0; i < ContractOrder.Length; i++)
             {

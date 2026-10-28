@@ -46,7 +46,7 @@ public sealed class CharacterAdmissionCloseTests
     {
         using AdmissionTestWorld fixture = new();
         EntrySession session = await fixture.LogInAsync(PersistedName);
-        session.Receive(new C_CharacterSelect { characterClass = (byte)CharacterClass.Knight });
+        fixture.SelectStored(session, CharacterClass.Knight);
         Repo.PendingCall<ReadAdmissionRequest, ReadAdmissionResult> probe = await fixture.NextReadAdmissionAsync();
         int mark = session.Mark;
 
@@ -135,6 +135,6 @@ public sealed class CharacterAdmissionCloseTests
         Assert.False(doneWhileReleasing, "the flush ended before its deadline while the release was pending");
         Assert.True(releaseStillPending);
         Assert.Equal(new[] { Repo.Admission, Repo.Acquire, Repo.Release }, fixture.Repository.Calls);
-        Assert.Empty(session.Sent().Where(sent => sent.Id == LoadResultId || sent.Id == (ushort)PacketID.S_EnterMap));
+        Assert.DoesNotContain(session.Sent(), sent => sent.Id is 54 or LoadResultId || sent.Id == (ushort)PacketID.S_EnterMap);
     }
 }

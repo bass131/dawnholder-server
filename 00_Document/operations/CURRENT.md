@@ -6,7 +6,7 @@
 
 - <a id="content-worktree"></a>Content: [캐릭터 선택·생성 화면](../../01_Phases/goals/2026-10-24-character-select-create-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active · feat/content-character-select-create-20261024 · 10-28 결정 31 반영 범위 승인, World 병합 전 가짜 응답 화면 단계 · [하우징 goal 기록](https://github.com/bass131/dawnholder-server/blob/14cb5361183e1c6179b2e4fed299f84c389ac51b/01_Phases/goals/2026-10-15-guild-client-ui/goal.md) · feat/content-guild-housing-20261022(14cb5361) · PR267이 넣은 하우징 창과의 대조는 아직 하지 않았다 · 길드 성장 효과 화면 연결은 10-28 결정 33 A로 종료
 
-- World: [길드 서버 — 클리어 보상에서 거점·무기 성장까지](../../01_Phases/goals/2026-10-14-guild-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `docs/guild-server-closeout-20261018`
+- World: [캐릭터 목록·생성·선택 서버 처리](../../01_Phases/goals/2026-10-18-character-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `feat/character-server-20261018` · Opus 리드 재개(결정 27 A)·범위 초안 승인 대기, goal 미완료
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 

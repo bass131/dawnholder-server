@@ -23,7 +23,7 @@ namespace GameServer.Tests.Maps;
 ///   4. 데미지 = 서버 계산: damage == Formulas.ComputeDamage(BossDefault(), 플레이어 Stats, BossBaseDamage)
 ///   5. 사망→리스폰: HP 낮게 세팅 → 보스 공격 → Position==PlayerSpawnPosition + Hp==Stats.MaxHp + ActionFsm != DeathState
 ///   6. drift 방지: BossDefault().MaxHp == EnemyDefaultHp Boss 값(100) 일치 (spawn된 boss.MaxHp 간접 검증)
-///   7. ProtocolVersion == 10 assert + S_EnemyAttack/S_PlayerJoin(characterClass 포함) 직렬화 왕복
+///   7. ProtocolVersion == 22 assert + S_EnemyAttack/S_PlayerJoin(characterClass 포함) 직렬화 왕복
 ///   8. animState 우선순위 — Attack > Hit
 ///   9. 보스 이동 행동: 배회(aggro 밖), 접근 후 공격, Walk animState
 ///
@@ -472,7 +472,7 @@ public class BossBehaviorTests : IDisposable
     // ─── 항목 7: ProtocolVersion + 직렬화 왕복 ────────────────────────────────────
 
     [Fact]
-    public void ProtocolVersion_Is21()
+    public void ProtocolVersion_Is22()
     {
         // M4.13 P5: C_SkillUse.facing append (대쉬 방향 권위) → v12→v13.
         // M4.15 P06: C_SkillUse.verticalDir append (텔레포트 4방향) → v13→v14.
@@ -482,7 +482,8 @@ public class BossBehaviorTests : IDisposable
         // 던전 패킷·창 PR: 클리어 결과·확인 요청 신설 (ID 39·40) → v17→v18.
         // 계정 로그인: C_Login/S_LoginResult (ID 41..42) → v18→v19.
         // World 예약 ID 43..47 → v20, 재접속 S_CharacterLoadResult ID 48 → v21.
-        Assert.Equal(21, ProtocolVersion.Current);
+        // 캐릭터 목록·생성·선택 메뉴 (ID 49..54) → v21→v22.
+        Assert.Equal(22, ProtocolVersion.Current);
     }
 
     [Fact]
