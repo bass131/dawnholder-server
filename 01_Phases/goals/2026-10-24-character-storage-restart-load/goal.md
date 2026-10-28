@@ -62,6 +62,7 @@ World동결은02:35Z부터B0반환까지예정이며02:35Z이후/동결준비보
 - **CORE-V1-E1-01(첫 Output 실행 중단):** core-active `.backups` junction 표기의 253자 WorkRoot에서 .NET Framework csc가 CS1619(임시 파일 생성 실패)로 끝났다. 같은 길이에서 재현했고 `C:\Dev\DawnHolder_Project\.backups` 표기의 짧은 경로에서 같은 소스가 성공했다. 검증자가 fixture/환경 경로 제약으로 재분류했고 내부 길이 한도는 미확인이다. 보충은 `core-review/contract-v1-supplement-d1.md`·`contract-v1-supplement-d1-continue.md`다.
 - **CORE-V1-H01 처분(리드):** 기존 Output 시험이 compiler 진단 본문을 버리는 점은 통과 비차단 후속 후보다(msg_629810fc83f8). 시험이 실패 때 예외로 닫혀 거짓 PASS가 없고, 같은 bytes가 짧은 경로에서 통과했기 때문이다. 후속 내용은 synthetic compiler 원문 보존과 긴 WorkRoot 안내다.
 - **리드 실수 첫 발생:** 진단 보충 D1 문구가 "예상한 재현 실패"와 "첫 실패 중단"을 가르지 않아 검증자가 D1 뒤 멈췄다. 계속 보충으로 풀었다. 반복 규칙은 만들지 않는다.
+- **PR271 main 받기(Main msg_e746dab8c3fa, 사용자 결정 35 A):** 2026-10-29 01:3x KST 안전 지점(작업자 쓰기 0, 검증자 E2 대기)에 origin/main `540172a41b58d4f4735ab9dd12f50f2e79d5fd34`를 merge commit `bff3fc66`로 받았다. 바뀐 파일은 CLAUDE.md 하나이며 새 절 「결정 4A 적용 기간의 Claude 리드·구현자」(`CLAUDE.md#claude-4a-interim`)를 읽었다. 지금까지의 4A 기록과 내용이 같다. 후보 3파일과 Framing 시험 hash는 받기 전후가 같다(`claude-lead-entry-01/merge-main-02.txt`).
 - Framing 시험 파일을 Core PR에 넣을지는 판정과 함께 정한다. 메인 밤 순서표(msg_7ac088eb1010)의 1번 Core 진단은 반환 보고했다(msg_beae80b00afd).
 - 범위 v2는 Main `msg_b847dd1c910b`로 승인됐다(결정 28 A·29 A).
 - 2026-10-28T14:15Z 새 리드가 handle `term_2ed01331-371a-428d-b13e-e84664ea33e1`로 `run_58bc61a38687`을 run-use했다. 회신 주소는 `run:run_58bc61a38687`이다. READY는 Main에 `msg_38d0fe9a7712`로 보냈다.
