@@ -2,7 +2,7 @@
 
 장면 9에서 서버를 끊었다 다시 켜도 같은 캐릭터의 직업이 유지되는지 실제 저장 경로로 확인한다. World의 캐릭터 서버·Stored 봇과 연결하되 Core 저장 검증과 Content 화면 완료를 구분한다.
 
-**현재 상태(2026-10-29 07:20 KST): 합동 실DB 창(T 05:50 KST)이 S1~S8을 모두 통과했고, Core 독립 강검증(Astra xhigh)은 PASS다. 서버 1(PID 500)을 정상 종료하고 서버 2(PID 506)를 따로 띄운 뒤, 기존 Mage와 새 Knight가 같은 ID·직업으로 다시 불러와졌다. Core 결과 PR 생성과 메인 반환이 다음이다.** PR 병합·종료 기록은 아직 없다.
+**현재 상태(2026-10-29 08:02 KST): 합동 실DB 창(T 05:50 KST)이 S1~S8을 모두 통과했고, Core 독립 강검증(Astra xhigh)은 PASS다. 서버 1(PID 500)을 정상 종료하고 서버 2(PID 506)를 따로 띄운 뒤, 기존 Mage와 새 Knight가 같은 ID·직업으로 다시 불러와졌다. PR272의 CI code-rules 들여쓰기 7건을 공백만 고쳤고 좁은 독립 재검증이 PASS다. 새 head의 CI 4개 통과 확인과 병합 승인 재요청이 다음이다.** PR 병합·종료 기록은 아직 없다.
 
 **이전 상태: O3 요구 단언 범위 PASS·World 한 파일 동일 바이트 반영 완료. E8/v7 B0는 Pre→Tests→Post 각1회, 실제3outer/5payload native0·RETURNED, Pre/Post WindowsCLEAR·Inputs829MATCHED, Tests54단언/실패0·observer23+publication2 전25사례를 확인했다.** B0 실행 자원 반환·Task succeeded·정확 작업자 pane 종료와 최종 정산을 마쳤다. 운영 신호 초과2구간은 별도 기록했다. B1 정적 준비 Task는 인수·정산·pane 종료를 마쳤으며, 새 source19의 noDB 실제 회귀와 최종 독립 강·실제 B1·저장 goal은 미완료다.
 
@@ -72,7 +72,18 @@ World동결은02:35Z부터B0반환까지예정이며02:35Z이후/동결준비보
 
 ### Core 리드 Opus 진입 v127
 
-**다음 첫 일:** Core 결과 PR(launcher·시험 4파일·goal)을 만들고 메인에 판정 원문 경로와 함께 반환한다. 병합은 메인의 정확 head 사용자 승인 뒤다. 그 뒤 종료 기록 PR·Gardener·R-8로 간다.
+**다음 첫 일:** PR272 새 head의 CI 4개 통과를 확인하고 메인에 새 head로 병합 승인을 다시 요청한다. 병합 순서는 PR270 → Content PR → PR272다(Main msg_d7f0a13b2aea). 병합 뒤 종료 기록 PR·Gardener·R-8로 간다.
+- **PR272 CI code-rules 실패와 수정(2026-10-28T22:15Z~23:01Z):** 메인 msg_c77ef6ad8872가 PR272 head `6a2552ca`의 CI code-rules 실패를 알렸다. 원인은 PSScriptAnalyzer `PSUseConsistentIndentation` 7건(launcher 1, Framing 시험 2, Output 시험 4)이다. 리드가 로컬에서 같은 7건을 재현했다(`claude-lead-entry-01/code-rules-local/`).
+  - 새 `[Core 구현 Opus]`(task_8da890eccc92)가 7줄의 줄 앞 공백만 고쳤다. 리드가 `f3e94759`로 커밋했다. 계약·보고는 `decision27-joint-01/indent-fix-01/lead/contract-implementer-v1.md`·`implementer/report-v1.md`다.
+  - 새 `[Core 검증자]`(Astra xhigh, task_ab53e9965901)의 좁은 재검증은 PASS다. 판정은 `indent-fix-01/verifier/verdict-v1.md`(sha256 2AFEF251…F603)다.
+    - 토큰열 동일·음성 대조 exit 1, code-rules 진단 0, 4 suite 63/0/1이다.
+    - 이전 Core 판정은 그 범위·한계와 함께 새 bytes에 적용된다고 판정했다. 새 DB 창은 열지 않는다.
+  - 리드 R-2 표본: code-rules results의 head·dirty·summary, 4 suite results.json Outcome, 각 gate의 변수 부재·Unity 0·7777 0, Output whole-entry 9사례의 가짜 child 기록을 원시에서 확인했다.
+- **계획 밖 실제 wsl.exe 9회(첫 발생, 메인 수령 msg_d7f0a13b2aea):** 구현자 첫 Output 실행(attempt-2)이 5/14로 실패했다. 그때 launcher가 띄운 child 9개는 가짜 `bin/wsl.exe`가 아니었다(child 기록 0, PID 9개). 원시는 `indent-fix-01/implementer/attempt-2/incident-real-wsl/`이다.
+  - 넘어간 인자는 가짜 /fixture 경로와 시험이 만든 가짜 자격 envelope이다. 실제 DB 자격 파일 접근·서버 기동은 없었다고 본다.
+  - 구현자는 원인을 Claude Code 세션의 `NoDefaultCurrentDirectoryInExePath=1`로 보았다. 변수를 뺀 probe는 가짜로 해석됐고 재실행은 19/0/0이었다.
+  - 독립 검증자는 System32 경로와 정확한 인과를 직접 관측으로 채택하지 않았다(INDENT-OBS01). 원시에 실행 경로 기록이 없기 때문이다. fixture/환경 장애 분류만 지지했다.
+  - 교정: 검증자 계약에 suite 직전 그 변수가 있으면 Output을 돌리지 않는 관문을 넣었다. 시험 자체의 보호는 BACKLOG `persistence-output-fixture-exe-resolution-guard`로 넘겼다(메인 동의, 이번 PR 밖). 반복 규칙은 만들지 않는다.
 - **합동 실DB 창 결과(2026-10-28T20:50Z~22:04Z):** S1~S8 모두 통과. 원시는 `core-review/worker/raw/e2-s1`~`e2-s8`이다.
   - S2 서버 1: PID 500, Listening 21:11:55Z.
   - S3 World 봇 before: 새 Knight `d1dd8569-8456-4762-848c-75072dda67e2`(`Wcreate1029`, slot 2) 생성. 기존 Mage `959c259f…`와 함께 54 → 48 → 입장.
@@ -1277,6 +1288,7 @@ Main msg_38f12385d323가 WSLService5448의fresh등록/동일PID·생성시각 �
 ## 현재 보고와 남은 위험
 
 - **2026-10-29 합동 창 뒤:** 완료조건 2·3·4는 실제 경로로 충족했다. 조건 5는 계약의 Core 관측 범위(고정 대상, 허용된 생성 1, 직접 SQL·DDL·삭제 0)까지만 확인했다. 지정 캐릭터 밖 DB 행의 불변은 직접 SQL로 대조하지 않았다. 조건 6은 신규 Astra 독립 강검증 PASS로 충족했다. 위 「Core 리드 Opus 진입 v127」의 판정 한계는 PR 본문과 메인 보고에 그대로 옮긴다. 남은 크리티컬 제품 결함은 없다.
+- **PR272 CI 수정 뒤:** 바뀐 것은 세 파일 7줄의 줄 앞 공백뿐이고 토큰열이 같다. 좁은 독립 재검증 PASS로 위 판정은 새 head에도 그 한계와 함께 적용된다. Output 시험의 실행 파일 해석 보호는 후속 후보이며, 그 전까지 Claude 세션에서 Output suite를 돌릴 때는 `NoDefaultCurrentDirectoryInExePath` 부재를 먼저 확인한다.
 
 - (역사) C9 반환 통지 msg_3df145430289 뒤 O3 신규 Sol max 정적 작업 task_c383b1a19017/ctx_27e7d3a4f760 발행·실제시작을 확인했다. STATIC_READY 뒤 별도 실행 창 전 시험0이고 전체 저장 goal 미완료다.
 

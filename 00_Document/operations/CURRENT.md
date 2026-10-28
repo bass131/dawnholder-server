@@ -2,7 +2,7 @@
 
 상태·결정·남은 일은 각 goal의 재개 안내에서 확인한다. 아직 병합되지 않은 goal은 아래 해당 worktree에서 읽는다. 다른 worktree의 로컬 기록이 이 checkout에도 있다고 가정하지 않는다.
 
-- Core: [캐릭터 저장의 서버 재기동·불러오기 합동 확인](../../01_Phases/goals/2026-10-24-character-storage-restart-load/goal.md#core-리드-opus-진입-v127) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active · feat/character-storage-restart-load-20261024 · 합동 실DB 창 S1~S8 통과(10-29 05:50~07:04 KST) · Core 독립 강검증 PASS · 결과 PR 준비 · goal 미완료
+- Core: [캐릭터 저장의 서버 재기동·불러오기 합동 확인](../../01_Phases/goals/2026-10-24-character-storage-restart-load/goal.md#core-리드-opus-진입-v127) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active · feat/character-storage-restart-load-20261024 · 합동 실DB 창 S1~S8 통과(10-29 05:50~07:04 KST) · Core 독립 강검증 PASS · PR272 CI 들여쓰기 수정·재검증 PASS · 병합 승인 대기 · goal 미완료
 
 - <a id="content-worktree"></a>Content: [길드 현황·거점 성장·대장간 화면](../../01_Phases/goals/2026-10-15-guild-client-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/content-guild-client-integration-20261018`
 
