@@ -145,8 +145,8 @@ foreach ($case in $cases) {
         Assert-Equal -Name ($case.Name + ': overlong stdout') -Expected $case.Overlong[0] -Actual $stdoutCounts.Overlong
         Assert-Equal -Name ($case.Name + ': overlong stderr') -Expected $case.Overlong[1] -Actual $stderrCounts.Overlong
         $unrelatedErrors = $stdoutCounts.DecodeErrors + $stderrCounts.DecodeErrors +
-            $stdoutCounts.ReaderErrors + $stderrCounts.ReaderErrors +
-            $stdoutCounts.QueueDropped + $stderrCounts.QueueDropped
+        $stdoutCounts.ReaderErrors + $stderrCounts.ReaderErrors +
+        $stdoutCounts.QueueDropped + $stderrCounts.QueueDropped
         Assert-Equal -Name ($case.Name + ': no unrelated errors') -Expected 0 -Actual $unrelatedErrors
         Assert-Equal -Name ($case.Name + ': completion status') -Expected $case.Complete -Actual $complete
         $timestampsValid = @($rows | Where-Object {

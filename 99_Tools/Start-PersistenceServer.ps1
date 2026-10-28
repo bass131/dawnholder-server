@@ -356,7 +356,7 @@ function Complete-PersistenceOutputCapture {
     foreach ($stream in @('stdout', 'stderr')) {
         $counts = $capture.Counts($stream)
         Write-Host (('Persistence output {0}: excluded={1}, overlong={2}, queueDropped={3}, ' +
-            'decodeErrors={4}, readerErrors={5}, drained={6}.') -f $stream, $counts.Excluded, $counts.Overlong,
+                'decodeErrors={4}, readerErrors={5}, drained={6}.') -f $stream, $counts.Excluded, $counts.Overlong,
             $counts.QueueDropped, $counts.DecodeErrors, $counts.ReaderErrors, $readersDrained)
     }
     return $capture.Clean

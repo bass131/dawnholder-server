@@ -852,7 +852,7 @@ foreach ($case in @('startup-failure', 'shutdown-failure', 'long-line', 'invalid
             ChildReturned = $record.ChildReturned
             ChildExitObserved = $record.ChildExitObserved
             ExpectedChildExitMatched = $null -ne $record.ChildExitCode -and
-                $record.ChildExitCode -eq $expectedChildExit
+            $record.ChildExitCode -eq $expectedChildExit
             ObserverDrained = $record.ObserverDrained
             NoSentinel = -not $record.SentinelSeen
             OneSafeDiagnostic = $diagnosticCount -eq 1
@@ -956,9 +956,9 @@ foreach ($mode in @('queue-bound', 'reader-fault', 'inherited-pipe')) {
             $faultObservation | ConvertTo-Json -Depth 4 |
                 Set-Content -LiteralPath (Join-Path $script:SuiteRoot 'reader-fault-injection.json')
             $faultOrderObserved = $null -ne $faultStream.ReadStartedUtc -and
-                $null -ne $faultStream.ReleasedUtc -and $null -ne $faultStream.FaultRaisedUtc -and
-                [datetime]$faultStream.ReadStartedUtc -le [datetime]$faultStream.ReleasedUtc -and
-                [datetime]$faultStream.ReleasedUtc -le [datetime]$faultStream.FaultRaisedUtc
+            $null -ne $faultStream.ReleasedUtc -and $null -ne $faultStream.FaultRaisedUtc -and
+            [datetime]$faultStream.ReadStartedUtc -le [datetime]$faultStream.ReleasedUtc -and
+            [datetime]$faultStream.ReleasedUtc -le [datetime]$faultStream.FaultRaisedUtc
             Assert-OutputChecks -Name 'reader I/O fault is counted and cannot produce successful completion' `
                 -Checks ([ordered]@{
                     ActualStdoutBindingVerified = $faultStream.StandardOutputBindingVerified
