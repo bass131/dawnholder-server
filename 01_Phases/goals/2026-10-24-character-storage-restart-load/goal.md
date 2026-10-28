@@ -2,7 +2,7 @@
 
 장면 9에서 서버를 끊었다 다시 켜도 같은 캐릭터의 직업이 유지되는지 실제 저장 경로로 확인한다. World의 캐릭터 서버·Stored 봇과 연결하되 Core 저장 검증과 Content 화면 완료를 구분한다.
 
-**현재 상태(2026-10-29 00:15 KST): 결정 27 반영 범위 v2가 승인됐다. Core 독립 검증자(Astra xhigh)가 정적 실사와 launcher 시험을 마쳤고(63 PASS/0 FAIL), 합동 실DB 창의 E2 보충을 기다린다. 합동 창은 결정 32 B로 사용자 기상 뒤에 연다.** 저장 성공·독립 PASS·PR 병합은 아직 없다.
+**현재 상태(2026-10-29 07:20 KST): 합동 실DB 창(T 05:50 KST)이 S1~S8을 모두 통과했고, Core 독립 강검증(Astra xhigh)은 PASS다. 서버 1(PID 500)을 정상 종료하고 서버 2(PID 506)를 따로 띄운 뒤, 기존 Mage와 새 Knight가 같은 ID·직업으로 다시 불러와졌다. Core 결과 PR 생성과 메인 반환이 다음이다.** PR 병합·종료 기록은 아직 없다.
 
 **이전 상태: O3 요구 단언 범위 PASS·World 한 파일 동일 바이트 반영 완료. E8/v7 B0는 Pre→Tests→Post 각1회, 실제3outer/5payload native0·RETURNED, Pre/Post WindowsCLEAR·Inputs829MATCHED, Tests54단언/실패0·observer23+publication2 전25사례를 확인했다.** B0 실행 자원 반환·Task succeeded·정확 작업자 pane 종료와 최종 정산을 마쳤다. 운영 신호 초과2구간은 별도 기록했다. B1 정적 준비 Task는 인수·정산·pane 종료를 마쳤으며, 새 source19의 noDB 실제 회귀와 최종 독립 강·실제 B1·저장 goal은 미완료다.
 
@@ -72,7 +72,27 @@ World동결은02:35Z부터B0반환까지예정이며02:35Z이후/동결준비보
 
 ### Core 리드 Opus 진입 v127
 
-**다음 첫 일:** 사용자 기상 뒤 메인의 합동 창 시작 알림을 받으면 World 리드와 보충 정보(World head 40자·봇 원시 경로·서버/프로세스 원시 경로·두 검증자 handle)를 주고받고, Core 검증자에게 E2 보충을 보낸다(결정 32 B). Core 검증자 `task_b56e0ff3a704`/`ctx_47ede59b6cb2`(handle `term_e98789bd-a13d-4846-84ef-704bb1669796`, Astra xhigh)는 E0·E1을 마치고 「E2 보충 대기」 공식 질문 `msg_f510b9116083`으로 기다린다. E2 보충은 이 질문에 reply로 보낸다. 계약은 `joint-runtime-02/decision27-joint-01/core-review/contract-v1-final.md`(sha256 5C65E84D…)다.
+**다음 첫 일:** Core 결과 PR(launcher·시험 4파일·goal)을 만들고 메인에 판정 원문 경로와 함께 반환한다. 병합은 메인의 정확 head 사용자 승인 뒤다. 그 뒤 종료 기록 PR·Gardener·R-8로 간다.
+- **합동 실DB 창 결과(2026-10-28T20:50Z~22:04Z):** S1~S8 모두 통과. 원시는 `core-review/worker/raw/e2-s1`~`e2-s8`이다.
+  - S2 서버 1: PID 500, Listening 21:11:55Z.
+  - S3 World 봇 before: 새 Knight `d1dd8569-8456-4762-848c-75072dda67e2`(`Wcreate1029`, slot 2) 생성. 기존 Mage `959c259f…`와 함께 54 → 48 → 입장.
+  - S4: `Server stopped.` 21:23:07Z, PID 500 소멸, 7777 해제.
+  - S5 서버 2: PID 506, Listening 21:24:50Z. boot·clone·DLL·profile hash는 같다.
+  - S6 World 봇 after: 두 ID·직업이 같은 목록에 있고 각각 54 → 48 → 입장. after 생성 0.
+  - S6a Content: 새 로그인 `c_s6a_test1029`로 `시험새벽1029` Knight(`3aa715ae-84f7-4f22-b48e-3b19057be307`)를 만들고 Town에 들어갔다. 재접속 뒤 같은 캐릭터로 다시 들어갔다. 장면 ②(`Wcreate1029` 이름 중복 거절)는 미실행이라 Core 기대는 미확인이다. 판정은 Content 몫이다.
+  - S7: `Server stopped.` 22:03:17Z.
+  - S8: 22:04:06Z에 7777 0, GameServer 0. 한도 22:20Z 전에 반환했다.
+- **Core 독립 판정:** `core-review/worker/verdict-v1.md`(sha256 2F44554B…B463)와 `verdict-v1.json`(101A1240…1E33)이다. 판정은 PASS(Core 할당 범위)이고 worker_done은 msg_18b2ad5d4144다. 검증자 pane은 정산 뒤 닫았다.
+  - 리드 R-2 표본 대조: hash 5개, suite 합계 63/0/1을 원시에서 직접 셌다. e2-s2·s5·s7·s8 result와 World S3·S6 원시 핵심 줄·sha256을 읽었다. 자격 경로 문자열은 원시에 0건이었다.
+  - 판정이 밝힌 한계: 직접 SQL·전체 DB 행 불변 미검증, 실제 WSL 강제 Retain 미실행, S7 첫 PID 표본이 사용자 종료 뒤(Alive=false), Content 화면·HP는 Content 판정이다.
+  - 후속 후보 CORE-V1-H01(Output 시험의 compiler 진단 원문 보존)은 그대로 남는다.
+- **창 안 리드 계약 판단(msg_57d88bae1378, 메인 이견 없음 msg_52df8b3298ef):** S5의 「같은 boot」를 통과 조건에서 기록 항목으로 내렸다. S1→S2 사이 WSL boot_id가 실제로 바뀌어(2ac0642b → 28df1708) 사용자 손 대기 중 다시 바뀔 수 있었기 때문이다. 같은 clone·DLL·profile hash와 다른 PID는 그대로 통과 조건이었다. 실제 S2·S5는 같은 boot여서 이 판단은 쓰이지 않았다.
+- **사용자 손 대기 해석(msg_6c61adb44115):** 3분 한도를 요청 시각이 아니라 launched 줄 첫 관측부터로 정했다. S2·S4에서 사용자 손이 3분을 넘겼지만 실패로 세지 않았다.
+- **리드 실수 첫 발생 셋(반복 규칙 없음):**
+  - 사용자 서버 카드 v1이 자격 경로를 Read-Host로만 두어 사용자가 위치를 몰랐다. 이전 카드 세 곳과 README 182·262행의 위치를 메인에 보내 풀었다(msg_652e1993541b). S2가 약 18분 늦어졌다.
+  - 그 메시지의 subject 첫머리를 내 태그가 아닌 「[메인 Claude 회신]」으로 썼다. 정정 msg_0bf7020446b8.
+  - 메인에 시간 어림을 보내며 S6a(25분)와 사용자 착석 전체(55분)를 섞었다. 정정 msg_2e4d8a733f97.
+- **이전 다음 첫 일(역사):** 사용자 기상 뒤 메인의 합동 창 시작 알림을 받으면 World 리드와 보충 정보를 주고받고, Core 검증자에게 E2 보충을 보낸다(결정 32 B). Core 검증자 `task_b56e0ff3a704`/`ctx_47ede59b6cb2`(handle `term_e98789bd-a13d-4846-84ef-704bb1669796`, Astra xhigh)는 「E2 보충 대기」 공식 질문 `msg_f510b9116083`으로 기다렸다. 계약은 `joint-runtime-02/decision27-joint-01/core-review/contract-v1-final.md`(sha256 5C65E84D…)다.
 - **E0·E1 결과(2026-10-29 00:10 KST):** E0 문법 오류 0. launcher 시험 Input 6 PASS+1 OBSERVED, SDK 5 PASS, Output 19 PASS, 검증자 새 시험 `99_Tools/database/tests/PersistenceLauncherFraming.Tests.ps1` 33 PASS다. 합계 63 PASS/0 FAIL/1 OBSERVED이고 실제 WSL·DB·서버·Unity 실행은 0이다. 후보 3파일 hash는 그대로라 S0 입력 변화가 없다. 중간 판정은 `core-review/worker/e0-e1-review-v1.md`·`diagnostic-result-v1.md`다.
 - **CORE-V1-E1-01(첫 Output 실행 중단):** core-active `.backups` junction 표기의 253자 WorkRoot에서 .NET Framework csc가 CS1619(임시 파일 생성 실패)로 끝났다. 같은 길이에서 재현했고 `C:\Dev\DawnHolder_Project\.backups` 표기의 짧은 경로에서 같은 소스가 성공했다. 검증자가 fixture/환경 경로 제약으로 재분류했고 내부 길이 한도는 미확인이다. 보충은 `core-review/contract-v1-supplement-d1.md`·`contract-v1-supplement-d1-continue.md`다.
 - **CORE-V1-H01 처분(리드):** 기존 Output 시험이 compiler 진단 본문을 버리는 점은 통과 비차단 후속 후보다(msg_629810fc83f8). 시험이 실패 때 예외로 닫혀 거짓 PASS가 없고, 같은 bytes가 짧은 경로에서 통과했기 때문이다. 후속 내용은 synthetic compiler 원문 보존과 긴 WorkRoot 안내다.
@@ -81,7 +101,7 @@ World동결은02:35Z부터B0반환까지예정이며02:35Z이후/동결준비보
 - **창 직전 준비(2026-10-29 03:00 KST):** World S0 고정값은 World msg_8ac8cb3314da로 받았다. World head는 `4755f807aeda8d35df20f98699a28245e43735e0`이고, World 검증자는 `term_f32fa163-29ed-42f2-b622-797831b8357e`/task_3ccc9d4a5f98다. Core 고정값과 신호 흐름은 World와 합의했다(msg_9f95f939cf1b → msg_b2da07371ce8 → msg_7cb867f19743). Core 검증자 보충 초안은 `core-review/contract-v1-window-supplement-draft.md`이고, T·Content handle·사용자 서버 창 handle이 남았다. 사용자 서버 카드는 `decision27-joint-01/user-server-card-v1.md`이며 메인에 보냈다(msg_4c8d0fea42eb).
 - **World selector 기준 합의:** World가 GameSession의 class-only 선택 거절 기준을 `_persistence?.Catalog is not null`로 좁히는 데 Core가 동의했다(msg_37ff61c16407). Core 자신도 Catalog 유무로 경로를 가른다. Core 파일 변경은 없다.
 - **PR271 main 받기(Main msg_e746dab8c3fa, 사용자 결정 35 A):** 2026-10-29 01:3x KST 안전 지점(작업자 쓰기 0, 검증자 E2 대기)에 origin/main `540172a41b58d4f4735ab9dd12f50f2e79d5fd34`를 merge commit `bff3fc66`로 받았다. 바뀐 파일은 CLAUDE.md 하나이며 새 절 「결정 4A 적용 기간의 Claude 리드·구현자」(`CLAUDE.md#claude-4a-interim`)를 읽었다. 지금까지의 4A 기록과 내용이 같다. 후보 3파일과 Framing 시험 hash는 받기 전후가 같다(`claude-lead-entry-01/merge-main-02.txt`).
-- Framing 시험 파일을 Core PR에 넣을지는 판정과 함께 정한다. 메인 밤 순서표(msg_7ac088eb1010)의 1번 Core 진단은 반환 보고했다(msg_beae80b00afd).
+- Framing 시험 파일은 Core PR에 넣는다. 독립 검증자가 쓴 새 시험이고 33 PASS이며 판정 inventory에 new-repository-test로 있다. 메인 밤 순서표(msg_7ac088eb1010)의 1번 Core 진단은 반환 보고했다(msg_beae80b00afd).
 - 범위 v2는 Main `msg_b847dd1c910b`로 승인됐다(결정 28 A·29 A).
 - 2026-10-28T14:15Z 새 리드가 handle `term_2ed01331-371a-428d-b13e-e84664ea33e1`로 `run_58bc61a38687`을 run-use했다. 회신 주소는 `run:run_58bc61a38687`이다. READY는 Main에 `msg_38d0fe9a7712`로 보냈다.
 - HEAD `90e10f13`, origin/main `627c9915`보다 11커밋 뒤다. 미커밋 3파일 hash는 v126 카드 기록과 같다. Run 37 Task는 36 settled + 1 abandoned(역사)이며 활성 작업자는 0이다.
@@ -1179,10 +1199,10 @@ Main `msg_5cb278bb955e`(2026-10-25T04:14:59Z)는 독립04 원문을 R-2로 읽�
 - [x] 범위 초안
 - [x] 범위 승인
 - [x] 결정27 범위 승인
-- [>] 검증자 사전 실사
-- [ ] 합동 실DB 확인
-- [ ] 독립 판정
-- [ ] 결과 PR 병합
+- [x] 검증자 사전 실사
+- [x] 합동 실DB 확인
+- [x] 독립 판정
+- [>] 결과 PR 병합
 - [ ] 종료 기록 병합
 - [ ] 종료 점검
 
@@ -1256,7 +1276,9 @@ Main msg_38f12385d323가 WSLService5448의fresh등록/동일PID·생성시각 �
 
 ## 현재 보고와 남은 위험
 
-- C9 반환 통지 msg_3df145430289 뒤 O3 신규 Sol max 정적 작업 task_c383b1a19017/ctx_27e7d3a4f760 발행·실제시작을 확인했다. STATIC_READY 뒤 별도 실행 창 전 시험0이고 전체 저장 goal 미완료다.
+- **2026-10-29 합동 창 뒤:** 완료조건 2·3·4는 실제 경로로 충족했다. 조건 5는 계약의 Core 관측 범위(고정 대상, 허용된 생성 1, 직접 SQL·DDL·삭제 0)까지만 확인했다. 지정 캐릭터 밖 DB 행의 불변은 직접 SQL로 대조하지 않았다. 조건 6은 신규 Astra 독립 강검증 PASS로 충족했다. 위 「Core 리드 Opus 진입 v127」의 판정 한계는 PR 본문과 메인 보고에 그대로 옮긴다. 남은 크리티컬 제품 결함은 없다.
+
+- (역사) C9 반환 통지 msg_3df145430289 뒤 O3 신규 Sol max 정적 작업 task_c383b1a19017/ctx_27e7d3a4f760 발행·실제시작을 확인했다. STATIC_READY 뒤 별도 실행 창 전 시험0이고 전체 저장 goal 미완료다.
 
 - Main msg_26011525878c의 계약 발행 승인/World Core리드 단독 반영 지정은 인수했다. C9 실제 반환 뒤 정적 구현만 발행하며 시험·noDB 실행은 별도Main창이 필요하다. World 반영도 독립 도구 판정·직전fresh 확인 뒤에만 한다. 계약·READY 원문 수정0이다.
 
