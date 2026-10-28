@@ -11,6 +11,9 @@ internal sealed class CharacterSelectRequestHandler : IPacketHandler
     {
         if (!CharacterMenuRequestReader.TryRead(buffer, PacketID.C_CharacterSelectRequest, out uint requestId))
             return;
-        session.SubmitCharacterMenuRequest(requestId, PacketID.C_CharacterSelectRequest);
+        C_CharacterSelectRequest request = new();
+        request.Read(buffer);
+        session.SubmitCharacterMenuRequest(requestId, PacketID.C_CharacterSelectRequest,
+            text: request.characterIdD);
     }
 }

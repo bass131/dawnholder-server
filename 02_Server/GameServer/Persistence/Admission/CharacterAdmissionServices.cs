@@ -41,6 +41,8 @@ public sealed class CharacterAdmissionServices
     public CharacterStorageMode Mode => CharacterStorageMode.Stored;
     public CharacterCatalogService? Catalog { get; }
 
+    internal TimeProvider TimeProvider => _timeProvider;
+
     internal bool IsPersistent(Guid accountId) => Catalog is not null || _selector!.IsPersistent(accountId);
 
     internal CharacterAdmissionLifetime CreateLifetime(CharacterClass intendedClass, SafeDefaults defaults)

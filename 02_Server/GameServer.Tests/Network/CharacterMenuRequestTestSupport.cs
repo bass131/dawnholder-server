@@ -84,8 +84,15 @@ internal sealed class CharacterMenuRequestSession(GameWorld world) : GameSession
     internal IReadOnlyList<byte[]> Packets => _packets;
     internal bool Selected => HasSelectedClass;
     internal int DisconnectCalls { get; private set; }
+    internal ushort? FailSendFor { get; set; }
 
-    public override void Send(ArraySegment<byte> packet) => _packets.Add(packet.ToArray());
+    public override void Send(ArraySegment<byte> packet)
+    {
+        byte[] frame = packet.ToArray();
+        if (CharacterMenuRequestWire.Id(frame) == FailSendFor)
+            throw new IOException("Scripted transport send failure.");
+        _packets.Add(frame);
+    }
 
     public override void Disconnect()
     {

@@ -5,6 +5,10 @@ using System.Collections.Concurrent;
 using Dawnholder.Server.GameServer.Hosting;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Persistence;
+using Dawnholder.Server.GameServer.Persistence.Admission;
+using Dawnholder.Server.GameServer.Persistence.Catalog;
+using Dawnholder.Server.GameServer.Persistence.Sql;
 using Dawnholder.Server.GameServer.Sessions;
 using Dawnholder.Server.Network;
 using Shared.GameData;
@@ -51,6 +55,109 @@ public sealed class ServerHostLifecycleTests
         header.CopyTo(frame, 0);
         await stream.ReadExactlyAsync(frame.AsMemory(4), timeout.Token);
         return frame;
+    }
+
+    [CharacterMenuDatabaseFact]
+    public async Task StoredMenuSqlEndToEnd()
+    {
+        using CharacterMenuDatabaseInput input = CharacterMenuDatabaseInput.Open();
+        string run = Guid.NewGuid().ToString("N")[..8];
+        string account = "w_" + run;
+        string name = "M" + run;
+        Guid characterId = Guid.Empty;
+
+        // Each phase creates a fresh host/catalog over real SQL connections. The second
+        // host must read the first host's durable identity and class after normal close.
+        for (int phase = 0; phase < 2; phase++)
+        {
+            GameWorld world = new(MapDataLoader.LoadAll());
+            var spawn = world.Map.PlayerSpawnPosition;
+            SafeDefaults defaults = new(spawn.X, spawn.Y, PlayerStats.Knight().MaxHp, PlayerStats.Mage().MaxHp);
+            SqlCharacterCatalogRepository catalogRepository = new(input.Options, input.CreateConnection);
+            CharacterCatalogService catalog = new(catalogRepository,
+                new SqlCharacterRepository(input.Options, input.CreateConnection), defaults, TimeProvider.System);
+            world.AttachPersistence(new CharacterAdmissionServices(catalog, TimeProvider.System));
+            using ServerHost host = new(world, new IPEndPoint(IPAddress.Loopback, 0));
+            try
+            {
+                Assert.True(await catalogRepository.PreflightAsync(
+                    PersistenceDeadline.FromBudget(TimeProvider.System, Limit), CancellationToken.None));
+                host.Start();
+                IPEndPoint endpoint = Assert.IsType<IPEndPoint>(host.LocalEndPoint);
+                using TcpClient client = new();
+                await client.ConnectAsync(endpoint.Address, endpoint.Port).WaitAsync(Limit);
+                NetworkStream stream = client.GetStream();
+                await stream.WriteAsync(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+                Assert.Equal((ushort)8, BitConverter.ToUInt16(await ReadFrame(stream), 2));
+                await stream.WriteAsync(new C_Login { accountName = account }.Write());
+                Assert.Equal(new byte[] { 5, 0, 42, 0, 0 }, await ReadFrame(stream));
+
+                await stream.WriteAsync(new C_CharacterListRequest { requestId = 1 }.Write());
+                S_CharacterListResult listed = new();
+                byte[] listFrame = await ReadFrame(stream);
+                Assert.Equal((ushort)50, BitConverter.ToUInt16(listFrame, 2));
+                listed.Read(new(listFrame));
+                Assert.Equal((byte)0, listed.result);
+                Assert.Equal(phase == 0 ? (byte)0 : (byte)1, listed.occupiedMask);
+                if (phase == 0)
+                {
+                    await stream.WriteAsync(new C_CharacterCreateRequest
+                    {
+                        requestId = 2, slot = 1, classId = 1, rawName = name,
+                    }.Write());
+                    byte[] createFrame = await ReadFrame(stream);
+                    Assert.Equal((ushort)52, BitConverter.ToUInt16(createFrame, 2));
+                    S_CharacterCreateResult created = new();
+                    created.Read(new(createFrame));
+                    Assert.Equal((byte)0, created.result);
+                    Assert.Equal((byte)1, created.slot);
+                    Assert.Equal(name, created.name);
+                    Assert.Equal((byte)1, created.classId);
+                    Assert.True(Guid.TryParseExact(created.characterIdD, "D", out characterId));
+                    Assert.NotEqual(Guid.Empty, characterId);
+                }
+                else
+                {
+                    Assert.Equal(characterId.ToString("D"), listed.slot1CharacterIdD);
+                    Assert.Equal(name, listed.slot1Name);
+                    Assert.Equal((byte)1, listed.slot1ClassId);
+                    await stream.WriteAsync(new C_CharacterSelect { characterClass = 0 }.Write());
+                    Assert.Equal(new byte[] { 6, 0, 48, 0, 3, 255 }, await ReadFrame(stream));
+                }
+
+                await stream.WriteAsync(new C_CharacterSelectRequest
+                {
+                    requestId = 4, characterIdD = characterId.ToString("D"),
+                }.Write());
+                byte[] selectFrame = await ReadFrame(stream);
+                Assert.Equal((ushort)54, BitConverter.ToUInt16(selectFrame, 2));
+                S_CharacterSelectResult selected = new();
+                selected.Read(new(selectFrame));
+                Assert.Equal((byte)0, selected.result);
+                Assert.Equal(characterId.ToString("D"), selected.selectedCharacterIdD);
+                Assert.Equal(new byte[] { 6, 0, 48, 0, 0, 1 }, await ReadFrame(stream));
+                Assert.Equal((ushort)3, BitConverter.ToUInt16(await ReadFrame(stream), 2));
+                byte[] guildFrame;
+                int frames = 0;
+                do
+                {
+                    guildFrame = await ReadFrame(stream);
+                    Assert.True(++frames <= 128, "Guild admission did not follow the real map entry.");
+                }
+                while (BitConverter.ToUInt16(guildFrame, 2) != 44);
+                S_GuildSnapshot guild = new();
+                guild.Read(new(guildFrame));
+                Assert.Equal(5, guild.treasury);
+                Assert.Equal(1, guild.memberCount);
+                string operations = phase == 0 ? "list/create/select" : "list/select";
+                Console.WriteLine($"[CharacterMenu SQL] phase={phase} account={account} character={characterId:D} " +
+                    $"{operations}=Success; wire54,48(Mage),3,44 observed; normal host close follows.");
+            }
+            finally
+            {
+                host.Stop(TimeSpan.FromSeconds(10));
+            }
+        }
     }
 
     [Theory]

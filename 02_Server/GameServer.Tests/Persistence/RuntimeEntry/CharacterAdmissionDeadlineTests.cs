@@ -9,8 +9,8 @@ namespace Dawnholder.Server.GameServer.Tests.Persistence.RuntimeEntry;
 /// <summary>
 /// Independent verification of two admission failure lifetimes (api-contract v2 「패킷과 공개 결과」 Unavailable row and
 /// 「서버 입장·owner 출력·종료」; verification contract criteria 2 and 3):
-/// an acquire that is still unanswered after every store budget of technical-spec §7 has passed is refused as
-/// Unavailable with class 255 exactly once, its late success spawns nothing, and the owner still settles it with one
+/// an acquire that is still unanswered after every store budget of technical-spec §7 has passed emits the current
+/// catalog OutcomeUnknown54 exactly once and closes without successful48, its late success spawns nothing, and the owner still settles it with one
 /// conditional release when the connection ends; and a C_CharacterSelect frame of the wrong length is a malformed
 /// client input that is silently dropped without any store call and without latching the one selection.
 /// </summary>
@@ -31,13 +31,13 @@ public sealed class CharacterAdmissionDeadlineTests
             await fixture.LoadingAsync(CharacterClass.Mage);
 
         fixture.Clock.Advance(BeyondEveryStoreBudget);
-        await fixture.TickUntilAsync(() => FirstIndexOf(session, LoadResultId) >= 0, "the refusal after the store budgets");
-        (byte refused, byte refusedClass) = SingleLoadResult(session);
+        await fixture.TickUntilAsync(() => FirstIndexOf(session, 54) >= 0, "the refusal after the store budgets");
+        (byte refused, byte invalidField) = SingleSelectFailure(session);
         string stateAfterRefusal = RuntimeEntryApi.AdmissionState(session);
 
         acquire.Complete(Acquired(acquire.Request, CharacterClass.Mage, MageMaxHp));
         await fixture.TicksAsync(3);
-        (byte resultAfterLateAcquire, _) = SingleLoadResult(session);
+        (byte resultAfterLateAcquire, _) = SingleSelectFailure(session);
         int enterMapIndex = FirstIndexOf(session, (ushort)PacketID.S_EnterMap);
         int playersAfterLateAcquire = fixture.Players.Count();
 
@@ -48,10 +48,11 @@ public sealed class CharacterAdmissionDeadlineTests
         Exception? flushFailure = await Record.ExceptionAsync(() =>
             PersistenceTestValues.Within(RuntimeEntryApi.FlushPersistenceClosuresAsync(fixture.World, hostDeadline)));
 
-        Assert.Equal(Unavailable, refused);
-        Assert.Equal(NoClass, refusedClass);
-        Assert.Equal("Rejected", stateAfterRefusal);
-        Assert.Equal(Unavailable, resultAfterLateAcquire);
+        Assert.Equal((byte)12, refused);
+        Assert.Equal((byte)0, invalidField);
+        Assert.Equal("Closed", stateAfterRefusal);
+        Assert.Equal((byte)12, resultAfterLateAcquire);
+        Assert.Equal(-1, FirstIndexOf(session, LoadResultId));
         Assert.Equal(-1, enterMapIndex);
         Assert.Equal(0, playersAfterLateAcquire);
         Assert.Null(flushFailure);
@@ -78,7 +79,7 @@ public sealed class CharacterAdmissionDeadlineTests
         int loadResultAfterMalformed = FirstIndexOf(session, LoadResultId);
         string stateAfterMalformed = RuntimeEntryApi.AdmissionState(session);
 
-        session.Receive(new C_CharacterSelect { characterClass = (byte)CharacterClass.Mage });
+        fixture.SelectStored(session, CharacterClass.Mage);
         Repo.PendingCall<ReadAdmissionRequest, ReadAdmissionResult> probe = await fixture.NextReadAdmissionAsync();
 
         Assert.Empty(callsAfterMalformed);

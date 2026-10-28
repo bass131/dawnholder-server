@@ -2,6 +2,8 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Persistence;
+using Dawnholder.Server.GameServer.Persistence.Admission;
+using Dawnholder.Server.GameServer.Persistence.Catalog;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.Protocol;
 
@@ -58,6 +60,11 @@ static class RuntimeEntryApi
         // The default queue capacity of API v2 is passed explicitly; reflection does not apply optional values.
         return Construct(ServerType("CharacterAdmissionServices"), parameters, selector, identity, repository, timeProvider, 4);
     }
+
+    // Current Stored host: the actual Core facade owns ID selection; repositories remain the test boundary.
+    public static CharacterAdmissionServices NewCatalogServices(ICharacterCatalogRepository catalog,
+        ICharacterRepository characters, TimeProvider clock)
+        => new(new CharacterCatalogService(catalog, characters, PersistenceTestValues.Defaults(), clock), clock);
 
     /// <summary>writer2: <c>GameWorld.AttachPersistence(CharacterAdmissionServices)</c>, once and before Start.</summary>
     public static void AttachPersistence(GameWorld world, object services)
