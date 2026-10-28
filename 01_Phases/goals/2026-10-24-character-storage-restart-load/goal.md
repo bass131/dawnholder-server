@@ -2,7 +2,7 @@
 
 장면 9에서 서버를 끊었다 다시 켜도 같은 캐릭터의 직업이 유지되는지 실제 저장 경로로 확인한다. World의 캐릭터 서버·Stored 봇과 연결하되 Core 저장 검증과 Content 화면 완료를 구분한다.
 
-**현재 상태(2026-10-28 23:50 KST): 결정 27 반영 범위 v2가 승인됐다. Core 독립 검증자(Astra xhigh)가 정적 실사와 launcher 시험을 진행 중이며, 합동 실DB 창은 결정 32 B로 사용자 기상 뒤에 연다.** 저장 성공·독립 PASS·PR 병합은 아직 없다.
+**현재 상태(2026-10-29 00:15 KST): 결정 27 반영 범위 v2가 승인됐다. Core 독립 검증자(Astra xhigh)가 정적 실사와 launcher 시험을 마쳤고(63 PASS/0 FAIL), 합동 실DB 창의 E2 보충을 기다린다. 합동 창은 결정 32 B로 사용자 기상 뒤에 연다.** 저장 성공·독립 PASS·PR 병합은 아직 없다.
 
 **이전 상태: O3 요구 단언 범위 PASS·World 한 파일 동일 바이트 반영 완료. E8/v7 B0는 Pre→Tests→Post 각1회, 실제3outer/5payload native0·RETURNED, Pre/Post WindowsCLEAR·Inputs829MATCHED, Tests54단언/실패0·observer23+publication2 전25사례를 확인했다.** B0 실행 자원 반환·Task succeeded·정확 작업자 pane 종료와 최종 정산을 마쳤다. 운영 신호 초과2구간은 별도 기록했다. B1 정적 준비 Task는 인수·정산·pane 종료를 마쳤으며, 새 source19의 noDB 실제 회귀와 최종 독립 강·실제 B1·저장 goal은 미완료다.
 
@@ -57,7 +57,12 @@ World동결은02:35Z부터B0반환까지예정이며02:35Z이후/동결준비보
 
 ### Core 리드 Opus 진입 v127
 
-**다음 첫 일:** Core 검증자 `task_b56e0ff3a704`/`ctx_47ede59b6cb2`(handle `term_e98789bd-a13d-4846-84ef-704bb1669796`, Astra xhigh)의 E0·E1 결과 공식 ask를 받아 실사한다. 그 뒤 S0 입력을 고정하고, 사용자 기상 뒤 메인의 합동 창 시작 알림을 기다린다(결정 32 B). 계약은 `joint-runtime-02/decision27-joint-01/core-review/contract-v1-final.md`(sha256 5C65E84D…)다.
+**다음 첫 일:** 사용자 기상 뒤 메인의 합동 창 시작 알림을 받으면 World 리드와 보충 정보(World head 40자·봇 원시 경로·서버/프로세스 원시 경로·두 검증자 handle)를 주고받고, Core 검증자에게 E2 보충을 보낸다(결정 32 B). Core 검증자 `task_b56e0ff3a704`/`ctx_47ede59b6cb2`(handle `term_e98789bd-a13d-4846-84ef-704bb1669796`, Astra xhigh)는 E0·E1을 마치고 「E2 보충 대기」 공식 질문 `msg_f510b9116083`으로 기다린다. E2 보충은 이 질문에 reply로 보낸다. 계약은 `joint-runtime-02/decision27-joint-01/core-review/contract-v1-final.md`(sha256 5C65E84D…)다.
+- **E0·E1 결과(2026-10-29 00:10 KST):** E0 문법 오류 0. launcher 시험 Input 6 PASS+1 OBSERVED, SDK 5 PASS, Output 19 PASS, 검증자 새 시험 `99_Tools/database/tests/PersistenceLauncherFraming.Tests.ps1` 33 PASS다. 합계 63 PASS/0 FAIL/1 OBSERVED이고 실제 WSL·DB·서버·Unity 실행은 0이다. 후보 3파일 hash는 그대로라 S0 입력 변화가 없다. 중간 판정은 `core-review/worker/e0-e1-review-v1.md`·`diagnostic-result-v1.md`다.
+- **CORE-V1-E1-01(첫 Output 실행 중단):** core-active `.backups` junction 표기의 253자 WorkRoot에서 .NET Framework csc가 CS1619(임시 파일 생성 실패)로 끝났다. 같은 길이에서 재현했고 `C:\Dev\DawnHolder_Project\.backups` 표기의 짧은 경로에서 같은 소스가 성공했다. 검증자가 fixture/환경 경로 제약으로 재분류했고 내부 길이 한도는 미확인이다. 보충은 `core-review/contract-v1-supplement-d1.md`·`contract-v1-supplement-d1-continue.md`다.
+- **CORE-V1-H01 처분(리드):** 기존 Output 시험이 compiler 진단 본문을 버리는 점은 통과 비차단 후속 후보다(msg_629810fc83f8). 시험이 실패 때 예외로 닫혀 거짓 PASS가 없고, 같은 bytes가 짧은 경로에서 통과했기 때문이다. 후속 내용은 synthetic compiler 원문 보존과 긴 WorkRoot 안내다.
+- **리드 실수 첫 발생:** 진단 보충 D1 문구가 "예상한 재현 실패"와 "첫 실패 중단"을 가르지 않아 검증자가 D1 뒤 멈췄다. 계속 보충으로 풀었다. 반복 규칙은 만들지 않는다.
+- Framing 시험 파일을 Core PR에 넣을지는 판정과 함께 정한다. 메인 밤 순서표(msg_7ac088eb1010)의 1번 Core 진단은 반환 보고했다(msg_beae80b00afd).
 - 범위 v2는 Main `msg_b847dd1c910b`로 승인됐다(결정 28 A·29 A).
 - 2026-10-28T14:15Z 새 리드가 handle `term_2ed01331-371a-428d-b13e-e84664ea33e1`로 `run_58bc61a38687`을 run-use했다. 회신 주소는 `run:run_58bc61a38687`이다. READY는 Main에 `msg_38d0fe9a7712`로 보냈다.
 - HEAD `90e10f13`, origin/main `627c9915`보다 11커밋 뒤다. 미커밋 3파일 hash는 v126 카드 기록과 같다. Run 37 Task는 36 settled + 1 abandoned(역사)이며 활성 작업자는 0이다.
