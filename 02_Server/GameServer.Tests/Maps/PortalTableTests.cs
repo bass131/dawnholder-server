@@ -47,7 +47,7 @@ public class PortalTableTests
     [Fact]
     public void Town_Portal_Position_IsRightEdge()
     {
-        // Town 출정문 (x=25). v3 마을 오른쪽 벽 안쪽.
+        // Town 출정문 (x=25). 마을 구역 경계.
         // 값 변경 시 이 테스트 즉시 실패 → 의도치 않은 좌표 변경 감지.
         Portal p = PortalTable.GetPortalsFor(MapId.Town)[0];
         Assert.Equal(25f, p.Position.X);
@@ -57,7 +57,7 @@ public class PortalTableTests
     [Fact]
     public void Town_Portal_DestSpawn_IsHuntingGroundLeftEntry()
     {
-        // HuntingGround 좌측 입장 spawn (x=2). Normal enemy(x=10)와 충분한 거리.
+        // HuntingGround 좌측 입장 지점. 첫 Normal 적과 떨어져 있다.
         Portal p = PortalTable.GetPortalsFor(MapId.Town)[0];
         Assert.Equal(2f, p.DestSpawn.X);
         Assert.Equal(0f, p.DestSpawn.Y);
@@ -89,18 +89,18 @@ public class PortalTableTests
         Portal rev = PortalTable.GetPortalsFor(MapId.HuntingGround)
             .Single(p => p.PortalId == 2);
         Assert.Equal(MapId.Town, rev.Dest);
-        // Position x=5 (좌측 입구 안쪽 — Town 도착 x=2와 거리 3).
-        Assert.Equal(5f, rev.Position.X);
+        // Position x=-2 (좌측 입구 — Town 도착 x=2와 거리 4).
+        Assert.Equal(-2f, rev.Position.X);
         // DestSpawn x=21 (Town 정방향 포탈 x=25 안쪽 4 — 재겹침 방지).
         Assert.Equal(21f, rev.DestSpawn.X);
     }
 
     [Fact]
-    public void HuntingGround_Portal_DestSpawn_IsBossRoomLeftEntry()
+    public void HuntingGround_Portal_DestSpawn_IsBossRoomRightPassageEntry()
     {
-        // BossRoom 좌측 spawn (x=22). Boss(x=30)와 충분한 거리.
+        // BossRoom 우측 통로 spawn (x=30). 보스방 귀환 포탈(x=34)과 거리 4.
         Portal p = PortalTable.GetPortalsFor(MapId.HuntingGround)[0];
-        Assert.Equal(22f, p.DestSpawn.X);
+        Assert.Equal(30f, p.DestSpawn.X);
         Assert.Equal(0f, p.DestSpawn.Y);
     }
 
@@ -130,10 +130,10 @@ public class PortalTableTests
         Portal rev = PortalTable.GetPortalsFor(MapId.BossRoom)
             .Single(p => p.PortalId == 2);
         Assert.Equal(MapId.HuntingGround, rev.Dest);
-        // Position x=18 (보스방 좌측 — HG 도착 x=22와 거리 4).
-        Assert.Equal(18f, rev.Position.X);
-        // DestSpawn x=22 (HG 정방향 포탈 x=25 안쪽 3 — 재겹침 방지).
-        Assert.Equal(22f, rev.DestSpawn.X);
+        // Position x=34 (보스방 우측 — HG 도착 x=30과 거리 4).
+        Assert.Equal(34f, rev.Position.X);
+        // DestSpawn x=50 (HG 정방향 포탈 x=56 안쪽 — 재겹침 방지).
+        Assert.Equal(50f, rev.DestSpawn.X);
     }
 
     // --- Ending ---

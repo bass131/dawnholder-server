@@ -48,8 +48,8 @@ public sealed class InventoryLifecycleRaceTests : IDisposable
     {
         ProbeSession knight = JoinAndEnter(CharacterClass.Knight);
         GameMap hunting = MoveToHuntingGround(knight);
-        StandAt(hunting, knight, 5f);
-        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, 6f, 0f, maxHp: 1);
+        StandAt(hunting, knight, -2f);
+        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, -1f, 0f, maxHp: 1);
         int mark = knight.Packets.Count;
 
         SubmitMelee(knight, enemy);
@@ -95,8 +95,8 @@ public sealed class InventoryLifecycleRaceTests : IDisposable
     {
         ProbeSession knight = JoinAndEnter(CharacterClass.Knight);
         GameMap hunting = MoveToHuntingGround(knight);
-        StandAt(hunting, knight, 5f);
-        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, 6f, 0f, maxHp: 1);
+        StandAt(hunting, knight, -2f);
+        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, -1f, 0f, maxHp: 1);
 
         SubmitMelee(knight, enemy);
         Tick();
@@ -119,7 +119,7 @@ public sealed class InventoryLifecycleRaceTests : IDisposable
         KillWithMelee(knight, _world.Map.SpawnEnemy(EnemyKind.Golem, 1f, 0f, maxHp: 1));
         Settle();
         GameMap hunting = MoveToHuntingGround(knight);
-        StandAt(hunting, knight, 5f);
+        StandAt(hunting, knight, -2f);
         int mark = knight.Packets.Count;
 
         knight.OnRecvPacket(Wire.InventoryRequest());

@@ -23,6 +23,11 @@ namespace Dawnholder.Client.UI
         [SerializeField] TMP_Text?   _member0Text;
         [SerializeField] GameObject? _member1Group;  // MemberStatus 1
         [SerializeField] TMP_Text?   _member1Text;
+        // 칸마다 Class_Icon 그림은 그 칸에 들어온 멤버의 직업을 따른다. 고정 그림이면 글자와 어긋난다.
+        [SerializeField] Image?      _member0Icon;
+        [SerializeField] Image?      _member1Icon;
+        [SerializeField] Sprite?     _knightIcon;
+        [SerializeField] Sprite?     _mageIcon;
 
         CanvasGroup? _rootGroup;
         PartyState? _partySource;
@@ -102,8 +107,14 @@ namespace Dawnholder.Client.UI
             SetVisible(inParty);
             if (!inParty) return;
 
-            ApplySlot(_member0Group, _member0Text, ps.Member0EntityId, ps.Member0Class);
-            ApplySlot(_member1Group, _member1Text, ps.Member1EntityId, ps.Member1Class);
+            // 서버 순서는 초대한 사람 → 수락한 사람이다. 첫 칸에는 항상 내 캐릭터를 둔다.
+            UnityClientSession? session = UnityClientSession.Instance;
+            int? self = session != null ? session.LocalEntityId : null;
+            bool selfSecond = self.HasValue && ps.Member1EntityId == self.Value;
+            ApplySlot(_member0Group, _member0Text, _member0Icon,
+                selfSecond ? ps.Member1EntityId : ps.Member0EntityId, selfSecond ? ps.Member1Class : ps.Member0Class);
+            ApplySlot(_member1Group, _member1Text, _member1Icon,
+                selfSecond ? ps.Member0EntityId : ps.Member1EntityId, selfSecond ? ps.Member0Class : ps.Member1Class);
         }
 
         void SetVisible(bool visible)
@@ -114,15 +125,17 @@ namespace Dawnholder.Client.UI
             _rootGroup.interactable   = visible;
         }
 
-        static void ApplySlot(GameObject? group, TMP_Text? text, int entityId, byte cls)
+        void ApplySlot(GameObject? group, TMP_Text? text, Image? icon, int entityId, byte cls)
         {
             bool active = entityId != 0;
             if (group != null) group.SetActive(active);
-            if (active && text != null)
-                text.text = $"{ClassName(cls)} ({entityId})";
+            if (!active) return;
+            if (text != null) text.text = $"{ClassName(cls)} ({entityId})";
+            Sprite? sprite = cls == 1 ? _mageIcon : _knightIcon;
+            if (icon != null && sprite != null) icon.sprite = sprite;
         }
 
-        // CharacterClass: Knight=0, Mage=1 (enum 의존 회피 위해 byte 직접 비교).
-        static string ClassName(byte cls) => cls == 1 ? "마법사" : "기사";
+        // CharacterClass: Knight=0, Mage=1 (enum 의존 회피 위해 byte 직접 비교). 초대 팝업도 같은 이름을 쓴다.
+        internal static string ClassName(byte cls) => cls == 1 ? "마법사" : "기사";
     }
 }

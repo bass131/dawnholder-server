@@ -110,12 +110,12 @@ abstract class ProbeBase
         }
     }
 
-    protected void SendMove(sbyte inputX)
+    protected void SendMove(sbyte inputX, bool jump = false)
     {
         ClientTick++;
         C_MoveIntent move = new()
         {
-            input = InputBits.Encode(inputX, jumpPressed: false),
+            input = InputBits.Encode(inputX, jumpPressed: jump),
             clientTick = ClientTick,
         };
         Session?.Send(move.Write());
@@ -134,10 +134,14 @@ abstract class ProbeBase
     }
 
     // 서버 권위 X 기반 포털 이동. 매 틱 방향 재계산 — hitstun/넉백 후에도 수렴.
+    // 1칸 단(사냥터 봉인 제단, 보스방 문턱·출구 단)에 막혀 X가 멈추면 한 틱 점프를 섞어 넘는다.
     protected async Task MoveToPortalCore(float portalX, CancellationToken ct,
         int maxTicks = 400, float reachRadius = 0.5f)
     {
+        const int StallTicksBeforeJump = 3;
         int ticks = 0;
+        int stalledTicks = 0;
+        float previousX = ServerX;
         while (true)
         {
             float sx = ServerX;
@@ -148,8 +152,14 @@ abstract class ProbeBase
                 throw new TimeoutException(
                     $"MoveToPortal: {maxTicks}틱 내 포털 미도달. portalX={portalX}, serverX={sx}");
 
+            stalledTicks = Math.Abs(sx - previousX) < 0.01f ? stalledTicks + 1 : 0;
+            previousX = sx;
+            bool jump = stalledTicks >= StallTicksBeforeJump;
+            if (jump)
+                stalledTicks = 0;
+
             sbyte dir = sx < portalX ? (sbyte)1 : (sbyte)-1;
-            SendMove(dir);
+            SendMove(dir, jump);
             await Task.Delay(Constants.TickIntervalMs, ct);
             ticks++;
         }

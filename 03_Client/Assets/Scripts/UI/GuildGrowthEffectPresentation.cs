@@ -153,6 +153,16 @@ namespace Dawnholder.Client.UI
             Vector2 personalSize = _personal.LayoutSize;
             float width = available.width * size.x;
             float height = available.height * size.y;
+            // A lone effect takes the centre of the area by itself; only concurrent effects split it.
+            EffectArea? solo = _shared.IsPlaying == _personal.IsPlaying ? null : _shared.IsPlaying ? _shared : _personal;
+            if (solo != null)
+            {
+                Vector2 soloSize = solo.LayoutSize;
+                scale = Mathf.Min(scale, width / (soloSize.x + 2f * LayoutPadding),
+                    height / (soloSize.y + 2f * LayoutPadding));
+                solo.SetLayout(available.center, Vector2.zero, scale);
+                return;
+            }
             float horizontalScale = Mathf.Min(width / (sharedSize.x + personalSize.x + LayoutGap + 2f * LayoutPadding),
                 height / (Mathf.Max(sharedSize.y, personalSize.y) + 2f * LayoutPadding));
             float verticalScale = Mathf.Min(width / (Mathf.Max(sharedSize.x, personalSize.x) + 2f * LayoutPadding),
@@ -242,6 +252,8 @@ namespace Dawnholder.Client.UI
                 _level.raycastTarget = false;
                 _level.text = string.Empty;
             }
+
+            internal bool IsPlaying => _playing;
 
             internal Vector2 LayoutSize
             {

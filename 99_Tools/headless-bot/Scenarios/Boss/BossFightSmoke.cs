@@ -48,7 +48,7 @@ public class BossFightSmoke
     // portal 좌표 상수 — PortalTable.cs와 정합.
     const float TownPortalX = 25f;
     const int TownPortalId = 1;
-    const float HGPortalX = 25f;
+    const float HGPortalX = 56f;
     const int HGPortalId = 1;
 
     public static async Task<Result> Run(

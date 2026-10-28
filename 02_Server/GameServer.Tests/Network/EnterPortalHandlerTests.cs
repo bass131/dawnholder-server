@@ -27,7 +27,7 @@ namespace GameServer.Tests.Network;
 public class EnterPortalHandlerTests : IDisposable
 {
     // Town 맵: portal x=25 (PortalTable 정의 — Town → HuntingGround, portalId=1)
-    // HuntingGround 맵: portal x=25 (HuntingGround → BossRoom, portalId=1)
+    // HuntingGround 맵: portal (56, 1) (HuntingGround → BossRoom, portalId=1)
     //
     // TestGameSession은 두 맵 모두 주입받아 migration 흐름 시뮬.
     readonly GameMap _townMap;

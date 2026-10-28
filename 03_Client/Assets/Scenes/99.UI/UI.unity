@@ -703,6 +703,10 @@ MonoBehaviour:
   _member0Text: {fileID: 2125634492}
   _member1Group: {fileID: 780923406}
   _member1Text: {fileID: 1757069867}
+  _member0Icon: {fileID: 277380340}
+  _member1Icon: {fileID: 1207128385}
+  _knightIcon: {fileID: 8208078025218537254, guid: 32e2da4ade0d7554a9a78b6d06488e68, type: 3}
+  _mageIcon: {fileID: 7302846409307623543, guid: 7a3a372f461e15c42ac140002d42aa69, type: 3}
 --- !u!1 &277380338
 GameObject:
   m_ObjectHideFlags: 0

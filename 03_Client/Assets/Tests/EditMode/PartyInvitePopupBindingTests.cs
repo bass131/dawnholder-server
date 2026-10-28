@@ -82,7 +82,7 @@ namespace Dawnholder.Client.Tests
                 h.AssertVisible(false); // no automatic rebind
                 h.State.SetPendingInvite(111, 0);
                 h.AssertVisible(true);
-                Assert.AreEqual("Mage 파티 초대", h.Popup.transform.Find("Panel/InviteText").GetComponent<TMP_Text>().text);
+                Assert.AreEqual("마법사 파티 초대",h.Popup.transform.Find("Panel/InviteText").GetComponent<TMP_Text>().text);
                 next.ClearPendingInvite();
                 h.State.ApplyUpdate(31, 71, 71, 72, 0, 1);
                 h.AssertVisible(false);

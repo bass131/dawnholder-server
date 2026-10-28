@@ -43,4 +43,15 @@ internal sealed class GuildState
         if (Revision == uint.MaxValue) throw new InvalidOperationException("Guild revision exhausted during dungeon clear.");
         return new GuildState(Revision + 1, Treasury + gain, StrongholdLevel);
     }
+
+#if DEBUG
+    // [시연 디버그 치트] F9 treasury grant. Same cap and revision rules as the dungeon clear credit.
+    internal GuildState WithDebugTreasuryGrant(int amount)
+    {
+        int gain = Math.Min(amount, GuildRules.TreasuryCap - Treasury);
+        if (gain == 0) return this;
+        if (Revision == uint.MaxValue) throw new InvalidOperationException("Guild revision exhausted during debug grant.");
+        return new GuildState(Revision + 1, Treasury + gain, StrongholdLevel);
+    }
+#endif
 }

@@ -50,7 +50,7 @@ public class BossStageClearSmoke
     // HuntingGround portal: x=25 → BossRoom destSpawn x=22.
     const float TownPortalX = 25f;
     const int TownPortalId = 1;
-    const float HGPortalX = 25f;
+    const float HGPortalX = 56f;
     const int HGPortalId = 1;
 
     public static async Task<Result> Run(
