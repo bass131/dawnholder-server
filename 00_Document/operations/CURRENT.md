@@ -4,9 +4,9 @@
 
 - Core: [캐릭터 저장의 서버 재기동·불러오기 합동 확인](../../01_Phases/goals/2026-10-24-character-storage-restart-load/goal.md#core-리드-opus-진입-v127) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active · feat/character-storage-restart-load-20261024 · 합동 실DB 창 S1~S8 통과(10-29 05:50~07:04 KST) · Core 독립 강검증 PASS · PR272 CI 들여쓰기 수정·재검증 PASS · 병합 승인 대기 · goal 미완료
 
-- <a id="content-worktree"></a>Content: [길드 현황·거점 성장·대장간 화면](../../01_Phases/goals/2026-10-15-guild-client-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/content-guild-client-integration-20261018`
+- <a id="content-worktree"></a>Content: [캐릭터 선택·생성 화면](../../01_Phases/goals/2026-10-24-character-select-create-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active · feat/content-character-select-create-20261024 · 합동 창 S6a 끝, 독립 검증 최종은 제품 결함 0·미관측 둘로 보류, 결정 44 A로 남은 위험 두고 PR273 올림, 병합 승인 대기 · [하우징 goal 기록](https://github.com/bass131/dawnholder-server/blob/14cb5361183e1c6179b2e4fed299f84c389ac51b/01_Phases/goals/2026-10-15-guild-client-ui/goal.md) · feat/content-guild-housing-20261022(14cb5361) · PR267이 넣은 하우징 창과의 대조는 아직 하지 않았다 · 길드 성장 효과 화면 연결은 10-28 결정 33 A로 종료
 
-- World: [길드 서버 — 클리어 보상에서 거점·무기 성장까지](../../01_Phases/goals/2026-10-14-guild-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `docs/guild-server-closeout-20261018`
+- World: [캐릭터 목록·생성·선택 서버 처리](../../01_Phases/goals/2026-10-18-character-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `feat/character-server-20261018` · Opus 리드 재개(결정 27 A)·범위 초안 승인 대기, goal 미완료
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 

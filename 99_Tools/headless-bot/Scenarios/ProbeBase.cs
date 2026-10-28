@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Sockets;
 using Dawnholder.Client.Net;
 using Shared.GameData;
 using Shared.Protocol;
@@ -30,6 +31,7 @@ abstract class ProbeBase
     readonly ManualResetEventSlim _login = new(false);
     readonly ManualResetEventSlim _disconnected = new(false);
     readonly ManualResetEventSlim _enterMap = new(false);
+    bool _closed;
 
     protected BotSession? Session;
     protected uint ClientTick;
@@ -47,6 +49,8 @@ abstract class ProbeBase
     // 서브클래스가 캐릭터 클래스를 지정. 기본값 Knight.
     protected virtual CharacterClass SelectedClass => CharacterClass.Knight;
     protected virtual string AccountName => _accountName;
+    protected virtual bool SelectClassAfterLogin => true;
+    protected bool IsDisconnected => _disconnected.IsSet;
 
     internal static string CreateAccountName()
     {
@@ -60,20 +64,7 @@ abstract class ProbeBase
     {
         _connector.Connect(
             new IPEndPoint(IPAddress.Parse(host), port),
-            sessionFactory: () =>
-            {
-                BotSession s = new();
-                s.OnConnectedCallback = _ =>
-                {
-                    _connected.Set();
-                    C_Handshake handshake = new() { clientVersion = ProtocolVersion.Current };
-                    s.Send(handshake.Write());
-                };
-                s.OnDisconnectedCallback = _ => _disconnected.Set();
-                s.OnPacketCallback = HandlePacket;
-                Session = s;
-                return s;
-            });
+            sessionFactory: CreateSession);
     }
 
     public bool WaitConnected(TimeSpan timeout) => _connected.Wait(timeout);
@@ -82,7 +73,42 @@ abstract class ProbeBase
     public bool WaitDisconnected(TimeSpan timeout) => _disconnected.Wait(timeout);
     public bool WaitEnterMap(TimeSpan timeout) => _enterMap.Wait(timeout);
 
-    public void Disconnect() => Session?.Disconnect();
+    public void Disconnect()
+    {
+        BotSession? session;
+        lock (Gate)
+        {
+            _closed = true;
+            session = Session;
+        }
+        session?.Disconnect();
+    }
+
+    protected async Task<bool> ConnectWithCancellationAsync(string host, int port, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        using CancellationTokenSource timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        timeout.CancelAfter(TimeSpan.FromSeconds(5));
+        using IConnectionAttempt attempt = _connector.BeginConnect(new IPEndPoint(IPAddress.Parse(host), port));
+        using CancellationTokenRegistration cancel = timeout.Token.Register(attempt.Cancel);
+        var outcome = await attempt.Completion;
+        ct.ThrowIfCancellationRequested();
+        if (outcome.Status != ConnectionStatus.Success || !attempt.TryTakeConnectedSocket(out Socket? socket))
+            return false;
+        try
+        {
+            EndPoint endPoint = socket!.RemoteEndPoint!;
+            BotSession session = CreateSession();
+            session.Start(socket);
+            socket = null; // Start owns the socket, including a session closed before activation.
+            if (!session.IsDisconnected) session.OnConnected(endPoint);
+            return !session.IsDisconnected;
+        }
+        finally
+        {
+            socket?.Dispose();
+        }
+    }
 
     protected void SendMove(sbyte inputX, bool jump = false)
     {
@@ -152,8 +178,38 @@ abstract class ProbeBase
         return predicate();
     }
 
+    BotSession CreateSession()
+    {
+        BotSession session = new();
+        session.OnConnectedCallback = _ =>
+        {
+            lock (Gate)
+            {
+                if (_closed) { session.Disconnect(); return; }
+                _connected.Set();
+                session.Send(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+            }
+        };
+        session.OnDisconnectedCallback = _ => _disconnected.Set();
+        session.OnPacketCallback = buffer =>
+        {
+            lock (Gate)
+            {
+                if (!_closed) HandlePacket(buffer);
+            }
+        };
+        lock (Gate)
+        {
+            Session = session;
+            // A timed-out/cancelled probe must also close a legacy connector that succeeds later.
+            if (_closed) session.Disconnect();
+        }
+        return session;
+    }
+
     void HandlePacket(ArraySegment<byte> buffer)
     {
+        if (!ValidatePacket(buffer)) return;
         if (buffer.Count < 4) return;
 
         ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
@@ -175,7 +231,7 @@ abstract class ProbeBase
                 S_LoginResult login = new();
                 login.Read(buffer);
                 LoginResult = (LoginResult)login.result;
-                if (LoginResult == Shared.GameData.LoginResult.Accepted)
+                if (LoginResult == Shared.GameData.LoginResult.Accepted && SelectClassAfterLogin)
                 {
                     Session?.Send(new C_CharacterSelect { characterClass = (byte)SelectedClass }.Write());
                 }
@@ -218,6 +274,7 @@ abstract class ProbeBase
     }
 
     // 서브클래스 확장 포인트 — 기본 구현은 no-op.
+    protected virtual bool ValidatePacket(ArraySegment<byte> buffer) => true;
     protected virtual void OnEnterMap(S_EnterMap packet) { }
     protected virtual void OnMapTransition(S_MapTransition packet) { }
 

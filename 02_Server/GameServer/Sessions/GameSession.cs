@@ -32,6 +32,8 @@ namespace Dawnholder.Server.GameServer.Sessions;
 public class GameSession : PacketSession
 {
     readonly GameWorld? _world;
+    readonly CharacterMenuSession _characterMenu = new();
+    readonly CharacterMenuCatalogSession? _catalogMenu;
     readonly CharacterAdmissionServices? _persistence;
     CharacterAdmissionLifetime? _admissionLifetime;
     int _selectionSubmitted;
@@ -88,6 +90,11 @@ public class GameSession : PacketSession
     {
         _world = world ?? GameWorld.Instance;
         _persistence = persistence ?? _world?.Persistence;
+        // Both services constructors report Stored, so only the Catalog decides the path
+        // (same predicate as CharacterAdmissionServices.CreateLifetime). The selector-bound
+        // constructor keeps the class-select entry and has no catalog menu.
+        if (_persistence?.Catalog is not null && _world is not null)
+            _catalogMenu = new CharacterMenuCatalogSession(_world, _persistence.Catalog);
     }
 
     internal event Action<GameSession>? ConnectionClosed;
@@ -97,6 +104,10 @@ public class GameSession : PacketSession
     internal int EntityId => _entityId;
     internal bool IsLoggedIn => Volatile.Read(ref _loginState) == 2;
     internal AccountIdentity? Account => IsLoggedIn ? _account : null;
+    internal bool CanUseCharacterMenu => IsLoggedIn && !HasSelectedClass &&
+        AdmissionState == CharacterAdmissionState.Selecting && Volatile.Read(ref _selectionSubmitted) == 0;
+    internal bool CanApplyCatalogSelection => !IsClosing && IsLoggedIn && !HasSelectedClass &&
+        AdmissionState == CharacterAdmissionState.Loading && Volatile.Read(ref _selectionSubmitted) == 1;
 
     // GameMap.BroadcastToAll에서 closing 중인 세션 skip 판별용 internal getter.
     // broadcast 발신은 tick thread에서만 호출되므로 Volatile.Read로 memory barrier 보장.
@@ -205,6 +216,61 @@ public class GameSession : PacketSession
         => !IsClosing && _handshakeCompleted && Interlocked.CompareExchange(ref _loginState, 1, 0) == 0;
 
     internal void SubmitLogin(string normalizedName) => _world?.Accounts.EnqueueLogin(this, normalizedName);
+
+    internal void SubmitCharacterMenuRequest(uint requestId, PacketID requestPacketId,
+        byte slot = 0, byte classId = 0, string text = "")
+    {
+        if (IsClosing || _world is null) return;
+        bool wasSelecting = CanUseCharacterMenu;
+        AccountIdentity? receivedAccount = Account;
+        PersistenceDeadline deadline = PersistenceDeadline.FromBudget(
+            _persistence?.TimeProvider ?? TimeProvider.System, TimeSpan.FromSeconds(5));
+        // Socket callbacks only submit immutable values. This existing World queue and
+        // CapturePersistenceClose serialize every menu lifetime operation on the tick.
+        _world.EnqueueAdmissionResult(() =>
+        {
+            if (_catalogMenu is not null)
+            {
+                _catalogMenu.HandleRequest(this, requestId, requestPacketId, deadline, wasSelecting,
+                    receivedAccount, slot, classId, text);
+            }
+            else
+            {
+                _characterMenu.HandleLegacyRequest(this, requestId, requestPacketId, deadline, wasSelecting);
+            }
+        });
+    }
+
+    internal bool TryBeginCatalogSelection()
+    {
+        if (IsClosing || !CanUseCharacterMenu ||
+            Interlocked.CompareExchange(ref _selectionSubmitted, 1, 0) != 0)
+        {
+            return false;
+        }
+        Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Loading);
+        return true;
+    }
+
+    internal void RejectCatalogSelection()
+    {
+        if (IsClosing || AdmissionState != CharacterAdmissionState.Loading) return;
+        Volatile.Write(ref _selectionSubmitted, 0);
+        Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Selecting);
+    }
+
+    internal void CompleteCatalogSelection(CharacterClass storedClass)
+    {
+        if (!CanApplyCatalogSelection) return;
+        Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Resolved);
+        SetCharacterClass((byte)storedClass);
+        Send(new S_CharacterLoadResult
+        {
+            result = (byte)CharacterLoadStatus.Success,
+            characterClass = (byte)storedClass,
+        }.Write());
+        EnterGameWorldIfReady();
+    }
 
     internal void RejectLogin(LoginResult result)
     {
@@ -502,6 +568,23 @@ public class GameSession : PacketSession
 
     internal void SubmitCharacterSelect(byte intendedClass)
     {
+        // A class-only packet has no stored identity and can never authorize Catalog entry. Same
+        // predicate as CharacterAdmissionServices.CreateLifetime, so the two refusals cannot diverge.
+        if (_persistence?.Catalog is not null)
+        {
+            _world?.EnqueueAdmissionResult(() =>
+            {
+                if (!IsClosing && CanUseCharacterMenu)
+                {
+                    Send(new S_CharacterLoadResult
+                    {
+                        result = (byte)CharacterLoadStatus.Unavailable,
+                        characterClass = byte.MaxValue,
+                    }.Write());
+                }
+            });
+            return;
+        }
         if (IsClosing || !IsLoggedIn || HasSelectedClass ||
             Interlocked.CompareExchange(ref _selectionSubmitted, 1, 0) != 0)
         {
@@ -530,6 +613,19 @@ public class GameSession : PacketSession
 
     internal void CapturePersistenceClose()
     {
+        // World close draining runs before queued menu work. The socket's IsClosing flag
+        // already suppresses late work/sends until this owner permanently closes the lifetime.
+        _characterMenu.Close();
+        SafeCheckpoint? catalogProjection = null;
+        if (_stats is not null && _world is not null && _entityId >= 0 &&
+            _world.AllLiveMaps.Any(map => ReferenceEquals(map.GetPlayer(_entityId)?.Owner, this)))
+        {
+            Vector2 town = _world.Map.PlayerSpawnPosition;
+            catalogProjection = new SafeCheckpoint(_stats.Class, town.X, town.Y, _stats.MaxHp);
+        }
+        _catalogMenu?.Close(catalogProjection);
+        if (_catalogMenu is not null && _persistence is not null)
+            _world?.RetainPersistenceCloseOwner(_persistence);
         Volatile.Write(ref _admissionState, (int)CharacterAdmissionState.Closed);
         if (_admissionLifetime is null || _persistence is null) return;
         SafeCheckpoint? projection = null;
@@ -659,6 +755,13 @@ public class GameSession : PacketSession
             self._entityId = entity.EntityId;
             self.SetCurrentMap(map);
             Volatile.Write(ref self._admissionState, (int)CharacterAdmissionState.Active);
+            // Preserve the unchanged-close contract only after this connection really owns a player.
+            // No gameplay projection is minted for a merely Selected or already-closed generation.
+            if (self._catalogMenu is not null && !self.IsClosing)
+            {
+                self._catalogMenu.RecordAdmission(new SafeCheckpoint(self._stats!.Class,
+                    spawnPos.X, spawnPos.Y, self._stats.MaxHp));
+            }
 
             Action? publishGuildAdmission = null;
             try

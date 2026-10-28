@@ -149,6 +149,272 @@ namespace Dawnholder.Client.Tests
 
     public sealed class ClientConnectionLifetimeTests
     {
+        // Explicit-menu branch only: reuse the existing lifetime/queue/session ownership above.
+        // These tests do not stand in for UnityClientSession handler registration or 48/map entry.
+        [Test]
+        public void CharacterMenuHandshake_LoginOnce_AndAcceptedNotifiesOnceWithoutLegacySelection()
+        {
+            using var h = new ConnectionHarness();
+            var accepted = ObserveMenuAccepted(h.Owner);
+            var session = ConnectMenu(h);
+            Assert.IsEmpty(session.Logins);
+            Assert.IsEmpty(accepted);
+            session.Handshake();
+            session.Handshake();
+            CollectionAssert.AreEqual(new[] { "menu_account" }, session.Logins);
+            Assert.IsEmpty(accepted);
+            session.AcceptLogin();
+            session.AcceptLogin();
+            h.Queue.Drain();
+            CollectionAssert.AreEqual(new IClientConnectionSession[] { session }, accepted);
+            Assert.IsEmpty(session.SelectedClasses);
+            Assert.AreSame(session, h.Owner.CurrentSession);
+        }
+
+        [Test]
+        public void LegacyHandshake_PreservesOneCapturedSelection_AndNeverNotifiesMenu()
+        {
+            using var h = new ConnectionHarness();
+            var accepted = ObserveMenuAccepted(h.Owner);
+            var session = h.Connect(1);
+            session.Handshake();
+            session.Handshake();
+            CollectionAssert.AreEqual(new[] { "test_account" }, session.Logins);
+            session.AcceptLogin();
+            session.AcceptLogin();
+            h.Queue.Drain();
+            CollectionAssert.AreEqual(new byte[] { 1 }, session.SelectedClasses);
+            Assert.IsEmpty(accepted);
+        }
+
+        [Test]
+        public void CharacterMenuAcceptedBeforeHandshake_DoesNotOpenMenuOrSuppressLaterValidAccepted()
+        {
+            using var h = new ConnectionHarness();
+            var accepted = ObserveMenuAccepted(h.Owner);
+            var session = ConnectMenu(h);
+            session.AcceptLogin();
+            h.Queue.Drain();
+            Assert.IsEmpty(accepted);
+            Assert.IsEmpty(session.Logins);
+            Assert.IsEmpty(session.SelectedClasses);
+            session.Handshake();
+            session.AcceptLogin();
+            session.AcceptLogin();
+            h.Queue.Drain();
+            CollectionAssert.AreEqual(new[] { "menu_account" }, session.Logins);
+            CollectionAssert.AreEqual(new IClientConnectionSession[] { session }, accepted);
+            Assert.IsEmpty(session.SelectedClasses);
+        }
+
+        [Test]
+        public void CharacterMenuDuplicateConnect_DoesNotReplaceAttemptOrActiveMode()
+        {
+            using var h = new ConnectionHarness();
+            var accepted = ObserveMenuAccepted(h.Owner);
+            var attempt = h.Add(null);
+            Assert.IsTrue(TryConnectMenu(h.Owner));
+            Assert.IsFalse(TryConnectMenu(h.Owner));
+            Assert.IsFalse(h.Owner.Connect(ConnectionHarness.Endpoint, 1, "legacy_account"));
+            Assert.AreEqual(1, h.BeginCalls);
+            attempt.Complete(ConnectionStatus.Success);
+            h.Queue.WaitThenDrain();
+            var session = h.Sessions[0];
+            Assert.IsFalse(TryConnectMenu(h.Owner));
+            Assert.IsFalse(h.Owner.Connect(ConnectionHarness.Endpoint, 1, "legacy_account"));
+            session.Handshake();
+            session.AcceptLogin();
+            CollectionAssert.AreEqual(new[] { "menu_account" }, session.Logins);
+            Assert.IsEmpty(session.SelectedClasses);
+            CollectionAssert.AreEqual(new IClientConnectionSession[] { session }, accepted);
+            Assert.AreEqual(1, attempt.Takes);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void CharacterMenuCancelOrDisposeBeforeCompletion_NeverActivatesOrNotifies(bool dispose)
+        {
+            using var h = new ConnectionHarness();
+            var accepted = ObserveMenuAccepted(h.Owner);
+            var attempt = h.Add(null);
+            Assert.IsTrue(TryConnectMenu(h.Owner));
+            if (dispose) h.Owner.Dispose(); else h.Owner.Disconnect();
+            attempt.Complete(ConnectionStatus.Success);
+            h.Queue.WaitThenDrain();
+            Assert.AreEqual(0, attempt.Takes);
+            Assert.IsTrue(attempt.Canceled);
+            Assert.IsEmpty(h.Sessions);
+            Assert.IsEmpty(accepted);
+            Assert.AreEqual(ClientConnectionState.Disconnected, h.Owner.State);
+            if (dispose) Assert.IsFalse(TryConnectMenu(h.Owner));
+        }
+
+        [TestCase(ConnectionStatus.Failed)]
+        [TestCase(ConnectionStatus.Canceled)]
+        public void CharacterMenuFailedAttempt_AllowsFreshLegacyConnectionWithoutModeLeak(ConnectionStatus status)
+        {
+            using var h = new ConnectionHarness();
+            var accepted = ObserveMenuAccepted(h.Owner);
+            h.Add(status);
+            Assert.IsTrue(TryConnectMenu(h.Owner));
+            h.Queue.WaitThenDrain();
+            Assert.AreEqual(ClientConnectionState.Disconnected, h.Owner.State);
+            Assert.IsEmpty(h.Sessions);
+            var session = h.Connect(1);
+            session.Handshake();
+            session.AcceptLogin();
+            Assert.IsEmpty(accepted);
+            CollectionAssert.AreEqual(new byte[] { 1 }, session.SelectedClasses);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void CharacterMenuOldGenerationAccepted_CannotOpenNewMenuOrSelectForIt(bool reconnectMenu)
+        {
+            using var h = new ConnectionHarness();
+            var accepted = ObserveMenuAccepted(h.Owner);
+            var old = ConnectMenu(h);
+            old.Handshake();
+            Action late = old.CaptureLoginResult(LoginResult.Accepted);
+            h.Owner.Disconnect();
+            var current = reconnectMenu ? ConnectMenu(h) : h.Connect(1);
+            current.Handshake();
+            h.Queue.Post(late);
+            old.Handshake();
+            old.AcceptLogin();
+            h.Queue.Drain();
+            Assert.IsEmpty(accepted);
+            Assert.IsEmpty(old.SelectedClasses);
+            Assert.IsEmpty(current.SelectedClasses);
+            Assert.AreSame(current, h.Owner.CurrentSession);
+            Assert.AreEqual(1, old.Cleanups);
+            Assert.AreEqual(1, old.Disconnects);
+            current.AcceptLogin();
+            if (reconnectMenu)
+            {
+                CollectionAssert.AreEqual(new IClientConnectionSession[] { current }, accepted);
+                Assert.IsEmpty(current.SelectedClasses);
+            }
+            else
+            {
+                Assert.IsEmpty(accepted);
+                CollectionAssert.AreEqual(new byte[] { 1 }, current.SelectedClasses);
+            }
+        }
+
+        [Test]
+        public void CharacterMenuAcceptedQueuedBeforeRemoteClose_DoesNotNotifyAfterClose()
+        {
+            using var h = new ConnectionHarness();
+            var accepted = ObserveMenuAccepted(h.Owner);
+            var session = ConnectMenu(h);
+            session.Handshake();
+            h.Queue.Post(session.CaptureLoginResult(LoginResult.Accepted));
+            session.NaturalClose();
+            h.Queue.Drain();
+            Assert.IsEmpty(accepted);
+            Assert.IsEmpty(session.SelectedClasses);
+            Assert.AreEqual(1, session.Disconnects);
+            Assert.AreEqual(1, session.Cleanups);
+            Assert.IsNull(h.Owner.CurrentSession);
+            Assert.AreEqual(ClientConnectionState.Disconnected, h.Owner.State);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void CharacterMenuAcceptedAfterCleanupOrDispose_IsObsolete(bool dispose)
+        {
+            using var h = new ConnectionHarness();
+            var accepted = ObserveMenuAccepted(h.Owner);
+            var session = ConnectMenu(h);
+            session.Handshake();
+            Action late = session.CaptureLoginResult(LoginResult.Accepted);
+            if (dispose) h.Owner.Dispose(); else h.Owner.Disconnect();
+            h.Queue.Post(late);
+            session.AcceptLogin();
+            h.Queue.Drain();
+            Assert.IsEmpty(accepted);
+            Assert.IsEmpty(session.SelectedClasses);
+            Assert.AreEqual(1, session.Disconnects);
+            Assert.AreEqual(1, session.Cleanups);
+        }
+
+        [TestCase(LoginResult.InvalidName)]
+        [TestCase(LoginResult.AlreadyOnline)]
+        public void CharacterMenuRejectedLogin_ReportsAndCleansOnceWithoutOpeningMenu(LoginResult result)
+        {
+            using var h = new ConnectionHarness();
+            var accepted = ObserveMenuAccepted(h.Owner);
+            var rejected = new List<LoginResult>();
+            h.Owner.LoginRejected += rejected.Add;
+            var session = ConnectMenu(h);
+            session.Handshake();
+            Action pending = session.CaptureLoginResult(result);
+            h.Queue.Post(pending);
+            h.Queue.Post(pending);
+            session.NaturalClose();
+            h.Queue.Drain();
+            CollectionAssert.AreEqual(new[] { result }, rejected);
+            Assert.IsEmpty(accepted);
+            Assert.IsEmpty(session.SelectedClasses);
+            Assert.AreEqual(1, session.Cleanups);
+            Assert.AreEqual(1, session.Disconnects);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void ReconnectBetweenMenuAndLegacy_ResetsModeAndAcceptedFlags(bool menuFirst)
+        {
+            using var h = new ConnectionHarness();
+            var accepted = ObserveMenuAccepted(h.Owner);
+            var first = menuFirst ? ConnectMenu(h) : h.Connect(1);
+            first.Handshake();
+            first.AcceptLogin();
+            first.AcceptLogin();
+            h.Owner.Disconnect();
+            var second = menuFirst ? h.Connect(1) : ConnectMenu(h);
+            second.Handshake();
+            second.Handshake();
+            second.AcceptLogin();
+            second.AcceptLogin();
+            h.Queue.Drain();
+            var menu = menuFirst ? first : second;
+            var legacy = menuFirst ? second : first;
+            CollectionAssert.AreEqual(new IClientConnectionSession[] { menu }, accepted);
+            Assert.IsEmpty(menu.SelectedClasses);
+            CollectionAssert.AreEqual(new byte[] { 1 }, legacy.SelectedClasses);
+            Assert.AreEqual(1, first.Logins.Count);
+            Assert.AreEqual(1, second.Logins.Count);
+            Assert.AreSame(second, h.Owner.CurrentSession);
+        }
+
+        static bool TryConnectMenu(ClientConnectionLifetime owner)
+        {
+            var method = typeof(ClientConnectionLifetime).GetMethod("ConnectCharacterMenu",
+                new[] { typeof(IPEndPoint), typeof(string) });
+            Assert.IsNotNull(method, "v1 ConnectCharacterMenu(IPEndPoint, string) is absent");
+            Assert.AreEqual(typeof(bool), method.ReturnType);
+            return (bool)method.Invoke(owner, new object[] { ConnectionHarness.Endpoint, "menu_account" });
+        }
+
+        static ControlledClientSession ConnectMenu(ConnectionHarness harness)
+        {
+            harness.Add();
+            Assert.IsTrue(TryConnectMenu(harness.Owner));
+            harness.Queue.WaitThenDrain();
+            return harness.Sessions[harness.Sessions.Count - 1];
+        }
+
+        static List<IClientConnectionSession> ObserveMenuAccepted(ClientConnectionLifetime owner)
+        {
+            var accepted = new List<IClientConnectionSession>();
+            var menuEvent = typeof(ClientConnectionLifetime).GetEvent("CharacterMenuLoginAccepted");
+            Assert.IsNotNull(menuEvent, "v1 CharacterMenuLoginAccepted event is absent");
+            Assert.AreEqual(typeof(Action<IClientConnectionSession>), menuEvent.EventHandlerType);
+            menuEvent.AddEventHandler(owner, (Action<IClientConnectionSession>)accepted.Add);
+            return accepted;
+        }
+
         [Test]
         public void DuplicateConnect_IsNoOpDuringAttemptAndActiveSession()
         {

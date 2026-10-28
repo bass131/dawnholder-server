@@ -26,12 +26,21 @@ using Dawnholder.Tools.HeadlessBot.Scenarios.Persistence;
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario DungeonClearSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario GuildGrowthSmoke
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
+//   HeadlessBot --scenario PersistenceRestart --mode Stored --phase before --account <account> --character-id <guid-D>
+//   HeadlessBot --scenario PersistenceRestart --mode Stored --phase before --account <account> --character-id <guid-D> --new-name <name> --new-class Knight|Mage
+//   HeadlessBot --scenario PersistenceRestart --mode Stored --phase after --account <account> --character-id <guid-D> --new-name <name> --new-class Knight|Mage --new-character-id <createdCharacterId from before>
 
 string host = "127.0.0.1";
 int port = 7777;
 string scenarioName = "smoke";
 string persistenceAccount = "";
 string persistencePhase = "";
+string persistenceMode = "Legacy";
+string persistenceCharacterId = "";
+string persistenceNewName = "";
+string persistenceNewClass = "";
+string persistenceNewCharacterId = "";
+string[] storedCreateArguments = ["--new-name", "--new-class", "--new-character-id"];
 
 for (int i = 0; i < args.Length - 1; i++)
 {
@@ -42,11 +51,30 @@ for (int i = 0; i < args.Length - 1; i++)
         case "--scenario": scenarioName = args[i + 1]; break;
         case "--account": persistenceAccount = args[i + 1]; break;
         case "--phase": persistencePhase = args[i + 1]; break;
+        case "--mode": persistenceMode = args[i + 1]; break;
+        case "--character-id": persistenceCharacterId = args[i + 1]; break;
+        case "--new-name": persistenceNewName = args[i + 1]; break;
+        case "--new-class": persistenceNewClass = args[i + 1]; break;
+        case "--new-character-id": persistenceNewCharacterId = args[i + 1]; break;
     }
 }
 
 Console.WriteLine($"=== HeadlessBot ===");
 Console.WriteLine($"target: {host}:{port}  scenario: {scenarioName}");
+
+bool persistenceRestart = string.Equals(scenarioName, "PersistenceRestart", StringComparison.OrdinalIgnoreCase);
+if (!persistenceRestart && args.Any(argument => argument is "--mode" or "--character-id"))
+{
+    Console.WriteLine("[Bot] --mode and --character-id require scenario PersistenceRestart.");
+    return 1;
+}
+bool storedCreate = args.Any(argument => storedCreateArguments.Contains(argument));
+if (!persistenceRestart && storedCreate)
+{
+    Console.WriteLine("[Bot] --new-name, --new-class and --new-character-id require scenario " +
+        "PersistenceRestart --mode Stored.");
+    return 1;
+}
 
 if (string.Equals(scenarioName, "GuildGrowthSmoke", StringComparison.OrdinalIgnoreCase))
 {
@@ -62,9 +90,36 @@ if (string.Equals(scenarioName, "PersistenceReconnect", StringComparison.Ordinal
     return result.Success ? 0 : 1;
 }
 
-if (string.Equals(scenarioName, "PersistenceRestart", StringComparison.OrdinalIgnoreCase))
+if (persistenceRestart)
 {
-    var result = await PersistenceRestartScenario.Run(host, port, persistenceAccount, persistencePhase);
+    bool stored = string.Equals(persistenceMode, "Stored", StringComparison.OrdinalIgnoreCase);
+    bool legacy = string.Equals(persistenceMode, "Legacy", StringComparison.OrdinalIgnoreCase);
+    if ((!stored && !legacy) ||
+        (args.Length > 0 && args[^1] is "--mode" or "--character-id" or "--account" or "--phase") ||
+        args.Count(argument => argument == "--mode") > 1 ||
+        args.Count(argument => argument == "--character-id") > 1 ||
+        (legacy && args.Contains("--character-id")))
+    {
+        Console.WriteLine("[Bot] Invalid PersistenceRestart arguments; use --mode Stored --phase before/after " +
+            "--account <account> --character-id <guid-D>, or the existing Legacy seed/restore arguments.");
+        return 1;
+    }
+    // Phase-specific rules (no new ID before, a different one after) stay with the scenario's own input check.
+    if (storedCreate && (!stored || storedCreateArguments.Contains(args[^1]) ||
+        storedCreateArguments.Any(name => args.Count(argument => argument == name) > 1) ||
+        !args.Contains("--new-name") || !args.Contains("--new-class")))
+    {
+        Console.WriteLine("[Bot] Invalid Stored create arguments; use --mode Stored --phase before " +
+            "--account <account> --character-id <guid-D> --new-name <name> --new-class Knight|Mage, and add " +
+            "--new-character-id <guid-D> from the before output for phase after.");
+        return 1;
+    }
+    var result = storedCreate
+        ? await PersistenceRestartScenario.RunStoredCreate(host, port, persistenceAccount, persistenceCharacterId,
+            persistenceNewName, persistenceNewClass, persistencePhase, persistenceNewCharacterId)
+        : stored
+        ? await PersistenceRestartScenario.RunStored(host, port, persistenceAccount, persistenceCharacterId, persistencePhase)
+        : await PersistenceRestartScenario.Run(host, port, persistenceAccount, persistencePhase);
     Console.WriteLine($"[Bot] PersistenceRestart: success={result.Success} reason={result.Reason}");
     return result.Success ? 0 : 1;
 }
