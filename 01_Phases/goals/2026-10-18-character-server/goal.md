@@ -12,7 +12,9 @@ Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확�
 
 ## 재개 지점
 
-**다음 첫 일(10-29 08:4x KST, `[World 리드 Opus]`):** 종료 Gardener(`task_141e27c7730f`)가 끝났다. 원문은 [gardener.md](gardener.md)이고, 후보는 「다음 계획 후보」로 BACKLOG에 연결했다. 후보 도착 검사는 `allowed`다(`closeout-01/candidate-check-01.json`). Gardener GR-02에 대한 메인 판정 A(`msg_4d16987f5c46`, 「적용 중인 메인 운영 판단」)에 따라, 신규 Opus 문서 구현자가 `domains/protocol.md`의 v22 절과 `FEATURE_MAP.md`의 메뉴 경로를 쓴다. 계약은 `closeout-01/impl-doc/contract-v1.md`다. 그 뒤 신규 Astra xhigh 종료 문서 실사 → 종료 기록 PR → 사용자 병합 승인 → 메인 종료 점검 → R-8이다. 미커밋 Core launcher는 메인이 서버 창을 닫은 뒤 HEAD 판으로 되돌린다. 아래는 직전 단계 기록이다.
+**다음 첫 일(10-29 08:5x KST, `[World 리드 Opus]`):** 프로토콜 현재 문서 갱신(`task_139288b76901`)이 끝나 commit했다. 결과는 「결정과 단계 결과」에 있다. 다음 일은 신규 Astra xhigh 검증자의 종료 문서 실사다. 대상은 main `8b6010d5` 이후 이 branch의 모든 문서 변경(goal.md·gardener.md·CURRENT.md·BACKLOG.md·protocol.md·FEATURE_MAP.md)이다. 그 뒤 종료 기록 PR → 사용자 병합 승인 → 메인 종료 점검 → R-8이다. 미커밋 Core launcher는 메인이 서버 창을 닫은 뒤 HEAD 판으로 되돌린다. 아래는 직전 단계 기록이다.
+
+**이전 다음 첫 일(10-29 08:4x KST, `[World 리드 Opus]`):** 종료 Gardener(`task_141e27c7730f`)가 끝났다. 원문은 [gardener.md](gardener.md)이고, 후보는 「다음 계획 후보」로 BACKLOG에 연결했다. 후보 도착 검사는 `allowed`다(`closeout-01/candidate-check-01.json`). Gardener GR-02에 대한 메인 판정 A(`msg_4d16987f5c46`, 「적용 중인 메인 운영 판단」)에 따라, 신규 Opus 문서 구현자가 `domains/protocol.md`의 v22 절과 `FEATURE_MAP.md`의 메뉴 경로를 쓴다. 계약은 `closeout-01/impl-doc/contract-v1.md`다. 그 뒤 신규 Astra xhigh 종료 문서 실사 → 종료 기록 PR → 사용자 병합 승인 → 메인 종료 점검 → R-8이다. 미커밋 Core launcher는 메인이 서버 창을 닫은 뒤 HEAD 판으로 되돌린다. 아래는 직전 단계 기록이다.
 
 **이전 다음 첫 일(10-29 08:1x KST, `[World 리드 Opus]`):** 제품 PR270이 병합됐다. 사용자 승인 줄은 「병합 승인: PR270 head 2d9df3868c0919f83d499be350ec6833039a72e3」이고, 메인이 23:06:56Z에 병합했다(`msg_4892c80fd856`). 종료 기록은 최신 main `8b6010d5`에서 만든 branch `docs/character-server-closeout-20261029`에서 한다. 순서는 정본 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)대로 Gardener → 종료 문서 독립 실사 → 종료 기록 PR 하나 → 메인 종료 점검 → R-8이다. 다음 일은 리드 pane 아래 신규 Opus Gardener를 읽기 전용으로 여는 것이다. world-active의 미커밋 Core launcher(`99_Tools/Start-PersistenceServer.ps1`)는 PR272와 bytes가 같다. Core 합의(`msg_df8970186d11`)대로, 메인이 서버 창을 닫은 뒤 근거 폴더에 사본을 남기고 HEAD 판으로 되돌린다. 다음 goal은 자동으로 시작하지 않는다. 아래는 직전 단계 기록이다.
 
@@ -988,6 +990,11 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
   - 새 제품 결함 0, 정리 후보 2, 리드 반환 2(GR-01·GR-02)다. 후보는 아래 「다음 계획 후보」로 BACKLOG에 연결만 했고, 채택과 구현은 하지 않았다.
   - 계약은 `closeout-01/gardener-contract-v1.md`, 고정 입력은 `gardener-inputs.json`이다. 정산은 `gardener-release.json`(retained·external_terminal)과 `gardener-close.json`이다.
 - **branch upstream이 `origin/main`으로 잡힘(두 번째 발생):** 리드가 `git switch -c docs/character-server-closeout-20261029 origin/main`으로 종료 기록 branch를 만들자 upstream이 `origin/main`으로 잡혔다. push 전에 `git branch --unset-upstream`으로 끊었고, 원격 main에 push된 것은 0이다. 첫 발생은 [module boundary goal](../2026-10-05-module-boundary-warning/goal.md)이다. 두 번째 발생이라 반복 규칙 요건은 찼다. 정본 문구는 Rules 소유라 BACKLOG `branch-create-no-track`으로 연결만 한다.
+- **프로토콜 현재 문서 갱신(`task_139288b76901`) — succeeded 정산:**
+  - 메인 판정 A(`msg_4d16987f5c46`)에 따라 신규 Opus 문서 구현자가 두 파일을 고쳤다. `domains/protocol.md`에는 v22 절 21줄을 v20 절 앞에 더했다. `FEATURE_MAP.md`의 「연결·버전·계정·캐릭터」 행에는 메뉴 요청의 서버·클라이언트 경로를 기존 칸을 지우지 않고 더했다.
+  - v21 절은 쓰지 않았고, Core 변경 `bcafb6bc` 연결 한 문장만 두었다. v21 절은 BACKLOG `protocol-doc-version-drift`에 남는다.
+  - 구현자 대조 결과, 내용은 PDL·GenPackets·ProtocolVersion·enum·handler·GameSession·CatalogSession·ServerHost와 일치했다. packet-contract-v1과도 차이가 없었다(작성 시점의 protocol 21 문장만 예외). 패킷 길이 수치는 손셈이며 근거는 `closeout-01/impl-doc/worker/byte-lengths.md`다.
+  - 빌드·시험·실행은 0이다. 이 작업의 통과는 독립 판정이 아니며 종료 문서 실사가 함께 본다. 보고는 `closeout-01/impl-doc/worker/report.md`, 정산은 `release-01.json`(retained·external_terminal)과 `close-01.json`이다.
 
 ## 보류와 남은 우려
 
