@@ -19,9 +19,9 @@ namespace Dawnholder.Client.Tests.PlayMode
     {
         const string EntranceLabel = "던전 입구";
 
-        // Town's portal stands at x = 20 (Town.unity, Portal_Town) and the fixture's usual spawn x = 2 leaves it off
+        // Town's portal stands at x = 25 (Town.unity, Portal_Town) and the fixture's usual spawn x = 2 leaves it off
         // screen, so this entry spawns beside it: the label must be on screen for its raycast to be observed.
-        const float SpawnBesideTownPortal = 17f;
+        const float SpawnBesideTownPortal = 22f;
 
         MapEntryPlayFixture _fixture;
 

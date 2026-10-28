@@ -18,8 +18,8 @@ public static class DungeonClearSmoke
     const int TownMapId = 0;
     const int HuntingGroundMapId = 1;
     const int BossRoomMapId = 2;
-    const float TownPortalX = 20f;
-    const float HuntingGroundPortalX = 25f;
+    const float TownPortalX = 25f;
+    const float HuntingGroundPortalX = 56f;
     const int ForwardPortalId = 1;
 
     // Attack loop limits from BossStageClearSmoke: reapproach after knockback, retry a missed hit.

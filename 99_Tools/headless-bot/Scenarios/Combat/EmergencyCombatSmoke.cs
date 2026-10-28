@@ -43,9 +43,9 @@ public class EmergencyCombatSmoke
     // simulatedLatencyMs — 봇이 C_Attack 송신 시 attackerClientTick에
     // "N ms 전 서버 tick"을 박아 lag 환경을 시뮬. 0 = zero-lag (기본, 회귀 호환).
     // portal 좌표 상수 — 서버 PortalTable.cs와 정합. 변경 시 양쪽 동기화 의무(불일치=전환 실패).
-    // Town portal: x=20 → HuntingGround destSpawn x=2.
+    // Town portal: x=25 → HuntingGround destSpawn x=2.
     // HuntingGround portal: x=25 → BossRoom destSpawn x=22 (BossProbe에서만 사용).
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const int TownPortalId = 1;
 
     public static async Task<Result> Run(

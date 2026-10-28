@@ -48,8 +48,8 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
     {
         ProbeSession mage = JoinAndEnter(CharacterClass.Mage);
         GameMap hunting = MoveToHuntingGround(mage);
-        StandAt(hunting, mage, 5f);
-        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, 6f, 0f, maxHp: 1);
+        StandAt(hunting, mage, -2f);
+        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, -1f, 0f, maxHp: 1);
         int travelTicks = LaunchProjectile(mage, enemy);
         Settle(travelTicks - 1);
         bool aliveBeforeLanding = hunting.Enemies.ContainsKey(enemy.EntityId);
@@ -77,8 +77,8 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
     {
         ProbeSession mage = JoinAndEnter(CharacterClass.Mage);
         GameMap hunting = MoveToHuntingGround(mage);
-        StandAt(hunting, mage, 5f);
-        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, 6f, 0f, maxHp: 1);
+        StandAt(hunting, mage, -2f);
+        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, -1f, 0f, maxHp: 1);
         int mark = mage.Packets.Count;
 
         int travelTicks = LaunchProjectile(mage, enemy);
@@ -103,8 +103,8 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
         GameMap hunting = MoveToHuntingGround(mage);
         Assert.Same(hunting, MoveToHuntingGround(observer));
         // A resident keeps the source instance alive after the projectile's owner leaves.
-        StandAt(hunting, mage, 5f);
-        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, 6f, 0f, maxHp: 1);
+        StandAt(hunting, mage, -2f);
+        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, -1f, 0f, maxHp: 1);
 
         int travelTicks = LaunchProjectile(mage, enemy);
         EnterPortal(mage, portalId: 2);
@@ -131,8 +131,8 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
     {
         ProbeSession knight = JoinAndEnter(CharacterClass.Knight);
         GameMap hunting = MoveToHuntingGround(knight);
-        StandAt(hunting, knight, 5f);
-        EnemyEntity golem = hunting.SpawnEnemy(EnemyKind.Golem, 6f, 0f, maxHp: 1);
+        StandAt(hunting, knight, -2f);
+        EnemyEntity golem = hunting.SpawnEnemy(EnemyKind.Golem, -1f, 0f, maxHp: 1);
 
         SubmitMelee(knight, golem);
         EnterPortal(knight, portalId: 2);
@@ -160,8 +160,8 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
     {
         ProbeSession knight = JoinAndEnter(CharacterClass.Knight);
         GameMap hunting = MoveToHuntingGround(knight);
-        StandAt(hunting, knight, 5f);
-        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, 6f, 0f, maxHp: 1);
+        StandAt(hunting, knight, -2f);
+        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, -1f, 0f, maxHp: 1);
         int knightId = knight.EntityId;
 
         SubmitMelee(knight, enemy);
@@ -196,8 +196,8 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
         Assert.NotNull(_world.Party.CreateParty(knight.EntityId, observer.EntityId));
         GameMap hunting = MoveToHuntingGround(knight);
         Assert.Same(hunting, MoveToHuntingGround(observer));
-        StandAt(hunting, knight, 5f);
-        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, 6f, 0f, maxHp: 1);
+        StandAt(hunting, knight, -2f);
+        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, -1f, 0f, maxHp: 1);
         int knightId = knight.EntityId;
         int knightMark = knight.Packets.Count;
         bool closedInTheGap = false;
@@ -327,10 +327,10 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
         return session;
     }
 
-    // Town portal 1 at x=20 leads to HuntingGround (PortalTable); the move completes within Settle.
+    // Town portal 1 at x=25 leads to HuntingGround (PortalTable); the move completes within Settle.
     GameMap MoveToHuntingGround(ProbeSession session)
     {
-        StandAt(_world.Map, session, 20f);
+        StandAt(_world.Map, session, 25f);
         EnterPortal(session, portalId: 1);
         Settle();
         InstanceKey key = _world.Party.GetPartyByEntity(session.EntityId) is { } party

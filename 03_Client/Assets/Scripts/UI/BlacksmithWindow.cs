@@ -178,22 +178,22 @@ namespace Dawnholder.Client.UI
         void BuildView()
         {
             _layout = new GuildWindowLayout(gameObject, "Blacksmith", "대장간", right: true);
-            _layout.Inset(104f, 194f);
+            _layout.Inset(80f, 114f);
             _close = _layout.CloseButton();
             _close.onClick.AddListener(Close);
             _refresh = _layout.RefreshButton();
             _refresh.onClick.AddListener(RequestRefresh);
-            _characterClass = _layout.Label("CharacterClass", 58f, 48f);
-            _level = _layout.Label("EnhanceLevel", 106f, 48f);
-            _bonus = _layout.Label("AttackBonus", 154f, 48f);
-            _gold = _layout.Label("GoldCost", 202f, 48f);
-            _material = _layout.Label("MaterialCost", 250f, 48f);
-            _status = _layout.Label("ActionStatus", 298f, 48f);
-            _result = _layout.Label("ActionResult", 346f, 48f);
-            _balance = _layout.Label("PersonalBalance", 394f, 48f);
+            _characterClass = _layout.Label("CharacterClass", 50f, 30f, width: 196f);
+            _level = _layout.Label("EnhanceLevel", 50f, 30f, left: 228f, width: 196f);
+            _bonus = _layout.Label("AttackBonus", 82f, 28f);
+            _gold = _layout.Label("GoldCost", 110f, 28f);
+            _material = _layout.Label("MaterialCost", 138f, 28f);
+            _status = _layout.Label("ActionStatus", 166f, 28f);
+            _result = _layout.Label("ActionResult", 196f, 28f);
+            _balance = _layout.Label("PersonalBalance", 224f, 40f, width: 270f);
             _balance.text = "보유 골드 · 재료 확인 중";
             _balance.fontSizeMax = 18f;
-            TMP_Text lifetime = _layout.Label("LifetimeNotice", 442f, 52f, width: 270f);
+            TMP_Text lifetime = _layout.Label("LifetimeNotice", 276f, 28f);
             lifetime.fontSizeMax = 17f;
             lifetime.text = "개인 강화는 현재 접속 동안 유지됩니다.";
             _enhance = _layout.ActionButton("Enhance", "무기 강화");

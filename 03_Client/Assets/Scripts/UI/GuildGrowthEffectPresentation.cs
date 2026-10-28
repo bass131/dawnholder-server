@@ -16,11 +16,14 @@ namespace Dawnholder.Client.UI
     {
         const string AtlasPath = "UI/GuildGrowthEffect/GuildGrowthEffectAtlas";
         const int AtlasSize = 1254;
+        const float LayoutGap = 12f;
+        const float LayoutPadding = 8f;
         readonly RectTransform _canvasRect;
         readonly Sprite[] _sprites = new Sprite[4];
         Material? _sharedLevelMaterial;
         EffectArea? _shared;
         EffectArea? _personal;
+        Rect? _availableArea;
         bool _disposed;
 
         GuildGrowthEffectPresentation(GameObject root)
@@ -47,8 +50,14 @@ namespace Dawnholder.Client.UI
         {
             // Each slot replaces its own start time and text; the other kind has no shared timer or queue.
             EffectArea? area = kind == GuildChangeKind.StrongholdUpgrade ? _shared : _personal;
-            Resize();
             area?.Play(confirmedLevel, now);
+            Resize();
+        }
+
+        internal void SetAvailableArea(Rect? normalizedAvailableArea)
+        {
+            _availableArea = normalizedAvailableArea;
+            Resize();
         }
 
         internal void Tick(double now)
@@ -129,11 +138,49 @@ namespace Dawnholder.Client.UI
         void Resize()
         {
             Vector2 size = _canvasRect.rect.size;
-            if (size.x <= 0f || size.y <= 0f) return;
+            if (size.x <= 0f || size.y <= 0f || _shared == null || _personal == null) return;
             // Smaller viewports shrink the two separated regions together, including text and light bounds.
             float scale = Mathf.Min(1f, size.x / 960f, size.y / 540f);
-            _shared?.SetScale(scale);
-            _personal?.SetScale(scale);
+            if (!_availableArea.HasValue)
+            {
+                _shared.RestoreLayout(scale);
+                _personal.RestoreLayout(scale);
+                return;
+            }
+
+            Rect available = _availableArea.Value;
+            Vector2 sharedSize = _shared.LayoutSize;
+            Vector2 personalSize = _personal.LayoutSize;
+            float width = available.width * size.x;
+            float height = available.height * size.y;
+            // A lone effect takes the centre of the area by itself; only concurrent effects split it.
+            EffectArea? solo = _shared.IsPlaying == _personal.IsPlaying ? null : _shared.IsPlaying ? _shared : _personal;
+            if (solo != null)
+            {
+                Vector2 soloSize = solo.LayoutSize;
+                scale = Mathf.Min(scale, width / (soloSize.x + 2f * LayoutPadding),
+                    height / (soloSize.y + 2f * LayoutPadding));
+                solo.SetLayout(available.center, Vector2.zero, scale);
+                return;
+            }
+            float horizontalScale = Mathf.Min(width / (sharedSize.x + personalSize.x + LayoutGap + 2f * LayoutPadding),
+                height / (Mathf.Max(sharedSize.y, personalSize.y) + 2f * LayoutPadding));
+            float verticalScale = Mathf.Min(width / (Mathf.Max(sharedSize.x, personalSize.x) + 2f * LayoutPadding),
+                height / (sharedSize.y + personalSize.y + LayoutGap + 2f * LayoutPadding));
+            scale = Mathf.Min(scale, Mathf.Max(horizontalScale, verticalScale));
+
+            // Separate the complete animation envelopes, not just the roots at the current animation frame.
+            // Offsets stay in canvas units so a narrow region does not lose their separation in normalized anchors.
+            if (horizontalScale >= verticalScale)
+            {
+                _shared.SetLayout(available.center, new Vector2(-(personalSize.x + LayoutGap) * scale * 0.5f, 0f), scale);
+                _personal.SetLayout(available.center, new Vector2((sharedSize.x + LayoutGap) * scale * 0.5f, 0f), scale);
+            }
+            else
+            {
+                _shared.SetLayout(available.center, new Vector2(0f, (personalSize.y + LayoutGap) * scale * 0.5f), scale);
+                _personal.SetLayout(available.center, new Vector2(0f, -(sharedSize.y + LayoutGap) * scale * 0.5f), scale);
+            }
         }
 
         static Sprite Slice(Texture2D atlas, string name, Rect rect)
@@ -158,6 +205,8 @@ namespace Dawnholder.Client.UI
         // A slot owns exactly one kind's display/time and reuses its three Images and one label for every request.
         sealed class EffectArea
         {
+            const float MaximumHaloScale = 1.08f;
+            const float MaximumSparkScale = 1.12f;
             readonly RectTransform _root;
             readonly Image _halo;
             readonly Image _emblem;
@@ -165,6 +214,9 @@ namespace Dawnholder.Client.UI
             readonly TMP_Text _level;
             readonly bool _shared;
             readonly float _duration;
+            readonly Vector2 _defaultAnchor;
+            Vector2 _layoutSize;
+            bool _layoutDirty = true;
             bool _playing;
             double _startedAt;
 
@@ -176,7 +228,8 @@ namespace Dawnholder.Client.UI
                 _root = Rect(shared ? "StrongholdGrowth" : "WeaponEnhancement", parent,
                     shared ? new Vector2(380f, 400f) : new Vector2(260f, 250f), Vector2.zero);
                 _root.gameObject.SetActive(false);
-                _root.anchorMin = _root.anchorMax = shared ? new Vector2(0.43f, 0.62f) : new Vector2(0.80f, 0.28f);
+                _defaultAnchor = shared ? new Vector2(0.43f, 0.62f) : new Vector2(0.80f, 0.28f);
+                _root.anchorMin = _root.anchorMax = _defaultAnchor;
                 _halo = Image("PreLight", halo, shared ? 312f : 164f);
                 _emblem = Image("Emblem", emblem, shared ? 216f : 132f);
                 _sparks = Image("RaysAndMotes", sparks, shared ? 304f : 176f);
@@ -200,12 +253,33 @@ namespace Dawnholder.Client.UI
                 _level.text = string.Empty;
             }
 
+            internal bool IsPlaying => _playing;
+
+            internal Vector2 LayoutSize
+            {
+                get
+                {
+                    if (!_layoutDirty) return _layoutSize;
+                    // The diagonal at maximum scale contains each square at every rotation throughout its animation.
+                    // The root already contains the translating emblem; include the full label even before it reveals.
+                    float diameter = Mathf.Max(_halo.rectTransform.rect.size.magnitude * MaximumHaloScale,
+                        _sparks.rectTransform.rect.size.magnitude * MaximumSparkScale);
+                    Vector2 labelSize = Vector2.Max(_level.rectTransform.rect.size, _level.GetPreferredValues(_level.text));
+                    Vector2 labelOffset = _level.rectTransform.anchoredPosition;
+                    Vector2 labelExtent = new Vector2(Mathf.Abs(labelOffset.x), Mathf.Abs(labelOffset.y)) + labelSize * 0.5f;
+                    _layoutSize = Vector2.Max(Vector2.Max(_root.sizeDelta, Vector2.one * diameter), labelExtent * 2f);
+                    _layoutDirty = false;
+                    return _layoutSize;
+                }
+            }
+
             internal void Play(int confirmedLevel, double now)
             {
                 _startedAt = now;
                 _playing = true;
                 _level.text = (_shared ? "거점 레벨 " : "무기 강화 ")
                     + confirmedLevel.ToString(CultureInfo.InvariantCulture);
+                _layoutDirty = true;
                 Apply(0f);
                 _root.gameObject.SetActive(true);
             }
@@ -226,9 +300,14 @@ namespace Dawnholder.Client.UI
                 if (_level != null) _level.text = string.Empty;
             }
 
-            internal void SetScale(float scale)
+            internal void RestoreLayout(float scale) => SetLayout(_defaultAnchor, Vector2.zero, scale);
+
+            internal void SetLayout(Vector2 anchor, Vector2 position, float scale)
             {
-                if (_root != null) _root.localScale = new Vector3(scale, scale, 1f);
+                if (_root == null) return;
+                _root.anchorMin = _root.anchorMax = anchor;
+                _root.anchoredPosition = position;
+                _root.localScale = new Vector3(scale, scale, 1f);
             }
 
             void Apply(float age)
@@ -243,7 +322,7 @@ namespace Dawnholder.Client.UI
                 float sparkle = burst * Mathf.Exp(-Mathf.Max(0f, age - burstDelay) * 1.6f);
 
                 _halo.color = new Color(1f, 0.89f, 0.65f, fade * (0.16f + 0.48f * Ease(age / 0.24f)));
-                float haloScale = Mathf.Lerp(0.65f, 1.08f, Ease(progress));
+                float haloScale = Mathf.Lerp(0.65f, MaximumHaloScale, Ease(progress));
                 _halo.rectTransform.localScale = new Vector3(haloScale, haloScale, 1f);
                 _halo.rectTransform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(-8f, 10f, progress));
 
@@ -253,7 +332,7 @@ namespace Dawnholder.Client.UI
                 _emblem.rectTransform.anchoredPosition = new Vector2(0f, Mathf.Lerp(-12f, 4f, reveal));
 
                 _sparks.color = new Color(1f, 0.93f, 0.76f, sparkle * fade);
-                float sparkScale = Mathf.Lerp(0.60f, 1.12f, Ease((age - burstDelay) / 0.40f));
+                float sparkScale = Mathf.Lerp(0.60f, MaximumSparkScale, Ease((age - burstDelay) / 0.40f));
                 _sparks.rectTransform.localScale = new Vector3(sparkScale, sparkScale, 1f);
                 _sparks.rectTransform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(-12f, 14f, progress));
                 _level.color = new Color(1f, 0.94f, 0.73f, reveal * fade);

@@ -184,6 +184,10 @@ internal static class CombatConstants
     /// BossAttackHalfExtent(2.5)와 같게 — 예고 시작 시점에 공격 AABB가 닿을 거리.</summary>
     public const float BossAttackTriggerRange = 2.5f;
 
+    /// <summary>예고 한 번이 피격으로 멈출 수 있는 최대 틱. 8틱=0.4초 = 피격 한 번(AnimLatchTicks)만큼.
+    /// 상한이 없으면 붙어서 연타하는 플레이어가 예고를 계속 붙잡아 보스가 공격하지 못한다.</summary>
+    public const int BossTelegraphMaxPauseTicks = AnimLatchTicks;
+
     /// <summary>배회 사이클의 Idle 짧은 dwell (틱). 10틱=0.5초. 배회 종료 후 다음 탐지까지의 숨.
     /// (post-attack dwell은 BossPhase1/2CooldownTicks가 담당 — Idle이 AttackCooldownTicks를 카운트다운.)</summary>
     public const int BossIdlePauseTicks = 10;

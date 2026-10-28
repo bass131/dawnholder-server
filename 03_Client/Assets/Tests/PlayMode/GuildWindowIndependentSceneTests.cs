@@ -446,17 +446,22 @@ namespace Dawnholder.Client.Tests.PlayMode
                     Vector2 anchorMax = smithPanel.anchorMax;
                     Vector2 anchored = smithPanel.anchoredPosition;
                     int order = smithCanvas.sortingOrder;
+                    TMP_Text closeCaption = smithPanel.Find("Close/Label").GetComponent<TMP_Text>();
+                    bool closeCaptionEnabled = closeCaption.enabled;
                     smithPanel.anchorMin = guildPanel.anchorMin;
                     smithPanel.anchorMax = guildPanel.anchorMax;
                     // Offset shared header captions so the covering window cannot redraw the same glyphs in place.
                     smithPanel.anchoredPosition = guildPanel.anchoredPosition + new Vector2(8f, -8f);
                     smithCanvas.sortingOrder = guildCanvas.sortingOrder + 1;
+                    // Identical overlaid Close glyphs would preserve the covered caption pixels.
+                    closeCaption.enabled = false;
                     return () =>
                     {
                         smithPanel.anchorMin = anchorMin;
                         smithPanel.anchorMax = anchorMax;
                         smithPanel.anchoredPosition = anchored;
                         smithCanvas.sortingOrder = order;
+                        closeCaption.enabled = closeCaptionEnabled;
                     };
                 },
                 "every guild text's F∩S ink drops",

@@ -117,6 +117,8 @@ pane의 소속 worktree와 shell의 실제 cwd는 별도로 확인한다. cwd만
 
 리드는 정산 때 기존 [생존 신호 간격 helper](../../99_Tools/README.md#생존-신호-간격)로 저장한 원시를 집계하고 **300초 초과는 구간·이유 한 줄**로 기록한다. 상세 수치·handle·원시는 근거 폴더에 두고 goal에는 단계 결과와 근거 경로를 남긴다([goal 기록 정본](../../.agents/skills/dawnholder-goal-loop/SKILL.md#goal-기록과-재개)). 기존 helper 집계와 메인 [R-2 표본 대조](#r2-source-check)는 유지한다.
 
+선택창·권한 차단은 관측한 초과 사유로 기록하되 **실제 신호 간격에서 추정 대기시간을 빼거나 자동 면제하지 않는다.** 공식 질문 대기는 기존 helper 기준으로 분리한다. 실행 창 Return 지연의 처분과 생존 신호 초과의 처분은 별개이며, 한쪽의 메인 처리를 다른 쪽의 면제로 쓰지 않는다.
+
 구간별 대화·도구 호출 추출 같은 추가 원시 감사는 **범위 밖 쓰기·실행을 의심할 다른 근거가 있을 때만** 해당 구간에 수행한다. 초과 구간이 있다는 사실만으로 매번 원시 감사를 추가하지 않는다. 보고와 실제 수행의 불일치·미실행의 통과 보고는 기존대로 즉시 메인에 알린다. 출처는 [검증 경량화 승인 goal](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#결정과-단계-결과)의 결정 2다.
 
 <a id="dispatch-message-policy"></a>
@@ -165,16 +167,16 @@ Orca 1.4.221(2026-10-06)에서 **활성 Dispatch 없는 발신자**의 `escalati
 **Unity MCP opt-in:** Unity MCP는 필요한 세션만 켠다. 시트는 1개이므로 사용 전 메인에게 요청하고, 메인이 보유 세션을 현황판에 적은 뒤 기동한다. 그 세션이 닫히면 시트가 풀린다. 필요한 Claude 세션에만 아래 최초 실행 명령에 `--mcp-config C:/Users/bass1/.unity/claude-mcp.json`을 붙인다. 이 설정은 저장소 밖 파일이며 전역 등록이 아니다.
 
 1. 설치된 `orca-cli`·`orchestration` 스킬로 CLI를 선택하고 버전 일치 가이드를 읽는다. 현재 runtime·담당 리드 handle·승인된 checkout을 확인한다.
-2. 같은 worktree는 `orca terminal split --terminal <리드-handle> --direction vertical`, 다른 worktree 작업자는 `orca terminal create --worktree <선택자>`로 빈 받침 pane 없이 바로 연다. 두 명령의 `--command`는 배정에 따라 Sol이면 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, Astra면 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`다. 독립 검증자는 [시범 배정](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지)에 따라 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh` 또는 `claude --model claude-opus-5-5`다. 시작 경로가 다르면 승인 checkout을 명시하고 실제 경로를 확인한다. 지정 모델 부재는 대체 없이 메인에 보고한다. capacity 예외는 [정본](#capacity-retry)을 따른다. Claude `--command` 앞에 PowerShell로 TEMP·TMP를 절대 경로 `.backups/tmp/<짧은 이름>/`로 정한다. [Git Bash `/tmp`는 그대로다](../../01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#기동-시험).
+2. 같은 worktree는 `orca terminal split --terminal <리드-handle> --direction vertical`, 다른 worktree 작업자는 `orca terminal create --worktree <선택자>`로 빈 받침 pane 없이 바로 연다. 두 명령의 구현자 `--command`는 [배정](../../.agents/skills/dawnholder-goal-loop/references/implementer-routing.md)에 따라 Sol이면 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, Astra면 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`다. 리드의 Sol xhigh 기동은 R-1을 유지한다. 독립 검증자는 [시범 배정](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지)에 따라 일반 문서·강약·로컬 DB 도구 카드에는 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, 위험 신호 구현·DB 등과 기존 Opus 예외에는 `claude --model claude-opus-5-5 --autocompact 250000`이다. 시작 경로가 다르면 승인 checkout을 명시하고 실제 경로를 확인한다. 지정 모델 또는 구현자 `max`가 첫 기동 화면에 없으면 대체 없이 메인에 보고한다. capacity 예외는 [정본](#capacity-retry)을 따른다. Claude `--command` 앞에 PowerShell로 TEMP·TMP를 절대 경로 `.backups/tmp/<짧은 이름>/`로 정한다. [Git Bash `/tmp`는 그대로다](../../01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#기동-시험).
 3. `orca terminal wait --terminal <새-handle> --for tui-idle --timeout-ms 90000`의 `satisfied`를 확인하고 [R-6](#r6-first-screen) 및 [세션 준비 절차](../../.agents/skills/dawnholder-session-handoff/SKILL.md#신규-prompt-준비-확인)를 따른다. timeout·busy·불명확한 화면에 작업을 주입하지 않는다.
-4. 준비된 **신규 세션의 최초 작업**을 `orca orchestration worker-start --terminal <새-handle> --worktree <확인한-작업-공간>`에 `--task <현재-Task>` 또는 `--spec <작업-계약>`을 붙여 연결한다. `--terminal`과 `--model`을 함께 쓰지 않는다. 모델 근거는 최초 실행 명령과 화면 표시이며 attach의 null launch 모델값을 실제 모델로 해석하지 않는다. 확인할 수 없는 backend는 `unknown`이다. 현재 Run·Task·Dispatch와 `input_accepted`·`turn_started` receipt를 구분해 기록한다.
+4. 준비된 **신규 세션의 최초 작업**을 `orca orchestration worker-start --terminal <새-handle> --worktree <확인한-작업-공간>`에 `--task <현재-Task>` 또는 `--spec <작업-계약>`을 붙여 연결한다. `--terminal`과 `--model`을 함께 쓰지 않는다. 모델 근거는 최초 실행 명령과 화면 표시이며 attach의 null launch 모델값을 실제 모델로 해석하지 않는다. 계약의 지정 모델·effort와 첫 화면·rollout 설정의 관측값을 구분하고 확인할 수 없는 backend는 `unknown`이다. 현재 Run·Task·Dispatch와 `input_accepted`·`turn_started` receipt를 구분해 기록한다.
    `turn_start_unobserved`이면 화면 tail만으로 판정하지 않고 [공식 계약 draft 복구](#official-contract-draft)의 JSON draft·계약·동일성 조건을 확인한다.
 5. 기동·연결 실패는 `failedStage`·`residualResources`·화면·receipt를 보존하고 메인에 대리 기동을 요청한다. 결과나 주입 여부가 불명확하면 중복 발행하지 않고 공식 recovery를 따른다. 미사용 pane 종료도 대상 동일성과 정산 상태를 확인한 뒤 수행한다. 대리 기동 뒤에는 실제 새 pane의 경로·runtime·incarnation·준비를 다시 확인하고 최초 연결한다.
 
 <a id="capacity-retry"></a>
 ### capacity 재시도와 신규 작업자 예외
 
-작업자 화면에 `Selected model is at capacity`가 관측되면 **같은 세션·같은 task에서 1→2→5→10분 간격**으로 재시도한다. 첫 capacity 관측부터 누적 30분에도 Sol 배정 작업자 `gpt-6.1-sol` xhigh가 계속 실패하면 기존 작업자를 공식 정산·종료하고 신규 `gpt-6-astra` xhigh **작업자**를 열 수 있다. Astra 배정은 재시도만 한다. 기존 세션을 실행 중에 모델 변경하지 않는다. 파트 리드 직접 구현은 금지이고, capacity로 막힌 독립 검증자는 지정 모델로 재시도만 하며 대체하지 않는다. 다른 모델 부재·권한 확인을 이 예외로 우회하지 않는다.
+작업자 화면에 `Selected model is at capacity`가 관측되면 **같은 세션·같은 task에서 1→2→5→10분 간격**으로 재시도한다. 첫 capacity 관측부터 누적 30분에도 Sol 배정 작업자 `gpt-6.1-sol` max가 계속 실패하면 기존 작업자를 공식 정산·종료하고 신규 `gpt-6-astra` xhigh **작업자**를 열 수 있다. Astra 배정은 재시도만 한다. 기존 세션을 실행 중에 모델 변경하지 않는다. 파트 리드 직접 구현은 금지이고, capacity로 막힌 독립 검증자는 지정 모델로 재시도만 하며 대체하지 않는다. 다른 모델 부재·권한 확인을 이 예외로 우회하지 않는다.
 
 요청 모델·최초 실행/launch·화면 관측·backend 실제 모델 또는 `unknown`, 최초 관측/재시도 시각·누적 시간·전환 사유·사용자 결정 출처를 기록한다. Opus 검증자에게 `Opus 5.5's safeguards flagged this session` 선택창이 뜨면 창에서 고르지 않는다(자동 전환 금지). 산출물은 근거 폴더에 두고 막힌 시각·화면 문구를 남겨 정산·종료한다. 같은 계약의 신규 `gpt-6-astra` xhigh 검증자를 새 Task·Dispatch로 열고 R-5·R-6을 따른다. 새 검증자가 독립 재판정한다. 메인에 status 한 통(막힌 시각·새 handle·모델 표시)을 보낸다. 실행 중 모델 변경이 아니라 세션 교체다.
 
@@ -208,12 +210,14 @@ accepted 뒤 침묵만으로 새 텍스트를 전송하거나 abandon하지 않�
 
 `tui-idle=true` 또는 wait의 `satisfied: true`만으로 모달·선택창이 없다고 판단하지 않는다. 새 세션의 첫 화면을 제한된 `terminal read`·`show`로 확인한다. Fable effort 기본값 선택창이나 `/auto-mode-setup` 안내가 있으면 리드는 입력하지 않고 상태를 메인에 보고한다. **메인이 선택창을 처리하고 설정 파일이 바뀌지 않았는지 확인한다.** 화면이 불명확하면 준비 완료로 판정하지 않는다. 권한 확인을 우회하거나 작업자가 설정을 바꾸지 않는다.
 
+메인의 키 입력도 권한 분류기에 거절되면 우회·리드 대리 입력·설정 변경으로 진행하지 않는다. 선택창 상태·세션/작업 소유·미완료 작업과 근거를 보존해 사용자 처리가 필요함을 보고한다. 선택창이 사라졌다는 관측은 해제 주체 확인이나 설정 불변의 증거와 별개다. 이 절은 새 Esc 입력 허용 규칙을 만들지 않는다.
+
 미제출 draft·추천 프롬프트·ghost text는 사용자 지시가 아니며 그것만으로 pane 종료를 보류하지 않는다. Enter로 제출돼 대화 기록에 들어간 표식 없는 입력과 구분한다. 사용자가 실제 작성 중인 prompt를 건드리지 않는 경계와 공식 주입 계약의 [조건부 draft 복구](#official-contract-draft)를 함께 적용한다.
 
 <a id="r7-fable-pilot"></a>
 ### R-7 — Fable 구현 전 설계 검토 한정 시범
 
-실패 수명·보호 집합·오류 분류·비용 상한의 **4범주에 닿는 작업 2~3개 한정 시범**으로 신규 `claude-fable-5-1`이 Sol 구현 계약 발행 전에 설계를 검토한다. 정식 기본 모델 라우팅·Sol xhigh와 [확정 실패3회 뒤 Fable Advisor](#confirmed-failures)를 대체하지 않는다. 메인이 승인한 시범 목표에서만 다음 순서로 수행한다.
+실패 수명·보호 집합·오류 분류·비용 상한의 **4범주에 닿는 작업 2~3개 한정 시범**으로 신규 `claude-fable-5-1`이 Sol 구현 계약 발행 전에 설계를 검토한다. 정식 [구현자 배정](../../.agents/skills/dawnholder-goal-loop/references/implementer-routing.md)의 Sol max 기본·조건부 Astra xhigh와 [확정 실패3회 뒤 Fable Advisor](#confirmed-failures)를 대체하지 않는다. 메인이 승인한 시범 목표에서만 다음 순서로 수행한다.
 
 1. 목표·범위·완료조건을 담은 `goal.md`를 commit한다.
 2. 신규 `claude-fable-5-1` 읽기 전용 세션에 검토를 맡기고 유일한 출력인 해당 목표의 `goal-review.md`에 「불변식 목록 + 전제 [소스]/[추론]/[미측정]」를 쓴다. 제품·테스트·goal은 쓰지 않는다.
@@ -283,3 +287,19 @@ hook은 방식 `--merge`·`--squash`·`--rebase` 중 하나를 받지만 운영 
 사용자는 Unity 설정 **3파일의 skip-worktree 숨김을 유지**했다. 대상은 `03_Client/Packages/manifest.json`, `03_Client/Packages/packages-lock.json`, `03_Client/ProjectSettings/ProjectSettings.asset`이다. 이유는 머신마다 다른 AI 패키지와 Unity Cloud 조직 연결이다. 게임 설정(productName·해상도·bundleVersion·커서)만 부분 커밋하는 일은 후속 담당 범위이며, Rules는 파일·인덱스 숨김 상태를 바꾸지 않는다.
 
 원문 로그는 목표 evidence에 보관한다. 메인에는 변경·검증 요약과 근거 위치를 전달한다. 이 지침은 운영 규약이며 실행·컨텍스트 격리를 기술적으로 강제하는 별도 시스템이 아니다.
+
+<a id="stale-index-locks"></a>
+### 낡은 index.lock의 메인 처리
+
+메인 checkout과 각 worktree의 **정확한 `index.lock` 한 파일씩**만 대상으로 삼는다. 메인은 삭제 직전에 **크기 0·마지막 쓰기 시각(mtime) 기준 10분 초과·그 순간 `git.exe` 프로세스 0**을 모두 확인한 경우만 그 파일을 삭제하고, 삭제 시각·정확한 경로·mtime을 메인 기록과 다음 보고에 남긴다. 하나라도 미충족이거나 불명확하면 지우지 않고 묻는다. 리드·작업자·검증자는 삭제하지 않고 메인에 전달한다. 다른 lock·활성 Git을 건드리거나 전역 자동 삭제로 넓히지 않는다.
+
+출처는 [최초 사용자 결정과 적용 기록](../../01_Phases/goals/2026-10-25-ops-candidate-canon/goal.md#잠금-조건부-복구) 및 그 원문을 대조한 메인 `msg_e482f53c0545`다. 사용자 원문은 「생긴 지 10분 넘음」이며 mtime 기준은 **보수적 메인 적용**이다. 같은 이름 재사용 때 생성시각 승계를 관측했다는 내용은 메인 관측 보고이고 Rules의 독립 실증이나 재발 원인 확정이 아니다.
+
+<a id="trial-library-cleanup"></a>
+### 실행 정산별 시험 사본 Library 정리
+
+사용자 A(`msg_e7752a20e30b`, [결정 원문 연결](../../01_Phases/goals/2026-10-25-ops-candidate-canon/goal.md#실행-정산별-시험-사본-library))에 따라, **실행 창 반환과 해당 실행의 작업자·검증자 정산이 끝난 뒤 리드가 그 실행이 새로 만든 시험용 Unity 복사본의 Library만** 지운다. 실패·unknown 실행은 실패 분류가 끝난 뒤 정리하고 goal 종료 점검 전 잔여 Library도 다시 확인한다. 대상은 `.backups/tmp`와 사용자가 허용한 짧은 경로 안의 해당 사본 Library를 포함하며 전체 복사본 삭제로 확대하지 않는다.
+
+복사본의 나머지 **Assets·Packages·ProjectSettings 등, 보고서·원시 기록·PNG·JSON, `.backups/verification`, 다른 실행이나 goal이 아직 가리키는 사본, 현재 진행 중인 실행·검증이 쓰는 사본은 보존**한다. 삭제 직전 Unity·시험 프로세스가 그 경로를 쓰지 않으며 메인이 배정한 다른 파트 실행 창 중이 아님을 확인한다. 확인하지 못하면 삭제하지 않고 보고한다. 삭제 실패는 재시도하지 않고 잔여 상태를 보고한다.
+
+정산 보고에는 삭제 경로·크기·전후 C 드라이브 여유를 남긴다. 여유 증가가 삭제 크기보다 커도 전부 해당 정리의 회수량으로 귀속하지 않는다. 매번 메인 허가를 따로 받지 않으며 메인은 승인 전 [R-2 표본 대조](#r2-source-check)에서 함께 확인한다.

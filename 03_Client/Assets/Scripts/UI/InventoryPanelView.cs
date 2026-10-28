@@ -14,6 +14,8 @@ namespace Dawnholder.Client.UI
     {
         const float Width = 550f;
         const float Height = 354f;
+        // Grow past the 1920x1080 design size on large screens; the HUD and screen bounds still cap it.
+        const float MaxScale = 1.3f;
         readonly Vector3[] _hudCorners = new Vector3[4];
         readonly RectTransform _canvasRect;
         readonly RectTransform _panel;
@@ -110,7 +112,7 @@ namespace Dawnholder.Client.UI
                 float hudBottom = _canvasRect.InverseTransformPoint(_hudCorners[0]).y;
                 top = Mathf.Max(top, _canvasRect.rect.yMax - hudBottom + 12f);
             }
-            float scale = Mathf.Min(1f, (canvasWidth - 24f) / Width, (canvasHeight - top - 12f) / Height);
+            float scale = Mathf.Min(MaxScale, (canvasWidth - 24f) / Width, (canvasHeight - top - 12f) / Height);
             scale = Mathf.Max(0.1f, scale);
             _panel.localScale = new Vector3(scale, scale, 1f);
             _panel.anchoredPosition = new Vector2(0f, -top);

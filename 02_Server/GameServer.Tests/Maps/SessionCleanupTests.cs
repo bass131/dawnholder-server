@@ -102,7 +102,7 @@ public sealed class SessionCleanupTests : IDisposable
         Tick(1);
         PlayerEntity player = Assert.Single(Players);
         int entityId = player.EntityId;
-        player.Position = new Vector2(20, 0);
+        player.Position = new Vector2(25, 0);
         session.OnRecvPacket(new C_EnterPortal { portalId = 1 }.Write());
         if (boundary == 2)
             session.OnPacket = id => { if (id == PacketID.S_MapTransition) session.OnDisconnected(Endpoint); };
@@ -129,7 +129,7 @@ public sealed class SessionCleanupTests : IDisposable
         CapturedSession session = Join();
         Tick(1);
         PlayerEntity player = Assert.Single(Players);
-        player.Position = new Vector2(20, 0);
+        player.Position = new Vector2(25, 0);
         session.OnRecvPacket(new C_EnterPortal { portalId = 1 }.Write());
         Tick(2);
         Tick(3);
@@ -280,13 +280,13 @@ public sealed class SessionCleanupTests : IDisposable
         // Solo players now enter different instances; party membership preserves this roster fixture.
         var party = _world.Party.CreateParty(observer.EntityId, session.EntityId)!;
         PlayerEntity other = Assert.Single(Players, p => ReferenceEquals(p.Owner, observer));
-        other.Position = new Vector2(20, 0);
+        other.Position = new Vector2(25, 0);
         observer.OnRecvPacket(new C_EnterPortal { portalId = 1 }.Write());
         Tick(3);
         Tick(4);
         Assert.True(_world.TryGetInstance(MapId.HuntingGround, InstanceKey.ForParty(party.PartyId), out GameMap? hunting));
         Assert.Same(observer, Assert.Single(hunting!.Players).Owner);
-        original.Position = new Vector2(20, 0);
+        original.Position = new Vector2(25, 0);
         session.Packets.Clear();
         session.OnRecvPacket(new C_EnterPortal { portalId = 1 }.Write());
         Tick(5);
