@@ -6,13 +6,15 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태(10-29 07:2x KST): PR270 head `4755f807aeda8d35df20f98699a28245e43735e0`의 World C1~C9 강 독립 검증이 합동 실DB 창까지 마쳐 PASS다. 메인 R-2 표본 대조와 사용자 병합 승인을 기다린다.** 아래 줄은 10-27 당시 상태다.
+**상태(10-29 08:1x KST): 제품 PR270이 사용자 승인 뒤 병합됐다(merge commit `8b6010d543c95837f504a225cdec5b9da9f854b5`). World C1~C9 강 독립 검증은 PASS다. 남은 것은 Gardener·종료 문서 실사·종료 기록 PR·메인 종료 점검·R-8이며 goal 전체 종료 전이다.** 아래 줄은 10-27 당시 상태다.
 
 **이전 상태: 10-28에는 검증을 통과한 만큼 보여 주고 미완료는11-06 제출까지 다듬는다. 신규 World 제품 묶음은 현재 밤 두 번째 빌드 후보이며, Core B1·최종 독립 실DB 인계 뒤 World 최종 강검증·제품 PR 순서를 유지한다.** 다음 Core B0 시각·최종 인계 F가 미정이므로18:00 포함을 확약하지 않는다. 기존 생성API·필수시험은 유지하고 생성 화면 실연 유예는 그대로다. 미커밋26경로/기존 입력을 보존했으며 이전 자체회귀838P는 당시 결과이고 현재 합동/최종 독립/Unity·실DB 전체 판정은 남았다.
 
 ## 재개 지점
 
-**다음 첫 일(10-29 07:2x KST, `[World 리드 Opus]`):** 합동 실DB 창(T 2026-10-28T20:50:00Z, 순서표 v3)이 S8까지 끝났다. World 독립 검증자(`task_3ccc9d4a5f98`)는 PR270 head `4755f807aeda8d35df20f98699a28245e43735e0`의 C1~C9 강 판정을 PASS로 냈고(`msg_5e6ea692c90f`), succeeded로 정산해 pane을 닫았다. 판정 원문은 `verify-pr270-01/worker/report.md`의 「합동 창 뒤 최종 판정」이다. 결정 28 A의 기존 시험 분류표는 `verify-pr270-01/worker/existing-test-classification.md`다. 이 기록 commit은 goal 1파일만 바꾸므로 제품과 시험은 4755f807과 같다. 메인에 판정 원문 경로와 새 head를 반환 보고하고, 메인의 R-2 표본 대조와 사용자 병합 승인을 기다린다. 서버 창(`term_307f908f-2776-4070-afb4-da2ad15f8600`)은 건드리지 않으며 닫을 때는 메인이 사용자에게 알린다. 비차단 관찰 O1(`CharacterMenuRequestReader.cs:53`의 낡은 주석)과 O2(selector 호환 세션 설명)는 후속 후보다. 창 결과는 아래 「2026-10-29 합동 실DB 창 결과」 절에 있다. 그 아래는 직전 단계 기록이다.
+**다음 첫 일(10-29 08:1x KST, `[World 리드 Opus]`):** 제품 PR270이 병합됐다. 사용자 승인 줄은 「병합 승인: PR270 head 2d9df3868c0919f83d499be350ec6833039a72e3」이고, 메인이 23:06:56Z에 병합했다(`msg_4892c80fd856`). 종료 기록은 최신 main `8b6010d5`에서 만든 branch `docs/character-server-closeout-20261029`에서 한다. 순서는 정본 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)대로 Gardener → 종료 문서 독립 실사 → 종료 기록 PR 하나 → 메인 종료 점검 → R-8이다. 다음 일은 리드 pane 아래 신규 Opus Gardener를 읽기 전용으로 여는 것이다. world-active의 미커밋 Core launcher(`99_Tools/Start-PersistenceServer.ps1`)는 PR272와 bytes가 같다. Core 합의(`msg_df8970186d11`)대로, 메인이 서버 창을 닫은 뒤 근거 폴더에 사본을 남기고 HEAD 판으로 되돌린다. 다음 goal은 자동으로 시작하지 않는다. 아래는 직전 단계 기록이다.
+
+**이전 다음 첫 일(10-29 07:2x KST, `[World 리드 Opus]`):** 합동 실DB 창(T 2026-10-28T20:50:00Z, 순서표 v3)이 S8까지 끝났다. World 독립 검증자(`task_3ccc9d4a5f98`)는 PR270 head `4755f807aeda8d35df20f98699a28245e43735e0`의 C1~C9 강 판정을 PASS로 냈고(`msg_5e6ea692c90f`), succeeded로 정산해 pane을 닫았다. 판정 원문은 `verify-pr270-01/worker/report.md`의 「합동 창 뒤 최종 판정」이다. 결정 28 A의 기존 시험 분류표는 `verify-pr270-01/worker/existing-test-classification.md`다. 이 기록 commit은 goal 1파일만 바꾸므로 제품과 시험은 4755f807과 같다. 메인에 판정 원문 경로와 새 head를 반환 보고하고, 메인의 R-2 표본 대조와 사용자 병합 승인을 기다린다. 서버 창(`term_307f908f-2776-4070-afb4-da2ad15f8600`)은 건드리지 않으며 닫을 때는 메인이 사용자에게 알린다. 비차단 관찰 O1(`CharacterMenuRequestReader.cs:53`의 낡은 주석)과 O2(selector 호환 세션 설명)는 후속 후보다. 창 결과는 아래 「2026-10-29 합동 실DB 창 결과」 절에 있다. 그 아래는 직전 단계 기록이다.
 
 **이전 다음 첫 일(10-29 02:1x KST, `[World 리드 Opus]`):** World 독립 검증자(`task_3ccc9d4a5f98`)가 시험 쓰기를 마쳤다. 쓴 파일은 서버 시험 2파일과 Unity 시험 3파일이고, 해시는 `verify-pr270-01/worker/raw/test-write-frozen-1.json`과 5/5 일치한다. 그 5파일과 이 기록을 한 commit으로 넣어 새 head를 검증자에게 보충한다. V2(WSL 전체)는 실패 0이다. V3(Unity 전체 EditMode)는 1337건 중 82건이 실패했다. 82건은 `-nographics`의 그래픽 장치 부재 81건과 긴 snapshot 경로(268자)의 native DLL 로드 실패 1건으로, 검증자 분류는 환경 누락(b)이다. 그래서 짧은 snapshot `.backups/unity-character-menu-06`에서 `-nographics` 없이 전체를 다시 돈다. 이 Unity 창은 시작 전에 메인에 알린다. 합동 창 순서표 v3에는 S6a(Content 2단)를 넣고, 사용자 결정 36 A·37 A를 반영해 Core가 작성한다. 아래는 직전 단계 기록이다.
 
@@ -925,10 +927,10 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
 - [x] 서버 계약
 - [x] 전송·소비 선행시험 — 패킷/Unity 최초 RED 완료, 서버 adapter 시험은 연결 단계에 남음
 - [x] 클라이언트 계약 — 소비 v1 확정, 공용2파일 실제 인계는 연결 단계에 남음
-- [>] 전송·서버 연결 — 전송217·Unity 실제session313 GREEN, 서버/Core·Content 통합 남음
-- [ ] 독립 강 검증
-- [ ] 제품 병합
-- [ ] 종료 기록
+- [x] 전송·서버 연결 — Core catalog 연결과 Stored 생성 봇까지 PR270에 들어갔다
+- [x] 독립 강 검증 — World 검증자 PASS(합동 실DB 창 포함)
+- [x] 제품 병합 — PR270, merge commit `8b6010d5`
+- [>] 종료 기록 — Gardener·종료 문서 실사·종료 기록 PR
 - [ ] 종료 점검
 
 ## 결정과 단계 결과
@@ -957,8 +959,23 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
   - 리드가 7파일을 commit `00441ff4`로 넣었다. 서식은 로컬 미실행, CI로 대체한다. 원시·보고는 `impl-fix-01/worker/`, 정산은 `worker/release-01.json`(retained·external_terminal)·`close-01.json`이다.
   - 열린 항목은 셋이다. Unity EditMode 세 파일의 21·48 기대(Content에 동의 요청 `msg_884bd7016495`, Content 동의 `msg_c4c3978d3187`, 메인 확인 `msg_dfb08ed64c6a`. World 독립 검증자가 버전·개수 literal, 길드 시험의 이름 목록 끝 49~54, 그 주석만 고치고 28 A 표에 a로 남긴다), selector 호스트의 메뉴 응답이 `LegacyFlowOnly`가 된 점과 packet-contract 99행 「Stored 서버는 이 결과를 보내지 않는다」의 대조, Catalog 호스트 거절 literal이 두 시험에 나뉜 점이다. 셋 다 독립 검증자가 판정한다.
 - **기준 브랜치 받기 — PR271(CLAUDE.md 결정 4A 절):** 메인 `msg_0261be43b203`의 지시로, 실행 창·작업자가 없는 안전 지점에 `540172a4`를 받았다(merge commit `93c4b41b`). 바뀐 파일은 CLAUDE.md 하나다. 새 절 「결정 4A 적용 기간의 Claude 리드·구현자」를 읽었고, 지금까지의 운영과 내용이 같다.
+- **10-29 World 독립 검증자(`task_3ccc9d4a5f98`) — PASS, succeeded 정산:**
+  - 판정 head는 `4755f807aeda8d35df20f98699a28245e43735e0`이고 강 등급 V1~V4를 마쳤다. 서버 시험은 2550 통과·0 실패·28 건너뜀, Unity EditMode는 1337 전부 통과다. 제품 차단 결함은 0이다.
+  - 검증자는 시험 5파일을 썼고 리드가 commit `4755f807`로 넣었다. 서버 신규 시험 2파일(경계 6사례, CLI 인자 8사례)과 Unity 호환 시험 3파일(버전 22·패킷 49~54)이다.
+  - 결정 28 A의 기존 시험 분류표는 `verify-pr270-01/worker/existing-test-classification.md`다. 메인이 병합 승인 요청 전에 표본 대조했다(`msg_7114ec9826dd`).
+  - 판정 원문은 `verify-pr270-01/worker/report.md`(sha256 `3832745779a0eff0b08cee8ab429ce5e19bdecf9f79b2ae197b7ab8b31045c59`)다. 합동 창 결과는 「재개 지점」의 「2026-10-29 합동 실DB 창 결과」 절에 있다.
+  - Unity 첫 실행의 82건 실패는 환경 전제 누락이었다. 그래픽 장치 없는 `-nographics` 실행에서 81건, 268자 긴 경로의 DLL 로드에서 1건이다. 승인된 새 snapshot에서 같은 82건이 통과했고 기대값 변경은 0이다. 검증자 실행 보조 코드의 조기 종료 오류(시도 2)는 판정에서 뺐다.
+  - 정산은 `worker-release`가 retained·external_terminal이었고, 대기 화면을 확인한 뒤 리드가 pane을 닫았다(`lead-opus-entry-20261028/verifier-release-pr270-01.json`, `verifier-close-pr270-01.json`).
+- **PR270 병합:** goal 기록 commit `2d9df386`을 더한 head의 CI 네 workflow가 모두 success였다(`verify-pr270-01/pr-checks-2d9df386-final.txt`). 리드의 draft 해제 명령은 권한 분류기에 막혔고, 사용자가 메인 pane에서 직접 해제했다. 사용자 승인 줄 「병합 승인: PR270 head 2d9df3868c0919f83d499be350ec6833039a72e3」 뒤 메인이 병합했다. merge commit은 `8b6010d543c95837f504a225cdec5b9da9f854b5`다(`msg_4892c80fd856`).
 
 ## 보류와 남은 우려
+
+**10-29 병합 뒤 현재:** 크리티컬 우려는 없다. 남은 것은 아래다.
+- 비차단 설계 관찰 둘이 후속 후보다. O1은 `CharacterMenuRequestReader.cs:53`의 주석이 현재 Catalog 경로를 설명하지 못하는 점이다. O2는 selector 호환 세션(Mode=Stored, Catalog=null)이 응답 16을 보내는 점과 packet-contract 99행 설명의 차이다. 실제 서버 기동은 Stored+null을 거부하므로 운영 우회로 보지 않는다.
+- Unity PlayMode, 화면 메뉴→Town, Player build는 World 계약 밖이라 실행하지 않았다. Content S6a 판정과 Core 판정은 World PASS에 포함되지 않는다.
+- WSL 전체 시험의 DB·장시간 통합 28건은 건너뜀이며 통과로 세지 않는다. 실DB 근거는 합동 창의 봇 before/after다.
+
+아래 문단은 10-2x 당시 기록이다.
 
 전송217GREEN·Unity 실제session313GREEN과 원본Shared22 배포는 완료했다. World 자기 기준의 공용2파일·최소handler 연결은 끝났고 Content 완성PR2의 Guild 의존성과 함께 직렬통합해야 한다. Core 실제DB/최종통합·강판정과 실제 서버54→48/입장·양쪽 전체 소비자 검증이 남는다. 후속 중량 실행은 사용자 캐시 자동 갱신의 관측·보존을 포함한 새 READY/실행창이 필요하고 현재 단계 GREEN과 DLL 배포 자체점검은 C7전체·C1~C9의 독립 강 판정을 대신하지 않는다.
 
