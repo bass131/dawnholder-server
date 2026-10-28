@@ -51,9 +51,9 @@ internal sealed class BossBehaviorSystem
 
             // ── 보스 State 머신 1틱 진행 ──────────────────────────────────────
             // telegraph pause 판정은 Tick *전*에 스냅샷 — Tick이 상태를 바꾸기 전 시점 기준.
-            // (Telegraph 상태 + hit-stun 중이면 이번 틱 telegraph가 정지됨 → latch도 정지.)
+            // (Telegraph 상태 + hit-stun 중이고 멈춤 상한이 남았으면 이번 틱 telegraph가 정지됨 → latch도 정지.)
             bool telegraphPaused =
-                enemy.Fsm!.CurrentState is BossTelegraphState && enemy.HitLatchTicks > 0;
+                enemy.Fsm!.CurrentState is BossTelegraphState && BossTelegraphState.IsPausedByHit(enemy);
 
             enemy.Fsm!.Tick(enemy);
 

@@ -26,8 +26,8 @@ namespace GameServer.Tests.Network;
 [Collection("ConsoleSerial")]
 public class EnterPortalHandlerTests : IDisposable
 {
-    // Town 맵: portal x=20 (PortalTable 정의 — Town → HuntingGround, portalId=1)
-    // HuntingGround 맵: portal x=25 (HuntingGround → BossRoom, portalId=1)
+    // Town 맵: portal x=25 (PortalTable 정의 — Town → HuntingGround, portalId=1)
+    // HuntingGround 맵: portal (56, 1) (HuntingGround → BossRoom, portalId=1)
     //
     // TestGameSession은 두 맵 모두 주입받아 migration 흐름 시뮬.
     readonly GameMap _townMap;
@@ -35,17 +35,17 @@ public class EnterPortalHandlerTests : IDisposable
     readonly StringWriter _consoleCapture;
     readonly TextWriter _originalOut;
 
-    // Town portal: portalId=1, position x=20, dest=HuntingGround, destSpawn x=2
+    // Town portal: portalId=1, position x=25, dest=HuntingGround, destSpawn x=2
     const int ValidPortalId = 1;
     const int InvalidPortalId = 999;
-    // Town portal 위치 x=20 — PortalTable.TownPortals 정의와 일치
-    const float PortalX = 20f;
+    // Town portal 위치 x=25 — PortalTable.TownPortals 정의와 일치
+    const float PortalX = 25f;
     const float PortalY = 0f;
 
     // 근접 임계 = 2 unit (SubmitEnterPortal 내부 ProximityThreshold)
-    // portal (20, 0)에서 1.5 unit 안: (18.5, 0) → 통과
+    // portal (25, 0)에서 1.5 unit 안: (23.5, 0) → 통과
     static readonly Vector2 NearPortalPos = new Vector2(PortalX - 1.5f, PortalY);
-    // portal (20, 0)에서 10 unit: (10, 0) → 실패 (dist²=100 > 4)
+    // portal (25, 0)에서 15 unit: (10, 0) → 실패 (dist²=225 > 4)
     static readonly Vector2 FarFromPortalPos = new Vector2(10f, 0f);
 
     // TestGameSession: 두 맵 모두 주입 (GetMap=currentMap, ResolveDestination=destMap)
@@ -174,7 +174,7 @@ public class EnterPortalHandlerTests : IDisposable
         TestGameSession s = SetupHandshakedSession();
         PlayerEntity? player = _townMap.Players.FirstOrDefault(p => p.Owner == s);
         Assert.NotNull(player);
-        player!.Position = FarFromPortalPos; // (10, 0) — portal (20, 0)에서 dist=10
+        player!.Position = FarFromPortalPos; // (10, 0) — portal (25, 0)에서 dist=15
 
         s.SentPackets.Clear();
 

@@ -145,6 +145,12 @@ public class EnemyEntity
     /// </summary>
     public int TelegraphTicksRemaining { get; set; }
 
+    /// <summary>
+    /// 이번 telegraph가 피격으로 더 멈출 수 있는 남은 틱 수. BeginTelegraph가 상한으로 채운다.
+    /// 0이면 피격 중에도 예고 카운트다운이 계속 감긴다.
+    /// </summary>
+    public int TelegraphPauseTicksRemaining { get; set; }
+
     // AI State machine + 소속 맵 back-ref. Normal/Golem = EnemyStates, Boss = BossStates.
     // OwningMap: State가 같은 맵 player를 스캔하는 통로. GameMap.SpawnEnemy에서 세팅.
     internal GameMap? OwningMap { get; set; }

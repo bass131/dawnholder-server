@@ -50,6 +50,7 @@ internal static class BossStates
             ? Constants.BossPhase2TelegraphTicks
             : Constants.BossTelegraphTicks;
         enemy.AttackLatchTicks = enemy.TelegraphTicksRemaining + CombatConstants.AnimLatchTicks;
+        enemy.TelegraphPauseTicksRemaining = CombatConstants.BossTelegraphMaxPauseTicks;
 
         S_EntityState telegraphPkt = new S_EntityState
         {
@@ -148,16 +149,27 @@ internal sealed class BossMoveState : ActorState<EnemyEntity>
 //   옛 구현은 hit 중에도 telegraph가 계속 감겨, 보스를 활발히 때리는 동안 모든 공격의
 //   준비자세가 체감상 단축되는 *지속 손상*이 발생("이후 공격부터 계속 빨라짐").
 //   pause로 hit 후 남은 예고가 온전히 재생 → 회피 공정성 보장(헌법 #1 서버 권위 타이밍).
-//   BossBehaviorSystem이 동일 가드로 AttackLatchTicks 감소도 함께 멈춤 → 애니 latch와 정합.
+//   BossBehaviorSystem이 동일 가드(IsPausedByHit)로 AttackLatchTicks 감소도 함께 멈춤 → 애니 latch와 정합.
+//
+// **멈춤 상한(2026-10-28)**: 예고 한 번에 멈출 수 있는 틱은 BossTelegraphMaxPauseTicks까지.
+//   붙어서 계속 때리면 HitLatchTicks가 0으로 내려가지 않아, 상한이 없을 때 보스가
+//   준비자세에서 공격으로 영영 넘어가지 못했다(시연 녹화에서 관측).
 internal sealed class BossTelegraphState : ActorState<EnemyEntity>
 {
     public override AnimState AnimState => AnimState.Attack;
 
+    // 이번 틱 예고가 피격으로 멈추는지. Tick과 BossBehaviorSystem의 latch 정지가 같은 판정을 쓴다.
+    internal static bool IsPausedByHit(EnemyEntity enemy)
+        => enemy.HitLatchTicks > 0 && enemy.TelegraphPauseTicksRemaining > 0;
+
     public override ActorState<EnemyEntity>? Tick(EnemyEntity enemy)
     {
-        // hit-stun 중에는 예고 카운트다운 정지 — 데미지 타이밍을 hit만큼 뒤로 미룸.
-        if (enemy.HitLatchTicks > 0)
+        // hit-stun 중에는 예고 카운트다운 정지 — 데미지 타이밍을 hit만큼 뒤로 미룸(상한까지만).
+        if (IsPausedByHit(enemy))
+        {
+            enemy.TelegraphPauseTicksRemaining--;
             return null;
+        }
 
         enemy.TelegraphTicksRemaining--;
         if (enemy.TelegraphTicksRemaining == 0)

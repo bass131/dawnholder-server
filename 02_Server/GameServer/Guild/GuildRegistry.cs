@@ -135,16 +135,35 @@ internal sealed class GuildRegistry
         {
             try
             {
-                if (!accountId.HasValue || !_members.TryGetValue(accountId.Value, out Connection? connection) ||
-                    connection == null || !ReferenceEquals(connection.Session, session) ||
-                    connection.EntityId != entityId || !IsActive(connection)) return;
-                apply(connection);
+                if (CurrentConnection(accountId, session, entityId) is { } connection) apply(connection);
             }
             finally
             {
                 session.CompleteGuildRequest();
             }
         });
+    }
+
+#if DEBUG
+    // [시연 디버그 치트] F9. Not a guild request: it must not release the session's pending purchase gate.
+    internal void EnqueueDebugTreasuryGrant(GameSession session, int entityId)
+    {
+        Guid? accountId = session.Account?.AccountId;
+        _pendingJobs.Enqueue(() =>
+        {
+            if (CurrentConnection(accountId, session, entityId) == null) return;
+            _state = _state.WithDebugTreasuryGrant(GuildRules.StrongholdCost);
+            Broadcast(GuildChangeKind.TreasuryCredit);
+        });
+    }
+#endif
+
+    Connection? CurrentConnection(Guid? accountId, GameSession session, int entityId)
+    {
+        if (!accountId.HasValue || !_members.TryGetValue(accountId.Value, out Connection? connection) ||
+            connection == null || !ReferenceEquals(connection.Session, session) ||
+            connection.EntityId != entityId || !IsActive(connection)) return null;
+        return connection;
     }
 
     void Query(Connection connection)

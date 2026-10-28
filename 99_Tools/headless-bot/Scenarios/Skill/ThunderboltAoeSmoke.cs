@@ -21,9 +21,9 @@ public class ThunderboltAoeSmoke
     static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(20);
     static readonly TimeSpan SkillArrivalTimeout = TimeSpan.FromSeconds(5);
 
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const int TownPortalId = 1;
-    const float HGPortalX = 25f;
+    const float HGPortalX = 56f;
     const int HGPortalId = 1;
 
     const byte NormalKind = 0;

@@ -19,7 +19,7 @@ namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 //   seedBossGate=Func (xUnit): 거부→시드→재시도(통과) 전체 플로우 검증.
 //
 // **portal 좌표 상수** (서버 PortalTable.cs와 정합 — 변경 시 양쪽 동기화 의무):
-//   Town x=20 → HuntingGround destSpawn x=2.
+//   Town x=25 → HuntingGround destSpawn x=2.
 //   HuntingGround x=25 → BossRoom destSpawn x=22.
 public class BossGateSmoke
 {
@@ -27,12 +27,12 @@ public class BossGateSmoke
     static readonly TimeSpan LockedWaitTimeout = TimeSpan.FromSeconds(2);
     static readonly TimeSpan TransitionTimeout = TimeSpan.FromSeconds(5);
 
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const int TownPortalId = 1;
-    const float HGPortalX = 25f;
+    const float HGPortalX = 56f;
     const int HGPortalId = 1;
 
-    const float BossRoomDestSpawnX = 22f;
+    const float BossRoomDestSpawnX = 30f;
     const float SpawnXTolerance = 0.01f;
 
     public class Result

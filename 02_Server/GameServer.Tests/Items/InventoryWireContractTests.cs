@@ -322,7 +322,7 @@ public sealed class InventoryWireContractTests : IDisposable
         AssertSnapshot(Assert.Single(knight.EconomyPacketsSince(mark)), revision: 1, currency: 10, (MaterialId, 1));
 
         // Town portal 1 leads to HuntingGround (same placement as SessionCleanupTests).
-        _world.Map.GetPlayer(knight.EntityId)!.Position = new Vector2(20, 0);
+        _world.Map.GetPlayer(knight.EntityId)!.Position = new Vector2(25, 0);
         knight.OnRecvPacket(new C_EnterPortal { portalId = 1 }.Write());
         Tick();
         Tick(); // 새 복사본은 다음 틱부터 입장 job을 실행한다(IM-16).

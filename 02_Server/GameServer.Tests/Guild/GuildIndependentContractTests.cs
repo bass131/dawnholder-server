@@ -459,7 +459,7 @@ internal static class IndependentWire
 
 // Real-entry world for the independent tests. Treasury comes only from real admissions (seed 5 each),
 // personal funds only from a real BossRoom clear (the Content clear reward), and leaving Town only through
-// the real portal request after a fixture placement next to the portal (PortalTable: Town x = 20 and
+// the real portal request after a fixture placement next to the portal (PortalTable: Town x = 25 and
 // hunting ground x = 25, portal 1 each).
 internal sealed class IndependentGuildWorld : IDisposable
 {
@@ -468,10 +468,10 @@ internal sealed class IndependentGuildWorld : IDisposable
     const int TownPortalId = 1;
     const int BossRoomPortalId = 1;
     const int BossUnlockKills = 20;
-    static readonly Vector2 TownPortalPosition = new(20f, 0f);
-    static readonly Vector2 BossRoomPortalPosition = new(25f, 0f);
+    static readonly Vector2 TownPortalPosition = new(25f, 0f);
+    static readonly Vector2 BossRoomPortalPosition = new(56f, 1f);
 
-    // Only the boss room has map data: its one boss, far from the arrival point x = 22. Town and the hunting
+    // Only the boss room has map data: its one boss, far from the arrival point x = 30. Town and the hunting
     // ground stay empty as before.
     readonly GameWorld _world = new(new Dictionary<MapId, (MapTerrain?, MapContent?)>
     {

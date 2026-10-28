@@ -48,8 +48,8 @@ public sealed class InventoryLifecycleRaceTests : IDisposable
     {
         ProbeSession knight = JoinAndEnter(CharacterClass.Knight);
         GameMap hunting = MoveToHuntingGround(knight);
-        StandAt(hunting, knight, 5f);
-        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, 6f, 0f, maxHp: 1);
+        StandAt(hunting, knight, -2f);
+        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, -1f, 0f, maxHp: 1);
         int mark = knight.Packets.Count;
 
         SubmitMelee(knight, enemy);
@@ -71,8 +71,8 @@ public sealed class InventoryLifecycleRaceTests : IDisposable
     public void KillThenPortalToALaterTickedMap_InOneTick_RewardsTheKiller()
     {
         ProbeSession knight = JoinAndEnter(CharacterClass.Knight);
-        StandAt(_world.Map, knight, 20f);
-        EnemyEntity enemy = _world.Map.SpawnEnemy(EnemyKind.Normal, 21f, 0f, maxHp: 1);
+        StandAt(_world.Map, knight, 25f);
+        EnemyEntity enemy = _world.Map.SpawnEnemy(EnemyKind.Normal, 26f, 0f, maxHp: 1);
         GameMap destination = _world.GetOrCreateInstance(MapId.HuntingGround, InstanceKey.ForSolo(knight.EntityId));
 
         SubmitMelee(knight, enemy);
@@ -95,8 +95,8 @@ public sealed class InventoryLifecycleRaceTests : IDisposable
     {
         ProbeSession knight = JoinAndEnter(CharacterClass.Knight);
         GameMap hunting = MoveToHuntingGround(knight);
-        StandAt(hunting, knight, 5f);
-        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, 6f, 0f, maxHp: 1);
+        StandAt(hunting, knight, -2f);
+        EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, -1f, 0f, maxHp: 1);
 
         SubmitMelee(knight, enemy);
         Tick();
@@ -119,7 +119,7 @@ public sealed class InventoryLifecycleRaceTests : IDisposable
         KillWithMelee(knight, _world.Map.SpawnEnemy(EnemyKind.Golem, 1f, 0f, maxHp: 1));
         Settle();
         GameMap hunting = MoveToHuntingGround(knight);
-        StandAt(hunting, knight, 5f);
+        StandAt(hunting, knight, -2f);
         int mark = knight.Packets.Count;
 
         knight.OnRecvPacket(Wire.InventoryRequest());
@@ -289,10 +289,10 @@ public sealed class InventoryLifecycleRaceTests : IDisposable
         return session;
     }
 
-    // Town portal 1 at x=20 leads to HuntingGround (PortalTable); the move completes within Settle.
+    // Town portal 1 at x=25 leads to HuntingGround (PortalTable); the move completes within Settle.
     GameMap MoveToHuntingGround(ProbeSession session)
     {
-        StandAt(_world.Map, session, 20f);
+        StandAt(_world.Map, session, 25f);
         EnterPortal(session, portalId: 1);
         Settle();
         Assert.True(_world.TryGetInstance(MapId.HuntingGround, InstanceKey.ForSolo(session.EntityId), out GameMap? hunting));

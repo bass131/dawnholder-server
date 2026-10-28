@@ -22,9 +22,9 @@ public class HpSyncSmoke
     const float ReapproachThreshold = 1.0f;
     const int MaxReapproachTicks = 30;
 
-    const float TownPortalX = 20f;
+    const float TownPortalX = 25f;
     const int TownPortalId = 1;
-    const float HGPortalX = 25f;
+    const float HGPortalX = 56f;
     const int HGPortalId = 1;
 
     public class Result
