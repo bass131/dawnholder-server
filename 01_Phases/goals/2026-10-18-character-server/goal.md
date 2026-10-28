@@ -10,7 +10,9 @@ Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확�
 
 ## 재개 지점
 
-**다음 첫 일(10-29 01:3x KST, `[World 리드 Opus]`):** World 독립 검증자(Astra xhigh) 계약을 발행한다. 검증 head는 `93c4b41b` 위에 이 기록을 넣은 commit이다. 수정 구현자(`task_68e496a2acdf`)는 succeeded로 정산·종료했고 전체 서버 시험은 실패 0이다. 남은 것은 Unity EditMode 세 파일(`GuildProtocolCompatibilityTests`·`InventoryProtocolCompatibilityTests`·`GuildAdmissionPacketCompatibilityTests`)의 버전 21·패킷 48 기대다. Content 동의(`msg_884bd7016495`에 대한 답)를 받으면 검증자 쓰기를 보충으로 연다. 검증자 WSL+Unity는 시작 전에 메인에 알린다. 아래는 직전 단계 기록이다.
+**다음 첫 일(10-29 02:1x KST, `[World 리드 Opus]`):** World 독립 검증자(`task_3ccc9d4a5f98`)가 시험 쓰기를 마쳤다. 쓴 파일은 서버 시험 2파일과 Unity 시험 3파일이고, 해시는 `verify-pr270-01/worker/raw/test-write-frozen-1.json`과 5/5 일치한다. 그 5파일과 이 기록을 한 commit으로 넣어 새 head를 검증자에게 보충한다. V2(WSL 전체)는 실패 0이다. V3(Unity 전체 EditMode)는 1337건 중 82건이 실패했다. 82건은 `-nographics`의 그래픽 장치 부재 81건과 긴 snapshot 경로(268자)의 native DLL 로드 실패 1건으로, 검증자 분류는 환경 누락(b)이다. 그래서 짧은 snapshot `.backups/unity-character-menu-06`에서 `-nographics` 없이 전체를 다시 돈다. 이 Unity 창은 시작 전에 메인에 알린다. 합동 창 순서표 v3에는 S6a(Content 2단)를 넣고, 사용자 결정 36 A·37 A를 반영해 Core가 작성한다. 아래는 직전 단계 기록이다.
+
+**이전 다음 첫 일(10-29 01:3x KST, `[World 리드 Opus]`):** World 독립 검증자(Astra xhigh) 계약을 발행한다. 검증 head는 `93c4b41b` 위에 이 기록을 넣은 commit이다. 수정 구현자(`task_68e496a2acdf`)는 succeeded로 정산·종료했고 전체 서버 시험은 실패 0이다. 남은 것은 Unity EditMode 세 파일(`GuildProtocolCompatibilityTests`·`InventoryProtocolCompatibilityTests`·`GuildAdmissionPacketCompatibilityTests`)의 버전 21·패킷 48 기대다. Content 동의(`msg_884bd7016495`에 대한 답)를 받으면 검증자 쓰기를 보충으로 연다. 검증자 WSL+Unity는 시작 전에 메인에 알린다. 아래는 직전 단계 기록이다.
 
 **이전 다음 첫 일(10-29 00:5x KST, `[World 리드 Opus]`):** World 수정 구현자(Opus) 계약을 발행한다. 할 일은 셋이다. ① `GameSession`의 직업만 고르는 선택 거절과 catalog 메뉴 연결의 기준을 `Mode == Stored`에서 `Catalog is not null`로 좁힌다. Core 동의는 `msg_37ff61c16407`이고, 술어와 주석은 Core `CharacterAdmissionServices.CreateLifetime`과 맞춘다. ② 버전 21·패킷 48을 기대하는 기존 시험 6건을 22·54로 고치고 분류표를 남긴다. ③ Integration 「GameWorld 단일 인스턴스」 9건을 진단해 고친다. 첫 단서는 collection 없는 `Guild/GuildDebugTreasuryCheatTests`다. 앞 구현자(`task_e1dc91317495`)는 failed로 정산·종료했고, 산출물은 리드 commit에 있다. 실행 창은 Content Unity 반환 뒤 메인에 요청한다. 그다음은 World 검증자다(계약 초안 `verify-pr270-01/contract-head-v1.md`). 서식 검사는 이 PC Windows에 SDK 10.0.301이 없어 PR CI의 `format-check.sh`로 확인한다. 아래는 직전 단계 기록이다.
 
@@ -390,6 +392,14 @@ Main `msg_82a65eb6e78b`의 메인 판단이다. 지금부터새B0창14:05~14:35Z
 Main `msg_61970f13bc49`의 **메인 판단**이며사용자원문으로기록하지않는다. 기간은2026-10-27 09:00KST까지다. 작업자/검증자의300초초과앞뒤HB명령·환경·exit·분리stdout/stderr원시가보존되고target실행이탈0이면절차실패로세지않고같은세션을계속한다. ORCAheartbeat-accounting의5분기준·초과구간/사유한줄정산과실제간격은유지한다. 같은세션재초과는자동실패가아니지만다음단계전메인에먼저보고한다. 원시누락·구기록기·미저장script가함께있으면적용하지않고공식질문한다. 원문은`approval-01/rehearsal-resume-01/inbox-wake-14.json`, 적용준비는`heartbeat-night-disposition-v1.md`이며회신메일0/정본수정0이다.
 
 ## 적용 중인 사용자 결정
+
+### 2026-10-29 결정 36 A·37 A — 합동 창 S6a의 새 시험 로그인과 한 번에 하는 창
+
+Main `msg_4e853f45229b`(2026-10-28T17:08:57Z 송신)가 전달한 사용자 원문이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 36 - 합동 창에서 새 로그인 이름(빈 계정)으로 첫 접속부터 볼지 → A 허용: 새 시험 로그인 하나를 쓴다 · 2) 37 - 합동 창 착석이 약 30분에서 약 50분으로 늘어도 될지 → A 한 번에 한다: 착석 약 50분
+
+**메인 적용:** S6a(봇 after 뒤, 서버 2 종료 전의 Content 2단)에서 새 시험 로그인 이름 하나를 쓴다. 개발 DB에 계정 행 하나와 캐릭터 행 한두 개가 새로 생겨도 된다. 삭제·DDL 0은 그대로다. 로그인·캐릭터 이름은 Content가 정하고 시험용임이 드러나야 한다. 합동 창은 한 번에 하며 사용자 착석 약 50분, 창 목표 약 75분, 한도 약 90분이다. 막히면 리드가 S6a를 멈추고 S7로 서버를 닫는다. 순서표 v3는 Core 작성·World 합의이고, 확정본의 경로와 SHA256을 메인에 보낸다. Unity·WSL 병행은 S6a 안에서만, 물리 여유 6GiB·commit 여유 4GiB 이상일 때다(`msg_01d40e3c6119`).
 
 ### 2026-10-28 결정 32 B — 합동 실DB 창은 사용자 기상 뒤
 
@@ -914,7 +924,7 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
   - Integration 9건의 원인은 기준 브랜치에서 온 `GuildDebugTreasuryCheatTests`의 collection 누락이다. 좁힌 실행에서 같은 충돌이 반대 방향으로 재현됐고, `[Collection("GameWorldRegistryTests")]` 한 줄 뒤 사라졌다. 분류는 「기존 불안정」이다(메인 동의 `msg_361ff017f349`).
   - 마지막 전체 `sync-wsl.sh test`는 실패 0·통과 2536·건너뜀 28이다. 같은 명령의 전 실적은 실패 18·통과 2517·건너뜀 28이었다. WSL 창은 01:07:35~01:20:10 KST다.
   - 리드가 7파일을 commit `00441ff4`로 넣었다. 서식은 로컬 미실행, CI로 대체한다. 원시·보고는 `impl-fix-01/worker/`, 정산은 `worker/release-01.json`(retained·external_terminal)·`close-01.json`이다.
-  - 열린 항목은 셋이다. Unity EditMode 세 파일의 21·48 기대(Content에 동의 요청 `msg_884bd7016495`), selector 호스트의 메뉴 응답이 `LegacyFlowOnly`가 된 점과 packet-contract 99행 「Stored 서버는 이 결과를 보내지 않는다」의 대조, Catalog 호스트 거절 literal이 두 시험에 나뉜 점이다. 셋 다 독립 검증자가 판정한다.
+  - 열린 항목은 셋이다. Unity EditMode 세 파일의 21·48 기대(Content에 동의 요청 `msg_884bd7016495`, Content 동의 `msg_c4c3978d3187`, 메인 확인 `msg_dfb08ed64c6a`. World 독립 검증자가 버전·개수 literal, 길드 시험의 이름 목록 끝 49~54, 그 주석만 고치고 28 A 표에 a로 남긴다), selector 호스트의 메뉴 응답이 `LegacyFlowOnly`가 된 점과 packet-contract 99행 「Stored 서버는 이 결과를 보내지 않는다」의 대조, Catalog 호스트 거절 literal이 두 시험에 나뉜 점이다. 셋 다 독립 검증자가 판정한다.
 - **기준 브랜치 받기 — PR271(CLAUDE.md 결정 4A 절):** 메인 `msg_0261be43b203`의 지시로, 실행 창·작업자가 없는 안전 지점에 `540172a4`를 받았다(merge commit `93c4b41b`). 바뀐 파일은 CLAUDE.md 하나다. 새 절 「결정 4A 적용 기간의 Claude 리드·구현자」를 읽었고, 지금까지의 운영과 내용이 같다.
 
 ## 보류와 남은 우려
