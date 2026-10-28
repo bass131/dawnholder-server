@@ -4,7 +4,7 @@
 
 - Core: [흐름 전체 DB 표와 캐릭터 저장 연결](../../01_Phases/goals/2026-10-17-character-storage-foundation/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `docs/character-storage-closeout-20261023` · PR259 병합·종료 기록 진행
 
-- <a id="content-worktree"></a>Content: [캐릭터 선택·생성 화면](../../01_Phases/goals/2026-10-24-character-select-create-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active · feat/content-character-select-create-20261024 · 10-28 결정 31 반영 범위 승인, World 병합 전 가짜 응답 화면 단계 · [하우징 goal 기록](https://github.com/bass131/dawnholder-server/blob/14cb5361183e1c6179b2e4fed299f84c389ac51b/01_Phases/goals/2026-10-15-guild-client-ui/goal.md) · feat/content-guild-housing-20261022(14cb5361) · PR267이 넣은 하우징 창과의 대조는 아직 하지 않았다 · 길드 성장 효과 화면 연결은 10-28 결정 33 A로 종료
+- <a id="content-worktree"></a>Content: [캐릭터 선택·생성 화면](../../01_Phases/goals/2026-10-24-character-select-create-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active · feat/content-character-select-create-20261024 · 실제 통신 연결·ID 관측 로그까지 구현, 독립 검증 1차 통과, 아침 합동 창 S6a 대기 · [하우징 goal 기록](https://github.com/bass131/dawnholder-server/blob/14cb5361183e1c6179b2e4fed299f84c389ac51b/01_Phases/goals/2026-10-15-guild-client-ui/goal.md) · feat/content-guild-housing-20261022(14cb5361) · PR267이 넣은 하우징 창과의 대조는 아직 하지 않았다 · 길드 성장 효과 화면 연결은 10-28 결정 33 A로 종료
 
 - World: [캐릭터 목록·생성·선택 서버 처리](../../01_Phases/goals/2026-10-18-character-server/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `feat/character-server-20261018` · Opus 리드 재개(결정 27 A)·범위 초안 승인 대기, goal 미완료
 
