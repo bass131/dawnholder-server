@@ -10,7 +10,9 @@ Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확�
 
 ## 재개 지점
 
-**다음 첫 일(10-29 00:5x KST, `[World 리드 Opus]`):** World 수정 구현자(Opus) 계약을 발행한다. 할 일은 셋이다. ① `GameSession`의 직업만 고르는 선택 거절과 catalog 메뉴 연결의 기준을 `Mode == Stored`에서 `Catalog is not null`로 좁힌다. Core 동의는 `msg_37ff61c16407`이고, 술어와 주석은 Core `CharacterAdmissionServices.CreateLifetime`과 맞춘다. ② 버전 21·패킷 48을 기대하는 기존 시험 6건을 22·54로 고치고 분류표를 남긴다. ③ Integration 「GameWorld 단일 인스턴스」 9건을 진단해 고친다. 첫 단서는 collection 없는 `Guild/GuildDebugTreasuryCheatTests`다. 앞 구현자(`task_e1dc91317495`)는 failed로 정산·종료했고, 산출물은 리드 commit에 있다. 실행 창은 Content Unity 반환 뒤 메인에 요청한다. 그다음은 World 검증자다(계약 초안 `verify-pr270-01/contract-head-v1.md`). 서식 검사는 이 PC Windows에 SDK 10.0.301이 없어 PR CI의 `format-check.sh`로 확인한다. 아래는 직전 단계 기록이다.
+**다음 첫 일(10-29 01:3x KST, `[World 리드 Opus]`):** World 독립 검증자(Astra xhigh) 계약을 발행한다. 검증 head는 `93c4b41b` 위에 이 기록을 넣은 commit이다. 수정 구현자(`task_68e496a2acdf`)는 succeeded로 정산·종료했고 전체 서버 시험은 실패 0이다. 남은 것은 Unity EditMode 세 파일(`GuildProtocolCompatibilityTests`·`InventoryProtocolCompatibilityTests`·`GuildAdmissionPacketCompatibilityTests`)의 버전 21·패킷 48 기대다. Content 동의(`msg_884bd7016495`에 대한 답)를 받으면 검증자 쓰기를 보충으로 연다. 검증자 WSL+Unity는 시작 전에 메인에 알린다. 아래는 직전 단계 기록이다.
+
+**이전 다음 첫 일(10-29 00:5x KST, `[World 리드 Opus]`):** World 수정 구현자(Opus) 계약을 발행한다. 할 일은 셋이다. ① `GameSession`의 직업만 고르는 선택 거절과 catalog 메뉴 연결의 기준을 `Mode == Stored`에서 `Catalog is not null`로 좁힌다. Core 동의는 `msg_37ff61c16407`이고, 술어와 주석은 Core `CharacterAdmissionServices.CreateLifetime`과 맞춘다. ② 버전 21·패킷 48을 기대하는 기존 시험 6건을 22·54로 고치고 분류표를 남긴다. ③ Integration 「GameWorld 단일 인스턴스」 9건을 진단해 고친다. 첫 단서는 collection 없는 `Guild/GuildDebugTreasuryCheatTests`다. 앞 구현자(`task_e1dc91317495`)는 failed로 정산·종료했고, 산출물은 리드 commit에 있다. 실행 창은 Content Unity 반환 뒤 메인에 요청한다. 그다음은 World 검증자다(계약 초안 `verify-pr270-01/contract-head-v1.md`). 서식 검사는 이 PC Windows에 SDK 10.0.301이 없어 PR CI의 `format-check.sh`로 확인한다. 아래는 직전 단계 기록이다.
 
 **이전 다음 첫 일(10-28 23:4x KST, `[World 리드 Opus]`):** 결정 27 반영 범위 v2와 결정 28 A·29 A가 승인됐다(Main `msg_5642ff7de0f4`). 순서는 리드의 후보 commit·main 통합·draft PR → 구현자 Opus의 Stored 생성 봇·selector 시험·WSL 자동 시험 → World·Core 독립 검증자 실사·시험 보완 → 합동 실DB 한 창 → Unity → 판정·PR이다. 실행 창은 Core와 순서를 맞춘 뒤 메인에 시각을 요청한다. 범위 초안 송신은 Main `msg_78570cdf06a1`이었다. 초안은 근거 폴더 `scope-draft-decision27-v2.md`(sha256 `da1b7492…`)다. Core 리드와 경계·순서·결정 문구를 맞췄다(Core `msg_a4bad38aab8c`·`msg_2084821e8a09`, World `msg_a89f446847b2`·`msg_ec2dd52491d3`). 합의 요지는 합동 실DB 한 창을 두 파트 독립 검증자의 실제 경로 실행으로 쓰고, 그 창의 World head를 PR head로 삼는 것이다. 진입 READY는 Main `msg_6113ac3af997`다. Run은 `run_90d18490c825`를 이어받았다. 미커밋 후보 25경로는 10-26 기록 hash와 25/25 일치한다. 근거는 `.backups/verification/2026-10-18-character-server/lead-opus-entry-20261028/`이다. 아래 Sol 리드 기록은 인계 당시 상태다.
 
@@ -906,6 +908,14 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
   - 서식 검사 `format-check.ps1`은 이 PC Windows에 SDK 10.0.301이 없어 실행하지 못했다. 계약에서 명령을 잘못 고른 리드 책임이다. 「로컬 미실행, CI로 대체」로 기록한다. 서식은 PR CI의 Linux `format-check.sh`로 확인한다. head `77591936`의 PR CI 서식 check 2건은 통과했다(10-29 00:47 KST 조회).
   - 원시는 `impl-stored-create-01/worker/raw/`, 보고는 같은 폴더의 `report.md`다. 정산·종료는 `worker/release-01.json`(retained·external_terminal), `worker/close-01.json`이다.
 - **selector 경로 수정 기준 — Core 동의:** 거절 기준을 `Catalog is not null`로 좁히는 World 수정안(`msg_163753b34afb`)에 Core가 동의했다(`msg_37ff61c16407`). Core 요청은 GameSession 거절 술어를 `CharacterAdmissionServices.CreateLifetime`과 같게 두고, 주석에서 그 규칙을 가리키는 것이다. 실제 서버 기동은 Catalog 생성자만 쓰므로 C6은 유지된다. 사용자 결정 28 A의 「selector 경로 시험은 유지」를 지키는 수정이다.
+- **10-29 World 수정 구현자(`task_68e496a2acdf`) — succeeded 정산:**
+  - `GameSession`의 두 기준을 `_persistence?.Catalog is not null`로 좁혔다. 버전·패킷 기대 시험 6건을 22·54로 고쳤고, 구버전 길드 거절 사례에 v21을 더했다. 이름 둘을 바꿨다(`ProtocolVersion_IsTwentyTwo_AndTheHandshakeRejectsTwentyOne`, `ProtocolVersion_Is22`).
+  - `GuildAdmissionCommitBoundaryTests`의 한 시험은 준비 단계만 selector 경로로 되돌렸다(구현자 질문 `msg_f42515102900`, 리드 회신 A `msg_c3cb5545cdac`). 이 브랜치 commit `213809ca`가 공용 `AdmissionTestWorld` 기본값을 Catalog로 바꿔 경로가 옮겨 가 있었다. 단정은 바꾸지 않았다. 분류는 b(fixture)다.
+  - Integration 9건의 원인은 기준 브랜치에서 온 `GuildDebugTreasuryCheatTests`의 collection 누락이다. 좁힌 실행에서 같은 충돌이 반대 방향으로 재현됐고, `[Collection("GameWorldRegistryTests")]` 한 줄 뒤 사라졌다. 분류는 「기존 불안정」이다(메인 동의 `msg_361ff017f349`).
+  - 마지막 전체 `sync-wsl.sh test`는 실패 0·통과 2536·건너뜀 28이다. 같은 명령의 전 실적은 실패 18·통과 2517·건너뜀 28이었다. WSL 창은 01:07:35~01:20:10 KST다.
+  - 리드가 7파일을 commit `00441ff4`로 넣었다. 서식은 로컬 미실행, CI로 대체한다. 원시·보고는 `impl-fix-01/worker/`, 정산은 `worker/release-01.json`(retained·external_terminal)·`close-01.json`이다.
+  - 열린 항목은 셋이다. Unity EditMode 세 파일의 21·48 기대(Content에 동의 요청 `msg_884bd7016495`), selector 호스트의 메뉴 응답이 `LegacyFlowOnly`가 된 점과 packet-contract 99행 「Stored 서버는 이 결과를 보내지 않는다」의 대조, Catalog 호스트 거절 literal이 두 시험에 나뉜 점이다. 셋 다 독립 검증자가 판정한다.
+- **기준 브랜치 받기 — PR271(CLAUDE.md 결정 4A 절):** 메인 `msg_0261be43b203`의 지시로, 실행 창·작업자가 없는 안전 지점에 `540172a4`를 받았다(merge commit `93c4b41b`). 바뀐 파일은 CLAUDE.md 하나다. 새 절 「결정 4A 적용 기간의 Claude 리드·구현자」를 읽었고, 지금까지의 운영과 내용이 같다.
 
 ## 보류와 남은 우려
 
