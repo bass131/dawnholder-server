@@ -7,6 +7,14 @@
 **이전 상태: O3 요구 단언 범위 PASS·World 한 파일 동일 바이트 반영 완료. E8/v7 B0는 Pre→Tests→Post 각1회, 실제3outer/5payload native0·RETURNED, Pre/Post WindowsCLEAR·Inputs829MATCHED, Tests54단언/실패0·observer23+publication2 전25사례를 확인했다.** B0 실행 자원 반환·Task succeeded·정확 작업자 pane 종료와 최종 정산을 마쳤다. 운영 신호 초과2구간은 별도 기록했다. B1 정적 준비 Task는 인수·정산·pane 종료를 마쳤으며, 새 source19의 noDB 실제 회귀와 최종 독립 강·실제 B1·저장 goal은 미완료다.
 
 ## 적용 중인 사용자 결정
+### 2026-10-29 결정 36 A·37 A — 합동 창 S6a에 새 시험 로그인 하나, 한 번에
+메인 전달 사용자 원문(Main msg_b785517f3a81, 2026-10-28T17:08:58Z, 메인 pane Enter 제출. 이 Core pane 직접 입력으로 격상하지 않는다): 「대시보드 결정 응답: 1) 36 - 합동 창에서 새 로그인 이름(빈 계정)으로 첫 접속부터 볼지 → A 허용: 새 시험 로그인 하나를 쓴다 · 2) 37 - 합동 창 착석이 약 30분에서 약 50분으로 늘어도 될지 → A 한 번에 한다: 착석 약 50분」
+- 합동 창 S6(봇 after) 뒤·S7(서버 2 종료) 전에 Content 단계 S6a를 둔다. 자리와 같은 시험 계정 기본안은 Main msg_dab283acb29c다.
+- 36 A: S6a는 새 시험 로그인 이름 하나를 쓴다. 개발 DB에 계정 행 하나와 캐릭터 행 한두 개가 새로 생겨도 된다. 삭제·DDL 0은 그대로다. 로그인·캐릭터 이름은 Content가 정해 v3에 적으며, 시험용임이 드러나야 한다. 결정 29 A의 쓰기 범위는 이만큼 넓어진다.
+- 37 A: 합동 창을 한 번에 한다. 사용자 착석 약 50분, 창 목표 약 75분, 한도 약 90분이다. 막히면 리드가 S6a를 멈추고 S7로 서버를 닫는다.
+- Unity·WSL 병행은 S6a 안에서만 허용한다. S6a 직전 물리 여유 6GiB 이상, commit 여유 4GiB 이상을 원시로 남기고, 못 미치면 시작하지 않는다(Main msg_dab283acb29c).
+- 순서표 v3는 Core가 쓰고 World가 합의해 두 독립 검증자에게 보충으로 넘긴다. 확정 경로와 SHA256을 메인에 보낸다.
+
 ### 2026-10-28 결정 32 B — 합동 실DB 창은 사용자 기상 뒤
 메인 전달 사용자 원문(Main msg_f8fc89df26cc, 2026-10-28T14:46:57Z, 메인 pane Enter 제출. 이 Core pane 직접 입력으로 격상하지 않는다): 「대시보드 결정 응답: 1) 32 - 합동 실DB 확인 창(사용자 착석 약 30분) 시각 → B 자고 일어나서 한다」
 - 밤사이 Core는 검증자 정적 실사·launcher 시험까지 끝내고, 합동 창 직전 상태(S0)에서 입력 hash를 고정한 채 기다린다. 사용자가 일어나 메인 pane에 말하면 메인이 두 리드에 시작을 알린다.
@@ -62,6 +70,8 @@ World동결은02:35Z부터B0반환까지예정이며02:35Z이후/동결준비보
 - **CORE-V1-E1-01(첫 Output 실행 중단):** core-active `.backups` junction 표기의 253자 WorkRoot에서 .NET Framework csc가 CS1619(임시 파일 생성 실패)로 끝났다. 같은 길이에서 재현했고 `C:\Dev\DawnHolder_Project\.backups` 표기의 짧은 경로에서 같은 소스가 성공했다. 검증자가 fixture/환경 경로 제약으로 재분류했고 내부 길이 한도는 미확인이다. 보충은 `core-review/contract-v1-supplement-d1.md`·`contract-v1-supplement-d1-continue.md`다.
 - **CORE-V1-H01 처분(리드):** 기존 Output 시험이 compiler 진단 본문을 버리는 점은 통과 비차단 후속 후보다(msg_629810fc83f8). 시험이 실패 때 예외로 닫혀 거짓 PASS가 없고, 같은 bytes가 짧은 경로에서 통과했기 때문이다. 후속 내용은 synthetic compiler 원문 보존과 긴 WorkRoot 안내다.
 - **리드 실수 첫 발생:** 진단 보충 D1 문구가 "예상한 재현 실패"와 "첫 실패 중단"을 가르지 않아 검증자가 D1 뒤 멈췄다. 계속 보충으로 풀었다. 반복 규칙은 만들지 않는다.
+- **합동 창 순서표 v3 확정:** `decision27-joint-01/joint-window-sequence-v3.md`(9964B, sha256 7D90ADB1055F1AB11D2E7B389140D840D9F9AF2F9650B949B87975E276712DD8)가 v2를 대체한다. 작성 Core, World 합의 msg_c242ad775c4f, 메인 보고 msg_f8c53ee7bb16이다. S6(봇 after) 뒤에 Content 단계 S6a를 넣었다. S6a는 새 시험 로그인 `c_s6a_test1029`, 캐릭터 `시험새벽1029` Knight로 진행한다(결정 36 A·37 A). Core는 장면 ②(`Wcreate1029` 재생성 시도)의 기대로 이름 중복 거절·행 없음을 적었다. 근거는 계정 무관 `UQ_Character_NameKey`다. 첫 초안 bytes는 `joint-window-sequence-v3-draft1.md`로 남겼다.
+- **World selector 기준 합의:** World가 GameSession의 class-only 선택 거절 기준을 `_persistence?.Catalog is not null`로 좁히는 데 Core가 동의했다(msg_37ff61c16407). Core 자신도 Catalog 유무로 경로를 가른다. Core 파일 변경은 없다.
 - **PR271 main 받기(Main msg_e746dab8c3fa, 사용자 결정 35 A):** 2026-10-29 01:3x KST 안전 지점(작업자 쓰기 0, 검증자 E2 대기)에 origin/main `540172a41b58d4f4735ab9dd12f50f2e79d5fd34`를 merge commit `bff3fc66`로 받았다. 바뀐 파일은 CLAUDE.md 하나이며 새 절 「결정 4A 적용 기간의 Claude 리드·구현자」(`CLAUDE.md#claude-4a-interim`)를 읽었다. 지금까지의 4A 기록과 내용이 같다. 후보 3파일과 Framing 시험 hash는 받기 전후가 같다(`claude-lead-entry-01/merge-main-02.txt`).
 - Framing 시험 파일을 Core PR에 넣을지는 판정과 함께 정한다. 메인 밤 순서표(msg_7ac088eb1010)의 1번 Core 진단은 반환 보고했다(msg_beae80b00afd).
 - 범위 v2는 Main `msg_b847dd1c910b`로 승인됐다(결정 28 A·29 A).
