@@ -6,13 +6,15 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태(10-29 08:1x KST): 제품 PR270이 사용자 승인 뒤 병합됐다(merge commit `8b6010d543c95837f504a225cdec5b9da9f854b5`). World C1~C9 강 독립 검증은 PASS다. 남은 것은 Gardener·종료 문서 실사·종료 기록 PR·메인 종료 점검·R-8이며 goal 전체 종료 전이다.** 아래 줄은 10-27 당시 상태다.
+**상태(10-29 08:4x KST): 제품 PR270이 사용자 승인 뒤 병합됐다(merge commit `8b6010d543c95837f504a225cdec5b9da9f854b5`). World C1~C9 강 독립 검증은 PASS이고 종료 Gardener도 끝났다. 남은 것은 프로토콜 현재 문서 갱신·종료 문서 실사·종료 기록 PR·메인 종료 점검·R-8이며 goal 전체 종료 전이다.** 아래 줄은 10-27 당시 상태다.
 
 **이전 상태: 10-28에는 검증을 통과한 만큼 보여 주고 미완료는11-06 제출까지 다듬는다. 신규 World 제품 묶음은 현재 밤 두 번째 빌드 후보이며, Core B1·최종 독립 실DB 인계 뒤 World 최종 강검증·제품 PR 순서를 유지한다.** 다음 Core B0 시각·최종 인계 F가 미정이므로18:00 포함을 확약하지 않는다. 기존 생성API·필수시험은 유지하고 생성 화면 실연 유예는 그대로다. 미커밋26경로/기존 입력을 보존했으며 이전 자체회귀838P는 당시 결과이고 현재 합동/최종 독립/Unity·실DB 전체 판정은 남았다.
 
 ## 재개 지점
 
-**다음 첫 일(10-29 08:1x KST, `[World 리드 Opus]`):** 제품 PR270이 병합됐다. 사용자 승인 줄은 「병합 승인: PR270 head 2d9df3868c0919f83d499be350ec6833039a72e3」이고, 메인이 23:06:56Z에 병합했다(`msg_4892c80fd856`). 종료 기록은 최신 main `8b6010d5`에서 만든 branch `docs/character-server-closeout-20261029`에서 한다. 순서는 정본 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)대로 Gardener → 종료 문서 독립 실사 → 종료 기록 PR 하나 → 메인 종료 점검 → R-8이다. 다음 일은 리드 pane 아래 신규 Opus Gardener를 읽기 전용으로 여는 것이다. world-active의 미커밋 Core launcher(`99_Tools/Start-PersistenceServer.ps1`)는 PR272와 bytes가 같다. Core 합의(`msg_df8970186d11`)대로, 메인이 서버 창을 닫은 뒤 근거 폴더에 사본을 남기고 HEAD 판으로 되돌린다. 다음 goal은 자동으로 시작하지 않는다. 아래는 직전 단계 기록이다.
+**다음 첫 일(10-29 08:4x KST, `[World 리드 Opus]`):** 종료 Gardener(`task_141e27c7730f`)가 끝났다. 원문은 [gardener.md](gardener.md)이고, 후보는 「다음 계획 후보」로 BACKLOG에 연결했다. 후보 도착 검사는 `allowed`다(`closeout-01/candidate-check-01.json`). Gardener GR-02에 대한 메인 판정 A(`msg_4d16987f5c46`, 「적용 중인 메인 운영 판단」)에 따라, 신규 Opus 문서 구현자가 `domains/protocol.md`의 v22 절과 `FEATURE_MAP.md`의 메뉴 경로를 쓴다. 계약은 `closeout-01/impl-doc/contract-v1.md`다. 그 뒤 신규 Astra xhigh 종료 문서 실사 → 종료 기록 PR → 사용자 병합 승인 → 메인 종료 점검 → R-8이다. 미커밋 Core launcher는 메인이 서버 창을 닫은 뒤 HEAD 판으로 되돌린다. 아래는 직전 단계 기록이다.
+
+**이전 다음 첫 일(10-29 08:1x KST, `[World 리드 Opus]`):** 제품 PR270이 병합됐다. 사용자 승인 줄은 「병합 승인: PR270 head 2d9df3868c0919f83d499be350ec6833039a72e3」이고, 메인이 23:06:56Z에 병합했다(`msg_4892c80fd856`). 종료 기록은 최신 main `8b6010d5`에서 만든 branch `docs/character-server-closeout-20261029`에서 한다. 순서는 정본 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)대로 Gardener → 종료 문서 독립 실사 → 종료 기록 PR 하나 → 메인 종료 점검 → R-8이다. 다음 일은 리드 pane 아래 신규 Opus Gardener를 읽기 전용으로 여는 것이다. world-active의 미커밋 Core launcher(`99_Tools/Start-PersistenceServer.ps1`)는 PR272와 bytes가 같다. Core 합의(`msg_df8970186d11`)대로, 메인이 서버 창을 닫은 뒤 근거 폴더에 사본을 남기고 HEAD 판으로 되돌린다. 다음 goal은 자동으로 시작하지 않는다. 아래는 직전 단계 기록이다.
 
 **이전 다음 첫 일(10-29 07:2x KST, `[World 리드 Opus]`):** 합동 실DB 창(T 2026-10-28T20:50:00Z, 순서표 v3)이 S8까지 끝났다. World 독립 검증자(`task_3ccc9d4a5f98`)는 PR270 head `4755f807aeda8d35df20f98699a28245e43735e0`의 C1~C9 강 판정을 PASS로 냈고(`msg_5e6ea692c90f`), succeeded로 정산해 pane을 닫았다. 판정 원문은 `verify-pr270-01/worker/report.md`의 「합동 창 뒤 최종 판정」이다. 결정 28 A의 기존 시험 분류표는 `verify-pr270-01/worker/existing-test-classification.md`다. 이 기록 commit은 goal 1파일만 바꾸므로 제품과 시험은 4755f807과 같다. 메인에 판정 원문 경로와 새 head를 반환 보고하고, 메인의 R-2 표본 대조와 사용자 병합 승인을 기다린다. 서버 창(`term_307f908f-2776-4070-afb4-da2ad15f8600`)은 건드리지 않으며 닫을 때는 메인이 사용자에게 알린다. 비차단 관찰 O1(`CharacterMenuRequestReader.cs:53`의 낡은 주석)과 O2(selector 호환 세션 설명)는 후속 후보다. 창 결과는 아래 「2026-10-29 합동 실DB 창 결과」 절에 있다. 그 아래는 직전 단계 기록이다.
 
@@ -383,6 +385,15 @@ Core `msg_80f596e64e30`(17:01:21Z)은 검증된 제한 checkpoint 없음·API v2
 - **착수 조건:** Unity 최소 수신 소유와 정확 파일은 Content 쓰기 종료·합의 뒤 계약 전 고정, 49..54/v22는 최신 main/타 파트 예약 대조 뒤 고정, Core 미검증 코드 복사0, 중량 실행은 메인 「실행 창 시작」 뒤다. 범위 승인만으로 이 조건을 생략하지 않는다.
 
 ## 적용 중인 메인 운영 판단
+
+### 프로토콜 현재 문서 갱신을 종료 기록 PR에 넣음 — 2026-10-28T23:36:51Z
+
+Main `msg_4d16987f5c46`의 **메인 판정**이다. 사용자 결정이 아니다. 리드 질문은 `msg_7ac0dc66131e`(Gardener GR-02)였다.
+
+- 판정은 A다. 신규 Opus 구현자가 `00_Document/domains/protocol.md`에 v22 절을 쓰고 `00_Document/FEATURE_MAP.md` 9행에 메뉴 요청 경로를 더한다. 종료 문서 실사자가 함께 본다.
+- 메인 판단 범위인 이유: 아래 「패킷·API 계약의 현재 제안」 절이 「이번 제품 변화 시 현재 설명을 함께 맞춘다」고 이미 정했다. 새 범위가 아니라 범위 안에서 빠진 일이고 문서만 바꾼다.
+- v21 절은 쓰지 않고 「v21은 Core 변경(`bcafb6bc`)」 연결만 둔다. v21 절과 드리프트 검사(Gardener 후보 1)는 BACKLOG `protocol-doc-version-drift`에 남긴다.
+- 후보 2(JSON 시각 helper)와 upstream 두 번째 발생은 BACKLOG 대기 행으로 연결만 한다. 정본 반영은 Rules가 다시 열릴 때 메인이 맡긴다.
 
 ### World 연속 동결 해제·PR266 영향 점검 — 2026-10-27T04:29:52Z
 
@@ -967,6 +978,16 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
   - Unity 첫 실행의 82건 실패는 환경 전제 누락이었다. 그래픽 장치 없는 `-nographics` 실행에서 81건, 268자 긴 경로의 DLL 로드에서 1건이다. 승인된 새 snapshot에서 같은 82건이 통과했고 기대값 변경은 0이다. 검증자 실행 보조 코드의 조기 종료 오류(시도 2)는 판정에서 뺐다.
   - 정산은 `worker-release`가 retained·external_terminal이었고, 대기 화면을 확인한 뒤 리드가 pane을 닫았다(`lead-opus-entry-20261028/verifier-release-pr270-01.json`, `verifier-close-pr270-01.json`).
 - **PR270 병합:** goal 기록 commit `2d9df386`을 더한 head의 CI 네 workflow가 모두 success였다(`verify-pr270-01/pr-checks-2d9df386-final.txt`). 리드의 draft 해제 명령은 권한 분류기에 막혔고, 사용자가 메인 pane에서 직접 해제했다. 사용자 승인 줄 「병합 승인: PR270 head 2d9df3868c0919f83d499be350ec6833039a72e3」 뒤 메인이 병합했다. merge commit은 `8b6010d543c95837f504a225cdec5b9da9f854b5`다(`msg_4892c80fd856`).
+- **CI 실패 run 기록 보강(Gardener GR-01):** PR270 branch의 CI 24 run 가운데 dotnet-tests 2 run이 실패했다.
+  - run `40708363252`(head `4c4d54da`)는 서식 단계에서 `error WHITESPACE` 56건이 났다. 구현자 보충 1이 고쳤다.
+  - run `40718932629`(head `77591936`)는 Test 단계에서 2563건 중 12건이 실패했다. 위 Stored 생성 작업 항목의 회귀와 같은 묶음이고, 수정 구현에서 0이 됐다.
+  - 그래서 위 「head `77591936`의 PR CI 서식 check 2건은 통과」는 서식 단계만의 결과다. 같은 head의 dotnet-tests는 실패였다. 최종 `4755f807`·`2d9df386`은 각 4/4 success다.
+- **종료 Gardener(`task_141e27c7730f`) — succeeded 정산:**
+  - 신규 `claude-opus-5-5`가 읽기 전용으로 보고서 한 파일을 썼다. 최초 명령은 `claude --model claude-opus-5-5 --effort xhigh`, 첫 화면은 Opus 5.5 xhigh, backend 실제 모델은 unknown이다.
+  - 원문은 [gardener.md](gardener.md)다. sha256 `4a4970b3f94dfb082c295a8ee13100aa0fd8203b643d9539d131f6973ff9547f`로 근거 `closeout-01/gardener/context-gardener-report.md`와 bytes가 같다.
+  - 새 제품 결함 0, 정리 후보 2, 리드 반환 2(GR-01·GR-02)다. 후보는 아래 「다음 계획 후보」로 BACKLOG에 연결만 했고, 채택과 구현은 하지 않았다.
+  - 계약은 `closeout-01/gardener-contract-v1.md`, 고정 입력은 `gardener-inputs.json`이다. 정산은 `gardener-release.json`(retained·external_terminal)과 `gardener-close.json`이다.
+- **branch upstream이 `origin/main`으로 잡힘(두 번째 발생):** 리드가 `git switch -c docs/character-server-closeout-20261029 origin/main`으로 종료 기록 branch를 만들자 upstream이 `origin/main`으로 잡혔다. push 전에 `git branch --unset-upstream`으로 끊었고, 원격 main에 push된 것은 0이다. 첫 발생은 [module boundary goal](../2026-10-05-module-boundary-warning/goal.md)이다. 두 번째 발생이라 반복 규칙 요건은 찼다. 정본 문구는 Rules 소유라 BACKLOG `branch-create-no-track`으로 연결만 한다.
 
 ## 보류와 남은 우려
 
@@ -985,3 +1006,16 @@ TRX helper와 봇 등록/회귀 목록 드리프트는 앞 목표 Gardener의 �
 ## 안정화 후보
 
 - 10-28 뒤: 감시·검사·운영 도구의 공통화/보강, receipt 자동 검사와 기능 완료조건을 막지 않는 부가 경계 사례 방어. 지금은 알려진 한계로 기록하고 기능 산출물을 잇는다(msg_5c3dc59360f6).
+
+## 다음 계획 후보
+
+후보 상세·출처·선행 조건은 BACKLOG 한 곳에서 관리한다. 아래는 종료 이관의 도착 링크이며 채택·착수 승인이 아니다.
+- 프로토콜 버전과 현재 문서의 드리프트 검사(Gardener 후보 1): BACKLOG `protocol-doc-version-drift`.
+- JSON 시각 처리 정본 helper와 위임 계약 승계(Gardener 후보 2): BACKLOG `json-time-parsing-helper`.
+- 캐릭터 메뉴 주석과 계약 설명 정정(판정 원문 O1·O2): BACKLOG `character-menu-comment-followup`.
+- main에서 새 branch를 만들 때 upstream을 잡지 않기(두 번째 발생): BACKLOG `branch-create-no-track`.
+- Unity 전체 EditMode 실행 명령의 플래그·경로 길이·종료 대기(VENV-01·02, VEXEC-01): BACKLOG `verification-operating-simplification-canon`.
+- 로컬 서식 미실행 뒤 CI 서식 실패 56건: BACKLOG `prepush-ci-format-checks`.
+- WSL 진입 인자의 재해석(수정 구현자 시도 1의 exit 127): BACKLOG `wsl-entry-argument-split`.
+- 리드 `gh pr ready`의 권한 분류기 거부: BACKLOG `auto-mode-workflow-blockers`.
+- CI 저장 관측 파일의 head·시각 누락: BACKLOG `pr-observation-evidence`.
