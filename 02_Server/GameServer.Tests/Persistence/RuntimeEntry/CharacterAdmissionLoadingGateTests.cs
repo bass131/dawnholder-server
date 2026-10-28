@@ -120,7 +120,7 @@ public sealed class CharacterAdmissionLoadingGateTests
         string state = RuntimeEntryApi.AdmissionState(session);
         ushort[] sent = session.IdsSince(mark);
         string[] callsAfterInvalid = fixture.Repository.Calls.ToArray();
-        session.Receive(new C_CharacterSelect { characterClass = (byte)CharacterClass.Knight });
+        fixture.SelectStored(session, CharacterClass.Knight);
         Repo.PendingCall<ReadAdmissionRequest, ReadAdmissionResult> probe = await fixture.NextReadAdmissionAsync();
 
         Assert.Equal("Selecting", state);

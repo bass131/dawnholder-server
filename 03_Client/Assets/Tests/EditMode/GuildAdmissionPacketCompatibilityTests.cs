@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Dawnholder.Client.Tests
 {
-    // The committed Shared/ClientNet consumers see raw v21 frames in one receive chunk.
+    // The committed Shared/ClientNet consumers see raw v22 frames in one receive chunk.
     // Authority belongs to 48 and the current connection; guild pushes cannot grant gameplay readiness.
     public sealed class GuildAdmissionPacketCompatibilityTests
     {
@@ -78,7 +78,7 @@ namespace Dawnholder.Client.Tests
                 26, 0, 47, 0, 2, 1, 4, 3, 2, 1,
                 212, 195, 178, 161, 68, 51, 34, 17, 8, 7, 6, 5, 4, 3, 2, 1,
             };
-            Assert.AreEqual(21, ProtocolVersion.Current);
+            Assert.AreEqual(22, ProtocolVersion.Current);
             Assert.AreEqual(76, snapshot.Length);
             byte[] chunk = admission.Concat(snapshot).Concat(result).ToArray();
             object guild = GuildClientProduct.State(_session);

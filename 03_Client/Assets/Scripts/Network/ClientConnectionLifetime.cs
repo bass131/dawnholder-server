@@ -39,10 +39,12 @@ namespace Dawnholder.Client.Network
         string _accountName;
         bool _loginSent;
         byte _selectedClass;
-        bool _characterSelectSent;
+        bool _characterMenu;
+        bool _loginAccepted;
         bool _disposed;
 
         public event Action<LoginResult> LoginRejected;
+        public event Action<IClientConnectionSession> CharacterMenuLoginAccepted;
 
         public ClientConnectionState State { get; private set; }
         public long Generation { get; private set; }
@@ -60,6 +62,12 @@ namespace Dawnholder.Client.Network
         }
 
         public bool Connect(IPEndPoint endPoint, byte selectedClass, string accountName)
+            => BeginConnection(endPoint, selectedClass, accountName, characterMenu: false);
+
+        public bool ConnectCharacterMenu(IPEndPoint endPoint, string accountName)
+            => BeginConnection(endPoint, 0, accountName, characterMenu: true);
+
+        bool BeginConnection(IPEndPoint endPoint, byte selectedClass, string accountName, bool characterMenu)
         {
             if (_disposed || State != ClientConnectionState.Disconnected) return false;
             Generation++;
@@ -67,7 +75,8 @@ namespace Dawnholder.Client.Network
             _selectedClass = selectedClass;
             _accountName = accountName;
             _loginSent = false;
-            _characterSelectSent = false;
+            _characterMenu = characterMenu;
+            _loginAccepted = false;
             LastError = null;
             State = ClientConnectionState.Connecting;
             try
@@ -176,9 +185,13 @@ namespace Dawnholder.Client.Network
                 Disconnect();
                 return;
             }
-            if (_characterSelectSent) return;
-            _characterSelectSent = true;
-            try { session.SendCharacterSelect(_selectedClass); }
+            if (_loginAccepted) return;
+            _loginAccepted = true; // Consume before notifying; callbacks may synchronously reenter this owner.
+            try
+            {
+                if (_characterMenu) CharacterMenuLoginAccepted?.Invoke(session);
+                else session.SendCharacterSelect(_selectedClass);
+            }
             catch (Exception error)
             {
                 LastError = error;
@@ -208,7 +221,8 @@ namespace Dawnholder.Client.Network
             _loginHandler = null;
             _accountName = null;
             _loginSent = false;
-            _characterSelectSent = false;
+            _characterMenu = false;
+            _loginAccepted = false;
             State = ClientConnectionState.Disconnected;
             if (session != null)
             {

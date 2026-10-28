@@ -71,6 +71,7 @@ namespace Shared.Protocol;
 ///   - v19: C_Login/S_LoginResult (ID 41..42) append. handshake 뒤 계정 로그인, 성공 뒤 직업 선택.
 ///   - v20: 길드 조회/거점 구매/개인 강화와 snapshot/result (ID 43..47) append.
 ///   - v21: 고정 World 길드 정의43..47 뒤 S_CharacterLoadResult48 append. 서버 직업 확인 뒤 진입.
+///   - v22: 캐릭터 목록·생성·ID 선택 요청/결과49..54 append. 기존1..48은 불변.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -84,6 +85,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. v21 = 길드·거점·무기 강화43..47 및 권위 직업 결과48.</summary>
-    public const ushort Current = 21;
+    /// <summary>현재 프로토콜 버전. v22 = 캐릭터 목록·생성·ID 선택 요청/결과49..54.</summary>
+    public const ushort Current = 22;
 }

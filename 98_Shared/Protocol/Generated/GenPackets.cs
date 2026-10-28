@@ -67,6 +67,12 @@ public enum PacketID : ushort
 	C_WeaponEnhance = 46,
 	S_GuildActionResult = 47,
 	S_CharacterLoadResult = 48,
+	C_CharacterListRequest = 49,
+	S_CharacterListResult = 50,
+	C_CharacterCreateRequest = 51,
+	S_CharacterCreateResult = 52,
+	C_CharacterSelectRequest = 53,
+	S_CharacterSelectResult = 54,
 	
 }
 
@@ -3748,6 +3754,643 @@ public class S_CharacterLoadResult : IPacket // S_CharacterLoadResult 패킷
 		// characterClass 쓰기
 		s[count] = (byte)this.characterClass;
 		count += sizeof(byte);
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class C_CharacterListRequest : IPacket // C_CharacterListRequest 패킷
+{
+    // 멤버 변수들
+    public uint requestId;
+	public byte reserved;
+    public ushort Protocol { get { return (ushort)PacketID.C_CharacterListRequest; } }
+
+    public void Read(ArraySegment<byte> segment)
+    {
+        // segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // requestId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.requestId = BinaryPrimitives.ReadUInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(uint);
+		
+		// reserved 읽기
+		this.reserved = (byte)s[count];
+		count += sizeof(byte);
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환.
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.C_CharacterListRequest);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // requestId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteUInt32LittleEndian(s.Slice(count, s.Length - count), this.requestId);
+		count += sizeof(uint);
+		
+		// reserved 쓰기
+		s[count] = (byte)this.reserved;
+		count += sizeof(byte);
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class S_CharacterListResult : IPacket // S_CharacterListResult 패킷
+{
+    // 멤버 변수들
+    public uint requestId;
+	public byte result;
+	public byte invalidField;
+	public byte occupiedMask;
+	public string slot1CharacterIdD;
+	public string slot1Name;
+	public byte slot1ClassId;
+	public string slot2CharacterIdD;
+	public string slot2Name;
+	public byte slot2ClassId;
+	public string slot3CharacterIdD;
+	public string slot3Name;
+	public byte slot3ClassId;
+    public ushort Protocol { get { return (ushort)PacketID.S_CharacterListResult; } }
+
+    public void Read(ArraySegment<byte> segment)
+    {
+        // segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // requestId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.requestId = BinaryPrimitives.ReadUInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(uint);
+		
+		// result 읽기
+		this.result = (byte)s[count];
+		count += sizeof(byte);
+		
+		// invalidField 읽기
+		this.invalidField = (byte)s[count];
+		count += sizeof(byte);
+		
+		// occupiedMask 읽기
+		this.occupiedMask = (byte)s[count];
+		count += sizeof(byte);
+		
+		// slot1CharacterIdD 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot1CharacterIdDLen = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(ushort);
+		this.slot1CharacterIdD = Encoding.Unicode.GetString(s.Slice(count, slot1CharacterIdDLen));
+		count += slot1CharacterIdDLen;
+		
+		// slot1Name 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot1NameLen = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(ushort);
+		this.slot1Name = Encoding.Unicode.GetString(s.Slice(count, slot1NameLen));
+		count += slot1NameLen;
+		
+		// slot1ClassId 읽기
+		this.slot1ClassId = (byte)s[count];
+		count += sizeof(byte);
+		
+		// slot2CharacterIdD 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot2CharacterIdDLen = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(ushort);
+		this.slot2CharacterIdD = Encoding.Unicode.GetString(s.Slice(count, slot2CharacterIdDLen));
+		count += slot2CharacterIdDLen;
+		
+		// slot2Name 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot2NameLen = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(ushort);
+		this.slot2Name = Encoding.Unicode.GetString(s.Slice(count, slot2NameLen));
+		count += slot2NameLen;
+		
+		// slot2ClassId 읽기
+		this.slot2ClassId = (byte)s[count];
+		count += sizeof(byte);
+		
+		// slot3CharacterIdD 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot3CharacterIdDLen = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(ushort);
+		this.slot3CharacterIdD = Encoding.Unicode.GetString(s.Slice(count, slot3CharacterIdDLen));
+		count += slot3CharacterIdDLen;
+		
+		// slot3Name 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot3NameLen = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(ushort);
+		this.slot3Name = Encoding.Unicode.GetString(s.Slice(count, slot3NameLen));
+		count += slot3NameLen;
+		
+		// slot3ClassId 읽기
+		this.slot3ClassId = (byte)s[count];
+		count += sizeof(byte);
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환.
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.S_CharacterListResult);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // requestId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteUInt32LittleEndian(s.Slice(count, s.Length - count), this.requestId);
+		count += sizeof(uint);
+		
+		// result 쓰기
+		s[count] = (byte)this.result;
+		count += sizeof(byte);
+		
+		// invalidField 쓰기
+		s[count] = (byte)this.invalidField;
+		count += sizeof(byte);
+		
+		// occupiedMask 쓰기
+		s[count] = (byte)this.occupiedMask;
+		count += sizeof(byte);
+		
+		// slot1CharacterIdD 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot1CharacterIdDLen = (ushort)Encoding.Unicode.GetByteCount(this.slot1CharacterIdD);
+		success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), slot1CharacterIdDLen);
+		count += sizeof(ushort);
+		Encoding.Unicode.GetBytes(this.slot1CharacterIdD.AsSpan(), s.Slice(count, s.Length - count));
+		count += slot1CharacterIdDLen;
+		
+		// slot1Name 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot1NameLen = (ushort)Encoding.Unicode.GetByteCount(this.slot1Name);
+		success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), slot1NameLen);
+		count += sizeof(ushort);
+		Encoding.Unicode.GetBytes(this.slot1Name.AsSpan(), s.Slice(count, s.Length - count));
+		count += slot1NameLen;
+		
+		// slot1ClassId 쓰기
+		s[count] = (byte)this.slot1ClassId;
+		count += sizeof(byte);
+		
+		// slot2CharacterIdD 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot2CharacterIdDLen = (ushort)Encoding.Unicode.GetByteCount(this.slot2CharacterIdD);
+		success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), slot2CharacterIdDLen);
+		count += sizeof(ushort);
+		Encoding.Unicode.GetBytes(this.slot2CharacterIdD.AsSpan(), s.Slice(count, s.Length - count));
+		count += slot2CharacterIdDLen;
+		
+		// slot2Name 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot2NameLen = (ushort)Encoding.Unicode.GetByteCount(this.slot2Name);
+		success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), slot2NameLen);
+		count += sizeof(ushort);
+		Encoding.Unicode.GetBytes(this.slot2Name.AsSpan(), s.Slice(count, s.Length - count));
+		count += slot2NameLen;
+		
+		// slot2ClassId 쓰기
+		s[count] = (byte)this.slot2ClassId;
+		count += sizeof(byte);
+		
+		// slot3CharacterIdD 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot3CharacterIdDLen = (ushort)Encoding.Unicode.GetByteCount(this.slot3CharacterIdD);
+		success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), slot3CharacterIdDLen);
+		count += sizeof(ushort);
+		Encoding.Unicode.GetBytes(this.slot3CharacterIdD.AsSpan(), s.Slice(count, s.Length - count));
+		count += slot3CharacterIdDLen;
+		
+		// slot3Name 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort slot3NameLen = (ushort)Encoding.Unicode.GetByteCount(this.slot3Name);
+		success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), slot3NameLen);
+		count += sizeof(ushort);
+		Encoding.Unicode.GetBytes(this.slot3Name.AsSpan(), s.Slice(count, s.Length - count));
+		count += slot3NameLen;
+		
+		// slot3ClassId 쓰기
+		s[count] = (byte)this.slot3ClassId;
+		count += sizeof(byte);
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class C_CharacterCreateRequest : IPacket // C_CharacterCreateRequest 패킷
+{
+    // 멤버 변수들
+    public uint requestId;
+	public byte slot;
+	public byte classId;
+	public byte reserved;
+	public string rawName;
+    public ushort Protocol { get { return (ushort)PacketID.C_CharacterCreateRequest; } }
+
+    public void Read(ArraySegment<byte> segment)
+    {
+        // segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // requestId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.requestId = BinaryPrimitives.ReadUInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(uint);
+		
+		// slot 읽기
+		this.slot = (byte)s[count];
+		count += sizeof(byte);
+		
+		// classId 읽기
+		this.classId = (byte)s[count];
+		count += sizeof(byte);
+		
+		// reserved 읽기
+		this.reserved = (byte)s[count];
+		count += sizeof(byte);
+		
+		// rawName 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort rawNameLen = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(ushort);
+		this.rawName = Encoding.Unicode.GetString(s.Slice(count, rawNameLen));
+		count += rawNameLen;
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환.
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.C_CharacterCreateRequest);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // requestId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteUInt32LittleEndian(s.Slice(count, s.Length - count), this.requestId);
+		count += sizeof(uint);
+		
+		// slot 쓰기
+		s[count] = (byte)this.slot;
+		count += sizeof(byte);
+		
+		// classId 쓰기
+		s[count] = (byte)this.classId;
+		count += sizeof(byte);
+		
+		// reserved 쓰기
+		s[count] = (byte)this.reserved;
+		count += sizeof(byte);
+		
+		// rawName 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort rawNameLen = (ushort)Encoding.Unicode.GetByteCount(this.rawName);
+		success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), rawNameLen);
+		count += sizeof(ushort);
+		Encoding.Unicode.GetBytes(this.rawName.AsSpan(), s.Slice(count, s.Length - count));
+		count += rawNameLen;
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class S_CharacterCreateResult : IPacket // S_CharacterCreateResult 패킷
+{
+    // 멤버 변수들
+    public uint requestId;
+	public byte result;
+	public byte invalidField;
+	public byte slot;
+	public string characterIdD;
+	public string name;
+	public byte classId;
+    public ushort Protocol { get { return (ushort)PacketID.S_CharacterCreateResult; } }
+
+    public void Read(ArraySegment<byte> segment)
+    {
+        // segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // requestId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.requestId = BinaryPrimitives.ReadUInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(uint);
+		
+		// result 읽기
+		this.result = (byte)s[count];
+		count += sizeof(byte);
+		
+		// invalidField 읽기
+		this.invalidField = (byte)s[count];
+		count += sizeof(byte);
+		
+		// slot 읽기
+		this.slot = (byte)s[count];
+		count += sizeof(byte);
+		
+		// characterIdD 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort characterIdDLen = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(ushort);
+		this.characterIdD = Encoding.Unicode.GetString(s.Slice(count, characterIdDLen));
+		count += characterIdDLen;
+		
+		// name 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort nameLen = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(ushort);
+		this.name = Encoding.Unicode.GetString(s.Slice(count, nameLen));
+		count += nameLen;
+		
+		// classId 읽기
+		this.classId = (byte)s[count];
+		count += sizeof(byte);
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환.
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.S_CharacterCreateResult);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // requestId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteUInt32LittleEndian(s.Slice(count, s.Length - count), this.requestId);
+		count += sizeof(uint);
+		
+		// result 쓰기
+		s[count] = (byte)this.result;
+		count += sizeof(byte);
+		
+		// invalidField 쓰기
+		s[count] = (byte)this.invalidField;
+		count += sizeof(byte);
+		
+		// slot 쓰기
+		s[count] = (byte)this.slot;
+		count += sizeof(byte);
+		
+		// characterIdD 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort characterIdDLen = (ushort)Encoding.Unicode.GetByteCount(this.characterIdD);
+		success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), characterIdDLen);
+		count += sizeof(ushort);
+		Encoding.Unicode.GetBytes(this.characterIdD.AsSpan(), s.Slice(count, s.Length - count));
+		count += characterIdDLen;
+		
+		// name 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort nameLen = (ushort)Encoding.Unicode.GetByteCount(this.name);
+		success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), nameLen);
+		count += sizeof(ushort);
+		Encoding.Unicode.GetBytes(this.name.AsSpan(), s.Slice(count, s.Length - count));
+		count += nameLen;
+		
+		// classId 쓰기
+		s[count] = (byte)this.classId;
+		count += sizeof(byte);
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class C_CharacterSelectRequest : IPacket // C_CharacterSelectRequest 패킷
+{
+    // 멤버 변수들
+    public uint requestId;
+	public byte reserved;
+	public string characterIdD;
+    public ushort Protocol { get { return (ushort)PacketID.C_CharacterSelectRequest; } }
+
+    public void Read(ArraySegment<byte> segment)
+    {
+        // segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // requestId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.requestId = BinaryPrimitives.ReadUInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(uint);
+		
+		// reserved 읽기
+		this.reserved = (byte)s[count];
+		count += sizeof(byte);
+		
+		// characterIdD 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort characterIdDLen = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(ushort);
+		this.characterIdD = Encoding.Unicode.GetString(s.Slice(count, characterIdDLen));
+		count += characterIdDLen;
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환.
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.C_CharacterSelectRequest);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // requestId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteUInt32LittleEndian(s.Slice(count, s.Length - count), this.requestId);
+		count += sizeof(uint);
+		
+		// reserved 쓰기
+		s[count] = (byte)this.reserved;
+		count += sizeof(byte);
+		
+		// characterIdD 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort characterIdDLen = (ushort)Encoding.Unicode.GetByteCount(this.characterIdD);
+		success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), characterIdDLen);
+		count += sizeof(ushort);
+		Encoding.Unicode.GetBytes(this.characterIdD.AsSpan(), s.Slice(count, s.Length - count));
+		count += characterIdDLen;
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class S_CharacterSelectResult : IPacket // S_CharacterSelectResult 패킷
+{
+    // 멤버 변수들
+    public uint requestId;
+	public byte result;
+	public byte invalidField;
+	public string selectedCharacterIdD;
+    public ushort Protocol { get { return (ushort)PacketID.S_CharacterSelectResult; } }
+
+    public void Read(ArraySegment<byte> segment)
+    {
+        // segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // requestId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.requestId = BinaryPrimitives.ReadUInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(uint);
+		
+		// result 읽기
+		this.result = (byte)s[count];
+		count += sizeof(byte);
+		
+		// invalidField 읽기
+		this.invalidField = (byte)s[count];
+		count += sizeof(byte);
+		
+		// selectedCharacterIdD 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort selectedCharacterIdDLen = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(ushort);
+		this.selectedCharacterIdD = Encoding.Unicode.GetString(s.Slice(count, selectedCharacterIdDLen));
+		count += selectedCharacterIdDLen;
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환.
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.S_CharacterSelectResult);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // requestId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteUInt32LittleEndian(s.Slice(count, s.Length - count), this.requestId);
+		count += sizeof(uint);
+		
+		// result 쓰기
+		s[count] = (byte)this.result;
+		count += sizeof(byte);
+		
+		// invalidField 쓰기
+		s[count] = (byte)this.invalidField;
+		count += sizeof(byte);
+		
+		// selectedCharacterIdD 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+		ushort selectedCharacterIdDLen = (ushort)Encoding.Unicode.GetByteCount(this.selectedCharacterIdD);
+		success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), selectedCharacterIdDLen);
+		count += sizeof(ushort);
+		Encoding.Unicode.GetBytes(this.selectedCharacterIdD.AsSpan(), s.Slice(count, s.Length - count));
+		count += selectedCharacterIdDLen;
 		
 
         // 최종 size 기록
