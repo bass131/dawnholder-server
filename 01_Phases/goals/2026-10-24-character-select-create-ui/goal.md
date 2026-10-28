@@ -4,14 +4,14 @@
 
 ### 현재 재개 카드 — 2026-10-28 결정 31 반영 범위 승인
 
-**다음 첫 일:** World PR270의 병합을 기다린다. 병합되면 그 merge SHA를 이 branch에 통합하고, 실제 연결 단계의 신규 구현자 Opus 계약을 쓴다. 그 계약에는 Legacy 전환, 오류 문구 연결, 입장 대기 상세 문구 정정을 넣는다. 그다음 Unity+서버 창을 메인에 요청한다. 병합 전 단계는 끝났다([결과](#병합-전-단계-결과--가짜-응답-화면)). 리드는 `[Content 리드 Opus]`(claude-opus-5-5 xhigh)이고 회신 주소는 `run:run_5ff5a7b7de60`다.
+**다음 첫 일:** 병합 뒤 1단(실제 통신 연결, EditMode)은 끝났다([결과](#병합-뒤-1단-결과--실제-통신-연결)). 다음은 2a다. 연결 담당 타입이 캐릭터 ID를 Editor 로그에 남기게 하고, 합동 창용 복사본 `cmi3u`를 미리 import한다. 2a가 끝나면 그 head를 합동 창 S0의 Content head로 World·Core에 보낸다. 그 뒤 합동 창 S6a(2b), PR 직전 Astra 독립 검증, PR 순서다. PR270이 병합되면 main을 다시 받아 World 쪽 차이 0을 확인한다. 리드는 `[Content 리드 Opus]`(claude-opus-5-5 xhigh)이고 회신 주소는 `run:run_5ff5a7b7de60`다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 사용자 결정 31 A·33 A·34 A와 범위 초안 v1([적용 중인 사용자 결정](#적용-중인-사용자-결정)). 초안 원문은 `.backups/verification/2026-10-24-growth-effect-screen-link/lead-opus-entry-20261028/scope-draft-decision31-v1.md`(sha256 `3781850098b0035384f0407c52644a86284ba85aa97d2e7ad7fb086653157399`)다. |
 | branch | 이 branch에 최신 main(`627c9915`)을 통합했고 10-28에 처음 push한다. 화면 1단계 `2215d47a`의 6파일은 그대로다. |
 | 병합 전 단계 | 10-29 01:00 KST에 끝났다. 오류 문구 매핑, 이름 규칙 안내, 배치 다듬기, 두 해상도 캡처를 했고 EditMode 1122/1122가 통과했다. Legacy 전환은 Network·컨트롤러를 건드려야 해서 병합 뒤 단계로 넘겼다. 독립 판정은 아직이다. |
-| 병합 뒤 단계 | World 통신 부품에 잇고, DB 있는 서버로 생성·선택·입장·재접속과 마을 풀 HP를 확인한다. 사용자 직접 플레이와 병합 승인은 아침에 묶어 요청한다(메인 `msg_9624bb2949f7`). |
+| 병합 뒤 단계 | World 통신 부품에 잇고, DB 있는 서버로 생성·선택·입장·재접속과 마을 풀 HP를 확인한다. 사용자 직접 플레이와 병합 승인은 아침에 묶어 요청한다(메인 `msg_9624bb2949f7`). 1단은 PR270 검증 통과 head 위에서 10-29 03:23 KST에 끝났다(EditMode 1421/1421, checkpoint `261b5ee1`). DB 서버 확인은 아침 합동 창 S6a에서 한다. |
 | 실행 창 | 병합 전 Unity 창은 00:42~00:57 KST에 쓰고 반환했다. 메인 순서로는 World 수정 구현자 WSL, World 검증자 WSL+Unity가 앞에 있다. 다음 Content 창은 시작 전 메인에 요청한다. |
 | 이전 goal | 길드 성장 효과 화면 연결은 결정 33 A로 닫았다([처분](#이전-goal-처분--길드-성장-효과-화면-연결)). |
 
@@ -353,3 +353,23 @@ PR 번호가 정해지면 병합 단계 이름을 해당 PR번호와 병합으�
 - 다음 단계로 넘긴 것: Legacy 16 전환, 컨트롤러에 문구 매핑 잇기, 입장 대기 상태에서 상세 문구 「입장하려면 선택 버튼을 누르세요.」가 남는 어긋남 정정.
 - 근거: `.backups/verification/2026-10-24-character-entry-prep/impl-pre-merge-v1/`에 report.md, 결과 XML 2개, 로그, PNG `png-1/`·`png-2/`가 있다. 리드 검토와 PNG SHA256은 `.backups/verification/2026-10-24-character-entry-prep/lead-opus-20261029/`의 `lead-review-impl-pre-merge-v1.md`·`png-sha256.txt`에 있다. 2차 PNG 8장은 아침 사용자 확인 묶음에 넣는다.
 - 정산: 구현자 pane을 닫았다. 복사본 `.backups/tmp/cmi1u/03_Client/Library`(2.88GiB, 파일 50,277개)만 지웠고, C: 여유는 73.29GiB에서 76.24GiB가 됐다.
+
+### 병합 뒤 1단 결과 — 실제 통신 연결
+
+- 기준: PR270 검증 통과 head `4755f807aeda8d35df20f98699a28245e43735e0`(병합 전)을 통합한 `203e6101`이다. World 쪽 파일 차이는 0이다(메인 `msg_3973304aa649`).
+- 구현자: 신규 `[Content 구현 Opus]`(claude-opus-5-5 xhigh, backend 실제 모델 unknown)다. Task `task_23cb9308604e`, Dispatch `ctx_df3f15ff4fe5`이고, 2026-10-28T18:22:53Z에 worker_done을 보냈다. 계약 v2의 sha256은 `164ebdbe…0ba6`다. 구현자 자체 확인이며 독립 판정이 아니다.
+- 바뀐 것:
+  - 신규 `CharacterMenuPresenter`가 `CharacterMenuClient` 응답을 화면 상태로 바꾸고 character ID를 혼자 든다. 16은 연결을 끊고 Knight/Mage 버튼으로 넘긴다. 12는 문구를 보인 채 연결 종료 상태로 둔다. 1+Slot/Class/CharacterId는 목록을 한 번 다시 요청한다.
+  - `CharacterSelectController`는 `NetworkService`가 있으면 메뉴 접속을 열고, 메뉴가 열린 동안 Legacy 버튼을 막는다.
+  - 입장 대기 상세 문구를 「이 캐릭터로 입장을 기다리는 중입니다.」로 고쳤다. `CharacterMenuResultText`는 Shared enum을 쓴다.
+  - 시험은 연결 담당 31건, 화면 1건, 캡처 1메서드(두 해상도)를 더했다.
+- 실행: 메인 사전 허가(`msg_3973304aa649`) 창 03:06~03:16 KST에 복사본 batchmode EditMode 전체를 1회 돌렸다. 리드가 원시 XML을 직접 읽어 1421/1421 통과, 실패 0을 확인했다. 반환 때 Unity·dotnet은 0이었다. PNG는 두 해상도 × 7상태 14장이다.
+- 리드 확인: 바뀐 10파일의 sha256을 다시 재서 보고와 같았다. 금지 영역 diff 0, 새 GUID 둘의 저장소 안 중복 0을 확인했다. checkpoint는 `261b5ee1a36840b6c5ae2eec20af38e525c4e8b3`이고 push했다.
+- 아침 사용자 확인에 넣을 것:
+  - 새 문구 넷(생성 성공, 생성·선택 미송신, 목록 미송신, 입장 대기 상세).
+  - 연결 시도 자체가 실패하면 화면이 「연결하는 중」에 남는다. `NetworkService`가 실패를 공개하지 않기 때문이고, 뒤로 가기는 된다.
+  - 선택 요청 대기(Selecting) 중에는 상세 문구가 「입장하려면 선택 버튼을 누르세요.」로 남는다. 버튼은 잠겨 있다.
+- 남은 미실행: 실제 서버·DB 접속, CharacterSelect 씬 실제 진입과 컨트롤러 `Start`·`Update` 경로, 실제 입력 장치, PlayMode다. 합동 창 S6a에서 일부를 본다.
+- 2a로 넘긴 것: 완료조건 4의 「같은 character ID」를 볼 곳이 없다. 화면은 ID를 보이지 않고, 클라 로그와 서버 로그(`CharacterMenuCatalogSession` 70·214행)에도 ID가 없다. 그래서 연결 담당 타입이 결과마다 칸·ID·이름·직업을 Editor 로그에 한 줄 남기게 한다.
+- 근거: `.backups/verification/2026-10-24-character-entry-prep/impl-post-merge-v2/`(report.md, context.md, 결과 XML, 로그, `png-1/`, `final-hashes.txt`). 정산 원시는 같은 상위 폴더의 `lead-opus-20261029/`에 있다.
+- 정산: 구현자 pane을 닫았다. worker-release는 retained/external_terminal이었다. 복사본 `.backups/tmp/cmi2u/03_Client/Library`(3,142,611,114 bytes)만 지웠고, C: 여유는 61.07GiB에서 64.06GiB가 됐다.
