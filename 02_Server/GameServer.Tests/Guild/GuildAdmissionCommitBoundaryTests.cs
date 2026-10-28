@@ -15,13 +15,18 @@ namespace Dawnholder.Server.GameServer.Tests.Guild;
 [Collection("GameWorldRegistryTests")]
 public sealed class GuildAdmissionCommitBoundaryTests
 {
+    // The selector-bound services keep this selector-path test (decision 28 A): the opposite menu class
+    // is sent, so the acquired Mage is the stored class that 48 and the guild entry must carry.
     [Fact]
     public async Task LoadingGuildInputsAreDropped_StoredClass48PrecedesEntryAndFirstSeed()
     {
-        using AdmissionTestWorld fixture = new();
+        using AdmissionTestWorld fixture = new(attachPersistence: false);
+        object selector = RuntimeEntryApi.NewSelector(PersistedName, PersistedAccountId);
+        RuntimeEntryApi.AttachPersistence(fixture.World,
+            RuntimeEntryApi.NewServices(selector, PersistedIdentity, fixture.Repository, fixture.Clock));
         EntrySession watcher = await fixture.EnterAsync(OtherName, CharacterClass.Knight);
         (EntrySession loading, Repo.PendingCall<AcquireAndLoadRequest, AcquireAndLoadResult> acquire) =
-            await fixture.LoadingAsync(CharacterClass.Knight);
+            await SelectorLoadingAsync(fixture, CharacterClass.Knight);
         int mark = loading.Mark;
 
         loading.OnRecvPacket(GuildWire.GuildRequest());
@@ -125,6 +130,19 @@ public sealed class GuildAdmissionCommitBoundaryTests
         Assert.Equal(0u, fresh.Revision);
         Assert.Equal(0, fresh.Currency);
         Assert.Empty(fresh.Counts);
+    }
+
+    // Selector path: the persisted account sends a class-only selection; the probe is answered Free and
+    // the acquire that follows stays pending, so the session is in Loading.
+    static async Task<(EntrySession Session, Repo.PendingCall<AcquireAndLoadRequest, AcquireAndLoadResult> Acquire)>
+        SelectorLoadingAsync(AdmissionTestWorld fixture, CharacterClass menuClass)
+    {
+        EntrySession session = await fixture.LogInAsync(PersistedName);
+        session.Receive(new C_CharacterSelect { characterClass = (byte)menuClass });
+        Repo.PendingCall<ReadAdmissionRequest, ReadAdmissionResult> probe = await fixture.NextReadAdmissionAsync();
+        Assert.Equal(PersistedIdentity, probe.Request.Identity);
+        probe.Complete(FreeProbe());
+        return (session, await fixture.NextAcquireAsync());
     }
 
     static async Task<GuildSnapshot> QueryAsync(AdmissionTestWorld fixture, EntrySession session)

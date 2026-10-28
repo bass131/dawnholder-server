@@ -4,12 +4,12 @@ using Shared.Protocol;
 namespace Dawnholder.Server.GameServer.Tests.Guild;
 
 // I9 / G7 (technical contract v1, 「패킷 필드와 결과」): packets 1..42 keep their names and numbers, the
-// five guild packets stay at 43..47, followed by the admission result at 48, and writers/readers use the fixed
-// LittleEndian layout. The new types are looked up by name through reflection, so this file compiles
-// before the generator runs and a missing type is a failing assertion rather than a build break.
-// Expected bytes are literals. Version 21 and the handshake rejection of older clients are owned by
-// InventoryProtocolContractTests and BossBehaviorTests; the server's own 44/47 output is checked
-// byte by byte through GuildWire in the behaviour tests of this folder.
+// five guild packets stay at 43..47, followed by the admission result at 48 and the character menu packets
+// at 49..54, and writers/readers use the fixed LittleEndian layout. The new types are looked up by name
+// through reflection, so this file compiles before the generator runs and a missing type is a failing
+// assertion rather than a build break. Expected bytes are literals. Version 22 and the handshake rejection
+// of older clients are owned by InventoryProtocolContractTests and BossBehaviorTests; the server's own
+// 44/47 output is checked byte by byte through GuildWire in the behaviour tests of this folder.
 public sealed class GuildProtocolContractTests
 {
     static readonly string[] ExistingOrder =
@@ -54,8 +54,8 @@ public sealed class GuildProtocolContractTests
         }
         Assert.True(actual.TryGetValue("S_CharacterLoadResult", out int loadResultId));
         Assert.Equal(48, loadResultId);
-        Assert.Equal(48, actual.Values.Max());
-        Assert.Equal(48, actual.Count);
+        Assert.Equal(54, actual.Values.Max());
+        Assert.Equal(54, actual.Count);
     }
 
     [Fact]

@@ -13,7 +13,6 @@ using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Entities;
 using Dawnholder.Server.GameServer.Persistence;
 using Dawnholder.Server.GameServer.Persistence.Admission;
-using Dawnholder.Server.GameServer.Persistence.Catalog;
 using Dawnholder.Server.Network;
 using Shared.GameData;
 using Shared.Protocol;
@@ -91,7 +90,10 @@ public class GameSession : PacketSession
     {
         _world = world ?? GameWorld.Instance;
         _persistence = persistence ?? _world?.Persistence;
-        if (_persistence?.Mode == CharacterStorageMode.Stored && _world is not null)
+        // Both services constructors report Stored, so only the Catalog decides the path
+        // (same predicate as CharacterAdmissionServices.CreateLifetime). The selector-bound
+        // constructor keeps the class-select entry and has no catalog menu.
+        if (_persistence?.Catalog is not null && _world is not null)
             _catalogMenu = new CharacterMenuCatalogSession(_world, _persistence.Catalog);
     }
 
@@ -566,8 +568,9 @@ public class GameSession : PacketSession
 
     internal void SubmitCharacterSelect(byte intendedClass)
     {
-        // A class-only packet has no stored identity and can never authorize Stored entry.
-        if (_persistence?.Mode == CharacterStorageMode.Stored)
+        // A class-only packet has no stored identity and can never authorize Catalog entry. Same
+        // predicate as CharacterAdmissionServices.CreateLifetime, so the two refusals cannot diverge.
+        if (_persistence?.Catalog is not null)
         {
             _world?.EnqueueAdmissionResult(() =>
             {
