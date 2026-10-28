@@ -89,3 +89,12 @@ PDL 끝에만 추가하고 기존1..48의 번호·필드 순서를 보존한다.
 선행 요구 시험에는 byte 고정 프레임/한도/잘린 UTF-16·길이·reserved, 목록0/1/3·mask/class0, 생성 거부/중복·상관값, 계정 소유 격리, pending/닫힘/늦은 완료, Unknown/원래 예산·Core host 소유,54→48→입장→guild, Legacy와 Stored 실패, AccountId seed 보존을 넣는다. 기대 byte/결과는 이 계약의 독립 고정값에서 만들며 제품 계산 복제로 항상 통과하게 하지 않는다.
 
 **Unity 제품 파일 쓰기와 실제 실행은 아직 허용되지 않았다.** Content가 공유 `UnityClientSession.cs`/`NetworkService.cs`를 길드 PR2에서 사용할 예정이므로 쓰기 종료·한정 소유 이전 전 World는 이 파일과 입장 관련 파일을 쓰지 않는다. 새 Network/CharacterMenu 책임 경로도 후보이며 Unity 후속 계약에서 정확 파일을 고정한다. 현재 서버/wire 선행 준비의 성공은 Unity 소비자·UI·실DB·Player build 완료가 아니다.
+
+## Content 선택·생성 창 안내 — 2026-10-28 추가
+
+사용자 결정 27 A·범위 v2 승인(goal 「적용 중인 사용자 결정」의 `msg_5642ff7de0f4`)에 따라 Content 창이 쓸 서버 규칙을 적는다. 위 wire 필드·번호·결과는 바꾸지 않는다. 화면 동작은 Unity 소비 계약 `unity-consumer-contract-v1.md`의 `CharacterMenuClient` API(목록·생성·선택 요청과 결과 통지) 위에 만든다.
+
+- **이름 규칙:** 서버가 판정한다. 원천은 `02_Server/GameServer/Persistence/Catalog/CreateDescriptor.cs`의 `Name`이다. 원문은 2~36 UTF-16 단위까지 받고, NFC 정규화 뒤 2~12자여야 한다. 허용 문자는 한글 음절(가~힣)·영문 대소문자·숫자뿐이다. 중복은 영문만 대문자로 바꾼 키로 본다(`abc`와 `ABC`는 같은 이름). 창은 이 규칙을 안내 문구로만 쓰고, 거절은 51 응답의 `InvalidInput`·`invalidField`와 `NameTaken`으로 표시한다. Shared 공개 상수는 만들지 않는다(Core 회신 `msg_a4bad38aab8c` 6).
+- **새 로그인 이름:** 로그인 이름은 서버에서 계정 ID로 바로 바뀐다(`AccountIdResolver`). 처음 보는 이름은 캐릭터 0명인 빈 계정으로 시작하며 별도 계정 생성 요청은 없다.
+- **Legacy 호스트:** DB 없이 Legacy로 시작한 서버는 로그인 뒤 캐릭터를 고르는 단계의 49·51·53 요청에 `LegacyFlowOnly`(16)로 답한다. 그 단계가 아니면 `InvalidState`(3)다(`Sessions/CharacterMenuSession.cs`의 `HandleLegacyRequest`). 창은 `LegacyFlowOnly`를 받으면 기존 직업 선택 흐름으로 넘어간다. Stored 서버는 이 결과를 보내지 않는다.
+- **선택 뒤 순서:** 54 Success는 플레이 준비 완료가 아니다. 그 뒤 48의 저장 직업과 맵 입장 패킷이 와야 화면을 넘긴다(위 「모드·선택·입장·종료」).

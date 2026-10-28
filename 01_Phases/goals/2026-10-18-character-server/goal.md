@@ -10,7 +10,9 @@ Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확�
 
 ## 재개 지점
 
-**다음 첫 일(10-28 23:4x KST, `[World 리드 Opus]`):** 결정 27 반영 범위 v2와 결정 28 A·29 A가 승인됐다(Main `msg_5642ff7de0f4`). 순서는 리드의 후보 commit·main 통합·draft PR → 구현자 Opus의 Stored 생성 봇·selector 시험·WSL 자동 시험 → World·Core 독립 검증자 실사·시험 보완 → 합동 실DB 한 창 → Unity → 판정·PR이다. 실행 창은 Core와 순서를 맞춘 뒤 메인에 시각을 요청한다. 범위 초안 송신은 Main `msg_78570cdf06a1`이었다. 초안은 근거 폴더 `scope-draft-decision27-v2.md`(sha256 `da1b7492…`)다. Core 리드와 경계·순서·결정 문구를 맞췄다(Core `msg_a4bad38aab8c`·`msg_2084821e8a09`, World `msg_a89f446847b2`·`msg_ec2dd52491d3`). 합의 요지는 합동 실DB 한 창을 두 파트 독립 검증자의 실제 경로 실행으로 쓰고, 그 창의 World head를 PR head로 삼는 것이다. 진입 READY는 Main `msg_6113ac3af997`다. Run은 `run_90d18490c825`를 이어받았다. 미커밋 후보 25경로는 10-26 기록 hash와 25/25 일치한다. 근거는 `.backups/verification/2026-10-18-character-server/lead-opus-entry-20261028/`이다. 아래 Sol 리드 기록은 인계 당시 상태다.
+**다음 첫 일(10-29 00:5x KST, `[World 리드 Opus]`):** World 수정 구현자(Opus) 계약을 발행한다. 할 일은 셋이다. ① `GameSession`의 직업만 고르는 선택 거절과 catalog 메뉴 연결의 기준을 `Mode == Stored`에서 `Catalog is not null`로 좁힌다. Core 동의는 `msg_37ff61c16407`이고, 술어와 주석은 Core `CharacterAdmissionServices.CreateLifetime`과 맞춘다. ② 버전 21·패킷 48을 기대하는 기존 시험 6건을 22·54로 고치고 분류표를 남긴다. ③ Integration 「GameWorld 단일 인스턴스」 9건을 진단해 고친다. 첫 단서는 collection 없는 `Guild/GuildDebugTreasuryCheatTests`다. 앞 구현자(`task_e1dc91317495`)는 failed로 정산·종료했고, 산출물은 리드 commit에 있다. 실행 창은 Content Unity 반환 뒤 메인에 요청한다. 그다음은 World 검증자다(계약 초안 `verify-pr270-01/contract-head-v1.md`). 서식 검사는 이 PC Windows에 SDK 10.0.301이 없어 PR CI의 `format-check.sh`로 확인한다. 아래는 직전 단계 기록이다.
+
+**이전 다음 첫 일(10-28 23:4x KST, `[World 리드 Opus]`):** 결정 27 반영 범위 v2와 결정 28 A·29 A가 승인됐다(Main `msg_5642ff7de0f4`). 순서는 리드의 후보 commit·main 통합·draft PR → 구현자 Opus의 Stored 생성 봇·selector 시험·WSL 자동 시험 → World·Core 독립 검증자 실사·시험 보완 → 합동 실DB 한 창 → Unity → 판정·PR이다. 실행 창은 Core와 순서를 맞춘 뒤 메인에 시각을 요청한다. 범위 초안 송신은 Main `msg_78570cdf06a1`이었다. 초안은 근거 폴더 `scope-draft-decision27-v2.md`(sha256 `da1b7492…`)다. Core 리드와 경계·순서·결정 문구를 맞췄다(Core `msg_a4bad38aab8c`·`msg_2084821e8a09`, World `msg_a89f446847b2`·`msg_ec2dd52491d3`). 합의 요지는 합동 실DB 한 창을 두 파트 독립 검증자의 실제 경로 실행으로 쓰고, 그 창의 World head를 PR head로 삼는 것이다. 진입 READY는 Main `msg_6113ac3af997`다. Run은 `run_90d18490c825`를 이어받았다. 미커밋 후보 25경로는 10-26 기록 hash와 25/25 일치한다. 근거는 `.backups/verification/2026-10-18-character-server/lead-opus-entry-20261028/`이다. 아래 Sol 리드 기록은 인계 당시 상태다.
 
 **인계 당시: 현재 Sol 리드는 안전 지점에서 정산·정지하며 메인의 pane 종료를 기다린다.** Main `msg_0a6a1432302c`에 따라 새 Task·worker·실행 창0, 후보 제품/미추적 변경을 보존하고 기록 파일만 로컬 commit한다. 후임 Claude는 아래 **「최종 리드 정산 재개 카드」**에서 이어받는다. goal 전체 완료나 최종 강검증 PASS가 아니다.
 
@@ -386,6 +388,14 @@ Main `msg_82a65eb6e78b`의 메인 판단이다. 지금부터새B0창14:05~14:35Z
 Main `msg_61970f13bc49`의 **메인 판단**이며사용자원문으로기록하지않는다. 기간은2026-10-27 09:00KST까지다. 작업자/검증자의300초초과앞뒤HB명령·환경·exit·분리stdout/stderr원시가보존되고target실행이탈0이면절차실패로세지않고같은세션을계속한다. ORCAheartbeat-accounting의5분기준·초과구간/사유한줄정산과실제간격은유지한다. 같은세션재초과는자동실패가아니지만다음단계전메인에먼저보고한다. 원시누락·구기록기·미저장script가함께있으면적용하지않고공식질문한다. 원문은`approval-01/rehearsal-resume-01/inbox-wake-14.json`, 적용준비는`heartbeat-night-disposition-v1.md`이며회신메일0/정본수정0이다.
 
 ## 적용 중인 사용자 결정
+
+### 2026-10-28 결정 32 B — 합동 실DB 창은 사용자 기상 뒤
+
+Main `msg_853790fcdc0f`(14:46:57Z 송신)가 전달한 사용자 원문이다. 메인 전달이며 이 pane의 직접 사용자 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 32 - 합동 실DB 확인 창(사용자 착석 약 30분) 시각 → B 자고 일어나서 한다
+
+**메인 적용:** 밤사이 구현·자동 시험·독립 검증·Unity 시험까지 끝내고 합동 창 직전(S0)에서 head를 고정한 채 기다린다. 사용자가 일어나 메인 pane에 말하면 메인이 두 리드에 시작을 알린다. 밤사이 결함은 승인 범위 안에서 수정·재검증하며, 합동 창 입력(head·hash)이 바뀌면 S0 고정 기록을 새로 남기고 메인에 알린다. 실행 창 배정(`msg_50f2fa1abdc1`: 구현자 WSL 10-29 01:30~02:30 KST, 검증자 WSL+Unity 03:00~04:00 무렵, 각 시작 전 메인 통지)은 그대로다. 병합·사용자 착석·사용자 결정이 필요한 일은 아침까지 묶어 보낸다.
 
 ### 2026-10-28 결정 27 반영 범위 v2 승인·결정 28 A·29 A
 
@@ -889,6 +899,13 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
 - **패킷 시험 작성 결과:** 신규 외부 Sol xhigh가 `CharacterMenuPacketContractTests.cs`와 `CharacterMenuPacketFixtures.cs`를 작성했다. 기존1..48 보존·새6패킷/공개enum·독립 byte/offset fixture를 요구로 검사하며 새 타입 부재는 reflection assertion으로 남긴다. 코드/보고·실제 diff·입력/출력 해시를 리드가 정적으로 대조하고 `worker_done succeeded`를 **작성 준비 완료만**으로 정산했다. 실제 실행·독립 판정은 미수행이다. 원문과 Task/Dispatch·수치/해시는 근거 `approval-01/packet-pretest-01/report.md`, `lead-post-settlement-audit.json`, `lead-settlement.md`에 있다.
 - **정산·종료:** 완료 Dispatch를 release한 뒤 외부 pane 유지 반환을 구분하고 정확 작성자 pane만 닫았다. 리드 생존·현재 worktree에 리드 pane만 남음·reclaimable0을 확인했다. 생존 신호 helper의 초과 구간은 이유 미기록으로 정산 원시에 남겼으며 질문 대기와 분리했다. 신호 초과만을 이유로 추가 대화 감사를 만들지 않았다. 제품 확정 실패와 섞지 않는다.
 - **CONTRACT-PS01(첫 발생):** 리드가 근거/harness 작성을 허용하면서 PowerShell 언어절 제외 이유를 쓰기0으로 적어 실제 일회성 정적 점검 script 작성/실행과 차이가 생겼다. 작성자의 자진 공식 질문 뒤 메인 `msg_dd0cf0173e26`에 보고하고 실행 원본·원시를 동결했다. 정산 보충1.2에 관련 규칙 원문 전체를 제공했지만 사전 누락을 소급 준수로 만들지 않았다. 후속 메모에 가독성 지적·미검토를 남겼고 script는 공용도구로 채택/재사용하지 않는다. 교정은 이번 리드 계약의 원문 선택·제외 설명 층에서 처리했다. 공용 검사 구현은 승인 범위 밖이며 첫 발생 기록이므로 새 반복 규칙을 만들지 않았다.
+- **10-29 World 구현자 Stored 생성 작업(`task_e1dc91317495`) — failed 정산:**
+  - 할 일 1~3과 보충 1(CI 공백 수정)을 파일로 마쳤다. 리드가 그 11파일을 commit했다.
+  - WSL 전체 시험은 실패 18·통과 2517·건너뜀 28이었다. 새 통합 시험 3건은 통과했다. 비교로 기준 브랜치 `627c9915`의 CI는 1952건 전부 통과다.
+  - 실패 세 묶음은 모두 이 브랜치가 들인 회귀다. 버전 21·패킷 48 기대 6건, Stored의 직업만 고르는 선택 거절이 selector 경로를 막은 3건, 병렬 Integration의 GameWorld 단일 인스턴스 충돌 9건이다.
+  - 서식 검사 `format-check.ps1`은 이 PC Windows에 SDK 10.0.301이 없어 실행하지 못했다. 계약에서 명령을 잘못 고른 리드 책임이다. 서식은 PR CI의 Linux `format-check.sh`로 확인한다.
+  - 원시는 `impl-stored-create-01/worker/raw/`, 보고는 같은 폴더의 `report.md`다. 정산·종료는 `worker/release-01.json`(retained·external_terminal), `worker/close-01.json`이다.
+- **selector 경로 수정 기준 — Core 동의:** 거절 기준을 `Catalog is not null`로 좁히는 World 수정안(`msg_163753b34afb`)에 Core가 동의했다(`msg_37ff61c16407`). Core 요청은 GameSession 거절 술어를 `CharacterAdmissionServices.CreateLifetime`과 같게 두고, 주석에서 그 규칙을 가리키는 것이다. 실제 서버 기동은 Catalog 생성자만 쓰므로 C6은 유지된다. 사용자 결정 28 A의 「selector 경로 시험은 유지」를 지키는 수정이다.
 
 ## 보류와 남은 우려
 
