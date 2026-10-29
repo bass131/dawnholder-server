@@ -2,19 +2,26 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-10-29 범위 승인
+### 현재 재개 카드 — 2026-10-29 PR2 착수
 
-**다음 첫 일:** PR275의 두 번째 독립 실사도 NOT PASS였다. 결함 3건 가운데 리드 몫 둘(반복 집계 누락, 세 번째 분석의 처분)을 이 커밋에서 고쳤다. 남은 하나는 그 검증자 자신의 쓰기 경계 위반이라 새 검증자가 정식 판정한다. 다음은 신규 독립 실사를 받아 PR275 병합 승인을 요청하는 것이다. 시안 한 장은 사용자가 결정 45로 확정했다([결정 45](#10-29-결정-45--시안-방향--msg_9789f261be0b)). 나머지 UI 병행은 [보충안 v3 A](#10-29-범위-보충안-v3-a--나머지-ui-병행--msg_79d2bf86419e)로 범위에 들어왔다. 두 창은 조각 재질 원천 생성 중이다.
+**다음 첫 일:** PR275가 병합됐다(사용자 결정 49 A, 아래 「PR275 병합」). PR2 branch를 최신 main에서 만들었고, 이 첫 커밋에 PR275 뒤의 기록을 넣었다. 다음은 선행 시험 계약을 발행하고, 그때 메인에 Unity 실행 시각을 요청하는 것이다. 계약 초안은 근거 폴더 `pr2-red-contract-draft-v2.md`, Unity 실행 계획은 `pr2-unity-run-plan-v1.md`다. 두 창 조각 25장은 근거 폴더에서 조합까지 끝났다(아래 「두 창 조각 묶음」). 나머지 UI 병행은 [보충안 v3 A](#10-29-범위-보충안-v3-a--나머지-ui-병행--msg_79d2bf86419e)대로 PR2 병합 뒤다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v2와 사용자 승인([적용 중인 사용자 결정](#적용-중인-사용자-결정)). 초안 원문은 `.backups/verification/2026-10-28-stone-terrain-environment-replacement/lead-opus-decision43-scope-draft-v2-20261029.md`(sha256 `7c0f2fa1376e4387ca9c6be651cf138a697a2d6111cd3086daf8c5ffd9ba628d`)다. |
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh). 회신 주소는 `run:run_6ae742140ce9`다. |
-| branch | PR1은 [PR275](https://github.com/bass131/dawnholder-server/pull/275), `docs/art-stone-closeout-ui-look-scope-20261029`(main `571d261c`에서 시작)다. 제품 branch `feat/art-ui-bright-look-20261029`는 PR1 병합 뒤 최신 main에서 만든다. |
-| 실행 창 | 이미지 생성은 시안 1회를 썼다(상한 11회 중). 두 창 조각 재질 원천 4회(2~5회째)가 승인돼 진행 중이다. Unity·서버 실행은 아직 0이다. 필요할 때 메인에 시각을 요청한다. |
+| branch | PR1 [PR275](https://github.com/bass131/dawnholder-server/pull/275)는 merge commit `dc66b77e`로 병합됐다. PR2 제품 branch는 `feat/art-ui-bright-look-20261029`이고, `dc66b77e`에서 upstream 없이 만들었다. |
+| 실행 창 | 이미지 생성은 상한 11회 중 5회를 썼다. 시안 1회와 조각 재질 원천 4회다. 6·7회째는 다시 그릴 때만 따로 승인을 받는다. Unity·서버 실행은 아직 0이다. 선행 시험 계약을 발행할 때 메인에 시각을 요청한다. |
 | 이전 goal | [석재 지형·환경물 교체](../2026-10-28-stone-terrain-environment-replacement/goal.md#closeout-20261029)는 안건 1 A로 미완료 종료했다. 그 미추적 58파일은 art-active에 그대로 있고 커밋하지 않는다. |
 
 ## 적용 중인 사용자 결정
+
+### 10-29 결정 49·50·51 A — PR275 승인 요청과 PR2 시험 경계 — msg_771bdbab00c1
+
+- 사용자 원문(메인 pane 제출, 메인 전달): 「대시보드 결정 응답: 2) 49 - Art PR275 넷째 실사 불통과: 다섯째 실사 없이 승인 요청으로 갈지 → A 실사 없이 승인 요청 · 3) 50 - 인벤토리 보존 시험의 배치 값 두 줄을 새 배치에 맞게 바꿀지 → A 두 줄 바꾼다 · 4) 51 - 캐릭터 선택창의 빈 자리를 어떻게 보일지 → A 빈 발판, 고르면 「새 캐릭터」」
+- 49 A(메인 전달): 다섯째 실사를 열지 않는다. 넷째 실사의 세 결함과 리드 자기 신고의 처분은 아래 「PR275 넷째 독립 실사」에 적었다.
+- 50 A(메인 전달): 인벤토리 보존 시험의 :500 패널 크기와 :505 새로고침 입력 칸 기대값만 새 배치 값으로 바꾼다. 같은 시험의 다른 단정은 그대로다. 조건은 인벤토리 외관 6건과 같다. 세부는 「건드릴 곳과 소유」의 시험 경계에 있다. Content 확인은 Content 리드를 다시 열 때 사후로 받는다.
+- 51 A(메인 전달): 자리 글 「슬롯 N\n빈 슬롯」은 그대로 둔다. 빈 자리는 직업 그림 없는 빈 발판으로 보인다. 빈 자리를 고르면 제목이 「새 캐릭터」로 보인다. 새 문구 오브젝트는 0이고 시험 변경도 0이다. 이 해석으로 완료조건 3의 「빈 자리는 「새 캐릭터」다」를 충족한다.
 
 ### 10-29 범위 보충안 v3 A — 나머지 UI 병행 — msg_79d2bf86419e
 
@@ -116,6 +123,14 @@
   - 바꾸지 않는다: 동작 시험, 문구를 정확히 맞추는 단정, `CharacterMenuViewCaptureTests`의 네 판정(1920×1080·1280×720에서 글자 손실 없음, 글자가 자기 칸과 화면 안, 겹침 없음, Tolerance 0.5)이다.
   - 결정 43 A를 근거로 고칠 수 있다: `ViewUsesExistingSkinAndFontWithoutAddingNamePolicy`의 스킨·글꼴 이름 단정, 캡처 fixture의 배경색과 「패널이 화면 절반 이상」 검사다. 같은 시험 안의 richText·이름 정책 단정은 남긴다. 바꾼 기대값과 근거는 이 goal에 적는다.
   - 인벤토리의 「이름 ×수량」 글 형식이나 Slot 경로를 바꿔야 하면 Content에 먼저 묻는다. 위 배치는 둘 다 바꾸지 않는다.
+  - 인벤토리 외관 시험 6건은 기대하는 GUID 표만 브라운에서 밝은 조각으로 바꾼다. 대상은 `UiWindowAppearanceContractTests.cs`의 :171·:184·:198·:211과 `UiWindowCompositionRenderTests.cs`의 :251·:315다.
+    - 메인 판단(`msg_e873edba3d2d`): 범위 초안 v2의 「예전 스킨을 고정한 검사」에 해당해 승인 범위 안이다. 이유는 결정 43 A와 완료조건 1이다. 역할 구조·raycast·포인터 상태 전이·화면 판정은 그대로 둔다. 다른 창(보상·파티 초대·파티 HUD·NPC)의 브라운 고정 시험은 PR2에서 바꾸지 않는다.
+    - Content 동의(`msg_b9b45522981b`, 질문 `msg_09d726f3642f`의 회신): 6건 모두 Art 작성 시험이다. 조건은 셋이다. :211의 금지 검사는 남기고 기준 표만 밝은 조각 표로 바꾸며, 브라운과의 합집합은 금지다. 기대값을 바꾼 뒤 일부러 틀린 조각을 넣으면 한 번은 실패하는지 확인한다. 앞서 합의한 `msg_3a2dfa53e814`의 조건도 그대로다.
+  - 인벤토리 배치 두 줄(사용자 결정 50 A): `UiWindowAppearanceContractTests.cs` :463 시험의 :500(패널 크기)·:505(새로고침 입력 칸) 기대값만 새 배치 값으로 바꾼다. 이유는 결정 43 A, 완료조건 1, 사용자 결정 50 A다. 같은 시험의 :508·:509 칸 사각형과 경로·listener·콜백·raycast·글꼴·숨김 단정은 그대로다.
+  - 위 8줄을 바꾸는 독립 검증자 계약에는 「외관·배치 기대값 외 단정이 약해지지 않았는지」를 줄 단위로 넣는다. 단정 수나 판정 기준이 줄면 통과 차단이다(메인 `msg_e873edba3d2d`·`msg_771bdbab00c1`).
+  - 빈 캐릭터 자리(사용자 결정 51 A): 「슬롯 N\n빈 슬롯」 단정(`CharacterMenuViewTests` :62~:64)과 Content 시험의 기대값은 바꾸지 않는다.
+  - 줄 번호는 `dc66b77e` 기준이다. 근거는 저장 스크립트 출력 `pr2-test-anchors-dc66b77e-01.stdout.txt`·`pr2-geometry-pins-dc66b77e-01.stdout.txt`·`pr2-character-text-pins-dc66b77e-01.stdout.txt`다. 앞 base `645fe187`의 출력과 같다(`pr2-anchor-compare-01.receipt.txt`).
+  - Content 리드를 다시 열 때 넘길 것: 결정 50 A의 사후 확인 요청, 질문 원문 `msg-content-pr2-boundary-q-01.txt`(Content가 결정 48 A로 닫혀 보내지 못했다), 「정의된 모든 ItemId에 아이콘이 있다」는 시험 요구다. 이 요구 때문에 새 아이템을 더하면 Art 아이콘도 같이 필요해진다.
 - PR3(나머지 9곳) 경계는 Content 리드 `msg_e187a4454281`(2026-10-29T01:09:28Z)의 동의를 받았다. 질문은 `msg_851b225dba78`이다.
   - Art가 쓴다: `Resources/UI/Components/UiWindowSkin.asset`, 같은 폴더의 `Window*.prefab` 5개, 새 밝은 조각 PNG·.meta. Content 파일 쓰기는 0이다.
   - 대상은 전투 HUD 틀, 파티 목록, 파티 초대, NPC 대화, 던전 클리어 보상, 길드 현황·대장간, 길드 거점 띠다. 세부 표는 보충안 v3 ①에 있다.
@@ -135,7 +150,7 @@
 
 1. PR2: 두 창은 밝은 스킨을 쓰고, 나머지 7개 창은 기존 브라운 조각을 그대로 쓴다. 이 둘을 선행 시험이 고정하고 통과한다.
 2. 인벤토리는 2열 4행 8칸이다. 아이콘이 재료·재화 주머니에 대응하고, 빈 칸·「이름 ×수량」 글·Slot 경로·「사용」 버튼 조건이 보존된다. 기존 Content 시험과 새 시험이 통과한다.
-3. 캐릭터 선택은 세 자리에 직업 그림이 대응하고 빈 자리는 「새 캐릭터」다. 위 보존 조건이 지켜지고 기존 Content 시험이 통과한다.
+3. 캐릭터 선택은 세 자리에 직업 그림이 대응하고 빈 자리는 「새 캐릭터」다. 빈 자리의 뜻은 [사용자 결정 51 A](#10-29-결정-495051-a--pr275-승인-요청과-pr2-시험-경계--msg_771bdbab00c1)다. 위 보존 조건이 지켜지고 기존 Content 시험이 통과한다.
 4. 두 해상도 캡처의 네 판정을 새 배치가 통과한다. 판정을 낮추지 않는다.
 5. 열림·마우스 올림·선택 강조 연출이 입력 잠금·raycast·종료 수명 시험을 깨지 않는다.
 6. 새 PNG는 새 .meta·GUID를 갖고, 기존 브라운 조각의 PNG·.meta·GUID 변화는 0이다.
@@ -164,6 +179,7 @@
 - 이미지 생성: 신규 Sol max 예외 경로다. 호출마다 쓰기 전에 메인 승인을 받는다. 상한은 시안 3회, 두 창 조각·아이콘 6회, 나머지 UI 2회로 합계 11회다(보충안 v3 A로 9회에서 늘었다). 결과 파일은 리드가 실제 경로(`~/.codex/generated_images/<세션>/`)와 SHA256을 확인한다.
 - Unity Editor: art-active에서 조각 가져오기, 화면 캡처, EditMode·PlayMode 시험에 쓴다. 메인에 시각을 요청한다.
 - PR267 기록에 UI 키트 렌더 시험 33건이 열린 에디터에서 실패했다. 외관 작업 전에 main 기준 결과를 먼저 재서 이번 변경과 구분한다.
+- Unity batchmode 시험 계약(main 기준 실측, 선행 시험, 구현, 검증)마다 10-24 Main 보호 결정 셋(`msg_6d2d607a721a`·`msg_b62ee0d53624`·`msg_e05dd4749c68`)을 원문으로 붙인다. 메인 지시 `msg_993fdd7557e6` 2항이다. 정본 반영 전까지 계약 승계로 막는다(BACKLOG `unity-testresults-protection-rule`, Rules 몫). 붙일 원문은 근거 폴더 `unity-protection-rules-v1.md`다.
 
 ## 일정
 
@@ -185,15 +201,17 @@
 
 - 세 맵 지형·소품 그림 품질 개선(이 goal 뒤 순서): BACKLOG `terrain-props-art-quality`
 - 게임 UI·아트 스타일 기준 문서화(채택 전, 이 goal의 입력 아님): BACKLOG `game-ui-style-reference`
+- 마을 배경·HUD 금괴 그림의 생성 도구 별 표식(메인 `msg_4a163b163353` 3항): BACKLOG `generated-image-star-mark`
+- 일반 회신에 `reply --id`를 쓰지 않게 막는 검사(R-3 반복, 아래 「운영 교정 반복 — R-3 회신 subject」): BACKLOG `orca-general-reply-tag-guard`
 
 ## 진척 단계
 
 - [x] 범위 승인
-- [>] PR275 병합
+- [x] PR275 병합
 - [x] 기준표와 시안
 - [x] 사용자 시안 확인
-- [ ] 조각·아이콘 제작
-- [ ] 선행 시험
+- [x] 조각·아이콘 제작
+- [>] 선행 시험
 - [ ] 두 창 구현
 - [ ] 독립 검증
 - [ ] 사용자 플레이 확인
@@ -243,6 +261,57 @@
 - 막는 결함 #DOC-05: 반복 표가 분석 명령 8개를 빠뜨렸다. 셀 단위도 적혀 있지 않았다.
 - 처리: #DOC-03은 메인이 비차단으로 처분했다(아래 표 밑). #DOC-05는 이 커밋에서 표와 BACKLOG 행을 고쳤다. #DOC-04는 새 검증자가 정식 판정한다.
 
+### 두 창 조각 묶음 — 재질 원천 네 장과 조합
+
+- 재질 원천: 신규 Sol max(`[Art Sol]`, task_cd512a9e2553 / ctx_46fa2da6a0b1)가 그림 생성 4회(2~5회째)를 썼다. worker_done은 `msg_12e145dbadb4`(01:43:31Z, succeeded)다. 결과 네 장(surface·controls·icons·pedestal, 각 1536×1024)은 근거 폴더 `bright-kit-sources/`에 있고, 원본 폴더의 PNG와 SHA256이 같다. 리드 확인 기록은 `bright-kit-sources-lead-check-01.md`다. 별 표식·글자·로고는 보이지 않았다.
+- 조합: 신규 Opus(`[Art 구현 Opus]`, task_e86c98beb13a / ctx_ef64c2af6316)가 네 장을 조합 스크립트로 오려 조각 25장을 만들었다. worker_done은 `msg_e4089606770e`다. 결과는 근거 폴더 `bright-kit/sprites/`, 명세는 `bright-kit/kit-spec.json`, 미리 정한 GUID 표는 `bright-kit-guids-v1.json`이다. 그림 생성 호출은 0이다.
+- 리드 대조: 저장 스크립트 `check-bright-kit-outputs.mjs`의 출력 `bright-kit-lead-check-02.*`(exit 0, failures 0)다. B1과 이름이 같은 17장은 크기·mode·border·본문 여백이 같다. 작업자 보고의 판단 일곱 항목을 받아들였다. 기록은 `bright-kit-lead-acceptance-01.md`다. 리드 자체 대조이며 독립 검증은 PR2에서 한다.
+- 메인도 미리보기 `bright-kit/preview/windows-rough.png`를 직접 봤다. 결정 45 시안과 같은 방향이고 별 표식·글자가 없다고 했다(`msg_4b6d035196d7`).
+
+### PR275 셋째 독립 실사 — NOT PASS
+
+- 신규 Astra xhigh 검증자(`[Art 검증자]`, ctx_c6c49ae86f61)의 판정 원문은 근거 폴더 `pr1-doc-review-03/verdict.md`(sha256 `e9265d5f92c55fed4f4d99fd6b2c4293d22d1ec5732c3f08bf62dcb2b15f1ff1`, 192줄)다. worker_done은 `msg_73b2abc0f84b`(02:20:24Z, failed)다. 대상 head는 `9bab98a0`였다.
+- 기준 19개 가운데 하나만 결함이고 나머지는 「검토했고 지적 없음」이었다. 대상 4파일의 결함은 없었다. #DOC-01·03은 메인 비차단 조건을, #DOC-02·05는 정정을, #DOC-04는 기록·보존을 확인받았다.
+- 막는 결함 #DOC-06: 리드 근거 메모 `lead-opus-v3-inline-record-context-20261029.md`에 완료 뒤 실제 파일·절·근거 연결이 없었다. 첫 작성일의 시계 원시도 없었다.
+- 처리(메인 결정 `msg_f3d062fbb7a4`, 사용자 결정 아님): 메모를 사본(`.as-reviewed-0220.md`)으로 보존했다. 끝에 「판정 DOC-06 뒤 덧붙임」 절을 덧붙인 시각 원시와 함께 붙였다(receipt `doc06-memo-appendix-01.txt`, 줄 번호 정정 `doc06-memo-appendix-fix-01.txt`). 첫 작성 시각은 unknown으로 적었고, 복원한 시계 호출은 재현이라고 적었다. PR275 head는 바꾸지 않았다.
+- **Art DOC-06, 파트 횡단 세 번째.** 결정 4A 뒤 Claude 리드가 리드 직접 쓰기의 맥락 메모 절차를 빠뜨린 일이 Content D01, Core CLOSE-D01에 이어 세 번째 파트에서 났다(메인 `msg_993fdd7557e6` 1항). 반복 규칙 후보는 BACKLOG `lead-direct-write-context-memo`다(정본 반영은 Rules 몫).
+- 비차단 관찰: O1(계약의 복원 파일 축약명)은 다음 계약부터 실제 파일명을 쓰기로 했다(메인 `msg_f3d062fbb7a4`). O2(PR 본문의 시차)는 승인 요청 전에 본문을 고쳤다(아래 「PR275 병합」).
+
+### PR275 넷째 독립 실사 — NOT PASS와 사용자 결정 49 A
+
+- DOC-06 처리만 보는 좁은 재검증이다. 신규 Astra xhigh 검증자(`[Art 검증자]`, ctx_89fdb7bdfd29)의 판정 원문은 근거 폴더 `pr1-doc-review-04/verdict.md`(sha256 `1aee34d314017ce4a1384be4060caf61d82bc2823d227c5db3ffef462177923a`, 180줄)다. worker_done은 `msg_27893afdfaa8`(03:01:42Z, failed)다. 대상 head는 `9bab98a0` 그대로였다.
+- #DOC-06은 해소됐다. 새로 나온 두 건은 PR 대상 파일이 아니라 근거 폴더의 기록에 관한 것이다.
+  - #DOC-07(검증자 귀속): 검증자 자신의 초기 명령 원시 일부를 보존하지 않았다.
+  - #DOC-08(리드 귀속): 리드 자기 신고 `lead-inline-lookups-doc06-fix-01.md`가 6549 호출을 「기록 값이 아닌 읽기」로 분류했다. 그 결과의 3986·3988은 넷째 실사 계약에 들어갔다. 리드가 검증자 질문의 답 `msg_c222f35df990`에서 먼저 밝힌 사실이다.
+- PR275 독립 실사 불통과는 네 번째였다. 메인은 셋째 뒤 「같은 산출물 수정 3회 선」을 알렸고(`msg_993fdd7557e6`), 넷째 뒤 사용자 체크포인트로 올렸다(`msg_f9a5510a7a5d`).
+- 사용자 결정 49 A(메인 `msg_771bdbab00c1` 전달)에 따른 처분이다. 다섯째 실사는 열지 않았다.
+  - #DOC-06: 해소로 받았다.
+  - #DOC-07: 검증자 절차 한계로 기록만 한다.
+  - #DOC-08: 메인 결정 `msg_f9a5510a7a5d`대로 자기 신고 끝에 「판정 DOC-08 뒤 덧붙임」 절을 붙여 닫았다. 덧붙이기 전 사본은 `.as-reviewed-0308.md`다. receipt는 `doc08-selfreport-appendix-01.txt`이고, 덧붙인 뒤 sha256은 `c53d0eb5ec8444517a0408ad0a35635d21bcacf78a601ee635b74fee5fe86d9b`다.
+- 리드 인라인 조회 자기 신고의 처분: 판정 원문 기준 「기존 자기 신고 다섯 묶음」(verdict.md 90행 절, 위치는 `review4-bundle-lines-01.txt`)과 #DOC-08의 6549 정정 절 전부에 같은 기준을 쓴다. 한정 인정, 소급 수정 없음, 원 위반 기록 유지다. 저장 스크립트 재현 결과는 원래 조회의 증거로 쓰지 않는다. Content D01·Core CLOSE-D01과 같은 기준이다.
+  - 사용자 결정 49 A 원문과 `msg_771bdbab00c1`의 「여섯 묶음」은 이 집합(다섯 묶음과 6549)을 뜻한다(메인 `msg_df7f2bd1f63d`).
+  - 메인 조건 1(`msg_af08be79ca51`, 이 goal 끝까지 인라인 값 기록 0)은 그대로다. 반복 기록은 아래 「운영 교정 반복 — 저장 안 한 분석 실행」 4행이다.
+- 설계 관찰 O1(비차단): 근거 메모 84행의 01:45:27Z가 receipt의 mtime이라는 점을 문장에 적으면 읽기 쉽다는 의견이다. 근거 폴더 기록이라 goal에는 이 줄만 남긴다.
+
+### PR275 병합
+
+- 승인 요청 전 다시 잰 값은 저장 스크립트 `measure-pr275-state.sh`의 출력 `pr275-state-04.*`다. 최신 main `796eb5af`(PR277 포함)과의 merge-tree는 충돌 0이었다. CI 4건이 pass였고, mergeable MERGEABLE, mergeStateStatus CLEAN, draft false였다. 양쪽이 함께 바꾼 CURRENT·BACKLOG에서 양쪽이 더한 줄은 병합 결과에 모두 남았고, BACKLOG 중복 ID는 0이었다(`pr275-state-03.overlap-diff.receipt.txt`, `pr275-state-03.backlog-dup.receipt.txt`).
+- PR 본문은 정정본 `pr275-body-final-03.md`로 바꿨다(`pr275-body-apply-03.receipt.txt`). 셋째·넷째 실사 결과와 처분은 이 커밋에 기록한다고 적었다.
+- 승인 요청은 `msg_8a6d5d898261`이다. 사용자가 「병합 승인: PR275 head 9bab98a0875c1762a8a71fc1968cd402c2f7e48e」를 제출한 뒤 메인이 병합 관문으로 실행했다. merge commit은 `dc66b77e6de836f243fde633a8ba81c3f5e93aa1`, mergedAt은 2026-10-29T12:16:41Z다(메인 `msg_282b4dbd7b22`).
+
+### 생존 신호 초과 정산
+
+세부 원시와 이유는 근거 폴더 `liveness-settlement-01.md`다. 300초 초과 구간을 면제 없이 적었다. 원인별 시간은 미측정이다.
+
+| 작업 | 초과 구간 |
+|---|---|
+| 재질 원천(ctx_46fa2da6a0b1) | 325초, 311초 |
+| PR275 셋째 실사(ctx_c6c49ae86f61) | 402초(문맥 압축과 복귀), 425초(판정문 작성 중) |
+| 조각 조합(ctx_ef64c2af6316) | 513초, 338초, 343초, 305초, 399초(긴 xhigh 생각 턴) |
+| PR275 넷째 실사(ctx_89fdb7bdfd29) | 537초. 검증자 기록은 그 사이 heartbeat가 있어 399초다. 리드 입력에는 그 heartbeat가 없다. |
+
+- 메인은 위 초과를 기록으로 받았다(`msg_f3d062fbb7a4`, `msg_f9a5510a7a5d`). 다음 정산은 검증자 자기 기록과 우편함 전체 목록(`inbox --json`)을 함께 대조한다(메인 `msg_f9a5510a7a5d`).
+
 ### 운영 교정 첫 발생 — 검증자 허용 폴더 밖 쓰기
 
 - 두 번째 실사 검증자가 apply_patch 호출을 잘못해 허용 폴더(`pr1-doc-review-02/`) 밖에 `evidence-unused-placeholder.txt`를 만들었다. 내용은 `placeholder`와 줄바꿈, 12 bytes, mtime 2026-10-29T01:11:12Z다. 검증자가 바로 escalation으로 알렸다(`msg_c42553ec7f35`).
@@ -253,7 +322,7 @@
 
 ### 운영 교정 반복 — 저장 안 한 분석 실행
 
-Art goal 계열에서 같은 종류가 세 번 났다. 근거·판정에 쓴 분석을 인라인 명령으로 돌리고 실행 파일을 남기지 않은 일이다. 규칙 원천은 task-context의 harness 파일 보존이다.
+Art goal 계열에서 같은 종류가 다섯 번 났다(PR275 head `9bab98a0` 때 세 번, 그 뒤 PR2 첫 커밋 전까지 두 번). 근거·판정에 쓴 분석을 인라인 명령으로 돌리고 실행 파일을 남기지 않은 일이다. 규칙 원천은 task-context의 harness 파일 보존이다.
 
 - 표의 「번」은 발생 묶음이다. 묶음은 메인 처분의 경계로 나눴다. 2번은 `msg_33a90eb2f56f` 전, 3번은 그 뒤다.
 - 묶음 안의 개수는 셸 명령(Bash 도구 호출 하나)으로 센다. 한 명령 안에서 Node가 여러 번 돌아도 한 개로 센다. 리드 세션의 분류 원천은 근거 폴더 `inline-node-runs-classification-01.md`다. 거기서 「71」은 명령 글에 인라인 node가 든 명령을 텍스트로 찾은 수다. 분석 명령은 그 가운데 13개다.
@@ -264,9 +333,21 @@ Art goal 계열에서 같은 종류가 세 번 났다. 근거·판정에 쓴 분
 | 1 | 2026-10-26 | 석재 goal의 옛 Opus 검증자 | 판정용 분석 실행 | 메인 `msg_bb057dfa6536`(10:50:05Z)이 PASS를 불인수했다. 그 뒤 계약에서 「저장하지 않은 node-e 등 분석 실행」을 금지했다([석재 goal](../2026-10-28-stone-terrain-environment-replacement/goal.md) 「10:50Z Main 처분」). |
 | 2 | 2026-10-29T00:24:50Z~00:47:59Z | Art 리드 | 분석 명령 9개. 19(PR275 첫 링크 검사, #DOC-01), 28·42(검증자·시안 작업자 rollout 모델 확인), 29(시안 입력 다섯 장의 PNG 크기), 40(rollout 모델 확인, 기록에 넣은 것 없음), 51~53(시안 PNG 크기, rollout의 image_gen 줄과 호출 수), 60(DOC-01 원래 호출 찾기, 기록에 넣은 것 없음) | 19는 메인 `msg_33a90eb2f56f`가 비차단으로 처분했다. 나머지 8개는 메인 `msg_2b0bf65b12c0`이 비차단으로 처분했다. 8개가 처음 표에서 빠진 것은 #DOC-05다. |
 | 3 | 2026-10-29T00:56:14Z~00:57:34Z | Art 리드 | 분석 명령 4개(67~70). 위 횟수를 세려고 석재 goal을 인라인으로 세 번 훑었고, 메시지 시각 조회 1회는 구문 오류(exit 1)였다. | 성공한 세 검색의 출력은 저장했다. 구문 오류 1회의 출력은 저장하지 않았다. 네 명령 모두 스크립트는 저장하지 않았다. 메인 `msg_2b0bf65b12c0`이 비차단으로 처분했다(#DOC-03). |
+| 4 | 2026-10-29T02:22:20Z 뒤~02:31:29Z(자기 신고 작성) | Art 리드 | DOC-06 정정 중 값이 기록에 들어간 조회 셸 명령 7개. 자기 신고의 「다섯 묶음」 6개(대화 기록 6350·6362·6500·6508·6526·6602)와 #DOC-08로 다시 분류한 6549다. 메모 mtime, 기동 시각, 규칙 파일 변경 여부·줄 범위, 원천 메시지 위치, 복원 receipt의 두 줄 번호를 셸에서 바로 읽었다. | 사용자 결정 49 A: 한정 인정, 소급 수정 없음, 원 위반 기록 유지(위 「PR275 넷째 독립 실사」). 자기 신고는 근거 폴더 `lead-inline-lookups-doc06-fix-01.md`다. 메인은 이것을 이 리드 세션의 네 번째 발생으로 보고 조건 1을 걸었다(`msg_af08be79ca51`). |
+| 5 | 2026-10-29T12:13Z 무렵, 12:22Z 무렵 | Art 리드 | 조건 1 뒤의 한 줄 분석 명령 2개. PR275 승인 요청 전 판정 hash를 `sha256sum`으로 받았고(`pr275-approval-sha-01.txt`), 두 base의 시험 기준 줄 출력을 `diff`로 비교했다(`pr2-*-645fe187-vs-dc66b77e-01.diff.txt`). | 두 값 모두 기록에 쓰지 않았다. 저장 스크립트로 다시 받은 출력(`pr275-approval-sha-02.txt`, `pr2-anchor-compare-01.receipt.txt`)만 인용했다. 첫 건은 메인이 자기 신고 기록에 넣는 것으로 받았다(`msg_df7f2bd1f63d`). 둘째 건은 이 커밋의 보고에서 메인에 올린다. 시각은 시계 원시가 없어 「무렵」이다. |
 
 - 저장 안 한 인라인 분석 — 메인 결정 `msg_2b0bf65b12c0`으로 비차단, 원래 위반 사실 유지. 2행의 8개와 3행이 대상이다. #DOC-01과 같은 기준이다.
 - 2행 8개가 기록에 넣은 사실(PNG 크기, image_gen 1회, rollout 모델)은 저장 스크립트로 다시 쟀고 모두 같았다(`inline-facts-reproduction-01/summary.md`). 이것은 재현일 뿐 원래 실행의 소급 증명이 아니다. 3행 구문 오류의 실패 원시는 남지 않았다.
 - 분석이 아닌 내용 없는 인라인 실행도 두 번 있었다. 2026-10-29T01:11:22Z의 `node -p "1" >/dev/null`과 01:20:06Z의 `node -e 0 2>/dev/null`이다. 둘 다 다른 명령에 섞였고 사실을 만들지 않았다.
 - 메인 원문의 「두 번째 발생」은 1번과 2번을 가리킨다. 교정 정본에 따라 반복 규칙 후보로 BACKLOG `saved-analysis-run-rule`에 연결했다. 정본 반영은 Rules 소유다.
-- 이 goal의 리드는 3번 뒤로 기록용 조회도 저장 스크립트로만 돌린다. 근거는 `lead-opus-doc01-disposition-context-20261029.md`다. 그 뒤의 인라인 실행은 위 내용 없는 두 번뿐이다.
+- 이 goal의 리드는 3번 뒤로 기록용 조회도 저장 스크립트로만 돌린다. 근거는 `lead-opus-doc01-disposition-context-20261029.md`다. 그 뒤의 인라인 실행은 위 내용 없는 두 번뿐이다. 이 문장은 PR275 head `9bab98a0` 당시의 기록이다. 그 뒤 같은 세션에서 4행과 5행이 났다.
+- 4행의 번호는 대화 기록 줄 번호다. 2·3행의 분류표 순번과 다르다. 개수를 세는 단위는 2·3행과 같이 셸 명령이다.
+- 교정 층: 자기 규칙 문장(3행 뒤)은 4행을 막지 못했다. 그래서 리드 쪽은 저장 스크립트 먼저 쓰기(메인 조건 1)로 막고, 정본 층(세션 가드·공통 기록기)은 BACKLOG `saved-analysis-run-rule`에 맡긴다. 5행은 그 조건 뒤에도 습관처럼 한 줄 명령을 쓴 경우다. 값이 기록에 들어가는 것은 인용 출처 확인으로 막았다.
+
+### 운영 교정 반복 — R-3 회신 subject
+
+- 두 번째 발생: 리드가 메인 status `msg_f9a5510a7a5d`에 `orchestration reply --id`로 DOC-08 보고를 보냈다(`msg_9fd4552dd94c`, 2026-10-29T03:09:54Z). subject가 「Re: [메인 Claude] …」가 됐고 body 첫머리 태그는 있었다. 첫 발생은 위 「운영 교정 첫 발생 — R-3 회신 subject」다.
+- 같은 내용이라 다시 보내지 않았다. 리드가 바로 메인에 알렸다(`msg_9bbe13a958f6`, 03:10:52Z).
+- 교정 층
+  - 리드 쪽: 근거 폴더에 보내기 스크립트 `send-tagged.sh`를 두었다. subject와 body 첫 줄이 자기 태그로 시작하지 않으면 보내지 않는다. 회신은 `--thread-id`로 묶고, 같은 receipt 경로가 있으면 다시 보내지 않는다. 그 뒤 리드의 일반 메시지 네 건(`msg_9bbe13a958f6`·`msg_fb9d721703dd`·`msg_8a6d5d898261`·`msg_8aa8c37abb19`)은 이 스크립트로 보냈다. 근거는 각 receipt의 스크립트 출력 줄(`msg-main-*.receipt.txt`)이다. `reply --id`는 작업자·검증자의 공식 질문 답에만 쓴다.
+  - 정본 쪽: 두 번째 발생이라 반복 규칙 후보다. Orca CLI는 이 저장소의 코드가 아니라서 `reply`가 받은 메시지 유형을 보고 막는 검사는 리드가 만들 수 없다. 후보는 BACKLOG `orca-general-reply-tag-guard`이고 정본 반영은 Rules 몫이다.
