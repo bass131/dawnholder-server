@@ -2,18 +2,24 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-10-30 PR·사용자 플레이 확인
+### 현재 재개 카드 — 2026-10-30 아침 사용자 플레이 확인 대기
 
-**다음 첫 일:** 독립 검증은 PASS로 끝났다([독립 검증](#독립-검증--2026-10-30)). branch를 push해 PR을 열고, 메인에 PR 번호와 정확한 40자 head로 사용자 좌·우 직접 플레이 확인을 요청한다(메인 `msg_40f9b3da4ec4`). 확인 항목은 「Dash 좌·우가 어긋나지 않는지」, 「사라질 때 창끝이 앞에 남는 것이 어색하지 않은지」, 「마지막이 빈 칸으로 자연스럽게 끝나는지」, 「스킬칸 아이콘이 새 첫 칸으로 보이는지」다. 직접 플레이 시각은 메인이 Art PR2와 함께 정한다. 시험 사본 Library 두 곳은 메인의 삭제 가능 신호(Art 「Unity 사용 끝」 뒤)를 받은 뒤 지운다.
+**다음 첫 일:** 아침까지 대기다(결정 63 A). PR278은 열려 있다([PR과 플레이 카드](#pr과-플레이-카드--2026-10-30)). 사용자는 아침에 메인이 Art PR2와 합친 카드 한 장으로 직접 플레이를 확인한다. Effect 쪽 카드는 근거 폴더 `lead/user-play-card-01.md`다. 확인 항목은 「Dash 좌·우가 어긋나지 않는지」, 「사라질 때 창끝이 앞에 남는 것이 어색하지 않은지」, 「마지막이 빈 칸으로 자연스럽게 끝나는지」, 「스킬칸 아이콘이 새 첫 칸으로 보이는지」다. 사용자가 병합을 승인하면 메인이 병합하고, 리드는 종료 기록으로 간다. 어색한 항목이 나오면 그 항목만 고치는 범위를 메인에 올린다. 시험 사본 Library 두 곳은 지웠다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1을 사용자가 결정 55 A로 승인했고, 아이콘은 결정 56 A(같이 바뀜)다([적용 중인 사용자 결정](#적용-중인-사용자-결정)). 초안 원문은 근거 폴더 `lead/scope-draft-v1.md`(sha256 `79c9f0ea6e5cd66d7cac8721077d7a62a92383747b8d0ee096c467592ee8ec7c`)다. |
 | 리드 | `[Effect 리드 Opus]`(claude-opus-5-5 xhigh). Run은 `run_fcbc2441a227`, 회신 주소는 `run:run_fcbc2441a227`다. |
-| branch | `feat/knight-dash-effect-sheet-20261029`, main `dc66b77e`에서 시작했다. upstream은 아직 없다. |
+| branch | `feat/knight-dash-effect-sheet-20261029`, main `dc66b77e`에서 시작했다. origin에 push했고 PR278이다. |
 | 실행 창 | 이미지 생성은 상한 3회 중 1회를 썼다. 2·3회째는 다시 메인 승인을 받아야 한다. Unity는 메인 지시 `msg_cb8c86f7e35c`의 창(18:00Z까지)에서 구현자 3회, 검증자 1회를 돌렸다. 마지막 종료는 17:25:50Z다. 리드가 끝난 뒤 관문(Unity 0, Windows dotnet 0)을 다시 재고 메인에 「Unity 사용 끝」을 보냈다(`msg_947f1ec5e92b`). |
 
 ## 적용 중인 사용자 결정
+
+### 10-30 결정 63 A — 직접 플레이는 아침에 한 번에 — msg_8243d3341ea0
+
+- 사용자 원문(메인 pane 제출, 메인 전달): 「대시보드 결정 응답: 1) 63 - Dash 이펙트·인벤토리/선택창 직접 플레이 확인을 언제 할지 → A 자고 일어나서 한 번에」
+- 메인이 보인 뜻: Dash(PR278)와 인벤토리·선택창(Art PR2)을 아침에 메인이 합친 카드 한 장으로 한 번에 확인한다. 병합 승인은 그 뒤 사용자 몫이다.
+- 밤 동안 메인은 Night Shift다. 사용자 결정이 필요한 안건은 평소처럼 메인에 보내고, 메인이 아침 대기열에 넣는다. 메인이 정할 수 있는 것은 「메인 결정(사용자 결정 아님)」으로 답한다.
 
 ### 10-30 메인 결정 — 절차 이탈 1~7 처분 — msg_9359ede6590b·msg_99c0be48fa4c·msg_eb0ee60c5440·msg_40f9b3da4ec4
 
@@ -249,5 +255,16 @@
 - 리드 원천 대조는 `lead/verify-01-lead-acceptance-01.md`(원시 `lead/r2-verify-01.json`·`r2-verify-01-direct-exec.json`)다. 결과 xml·로그·제품 파일·git·rollout을 다시 읽었고 판정 수치와 같다. 검증자 rollout의 turn_context는 2건 모두 `gpt-6-astra`·`xhigh`이고 git 쓰기 명령은 0이다.
 - 메인 결정 6 A의 대조(저장 harness 밖 호출 수): 메모 첫 쓰기 뒤 runner 밖 읽기가 #P6(17:33:19Z) 말고 한 번 더(17:13:34Z, 문서 4개) 있었다. 판정의 절차 이탈 목록에는 따로 없다. 리드는 판단하지 않고 메인에 올렸고(`msg_a2afba5c93eb`), 메인이 안건 7 A로 처분했다. 판정은 그대로 쓴다.
 - 정산: worker-release retained/external_terminal, terminal close ptyKilled true(`lead/verify-release-01.json`·`verify-close-01.json`).
-- 시험 사본 Library 두 곳(dash01u 3,099,594,587 B, dash01v 3,142,708,686 B)은 아직 지우지 않았다. 메인 결정 8 B(`msg_40f9b3da4ec4`, 사용자 결정 아님)는 Art의 「Unity 사용 끝」 뒤에 지우는 것이다. Art 독립 검증 batchmode 창이 17:29Z에 열려 19:30Z까지라 정리 규칙의 「다른 파트 실행 창 중이 아님」을 지금은 만족하지 않는다. Art가 끝나면 메인이 삭제 가능 신호를 보낸다.
-- 남은 것: PR, 사용자 직접 플레이 확인, 병합, 종료 기록이다.
+- 시험 사본 Library 정리: 메인 결정 8 B(`msg_40f9b3da4ec4`, 사용자 결정 아님)대로 Art의 「Unity 사용 끝」 뒤에 지웠다. 메인 삭제 가능 신호는 `msg_feb4c568a1a9`다(Art 마지막 Unity 끝 17:58:55Z).
+  - 지우기 직전 Unity·dotnet 프로세스는 0이었다. 두 대상은 `.backups/tmp` 안의 실제 폴더였고 안쪽 reparse point도 0이었다.
+  - dash01u Library 50,278개 3,099,594,587 B와 dash01v Library 50,223개 3,142,708,686 B를 18:10:48Z~18:11:30Z에 지웠다. 두 폴더 모두 지운 뒤 없다.
+  - C 드라이브 여유는 55,175,905,280 B에서 61,558,415,360 B가 됐다. 원시는 `lead/delete-library-cleanup-01.json`(스크립트 `.ps1`)이다.
+
+### PR과 플레이 카드 — 2026-10-30
+
+- PR278(https://github.com/bass131/dawnholder-server/pull/278)을 열었다(`lead/pr-create-01.txt`). 본문은 `lead/pr-body-01.md`다. 메인에 사용자 직접 플레이 확인 뒤 병합 승인을 요청했다(`msg_36e2a45475e2`).
+- 메인이 플레이 카드를 요청했다(`msg_2bbbfe62dd06`). Effect 쪽 카드는 `lead/user-play-card-01.md`다. 사실 원천은 `lead/user-play-card-facts-01.json`~`-03.json`(각 저장 스크립트 `.cjs`)이다. 메인에 경로·sha256만 보냈다(`msg_16c8a84dd3a1`).
+  - 서버는 effect-active의 `run-server.bat`(DB 없는 Legacy 모드)이고, 클라이언트는 Unity Editor로 effect-active `03_Client`를 연다. 운영툴은 필요 없다.
+  - 7777 서버는 checkout이 달라도 하나만 뜬다. Art PR2와는 Editor·서버를 차례로 띄워야 한다.
+  - 사용자가 결정 63 A로 플레이를 아침에 Art PR2와 한 번에 하기로 했다.
+- 남은 것: 아침 사용자 직접 플레이 확인, 병합, 종료 기록이다.
