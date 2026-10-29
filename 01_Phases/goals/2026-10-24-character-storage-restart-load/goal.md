@@ -72,7 +72,7 @@ World동결은02:35Z부터B0반환까지예정이며02:35Z이후/동결준비보
 
 ### Core 리드 Opus 진입 v127
 
-**다음 첫 일:** branch `docs/character-storage-restart-closeout-20261029`(origin/main 34756e01에서 시작)에서 신규 Gardener를 열어 점검 보고서를 받는다. 그 결과를 이 goal의 `gardener.md`와 아래 「다음 계획 후보」에 넣고, 종료 기록 문서 실사 → 종료 기록 PR → 종료 점검 → R-8 순서로 간다(ORCA R-8). 다음 goal은 자동으로 시작하지 않는다.
+**다음 첫 일:** branch `docs/character-storage-restart-closeout-20261029`(origin/main 34756e01에서 시작)의 종료 기록을 신규 Astra 문서 실사에 넘긴다. 그 뒤 종료 기록 PR → 병합 승인 요청 → 종료 점검 → R-8 순서로 간다(ORCA R-8). 종료 Gardener는 끝났다(아래 「종료 점검 준비」). 다음 goal은 자동으로 시작하지 않는다.
 - **PR272 병합(Main msg_6fa198228fac):** 사용자 원문 「병합 승인: PR272 head 4bee7ab9d78853e35bbfa37a6415ce2bb2ea3871」(메인 pane Enter 제출). merge commit `34756e01151db5d9f58254f7691f2fef2478415a`, mergedAt 2026-10-29T00:36:10Z다. 메인이 병합 직전 head·draft false·CI 4개 success·MERGEABLE CLEAN을 확인했다. 병합 순서는 PR270(8b6010d5) → PR273(571d261c) → PR272였다.
 - **병합 전 main 받기(Main msg_b58297b276a6 지시):** head 48f2fcc1의 dotnet-tests가 옛 base 540172a4에서 두 번 실패했다. 실패는 `GuildDebugTreasuryCheatTests` 3건이었고 오류는 둘 다 `GameWorld는 단일 인스턴스만 허용`이었다. 옛 base의 그 시험 클래스에는 `[Collection("GameWorldRegistryTests")]`가 없었고, World 커밋 00441ff4가 main에 그 속성을 넣었다. 그래서 origin/main 571d261c를 merge commit 4bee7ab9로 받았다. 자동 병합 파일은 CURRENT.md 하나이고, 제품 4파일 hash는 그대로였다(`claude-lead-entry-01/merge-main-03.txt`). 새 base에서 CI 4개가 통과했다.
 - **PR272 CI code-rules 실패와 수정(2026-10-28T22:15Z~23:01Z):** 메인 msg_c77ef6ad8872가 PR272 head `6a2552ca`의 CI code-rules 실패를 알렸다. 원인은 PSScriptAnalyzer `PSUseConsistentIndentation` 7건(launcher 1, Framing 시험 2, Output 시험 4)이다. 리드가 로컬에서 같은 7건을 재현했다(`claude-lead-entry-01/code-rules-local/`).
@@ -1117,6 +1117,7 @@ Content가 `msg_d1195a8a1274`로 인계를 접수하고 원천·완료조건3·4
 
 승인 원문은 「적용 중인 사용자 결정」의 결정 28 A·29 A 절이고, 범위 초안 전문은 `joint-runtime-02/claude-lead-entry-01/scope-draft-decision27-v2.md`다. 아래 기존 범위 네 항목은 유지하되 이 절이 다음만 바꾼다.
 - **합동 실DB 한 창을 두 파트 독립 검증자가 실행한다.** 사용자 손은 서버 2번 시작·2번 Enter의 한 창이다. Core 검증자가 서버·프로세스·DB 쪽, World 검증자가 봇·패킷 쪽을 맡는다. 단계·고정값은 공용 순서표 `joint-runtime-02/decision27-joint-01/joint-window-sequence-v2.md`(sha256 11F8D5C2…)다. 목표 45분, 한도 60분이다.
+  - (대체됨) 이 줄의 순서표 v2와 창 시간은 결정 36 A·37 A와 순서표 v3로 바뀌었다(위 「적용 중인 사용자 결정」). 실제 창은 순서표 v3로 진행했다.
 - **새 캐릭터 생성 허용(결정 29 A):** 기존 개발 DB 하나, 시험 계정 `w_2fbe2e9a` 한정, 이름 `Wcreate1029`/Knight를 가장 낮은 빈 칸에 만든다. 삭제·DB 구조 변경 없음. 「필요한 DB 쓰기와 실행 경계」 표의 신규 생성 금지는 이 범위만큼 대체된다.
 - 재기동 전후 기존 Mage와 새 캐릭터가 같은 ID·직업으로 목록에 남고 각각 선택 뒤 불러오기에 성공해야 완료조건 2~4를 충족한다.
 - 서버는 World 후보를 world-active에서 띄운다. launcher는 두 checkout에 같은 bytes(F27EEC2D…)로 있으며 Core PR에만 넣는다.
@@ -1291,6 +1292,7 @@ Main msg_38f12385d323가 WSLService5448의fresh등록/동일PID·생성시각 �
 
 - **2026-10-29 합동 창 뒤:** 완료조건 2·3·4는 실제 경로로 충족했다. 조건 5는 계약의 Core 관측 범위(고정 대상, 허용된 생성 1, 직접 SQL·DDL·삭제 0)까지만 확인했다. 지정 캐릭터 밖 DB 행의 불변은 직접 SQL로 대조하지 않았다. 조건 6은 신규 Astra 독립 강검증 PASS로 충족했다. 위 「Core 리드 Opus 진입 v127」의 판정 한계는 PR 본문과 메인 보고에 그대로 옮긴다. 남은 크리티컬 제품 결함은 없다.
 - **PR272 CI 수정 뒤:** 바뀐 것은 세 파일 7줄의 줄 앞 공백뿐이고 토큰열이 같다. 좁은 독립 재검증 PASS로 위 판정은 새 head에도 그 한계와 함께 적용된다. Output 시험의 실행 파일 해석 보호는 후속 후보이며, 그 전까지 Claude 세션에서 Output suite를 돌릴 때는 `NoDefaultCurrentDirectoryInExePath` 부재를 먼저 확인한다.
+- **(역사) 아래 줄들은 execution-01·O3 당시의 기록이다.** 현재 상태가 아니다. 현재 상태는 맨 위 상태 줄과 「종료 점검 준비」다(Gardener GR-02).
 
 - (역사) C9 반환 통지 msg_3df145430289 뒤 O3 신규 Sol max 정적 작업 task_c383b1a19017/ctx_27e7d3a4f760 발행·실제시작을 확인했다. STATIC_READY 뒤 별도 실행 창 전 시험0이고 전체 저장 goal 미완료다.
 
@@ -1312,6 +1314,11 @@ Main msg_38f12385d323가 WSLService5448의fresh등록/동일PID·생성시각 �
 - Output 시험의 가짜 `wsl.exe` 해석 보호(INDENT-H01): BACKLOG `persistence-output-fixture-exe-resolution-guard`. CI 수정 중 계획 밖 실제 wsl.exe 9회의 정확한 경로·인과는 미확정이다(INDENT-OBS01).
 - 앞 goal의 미실행 경로(동시 writer 독립 재현, Resume Verify·Cleanup): BACKLOG `character-storage-unexecuted-paths` 그대로다. 이번 goal의 단일 후보 재기동·불러오기 실증을 앞 goal 조건5 전체의 충족으로 확대하지 않는다(완료조건 4).
 - S6a 장면 ②(`Wcreate1029` 이름 중복 거절) 미실행: Content 판정 몫이며 [캐릭터 선택·생성 화면 goal](../2026-10-24-character-select-create-ui/goal.md)에 있다. Core 기대(이름 중복 거절·행 없음)는 미확인이다.
+- launcher의 맨 이름 `wsl.exe` 실행 파일 해석(IV02-04, Gardener GR-01): BACKLOG `persistence-launcher-wsl-executable-resolution`. 독립02가 「보안 결함 후보, 운영 영향 미확정」으로 적었고 Main msg_0c635b90e265 ②가 O3 비차단 후속으로 두었다. 절대 경로 지정은 제품 변경이라 별도 goal·승인 대상이다.
+- launcher 허용 문장과 서버 `Program.cs` 문장의 drift 시험 공백(IV02-06, Gardener GR-01): BACKLOG `persistence-launcher-allowlist-drift-test`. 같은 Main 처분의 비차단 후속이다.
+- Gardener 후보 1, 자작 PowerShell 근거 harness의 같은 종류 함정 반복(5부류 11건): BACKLOG `verification-harness-powershell-helper`. 제안의 이관이며 채택·구현이 아니다.
+- Gardener 후보 2, 판정의 비차단 후속이 후보 절·BACKLOG로 오지 않은 일: 기존 BACKLOG `candidate-check-excluded-section`의 추가 관측이다. 이번 goal에서는 IV02-04~06이 그 사례이고, IV02-05가 짚은 전제가 4일 뒤 계획 밖 실제 wsl.exe 9회로 나타났다.
+- PR272 code-rules CI 실패(push 전 로컬 code-rules 기록 0회): 기존 BACKLOG `prepush-ci-format-checks`의 추가 관측이다. junction 출력 거부와 긴 junction 경로 CS1619는 기존 BACKLOG `windows-local-checker-paths`의 추가 관측이다.
 
 ## 종료 점검 준비
 
@@ -1319,4 +1326,6 @@ Main msg_38f12385d323가 WSLService5448의fresh등록/동일PID·생성시각 �
 - 완료조건: 2·3·4는 실제 경로로 충족했다. 5는 계약의 Core 관측 범위까지만 확인했다. 6은 결정 4A에 따른 신규 Astra 독립 강검증으로 충족했다.
 - 남은 한계: 지정 캐릭터 밖 DB 행의 불변을 직접 SQL로 대조하지 않았다. 실제 WSL의 reader 취소·Retain 실패는 유도하지 않았다. S7 첫 PID 표본은 사용자 종료 뒤였다(Alive=false). crash·kill은 범위 밖이다. 후속 위치는 위 「다음 계획 후보」다.
 - 보존 자원: 개발 DB의 시험 행(World `Wcreate1029` Knight, Content `c_s6a_test1029` 계정과 `시험새벽1029` Knight)은 그대로 둔다. 종료 기록에서 DB·서버·Unity·WSL 실행이나 자원 삭제는 하지 않는다.
+- 시험용 Unity 복사본 Library 재확인(사용자 A, 위 「시험용 Unity 복사본 Library 정리」 1번, Gardener GR-03): Core는 이 goal에서 Unity 복사본을 만들지 않았다. 2026-10-29T00:59:54Z 조회에서 `.backups/tmp` 아래 깊이 4 안의 Library 폴더는 0이다(`closeout-01/unity-library-check.txt`). 지울 대상은 0이다.
+- 종료 Gardener: 신규 `[Core Gardener]`(claude-opus-5-5 xhigh, task_233a38afd1e4)가 차단 0·후보 2로 마쳤다(worker_done msg_427a19a27ac9). 보고서는 이 폴더의 [gardener.md](gardener.md)이고, 원본 `closeout-01/gardener/context-gardener-report.md`와 sha256이 같다(47FEF614…5C65). 리드 반환 GR-01~03은 위 「다음 계획 후보」, 「대체됨」 표시, 이 절에 반영했다.
 - 다음 계획 초안: 메인·사용자가 결과·남은 위험·BACKLOG를 확인한 뒤 정한다. 새 goal은 자동으로 시작하지 않는다.
