@@ -28,7 +28,7 @@
 - 원격 branch `feat/stone-environment-replacement-20261025`(`278c3583`)에 이 goal 기록의 커밋 이력이 있다. 이 goal 파일은 [인벤토리·캐릭터 선택창 goal의 PR1](../2026-10-29-inventory-character-select-look/goal.md#pr-경계와-작업-방식)이 main에 넣는다.
 - 이미지 생성 장부(상한 15, 사용 9, 남음 6)는 이 goal과 함께 닫는다. 남은 6회는 다른 goal로 넘기지 않는다.
 - 지형·소품 품질 개선은 BACKLOG `terrain-props-art-quality` 후보로 남겼다.
-- Gardener는 제품 PR 병합 뒤 단계라 이 미완료 종료에서는 열지 않았다. 메인 판단을 받아 바뀌면 이 줄을 고친다.
+- Gardener 미실시 — 제품 PR 없음으로 발동 조건 미충족, 메인 판정 `msg_4a163b163353`(2026-10-29T00:34:07Z). 메인은 같은 메시지에서 「이번 외관 goal이 제품 PR로 끝나면 그때는 연다」고 했다.
 
 ## 다음 계획 후보
 
