@@ -1304,6 +1304,7 @@ Main msg_38f12385d323가 WSLService5448의fresh등록/동일PID·생성시각 �
   - CLOSE-D02: BACKLOG 다섯 행에 새 처분의 전달 시각이나 이번 관측의 출처가 빠졌다. 사실이 틀린 것은 아니다. 수정 commit에서 보강했고 재실사로 확인한다.
   - CLOSE-C01: 리드 계약 작성 절차의 누락이다. 실사 계약 v1에 CODE_CONVENTION 관련 절 원문 전체·기준 commit·제외 이유가 없었고, 발행 전 경로 기계 확인을 하지 않아 Gardener 계약 경로가 틀렸다. 보충 v1.1(`closeout-01/review-contract-supplement-v1.1.md`)로 해소했다. 원래 누락은 이 기록과 판정에 그대로 남긴다.
   - 비차단 관찰 CLOSE-O01: BACKLOG `persistence-launcher-wsl-executable-resolution`의 사건 방향을 「추정」으로 고쳤다.
+  - 수정분 재실사 NOT PASS(CLOSE-D03): 판정은 `closeout-01/fix-01/reviewer/verdict-v1.md`(sha256 497225A3…353F)다. D02·O01·D01 처분·병합 순수성은 통과했다. 수정 commit이 BACKLOG `branch-create-no-track`에 앞으로의 push 방침(refspec 명시)을 이미 한 일처럼 적었다. 이 branch는 push 전이다. 사실과 예정을 나눠 고쳤다(fix-02). 사실과 방침을 섞은 리드 문서 표현의 첫 발생이며 반복 규칙은 만들지 않는다.
 - **(역사) 아래 줄들은 execution-01·O3 당시의 기록이다.** 현재 상태가 아니다. 현재 상태는 맨 위 상태 줄과 「종료 점검 준비」다(Gardener GR-02).
 
 - (역사) C9 반환 통지 msg_3df145430289 뒤 O3 신규 Sol max 정적 작업 task_c383b1a19017/ctx_27e7d3a4f760 발행·실제시작을 확인했다. STATIC_READY 뒤 별도 실행 창 전 시험0이고 전체 저장 goal 미완료다.
