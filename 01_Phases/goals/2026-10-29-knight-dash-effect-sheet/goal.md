@@ -2,18 +2,46 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-10-30 Unity 창 대기
+### 현재 재개 카드 — 2026-10-30 PR·사용자 플레이 확인
 
-**다음 첫 일:** 제품 PNG에 9번째 칸을 비운 피벗 맞춤 시트가 들어갔다(sha256 `bcdbd619…c015`). 메인의 Unity 시작 지시(Art 「Unity 사용 끝」 뒤 또는 03:30 KST)를 받으면 Unity 계약 구현자를 띄운다. 복사본 batchmode로 EditMode 전체 1회, 임시 캡처 시험으로 새·지금 시트 캡처 2회를 돈다(메인에 보낸 계획 `msg_737324e02c1c`, 9번째 칸은 「빈 칸이 그려지지 않음」 확인으로 바꿈). 그 전에는 Unity를 띄우지 않는다.
+**다음 첫 일:** 독립 검증은 PASS로 끝났다([독립 검증](#독립-검증--2026-10-30)). branch를 push해 PR을 열고, 메인에 PR 번호와 정확한 40자 head로 사용자 좌·우 직접 플레이 확인을 요청한다(메인 `msg_40f9b3da4ec4`). 확인 항목은 「Dash 좌·우가 어긋나지 않는지」, 「사라질 때 창끝이 앞에 남는 것이 어색하지 않은지」, 「마지막이 빈 칸으로 자연스럽게 끝나는지」, 「스킬칸 아이콘이 새 첫 칸으로 보이는지」다. 직접 플레이 시각은 메인이 Art PR2와 함께 정한다. 시험 사본 Library 두 곳은 메인의 삭제 가능 신호(Art 「Unity 사용 끝」 뒤)를 받은 뒤 지운다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1을 사용자가 결정 55 A로 승인했고, 아이콘은 결정 56 A(같이 바뀜)다([적용 중인 사용자 결정](#적용-중인-사용자-결정)). 초안 원문은 근거 폴더 `lead/scope-draft-v1.md`(sha256 `79c9f0ea6e5cd66d7cac8721077d7a62a92383747b8d0ee096c467592ee8ec7c`)다. |
 | 리드 | `[Effect 리드 Opus]`(claude-opus-5-5 xhigh). Run은 `run_fcbc2441a227`, 회신 주소는 `run:run_fcbc2441a227`다. |
 | branch | `feat/knight-dash-effect-sheet-20261029`, main `dc66b77e`에서 시작했다. upstream은 아직 없다. |
-| 실행 창 | 이미지 생성은 상한 3회 중 1회를 썼다. 2·3회째는 다시 메인 승인을 받아야 한다. Unity 실행 0회다. Unity 창은 메인 잠정 결정대로 Art 뒤, 늦어도 03:30~05:00 KST다. 예상은 약 25~30분이다(Content 10-28 복사본 첫 실행 8분 36초 기준, 미측정). |
+| 실행 창 | 이미지 생성은 상한 3회 중 1회를 썼다. 2·3회째는 다시 메인 승인을 받아야 한다. Unity는 메인 지시 `msg_cb8c86f7e35c`의 창(18:00Z까지)에서 구현자 3회, 검증자 1회를 돌렸다. 마지막 종료는 17:25:50Z다. 리드가 끝난 뒤 관문(Unity 0, Windows dotnet 0)을 다시 재고 메인에 「Unity 사용 끝」을 보냈다(`msg_947f1ec5e92b`). |
 
 ## 적용 중인 사용자 결정
+
+### 10-30 메인 결정 — 절차 이탈 1~7 처분 — msg_9359ede6590b·msg_99c0be48fa4c·msg_eb0ee60c5440·msg_40f9b3da4ec4
+
+이 절은 사용자 결정이 아니라 메인 결정이다. task-context 「독립 판정과 통과 차단」의 「수정 또는 메인 결정 전 통과 차단」에서 말하는 메인 결정이다. 1~6은 독립 검증자 질문 `msg_81c64ccdafa8`·`msg_09612790fc8a`·`msg_92aee771c708`에 따라 리드가 요청했다(`msg_983b241b0bc8`·`msg_a5788be73214`·`msg_745c64d6f531`). 리드가 원문을 검증자에게 그대로 전달했다(`msg_26143fa1fce2`·`msg_6616fe139a2e`·`msg_dcdcc0377328`). 7은 리드 원천 대조에서 나와 검증자 정산 뒤 리드가 요청했다(`msg_a2afba5c93eb`).
+
+| 안건 | 처분 | 검증자 몫 |
+|---|---|---|
+| 1 - Unity 확인 구현자의 저장하지 않은 인라인 node 분석 3회 | A 한정 인정, 차단 해제, 기록 유지, 소급 수정 없음 | 저장 명령 재측정 값과 보고 값을 자기 저장 명령으로 표본 대조 |
+| 2 - Unity Editor의 홈 공용 캐시·로그 쓰기 | A 리드 계약 누락 첫 발생으로 기록, 차단 안 함 | — |
+| 3 - 9번째 칸 비우기 구현자의 계약 git 목록 밖 읽기(`rev-parse HEAD`·`branch --show-current`·`merge-base HEAD origin/main`·`status --porcelain --ignored`) | A 한정 인정, 차단 해제, 기록 유지 | ref·index·작업 트리 무변화를 자기 저장 명령으로 확인. 변화가 나오면 처분 밖 |
+| 4 - 리드가 단계 대조에서 「위반 아님」으로 스스로 본 두 가지: 피벗 맞춤 단계의 session-guard 상태 파일(`.claude/state/`, Git 제외), 반입 1차 단계의 첫 heartbeat·check 출력 미저장과 메모 전 읽기 | A 같은 처분. 실행되지 않은 `node -e "1"`은 실행 기록으로 보지 않는다 | 이 목록 밖 새 이탈만 다시 올린다 |
+| 5 - 피벗 맞춤 구현자의 계약 git 목록 밖 읽기(`rev-parse HEAD`·`branch --show-current`) | A 안건 3과 같은 처분 | 상태 무변화 확인 |
+| 6 - 독립 검증자 자신의 저장 harness 밖 `Get-Content` 1회(자기 맥락 메모·판정 양식 재독해) | A 기록만, 차단 안 함. 판정 값이 아니고 판정은 이 읽기에 기대지 않는다 | 리드가 정산 때 대화 원시에서 이 호출이 한 번뿐인지 대조 |
+| 7 - 독립 검증자의 17:13:34Z 저장 harness 밖 `Get-Content` 1회(goal·실행 스크립트·규칙 문서·시험 코드 4개 읽기). 판정 절차 이탈 목록에 따로 없음 | A 6 A·묶음 기준과 같은 처분. 판정이 116행 묶음 문장에만 넣은 것은 기록 누락으로 본다. 판정(`verify-01/verdict.md` sha256 `3be82f0a…580a`)은 그대로 쓰고 새 검증자는 열지 않는다 | — |
+
+- verify-01 한정 묶음 기준(`msg_eb0ee60c5440`): 아래 세 조건을 모두 만족하는 절차 이탈은 검증자가 판정의 「절차 이탈 목록」에 사실로 적고 차단하지 않는다. 메인에 따로 묻지 않는다.
+  1. 상태를 바꾸지 않는 읽기다(git 읽기, 파일 읽기, 프로세스·자원 조회).
+  2. 그 출력 값이 저장 원시 없이 판정·기록 값에 들어가지 않았다. 들어갔으면 저장 명령으로 다시 잰 값과 같다.
+  3. 제품·추적 파일·ref·index에 변화가 없다.
+  - 하나라도 어기면(쓰기, 상태 변경, 저장 안 한 값이 판정에 들어감, 다시 잰 값이 다름) 메인에 올린다. 이 기준은 verify-01 판정에만 쓴다. 다른 goal·다른 검증과 정본 규칙은 바꾸지 않는다.
+- 리드 대조 사실(6 A의 확인): 검증자 메모 첫 쓰기(17:13:22Z) 뒤 저장 harness 밖 읽기는 17:33:19Z(#P6)와 17:13:34Z(안건 7) 두 번이다(`lead/r2-verify-01-direct-exec.json`).
+- 적용 범위: 위 일곱 건과 verify-01 한정 묶음 기준에만 적용한다. 기능·제품 판정과 실제 경로 판정은 검증자가 그대로 한다. 사용자가 B를 원하면 병합 전 그 건만 NOT PASS로 되돌리고, 메인이 사용자 보고에 이 처분을 적는다.
+- 리드 교정(메인 지시): 리드의 자체 「위반 아님」 판단은 판정 근거가 아니다. 앞으로 리드 대조는 이탈을 판단하지 않고 목록으로만 올린다.
+- 규칙 후보(정본 반영은 Rules 몫, 지금 하지 않는다):
+  - 위임 계약 git 읽기 허용 목록에 `rev-parse`·`branch --show-current`·`merge-base`·`status`를 기본으로 넣는다.
+  - Unity batchmode 계약 양식에 홈 공용 캐시·로그와 LocalLow `TestResults.xml`을 허용 부작용으로 적는다.
+  - BACKLOG `saved-analysis-run-rule` 후보 근거에 안건 1의 원시 `unity-01/report.md` 「계획과 달라진 점」 6을 더한다. BACKLOG는 이 PR 범위 밖이라 PR 본문 후속 항목으로 남긴다.
+  - 위 verify-01 한정 묶음 기준(상태 무변화 읽기의 비차단 기록)을 독립 검증 일반 기준으로 둘지 정한다.
 
 ### 10-30 결정 61 A — 9번째 칸을 빈 칸으로 비운다 — msg_14a563771089
 
@@ -114,7 +142,7 @@
 2. `.meta`·anim·controller·prefab·아이콘 목록의 변경이 0이다(아이콘 A일 때). git diff로 확인한다.
 3. Unity 가져오기 오류가 0이고, 스킬칸 아이콘을 읽는 기존 EditMode 시험(`HudPresentationTests`)이 통과한다.
 4. 적용 전에 사용자가 시안(시트 미리보기와 기사 옆 움직임 미리보기)을 확인한다.
-5. 적용 뒤 사용자가 직접 플레이로 Dash를 좌우로 써 본다. 볼 것은 두 가지다. 하나는 Dash 이펙트가 기사와 어긋나지 않는지다(메인 `msg_79e59314eaf9`). 다른 하나는 사라질 때 창끝이 앞에 남는 것이 어색하지 않은지다(결정 60 A).
+5. 적용 뒤 사용자가 직접 플레이로 Dash를 좌우로 써 본다. 볼 것은 두 가지다. 하나는 Dash 이펙트가 기사와 어긋나지 않는지다(메인 `msg_79e59314eaf9`). 다른 하나는 사라질 때 창끝이 앞에 남는 것이 어색하지 않은지다(결정 60 A). 메인 `msg_40f9b3da4ec4`로 두 가지를 더 본다. 마지막이 빈 칸으로 자연스럽게 끝나는지(결정 61 A)와 스킬칸 아이콘이 새 첫 칸으로 보이는지(결정 56 A)다.
 6. 신규 Astra 독립 검증이 PASS를 낸다.
 7. 새 시트의 칸별 그림 위치가 지금 시트와 가중 평균 3px 안에서 맞는다(창 축 높이, 무게 중심). 결정 61 A 뒤에는 그림이 있는 1~8번째 칸 기준이다. `.meta` 피벗은 그대로다(메인 `msg_79e59314eaf9`로 더함).
 
@@ -145,9 +173,9 @@
 - [x] 시안 생성
 - [x] 시트 조립
 - [x] 사용자 시안 확인
-- [>] 제품 반입·Unity(반입·피벗 맞춤·9번째 칸 비우기 끝, Unity 창 대기)
-- [ ] 독립 검증
-- [ ] 사용자 플레이 확인
+- [x] 제품 반입·Unity
+- [x] 독립 검증
+- [>] 사용자 플레이 확인
 - [ ] 제품 PR 병합
 - [ ] 종료 기록
 
@@ -195,5 +223,31 @@
   - 제품 화소는 비우기 전 제품에서 9번째 칸만 0으로 둔 것과 바이트로 같다.
   - 1~8번째 칸 가중 차이는 창 축 0.23px, 무게 중심 0.20px이다. 앞 측정 스크립트는 빈 칸을 재면 NaN이 나와 3px 관문을 그대로 통과하므로, 8칸만 재는 리드 스크립트(`lead/measure-alignment-02.cjs`·`plan-alignment-02.cjs`)로 쟀다.
   - 비교 그림은 `clear-01/preview/anchor-overlay-right.png`·`anchor-overlay-left.png`, 비교 움직임은 `clear-01/preview/motion-compare.gif`다. GIF의 새 시트 쪽은 8번째 칸 뒤 기사만 보이는 구간이 4프레임(약 0.33초)이다.
-- 리드 대조는 `lead/clear-01-lead-acceptance-01.md`다.
-- 남은 것: Unity 가져오기·EditMode 시험·Unity 캡처(메인이 정한 창), 독립 검증, 사용자 직접 플레이다.
+- 리드 대조는 `lead/clear-01-lead-acceptance-01.md`다. checkpoint는 `afe20cb9`다.
+
+### Unity 확인 — 2026-10-30
+
+- 메인의 Unity 시작 지시는 `msg_cb8c86f7e35c`(16:43:42Z)다. 창은 03:00 KST(18:00Z)까지다.
+- 계약은 `unity-01-contract-v1.md`(sha256 `9937a263…12ce`)다. 구현자(task_3950d6abff52) worker_done은 `msg_510b2464c264`이고, 보고는 `unity-01/report.md`다. 복사본 `.backups/tmp/dash01u/`에서 batchmode를 세 번 돌렸다.
+  - 1회째 EditMode 전체는 1,456/1,456 통과다. HudPresentationTests는 11/11이고, 이 시트 로그 줄에 오류·경고가 없다.
+  - 2·3회째 캡처는 제품 `ClassVisualMount.Attach`·`EffectAnchor.ResolvePosition`·`EffectSpawnService.SpawnPrefab`을 불렀다. 이펙트는 오른쪽 (1, 0.9, -0.65)·scale x 1, 왼쪽 (-1, 0.9, -0.65)·scale x -1에 놓였다.
+  - 새 시트 9번째 칸의 「이펙트만」 그림은 좌·우 모두 바탕 그림과 sha256이 같다. 빈 칸이 그려지지 않는다.
+  - 비교 그림은 `unity-01/compare/unity-compare-right.png`·`unity-compare-left.png`다. 구현자 Unity는 17:03:26Z에 끝났다.
+- Unity Test Framework가 홈 `AppData/LocalLow/DefaultCompany/03_Client/TestResults.xml`을 실행마다 덮어썼다. 리드가 질문 `msg_02c8118ffe9e`에 계속 진행으로 답했다. Unity 공용 캐시·로그 쓰기도 사후에 확인됐다.
+- 구현자가 저장하지 않은 인라인 `node -e`를 세 번 썼다. 계약 위반 첫 발생이고, 판정 값은 저장된 명령으로 다시 쟀다.
+- 독립 검증자가 위 인라인 분석, 승인 밖 Unity 공용 캐시 쓰기, 앞 단계의 계약 목록 밖 git 읽기를 처리한 메인 결정이 있는지 물었다. 리드 대조의 비차단 판단은 판정 근거가 아니라고 답하고 메인에 결정을 요청했다. 처분은 [메인 결정 — 절차 이탈 1~7](#10-30-메인-결정--절차-이탈-17-처분--msg_9359ede6590bmsg_99c0be48fa4cmsg_eb0ee60c5440msg_40f9b3da4ec4)에 있다.
+- 리드 대조는 `lead/unity-01-lead-acceptance-01.md`(원천 대조 `lead/verify-unity-01.txt`)다.
+
+### 독립 검증 — 2026-10-30
+
+- 계약은 `verify-01-contract-v1.md`(sha256 `c7259362…cd7b`)다. 신규 `[Effect 검증자]`(task_2db9e7912589, GPT-6-Astra xhigh)를 17:11:57Z에 열었다. 기동 기록은 `lead/verify-01-launch-record-01.md`다.
+- 판정은 **PASS**이고 차단 결함은 0이다. worker_done은 `msg_afb13aecc1a0`(17:46:28Z), 판정 원문은 `verify-01/verdict.md`(sha256 `3be82f0a…580a`)다.
+  - 검증자 자기 복사본(`.backups/tmp/dash01v/`) EditMode 전체는 1,456/1,456 통과이고 HudPresentationTests는 11/11이다. Unity는 17:16:26Z에 시작해 17:25:50Z에 exit 0으로 끝났다.
+  - 완료조건 1·2·3·7은 통과, 4는 결정 기록으로 충족, 6은 이 판정이다. 5(사용자 좌·우 직접 플레이)는 「아직 안 됨, 병합 전 사용자 확인 대상」이다.
+  - 절차 이탈 #P1~#P6은 [메인 결정 — 절차 이탈 1~7](#10-30-메인-결정--절차-이탈-17-처분--msg_9359ede6590bmsg_99c0be48fa4cmsg_eb0ee60c5440msg_40f9b3da4ec4)대로 비차단 기록이다.
+  - 설계 관찰 두 개는 비차단이다. 미리보기 좌표계 상수 중복(O1)과 가중 평균이 칸별 차이를 숨길 수 있다는 점(O2, 결정 60 A로 수용)이다.
+- 리드 원천 대조는 `lead/verify-01-lead-acceptance-01.md`(원시 `lead/r2-verify-01.json`·`r2-verify-01-direct-exec.json`)다. 결과 xml·로그·제품 파일·git·rollout을 다시 읽었고 판정 수치와 같다. 검증자 rollout의 turn_context는 2건 모두 `gpt-6-astra`·`xhigh`이고 git 쓰기 명령은 0이다.
+- 메인 결정 6 A의 대조(저장 harness 밖 호출 수): 메모 첫 쓰기 뒤 runner 밖 읽기가 #P6(17:33:19Z) 말고 한 번 더(17:13:34Z, 문서 4개) 있었다. 판정의 절차 이탈 목록에는 따로 없다. 리드는 판단하지 않고 메인에 올렸고(`msg_a2afba5c93eb`), 메인이 안건 7 A로 처분했다. 판정은 그대로 쓴다.
+- 정산: worker-release retained/external_terminal, terminal close ptyKilled true(`lead/verify-release-01.json`·`verify-close-01.json`).
+- 시험 사본 Library 두 곳(dash01u 3,099,594,587 B, dash01v 3,142,708,686 B)은 아직 지우지 않았다. 메인 결정 8 B(`msg_40f9b3da4ec4`, 사용자 결정 아님)는 Art의 「Unity 사용 끝」 뒤에 지우는 것이다. Art 독립 검증 batchmode 창이 17:29Z에 열려 19:30Z까지라 정리 규칙의 「다른 파트 실행 창 중이 아님」을 지금은 만족하지 않는다. Art가 끝나면 메인이 삭제 가능 신호를 보낸다.
+- 남은 것: PR, 사용자 직접 플레이 확인, 병합, 종료 기록이다.
