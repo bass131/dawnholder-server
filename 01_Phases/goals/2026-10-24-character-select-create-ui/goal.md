@@ -4,14 +4,14 @@
 
 ### 현재 재개 카드 — 2026-10-28 결정 31 반영 범위 승인
 
-**다음 첫 일:** 합동 창 S6a와 독립 검증 최종 판정까지 끝났다([S6a 결과](#s6a-결과--합동-실db-창-실제-화면), [최종 판정](#독립-검증-최종--u1u2-보류)). 최종 판정은 보류이고 제품 결함은 0이다. 보류 사유는 U1(장면 ② 이름 중복 거절 미실행)과 U2(S7 뒤 Content 캐릭터 저장 미관측) 둘이다. 사용자 결정 44 A로 이 둘은 남은 위험으로 두고 PR로 간다([결정 기록](#10-29-결정-44-a-미관측-두-가지를-남은-위험으로--msg_b90ad547a9be)). PR270이 병합됐고(merge `8b6010d5`), main을 다시 받았다. World 쪽 코드 차이는 0이라 EditMode는 다시 돌리지 않았다. [PR273](https://github.com/bass131/dawnholder-server/pull/273)을 올렸고, 본문 남은 위험에 판정 보류와 U1·U2를 적었다. 다음은 CI 확인 뒤 메인에 병합 승인 요청을 보내는 것이다. 리드는 `[Content 리드 Opus]`(claude-opus-5-5 xhigh)이고 회신 주소는 `run:run_5ff5a7b7de60`다.
+**다음 첫 일:** 종료 기록 문서의 좁힌 재실사를 신규 검증자로 연다. 1차 실사는 불통과였다([실사 1차](#종료-기록-문서-실사-1차--불통과)). D01은 메인 결정으로 풀렸고, D02·D03은 고쳤다. 그 뒤 순서는 종료 기록 PR, 종료 점검, R-8이다. 제품 [PR273](https://github.com/bass131/dawnholder-server/pull/273)은 병합됐다(merge `571d261c`, 10-29 08:54 KST). 종료 기록은 `docs/content-character-select-closeout-20261029`에서 한다. U1·U2(결정 44 A)와 비차단 후속 셋은 BACKLOG 후보로 연결했다. 10-24 보호 결정의 계약 누락은 처분 문구의 메인 확인을 기다린다. 캐릭터 화면 외관은 결정 43 A로 Art가 이어받는다. 리드는 `[Content 리드 Opus]`(claude-opus-5-5 xhigh)이고 회신 주소는 `run:run_5ff5a7b7de60`다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 사용자 결정 31 A·33 A·34 A와 범위 초안 v1([적용 중인 사용자 결정](#적용-중인-사용자-결정)). 초안 원문은 `.backups/verification/2026-10-24-growth-effect-screen-link/lead-opus-entry-20261028/scope-draft-decision31-v1.md`(sha256 `3781850098b0035384f0407c52644a86284ba85aa97d2e7ad7fb086653157399`)다. |
-| branch | 이 branch에 최신 main(`627c9915`)을 통합했고 10-28에 처음 push한다. 화면 1단계 `2215d47a`의 6파일은 그대로다. |
-| 병합 전 단계 | 10-29 01:00 KST에 끝났다. 오류 문구 매핑, 이름 규칙 안내, 배치 다듬기, 두 해상도 캡처를 했고 EditMode 1122/1122가 통과했다. Legacy 전환은 Network·컨트롤러를 건드려야 해서 병합 뒤 단계로 넘겼다. 독립 판정은 아직이다. |
-| 병합 뒤 단계 | World 통신 부품에 잇고, DB 있는 서버로 생성·선택·입장·재접속과 마을 풀 HP를 확인한다. 사용자 직접 플레이와 병합 승인은 아침에 묶어 요청한다(메인 `msg_9624bb2949f7`). 1단은 PR270 검증 통과 head 위에서 10-29 03:23 KST에 끝났다(EditMode 1421/1421, checkpoint `261b5ee1`). DB 서버 확인은 합동 창 S6a에서 했다(10-29 06:32~07:01 KST). |
+| branch | 제품 branch `feat/content-character-select-create-20261024`(head `63e9152a`)는 PR273으로 병합됐다. 종료 기록 branch는 `docs/content-character-select-closeout-20261029`이고 base는 merge `571d261c`다. |
+| 병합 전 단계 | 10-29 01:00 KST에 끝났다. 오류 문구 매핑, 이름 규칙 안내, 배치 다듬기, 두 해상도 캡처를 했고 EditMode 1122/1122가 통과했다. Legacy 전환은 Network·컨트롤러를 건드려야 해서 병합 뒤 단계로 넘겼다. 독립 판정은 PR 직전 한 번으로 묶었다(1차 통과, 최종 보류). |
+| 병합 뒤 단계 | World 통신 부품에 잇고, DB 있는 서버로 생성·선택·입장·재접속과 마을 풀 HP를 확인했다. 병합 승인은 10-29 아침에 받았다. 사용자 직접 플레이는 U1·U2 확인과 함께 다음 외관 확인 때로 넘어갔다(결정 44 A). 1단은 PR270 검증 통과 head 위에서 10-29 03:23 KST에 끝났다(EditMode 1421/1421, checkpoint `261b5ee1`). DB 서버 확인은 합동 창 S6a에서 했다(10-29 06:32~07:01 KST). |
 | 실행 창 | 10-29 Content Unity 창은 다섯이다. 병합 전 00:42~01:22, 1단 03:06~03:16, 2a 03:36~03:46, 검증 1차 04:00~04:10, 합동 창 S6a 06:32~07:01 KST이고 모두 반환했다. 남은 창은 없다. |
 | 이전 goal | 길드 성장 효과 화면 연결은 결정 33 A로 닫았다([처분](#이전-goal-처분--길드-성장-효과-화면-연결)). |
 
@@ -248,17 +248,19 @@ World 후속 msg_4cb5d03d42fd는 Core의 기존 launcher에 사용자 직접 실
 - [x] 새 리드 인계
 - [x] 서버 기준 고정
 - [x] 화면·입력 구현
-- [>] 입장·재접속 확인
-- [>] 독립 검증
-- [>] PR273 - 캐릭터 선택·생성 화면 병합
+- [x] 입장·재접속 확인 — S6a 생성·선택·Town·같은 서버 재접속, U1·U2 미관측은 결정 44 A로 남은 위험
+- [x] 독립 검증 — 1차 통과, 최종 판정 보류(제품 결함 0), 결정 44 A로 PR 진행
+- [x] PR273 - 캐릭터 선택·생성 화면 병합
+- [>] 종료 기록 PR
 - [ ] 종료 점검
 
-PR 번호가 정해지면 병합 단계 이름을 해당 PR번호와 병합으로 바꾼다. 10-29 07:3x KST 기준이다.
+종료 기록 PR의 번호·head와 통과 판정은 goal을 다시 고치지 않고 근거 폴더와 메인 승인 요청으로 전한다(병합 관문). 통과 전 실사 결과는 [종료 기록](#종료-기록)에 적는다.
+- [x] PR273: 사용자 head 지정 승인 「병합 승인: PR273 head 63e9152a59e7a7acfa3b7b54a1ca6c4e47c8e406」(메인 pane Enter 제출) 뒤 메인이 병합했다. merge `571d261c4d279de9a5955ee909f7205af637018c`, mergedAt 2026-10-28T23:54:21Z다(메인 `msg_6627376be3c0`). 병합 직전 head·draft false·CI 4개 success·CLEAN은 메인이 확인했다.
 - [x] 서버 기준: World PR270이 `8b6010d5`로 병합됐다. 병합 전 통합한 `4755f807`과 main의 차이는 World goal 문서 하나뿐이고, 02_Server·98_Shared·03_Client·99_Tools·.github의 차이는 0줄이다. main을 이 branch에 통합했다.
 - 화면·입력 구현: 화면 A, 병합 전 단계, 실제 API 연결(1단), ID 관측 로그(2a)를 마쳤다.
 - 입장·재접속 확인: S6a에서 생성·선택·Town 입장과 같은 서버 안의 재접속을 확인했다. 장면 ②와 S7 뒤 저장은 미관측이다(U1·U2).
 - 독립 검증: 1차는 통과했고, 최종 판정은 U1·U2 때문에 보류다. 결정 44 A로 U1·U2는 남은 위험으로 두고 PR로 간다.
-- PR273: Content 21파일(제품 5·시험 5와 각 meta, goal·CURRENT)이고 일반 PR로 올렸다. 병합은 사용자의 head 지정 승인 뒤 메인이 한다.
+- PR273: Content 21파일(제품 5·시험 5와 각 meta, goal·CURRENT)이고 일반 PR로 올렸다. 리드의 승인 요청은 `msg_ca23e528c10e`다.
 
 ## 단계 결과와 근거
 
@@ -461,3 +463,99 @@ PR 번호가 정해지면 병합 단계 이름을 해당 PR번호와 병합으�
 - 검증자는 U1·U2의 처분이 자기 권한 밖이라고 적었다. 리드가 메인에 결정 요청으로 올렸고(`msg_2a1505c3c663`), 사용자 결정 44 A로 남은 위험이 됐다.
 - 근거: `.backups/verification/2026-10-24-character-entry-prep/verify-astra-v1/verdict-final.md`(sha256 `6b9a8da29c38a206d626658a3c756767286f68fff52a1964c012f52926186457`, 128줄), 같은 폴더의 `s6a-audit.json`·`audit-s6a.ps1`.
 - 정리: cv1u Library(3,142,722,054 bytes)는 22:25Z에 지웠다. cmi3u Library(Editor 실행 뒤 3,661,072,016 bytes)는 결정 44 A 뒤 22:58Z에 지웠고, C: 여유는 61.85GiB가 됐다(`lead-opus-20261029/library-delete-*-cv1u.txt`·`*-cmi3u.txt`).
+
+## 종료 기록
+
+### PR273 병합
+
+- 제품 PR [273 - 캐릭터 선택·생성 화면](https://github.com/bass131/dawnholder-server/pull/273)은 head `63e9152a59e7a7acfa3b7b54a1ca6c4e47c8e406`에서 사용자 head 지정 승인을 받아 메인이 병합했다. merge는 `571d261c4d279de9a5955ee909f7205af637018c`(2026-10-28T23:54:21Z)이고, 출처는 메인 `msg_6627376be3c0`이다.
+- merge `571d261c`의 tree는 head `63e9152a`의 tree와 같다. 코드 경로에서 `803a1b6c`(독립 검증 1차의 판정 대상)와 다른 것은 검증자 시험 `CharacterMenuBoundaryTests.cs`와 그 meta 둘뿐이고, 나머지 차이는 문서다.
+- 종료 기록 branch `docs/content-character-select-closeout-20261029`는 이 merge에서 만들었다. 병합된 제품 branch에는 더 쓰지 않는다.
+
+- CI 4종(architecture-tests·module-boundaries·code-rules·dotnet-tests)의 성공은 이 PR 클라이언트 코드의 검사 통과가 아니다. code-rules는 `03_Client/`를 제외하고 Unity를 돌리는 workflow는 없다. 클라이언트 검증 근거는 로컬 Unity 창의 EditMode 실행과 S6a다([Gardener](gardener.md) 「설계 관찰과 대안」).
+
+### 종료 Gardener
+
+- 신규 `[Content Gardener]`(claude-opus-5-5 xhigh, 첫 화면 「Opus 5.5 with xhigh effort」, backend 실제 모델 unknown)가 읽기 전용으로 점검했다. Task `task_0da9134a10e9`, Dispatch `ctx_c4a5803589c1`이고, 계약 v1의 sha256은 `40c90ee1…20ab`이다. 고정 입력 17파일은 17/17 일치했다.
+- 2026-10-29T00:21:33Z에 worker_done(succeeded)을 받았다. 리드가 release(retained/external_terminal)하고 idle을 확인한 뒤 pane을 닫았다(ptyKilled true).
+- 보고서는 [gardener.md](gardener.md)다. 원본 `closeout-20261029/gardener/context-gardener-report.md`(sha256 `e82bc4b88d95f8724b6a6a63ac4d24dc40d2f9a6713985e951bed9e566e58a31`, 34,006 bytes)를 bytes 그대로 복사했다.
+- 결론: 새 차단 관찰 0, 비차단 리드 반환 다섯(GR-01~GR-05), 정리 후보 둘이다. 현재 판정(최종 보류, 제품 결함 0, U1·U2 남은 위험)은 바꾸지 않았다.
+- 정리 후보 둘은 모두 기존 BACKLOG 행에 관측을 더했다. 제안의 이관이며 채택이나 구현 승인이 아니다.
+  - 후보 1: 생존 신호 정산을 정본 helper 없이 손으로 기록해 초과 구간이 빠졌다 → `heartbeat-interval-review`.
+  - 후보 2: Unity 실행 관문과 사용자 프로필 관측을 세션마다 임시 helper로 다시 만들었다 → `unity-baseline-harness-reuse`.
+- 리드 반환 처분
+  - GR-01(CURRENT Content 줄 낡음): 이 종료 기록에서 고쳤다.
+  - GR-02(goal이 가리키는 BACKLOG ID 넷 부재): 이 종료 기록에서 BACKLOG 행을 만들었다.
+  - GR-03(10-24 Main 보호 결정 셋의 10-28/29 계약 미반영): 아래 「10-24 보호 결정의 계약 누락」에 적었다. 처분은 메인 확인을 받는다.
+  - GR-04(재개 카드 표의 낡은 두 줄): 고쳤다.
+  - GR-05(단계별 신호 정산 누락): 아래 「생존 신호 정산」에 helper 집계를 적었다.
+
+### 생존 신호 정산
+
+- 정본 helper `99_Tools/Orca/check-liveness.mjs`를 종료 기록에서 처음 돌렸다. 단계 정산 때 돌리지 않은 것은 ORCA 「생존 신호와 초과 정산」과 어긋난 리드 절차 누락이다.
+- 10-28/29 Dispatch 여섯의 300초 초과는 14구간이다. 병합 전 구현 5, 1단 구현 4, 2a 구현 1, 독립 검증 3, S6a 관측 1이고, 종료 Gardener는 0이다. 검증자의 공식 질문 대기 8861초는 따로 뺐다.
+- 이 결과는 Gardener의 손 집계 14구간과 구간·초가 같다. 단계 결과에 이미 적힌 것은 S6a 338초와 검증 512초뿐이었다.
+- 구간별 이유와 입력·출력은 `.backups/verification/2026-10-24-character-entry-prep/closeout-20261029/liveness-settlement.md`에 있다. 판정에 쓴 helper 출력은 같은 폴더의 `liveness-output-v2.txt`(sha256 `26788d6c…71aa0`)다.
+- v2를 다시 만들려면 `inbox-run-dispatch-messages.json`을 먼저 넣고 91파일 목록을 뒤에 넣는다. 순서를 바꾸면 같은 초의 두 신호 때문에 15구간·질문 대기 0이 나온다(문서 실사 O1). 정확한 명령은 정산 문서 「재현 순서」에 있다.
+- 종료 기록 문서 실사 Dispatch(`ctx_65fff96c5008`)는 초과 1구간이다. 검증자의 판정 작성 중 341초였고, 검증자가 스스로 보고했다. 질문 대기 112초는 따로 뺐다.
+
+### 10-24 보호 결정의 계약 누락
+
+- 10-24에 Main이 B 단계 보호를 셋 정했다(사용자 부재 위임에 근거한 Main 결정). LocalLow `TestResults.xml`의 before 캡처·반환 대조(`msg_6d2d607a721a`), GiCache 네 메타의 before/after 관측(`msg_b62ee0d53624`), before를 실제 진입 직전에 두기(`msg_e05dd4749c68`)다([Main의 A 마감·후속 보호 결정](#main의-a-마감후속-보호-결정), [GiCache 정책](#main의-gicache-정적-관측-정책), [before 시점](#공유-testresults의-b-before-시점-보충)).
+- 10-28 리드는 결정 31 A의 범위 초안 v1로 다시 들어오면서 이 셋을 새 계약 다섯(병합 전·1단·2a·검증·S6a)에 옮기지 않았다. 이 셋을 대체하는 결정도 없었다.
+- 그 사이 batchmode 다섯 번이 LocalLow `TestResults.xml`에 저장했다. 다섯 번과 S6a Editor 한 번이 GiCache 생성 줄을 남겼다(각 `editmode*.log`, `joint-s6a/editor.log`). before/after는 관측하지 않았다. 삭제·복원은 0이다. 원본 checkout은 복사본 방식이라 바뀌지 않았다.
+- `TestResults.xml` 보호 누락은 10-24 A-PROTECT-01에 이은 두 번째 발생이다. 교정 정본은 두 번째 발생부터 반복 규칙을 만든다. 같은 실수를 계약 문장으로 다시 막기보다, Gardener 후보 2의 정본 Unity 실행 wrapper(실행 전후 LocalLow·GiCache 관측 포함)로 가져가는 쪽을 제안한다. 채택은 메인과 사용자가 정한다.
+- 리드 제안 처분: 「대체됨」이 아니라 「계약 누락·before unknown·삭제·복원 0」으로 기록을 남긴다. 상태는 10-24 Main 처분(after 보존, 삭제·복원 0, GiCache는 공유 파생 캐시로 변경 수용)과 같다. 메인 확인은 종료 기록 승인 요청과 함께 받고, 그 회신을 처분 근거로 쓴다.
+- 메인은 이 누락을 반복 규칙 후보로 BACKLOG에 연결하라고 지시했다(`msg_32aa6feca868`, 정본 반영은 Rules 소유). 연결한 행은 `unity-testresults-protection-rule`이다.
+
+### 종료 기록 문서 실사 1차 — 불통과
+
+- 신규 `[Content 검증자]`(gpt-6-astra xhigh, Fast 꺼짐, backend 실제 모델 unknown)가 HEAD `4ddb6675`의 문서 4파일을 실사했다. Task는 `task_ecd4e2c93ba2`, Dispatch는 `ctx_65fff96c5008`이다. 첫 화면의 업데이트 선택창은 메인이 「Skip」으로 처리했다(`msg_cb201514fd63`).
+- 2026-10-29T00:49:59Z에 worker_done(succeeded)을 받았다. 리드가 release(retained/external_terminal)한 뒤 pane을 닫았다(ptyKilled true).
+- 판정 원문은 `closeout-20261029/reviewer/verdict.md`(sha256 `60aacd08be2fb5357256f43566c5b48a2094aa0af6db2410aafb9ec15de3dfcf`, 34,161 bytes)다.
+- 판정은 불통과이고 차단 결함은 셋이다. PR273 사실, `gardener.md` bytes, BACKLOG 기존 두 행과 CURRENT 다른 줄의 보존, U1·U2 보류, Gardener 수명, 신호 v2 재현은 맞았다.
+  - D01(사전 메모 누락): 메인 결정 `msg_32aa6feca868`(2026-10-29T00:52:57Z)으로 `4ddb6675`의 쓰기에 한해 인정했다. 첫 쓰기 시점은 unknown으로 남기고, 소급은 0이다. 수정 commit은 사전 메모 `closeout-20261029/context-lead-closeout-fix1.md`(00:51:34Z)를 먼저 쓰고 진행했다.
+  - D02(후보 도착 검사 input-error): 후보 절을 정확한 `## 다음 계획 후보`로 올리고 후보만 남겼다. 후보가 아닌 세 항목은 [Art 인계와 문서 어긋남](#art-인계와-문서-어긋남)으로 옮겼고, 종료 점검 준비도 2단계 제목으로 올렸다.
+  - D03(BACKLOG 출처 시각): 새 세 행의 출처에 메인 종료 연결 지시의 시각(2026-10-28T23:55:02Z)을 적었다.
+- 비차단 관찰 셋은 이렇게 처리했다.
+  - O1(정산 입력 순서): 위 「생존 신호 정산」과 정산 문서에 순서를 고정했다.
+  - O2(재개 카드): 첫 문장을 다음 일로 바꿨다.
+  - O3(리드 메모의 줄 수 오기): 메모에 정정을 표시했다.
+
+### 리드 절차 누락
+
+10-28/29 Content 리드가 스스로 알리거나 실사에서 드러난 절차 누락이다. 메인 지시 `msg_32aa6feca868`로 한곳에 모은다. 횟수는 이 goal 안의 발생이다.
+
+| 누락 | 횟수 | 결과 | 처리 |
+|---|---|---|---|
+| 10-24 보호 결정 셋을 새 계약에 옮기지 않음 | 계약 5개 | LocalLow `TestResults.xml` 저장 5번, GiCache 생성 줄 6번, before/after 미관측 | [위 절](#10-24-보호-결정의-계약-누락). TestResults 보호 누락은 A-PROTECT-01에 이은 두 번째 발생이다. BACKLOG `unity-testresults-protection-rule` |
+| 단계 정산 때 정본 생존 신호 helper 미실행 | 단계 정산 5번(병합 전·1단·2a·검증·S6a) | 손 기록이 초과 14구간 중 8구간만 표시 | 종료 기록에서 helper로 다시 셌다([생존 신호 정산](#생존-신호-정산)). BACKLOG `heartbeat-interval-review`에 관측 추가 |
+| 종료 기록 1차 쓰기 전 맥락 메모 없음 | 1번 | 실사 D01 | 메인 결정 A로 `4ddb6675` 한정 인정 |
+| 종료 기록 PR 전 후보 도착 검사 미실행 | 1번 | 실사 D02(형식 오류를 PR 전에 못 잡음) | 실사 질문 뒤 처음 실행했고 이번 수정으로 고쳤다 |
+
+교정 정본에 따라 첫 발생은 이 goal에 기록한다. 두 번째 발생인 TestResults 보호 누락만 반복 규칙 후보로 넘긴다.
+
+## 다음 계획 후보
+
+- U1·U2(결정 44 A): BACKLOG `character-menu-unobserved-real-screens`로 연결한다. 확인 시점은 다음 사용자 직접 플레이(외관 작업 확인·영상 재촬영) 때다. 대역 시험이나 다른 계정의 성공으로 완료를 바꾸지 않는다.
+- 연결 시도 실패 때 「연결하는 중」 고착: BACKLOG `character-menu-connect-failure-state`로 연결한다. `NetworkService`가 실패를 공개하지 않는 것이 원인이라 World와 공개 상태 계약을 먼저 정해야 한다.
+- Selecting 상세 문구: BACKLOG `character-menu-selecting-detail-text`로 연결한다.
+- presenter의 `Debug.Log` 직접 사용: BACKLOG `character-menu-presenter-log-seam`으로 연결한다. 줄 형식은 S6a 판정 기준이었으므로 바꿀 때 그 관계를 함께 본다.
+- Gardener 후보 둘은 기존 BACKLOG `heartbeat-interval-review`·`unity-baseline-harness-reuse`에 관측으로 더했다. 채택·구현은 메인과 사용자가 정한다.
+- TestResults 보호 누락의 반복 규칙: BACKLOG `unity-testresults-protection-rule`로 연결한다. 두 번째 발생이라 규칙 후보가 됐고, 정본 반영은 Rules가 맡는다(메인 `msg_32aa6feca868`).
+
+## Art 인계와 문서 어긋남
+
+후보가 아니라 기록으로 남기는 사항이다.
+
+- 완료조건 4와 순서표 v3 S7 행의 어긋남은 [결정 44 A 기록](#10-29-결정-44-a-미관측-두-가지를-남은-위험으로--msg_b90ad547a9be)에 남겼고 두 문서는 고치지 않는다.
+- 캐릭터 화면 외관(밝은 2D 판타지 풍)은 결정 43 A로 Art가 이어받는다. Content는 이 화면의 외관을 더 고치지 않는다(메인 `msg_6627376be3c0`).
+- Art 리드가 결정 43 외관의 파일 경계를 물었고(`msg_407f762f5d3f`), Content가 회신했다(`msg_3a2dfa53e814`). Art는 두 View 파일의 배치·그림·색·글꼴 크기를 쓴다. 보존 조건은 콜백·상태 문구와 분기·입력 잠금·수명, 시험이 찾는 오브젝트 경로, richText false, 이름 입력칸의 길이·검증 0, 이름 규칙 안내 위치, 한글 대체 글꼴이다. 시험은 동작·승인 문구·캡처 판정 넷을 바꾸지 않는다. 스킨·글꼴 이름 단정과 캡처 fixture 값은 결정 43 A를 근거로 고칠 수 있다. Art는 이를 범위 초안 v2(`msg_d6a2f8633fb1`)에 넣었다고 알렸다(`msg_8cc601004604`).
+
+## 종료 점검 준비
+
+- 승인 범위의 결과: PR273 병합. 구현자 자체 확인은 EditMode 1122 → 1421 → 1431 전체 통과다. 독립 검증 1차는 통과(독립 25/25, EditMode 1456/1456, 제품 결함 0)이고, 최종 판정은 U1·U2 때문에 보류다. 이 수치들은 서로 다른 실행이며 하나로 합치지 않는다.
+- 실제 화면: S6a에서 빈 세 칸 목록, 생성, 선택, Town 입장(HP 150 / 150), 같은 서버 안 재접속 뒤 같은 character ID를 봤다. 장면 ②(이름 중복 거절)와 서버 재기동 뒤 목록은 보지 않았다.
+- 보존 자원: 개발 DB의 시험 로그인 `c_s6a_test1029`와 캐릭터 `시험새벽1029` 행은 결정 36 A대로 남긴다. Editor PlayerPrefs의 로그인 칸 값은 S6a에서 `user2`가 `c_s6a_test1029`로 바뀌었고, 리드는 되돌리지 않았다. 복사본 `.backups/tmp/cmi1u`·`cmi2u`·`cmi3u`·`cv1u`는 Library만 지웠고 나머지 파일은 Git 밖에 남아 있다.
+- 종료 기록에서 Unity·서버·DB·WSL 실행은 0이다.
+- 다음 goal은 자동으로 시작하지 않는다. 메인과 사용자가 결과·남은 위험·BACKLOG·다음 계획을 확인한 뒤 정한다.
