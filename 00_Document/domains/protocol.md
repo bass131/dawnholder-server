@@ -8,6 +8,27 @@ PDL 수정 → 생성기 실행 → 생성 diff와 [ProtocolVersion](../../98_Sh
 
 패킷 ID를 재사용하거나 정의 순서를 바꾸지 않는다. 필드 끝 추가도 기존 읽기 코드에 영향을 준다. 버전 일치로 연결을 제한하는 현재 핸드셰이크와 새 동작을 함께 검증한다. 전송의 프레임 길이 검사는 [서버](../../02_Server/Network/FrameValidator.cs)와 [클라이언트](../../04_ClientNet/FrameValidator.cs)에 각각 있다.
 
+## v22 캐릭터 목록·생성·선택
+
+`ProtocolVersion.Current=22`이며 equality handshake가 v21 연결을 거부한다. v21은 Core의 [저장 재시작 진입 변경](../../01_Phases/goals/2026-10-14-persistence-runtime-entry/goal.md)(`bcafb6bc`, 2026-10-15)이며 이 문서에 절이 아직 없다. 기존 1..48 번호와 필드는 보존하고 PDL 끝에 아래를 추가한다. LittleEndian이고 전체 길이는 4바이트 머리를 포함한다. string은 UInt16 바이트 길이 + UTF-16 LE이며 ID는 36자 D형 Guid(72바이트)다.
+
+| ID·이름 | 머리 뒤 필드 순서 | 전체 길이 |
+|---|---|---|
+| 49 C_CharacterListRequest | uint requestId, byte reserved(0) | 9 |
+| 50 S_CharacterListResult | uint requestId, byte result, byte invalidField, byte occupiedMask, 슬롯1..3마다 string slotNCharacterIdD, string slotNName, byte slotNClassId | 26 + 문자열 바이트, 최대 314 |
+| 51 C_CharacterCreateRequest | uint requestId, byte slot, byte classId, byte reserved(0), string rawName | 13 + 이름 바이트, 최대 85 |
+| 52 S_CharacterCreateResult | uint requestId, byte result, byte invalidField, byte slot, string characterIdD, string name, byte classId | 16 + 문자열 바이트, 최대 112 |
+| 53 C_CharacterSelectRequest | uint requestId, byte reserved(0), string characterIdD | 11 + ID 바이트, D형 83 |
+| 54 S_CharacterSelectResult | uint requestId, byte result, byte invalidField, string selectedCharacterIdD | 12 + ID 바이트, 성공 84 |
+
+[CharacterMenuRequestReader](../../02_Server/GameServer/Handlers/Session/CharacterMenuRequestReader.cs)는 큐 등록 전 size·ID·실제 길이 일치, reserved=0, requestId≠0을 검사한다. 49는 정확히 9바이트이고 51·53의 문자열은 72바이트 이하 짝수 길이로 프레임 끝까지 차야 하며 짝 없는 surrogate를 거부한다. 구조 위반과 연결에서 이미 본 requestId 이하는 무응답으로 버린다. 연결당 한 건만 처리하며 그 사이 새 requestId는 `RequestInProgress`를 받는다.
+
+[CharacterMenuResult](../../98_Shared/Protocol/CharacterMenuResult.cs)는 Success=0, InvalidInput=1, RequestInProgress=2, InvalidState=3, SlotOccupied=4, SlotsFull=5, NameTaken=6, CharacterUnavailable=7, Busy=8, RecoveryRequired=9, CancelledBeforeDispatch=10, Unavailable=11, OutcomeUnknown=12, SchemaMismatch=13, IntegrityFailure=14, OperationConflict=15, LegacyFlowOnly=16이다. [CharacterMenuInvalidField](../../98_Shared/Protocol/CharacterMenuInvalidField.cs)는 None=0, Slot=1, Name=2, Class=3, CharacterId=4이며 InvalidInput에서만 None이 아니다. 실패는 빈 문자열·0으로 채워 50·52·54가 26·16·12바이트다. occupiedMask bit0/1/2가 슬롯1/2/3이며 Knight도 class0이라 빈 슬롯은 mask로만 구분한다.
+
+Stored 호스트는 로그인 `Accepted` 뒤 목록 49→50, 생성 51→52, 선택 53→54 Success → 48 Success(저장 직업) → 맵 입장 순서이며 [CharacterMenuCatalogSession](../../02_Server/GameServer/Sessions/CharacterMenuCatalogSession.cs)이 처리한다. 54는 플레이 가능 신호가 아니며 선택 거부는 54로 끝나 48·입장이 없다. 적용 미확정 결과는 12를 보낸 뒤 연결을 닫는다. 선택 단계의 기존 `C_CharacterSelect`(16)는 48 `CharacterLoadStatus.Unavailable`·class255로 거부된다. 이름 규칙은 서버 Core `PrepareCreate`가 [CreateDescriptor.cs](../../02_Server/GameServer/Persistence/Catalog/CreateDescriptor.cs)의 `CatalogValidation.Name`으로 판정한다.
+
+Legacy 호스트는 49·51·53에 선택 단계면 `LegacyFlowOnly`(16), 아니면 `InvalidState`(3)로 답하고([CharacterMenuSession](../../02_Server/GameServer/Sessions/CharacterMenuSession.cs)) 기존 `C_CharacterSelect` → 48 → 맵 입장을 유지한다. `ServerHost.Start`는 catalog 없는 Stored 시작을 거부한다.
+
 ## v20 길드·거점·개인 강화
 
 `ProtocolVersion.Current=20`이며 equality handshake가 v19 연결을 거부한다. 기존 1..42 번호와 필드는 보존하고 PDL 끝에 아래 필드를 추가한다. LittleEndian이고 전체 길이는 ushort size/id의 4바이트 머리를 포함한다.
