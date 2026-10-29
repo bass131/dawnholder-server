@@ -6,13 +6,15 @@
 Core가 저장 기능을 검증하는 동안 전송 형식과 대역 시험을 준비하고, 실제 연결 뒤 서버·Unity 양쪽을 검증하는 안입니다.
 Core 준비 시점부터 약 3~5작업일을 예상하며, 10-23~24 연결 확인과 10-28 기능 동결을 목표로 합니다. 일정은 추정입니다.
 
-**상태(10-29 08:4x KST): 제품 PR270이 사용자 승인 뒤 병합됐다(merge commit `8b6010d543c95837f504a225cdec5b9da9f854b5`). World C1~C9 강 독립 검증은 PASS이고 종료 Gardener도 끝났다. 남은 것은 프로토콜 현재 문서 갱신·종료 문서 실사·종료 기록 PR·메인 종료 점검·R-8이며 goal 전체 종료 전이다.** 아래 줄은 10-27 당시 상태다.
+**상태(10-29 09:3x KST): 제품 PR270이 사용자 승인 뒤 병합됐다(merge commit `8b6010d543c95837f504a225cdec5b9da9f854b5`). World C1~C9 강 독립 검증은 PASS이고, 종료 Gardener와 프로토콜 현재 문서 갱신도 끝났다. 종료 기록 PR은 draft PR274다. 첫 종료 문서 실사가 리드 기록 결함 둘로 NOT PASS여서 리드가 고쳤다. 남은 것은 신규 종료 문서 재실사·사용자 병합 승인·메인 종료 점검·R-8이며 goal 전체 종료 전이다.** 아래 줄은 10-27 당시 상태다.
 
 **이전 상태: 10-28에는 검증을 통과한 만큼 보여 주고 미완료는11-06 제출까지 다듬는다. 신규 World 제품 묶음은 현재 밤 두 번째 빌드 후보이며, Core B1·최종 독립 실DB 인계 뒤 World 최종 강검증·제품 PR 순서를 유지한다.** 다음 Core B0 시각·최종 인계 F가 미정이므로18:00 포함을 확약하지 않는다. 기존 생성API·필수시험은 유지하고 생성 화면 실연 유예는 그대로다. 미커밋26경로/기존 입력을 보존했으며 이전 자체회귀838P는 당시 결과이고 현재 합동/최종 독립/Unity·실DB 전체 판정은 남았다.
 
 ## 재개 지점
 
-**다음 첫 일(10-29 08:5x KST, `[World 리드 Opus]`):** 프로토콜 현재 문서 갱신(`task_139288b76901`)이 끝나 commit했다. 결과는 「결정과 단계 결과」에 있다. 다음 일은 신규 Astra xhigh 검증자의 종료 문서 실사다. 대상은 main `8b6010d5` 이후 이 branch의 모든 문서 변경(goal.md·gardener.md·CURRENT.md·BACKLOG.md·protocol.md·FEATURE_MAP.md)이다. 그 뒤 종료 기록 PR → 사용자 병합 승인 → 메인 종료 점검 → R-8이다. 미커밋 Core launcher는 메인이 서버 창을 닫은 뒤 HEAD 판으로 되돌린다. 아래는 직전 단계 기록이다.
+**다음 첫 일(10-29 09:3x KST, `[World 리드 Opus]`):** 종료 기록 PR은 draft [PR274](https://github.com/bass131/dawnholder-server/pull/274)다. 첫 종료 문서 실사(`task_d4f39cf2e9a6`, head `838db30e`)는 NOT PASS였다. 리드 기록 결함 D01(이 goal 상태 줄이 끝난 프로토콜 문서 갱신을 남은 일로 적음)과 D02(CURRENT World 줄의 진행 상태 문구)를 고쳤다. 결과는 「결정과 단계 결과」에 있다. 다음 일은 고친 head의 문서 변경 전체를 신규 Astra xhigh 검증자가 다시 실사하는 것이다. 그 뒤 사용자 병합 승인 → 메인 종료 점검 → R-8이다. 미커밋 Core launcher는 서버 창이 닫힌 뒤 HEAD 판으로 되돌린다. 아래는 직전 단계 기록이다.
+
+**이전 다음 첫 일(10-29 08:5x KST, `[World 리드 Opus]`):** 프로토콜 현재 문서 갱신(`task_139288b76901`)이 끝나 commit했다. 결과는 「결정과 단계 결과」에 있다. 다음 일은 신규 Astra xhigh 검증자의 종료 문서 실사다. 대상은 main `8b6010d5` 이후 이 branch의 모든 문서 변경(goal.md·gardener.md·CURRENT.md·BACKLOG.md·protocol.md·FEATURE_MAP.md)이다. 그 뒤 종료 기록 PR → 사용자 병합 승인 → 메인 종료 점검 → R-8이다. 미커밋 Core launcher는 메인이 서버 창을 닫은 뒤 HEAD 판으로 되돌린다. 아래는 직전 단계 기록이다.
 
 **이전 다음 첫 일(10-29 08:4x KST, `[World 리드 Opus]`):** 종료 Gardener(`task_141e27c7730f`)가 끝났다. 원문은 [gardener.md](gardener.md)이고, 후보는 「다음 계획 후보」로 BACKLOG에 연결했다. 후보 도착 검사는 `allowed`다(`closeout-01/candidate-check-01.json`). Gardener GR-02에 대한 메인 판정 A(`msg_4d16987f5c46`, 「적용 중인 메인 운영 판단」)에 따라, 신규 Opus 문서 구현자가 `domains/protocol.md`의 v22 절과 `FEATURE_MAP.md`의 메뉴 경로를 쓴다. 계약은 `closeout-01/impl-doc/contract-v1.md`다. 그 뒤 신규 Astra xhigh 종료 문서 실사 → 종료 기록 PR → 사용자 병합 승인 → 메인 종료 점검 → R-8이다. 미커밋 Core launcher는 메인이 서버 창을 닫은 뒤 HEAD 판으로 되돌린다. 아래는 직전 단계 기록이다.
 
@@ -995,6 +997,12 @@ Content의 최소 wire 소비자를 별도 제품 PR에 둘 필요가 생기면,
   - v21 절은 쓰지 않았고, Core 변경 `bcafb6bc` 연결 한 문장만 두었다. v21 절은 BACKLOG `protocol-doc-version-drift`에 남는다.
   - 구현자 대조 결과, 내용은 PDL·GenPackets·ProtocolVersion·enum·handler·GameSession·CatalogSession·ServerHost와 일치했다. packet-contract-v1과도 차이가 없었다(작성 시점의 protocol 21 문장만 예외). 패킷 길이 수치는 손셈이며 근거는 `closeout-01/impl-doc/worker/byte-lengths.md`다.
   - 빌드·시험·실행은 0이다. 이 작업의 통과는 독립 판정이 아니며 종료 문서 실사가 함께 본다. 보고는 `closeout-01/impl-doc/worker/report.md`, 정산은 `release-01.json`(retained·external_terminal)과 `close-01.json`이다.
+- **종료 문서 실사 1차(`task_d4f39cf2e9a6`) — NOT PASS, failed 정산:**
+  - 신규 `gpt-6-astra` xhigh가 draft PR274 head `838db30e`의 문서 6파일을 문서 실사했다. 최초 명령은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`이고, rollout의 service_tier는 default(Fast 꺼짐), backend 실제 모델은 unknown이다. 첫 화면의 Codex 업데이트 선택창은 메인이 Skip으로 처리했다(`msg_6b89efc48aab`).
+  - 프로토콜 v22 절과 FEATURE_MAP의 원천 대조, 패킷 길이 독립 합산, Gardener 이관, 후보 9개 도착, 상대 링크 15건에는 지적이 없었다. 문서 구현자의 메모 선행은 구현자 대화 기록의 tool event로 확인했다. 리드가 찾는 표로 준 것은 `closeout-01/review/impl-doc-write-order-receipt.md`다.
+  - 차단 결함은 리드 기록 둘이다. D01은 이 goal 상태 줄이 끝난 프로토콜 문서 갱신을 남은 일로 적은 것이다. D02는 CURRENT World 줄에 진행 상태 문구를 새로 적은 것이다(CURRENT는 진행 goal 링크만 둔다). 둘 다 고쳤다. 다른 파트 줄의 상태 문구는 범위 밖이라 그대로 두었다.
+  - 비차단 관찰 하나도 반영했다. BACKLOG `protocol-doc-version-drift`의 이유 첫 문장이 현재형으로 「최신 절은 v20」이라 적어, 종료 Gardener 시점의 사실로 고쳤다.
+  - 판정 원문은 `closeout-01/review/worker/report.md`(sha256 `df4633d2ec00df01ec0fb2b8df5a56885a3446f970395de4fd4cf4a5cd71dc5f`)다. 정산은 `review/release-01.json`(retained·external_terminal)과 `review/close-01.json`이다. 종료 기록 산출물의 수정은 이번이 1회째다.
 
 ## 보류와 남은 우려
 
