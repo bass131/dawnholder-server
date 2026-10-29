@@ -45,7 +45,12 @@ namespace Dawnholder.Client.Tests
         const float Tolerance = 0.5f;
         const string NpcLine = "대장장이: 오늘도 좋은 쇠가 들어왔다네. 강화가 필요하면 말하게.";
 
-        enum Kind { Panel, Inset, Header, Button, ItemSlot, IconBase, CircleButton, NumberBadge, PortraitFrame, Divider, Corner, HeaderEnd }
+        // The last five are bright-kit kinds only (BrightPieces below; lead msg_8d4e83bd3bb0 4).
+        enum Kind
+        {
+            Panel, Inset, Header, Button, ItemSlot, IconBase, CircleButton, NumberBadge, PortraitFrame, Divider, Corner, HeaderEnd,
+            CharacterSlot, Pedestal, InputField, SelectionGlow, Icon,
+        }
 
         // One approved B1 piece: name, meta GUID, kind, mode and border L/R/T/B in PNG px, copied from
         // Art/UI/Components/import-spec.json sprites[] and the 33 .meta files at 4728e493.
@@ -117,6 +122,42 @@ namespace Dawnholder.Client.Tests
         // Declared after Pieces: static initializers run in text order.
         static readonly Dictionary<string, Piece> PiecesByGuid = Pieces.ToDictionary(piece => piece.Guid);
 
+        // The approved bright kit the inventory moves to (decision 43 A, goal 2026-10-29-inventory-character-select-look
+        // 완료조건 1). The inventory tests expect these 25 GUIDs instead of the brown 33, never both (Content
+        // msg_b9b45522981b: no union; main msg_e873edba3d2d). Rows printed by pr2-red-01/scripts/emit-bright-table-v2.ps1
+        // from the approved spec; BrightUiKitTestSupport names the inputs and their SHA256. The PNGs live under
+        // BrightUiKitTestSupport.ArtFolder, so these rows are loaded by LoadBright, never by Piece.AssetPath.
+        static readonly Piece[] BrightPieces =
+        {
+            Sliced("Panel_Default", "387817131a7ee7abd35357ff32e6cd2a", Kind.Panel, 24),
+            Sliced("Header", "7e18e6245ab44c8b34442c1876be07d3", Kind.Header, 16),
+            Sliced("Inset_Default", "d86a90ca34d7ac84244096c673e46475", Kind.Inset, 12),
+            new Piece("Divider_Horizontal", "397c7e470f14e2989cc3622e25f75e24", Kind.Divider, true, 16, 16, 0, 0),
+            Sliced("Button_Default_Normal", "218e99a5632015261381128b2909788b", Kind.Button, 16),
+            Sliced("Button_Default_Highlighted", "8c51a6fac51dd8f61ef4cede5690f59c", Kind.Button, 16),
+            Sliced("Button_Default_Pressed", "09e130da54a609f68834547b2363b2a6", Kind.Button, 16),
+            Sliced("Button_Default_Disabled", "0438a51907e9b5791382a7beecdf53ad", Kind.Button, 16),
+            Sliced("Button_Accept_Normal", "fdaa805e70f5533488dae81f7234282a", Kind.Button, 16),
+            Sliced("Button_Accept_Highlighted", "b19f5a6d0300e566d0fffea8534ac8ca", Kind.Button, 16),
+            Sliced("Button_Accept_Pressed", "819be5b406aaa976f19a17fb72ef6fae", Kind.Button, 16),
+            Sliced("Button_Accept_Disabled", "d14f5c1a8a0197176bd076a96fb0009e", Kind.Button, 16),
+            Sliced("ItemSlot_Empty", "e702897eaffb5b94a75480e1d24d43b4", Kind.ItemSlot, 16),
+            Sliced("ItemSlot_Filled", "74be0b4adcf9029de03d21c58f39d95d", Kind.ItemSlot, 16),
+            Sliced("ItemSlot_Selected", "d44be2e942c90002e105154dfa0f758a", Kind.ItemSlot, 16),
+            Simple("IconBase_64", "87b8e15f8cfe6c51f3820283d7a2f67a", Kind.IconBase),
+            Simple("NumberBadge", "5efe8348bfdcd2327dfc5a5568c159d4", Kind.NumberBadge),
+            Sliced("CharacterSlot_Default", "b0d2304d8eeaeac834d357ce350b062c", Kind.CharacterSlot, 16),
+            Sliced("CharacterSlot_Selected", "39f038f1abf5257969dd43c5458e0634", Kind.CharacterSlot, 16),
+            Simple("Pedestal", "54faccc43070f3ab735dae9c756f651b", Kind.Pedestal),
+            Sliced("InputField", "38f801c703515178c835f249a4db2983", Kind.InputField, 16),
+            Simple("SelectionGlow", "ae12c245de4289f6e0ba6cabc07b8bf7", Kind.SelectionGlow),
+            Simple("Icon_Material", "9f5082fa3c5d6e75b68675a2d3f1a491", Kind.Icon),
+            Simple("Icon_CurrencyPouch", "3aadc85f7b3e7ca0c8a31d52cc7910a8", Kind.Icon),
+            Simple("Icon_Coin", "87e028dcd3360e891febb86e8d4c61d8", Kind.Icon),
+        };
+
+        static readonly Dictionary<string, Piece> BrightPiecesByGuid = BrightPieces.ToDictionary(piece => piece.Guid);
+
         // Approved preview "current" rects kept by the composition (inventory-0 window, InventoryPanelView.cs:68-76):
         // top-left offset from the panel's top-left and size, UI units, y downward.
         static readonly Rect[] InventorySlotRects =
@@ -166,7 +207,9 @@ namespace Dawnholder.Client.Tests
         // A. Approved pieces on the real builders
         // ---------------------------------------------------------------------------------------------------------
 
-        // Approved preview inventory-0: Panel_Default behind the whole 550×354 panel.
+        // Approved preview inventory-0: Panel_Default behind the whole 550×354 panel. The inventory now expects the
+        // bright kit's Panel_Default (decision 43 A, goal 2026-10-29 완료조건 1, Content msg_b9b45522981b, main
+        // msg_e873edba3d2d); only the GUID table changed.
         [Test]
         public void InventoryPanel_Background_IsTheApprovedDefaultPanel()
         {
@@ -174,47 +217,53 @@ namespace Dawnholder.Client.Tests
             Image background = Background(window.Panel);
             Log("inventory", window.Root.transform);
 
-            Assert.AreEqual("Panel_Default", ApprovedPiece(background?.sprite)?.Name,
-                $"A inventory background shows {Describe(background)}, approved Panel_Default");
+            Assert.AreEqual("Panel_Default", ApprovedPiece(background?.sprite, BrightPiecesByGuid)?.Name,
+                $"A inventory background shows {Describe(background, BrightPiecesByGuid)}, approved bright Panel_Default");
         }
 
         // Approved preview: refresh and use buttons are Button_Default; scope 「보존 계약」: the normal, highlighted,
-        // pressed and disabled states are the approved sprites.
+        // pressed and disabled states are the approved sprites. Bright table: decision 43 A, 완료조건 1, Content
+        // msg_b9b45522981b, main msg_e873edba3d2d.
         [Test]
         public void InventoryPanel_RefreshAndUseButtons_ShowTheApprovedDefaultButtonStates()
         {
             InventoryWindow window = BuildInventory(_ => { }, () => { });
             var problems = new List<string>();
-            problems.AddRange(ButtonViolations(window.Refresh, "Default").Select(p => "Refresh: " + p));
+            problems.AddRange(ButtonViolations(window.Refresh, "Default", BrightPiecesByGuid).Select(p => "Refresh: " + p));
             for (int i = 0; i < window.Uses.Length; i++)
-                problems.AddRange(ButtonViolations(window.Uses[i], "Default").Select(p => $"Slot{i + 1}/Use: " + p));
+                problems.AddRange(ButtonViolations(window.Uses[i], "Default", BrightPiecesByGuid).Select(p => $"Slot{i + 1}/Use: " + p));
             Log("inventory buttons", problems);
 
-            Assert.IsEmpty(problems, "A inventory buttons use the approved Button_Default states");
+            Assert.IsEmpty(problems, "A inventory buttons use the approved bright Button_Default states");
         }
 
         // Scope 「제품 쓰기 경계」 inventory 「칸」; approved preview rows: Inset_* row and ItemSlot_* square per slot.
+        // Bright table: decision 43 A, 완료조건 1, Content msg_b9b45522981b, main msg_e873edba3d2d.
         [Test]
         public void InventoryPanel_EachOfTheEightSlots_StandsOnAnApprovedSlotPiece()
         {
             InventoryWindow window = BuildInventory(_ => { }, () => { });
             string[] bare = Enumerable.Range(0, window.Slots.Length)
-                .Where(i => PiecesUnder(window.Panel, Centre(window.Panel, window.Slots[i]), Kind.Inset, Kind.ItemSlot).Length == 0)
+                .Where(i => PiecesUnder(window.Panel, Centre(window.Panel, window.Slots[i]), BrightPiecesByGuid, Kind.Inset, Kind.ItemSlot)
+                    .Length == 0)
                 .Select(i => "Slot" + (i + 1)).ToArray();
             Log("inventory slots without a slot piece", bare);
 
-            Assert.IsEmpty(bare, "A every inventory slot row stands on an approved Inset_* or ItemSlot_* piece");
+            Assert.IsEmpty(bare, "A every inventory slot row stands on an approved bright Inset_* or ItemSlot_* piece");
         }
 
-        // Goal 완료조건 1 「임시 그림·단색 대신 공통 조각의 조합」 with README/import-spec image rules.
+        // Goal 완료조건 1 「임시 그림·단색 대신 공통 조각의 조합」 with README/import-spec image rules. The ban on other
+        // sprites stays; only the bright table is allowed, never the brown one as well (Content msg_b9b45522981b, decision
+        // 43 A, main msg_e873edba3d2d).
         [Test]
         public void InventoryPanel_Chrome_IsOnlyApprovedPiecesUsedAsSpecified()
         {
             InventoryWindow window = BuildInventory(_ => { }, () => { });
-            List<string> violations = ChromeViolations(window.Root.transform, Background(window.Panel), Array.Empty<Graphic>());
+            List<string> violations = ChromeViolations(window.Root.transform, Background(window.Panel), Array.Empty<Graphic>(),
+                BrightPiecesByGuid);
             Log("inventory chrome", violations);
 
-            Assert.IsEmpty(violations, "A inventory shows no plain colour or foreign sprite and uses each piece per spec");
+            Assert.IsEmpty(violations, "A inventory shows no plain colour or foreign sprite and uses each bright piece per spec");
         }
 
         // Approved preview dungeon-reward-0: Panel_Emphasis behind the whole 520×364 panel.
@@ -851,6 +900,52 @@ namespace Dawnholder.Client.Tests
                 "control: a serialized Image reference shows up as a dependency of its asset");
         }
 
+        // Bright-table control (a), contract pr2-red-contract-v4 T3 「같은 이름의 브라운 조각과 표에 없는 sprite는 실패한다」
+        // in the shape of :722·:732·:783~:786 (lead msg_8d4e83bd3bb0 5). Needs no bright PNG, so it passes before the
+        // bright kit lands.
+        [Test]
+        public void Control_BrightTable_RejectsTheSameNamedBrownPieceAndAForeignSprite()
+        {
+            RectTransform panel = ControlPanel();
+            Image brown = ControlImage(panel, "brown Panel_Default", Load("Panel_Default"), new Vector2(400f, 300f));
+            brown.raycastTarget = false;
+            Image foreign = ControlImage(panel, "foreign", Resources.Load<Sprite>("UI/Menu_Button"), new Vector2(100f, 100f));
+            List<string> brightTable = ChromeViolations(panel, brown, Array.Empty<Graphic>(), BrightPiecesByGuid);
+            List<string> brownTable = ChromeViolations(panel, brown, Array.Empty<Graphic>());
+            Button brownButton = ControlButton(panel, "brown button", "Default");
+            Log("control bright table", brightTable);
+
+            Assert.IsNotNull(foreign.sprite, "fixture: UI/Menu_Button exists as the borrowed foreign sprite");
+            Assert.IsNull(ApprovedPiece(brown.sprite, BrightPiecesByGuid), "control: the brown Panel_Default is not a bright piece");
+            Assert.AreEqual(2, brightTable.Count, "control: the bright table reports exactly the brown piece and the foreign sprite");
+            Assert.IsTrue(brightTable.Any(v => v.Contains(brown.name)), "control: the same-named brown piece is reported");
+            Assert.IsTrue(brightTable.Any(v => v.Contains(foreign.name)), "control: the foreign sprite is reported");
+            Assert.AreEqual(1, brownTable.Count, "control: the brown table accepts its own piece and reports only the foreign sprite");
+            Assert.IsNotEmpty(ButtonViolations(brownButton, "Default", BrightPiecesByGuid),
+                "control: a brown Default button is not accepted as the bright Default family");
+        }
+
+        // Bright-table control (b), contract T3 「밝은 같은 이름 조각은 통과한다」 (lead msg_8d4e83bd3bb0 5). Loads the
+        // bright PNGs, so it fails until they are imported (expected before the implementation).
+        [Test]
+        public void Control_BrightTable_AcceptsTheBrightPieceOfTheSameName_AndTheBrownTableDoesNot()
+        {
+            RectTransform panel = ControlPanel();
+            Image bright = ControlImage(panel, "bright Panel_Default", LoadBright("Panel_Default"), new Vector2(400f, 300f));
+            bright.raycastTarget = false;
+            Button button = BrightControlButton(panel, "bright button", "Default");
+            List<string> brightTable = ChromeViolations(panel, bright, Array.Empty<Graphic>(), BrightPiecesByGuid);
+            List<string> brownTable = ChromeViolations(panel, bright, Array.Empty<Graphic>());
+            Log("control bright pieces under the brown table", brownTable);
+
+            Assert.AreEqual("Panel_Default", ApprovedPiece(bright.sprite, BrightPiecesByGuid)?.Name,
+                "control: the bright Panel_Default is a bright piece");
+            Assert.IsEmpty(brightTable, "control: bright pieces used per spec pass the bright table");
+            Assert.IsEmpty(ButtonViolations(button, "Default", BrightPiecesByGuid),
+                "control: a bright Default button with its four bright states passes");
+            Assert.AreEqual(2, brownTable.Count, "control: the brown table reports the bright panel and button (no union)");
+        }
+
         // ---------------------------------------------------------------------------------------------------------
         // Window builders: each calls the product's own entry point and only finds what it built.
         // ---------------------------------------------------------------------------------------------------------
@@ -1060,18 +1155,24 @@ namespace Dawnholder.Client.Tests
         // ---------------------------------------------------------------------------------------------------------
 
         // The approved piece an Image shows: its sprite must be the asset behind one of the 33 GUIDs, not a copy.
-        static Piece ApprovedPiece(Sprite sprite)
+        // The table overloads below take the GUID table a window expects (brown PiecesByGuid or the inventory's
+        // BrightPiecesByGuid); the judgement is the same (T3·T4, lead msg_8d4e83bd3bb0 1·2).
+        static Piece ApprovedPiece(Sprite sprite) => ApprovedPiece(sprite, PiecesByGuid);
+
+        static Piece ApprovedPiece(Sprite sprite, Dictionary<string, Piece> table)
         {
             if (sprite == null) return null;
             if (!AssetDatabase.TryGetGUIDAndLocalFileIdentifier(sprite, out string guid, out long _)) return null;
-            return PiecesByGuid.TryGetValue(guid, out Piece piece) && sprite.name == piece.Name ? piece : null;
+            return table.TryGetValue(guid, out Piece piece) && sprite.name == piece.Name ? piece : null;
         }
 
-        static string Describe(Image image)
+        static string Describe(Image image) => Describe(image, PiecesByGuid);
+
+        static string Describe(Image image, Dictionary<string, Piece> table)
         {
             if (image == null) return "no Image";
             if (image.sprite == null) return $"plain colour {image.color}";
-            Piece piece = ApprovedPiece(image.sprite);
+            Piece piece = ApprovedPiece(image.sprite, table);
             if (piece != null) return piece.Name;
             string guid = AssetDatabase.TryGetGUIDAndLocalFileIdentifier(image.sprite, out string found, out long _) ? found : "none";
             return $"non-approved sprite '{image.sprite.name}' (GUID {guid})";
@@ -1091,7 +1192,11 @@ namespace Dawnholder.Client.Tests
         // Every Image/RawImage of the window except content must be an approved piece used as README and
         // import-spec say, and decorations (not the background, not a button graphic) must not take raycasts
         // (scope 「장식은 raycastTarget=false」). The background's raycast is a C preservation item per window.
-        static List<string> ChromeViolations(Transform window, Image background, ICollection<Graphic> content)
+        static List<string> ChromeViolations(Transform window, Image background, ICollection<Graphic> content) =>
+            ChromeViolations(window, background, content, PiecesByGuid);
+
+        static List<string> ChromeViolations(Transform window, Image background, ICollection<Graphic> content,
+            Dictionary<string, Piece> table)
         {
             var violations = new List<string>();
             foreach (Graphic graphic in window.GetComponentsInChildren<Graphic>(true))
@@ -1104,10 +1209,10 @@ namespace Dawnholder.Client.Tests
                     continue;
                 }
                 if (IsInvisibleHitArea(image)) continue;
-                Piece piece = ApprovedPiece(image.sprite);
+                Piece piece = ApprovedPiece(image.sprite, table);
                 if (piece == null)
                 {
-                    violations.Add($"{where}: {Describe(image)} instead of an approved piece");
+                    violations.Add($"{where}: {Describe(image, table)} instead of an approved piece");
                     continue;
                 }
                 violations.AddRange(SpecViolations(image, piece).Select(problem => $"{where} ({piece.Name}): {problem}"));
@@ -1155,34 +1260,39 @@ namespace Dawnholder.Client.Tests
 
         // Scope 「버튼의 보통/마우스 올림/누름/비활성은 승인 Sprite로 표시한다」: the normal sprite on the target graphic
         // and SpriteSwap states from the same approved family; the existing interactable decisions stay where they are.
-        static List<string> ButtonViolations(Button button, string family)
+        static List<string> ButtonViolations(Button button, string family) => ButtonViolations(button, family, PiecesByGuid);
+
+        static List<string> ButtonViolations(Button button, string family, Dictionary<string, Piece> table)
         {
             var problems = new List<string>();
             var graphic = button.targetGraphic as Image;
-            Piece normal = graphic == null ? null : ApprovedPiece(graphic.sprite);
+            Piece normal = graphic == null ? null : ApprovedPiece(graphic.sprite, table);
             if (normal == null || normal.Name != $"Button_{family}_Normal")
-                problems.Add($"shows {Describe(graphic)}, approved Button_{family}_Normal");
+                problems.Add($"shows {Describe(graphic, table)}, approved Button_{family}_Normal");
             if (button.transition != Selectable.Transition.SpriteSwap)
                 problems.Add($"transition {button.transition}; the approved hover/press/disabled states are sprites");
             SpriteState states = button.spriteState;
-            ExpectState(states.highlightedSprite, $"Button_{family}_Highlighted", "highlighted", problems);
-            ExpectState(states.pressedSprite, $"Button_{family}_Pressed", "pressed", problems);
-            ExpectState(states.disabledSprite, $"Button_{family}_Disabled", "disabled", problems);
+            ExpectState(states.highlightedSprite, $"Button_{family}_Highlighted", "highlighted", problems, table);
+            ExpectState(states.pressedSprite, $"Button_{family}_Pressed", "pressed", problems, table);
+            ExpectState(states.disabledSprite, $"Button_{family}_Disabled", "disabled", problems, table);
             return problems;
         }
 
-        static void ExpectState(Sprite sprite, string expected, string state, List<string> problems)
+        static void ExpectState(Sprite sprite, string expected, string state, List<string> problems, Dictionary<string, Piece> table)
         {
-            Piece piece = ApprovedPiece(sprite);
+            Piece piece = ApprovedPiece(sprite, table);
             if (piece != null && piece.Name == expected) return;
             string shown = sprite == null ? "nothing" : piece != null ? piece.Name : $"non-approved '{sprite.name}'";
             problems.Add($"{state} state shows {shown}, approved {expected}");
         }
 
         // Approved pieces of the given kinds whose rect lies under a point of the panel (a title, a row, a portrait).
-        static Piece[] PiecesUnder(RectTransform panel, Vector2 point, params Kind[] kinds) => panel.GetComponentsInChildren<Image>(true)
+        static Piece[] PiecesUnder(RectTransform panel, Vector2 point, params Kind[] kinds) => PiecesUnder(panel, point, PiecesByGuid, kinds);
+
+        static Piece[] PiecesUnder(RectTransform panel, Vector2 point, Dictionary<string, Piece> table, params Kind[] kinds) =>
+            panel.GetComponentsInChildren<Image>(true)
             .Where(image => image.enabled)
-            .Select(image => (image, piece: ApprovedPiece(image.sprite)))
+            .Select(image => (image, piece: ApprovedPiece(image.sprite, table)))
             .Where(entry => entry.piece != null && kinds.Contains(entry.piece.Kind) &&
                 ContainsPoint(InSpaceOf(panel, entry.image.rectTransform), point))
             .Select(entry => entry.piece).ToArray();
@@ -1406,6 +1516,32 @@ namespace Dawnholder.Client.Tests
                 highlightedSprite = Load($"Button_{family}_Highlighted"),
                 pressedSprite = Load($"Button_{family}_Pressed"),
                 disabledSprite = Load($"Button_{family}_Disabled"),
+            };
+            return button;
+        }
+
+        static Sprite LoadBright(string name)
+        {
+            Piece piece = BrightPieces.Single(p => p.Name == name);
+            string path = BrightUiKitTestSupport.ArtFolder + "/" + name + ".png";
+            Assert.AreEqual(path, AssetDatabase.GUIDToAssetPath(piece.Guid), $"fixture: bright {name} GUID path");
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            Assert.IsNotNull(sprite, $"fixture: {path} loads as a Sprite");
+            return sprite;
+        }
+
+        // ControlButton's shape with the bright family; ControlButton stays brown so the brown controls are unchanged.
+        static Button BrightControlButton(Transform parent, string name, string family)
+        {
+            Image image = ControlImage(parent, name, LoadBright($"Button_{family}_Normal"), new Vector2(128f, 48f));
+            var button = image.gameObject.AddComponent<Button>();
+            button.targetGraphic = image;
+            button.transition = Selectable.Transition.SpriteSwap;
+            button.spriteState = new SpriteState
+            {
+                highlightedSprite = LoadBright($"Button_{family}_Highlighted"),
+                pressedSprite = LoadBright($"Button_{family}_Pressed"),
+                disabledSprite = LoadBright($"Button_{family}_Disabled"),
             };
             return button;
         }
