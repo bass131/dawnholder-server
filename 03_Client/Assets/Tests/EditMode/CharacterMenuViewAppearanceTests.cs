@@ -207,12 +207,18 @@ namespace Dawnholder.Client.Tests
         {
             _view.Render(new CharacterMenuViewState(Phase.Ready, new Slot("가람", 0)));
             Click("Slot1");
-            var detailsBackground = Panel.Find("DetailsBackground").GetComponent<Image>();
+            // Decision 45, contract pr2-red-fix-contract-v1: both window backgrounds are seen and only they are skipped.
+            var panelBackground = Panel.GetComponent<Image>();
+            var detailsBackground = Panel.Find("DetailsBackground")?.GetComponent<Image>();
+            Image[] visible = Visible();
+            CollectionAssert.Contains(visible, panelBackground, "precondition: the observer sees the panel background");
+            CollectionAssert.Contains(visible, detailsBackground, "precondition: the observer sees the details background");
             Rect details = RectOf(detailsBackground);
-            string[] inside = Visible().Where(image => image != detailsBackground && ContainsPoint(details, RectOf(image).center))
+            string[] inside = visible.Where(image => image != panelBackground && image != detailsBackground)
+                .Where(image => ContainsPoint(details, RectOf(image).center))
                 .Select(image => PathUnder(image.transform)).ToArray();
 
-            Assert.IsEmpty(inside, "decision 45: no image other than the details background sits in the details area");
+            Assert.IsEmpty(inside, "decision 45: no face or icon image sits in the details area");
         }
 
         // T6: raycasts are taken only by the buttons, the name input and the panel background (which already blocks
