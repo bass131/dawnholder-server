@@ -2,7 +2,7 @@
 
 상태·결정·남은 일은 각 goal의 재개 안내에서 확인한다. 아직 병합되지 않은 goal은 아래 해당 worktree에서 읽는다. 다른 worktree의 로컬 기록이 이 checkout에도 있다고 가정하지 않는다.
 
-- Core: [캐릭터 저장의 서버 재기동·불러오기 합동 확인](../../01_Phases/goals/2026-10-24-character-storage-restart-load/goal.md#core-리드-opus-진입-v127) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active · feat/character-storage-restart-load-20261024 · 합동 실DB 창 S1~S8 통과(10-29 05:50~07:04 KST) · Core 독립 강검증 PASS · PR272 CI 들여쓰기 수정·재검증 PASS · 병합 승인 대기 · goal 미완료
+- Core: [캐릭터 저장의 서버 재기동·불러오기 합동 확인](../../01_Phases/goals/2026-10-24-character-storage-restart-load/goal.md#core-리드-opus-진입-v127) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active · docs/character-storage-restart-closeout-20261029 · 합동 실DB 창 S1~S8 통과(10-29 05:50~07:04 KST) · PR272 병합(34756e01) · 종료 기록(Gardener·종료 기록 PR) 진행 · goal 미완료
 
 - <a id="content-worktree"></a>Content: [캐릭터 선택·생성 화면](../../01_Phases/goals/2026-10-24-character-select-create-ui/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active · feat/content-character-select-create-20261024 · 합동 창 S6a 끝, 독립 검증 최종은 제품 결함 0·미관측 둘로 보류, 결정 44 A로 남은 위험 두고 PR273 올림, 병합 승인 대기 · [하우징 goal 기록](https://github.com/bass131/dawnholder-server/blob/14cb5361183e1c6179b2e4fed299f84c389ac51b/01_Phases/goals/2026-10-15-guild-client-ui/goal.md) · feat/content-guild-housing-20261022(14cb5361) · PR267이 넣은 하우징 창과의 대조는 아직 하지 않았다 · 길드 성장 효과 화면 연결은 10-28 결정 33 A로 종료
 
