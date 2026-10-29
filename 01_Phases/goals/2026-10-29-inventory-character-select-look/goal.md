@@ -4,17 +4,25 @@
 
 ### 현재 재개 카드 — 2026-10-29 PR2 착수
 
-**다음 첫 일:** 구현을 커밋했고(아래 「PR2 구현」), 구현 뒤 Unity Editor 창 실행도 끝났다(「PR2 구현 뒤 Editor 창 실행」). [사용자 지시](#10-29-사용자-지시--pr2-새-외관-적용부터-최종-보고까지--msg_c5b94381e2d5)대로 독립 검증 → PR 생성 → 메인 보고까지 멈추지 않고 잇는다. 다음은 독립 검증 계약을 쓰고 신규 Astra 검증자를 여는 것이다. 검증자의 Unity 창은 Effect 다음에 메인이 정한다([Unity 창 메인 결정](#10-29-unity-창과-독립-검증-창--메인-결정--msg_48711df1f472msg_a16e9bc7035d)). 나머지 UI 병행은 [보충안 v3 A](#10-29-범위-보충안-v3-a--나머지-ui-병행--msg_79d2bf86419e)대로 PR2 병합 뒤다.
+**다음 첫 일:** 첫 독립 검증은 NOT PASS(결함 3건)다(아래 「PR2 독립 검증 — NOT PASS」). 검증자 새 시험 3파일은 PR2에 넣었다. 다음은 수정 계약을 쓰고 신규 Opus 수정 구현자를 여는 것이다. 그 뒤 신규 Astra 재검증 → PR 생성 → 메인 보고 → 「Art 쪽 단계」 플레이 카드로 잇는다([사용자 지시](#10-29-사용자-지시--pr2-새-외관-적용부터-최종-보고까지--msg_c5b94381e2d5), [결정 63 A](#10-29-결정-63-a--직접-플레이는-아침에-한-번에--msg_66faefa79cd7)). 수정·재검증 Unity 창은 23:00Z(08:00 KST)까지다([Unity 창 메인 결정](#10-29-unity-창과-독립-검증-창--메인-결정--msg_48711df1f472msg_a16e9bc7035d)). 나머지 UI 병행은 [보충안 v3 A](#10-29-범위-보충안-v3-a--나머지-ui-병행--msg_79d2bf86419e)대로 PR2 병합 뒤다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v2와 사용자 승인([적용 중인 사용자 결정](#적용-중인-사용자-결정)). 초안 원문은 `.backups/verification/2026-10-28-stone-terrain-environment-replacement/lead-opus-decision43-scope-draft-v2-20261029.md`(sha256 `7c0f2fa1376e4387ca9c6be651cf138a697a2d6111cd3086daf8c5ffd9ba628d`)다. |
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh). 회신 주소는 `run:run_6ae742140ce9`다. |
 | branch | PR1 [PR275](https://github.com/bass131/dawnholder-server/pull/275)는 merge commit `dc66b77e`로 병합됐다. PR2 제품 branch는 `feat/art-ui-bright-look-20261029`이고, `dc66b77e`에서 만들어 같은 이름의 원격 branch로 push한다. |
-| 실행 창 | 이미지 생성은 상한 11회 중 5회를 썼다. 시안 1회와 조각 재질 원천 4회다. 6·7회째는 다시 그릴 때만 따로 승인을 받는다. Unity는 메인이 연 창 세 번에서 돌렸다. 선행 시험의 batchmode 창(13:15Z~14:45Z), 결정 53 A의 Editor 창(14:30Z~15:00Z), 구현 batchmode 창(16:00Z~18:30Z)이다. 결정 58 A의 구현 뒤 Editor 창 실행은 세 번째 창 안에서 돌렸고, Unity 사용 끝은 16:41:15Z다. 서버 실행은 0이다. |
+| 실행 창 | 이미지 생성은 상한 11회 중 5회를 썼다. 시안 1회와 조각 재질 원천 4회다. 6·7회째는 다시 그릴 때만 따로 승인을 받는다. Unity는 메인이 연 창 세 번에서 돌렸다. 선행 시험의 batchmode 창(13:15Z~14:45Z), 결정 53 A의 Editor 창(14:30Z~15:00Z), 구현 batchmode 창(16:00Z~18:30Z)이다. 결정 58 A의 구현 뒤 Editor 창 실행은 세 번째 창 안에서 돌렸고, Unity 사용 끝은 16:41:15Z다. 독립 검증 batchmode는 네 번째 창(17:29Z~19:30Z)에서 돌렸고, 마지막 실행 끝은 17:58:55Z다. 수정·재검증 창은 그 창을 이어 23:00Z까지다. 서버 실행은 0이다. |
 | 이전 goal | [석재 지형·환경물 교체](../2026-10-28-stone-terrain-environment-replacement/goal.md#closeout-20261029)는 안건 1 A로 미완료 종료했다. 그 미추적 58파일은 art-active에 그대로 있고 커밋하지 않는다. |
 
 ## 적용 중인 사용자 결정
+
+### 10-29 결정 63 A — 직접 플레이는 아침에 한 번에 — msg_66faefa79cd7
+
+- 사용자 원문(메인 pane 제출, 메인 전달): 「대시보드 결정 응답: 1) 63 - Dash 이펙트·인벤토리/선택창 직접 플레이 확인을 언제 할지 → A 자고 일어나서 한 번에」
+- 메인이 보인 뜻: 사용자는 지금 잔다. Dash(PR278)와 인벤토리·선택창(Art PR2)은 아침에 메인이 합친 카드 한 장으로 한 번에 플레이 확인한다. 병합 승인은 그 뒤 사용자 몫이다. 메인은 Night Shift(사용자 부재 중 야간 운영)다. 밤에는 사용자 결정 요청을 아침에 모으고, 메인이 정할 수 있는 것은 「메인 결정」으로 답한다.
+- Art 할 일(메인 전달): 판정이 결함 확정이면 범위 안 수정 Opus → 새 검증자 재검증까지 밤에 진행한다. PASS가 되면 PR 생성 → 메인에 PR 번호·40자 head를 보낸다. 근거 폴더 `lead/`에 사용자 직접 플레이 카드를 쓴다(「Art 쪽 단계」만 따로 묶음, 10단계 이하, 확인 항목 체크 표, 예상 시간, 띄울 것과 방법, 미확인 표시). 합치는 것은 메인이 한다.
+- 메인 `msg_88233d71b5d5` 덧붙임: Effect 카드(effect-active 근거 폴더 `lead/user-play-card-01.md`)와 같은 형식으로 쓴다. 그 카드는 Legacy 서버(run-server.bat, DB 없음)와 Editor MainMenu Play 방식이다.
+- 원문은 근거 폴더 `pr2-verify-message-bodies-04.txt`(`msg_66faefa79cd7`)와 `pr2-verify-message-bodies-05.txt`(`msg_88233d71b5d5`)다.
 
 ### 10-29 Unity 창과 독립 검증 창 — 메인 결정 — msg_48711df1f472·msg_a16e9bc7035d
 
@@ -28,6 +36,11 @@
   - 구현 뒤 Editor 창의 P1 통과는 리드 원시 대조 값을 근거로 쓰되 독립 검증자 실행으로 격상하지 않는다. 실제 게임 실행은 병합 전 사용자 직접 플레이 확인이 맡는다.
   - 검증자가 Editor 창 모드 없이는 판정할 수 없는 결함·보류를 내면 그때 사용자 결정으로 올린다.
   - 검증자 첫 화면의 모델·effort와 Fast 꺼짐을 기록한다.
+- 독립 검증 창 열림(`msg_a5becde72f3c`, 17:29:20Z): Effect가 Unity 사용 끝을 알렸다. Art 독립 검증자가 batchmode를 04:30 KST(19:30Z)까지 쓴다. 원문은 `pr2-verify-message-bodies-04.txt`다.
+- 수정·재검증 창(`msg_88233d71b5d5`, 18:17:12Z)
+  - Art가 지금 창을 이어서 08:00 KST(23:00Z)까지 쓴다. 수정 구현(R·F)과 재검증(V-R·V-F)을 이 창 안에서 잇는다. 08:00 KST 뒤는 사용자 직접 플레이가 Unity를 쓴다. 그 전에 끝나지 않을 것 같으면 07:00 KST까지 알린다. 시작·끝마다 한 줄씩 알린다.
+  - 같은 글에서 메인은 리드 결정 1~3(아래 「PR2 독립 검증 — NOT PASS」)을 범위 안 처리로 받았다. #UI-02에서 「짧게 커지며 나타난다」를 배치 값 불변 조건으로 만들 수 없다는 질문이 나오면 메인에 올린다. 요구 변경이라 사용자 몫이고 아침 대기열에 들어간다. 그때 구현자는 그 항목만 멈추고 #UI-01은 계속한다.
+  - 원문은 `pr2-verify-message-bodies-05.txt`다.
 
 ### 10-29 결정 58 A — 구현 뒤 Unity Editor 창, 사용자 부재 중 — msg_d370d974e3e7
 
@@ -445,6 +458,28 @@
 - 실행자 자기 신고(report 「맥락 메모 대비 실제 준수 위치」 끝): 계약이 금지한 PowerShell `-Command` 인라인 버전 확인 한 번과, 의미 없는 `pwsh -File /dev/null` 한 번이다. 출력은 결과 값으로 쓰지 않았다고 적었다. 대화 기록의 인라인 node 실행은 0이다(`pr2-editor-after-audit-01.txt` 끝 절). ` -Command ` 문자열이 든 호출 셋의 목록은 `pr2-editor-after-command-hits-01.txt`다.
 - 실행자 pane은 닫았다(`pr2-editor-after-close-01.json`, `pr2-editor-after-terminals-after-close-01.json`).
 
+### PR2 독립 검증 — NOT PASS
+
+- 검증자는 신규 Astra(`[Art 검증자]`, task_da792cbedc1c / ctx_a5c990055cf2, `pr2-verify-worker-start-01.summary.txt`)다. 계약은 `pr2-verify-contract-v1.md`(sha256 `577663e5…`, `pr2-verify-contract-v1.receipt.txt`)이고, 기동 기록은 `pr2-verify-launch-record-01.md`다. 첫 화면은 Codex v0.165.0, GPT-6-Astra xhigh, 업데이트 창 없음이고, rollout은 gpt-6-astra·xhigh·service_tier default(Fast 꺼짐)다. backend 실제 모델은 unknown이다.
+- 판정은 worker_done `msg_0ac5f4f2d35f`(18:13:29Z)이고, 원문은 `pr2-verify-01/verdict.md`(sha256 `97e76bc3…`, 161줄, `pr2-verify-verdict-sha-01.txt`)다. **NOT PASS, 차단 결함 3건**이다.
+  - #UI-01(제품, 구현 Task 귀속): 생성 폼 Knight/Mage 버튼에 직업 그림이 없다. 구현 계약 I5 「그림을 더한다」를 채우지 못했다.
+  - #UI-02(제품, 구현 Task 귀속): 열기 연출 `UiWindowOpenEffect.LateUpdate`가 `Resize`가 정한 패널 배율을 덮는다. 활성 열기 뒤 배율이 (0.90,0.90,1)에서 (0.83,0.83,1)로 바뀐다. I6 위반이다.
+  - #UI-03(선행 시험 task_7f9527319c5c 귀속, 구현 실패로 합산하지 않음): 기존 T8 `OpeningEffect_KeepsThePanelScaleAndPositionThatResizeSets`가 열림 전환과 연출 프레임을 실행하지 않아 #UI-02를 놓친다. 같은 계열의 칸 마우스 올림 시험도 실제 마우스 구동을 보지 않는다.
+- 실행(리드 원시 대조 `audit-pr2-verify-01.sh` → `pr2-verify-audit-01.txt`)
+  - V-F EditMode 1569건: 1566 통과, 3 실패. 실패 3은 모두 검증자 새 시험(`BrightWindowInteractionTests`)의 #UI-01 두 case와 #UI-02 한 case다. 구현 F2와 공통 1560건은 결과 변화 0이다.
+  - V-F PlayMode 182건: 140 통과, 23 실패, 19 건너뜀. 구현 F3P와 공통 180건은 결과 변화 0이고, 새 시험 2건은 통과다. 실패 23은 판정문에서 (b) 환경으로 분류됐다.
+  - V-F 결과 XML SHA256이 판정문 값과 같다. 판정문은 V-R 3회, V-F EditMode·PlayMode 각 1회를 적었다.
+  - 실제 경로: 실제 CharacterSelect 장면(대역 wire, 슬롯 버튼, 고른 그림의 unscaled 흔들림, unload 뒤 소멸)과 실제 Town·HuntingGround 인벤토리(I 입력, 일시정지 중 연출 끝, 기존 HUD 겹침 시험 통과)다. Editor 창 재실행·실서버·DB·사용자 플레이는 미실행이다(판정문 「실행 결과와 실제 진입」).
+  - 과거 `DungeonClearRewardOverlapSceneTests.AfterConfirm_TheNextStageClearShowsTheBannerAgain`의 구현 F 실패는 (d) 분류를 유지한다.
+- 판정 기준 10(리드 기록 사실 대조): 값 불일치 없음. 7행의 7860 message ID와 8634 Content handle은 「기록 없음」이다. 원래 호출은 각각 모듈을 못 찾아 실패했고, 찾던 Content handle은 목록에 없었다. 12868의 task·dispatch는 receipt와 같다. 셸 한 줄 조회 표본 12개에서도 불일치가 없다(판정문 「보고·기록 사실 대조」).
+- 구현 뒤 Editor 창 1920 캡처가 비쳐 보이는 관찰: 판정문은 캡처 시험이 I 뒤 3 frame만 기다린다고 적었다. 진행 중인 fade를 찍었을 가능성은 추론으로 두고, 결함으로 확정하지 않았다.
+- Unity: 창 열림은 리드 `msg_ace53ed768c1`(17:29:46Z)이다. 리드 시작 관문은 물리 여유 18.2 GiB, commit 여유 29.5 GiB, Unity·dotnet 0이다(`pr2-verify-window-gate-01.txt`). 마지막 실행 끝은 17:58:55Z다(`pr2-verify-unity-end-result-01.txt`). 리드가 그 뒤 잰 값은 Unity·dotnet·Burst dotnet 0이다(`pr2-verify-unity-end-gate-01.txt`). 리드는 메인에 「Unity 사용 끝」을 보냈다(`msg_4ac359685352`).
+- 부수 변경: 같은 SENTIS 한 줄(diff sha256 `31e7aaf1…`)을 HEAD로 복원했다(`pr2-verify-projectsettings-restore-01.txt`). 검증자 pane은 닫았다(`pr2-verify-close-01.json`, `pr2-verify-terminals-after-close-01.json`).
+- 리드 결정(사용자 지시 `msg_c5b94381e2d5` 안, 리드 보고 `msg_c65147daf41c`, 메인이 범위 안 처리로 받음 `msg_88233d71b5d5`)
+  1. 검증자 새 시험 3파일을 PR2에 넣는다. `03_Client/Assets/Tests/EditMode/BrightWindowInteractionTests.cs`(180줄), `03_Client/Assets/Tests/PlayMode/CharacterMenuMotionSceneTests.cs`(156줄), `03_Client/Assets/Tests/PlayMode/InventoryOpeningSceneTests.cs`(69줄)와 Unity가 만든 `.meta` 셋이다. SHA256은 검증자 동결값과 같다(`pr2-verify-audit-01.txt` 6·7절). #UI-03은 이 채택으로 관찰 누락을 메운다. 기존 T8은 고치지 않는다. 해소 여부는 재검증자가 판정한다.
+  2. 신규 `[Art 구현 Opus]` 수정 세션 하나로 #UI-01·#UI-02를 고친다. 시험 파일은 쓰지 않는다.
+  3. 그 뒤 신규 Astra 검증자로 PR2 전체를 다시 본다.
+
 ### 생존 신호 초과 정산
 
 세부 원시와 이유는 근거 폴더 `liveness-settlement-01.md`다. 300초 초과 구간을 면제 없이 적었다. 원인별 시간은 미측정이다.
@@ -459,8 +494,10 @@
 | PR2 시험 결함 수정(ctx_8de1650e00fe), Editor 창 실행(ctx_a82712daaadc) | 없음 |
 | PR2 구현(ctx_d2994cfb9da9) | 없음(신호 20개, 가장 긴 간격 272초) |
 | PR2 구현 뒤 Editor 창 실행(ctx_437a9dda6fe1) | 308초, 363초. 둘 다 「Editor 창 시작」 전 준비·대기 구간(16:13:21Z~16:24:32Z)이다. 실행자 report는 그 사이 우편함 대기 하나가 셸 exit 127로 끝났다고 적었다. 원인은 확인하지 않았다. |
+| PR2 독립 검증(ctx_a5c990055cf2) | 리드 측정(메시지 시각 기준) 308초, 406초, 303초, 371초, 344초, 456초다(`liveness-pr2-verify-01.summary.txt`). 검증자 자기 정산(명령 시작 시각 기준)은 7구간, 가장 긴 것 456.205초다(판정문 「검증자 자기 정산과 남은 일」, `pr2-verify-01/closeout/liveness-accounting.json`). 긴 분석·시험 작성·판정문 작성 구간이다. 메인은 표 기록으로 충분하다고 했다(`msg_88233d71b5d5`). |
 
 - 메인은 위 초과를 기록으로 받았다(`msg_f3d062fbb7a4`, `msg_f9a5510a7a5d`). 다음 정산은 검증자 자기 기록과 우편함 전체 목록(`inbox --json`)을 함께 대조한다(메인 `msg_f9a5510a7a5d`).
+- PR2 독립 검증도 같은 방식으로 쟀다(`run-liveness-filtered.sh` → `liveness-pr2-verify-01.*`). 우편함 전체 목록은 `lead-inbox-05.json`, 리드 답 배열은 `pr2-verify-lead-replies-01.json`이다.
 - PR2 구현과 구현 뒤 Editor 창 실행도 같은 방식으로 쟀다(`run-liveness-filtered.sh` → `liveness-pr2-workers-03.*`, receipt 입력 149·사용 144). 우편함 전체 목록은 `lead-inbox-04.json`, 리드 답 배열은 `pr2-impl-lead-replies-01.json`(`build-lead-replies.mjs`)이다. 뺀 파일 다섯은 `liveness-pr2-workers-03.excluded.txt`다.
 - PR2 세 작업은 그 방식대로 쟀다(`run-liveness-filtered.sh` → `liveness-pr2-workers-02.*`). 리드 대기 원시에 우편함 전체 목록 `lead-inbox-03.json`과 리드 답 배열 `pr2-workers-lead-replies-01.json`을 더했다. 전체 목록 없이 잰 `liveness-pr2-workers-01.*`에서는 결함 수정 593초와 Editor 창 실행 348초가 초과로 나왔다. 리드 대기 원시에 없는 heartbeat가 전체 목록에 있었기 때문이다. 세부와 뺀 파일은 `liveness-settlement-01.md` 덧붙임에 있다.
 
@@ -469,6 +506,13 @@
 - 두 번째 실사 검증자가 apply_patch 호출을 잘못해 허용 폴더(`pr1-doc-review-02/`) 밖에 `evidence-unused-placeholder.txt`를 만들었다. 내용은 `placeholder`와 줄바꿈, 12 bytes, mtime 2026-10-29T01:11:12Z다. 검증자가 바로 escalation으로 알렸다(`msg_c42553ec7f35`).
 - 대상 4파일, 기존 근거, 미추적 58파일은 바뀌지 않았다. 이 파일은 판정 근거가 아니다. 지우지 않고 그대로 둔다.
 - 메인 처분 `msg_79d2bf86419e` 3항: 그 검증자는 결함 목록만 내고 닫는다. 정식 판정은 새 Astra 검증자 한 명이 낸다. 이 goal의 첫 발생이라 기록만 하고, 반복 규칙 후보로는 아직 올리지 않는다.
+
+### 운영 교정 첫 발생 — 리드 우편함 대기 출력 버림
+
+- 리드가 검증자 pane 화면 확인 명령 끝에 우편함 대기(`orca orchestration check … --wait`)를 붙였다. 그 출력을 `/dev/null`로 버리고 `&`로 띄우는 꼴이었다. 우편함 대기는 background 실행 하나로 열고 출력을 근거 폴더 파일로 받는다는 규칙(CLAUDE.md 「Orca로 Codex 세션과 통신」, ORCA 대기 정본)을 어긴 것이다.
+- 세션 hook `session-guard:mailbox-output-loss`가 실행 전에 막았다. 명령 전체가 돌지 않았고, 메시지를 가져간 대기는 없다. 시각은 앞 대기 출력 `lead-wait-143.json`(17:54:49Z)과 다시 돌린 화면 확인 `pr2-verify-screen-06.json`(17:55:12Z) 사이다(`lead-hook-block-mailbox-times-01.txt`). 리드 보고 `msg_c65147daf41c`에는 이 시각을 「18:0xZ」로 잘못 적었다. 바른 시각은 이 줄이다.
+- 리드는 화면 확인과 대기를 나눠 다시 돌렸다(`lead-wait-144.json`, background).
+- 교정 층: 막은 것은 이미 있는 세션 hook이다. 가장 높은 층이 동작했다. 메인은 첫 발생 기록이 맞고 처분은 없다고 했다(`msg_88233d71b5d5`). 반복 규칙 후보로는 올리지 않는다.
 
 <a id="saved-analysis-run-repeat"></a>
 
