@@ -124,6 +124,8 @@ namespace Dawnholder.Client.UI
                 "Knight", font, out _knightLabel, _skin);
             _mage = MakeButton("Mage", form, new Vector2(178f, 40f), new Vector2(190f, -110f),
                 "Mage", font, out _mageLabel, _skin);
+            AddClassPicture(_knight, _knightLabel, 0);
+            AddClassPicture(_mage, _mageLabel, 1);
             _knight.onClick.AddListener(() => OnClassClicked(0));
             _mage.onClick.AddListener(() => OnClassClicked(1));
             TMP_Text hint = Label("Hint", form, new Vector2(368f, 32f), new Vector2(0f, -152f), font);
@@ -439,6 +441,17 @@ namespace Dawnholder.Client.UI
             // Midline centres the drawn glyphs; Center would centre the fallback's tall line box and sit Korean low.
             label.alignment = TextAlignmentOptions.Midline;
             return button;
+        }
+
+        // Creation class choice: the class's own art (the same art the slots show) in a column left of the caption.
+        // Unlike the slot art it has no chosen or empty state, so it does not share the slot's art helpers.
+        void AddClassPicture(Button button, TMP_Text caption, byte classId)
+        {
+            Image picture = UiWindowAppearance.CreateSimple("ClassPicture", button.transform, ClassArt(classId)!);
+            Place(picture.rectTransform, new Vector2(36f, 40f), new Vector2(4f, 0f));
+            // Drawn first, under the caption; the caption's left margin keeps its glyphs out of the picture column.
+            picture.transform.SetAsFirstSibling();
+            caption.margin = new Vector4(42f, 0f, 0f, 0f);
         }
     }
 }

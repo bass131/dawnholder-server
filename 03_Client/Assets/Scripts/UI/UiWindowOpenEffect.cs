@@ -1,27 +1,30 @@
 #nullable enable
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Dawnholder.Client.UI
 {
     /// <summary>
-    /// Plays <see cref="UiWindowOpenMotion"/> on a panel the owner places every frame. Only the drawing moves: the
-    /// owner's placement, visibility and input decisions stay where they are, and closing is immediate.
+    /// Plays <see cref="UiWindowOpenMotion"/> on a panel the owner places every frame. Only drawing changes: the panel's
+    /// content fades in through a group of its own while a frame the effect draws grows into the panel's border. The
+    /// effect never writes the panel's or any other existing transform, nor the owner's visibility and input decisions,
+    /// and closing is immediate.
     /// </summary>
     [DisallowMultipleComponent]
     internal sealed class UiWindowOpenEffect : MonoBehaviour
     {
         RectTransform _target = null!;
+        Image _background = null!;
         CanvasGroup _fade = null!;
+        RectTransform? _frame;
         float _startTime;
         bool _playing;
-        bool _applied;
-        Vector3 _placedScale;
-        Vector3 _writtenScale;
 
         internal static UiWindowOpenEffect Attach(RectTransform target)
         {
             var effect = target.gameObject.AddComponent<UiWindowOpenEffect>();
             effect._target = target;
+            effect._background = target.GetComponent<Image>();
             // A group of its own only fades; the window's root group keeps showing, hiding and input.
             effect._fade = target.gameObject.AddComponent<CanvasGroup>();
             effect.enabled = false;
@@ -40,13 +43,10 @@ namespace Dawnholder.Client.UI
         {
             _playing = false;
             enabled = false;
-            _fade.alpha = 1f;
-            if (_applied && _target.localScale == _writtenScale) _target.localScale = _placedScale;
-            _applied = false;
+            if (_fade != null) _fade.alpha = 1f;
+            RemoveFrame();
         }
 
-        // LateUpdate runs after the owner's Update placed the panel, and the owner's next placement replaces this
-        // frame's scale, so the effect multiplies the current placement instead of keeping a copy of it.
         void LateUpdate()
         {
             if (!_playing)
@@ -54,23 +54,54 @@ namespace Dawnholder.Client.UI
                 enabled = false;
                 return;
             }
-            Vector3 placed = _target.localScale;
-            // The owner skipped placing this frame (no canvas size yet): start from its last placement, never compound.
-            if (_applied && placed == _writtenScale) placed = _placedScale;
-            _placedScale = placed;
             float elapsed = Time.unscaledTime - _startTime;
             if (UiWindowOpenMotion.IsFinished(elapsed))
             {
-                _target.localScale = placed;
-                _applied = false;
                 Stop();
                 return;
             }
+            if (_frame == null) _frame = CreateFrame();
             float scale = UiWindowOpenMotion.ScaleAt(elapsed);
-            _writtenScale = new Vector3(placed.x * scale, placed.y * scale, placed.z);
-            _target.localScale = _writtenScale;
-            _applied = true;
+            _frame.localScale = new Vector3(scale, scale, 1f);
             _fade.alpha = UiWindowOpenMotion.AlphaAt(elapsed);
+        }
+
+        // The growing frame is the panel's own border piece without its fill, drawn over the fading content as the
+        // panel's last child, so no existing child changes order or path. At full size it lies on the real border.
+        RectTransform CreateFrame()
+        {
+            var frame = new GameObject("OpeningFrame", typeof(RectTransform));
+            frame.transform.SetParent(_target, false);
+            var rect = (RectTransform)frame.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.sizeDelta = Vector2.zero;
+            // Grows from the window's centre whatever pivot the owner placed the panel with.
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            // The panel's fade would hide the frame with the content; only the frame ignores it. Hiding always stops
+            // the effect first, so the frame never outlives an open window.
+            var group = frame.AddComponent<CanvasGroup>();
+            group.ignoreParentGroups = true;
+            group.interactable = false;
+            group.blocksRaycasts = false;
+            var image = frame.AddComponent<Image>();
+            image.sprite = _background.sprite;
+            image.type = _background.type;
+            image.pixelsPerUnitMultiplier = _background.pixelsPerUnitMultiplier;
+            image.color = _background.color;
+            image.fillCenter = false;
+            image.raycastTarget = false;
+            return rect;
+        }
+
+        void RemoveFrame()
+        {
+            if (_frame == null) return;
+            // Edit-mode tests drive the effect by hand, where Destroy is not allowed.
+            if (Application.isPlaying) Destroy(_frame.gameObject);
+            else DestroyImmediate(_frame.gameObject);
+            _frame = null;
         }
     }
 }

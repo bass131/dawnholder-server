@@ -121,6 +121,8 @@ namespace Dawnholder.Client.UI
         {
             _refreshButton.onClick.RemoveAllListeners();
             foreach (Button button in _useButtons) button.onClick.RemoveAllListeners();
+            // The root stays the owner's to destroy; only the opening's own drawing must not outlive the view.
+            if (_openEffect != null) _openEffect.Stop();
         }
 
         internal void SetVisibility(bool visible, bool interactive)

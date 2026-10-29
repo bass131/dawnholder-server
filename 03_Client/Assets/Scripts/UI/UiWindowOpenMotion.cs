@@ -3,7 +3,10 @@ using UnityEngine;
 
 namespace Dawnholder.Client.UI
 {
-    /// <summary>Scale and opacity of a window while it opens, as a function of the time since opening.</summary>
+    /// <summary>
+    /// Scale of the growing frame and opacity of the content while a window opens, as a function of the time since
+    /// opening. <see cref="UiWindowOpenEffect"/> draws them; the window's own placement never takes this scale.
+    /// </summary>
     internal static class UiWindowOpenMotion
     {
         internal const float Duration = 0.12f;
