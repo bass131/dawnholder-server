@@ -10,7 +10,7 @@
 |---|---|
 | 승인 | 범위 초안 v2와 사용자 승인([적용 중인 사용자 결정](#적용-중인-사용자-결정)). 초안 원문은 `.backups/verification/2026-10-28-stone-terrain-environment-replacement/lead-opus-decision43-scope-draft-v2-20261029.md`(sha256 `7c0f2fa1376e4387ca9c6be651cf138a697a2d6111cd3086daf8c5ffd9ba628d`)다. |
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh). 회신 주소는 `run:run_6ae742140ce9`다. |
-| branch | PR1은 `docs/art-stone-closeout-ui-look-scope-20261029`(main `571d261c`에서 시작)다. 제품 branch `feat/art-ui-bright-look-20261029`는 PR1 병합 뒤 최신 main에서 만든다. |
+| branch | PR1은 [PR275](https://github.com/bass131/dawnholder-server/pull/275), `docs/art-stone-closeout-ui-look-scope-20261029`(main `571d261c`에서 시작)다. 제품 branch `feat/art-ui-bright-look-20261029`는 PR1 병합 뒤 최신 main에서 만든다. |
 | 실행 창 | Unity·이미지 생성·서버 실행은 아직 0이다. 필요할 때 메인에 시각을 요청한다. |
 | 이전 goal | [석재 지형·환경물 교체](../2026-10-28-stone-terrain-environment-replacement/goal.md#closeout-20261029)는 안건 1 A로 미완료 종료했다. 그 미추적 58파일은 art-active에 그대로 있고 커밋하지 않는다. |
 
@@ -155,7 +155,7 @@
 ## 진척 단계
 
 - [x] 범위 승인
-- [>] 문서 PR 병합
+- [>] PR275 병합
 - [ ] 기준표와 시안
 - [ ] 사용자 시안 확인
 - [ ] 조각·아이콘 제작
