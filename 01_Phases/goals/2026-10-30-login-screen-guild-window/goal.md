@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR-A 신규 Astra 독립 검증자를 띄운다(계약 `pr-a-verify-contract-v1.md`). 그 Unity 창은 검증자가 테스트를 다 쓴 뒤 메인에 요청한다. PR-B 구현자(task_27bdad71a9d7)는 초안을 끝내고 대기 중이다. PR-A 검증의 Unity 실행이 끝나면 PR-B branch를 PR-A 위에 만들고 PR-B 선행 시험을 commit한 뒤 「Unity 창 열림·배치 허가」를 보낸다([로그인 화면 구현](#로그인-화면-구현--unity-창-pr-a-u2)).
+**다음 첫 일:** PR-A는 독립 검증을 통과했고 이 commit으로 PR을 연다([로그인 독립 검증](#로그인-독립-검증--unity-창-pr-a-v1b)). 이어서 PR-B branch를 PR-A head 위에 만들고 PR-B 선행 시험을 commit한다. PR-B 구현자(task_27bdad71a9d7)는 초안을 끝내고 대기 중이다. Unity 창은 메인 대기열에서 Effect 65 A 독립 검증 다음이다(`msg_e2eeb638f742`). 배정되면 관문을 다시 재고 「Unity 창 열림·배치 허가」를 보낸다.
 
 | 항목 | 현재 |
 |---|---|
@@ -141,9 +141,9 @@
 - [x] 기준 실행·사후 확인
 - [x] 로그인 선행 시험
 - [x] 로그인 화면 구현
-- [>] 로그인 독립 검증
-- [ ] 길드 창 선행 시험
-- [ ] 길드 창 구현
+- [x] 로그인 독립 검증
+- [x] 길드 창 선행 시험
+- [>] 길드 창 구현
 - [ ] 길드 창 독립 검증
 - [ ] PR 두 개 준비
 - [ ] 종료 기록
@@ -185,3 +185,13 @@
 - 캡처 세 장(`pr-a-impl-01/u2/captures/`)을 리드가 열어 봤다. 두 해상도 모두 로고가 위, 밝은 로그인 창이 아래이고 오류 문구는 창 안 한 줄이다. 판정은 독립 검증자가 한다.
 - Unity 0 반환과 drift 두 파일 복원을 메인에 보고했다(`msg_827044895b17`). 구현자 worker_done `msg_667218991a26`, 보고 `pr-a-impl-01/report.md`, 리드 정산 `pr-a-impl-settlement-01.md`.
 - 정산의 후속 후보: `FEATURE_MAP`·`domains/client.md`의 메인 메뉴 항목에 `MainMenuLoginView` 추가(이 goal의 건드릴 곳 밖), 장면 버튼·칸에 밝은 조각을 입히는 함수의 공용화(Art 후보), TMP Awake 글꼴 경고, 실제 플레이어의 Enter 이중 제출 가드 시험 부재.
+- 두 문서 추가는 메인 결정 `msg_b0d2988af33b`로 PR-B 문서 commit에 넣는다. PR-A head는 검증 중이라 바꾸지 않았다. 로그인 배경 새 그림은 요청하지 않는다(메인·리드가 캡처를 보고 같은 판단).
+
+### 로그인 독립 검증 — Unity 창 PR-A V1b
+
+- 검증자 계약 `pr-a-verify-contract-v1.md`(sha256 `4a22bf70…0fe2d6d`), task_0c6e5b66408b, `[Content 검증자]` gpt-6-astra xhigh(backend 실제 모델 unknown). 리드 보충 셋: PR-B U1 근거 세 파일 읽기 예외(`msg_2d4f32f62c52`), 실사 순서 이탈 기록 뒤 계속(`msg_9c6ef5d01b22`), harness 재실행(`msg_62d4528b302a`).
+- 독립 시험 셋을 더했다. 두 입력칸이 한 프레임에 제출을 보내도 시작 요청이 하나인지(EditMode 두 순서), 실제 시작 버튼 클릭 → probe 실패 → 버튼 회복 → 칸 제출로 재시도하고 저장값은 그대로인지(PlayMode)다.
+- V1(메인 배정 `msg_ff387ece72bf`, 시한 08:35:00Z)은 Unity를 띄우기 전 harness 입력 검사에서 멈췄다(PowerShell 5 JSON 배열 래핑). 같은 창 안 V1b(08:18:03Z~08:29:55Z)에서 EditMode 1582 중 통과 1577·실패 5, PlayMode 210 중 통과 158·실패 33·건너뜀 19였다. 구현 U2와 시험 이름 단위로 비교하면 새 실패 0·첫 문구 변경 0이고, 새 시험 셋은 통과했다.
+- 판정은 **통과**, 차단 결함 0이다. worker_done `msg_6f77fd68cde1`, 판정 `pr-a-verify-01/verdict.md`(sha256 `11d8ada0…bf43de6`). 기존 실패 38(환경 23, PR-B 선행 시험 15)은 통과로 바꾸지 않았다. 실제 Overlay·물리 키·서버 성공 접속·DB·실제 종료는 미실행이다.
+- 리드 R-2 표본 대조(`pr-a-verify-settlement-01.md`): 결과 수치, 이름 비교, 새 시험 통과, 캡처 sha256, 맥락 메모 선행(검증자 rollout에서 메모 07:57:39Z, 시험 08:03:39Z), 쓰기 범위가 원천과 맞았다. Unity 0 반환과 drift 두 파일 복원을 메인에 보고했다(`msg_5b1cd8a8811a`).
+- 독립 시험은 리드가 `445fa240`으로 commit했다. 사용자 플레이 확인 항목은 검증자의 보완(유효 계정을 다시 넣는 4번)을 반영해 PR 본문에 적는다.
