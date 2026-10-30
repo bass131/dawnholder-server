@@ -119,6 +119,41 @@ namespace Dawnholder.Client.Tests
         // Declared after Pieces: static initializers run in text order.
         static readonly Dictionary<string, Piece> PiecesByGuid = Pieces.ToDictionary(piece => piece.Guid);
 
+        // The approved bright kit the inventory moves to (decision 43 A, goal 2026-10-29-inventory-character-select-look
+        // 완료조건 1). The inventory render tests filter by these 25 GUIDs instead of the brown 33, never both (Content
+        // msg_b9b45522981b: no union; main msg_e873edba3d2d); other windows keep PiecesByGuid. Rows printed by
+        // pr2-red-01/scripts/emit-bright-table-v2.ps1 from the approved spec; BrightUiKitTestSupport names the inputs.
+        static readonly Piece[] BrightPieces =
+        {
+            new Piece("Panel_Default", "387817131a7ee7abd35357ff32e6cd2a", true, false, 24, 24),
+            new Piece("Header", "7e18e6245ab44c8b34442c1876be07d3", true, false, 16, 16),
+            new Piece("Inset_Default", "d86a90ca34d7ac84244096c673e46475", true, false, 12, 12),
+            new Piece("Divider_Horizontal", "397c7e470f14e2989cc3622e25f75e24", true, false, 16, 0),
+            new Piece("Button_Default_Normal", "218e99a5632015261381128b2909788b", true, false, 16, 16),
+            new Piece("Button_Default_Highlighted", "8c51a6fac51dd8f61ef4cede5690f59c", true, false, 16, 16),
+            new Piece("Button_Default_Pressed", "09e130da54a609f68834547b2363b2a6", true, false, 16, 16),
+            new Piece("Button_Default_Disabled", "0438a51907e9b5791382a7beecdf53ad", true, false, 16, 16),
+            new Piece("Button_Accept_Normal", "fdaa805e70f5533488dae81f7234282a", true, false, 16, 16),
+            new Piece("Button_Accept_Highlighted", "b19f5a6d0300e566d0fffea8534ac8ca", true, false, 16, 16),
+            new Piece("Button_Accept_Pressed", "819be5b406aaa976f19a17fb72ef6fae", true, false, 16, 16),
+            new Piece("Button_Accept_Disabled", "d14f5c1a8a0197176bd076a96fb0009e", true, false, 16, 16),
+            new Piece("ItemSlot_Empty", "e702897eaffb5b94a75480e1d24d43b4", true, false, 16, 16),
+            new Piece("ItemSlot_Filled", "74be0b4adcf9029de03d21c58f39d95d", true, false, 16, 16),
+            new Piece("ItemSlot_Selected", "d44be2e942c90002e105154dfa0f758a", true, false, 16, 16),
+            new Piece("IconBase_64", "87b8e15f8cfe6c51f3820283d7a2f67a", false, true, 0, 0),
+            new Piece("NumberBadge", "5efe8348bfdcd2327dfc5a5568c159d4", false, true, 0, 0),
+            new Piece("CharacterSlot_Default", "b0d2304d8eeaeac834d357ce350b062c", true, false, 16, 16),
+            new Piece("CharacterSlot_Selected", "39f038f1abf5257969dd43c5458e0634", true, false, 16, 16),
+            new Piece("Pedestal", "54faccc43070f3ab735dae9c756f651b", false, true, 0, 0),
+            new Piece("InputField", "38f801c703515178c835f249a4db2983", true, false, 16, 16),
+            new Piece("SelectionGlow", "ae12c245de4289f6e0ba6cabc07b8bf7", false, true, 0, 0),
+            new Piece("Icon_Material", "9f5082fa3c5d6e75b68675a2d3f1a491", false, true, 0, 0),
+            new Piece("Icon_CurrencyPouch", "3aadc85f7b3e7ca0c8a31d52cc7910a8", false, true, 0, 0),
+            new Piece("Icon_Coin", "87e028dcd3360e891febb86e8d4c61d8", false, true, 0, 0),
+        };
+
+        static readonly Dictionary<string, Piece> BrightPiecesByGuid = BrightPieces.ToDictionary(piece => piece.Guid);
+
         readonly List<UnityEngine.Object> _owned = new List<UnityEngine.Object>();
         readonly List<Action> _cleanups = new List<Action>();
 
@@ -246,6 +281,9 @@ namespace Dawnholder.Client.Tests
         // Approved preview inventory-0 roles: Panel_Default behind the 550×354 panel, Button_Default states, an
         // Inset_*/ItemSlot_* piece under each slot row. Max legal state (Shared InventoryLimits and the snapshot rules
         // in client.md): currency 1,000,000,000, the two catalog items sorted with 99 each, six empty slots.
+        // The inventory filters by the bright table (decision 43 A, goal 2026-10-29 완료조건 1, Content msg_b9b45522981b,
+        // main msg_e873edba3d2d). T4: the roles must be found by that table, so the drawing checks are not run on an
+        // empty set (lead msg_8d4e83bd3bb0).
         [TestCase(1920, 1080)]
         [TestCase(1280, 720)]
         public void Inventory_OnCamera_DrawsApprovedPiecesPerSpecAndKeepsTextReadableAtMaxLegalState(int width, int height)
@@ -256,18 +294,22 @@ namespace Dawnholder.Client.Tests
             Pixels built = rig.Capture();
             SaveScreen(rig, "inventory-built");
             var builtRoles = new List<string>();
-            builtRoles.AddRange(RoleViolations(rig, window.Root.transform, window.Panel, "Panel_Default"));
-            builtRoles.AddRange(DrawnPerSpec(rig, built, Background(rig, window.Root.transform, window.Panel), PieceNamed("Panel_Default"),
-                "inventory background", requireCompared: true));
-            builtRoles.AddRange(ButtonStateViolations(window.Refresh, "Button_Default_Normal").Select(p => "Refresh " + p));
+            builtRoles.AddRange(RoleViolations(rig, window.Root.transform, window.Panel, "Panel_Default", BrightPiecesByGuid));
+            builtRoles.AddRange(DrawnPerSpec(rig, built, Background(rig, window.Root.transform, window.Panel, BrightPiecesByGuid),
+                PieceNamed("Panel_Default", BrightPieces), "inventory background", requireCompared: true));
+            builtRoles.AddRange(ButtonStateViolations(window.Refresh, "Button_Default_Normal", BrightPiecesByGuid)
+                .Select(p => "Refresh " + p));
             for (int i = 0; i < 8; i++)
-                builtRoles.AddRange(ButtonStateViolations(window.Uses[i], "Button_Default_Normal").Select(p => $"Slot{i + 1}/Use " + p));
-            builtRoles.AddRange(DrawnPerSpec(rig, built, TargetImage(window.Uses[0]), PieceNamed("Button_Default_Normal"),
+                builtRoles.AddRange(ButtonStateViolations(window.Uses[i], "Button_Default_Normal", BrightPiecesByGuid)
+                    .Select(p => $"Slot{i + 1}/Use " + p));
+            builtRoles.AddRange(DrawnPerSpec(rig, built, TargetImage(window.Uses[0]), PieceNamed("Button_Default_Normal", BrightPieces),
                 "Slot1/Use", requireCompared: true));
-            string[] bareRows = window.Slots.Where(row => PiecesUnder(rig, window.Root.transform, Centre(rig, row),
+            string[] bareRows = window.Slots.Where(row => PiecesUnder(rig, window.Root.transform, Centre(rig, row), BrightPiecesByGuid,
                 "Inset_Default", "Inset_Selected", "Inset_Disabled", "ItemSlot_Empty", "ItemSlot_Filled", "ItemSlot_Selected").Length == 0)
                 .Select(row => row.name).ToArray();
-            List<string> builtDrawing = AllPiecesDrawnPerSpec(rig, built, window.Root.transform);
+            string[] builtPieces = ApprovedImages(window.Root.transform, BrightPiecesByGuid)
+                .Select(image => ShownPiece(image, BrightPiecesByGuid).Name).ToArray();
+            List<string> builtDrawing = AllPiecesDrawnPerSpec(rig, built, window.Root.transform, BrightPiecesByGuid);
             string[] builtHidden = HiddenTexts(rig, built, VisibleTexts(window.Root.transform));
             string[] builtMissing = MissingGlyphs(VisibleTexts(window.Root.transform));
             LogGeometry(rig, window);
@@ -284,20 +326,30 @@ namespace Dawnholder.Client.Tests
             Pixels max = rig.Capture();
             SaveScreen(rig, "inventory-max-legal");
             var maxRoles = new List<string>();
-            maxRoles.AddRange(ButtonStateViolations(window.Refresh, "Button_Default_Disabled").Select(p => "Refresh " + p));
-            maxRoles.AddRange(ButtonStateViolations(window.Uses[1], "Button_Default_Disabled").Select(p => "Slot2/Use " + p));
-            maxRoles.AddRange(DrawnPerSpec(rig, max, TargetImage(window.Uses[1]), PieceNamed("Button_Default_Disabled"),
+            maxRoles.AddRange(ButtonStateViolations(window.Refresh, "Button_Default_Disabled", BrightPiecesByGuid)
+                .Select(p => "Refresh " + p));
+            maxRoles.AddRange(ButtonStateViolations(window.Uses[1], "Button_Default_Disabled", BrightPiecesByGuid)
+                .Select(p => "Slot2/Use " + p));
+            maxRoles.AddRange(DrawnPerSpec(rig, max, TargetImage(window.Uses[1]), PieceNamed("Button_Default_Disabled", BrightPieces),
                 "Slot2/Use disabled", requireCompared: true));
-            List<string> maxDrawing = AllPiecesDrawnPerSpec(rig, max, window.Root.transform);
+            List<string> maxDrawing = AllPiecesDrawnPerSpec(rig, max, window.Root.transform, BrightPiecesByGuid);
             TMP_Text[] maxTexts = VisibleTexts(window.Root.transform);
             string[] maxHidden = HiddenTexts(rig, max, maxTexts);
             string[] maxMissing = MissingGlyphs(maxTexts);
             Log("inventory max texts", maxTexts.Select(t => $"{t.name}: 「{t.text}」 truncated={t.isTextTruncated} overflowing={t.isTextOverflowing}"));
 
             Log("inventory built roles", builtRoles);
+            Log("inventory built bright pieces", builtPieces);
             Log("inventory built drawing", builtDrawing);
             Log("inventory max roles", maxRoles);
             Log("inventory max drawing", maxDrawing);
+            Assert.GreaterOrEqual(builtPieces.Count(name => name == "Panel_Default"), 1, "R T4 the bright table finds the window background");
+            Assert.GreaterOrEqual(builtPieces.Count(name => name == "Header"), 1, "R T4 the bright table finds the title band");
+            Assert.GreaterOrEqual(builtPieces.Count(name => name.StartsWith("ItemSlot_", StringComparison.Ordinal) ||
+                    name.StartsWith("Inset_", StringComparison.Ordinal)), 8,
+                "R T4 the bright table finds a slot piece for each of the eight slots");
+            Assert.GreaterOrEqual(builtPieces.Count(name => name.StartsWith("Button_Default_", StringComparison.Ordinal)), 9,
+                "R T4 the bright table finds the refresh and the eight use buttons");
             Assert.IsEmpty(builtRoles, "R panel and button pieces as approved and drawn per spec when built");
             Assert.IsEmpty(bareRows, "R every slot row is drawn on an approved Inset_*/ItemSlot_* piece");
             Assert.IsEmpty(builtDrawing, "R every approved piece the inventory draws matches the spec drawing");
@@ -311,6 +363,8 @@ namespace Dawnholder.Client.Tests
 
         // Scope 「보존 계약」: only buttons take input; their hover/press/disabled states are the approved sprites; a hidden
         // panel takes nothing; Dispose leaves no callbacks. Pointer input goes through the panel's own raycaster.
+        // The inventory filters by the bright table (decision 43 A, goal 2026-10-29 완료조건 1, Content msg_b9b45522981b,
+        // main msg_e873edba3d2d); T4: the decoration points must not be empty (lead msg_8d4e83bd3bb0).
         [Test]
         public void Inventory_RealPointer_ReachesOnlyEnabledButtonsWithApprovedStates_AndHiddenOrDisposedTakeNothing()
         {
@@ -321,11 +375,13 @@ namespace Dawnholder.Client.Tests
             var raycaster = window.Root.GetComponent<GraphicRaycaster>();
 
             Press hover = PointerEnter(rig, raycaster, Centre(rig, (RectTransform)window.Uses[0].transform));
-            string hoverShown = ShownPiece(TargetImage(window.Uses[0]))?.Name;
-            List<string> hoverDrawing = DrawnPerSpec(rig, rig.Capture(), TargetImage(window.Uses[0]), PieceNamed("Button_Default_Highlighted"), "hover", requireCompared: true);
+            string hoverShown = ShownPiece(TargetImage(window.Uses[0]), BrightPiecesByGuid)?.Name;
+            List<string> hoverDrawing = DrawnPerSpec(rig, rig.Capture(), TargetImage(window.Uses[0]),
+                PieceNamed("Button_Default_Highlighted", BrightPieces), "hover", requireCompared: true);
             PointerDown(hover);
-            string pressShown = ShownPiece(TargetImage(window.Uses[0]))?.Name;
-            List<string> pressDrawing = DrawnPerSpec(rig, rig.Capture(), TargetImage(window.Uses[0]), PieceNamed("Button_Default_Pressed"), "press", requireCompared: true);
+            string pressShown = ShownPiece(TargetImage(window.Uses[0]), BrightPiecesByGuid)?.Name;
+            List<string> pressDrawing = DrawnPerSpec(rig, rig.Capture(), TargetImage(window.Uses[0]),
+                PieceNamed("Button_Default_Pressed", BrightPieces), "press", requireCompared: true);
             PointerUp(hover);
             PointerExit(hover);
             int usesAfterHoverClick = uses.Count;
@@ -334,8 +390,8 @@ namespace Dawnholder.Client.Tests
             GameObject refreshPressed = Click(rig, raycaster, Centre(rig, (RectTransform)window.Refresh.transform));
             string[] rowHits = window.Slots.SelectMany(row =>
                 HitNames(rig, raycaster, RowPointLeftOfUse(rig, row))).ToArray();
-            string[] decorationHits = DecorationPoints(rig, window.Root.transform)
-                .SelectMany(point => HitNames(rig, raycaster, point)).ToArray();
+            Vector2[] decorationPoints = DecorationPoints(rig, window.Root.transform, BrightPiecesByGuid);
+            string[] decorationHits = decorationPoints.SelectMany(point => HitNames(rig, raycaster, point)).ToArray();
 
             GameObject mirrorOwner = Own(new GameObject("Inventory mirror (fixture)"));
             mirrorOwner.SetActive(false);
@@ -348,7 +404,7 @@ namespace Dawnholder.Client.Tests
             int usesBeforeDisabled = uses.Count, refreshesBeforeDisabled = refreshes;
             Click(rig, raycaster, Centre(rig, (RectTransform)window.Uses[1].transform));
             Click(rig, raycaster, Centre(rig, (RectTransform)window.Refresh.transform));
-            string disabledShown = ShownPiece(TargetImage(window.Uses[1]))?.Name;
+            string disabledShown = ShownPiece(TargetImage(window.Uses[1]), BrightPiecesByGuid)?.Name;
             string[] hiddenUseHits = HitNames(rig, raycaster, Centre(rig, (RectTransform)window.Uses[0].transform));
 
             window.View.SetVisibility(false, false);
@@ -385,6 +441,7 @@ namespace Dawnholder.Client.Tests
             CollectionAssert.AreEqual(new[] { 0, 0, 1, 2, 3, 4, 5, 6, 7 }, uses, "P each real click reports its own slot once");
             Assert.AreEqual(1, refreshes, "P one real refresh click reaches the refresh callback once");
             Assert.IsEmpty(rowHits, "P slot rows and their art pass the pointer (only buttons take raycasts)");
+            Assert.IsNotEmpty(decorationPoints, "P T4 the bright table finds decoration pieces outside the buttons");
             Assert.IsEmpty(decorationHits, "P approved decoration pieces outside buttons take no raycast");
             Assert.AreEqual(usesBeforeDisabled, uses.Count, "P a disabled use button does not reach the callback");
             Assert.AreEqual(refreshesBeforeDisabled, refreshes, "P a disabled refresh button does not reach the callback");
@@ -1267,17 +1324,23 @@ namespace Dawnholder.Client.Tests
         }
 
         // The approved piece an Image shows (its active sprite), by the .meta GUID of the sprite asset; null otherwise.
-        static Piece ShownPiece(Image image)
+        // The table overloads below take the GUID table a window expects (brown PiecesByGuid or the inventory's
+        // BrightPiecesByGuid); the judgement is the same (T3·T4, lead msg_8d4e83bd3bb0 1·2).
+        static Piece ShownPiece(Image image) => ShownPiece(image, PiecesByGuid);
+
+        static Piece ShownPiece(Image image, Dictionary<string, Piece> table)
         {
             Sprite sprite = image != null ? image.overrideSprite : null;
             if (sprite == null) return null;
             return AssetDatabase.TryGetGUIDAndLocalFileIdentifier(sprite, out string guid, out long _) &&
-                   PiecesByGuid.TryGetValue(guid, out Piece piece) ? piece : null;
+                   table.TryGetValue(guid, out Piece piece) ? piece : null;
         }
 
         static Piece ShownPieceOf(GameObject go) => go != null && go.TryGetComponent(out Image image) ? ShownPiece(image) : null;
 
-        static Piece PieceNamed(string name) => Pieces.Single(piece => piece.Name == name);
+        static Piece PieceNamed(string name) => PieceNamed(name, Pieces);
+
+        static Piece PieceNamed(string name, Piece[] pieces) => pieces.Single(piece => piece.Name == name);
 
         static Sprite LoadPiece(Piece piece)
         {
@@ -1286,40 +1349,59 @@ namespace Dawnholder.Client.Tests
             return sprite;
         }
 
-        static Image[] ApprovedImages(Transform window) => window.GetComponentsInChildren<Image>(false)
-            .Where(image => image.enabled && ShownPiece(image) != null).ToArray();
+        static Image[] ApprovedImages(Transform window) => ApprovedImages(window, PiecesByGuid);
+
+        static Image[] ApprovedImages(Transform window, Dictionary<string, Piece> table) => window.GetComponentsInChildren<Image>(false)
+            .Where(image => image.enabled && ShownPiece(image, table) != null).ToArray();
 
         static string[] PiecesUnder(CaptureRig rig, Transform window, Vector2 point, params string[] names) =>
-            ApprovedImages(window).Where(image => names.Contains(ShownPiece(image).Name) &&
+            PiecesUnder(rig, window, point, PiecesByGuid, names);
+
+        static string[] PiecesUnder(CaptureRig rig, Transform window, Vector2 point, Dictionary<string, Piece> table,
+            params string[] names) =>
+            ApprovedImages(window, table).Where(image => names.Contains(ShownPiece(image, table).Name) &&
                     ScreenRect(rig, image.rectTransform).Contains(point))
-                .Select(image => ShownPiece(image).Name).ToArray();
+                .Select(image => ShownPiece(image, table).Name).ToArray();
 
         // The window background must be the approved role piece.
-        static List<string> RoleViolations(CaptureRig rig, Transform window, RectTransform panel, string expected)
+        static List<string> RoleViolations(CaptureRig rig, Transform window, RectTransform panel, string expected) =>
+            RoleViolations(rig, window, panel, expected, PiecesByGuid);
+
+        static List<string> RoleViolations(CaptureRig rig, Transform window, RectTransform panel, string expected,
+            Dictionary<string, Piece> table)
         {
-            Image background = Background(rig, window, panel);
-            string shown = background != null ? ShownPiece(background).Name : "no approved piece";
+            Image background = Background(rig, window, panel, table);
+            string shown = background != null ? ShownPiece(background, table).Name : "no approved piece";
             return shown == expected ? new List<string>() : new List<string> { $"{panel.name} background shows {shown}, approved {expected}" };
         }
 
-        static List<string> ButtonStateViolations(Button button, string expected)
+        static List<string> ButtonStateViolations(Button button, string expected) => ButtonStateViolations(button, expected, PiecesByGuid);
+
+        static List<string> ButtonStateViolations(Button button, string expected, Dictionary<string, Piece> table)
         {
-            string shown = ShownPiece(TargetImage(button))?.Name ?? "no approved piece";
+            string shown = ShownPiece(TargetImage(button), table)?.Name ?? "no approved piece";
             return shown == expected ? new List<string>() : new List<string> { $"shows {shown}, approved {expected}" };
         }
 
         static Image TargetImage(Button button) => button.targetGraphic as Image;
 
         // Every approved piece the window draws is compared with the same piece drawn per spec.
-        List<string> AllPiecesDrawnPerSpec(CaptureRig rig, Pixels drawn, Transform window) => ApprovedImages(window)
+        List<string> AllPiecesDrawnPerSpec(CaptureRig rig, Pixels drawn, Transform window) =>
+            AllPiecesDrawnPerSpec(rig, drawn, window, PiecesByGuid);
+
+        List<string> AllPiecesDrawnPerSpec(CaptureRig rig, Pixels drawn, Transform window, Dictionary<string, Piece> table) =>
+            ApprovedImages(window, table)
             .Where(image => image.gameObject.activeInHierarchy && EffectiveAlpha(image) > 0f)
-            .SelectMany(image => DrawnPerSpec(rig, drawn, image, ShownPiece(image), PathOf(image.transform), requireCompared: false)).ToList();
+            .SelectMany(image => DrawnPerSpec(rig, drawn, image, ShownPiece(image, table), PathOf(image.transform), requireCompared: false))
+            .ToList();
 
         // The window background: the approved piece covering exactly the panel's screen rectangle (null when none).
-        static Image Background(CaptureRig rig, Transform window, RectTransform panel)
+        static Image Background(CaptureRig rig, Transform window, RectTransform panel) => Background(rig, window, panel, PiecesByGuid);
+
+        static Image Background(CaptureRig rig, Transform window, RectTransform panel, Dictionary<string, Piece> table)
         {
             Rect panelRect = ScreenRect(rig, panel);
-            return ApprovedImages(window).FirstOrDefault(image => SameRect(ScreenRect(rig, image.rectTransform), panelRect));
+            return ApprovedImages(window, table).FirstOrDefault(image => SameRect(ScreenRect(rig, image.rectTransform), panelRect));
         }
 
         // Compares the corner and edge blocks of the subject that no other drawn graphic touches. The reference draws,
@@ -1786,7 +1868,9 @@ namespace Dawnholder.Client.Tests
         }
 
         // Centres of approved pieces that are not part of a button (panel, header, rows, frame, divider).
-        static Vector2[] DecorationPoints(CaptureRig rig, Transform window) => ApprovedImages(window)
+        static Vector2[] DecorationPoints(CaptureRig rig, Transform window) => DecorationPoints(rig, window, PiecesByGuid);
+
+        static Vector2[] DecorationPoints(CaptureRig rig, Transform window, Dictionary<string, Piece> table) => ApprovedImages(window, table)
             .Where(image => image.GetComponentInParent<Button>(true) == null && image.GetComponentsInChildren<Button>(true).Length == 0)
             .Select(image => Centre(rig, image.rectTransform)).ToArray();
 

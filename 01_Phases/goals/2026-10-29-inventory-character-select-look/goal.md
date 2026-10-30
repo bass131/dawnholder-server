@@ -2,19 +2,90 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-10-29 범위 승인
+### 현재 재개 카드 — 2026-10-29 PR2 착수
 
-**다음 첫 일:** PR275의 두 번째 독립 실사도 NOT PASS였다. 결함 3건 가운데 리드 몫 둘(반복 집계 누락, 세 번째 분석의 처분)을 이 커밋에서 고쳤다. 남은 하나는 그 검증자 자신의 쓰기 경계 위반이라 새 검증자가 정식 판정한다. 다음은 신규 독립 실사를 받아 PR275 병합 승인을 요청하는 것이다. 시안 한 장은 사용자가 결정 45로 확정했다([결정 45](#10-29-결정-45--시안-방향--msg_9789f261be0b)). 나머지 UI 병행은 [보충안 v3 A](#10-29-범위-보충안-v3-a--나머지-ui-병행--msg_79d2bf86419e)로 범위에 들어왔다. 두 창은 조각 재질 원천 생성 중이다.
+**다음 첫 일:** 신규 Astra 재검증이 PASS·차단 0건을 냈다(아래 「PR2 재검증 — PASS」). 다음은 PR 생성 → 메인에 PR 번호·40자 head·판정 원문·플레이 카드 경로 보고다. 그 뒤 아침 사용자 직접 플레이 확인과 병합 승인을 기다린다. 카드는 두 안을 모두 쓴다(아래 Unity 창 메인 결정 절의 `msg_fb8c092d2f4a`)([사용자 지시](#10-29-사용자-지시--pr2-새-외관-적용부터-최종-보고까지--msg_c5b94381e2d5), [결정 63 A](#10-29-결정-63-a--직접-플레이는-아침에-한-번에--msg_66faefa79cd7)). 수정·재검증 Unity 창은 23:00Z(08:00 KST)까지다([Unity 창 메인 결정](#10-29-unity-창과-독립-검증-창--메인-결정--msg_48711df1f472msg_a16e9bc7035d)). 나머지 UI 병행은 [보충안 v3 A](#10-29-범위-보충안-v3-a--나머지-ui-병행--msg_79d2bf86419e)대로 PR2 병합 뒤다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v2와 사용자 승인([적용 중인 사용자 결정](#적용-중인-사용자-결정)). 초안 원문은 `.backups/verification/2026-10-28-stone-terrain-environment-replacement/lead-opus-decision43-scope-draft-v2-20261029.md`(sha256 `7c0f2fa1376e4387ca9c6be651cf138a697a2d6111cd3086daf8c5ffd9ba628d`)다. |
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh). 회신 주소는 `run:run_6ae742140ce9`다. |
-| branch | PR1은 [PR275](https://github.com/bass131/dawnholder-server/pull/275), `docs/art-stone-closeout-ui-look-scope-20261029`(main `571d261c`에서 시작)다. 제품 branch `feat/art-ui-bright-look-20261029`는 PR1 병합 뒤 최신 main에서 만든다. |
-| 실행 창 | 이미지 생성은 시안 1회를 썼다(상한 11회 중). 두 창 조각 재질 원천 4회(2~5회째)가 승인돼 진행 중이다. Unity·서버 실행은 아직 0이다. 필요할 때 메인에 시각을 요청한다. |
+| branch | PR1 [PR275](https://github.com/bass131/dawnholder-server/pull/275)는 merge commit `dc66b77e`로 병합됐다. PR2 제품 branch는 `feat/art-ui-bright-look-20261029`이고, `dc66b77e`에서 만들어 같은 이름의 원격 branch로 push한다. |
+| 실행 창 | 이미지 생성은 상한 11회 중 5회를 썼다. 시안 1회와 조각 재질 원천 4회다. 6·7회째는 다시 그릴 때만 따로 승인을 받는다. Unity는 메인이 연 창 세 번에서 돌렸다. 선행 시험의 batchmode 창(13:15Z~14:45Z), 결정 53 A의 Editor 창(14:30Z~15:00Z), 구현 batchmode 창(16:00Z~18:30Z)이다. 결정 58 A의 구현 뒤 Editor 창 실행은 세 번째 창 안에서 돌렸고, Unity 사용 끝은 16:41:15Z다. 독립 검증 batchmode는 네 번째 창(17:29Z~19:30Z)에서 돌렸고, 마지막 실행 끝은 17:58:55Z다. 수정·재검증 창은 그 창을 이어 23:00Z까지다. 수정 구현은 그 안에서 18:36:55Z~18:52:35Z에, 재검증은 19:24:30Z~19:39:46Z에 돌렸다. 서버 실행은 0이다. |
 | 이전 goal | [석재 지형·환경물 교체](../2026-10-28-stone-terrain-environment-replacement/goal.md#closeout-20261029)는 안건 1 A로 미완료 종료했다. 그 미추적 58파일은 art-active에 그대로 있고 커밋하지 않는다. |
 
 ## 적용 중인 사용자 결정
+
+### 10-29 결정 63 A — 직접 플레이는 아침에 한 번에 — msg_66faefa79cd7
+
+- 사용자 원문(메인 pane 제출, 메인 전달): 「대시보드 결정 응답: 1) 63 - Dash 이펙트·인벤토리/선택창 직접 플레이 확인을 언제 할지 → A 자고 일어나서 한 번에」
+- 메인이 보인 뜻: 사용자는 지금 잔다. Dash(PR278)와 인벤토리·선택창(Art PR2)은 아침에 메인이 합친 카드 한 장으로 한 번에 플레이 확인한다. 병합 승인은 그 뒤 사용자 몫이다. 메인은 Night Shift(사용자 부재 중 야간 운영)다. 밤에는 사용자 결정 요청을 아침에 모으고, 메인이 정할 수 있는 것은 「메인 결정」으로 답한다.
+- Art 할 일(메인 전달): 판정이 결함 확정이면 범위 안 수정 Opus → 새 검증자 재검증까지 밤에 진행한다. PASS가 되면 PR 생성 → 메인에 PR 번호·40자 head를 보낸다. 근거 폴더 `lead/`에 사용자 직접 플레이 카드를 쓴다(「Art 쪽 단계」만 따로 묶음, 10단계 이하, 확인 항목 체크 표, 예상 시간, 띄울 것과 방법, 미확인 표시). 합치는 것은 메인이 한다.
+- 메인 `msg_88233d71b5d5` 덧붙임: Effect 카드(effect-active 근거 폴더 `lead/user-play-card-01.md`)와 같은 형식으로 쓴다. 그 카드는 Legacy 서버(run-server.bat, DB 없음)와 Editor MainMenu Play 방식이다.
+- 원문은 근거 폴더 `pr2-verify-message-bodies-04.txt`(`msg_66faefa79cd7`)와 `pr2-verify-message-bodies-05.txt`(`msg_88233d71b5d5`)다.
+
+### 10-29 Unity 창과 독립 검증 창 — 메인 결정 — msg_48711df1f472·msg_a16e9bc7035d
+
+메인 결정이며 사용자 결정이 아니다. 원문은 근거 폴더 `pr2-editor-after-message-bodies-01.txt`(`msg_48711df1f472`)와 `pr2-verify-message-bodies-01.txt`(`msg_a16e9bc7035d`)다.
+
+- 구현 batchmode 창(`msg_48711df1f472`, 15:23:08Z): 2026-10-30 01:00~03:30 KST(16:00Z~18:30Z)다. 거른 EditMode 최대 6회와 F·F2를 이 창 안에서 한다. 03:30까지 끝나지 않으면 새 실행을 시작하지 않고 멈춰 보고한다. 일찍 끝나면 바로 「Unity 사용 끝」을 보낸다. 다음 Unity 차례는 Effect다. 관문은 그대로다(물리 여유·commit 여유 4 GiB, Unity·Windows dotnet 0).
+  - 같은 글에서 메인은 구현 계약 안의 리드 결정 1~5와, 첫 초안의 근거 없는 인용을 보내기 전에 고친 것을 받았다. 「독립 검증 입력에 첫 초안과 고친 본문을 함께 넣어라」고 했다.
+- 독립 검증용 Unity 창(`msg_a16e9bc7035d`, 16:43:42Z)
+  - batchmode 60~90분을 받는다. 시작은 Effect의 「Unity 사용 끝」 뒤 메인이 신호를 보낸다. 늦어도 03:00 KST 무렵이다. 시작 직전 관문은 검증 쪽이 다시 잰다.
+  - Editor 창(사용자 화면) 재실행은 열지 않는다. 검증자는 batchmode의 실제 장면 PlayMode(마을·사냥터, 대역 wire)를 실제 경로 1회로 쓰고, 입력→분기→출력과 쓴 대역·미확인 경계를 기록한다. Editor 창 모드 재실행은 「미실행」으로 적는다.
+  - 구현 뒤 Editor 창의 P1 통과는 리드 원시 대조 값을 근거로 쓰되 독립 검증자 실행으로 격상하지 않는다. 실제 게임 실행은 병합 전 사용자 직접 플레이 확인이 맡는다.
+  - 검증자가 Editor 창 모드 없이는 판정할 수 없는 결함·보류를 내면 그때 사용자 결정으로 올린다.
+  - 검증자 첫 화면의 모델·effort와 Fast 꺼짐을 기록한다.
+- 독립 검증 창 열림(`msg_a5becde72f3c`, 17:29:20Z): Effect가 Unity 사용 끝을 알렸다. Art 독립 검증자가 batchmode를 04:30 KST(19:30Z)까지 쓴다. 원문은 `pr2-verify-message-bodies-04.txt`다.
+- 수정·재검증 창(`msg_88233d71b5d5`, 18:17:12Z)
+  - Art가 지금 창을 이어서 08:00 KST(23:00Z)까지 쓴다. 수정 구현(R·F)과 재검증(V-R·V-F)을 이 창 안에서 잇는다. 08:00 KST 뒤는 사용자 직접 플레이가 Unity를 쓴다. 그 전에 끝나지 않을 것 같으면 07:00 KST까지 알린다. 시작·끝마다 한 줄씩 알린다.
+  - 같은 글에서 메인은 리드 결정 1~3(아래 「PR2 독립 검증 — NOT PASS」)을 범위 안 처리로 받았다. #UI-02에서 「짧게 커지며 나타난다」를 배치 값 불변 조건으로 만들 수 없다는 질문이 나오면 메인에 올린다. 요구 변경이라 사용자 몫이고 아침 대기열에 들어간다. 그때 구현자는 그 항목만 멈추고 #UI-01은 계속한다.
+  - 원문은 `pr2-verify-message-bodies-05.txt`다.
+- 플레이 카드 두 안(`msg_fb8c092d2f4a`, 18:25:32Z, 리드 미리 알림 `msg_3bb14d2bc63f` 회신)
+  - Legacy 서버로는 새 캐릭터 선택창이 보이지 않는다는 리드 알림에 대한 답이다. 선택창을 라이브로 볼지는 사용자 시간·손이 드는 일이라 아침 사용자 몫이다. 카드에는 두 안을 모두 실행할 수 있게 쓴다.
+  - 1안(기본): Effect와 같은 Legacy 세션에서 인벤토리를 라이브로 본다. 캐릭터 선택창은 재검증 캡처 그림으로 본다. 열기 연출은 그림으로 안 보인다는 한계를 적는다.
+  - 2안: 선택창도 라이브로 본다. DB 모드 서버 단계는 10-29 합동 실DB 창의 사용자 카드와 실행 기록에서 재사용할 수 있는 것을 원천 경로와 함께 쓴다. 지금도 그대로 도는지는 「미확인」이다. credential 파일은 사용자가 경로를 직접 입력하는 단계로만 쓰고, 리드·구현자는 그 파일을 읽거나 존재·크기·해시를 확인하지 않는다. 2안의 추가 시간과 1안 대비 늘어나는 사용자 손 단계 수를 적는다.
+  - 카드는 재검증 PASS 뒤에 보낸다. 원문은 `pr2-verify-message-bodies-06.txt`다.
+
+### 10-29 결정 58 A — 구현 뒤 Unity Editor 창, 사용자 부재 중 — msg_d370d974e3e7
+
+- 사용자 원문(메인 pane 제출, 메인 전달): 「대시보드 결정 응답: 1) 58 - 인벤토리·선택창 구현 뒤 Unity Editor 창 30분을 네가 자리에 없어도 열지 → A 자리에 없어도 연다」
+- 메인이 보인 A의 뜻: batchmode 최종 실행이 통과하면 바로 Editor 창을 띄워 P1(HUD 겹침)·P2(인벤토리 실화면 캡처)를 잰다. 그동안 사용자는 PC를 쓰지 않는다.
+- 메인 지시: F(또는 F2) 통과 뒤 메인에 따로 묻지 말고 바로 시작한다. 시작 직전에 「Editor 창 시작」 한 줄을 메인에 보낸다. 03:30 KST 안에 끝내는 것이 기본이다. 관문·ProjectSettings 처리·마우스 되돌림 기록은 23:30 창과 같다. 실행 셋을 계약으로 고정하고 sha256을 남긴다.
+- 원문은 근거 폴더 `pr2-editor-after-message-bodies-01.txt`다. 결과는 아래 「PR2 구현 뒤 Editor 창 실행」이다.
+
+### 10-29 결정 57 A — Codex 0.165.0 유지 — msg_fcd61cec592d
+
+- 사용자 원문(메인 pane 제출, 메인 전달): 「대시보드 결정 응답: 1) 57 - 저절로 설치된 Codex 0.165.0을 그대로 쓸지 → A 그대로 쓴다」
+- 메인 전달: 앞으로 새 Codex 세션은 0.165.0이다. 모델이 안 보이거나 지정 effort가 없으면 대체하지 말고 멈춰 보고한다. PR2 독립 검증자(신규 Astra)는 첫 화면에 gpt-6-astra·xhigh·Fast 꺼짐이 보이는지 확인한다. 업데이트 선택창이 뜨면 아무 키도 넣지 않고 메인에 알린다. 메인이 Skip만 고른다.
+- 원문은 근거 폴더 `pr2-editor-after-message-bodies-01.txt`다.
+
+### 10-29 사용자 지시 — PR2 새 외관 적용부터 최종 보고까지 — msg_c5b94381e2d5
+
+- 사용자 원문(메인 pane 제출, 메인 전달): 「새 외관까지 적용하고나서 최종 보고까지 진행해줘」
+- 뜻(메인 전달): 승인된 PR2 범위(이 goal과 결정 43·45 C·50 B·51 A) 안에서 구현 → 독립 검증 → PR 생성 → 메인 보고까지 멈추지 않고 잇는다. 범위를 넓히는 지시가 아니다. 병합은 따로 사용자 승인 줄이 있어야 한다.
+- 순서(메인 전달): Editor 창 실행자 정산·pane 닫기, ProjectSettings 보존·복원, goal 기록, 구현 계약, 신규 Opus 구현자, 독립 검증(결정 4A의 신규 Astra xhigh, fast 끔), PR이다. 계약 안 판단과 범위 안 결함 수정은 리드가 정하고 보고에 적는다.
+- Unity 실행(메인 전달): batchmode 창은 메인이 정하므로 필요할 때 시각을 요청한다. Editor 창 모드는 사용자 화면을 쓰므로 메인이 사용자에게 묻는다. 필요하면 구현 계약 단계에서 미리 알린다.
+- 메인 관찰(사용자 결정 아님, 판단은 리드 몫): 구현 전 캡처 `inventory-1920x1080.png`에서 두 가지가 보였다.
+  - 제목 「인벤토리」 글자가 제목 칸 왼쪽 테두리에 거의 붙어 있다.
+  - 슬롯 아래에 가로줄 하나와 빈 공간이 있다. 50 B로 내려가는 재화 줄이 이 자리를 쓸 것으로 보인다.
+  - 구현 뒤 캡처 비교에 둘이 어떻게 됐는지 한 줄씩 적는다. 보존 시험이 지키는 글자 넘침 기준은 바꾸지 않는다.
+
+### 10-29 결정 53 A — 구현 전 Unity Editor 창 — msg_1e53be0bd865
+
+- 사용자 원문(메인 pane 제출, 메인 전달): 「대시보드 결정 응답: 1) 53 - 인벤토리·캐릭터 선택창 구현 전에 Unity Editor 창 실행을 한 번 더 열지 → A 연다(23:30~00:00 KST)」
+- 창(메인 전달): 2026-10-29 23:30~10-30 00:00 KST(14:30Z~15:00Z)다. 관문은 선행 시험 창과 같다(물리 여유 4 GiB, commit 여유 4 GiB, 진입 직전 측정, 미달이면 띄우지 않음). 00:00까지 안 끝나면 새 실행을 시작하지 않고 멈춰 보고한다.
+- 메인 처분: 셋째 실행이 무엇인지는 시작 보고에 한 줄로 적는다. Editor 창 모드 실행이 ProjectSettings 같은 추적 파일을 다시 바꾸면 보존 뒤 복원하고 커밋에 넣지 않는다.
+- 결과는 아래 「PR2 구현 전 Editor 창 실행」이다.
+
+### 10-29 결정 49·50·51 A — PR275 승인 요청과 PR2 시험 경계 — msg_771bdbab00c1
+
+- 사용자 원문(메인 pane 제출, 메인 전달): 「대시보드 결정 응답: 2) 49 - Art PR275 넷째 실사 불통과: 다섯째 실사 없이 승인 요청으로 갈지 → A 실사 없이 승인 요청 · 3) 50 - 인벤토리 보존 시험의 배치 값 두 줄을 새 배치에 맞게 바꿀지 → A 두 줄 바꾼다 · 4) 51 - 캐릭터 선택창의 빈 자리를 어떻게 보일지 → A 빈 발판, 고르면 「새 캐릭터」」
+- 49 A(메인 전달): 다섯째 실사를 열지 않는다. 넷째 실사의 세 결함과 리드 자기 신고의 처분은 아래 「PR275 넷째 독립 실사」에 적었다.
+- 50 A(메인 전달): 인벤토리 보존 시험의 :500 패널 크기와 :505 새로고침 입력 칸 기대값만 새 배치 값으로 바꾼다. 같은 시험의 다른 단정은 그대로다. 조건은 인벤토리 외관 6건과 같다. 세부는 「건드릴 곳과 소유」의 시험 경계에 있다. Content 확인은 Content 리드를 다시 열 때 사후로 받는다.
+  - 50 B로 바뀜(메인 `msg_2549446d42d1`, 2026-10-29T12:44:55Z). 사용자 원문(메인 pane 제출): 「50 B」. 메인이 물은 두 안은 「50 B(추천) — 시안 그대로 간다. 새로고침은 위 오른쪽, 재화 줄은 아래에 둔다. 패널 크기·칸 배치가 지금 값 그대로라 시험 변경 0이다. goal 배치 기준 문장은 다음 goal commit에서 시안에 맞게 고친다.」와 「50 A 유지 — 새로고침을 아래로 내리며 패널을 키운다. 보존 PlayMode 시험 세 파일을 넘을 위험이 있다.」였다. 사용자는 앞의 것을 골랐다.
+  - 그래서 :500(550×354)·:505(426, 10, 112, 44)와 칸 사각형 표 :122~:128은 바꾸지 않는다. 바꾸는 시험은 `msg_e873edba3d2d`의 외관 기대값 6줄뿐이다. 재화 줄은 아래에 둔다(시안 mockup-01의 왼쪽 아래 재화 표시). 메인은 시안의 새로고침 위치를 보고 `msg_153a92e718d9`부터 사용자에게 다시 확인했다. 50 B 전달은 리드 보고 `msg_b2bce894272c`의 회신이다.
+- 51 A(메인 전달): 자리 글 「슬롯 N\n빈 슬롯」은 그대로 둔다. 빈 자리는 직업 그림 없는 빈 발판으로 보인다. 빈 자리를 고르면 제목이 「새 캐릭터」로 보인다. 새 문구 오브젝트는 0이고 시험 변경도 0이다. 이 해석으로 완료조건 3의 「빈 자리는 「새 캐릭터」다」를 충족한다.
 
 ### 10-29 범위 보충안 v3 A — 나머지 UI 병행 — msg_79d2bf86419e
 
@@ -73,7 +144,7 @@
 
 리드가 말로 정리한 기준표로만 넘긴다. 원작 화면 캡처는 어떤 단계의 입력에도 넣지 않는다.
 
-- 인벤토리 배치: 위에 제목 띠, 가운데 2열 4행 격자 8칸, 아래쪽에 재화 줄과 새로고침 버튼을 둔다.
+- 인벤토리 배치: 위에 제목 띠를 두고 새로고침은 위 오른쪽(시안)에 둔다. 가운데 2열 4행 격자 8칸, 재화 줄은 아래에 둔다(사용자 결정 50 B).
 - 인벤토리 칸: 칸마다 왼쪽에 아이콘, 가운데에 지금과 같은 「이름 ×수량」 글, 오른쪽에 「사용」을 둔다. 서버 이름·수량을 그대로 보이는 요구사항을 지키려는 배치다.
 - 인벤토리 사용: 사용할 수 있는 칸의 「사용」은 지금처럼 한 번 눌러 쓴다. 입력 방식은 바꾸지 않는다.
 - 인벤토리 연출: 창이 열릴 때 짧게 커지며 나타난다. 칸에 마우스를 올리면 테두리가 밝아진다. 누르면 살짝 눌린다.
@@ -116,6 +187,16 @@
   - 바꾸지 않는다: 동작 시험, 문구를 정확히 맞추는 단정, `CharacterMenuViewCaptureTests`의 네 판정(1920×1080·1280×720에서 글자 손실 없음, 글자가 자기 칸과 화면 안, 겹침 없음, Tolerance 0.5)이다.
   - 결정 43 A를 근거로 고칠 수 있다: `ViewUsesExistingSkinAndFontWithoutAddingNamePolicy`의 스킨·글꼴 이름 단정, 캡처 fixture의 배경색과 「패널이 화면 절반 이상」 검사다. 같은 시험 안의 richText·이름 정책 단정은 남긴다. 바꾼 기대값과 근거는 이 goal에 적는다.
   - 인벤토리의 「이름 ×수량」 글 형식이나 Slot 경로를 바꿔야 하면 Content에 먼저 묻는다. 위 배치는 둘 다 바꾸지 않는다.
+  - 인벤토리 외관 시험 6건은 기대하는 GUID 표만 브라운에서 밝은 조각으로 바꾼다. 대상은 `UiWindowAppearanceContractTests.cs`의 :171·:184·:198·:211과 `UiWindowCompositionRenderTests.cs`의 :251·:315다.
+    - 메인 판단(`msg_e873edba3d2d`): 범위 초안 v2의 「예전 스킨을 고정한 검사」에 해당해 승인 범위 안이다. 이유는 결정 43 A와 완료조건 1이다. 역할 구조·raycast·포인터 상태 전이·화면 판정은 그대로 둔다. 다른 창(보상·파티 초대·파티 HUD·NPC)의 브라운 고정 시험은 PR2에서 바꾸지 않는다.
+    - Content 동의(`msg_b9b45522981b`, 질문 `msg_09d726f3642f`의 회신): 6건 모두 Art 작성 시험이다. 조건은 셋이다. :211의 금지 검사는 남기고 기준 표만 밝은 조각 표로 바꾸며, 브라운과의 합집합은 금지다. 기대값을 바꾼 뒤 일부러 틀린 조각을 넣으면 한 번은 실패하는지 확인한다. 앞서 합의한 `msg_3a2dfa53e814`의 조건도 그대로다.
+  - 인벤토리 배치 두 줄: 사용자 결정 50 B로 바꾸지 않는다. `UiWindowAppearanceContractTests.cs` :463 시험의 :500(패널 550×354)·:505(새로고침 입력 칸 426, 10, 112, 44)와 :508·:509 칸 사각형, 같은 시험의 다른 단정이 모두 그대로다. 50 A의 「두 줄 바꾼다」는 50 B로 대체됐다.
+  - 재화 줄 이동(50 B): 지금 `Inventory/Currency`는 제목 줄에 있다(`InventoryPanelView.cs`:58, `inventory-layout-lines-dc66b77e-01.txt`). 그 사각형을 고정한 시험은 없다. 옮긴 자리에도 보존 시험의 글자 판정이 그대로 걸린다. PlayMode `InventorySceneLifecycleTests`의 `AssertEveryLabelIsDrawn`(:58~:67, 넘침 없음·모든 글자 배치)과 :262·:264(화면 안), Render :251 시험의 `HiddenTexts`·`MissingGlyphs`다. `Inventory/Currency`는 패널 바로 아래 자식으로 남아야 한다(:477). 근거는 `pr2-currency-move-pins-dc66b77e-01.stdout.txt`·`pr2-currency-move-pins-v2-dc66b77e-01.stdout.txt`다.
+  - 패널의 화면 위치를 재는 PlayMode 보존 시험: `InventorySceneLifecycleTests` :260~:264(HUD와 겹침 0, 패널·8칸·글자가 화면 안), `DungeonClearRewardOverlapSceneTests` :93·:165와 `DungeonClearRewardPresentationLifecycleTests` :178(보상 창과 겹침 0)이다. 바꾸지 않고 선행 시험의 전후 비교 대상에 둔다. 근거는 `pr2-panel-rect-assertions-dc66b77e-01.stdout.txt`다.
+  - 위 6줄을 바꾸는 독립 검증자 계약에는 「외관 기대값 외 단정이 약해지지 않았는지」를 줄 단위로 넣는다. 단정 수나 판정 기준이 줄면 통과 차단이다(메인 `msg_e873edba3d2d`). :463 시험과 위 PlayMode 보존 시험은 diff 0인지도 본다(50 B).
+  - 빈 캐릭터 자리(사용자 결정 51 A): 「슬롯 N\n빈 슬롯」 단정(`CharacterMenuViewTests` :62~:64)과 Content 시험의 기대값은 바꾸지 않는다.
+  - 줄 번호는 `dc66b77e` 기준이다. 근거는 저장 스크립트 출력 `pr2-test-anchors-dc66b77e-01.stdout.txt`·`pr2-geometry-pins-dc66b77e-01.stdout.txt`·`pr2-character-text-pins-dc66b77e-01.stdout.txt`다. 앞 base `645fe187`의 출력과 같다(`pr2-anchor-compare-01.receipt.txt`).
+  - Content 리드를 다시 열 때 넘길 것: 결정 50이 B로 바뀌어 배치 단정 변경이 없어졌고 재화 줄 자리만 아래로 옮긴다는 알림, 질문 원문 `msg-content-pr2-boundary-q-01.txt`(Content가 결정 48 A로 닫혀 보내지 못했다), 「정의된 모든 ItemId에 아이콘이 있다」는 시험 요구다. 이 요구 때문에 새 아이템을 더하면 Art 아이콘도 같이 필요해진다.
 - PR3(나머지 9곳) 경계는 Content 리드 `msg_e187a4454281`(2026-10-29T01:09:28Z)의 동의를 받았다. 질문은 `msg_851b225dba78`이다.
   - Art가 쓴다: `Resources/UI/Components/UiWindowSkin.asset`, 같은 폴더의 `Window*.prefab` 5개, 새 밝은 조각 PNG·.meta. Content 파일 쓰기는 0이다.
   - 대상은 전투 HUD 틀, 파티 목록, 파티 초대, NPC 대화, 던전 클리어 보상, 길드 현황·대장간, 길드 거점 띠다. 세부 표는 보충안 v3 ①에 있다.
@@ -135,7 +216,7 @@
 
 1. PR2: 두 창은 밝은 스킨을 쓰고, 나머지 7개 창은 기존 브라운 조각을 그대로 쓴다. 이 둘을 선행 시험이 고정하고 통과한다.
 2. 인벤토리는 2열 4행 8칸이다. 아이콘이 재료·재화 주머니에 대응하고, 빈 칸·「이름 ×수량」 글·Slot 경로·「사용」 버튼 조건이 보존된다. 기존 Content 시험과 새 시험이 통과한다.
-3. 캐릭터 선택은 세 자리에 직업 그림이 대응하고 빈 자리는 「새 캐릭터」다. 위 보존 조건이 지켜지고 기존 Content 시험이 통과한다.
+3. 캐릭터 선택은 세 자리에 직업 그림이 대응하고 빈 자리는 「새 캐릭터」다. 빈 자리의 뜻은 [사용자 결정 51 A](#10-29-결정-495051-a--pr275-승인-요청과-pr2-시험-경계--msg_771bdbab00c1)다. 위 보존 조건이 지켜지고 기존 Content 시험이 통과한다.
 4. 두 해상도 캡처의 네 판정을 새 배치가 통과한다. 판정을 낮추지 않는다.
 5. 열림·마우스 올림·선택 강조 연출이 입력 잠금·raycast·종료 수명 시험을 깨지 않는다.
 6. 새 PNG는 새 .meta·GUID를 갖고, 기존 브라운 조각의 PNG·.meta·GUID 변화는 0이다.
@@ -164,6 +245,7 @@
 - 이미지 생성: 신규 Sol max 예외 경로다. 호출마다 쓰기 전에 메인 승인을 받는다. 상한은 시안 3회, 두 창 조각·아이콘 6회, 나머지 UI 2회로 합계 11회다(보충안 v3 A로 9회에서 늘었다). 결과 파일은 리드가 실제 경로(`~/.codex/generated_images/<세션>/`)와 SHA256을 확인한다.
 - Unity Editor: art-active에서 조각 가져오기, 화면 캡처, EditMode·PlayMode 시험에 쓴다. 메인에 시각을 요청한다.
 - PR267 기록에 UI 키트 렌더 시험 33건이 열린 에디터에서 실패했다. 외관 작업 전에 main 기준 결과를 먼저 재서 이번 변경과 구분한다.
+- Unity batchmode 시험 계약(main 기준 실측, 선행 시험, 구현, 검증)마다 10-24 Main 보호 결정 셋(`msg_6d2d607a721a`·`msg_b62ee0d53624`·`msg_e05dd4749c68`)을 원문으로 붙인다. 메인 지시 `msg_993fdd7557e6` 2항이다. 정본 반영 전까지 계약 승계로 막는다(BACKLOG `unity-testresults-protection-rule`, Rules 몫). 붙일 원문은 근거 폴더 `unity-protection-rules-v1.md`다.
 
 ## 일정
 
@@ -185,18 +267,20 @@
 
 - 세 맵 지형·소품 그림 품질 개선(이 goal 뒤 순서): BACKLOG `terrain-props-art-quality`
 - 게임 UI·아트 스타일 기준 문서화(채택 전, 이 goal의 입력 아님): BACKLOG `game-ui-style-reference`
+- 마을 배경·HUD 금괴 그림의 생성 도구 별 표식(메인 `msg_4a163b163353` 3항): BACKLOG `generated-image-star-mark`
+- 일반 회신에 `reply --id`를 쓰지 않게 막는 검사(R-3 반복, 아래 「운영 교정 반복 — R-3 회신 subject」): BACKLOG `orca-general-reply-tag-guard`
 
 ## 진척 단계
 
 - [x] 범위 승인
-- [>] PR275 병합
+- [x] PR275 병합
 - [x] 기준표와 시안
 - [x] 사용자 시안 확인
-- [ ] 조각·아이콘 제작
-- [ ] 선행 시험
-- [ ] 두 창 구현
-- [ ] 독립 검증
-- [ ] 사용자 플레이 확인
+- [x] 조각·아이콘 제작
+- [x] 선행 시험
+- [x] 두 창 구현
+- [x] 독립 검증
+- [>] 사용자 플레이 확인
 - [ ] 제품 PR 병합
 - [ ] 나머지 9곳
 - [ ] 종료 기록
@@ -243,17 +327,252 @@
 - 막는 결함 #DOC-05: 반복 표가 분석 명령 8개를 빠뜨렸다. 셀 단위도 적혀 있지 않았다.
 - 처리: #DOC-03은 메인이 비차단으로 처분했다(아래 표 밑). #DOC-05는 이 커밋에서 표와 BACKLOG 행을 고쳤다. #DOC-04는 새 검증자가 정식 판정한다.
 
+### 두 창 조각 묶음 — 재질 원천 네 장과 조합
+
+- 재질 원천: 신규 Sol max(`[Art Sol]`, task_cd512a9e2553 / ctx_46fa2da6a0b1)가 그림 생성 4회(2~5회째)를 썼다. worker_done은 `msg_12e145dbadb4`(01:43:31Z, succeeded)다. 결과 네 장(surface·controls·icons·pedestal, 각 1536×1024)은 근거 폴더 `bright-kit-sources/`에 있고, 원본 폴더의 PNG와 SHA256이 같다. 리드 확인 기록은 `bright-kit-sources-lead-check-01.md`다. 별 표식·글자·로고는 보이지 않았다.
+- 조합: 신규 Opus(`[Art 구현 Opus]`, task_e86c98beb13a / ctx_ef64c2af6316)가 네 장을 조합 스크립트로 오려 조각 25장을 만들었다. worker_done은 `msg_e4089606770e`다. 결과는 근거 폴더 `bright-kit/sprites/`, 명세는 `bright-kit/kit-spec.json`, 미리 정한 GUID 표는 `bright-kit-guids-v1.json`이다. 그림 생성 호출은 0이다.
+- 리드 대조: 저장 스크립트 `check-bright-kit-outputs.mjs`의 출력 `bright-kit-lead-check-02.*`(exit 0, failures 0)다. B1과 이름이 같은 17장은 크기·mode·border·본문 여백이 같다. 작업자 보고의 판단 일곱 항목을 받아들였다. 기록은 `bright-kit-lead-acceptance-01.md`다. 리드 자체 대조이며 독립 검증은 PR2에서 한다.
+- 메인도 미리보기 `bright-kit/preview/windows-rough.png`를 직접 봤다. 결정 45 시안과 같은 방향이고 별 표식·글자가 없다고 했다(`msg_4b6d035196d7`).
+
+### PR275 셋째 독립 실사 — NOT PASS
+
+- 신규 Astra xhigh 검증자(`[Art 검증자]`, ctx_c6c49ae86f61)의 판정 원문은 근거 폴더 `pr1-doc-review-03/verdict.md`(sha256 `e9265d5f92c55fed4f4d99fd6b2c4293d22d1ec5732c3f08bf62dcb2b15f1ff1`, 192줄)다. worker_done은 `msg_73b2abc0f84b`(02:20:24Z, failed)다. 대상 head는 `9bab98a0`였다.
+- 기준 19개 가운데 하나만 결함이고 나머지는 「검토했고 지적 없음」이었다. 대상 4파일의 결함은 없었다. #DOC-01·03은 메인 비차단 조건을, #DOC-02·05는 정정을, #DOC-04는 기록·보존을 확인받았다.
+- 막는 결함 #DOC-06: 리드 근거 메모 `lead-opus-v3-inline-record-context-20261029.md`에 완료 뒤 실제 파일·절·근거 연결이 없었다. 첫 작성일의 시계 원시도 없었다.
+- 처리(메인 결정 `msg_f3d062fbb7a4`, 사용자 결정 아님): 메모를 사본(`.as-reviewed-0220.md`)으로 보존했다. 끝에 「판정 DOC-06 뒤 덧붙임」 절을 덧붙인 시각 원시와 함께 붙였다(receipt `doc06-memo-appendix-01.txt`, 줄 번호 정정 `doc06-memo-appendix-fix-01.txt`). 첫 작성 시각은 unknown으로 적었고, 복원한 시계 호출은 재현이라고 적었다. PR275 head는 바꾸지 않았다.
+- **Art DOC-06, 파트 횡단 세 번째.** 결정 4A 뒤 Claude 리드가 리드 직접 쓰기의 맥락 메모 절차를 빠뜨린 일이 Content D01, Core CLOSE-D01에 이어 세 번째 파트에서 났다(메인 `msg_993fdd7557e6` 1항). 반복 규칙 후보는 BACKLOG `lead-direct-write-context-memo`다(정본 반영은 Rules 몫).
+- 비차단 관찰: O1(계약의 복원 파일 축약명)은 다음 계약부터 실제 파일명을 쓰기로 했다(메인 `msg_f3d062fbb7a4`). O2(PR 본문의 시차)는 승인 요청 전에 본문을 고쳤다(아래 「PR275 병합」).
+
+### PR275 넷째 독립 실사 — NOT PASS와 사용자 결정 49 A
+
+- DOC-06 처리만 보는 좁은 재검증이다. 신규 Astra xhigh 검증자(`[Art 검증자]`, ctx_89fdb7bdfd29)의 판정 원문은 근거 폴더 `pr1-doc-review-04/verdict.md`(sha256 `1aee34d314017ce4a1384be4060caf61d82bc2823d227c5db3ffef462177923a`, 180줄)다. worker_done은 `msg_27893afdfaa8`(03:01:42Z, failed)다. 대상 head는 `9bab98a0` 그대로였다.
+- #DOC-06은 해소됐다. 새로 나온 두 건은 PR 대상 파일이 아니라 근거 폴더의 기록에 관한 것이다.
+  - #DOC-07(검증자 귀속): 검증자 자신의 초기 명령 원시 일부를 보존하지 않았다.
+  - #DOC-08(리드 귀속): 리드 자기 신고 `lead-inline-lookups-doc06-fix-01.md`가 6549 호출을 「기록 값이 아닌 읽기」로 분류했다. 그 결과의 3986·3988은 넷째 실사 계약에 들어갔다. 리드가 검증자 질문의 답 `msg_c222f35df990`에서 먼저 밝힌 사실이다.
+- PR275 독립 실사 불통과는 네 번째였다. 메인은 셋째 뒤 「같은 산출물 수정 3회 선」을 알렸고(`msg_993fdd7557e6`), 넷째 뒤 사용자 체크포인트로 올렸다(`msg_f9a5510a7a5d`).
+- 사용자 결정 49 A(메인 `msg_771bdbab00c1` 전달)에 따른 처분이다. 다섯째 실사는 열지 않았다.
+  - #DOC-06: 해소로 받았다.
+  - #DOC-07: 검증자 절차 한계로 기록만 한다.
+  - #DOC-08: 메인 결정 `msg_f9a5510a7a5d`대로 자기 신고 끝에 「판정 DOC-08 뒤 덧붙임」 절을 붙여 닫았다. 덧붙이기 전 사본은 `.as-reviewed-0308.md`다. receipt는 `doc08-selfreport-appendix-01.txt`이고, 덧붙인 뒤 sha256은 `c53d0eb5ec8444517a0408ad0a35635d21bcacf78a601ee635b74fee5fe86d9b`다.
+- 리드 인라인 조회 자기 신고의 처분: 판정 원문 기준 「기존 자기 신고 다섯 묶음」(verdict.md 90행 절, 위치는 `review4-bundle-lines-01.txt`)과 #DOC-08의 6549 정정 절 전부에 같은 기준을 쓴다. 한정 인정, 소급 수정 없음, 원 위반 기록 유지다. 저장 스크립트 재현 결과는 원래 조회의 증거로 쓰지 않는다. Content D01·Core CLOSE-D01과 같은 기준이다.
+  - 사용자 결정 49 A 원문과 `msg_771bdbab00c1`의 「여섯 묶음」은 이 집합(다섯 묶음과 6549)을 뜻한다(메인 `msg_df7f2bd1f63d`).
+  - 메인 조건 1(`msg_af08be79ca51`, 이 goal 끝까지 인라인 값 기록 0)은 그대로다. 반복 기록은 아래 「운영 교정 반복 — 저장 안 한 분석 실행」 4행이다.
+- 설계 관찰 O1(비차단): 근거 메모 84행의 01:45:27Z가 receipt의 mtime이라는 점을 문장에 적으면 읽기 쉽다는 의견이다. 근거 폴더 기록이라 goal에는 이 줄만 남긴다.
+
+### PR275 병합
+
+- 승인 요청 전 다시 잰 값은 저장 스크립트 `measure-pr275-state.sh`의 출력 `pr275-state-04.*`다. 최신 main `796eb5af`(PR277 포함)과의 merge-tree는 충돌 0이었다. CI 4건이 pass였고, mergeable MERGEABLE, mergeStateStatus CLEAN, draft false였다. 양쪽이 함께 바꾼 CURRENT·BACKLOG에서 양쪽이 더한 줄은 병합 결과에 모두 남았고, BACKLOG 중복 ID는 0이었다(`pr275-state-03.overlap-diff.receipt.txt`, `pr275-state-03.backlog-dup.receipt.txt`).
+- PR 본문은 정정본 `pr275-body-final-03.md`로 바꿨다(`pr275-body-apply-03.receipt.txt`). 셋째·넷째 실사 결과와 처분은 이 커밋에 기록한다고 적었다.
+- 승인 요청은 `msg_8a6d5d898261`이다. 사용자가 「병합 승인: PR275 head 9bab98a0875c1762a8a71fc1968cd402c2f7e48e」를 제출한 뒤 메인이 병합 관문으로 실행했다. merge commit은 `dc66b77e6de836f243fde633a8ba81c3f5e93aa1`, mergedAt은 2026-10-29T12:16:41Z다(메인 `msg_282b4dbd7b22`).
+
+### PR2 선행 시험 준비 — 배치 결정 50 B
+
+- 계약을 마무리하며 두 창에 오브젝트 경로로 닿는 시험을 따로 찾았다(`locate-pr2-indirect-pins.sh` → `pr2-indirect-pins-dc66b77e-01.stdout.txt`). 앞 조사 `locate-pr2-geometry-pins.sh`는 두 View 타입을 부르는 파일만 봐서 PlayMode 장면 시험이 빠졌었다. 찾은 PlayMode 세 파일의 패널 단정은 위 「건드릴 곳과 소유」 시험 경계에 적었다.
+- 패널을 키우는 50 A는 이 세 파일의 제약을 받는다. 메인은 시안의 새로고침 위치 때문에 이미 사용자에게 다시 묻고 있었다(`msg_153a92e718d9`). 리드는 50 A 값을 정하기 전에 이 사실을 보탰다(`msg_b2bce894272c`). 메인이 두 안을 물었고 사용자가 50 B를 골랐다(위 결정 49·50·51 A 절).
+- 50 B의 재화 줄 이동이 닿는 단정을 재서 메인에 알렸다(`msg_39dff3c91277`). 위치를 고정한 시험은 없고 보존 글자 판정만 걸린다. 선행 시험은 새 시험 파일에 「재화 줄이 칸 격자 아래에 있다」와 「`Icon_Coin`이 재화 줄 옆에 있다」를 더한다.
+- 발행 전 다시 잰 것
+  - 미리 정한 밝은 조각 GUID 25개는 형식 오류 0, 표 안 중복 0이다. 작업 트리의 .meta 1279개(추적 1249, 미추적 30)와 겹침도 0이다(`check-bright-guids-collision.mjs` → `bright-guids-collision-44f556b4-01.stdout.txt`).
+  - 계약에 붙일 규칙 파일 9개는 `645fe187`과 `dc66b77e`에서 blob이 같다(`check-rules-drift.sh` → `rules-drift-645fe187-dc66b77e-01.txt`). 그래서 `645fe187`에서 뽑은 규칙 원문을 그대로 쓴다.
+- 밝은 조각 폴더 이름은 `BrightComponents`로 정했다. PNG·.meta는 `03_Client/Assets/Art/UI/BrightComponents`, 밝은 스킨은 `03_Client/Assets/Resources/UI/BrightComponents`에 둔다. 기존 B1 폴더 `Components` 옆에 같은 이름 꼴로 두어 찾기 쉽게 하려는 것이다.
+
+### PR2 선행 시험 — RED
+
+- 작성자는 신규 Opus(`[Art 구현 Opus]`, task_7f9527319c5c / ctx_a1ca6d3bca93)다. 계약은 근거 폴더 `pr2-red-contract-v4.md`, 기동 기록은 `pr2-red-launch-record-01.md`다. worker_done은 `msg_87930ecaa6f3`(13:59:47Z, 성공)이고, 보고는 `pr2-red-01/report.md`다.
+- Unity 창: 메인이 batchmode 창 13:15Z~14:45Z를 열었다(`msg_2c1440fa9375`). 관문은 물리 여유 4 GiB, commit 여유 4 GiB다. batchmode로 못 도는 PlayMode 캡처는 (b) 환경으로 기록만 하고 다시 돌리지 않는다. 서버가 필요한 시험이 U0·U1에서 같은 이유로 실패하면 (b)로 둔다.
+  - 실행 시각: U0 EditMode 13:16:44Z~13:22:22Z, U0 PlayMode 13:28:14Z~13:34:07Z, U1 EditMode attempt 02 13:45:20Z~13:47:34Z, U1 PlayMode 13:48:07Z~13:54:02Z다(리드 보고 `msg_9eb639247671`, 대조 출력 `pr2-red-inline-values-compare-01.txt`).
+- 리드 원시 대조(`audit-pr2-red-01.sh` → `pr2-red-audit-01.txt`)
+  - EditMode: U0는 1456건 모두 통과다. U1은 1560건 중 통과 1459, 실패 101이다. 기존 시험에서 새로 실패한 것은 예상 목록의 7 case뿐이다(외관 계약 4, 렌더 :251 두 해상도, :315). 같은 결과 1449, 새로 통과 0, 새 시험 104 case다.
+  - PlayMode: U0·U1 모두 180건 중 통과 137, 실패 24, 건너뜀 19이고 case마다 같다. 실패 24는 작업자가 모두 (b) 환경(캡처 폴더·runner 허가·서버 미기동·작은 batchmode 화면)으로 분류했다.
+  - diff 0이어야 하는 곳(제품 코드, PlayMode 시험, 그림 자원, 지정한 기존 시험 8파일)은 모두 0이다. 바뀐 두 시험 파일에서 지운 단정 줄은 4줄이고, 모두 같은 단정을 밝은 표로 바꾼 줄이다. 밝은 표는 브라운 표와 합치지 않는다. 작업자 대화 기록의 인라인 분석 실행은 0이다.
+- 작업자 질문 둘
+  - Q1(밝은 표를 helper에 넘기는 방식)은 A로 답했다(`msg_8d4e83bd3bb0`, 원문 `reply-worker-pr2-red-q1-01.txt`). 판정 로직은 그대로 두고 표만 인자로 받는다. 기존 1인자 형은 브라운 표 위임 한 줄로 남기고, 밝은 표에는 밝은 25개만 담는다.
+  - Q2(U1 EditMode 첫 시도의 컴파일 오류, obsolete API 하나)는 새 시험 파일의 두 줄(:268·:276)만 고쳐 창 안에서 한 번 다시 돌리게 했다(`msg_2b4787ebc616`, 원문 `reply-worker-pr2-red-q2-01.txt`). 메인이 받았다(`msg_5f5fdf33ae30`). 첫 시도는 시험 0건이라 U1 결과로 쓰지 않는다.
+- SENTIS 한 줄: Unity가 `ProjectSettings.asset` Standalone define에서 `SENTIS_ANALYTICS_ENABLED;`를 지웠다. 메인도 관측해 알렸다(`msg_70399eda2af5`). 작업자 쓰기가 아니라 Unity 실행의 부산물이었다(`pr2-red-projectsettings-trace-01.txt`). 사본을 남긴 뒤 HEAD로 복원했다. 복원 뒤 diff exit 0이고 파일 SHA256이 HEAD blob과 같다(`pr2-red-projectsettings-restore-01.txt`). 커밋에 넣지 않았다.
+- Orca 업데이트: 13:54Z 무렵 Orca가 1.4.244로 다시 떴다(메인 관측 `msg_5f5fdf33ae30`). 리드 대기 하나가 runtime_unavailable로 끊겼다. request-show로 ack 적용과 가져간 메시지 0을 확인했고 handle은 그대로였다(`msg_a1625577a53f`, 원시 `lead-wait-109-request-show-01.json`·`-02.json`).
+- 리드가 정한 계약 안 판단(`msg_e044288c106e`)
+  - 캐릭터 선택창 패널 바탕 raycast(report 「12」④): 시험이 패널 바탕을 예외로 둔 그대로 간다. 제품 `CharacterMenuView.cs` :74가 패널 바탕을 raycast 대상으로 둬 메뉴 뒤 클릭을 막는다(`pr2-character-menu-raycast-01.txt`). 이것을 바꾸면 결정 43의 기능 변경 0에 어긋난다.
+  - 시험 결함(report 「12」①): 아래 「PR2 시험 결함 수정」에서 고쳤다.
+  - LocalLow `TestResults.xml`: U0 EditMode가 10-28 원본을 덮었다. 보호 결정대로 지우거나 되살리지 않고 before/after만 기록했다. Unity가 실행마다 다시 쓰는 결과 사본이라 이 goal 판정에 쓰지 않는다.
+- 렌더 :251·:315 세 case는 밝은 PNG가 없어 `LoadPiece` 전제에서 멈췄다. 그래서 역할별 개수 단정에는 아직 닿지 않았다(report 「12」③). 반입 뒤에 닿는다.
+- 구현 계약으로 넘길 것(report 「10」): 밝은 스킨에 없는 조각을 부를 때의 예외, 연출 구동 방식, 재화 줄 이동 제약(새 부모로 감싸지 않음, 최대 재화·가장 긴 사용 결과 넘침 없음), 아이콘 위치 기준(칸 줄 사각형 안에 중심이 있는 비버튼 Image), 직업 그림·받침의 자리 기준이다.
+- 커밋: 리드가 시험 10파일(새 4, `.meta` 4, 기존 2)을 `4117343282339a450a1418b8689a32148e809136`로 커밋해 push했다(`pr2-red-commit-01.txt`, `pr2-base-07.txt`).
+
+### PR2 시험 결함 수정
+
+- 작성자는 신규 Opus(`[Art 구현 Opus]`, task_010491d9d4e3 / ctx_8de1650e00fe)다. 계약은 `pr2-red-fix-contract-v1.md`, 기동 기록은 `pr2-red-fix-launch-record-01.md`다. worker_done은 `msg_57a254b806d6`(14:18:02Z, 성공)이다. Unity는 쓰지 않았다.
+- 고친 것은 `CharacterMenuViewAppearanceTests.Details_ShowNoFaceOrIconImages`의 관찰자다. 정보 칸 안 그림을 셀 때 패널 바탕과 정보 칸 바탕 두 Image만 뺀다. 두 바탕이 관찰자에게 보인다는 전제 단정도 더했다. 제품 결함이 아니라 패널 자신의 바탕을 그림으로 센 시험 결함이었다(RED report 「12」①).
+- 리드 대조(`audit-pr2-red-fix-01.sh` → `pr2-red-fix-audit-01.txt`): 바뀐 파일은 그 시험 파일 하나다. 더한 줄의 `GetInstanceID`와 이름 거르기는 0이다. 지운 단정 1줄, 더한 단정 3줄이다.
+- 커밋은 `9d9a6f06d5cac38779311b560ff1b54c5afcb3ef`다(`pr2-base-08.txt`). 실측은 아래 Editor 창 실행의 E1이다.
+
+### PR2 구현 전 Editor 창 실행
+
+- 실행자는 신규 Opus(`[Art 구현 Opus]`, task_a69d7ea941f5 / ctx_a82712daaadc)다. 계약은 `pr2-editor-run-contract-v1.md`(sha256 `8acdb283…`), 기동 기록은 `pr2-editor-launch-record-01.md`다. worker_done은 `msg_7b42d4d867b4`(14:42:38Z, 성공)이고, 보고는 `pr2-editor-01/report.md`다.
+- 창은 사용자 결정 53 A다. 창 열림은 `msg_032b9c126825`, 시작 보고는 `msg_23a41344ea9e`, 반환은 `msg_1a69b664d0ad`(Unity 끝 14:36:18Z)다. 시작 보고에서 결정 요청 `msg_e044288c106e`의 「실행 셋」 누락을 정정했다. 셋째 실행은 PlayMode를 runner 조건에 따라 P1과 P2로 나눈 것이다.
+- 실행 결과(리드 원시 대조 `audit-pr2-editor-01.sh` → `pr2-editor-audit-01.txt`)
+  - E1(batchmode EditMode, `CharacterMenuViewAppearanceTests` fixture): 14 case 중 통과 6, 실패 8이다. U1과 비교해 고친 `Details_ShowNoFaceOrIconImages`만 실패에서 통과로 바뀌었고, 나머지 13 case는 같다.
+  - P1(Editor 창 모드 PlayMode): `InventorySceneLifecycleTests.RealTownAndHuntingGround_HudGraphicsShareNoAreaWithThePanel_AndItsButtonsStillClick` 1건이 통과했다. U0 batchmode에서는 실패했던 시험이라, 그 실패를 (b) 환경으로 본 분류와 맞는다.
+  - P2(Editor 창 모드 PlayMode, 캡처 runner 조건): `UiWindowLiveCaptureTests.Inventory_OpenedByIAfterTheWireSnapshot_CapturedFromTheGameView` 1건이 통과했다(U0에서는 건너뜀). 캡처는 `pr2-editor-01/raw/p2/attempt-01/captures/`의 `inventory-1920x1080.png`(1,339,145 bytes, sha256 `4426b7bb…`)와 `inventory-1280x720.png`(692,238 bytes, sha256 `c8396dd2…`)다. 지금의 브라운 인벤토리다.
+- P2를 한 case로 좁혔다. 실행자는 캡처 6 case를 한 실행에 돌리면 둘째 case부터 GameView 크기 scope의 영수증 파일(새로 만들기만 허용)이 겹쳐 실패한다고 원문 줄로 찾았다(질문 `msg_880b070a3587`). 리드는 C로 답했다(`msg_ed3f51946f9f`). 이 goal의 창인 인벤토리 case만 돌리고, 나머지 5 case는 미실행으로 원문 줄과 함께 report에 적게 했다.
+- 부수 변경: Unity가 같은 SENTIS 한 줄을 다시 지웠다. 같은 저장 스크립트로 사본을 남기고 HEAD로 복원했다. 복원 뒤 diff exit 0이고 파일 SHA256이 HEAD blob과 같다(`pr2-editor-projectsettings-restore-01.txt`). Unity 전역 `GameViewSizes.asset` 측정은 report 「보호 블록·GameViewSizes·추적 파일 부수 변경」에 있다.
+- 이 두 캡처가 구현 뒤 비교의 기준이다. 메인 관찰 두 가지(제목 글자와 왼쪽 테두리, 슬롯 아래 빈 공간)는 구현 뒤 비교에 한 줄씩 적는다(위 「10-29 사용자 지시」).
+
+### PR2 구현
+
+- 구현자는 신규 Opus(`[Art 구현 Opus]`, task_9ad2fbbc5684 / ctx_d2994cfb9da9)다. 기동 기록은 `pr2-impl-launch-record-01.md`다. worker_done은 `msg_ed6fd9149396`(16:32:06Z, 성공)이고, 보고는 `pr2-impl-01/report.md`(sha256 `321100ce…`, `pr2-impl-audit-01.txt` 2행)다. 받은 글 ID·시각은 `pr2-received-messages-02.txt`, 보낸 글은 `pr2-send-receipts-02.txt`에서 옮겼다.
+- 계약은 `pr2-impl-contract-v1.md`(sha256 `29ed781d…`, 1245줄, 조립 receipt `pr2-impl-contract-v1.receipt.txt`)다.
+  - 첫 초안 `pr2-impl-contract-v1-head.md`는 조립하지도 보내지도 않았다. 근거 없는 인용(줄 번호 둘, 시험 이름 하나, 절 이름 하나)을 저장 스크립트로 찾아(`pr2-impl-head-citations-01.txt`·`-02.txt`) 고친 본문 `pr2-impl-contract-v1-head-02.md`로 조립했다.
+  - 메인은 고친 것을 받았고, 두 본문을 독립 검증 입력에 함께 넣으라고 했다(위 「10-29 Unity 창과 독립 검증 창」).
+- Unity 창은 메인 결정의 16:00Z~18:30Z다. 리드가 창 열림 직전에 잰 관문은 물리 여유 16.2 GiB, commit 여유 27.0 GiB, Unity·dotnet 0이다(`pr2-impl-window-gate-01.txt`, 16:00:10Z).
+- 실행 결과(리드 원시 대조 `audit-pr2-impl-01.sh` → `pr2-impl-audit-01.txt`, 비교 출력 셋)
+  - F EditMode: 1560건 중 통과 1547, 실패 13이다. U1 대비 새 실패 13은 모두 `UiKitImportTests`였다(`pr2-impl-f-editmode-01-compare-01.txt`). 실패 원인은 구현자 harness가 준 캡처 폴더 경로가 Windows 경로 한도를 넘은 것이었다(`list-nunit-failures.mjs` → `pr2-impl-f-editmode-01-failures-01.txt`).
+  - 구현자 질문(`msg_8ee28d334d08`)에 리드는 A로 답했다(`msg_15f139440bd9`, 본문 `reply-worker-pr2-impl-q1-01.txt`). 제품은 고치지 않고 캡처 경로만 줄여 EditMode 전체를 한 번 더 돌린다(F2)는 것이다.
+  - F2 EditMode: 1560건 모두 통과다. U1 대비 새 실패 0, 새 통과 101이다(`pr2-impl-audit-01.txt` 1절).
+  - F PlayMode: 180건 중 통과 136, 실패 25, 건너뜀 19다. U1 대비 새 실패 1건은 `DungeonClearRewardOverlapSceneTests.AfterConfirm_TheNextStageClearShowsTheBannerAgain`이고, 첫 줄은 「Timed out: Town binding before HP」다(`pr2-impl-f-playmode-01-compare-01.txt`). 구현자는 (d) 원인 미확정으로 분류했다.
+  - 리드는 PlayMode 전체 한 번 더(F3P)를 허용했다(`msg_1e15d897f181`, 본문 `msg-worker-pr2-impl-playmode-rerun-01.txt`). F의 결과와 (d) 분류는 덮지 않고 나란히 둔다.
+  - F3P PlayMode: 180건 중 통과 138, 실패 23, 건너뜀 19다. U1 대비 새 실패 0이다. 새 통과 1건은 batchmode (b)였던 `InventorySceneLifecycleTests.RealTownAndHuntingGround_HudGraphicsShareNoAreaWithThePanel_AndItsButtonsStillClick`이다. F 대비 F3P에서 위 (d) case가 통과했다(`pr2-impl-f3p-playmode-01-compare-01.txt`).
+- 바뀐 것(`pr2-impl-audit-01.txt` 3·6·7절)
+  - 추적 제품 파일 4개: `CharacterMenuView.cs` +87/−25, `InventoryPanelView.cs` +72/−15, `UiWindowAppearance.cs` +53/−25, `UiWindowSkin.cs` +45/−10.
+  - 새 제품 `.cs` 5개: `CharacterArtBob.cs` 42줄, `CharacterArtBobMotion.cs` 17줄, `InventorySlotHoverHighlight.cs` 45줄, `UiWindowOpenEffect.cs` 76줄, `UiWindowOpenMotion.cs` 23줄.
+  - 그 밖에 밝은 조각 폴더 `Art/UI/BrightComponents/`(PNG 25장·`.meta`·README)와 밝은 스킨 폴더 `Resources/UI/BrightComponents/`(스킨·prefab 4개)다.
+- 보존(`pr2-impl-audit-01.txt` 5·8절, `check-bright-guids-placed.mjs` → `pr2-impl-guids-placed-01.txt`)
+  - 시험·브라운 그림·기본 스킨·장면·공유·서버, Content 소유 5파일, `Scripts/Network`·`Scripts/State`의 변경이 모두 0이다.
+  - 반입한 PNG 25장의 bytes가 근거 폴더 원본과 같다(불일치 0).
+  - 밝은 GUID 25개가 각각 자기 PNG `.meta`에만 있고, 새 `.meta` 13개의 GUID도 한 번씩만 나온다. 작업 트리 `.meta` 1321개에 겹친 GUID가 0이다.
+  - 반입 전 겹침 검사 스크립트 `check-bright-guids-collision.mjs`는 반입 뒤에는 자기 `.meta`를 겹침으로 센다(`pr2-impl-audit-01.txt` 9절). 그래서 반입 뒤 확인은 위 새 스크립트로 했다.
+- SENTIS 한 줄: 같은 diff(sha256 `31e7aaf1…`)라 사본을 남기고 HEAD로 복원했다(`pr2-impl-projectsettings-restore-01.txt`, 복원 뒤 diff exit 0). 커밋에 넣지 않았다.
+- 커밋: 리드가 `5d450a9d0097533a112fea5f7fc673dd72fff209`로 커밋해 push했다. 78파일(추가 74, 수정 4), 3550줄 추가, 75줄 삭제다(`record-commit-stat.sh` → `pr2-impl-commit-stat-01.txt`, push `pr2-push-06.txt`, 기준 `pr2-base-13.txt`).
+- 구현자 report가 적은 것(작업자 자체 점검이며 독립 판정이 아니다)
+  - 메인 관찰 두 줄은 report 7.2절, 시안 mockup-01과 달라진 점은 7.3절이다.
+  - 실수 넷은 report 9절이다. 빈 `node -e ""` 한 번, 스킨 생성 스크립트를 돌린 뒤 `UiWindowSkin.asset`에 손으로 더한 한 줄, F의 긴 캡처 경로, F2 시작 status의 「뒤 4건」(원시는 5건)이다. 대화 기록의 인라인 node 실행은 그 빈 한 번(15:56:18Z)뿐이다(`pr2-impl-audit-01.txt` 13절).
+- 다음 goal로 넘길 것: Effect 리드 알림(`msg_48080b09b77f`, 원문 `pr2-verify-message-bodies-01.txt`). 사용자 결정 56 A로 기사 Dash 스킬칸 아이콘이 새 Dash 시트 첫 칸으로 바뀐다. Effect PR이 먼저 병합되면 PR3의 전투 HUD 캡처에 새 아이콘이 보일 수 있다.
+
+### PR2 구현 뒤 Editor 창 실행
+
+- 실행자는 신규 Opus(`[Art 구현 Opus]`, task_b242d48a0de6 / ctx_437a9dda6fe1)다. 계약은 `pr2-editor-after-contract-v1.md`(sha256 `86cd5ac0…`, `pr2-editor-after-contract-v1-pointer-sha-01.txt`), 기동 기록은 `pr2-editor-after-launch-record-01.md`다. worker_done은 `msg_75b07ff27b16`(16:47:06Z, 성공)이고, 보고는 `pr2-editor-after-01/report.md`(sha256 `76d46813…`, `pr2-editor-after-audit-01.txt` 2행)다.
+- 창은 사용자 결정 58 A다. 시작 알림은 메인 `msg_eba25c5cd9c3`, 실행자 `msg_3cb09ef1838c`(16:35:05Z)다. 리드가 잰 시작 관문은 물리 여유 18.4 GiB, commit 여유 27.8 GiB, Unity·dotnet 0이다(`pr2-editor-after-window-gate-01.txt`, 16:34:40Z).
+- Unity 사용 끝은 16:41:15Z다(실행자 status `msg_0bc7f504ee25`). 리드가 그 뒤 잰 값은 Unity·dotnet·Burst dotnet 0이다(`pr2-editor-after-unity-end-gate-01.txt`, 16:42:16Z). 리드는 메인에 「Unity 사용 끝」을 보냈다(`msg_36f611e113c3`).
+- 결과(리드 원시 대조 `audit-pr2-editor-after-01.sh` → `pr2-editor-after-audit-01.txt`)
+  - P1 `InventorySceneLifecycleTests.RealTownAndHuntingGround_HudGraphicsShareNoAreaWithThePanel_AndItsButtonsStillClick`: 1건 통과, 구현 전 P1과 같다.
+  - P2 `UiWindowLiveCaptureTests.Inventory_OpenedByIAfterTheWireSnapshot_CapturedFromTheGameView`: 1건 통과, 구현 전 P2와 같다.
+  - 캡처는 `pr2-editor-after-01/raw/p2/attempt-01/captures/`의 `inventory-1920x1080.png`(1,177,514 bytes, sha256 `1f713d16…`)와 `inventory-1280x720.png`(571,500 bytes, sha256 `eda3f709…`)다.
+- 메인 관찰 두 줄(실행자 report 「메인 관찰 두 줄」, 구현 뒤 1920×1080 캡처의 그림 사실)
+  1. 제목: 「인벤토리」 글자와 제목 띠 왼쪽 테두리 사이에 눈에 보이는 여백이 생겼다. 구현 전 제목 줄 오른쪽에 있던 재화 글은 제목 띠에서 빠졌다.
+  2. 칸 아래: 8칸 아래 구분선 밑 왼쪽에 동전 아이콘과 재화 줄이 놓여 빈자리를 쓴다.
+  - 같은 report의 「계약 밖 관찰」에 1920×1080 캡처에서 패널 바탕 너머가 비쳐 보인다는 줄이 있다. 판정은 독립 검증 몫이다.
+- 부수 변경: Unity가 같은 SENTIS 한 줄을 다시 지웠다. 같은 저장 스크립트로 사본을 남기고 HEAD로 복원했다. 복원 뒤 diff exit 0이고 파일 SHA256이 HEAD blob과 같다(`pr2-editor-after-projectsettings-restore-01.txt`).
+- 실행자 자기 신고(report 「맥락 메모 대비 실제 준수 위치」 끝): 계약이 금지한 PowerShell `-Command` 인라인 버전 확인 한 번과, 의미 없는 `pwsh -File /dev/null` 한 번이다. 출력은 결과 값으로 쓰지 않았다고 적었다. 대화 기록의 인라인 node 실행은 0이다(`pr2-editor-after-audit-01.txt` 끝 절). ` -Command ` 문자열이 든 호출 셋의 목록은 `pr2-editor-after-command-hits-01.txt`다.
+- 실행자 pane은 닫았다(`pr2-editor-after-close-01.json`, `pr2-editor-after-terminals-after-close-01.json`).
+
+### PR2 독립 검증 — NOT PASS
+
+- 검증자는 신규 Astra(`[Art 검증자]`, task_da792cbedc1c / ctx_a5c990055cf2, `pr2-verify-worker-start-01.summary.txt`)다. 계약은 `pr2-verify-contract-v1.md`(sha256 `577663e5…`, `pr2-verify-contract-v1.receipt.txt`)이고, 기동 기록은 `pr2-verify-launch-record-01.md`다. 첫 화면은 Codex v0.165.0, GPT-6-Astra xhigh, 업데이트 창 없음이고, rollout은 gpt-6-astra·xhigh·service_tier default(Fast 꺼짐)다. backend 실제 모델은 unknown이다.
+- 판정은 worker_done `msg_0ac5f4f2d35f`(18:13:29Z)이고, 원문은 `pr2-verify-01/verdict.md`(sha256 `97e76bc3…`, 161줄, `pr2-verify-verdict-sha-01.txt`)다. **NOT PASS, 차단 결함 3건**이다.
+  - #UI-01(제품, 구현 Task 귀속): 생성 폼 Knight/Mage 버튼에 직업 그림이 없다. 구현 계약 I5 「그림을 더한다」를 채우지 못했다.
+  - #UI-02(제품, 구현 Task 귀속): 열기 연출 `UiWindowOpenEffect.LateUpdate`가 `Resize`가 정한 패널 배율을 덮는다. 활성 열기 뒤 배율이 (0.90,0.90,1)에서 (0.83,0.83,1)로 바뀐다. I6 위반이다.
+  - #UI-03(선행 시험 task_7f9527319c5c 귀속, 구현 실패로 합산하지 않음): 기존 T8 `OpeningEffect_KeepsThePanelScaleAndPositionThatResizeSets`가 열림 전환과 연출 프레임을 실행하지 않아 #UI-02를 놓친다. 같은 계열의 칸 마우스 올림 시험도 실제 마우스 구동을 보지 않는다.
+- 실행(리드 원시 대조 `audit-pr2-verify-01.sh` → `pr2-verify-audit-01.txt`)
+  - V-F EditMode 1569건: 1566 통과, 3 실패. 실패 3은 모두 검증자 새 시험(`BrightWindowInteractionTests`)의 #UI-01 두 case와 #UI-02 한 case다. 구현 F2와 공통 1560건은 결과 변화 0이다.
+  - V-F PlayMode 182건: 140 통과, 23 실패, 19 건너뜀. 구현 F3P와 공통 180건은 결과 변화 0이고, 새 시험 2건은 통과다. 실패 23은 판정문에서 (b) 환경으로 분류됐다.
+  - V-F 결과 XML SHA256이 판정문 값과 같다. 판정문은 V-R 3회, V-F EditMode·PlayMode 각 1회를 적었다.
+  - 실제 경로: 실제 CharacterSelect 장면(대역 wire, 슬롯 버튼, 고른 그림의 unscaled 흔들림, unload 뒤 소멸)과 실제 Town·HuntingGround 인벤토리(I 입력, 일시정지 중 연출 끝, 기존 HUD 겹침 시험 통과)다. Editor 창 재실행·실서버·DB·사용자 플레이는 미실행이다(판정문 「실행 결과와 실제 진입」).
+  - 과거 `DungeonClearRewardOverlapSceneTests.AfterConfirm_TheNextStageClearShowsTheBannerAgain`의 구현 F 실패는 (d) 분류를 유지한다.
+- 판정 기준 10(리드 기록 사실 대조): 값 불일치 없음. 7행의 7860 message ID와 8634 Content handle은 「기록 없음」이다. 원래 호출은 각각 모듈을 못 찾아 실패했고, 찾던 Content handle은 목록에 없었다. 12868의 task·dispatch는 receipt와 같다. 셸 한 줄 조회 표본 12개에서도 불일치가 없다(판정문 「보고·기록 사실 대조」).
+- 구현 뒤 Editor 창 1920 캡처가 비쳐 보이는 관찰: 판정문은 캡처 시험이 I 뒤 3 frame만 기다린다고 적었다. 진행 중인 fade를 찍었을 가능성은 추론으로 두고, 결함으로 확정하지 않았다.
+- Unity: 창 열림은 리드 `msg_ace53ed768c1`(17:29:46Z)이다. 리드 시작 관문은 물리 여유 18.2 GiB, commit 여유 29.5 GiB, Unity·dotnet 0이다(`pr2-verify-window-gate-01.txt`). 마지막 실행 끝은 17:58:55Z다(`pr2-verify-unity-end-result-01.txt`). 리드가 그 뒤 잰 값은 Unity·dotnet·Burst dotnet 0이다(`pr2-verify-unity-end-gate-01.txt`). 리드는 메인에 「Unity 사용 끝」을 보냈다(`msg_4ac359685352`).
+- 부수 변경: 같은 SENTIS 한 줄(diff sha256 `31e7aaf1…`)을 HEAD로 복원했다(`pr2-verify-projectsettings-restore-01.txt`). 검증자 pane은 닫았다(`pr2-verify-close-01.json`, `pr2-verify-terminals-after-close-01.json`).
+- 리드 결정(사용자 지시 `msg_c5b94381e2d5` 안, 리드 보고 `msg_c65147daf41c`, 메인이 범위 안 처리로 받음 `msg_88233d71b5d5`)
+  1. 검증자 새 시험 3파일을 PR2에 넣는다. `03_Client/Assets/Tests/EditMode/BrightWindowInteractionTests.cs`(180줄), `03_Client/Assets/Tests/PlayMode/CharacterMenuMotionSceneTests.cs`(156줄), `03_Client/Assets/Tests/PlayMode/InventoryOpeningSceneTests.cs`(69줄)와 Unity가 만든 `.meta` 셋이다. SHA256은 검증자 동결값과 같다(`pr2-verify-audit-01.txt` 6·7절). #UI-03은 이 채택으로 관찰 누락을 메운다. 기존 T8은 고치지 않는다. 해소 여부는 재검증자가 판정한다.
+  2. 신규 `[Art 구현 Opus]` 수정 세션 하나로 #UI-01·#UI-02를 고친다. 시험 파일은 쓰지 않는다.
+  3. 그 뒤 신규 Astra 검증자로 PR2 전체를 다시 본다.
+
+### PR2 결함 수정
+
+- 수정 구현자는 신규 Opus(`[Art 구현 Opus]`, task_de3346754a4d / ctx_836047d0ad3f, `pr2-fix-worker-start-01.summary.txt`)다. 계약은 `pr2-fix-contract-v1.md`(sha256 `d1d7c08e…`, 1356줄, `pr2-fix-contract-v1.receipt.txt`)이고, 기동 기록은 `pr2-fix-launch-record-01.md`다. 리드는 기동을 메인에 알렸다(`msg_589cff9bc74d`).
+- worker_done은 `msg_5c808f14e282`(18:58:36Z, 성공, `lead-wait-153.json`)이고, 보고는 `pr2-fix-01/report.md`(sha256 `bd60efeb…`, `pr2-fix-audit-01.txt` 1절)다. 질문·escalation은 없었다.
+- 고친 것(구현자 report 2절, 리드 diff `pr2-fix-audit-01.diff`)
+  - #UI-01: 생성 폼 Knight·Mage 버튼에 슬롯과 같은 직업 그림을 버튼 첫 자식으로 더했다. 글은 왼쪽 여백으로 그림 칸 밖에 둔다.
+  - #UI-02: 연출은 패널과 기존 객체의 transform을 쓰지 않는다. 내용은 연출 자신의 `CanvasGroup` alpha로 나타난다. 연출이 만들고 지우는, 채움 없는 테두리 장식 하나가 0.92배에서 1배로 커진다. 숨김·끝남·`Dispose`가 모두 장식을 지운다.
+  - goal 「만들 것」의 「창이 열릴 때 짧게 커지며 나타난다」를 창 내용 대신 테두리 장식이 커지는 방식으로 그렸다. 이 방식이 요구를 채우는지는 재검증자가 따로 판정한다. 사용자 판단이 필요하다고 보면 아침 대기열로 간다(위 Unity 창 메인 결정 절의 `msg_88233d71b5d5`).
+- 실행 결과(리드 원시 대조 `audit-pr2-fix-01.sh` → `pr2-fix-audit-01.txt`)
+  - F EditMode 1569건 모두 통과다. 첫 검증 V-F 대비 새 실패 0, 새 통과 3이다. 새 통과는 V-F에서 실패한 검증자 새 시험 3 case(#UI-01 두 case, #UI-02 한 case)다.
+  - F PlayMode 182건: 140 통과, 23 실패, 19 건너뜀. V-F와 case마다 같고, 실패 23은 V-F와 같은 case다.
+  - 바뀐 추적 파일은 계약이 허용한 제품 4개(`CharacterMenuView.cs`·`InventoryPanelView.cs`·`UiWindowOpenEffect.cs`·`UiWindowOpenMotion.cs`)와 SENTIS 한 줄뿐이다. 4파일 69줄 추가, 20줄 삭제다. 시험 폴더의 추적·미추적 변경과 석재 5항목 밖 미추적 파일은 0이다.
+- Unity: 구현자 「Unity 시작」은 18:36:55Z다(`msg_ee9f7c19dfe6`, `lead-wait-150.json`). 마지막 Unity 종료는 18:52:35Z다(`pr2-fix-unity-end-result-02.txt`의 unityExitUtc). 구현자 통지로는 R 2회, F EditMode·PlayMode 각 1회이고 F2는 쓰지 않았다(`msg_1ce1e752414a`, `lead-wait-152.json`). 리드가 그 뒤 잰 관문은 물리 여유 19.0 GiB, commit 여유 29.6 GiB, Unity·dotnet·Burst dotnet 0이다(`pr2-fix-unity-end-gate-01.txt`). 리드는 메인에 시작(`msg_0a267b3dab82`)과 끝(`msg_c1c0d4ac6f36`)을 알렸다.
+- 부수 변경: 같은 SENTIS 한 줄(diff sha256 `31e7aaf1…`)을 HEAD로 복원했다(`pr2-fix-projectsettings-restore-01.txt`). 구현자 pane은 닫았다(`pr2-fix-close-01.json`, `pr2-fix-terminals-after-close-01.json`).
+- 커밋: 리드가 `bed1e4a2b39f8b03e735480c14adba5ab474add0`로 커밋했다(`pr2-fix-commit-head-01.txt`). commit의 제품 diff SHA256이 리드가 대조한 diff와 같다(`pr2-fix-commit-check-01.txt`).
+- 구현자 report가 적은 것(작업자 자체 점검이며 독립 판정이 아니다): 장식이 `Dispose` 뒤 남지 않는지를 직접 보는 시험은 없고, 코드 경로 근거다(report 2절 조건 5). 실화면·플레이·서버는 미실행이다(report 10절).
+
+### PR2 재검증 — PASS
+
+- 검증자는 신규 Astra(`[Art 검증자]`, task_f5a7fc3674a2 / ctx_c9f75a7bed0e, `pr2-reverify-worker-start-01.summary.txt`)다. 계약은 `pr2-reverify-contract-v1.md`(sha256 `ffe40998…`, 1696줄, `pr2-reverify-contract-v1.receipt.txt`)이고, 기동 기록은 `pr2-reverify-launch-record-01.md`다. 첫 화면은 Codex v0.165.0, GPT-6-Astra xhigh, 업데이트 창 없음, Fast 표시 없음이고, rollout은 gpt-6-astra·xhigh·service_tier default다. backend 실제 모델은 unknown이다. 리드는 기동을 메인에 알렸다(`msg_2255921914db`).
+- 판정은 worker_done `msg_eceda66590ac`(19:54:55Z, `lead-wait-166.json`)이고, 원문은 `pr2-reverify-01/verdict.md`(sha256 `53bfde02…`, `pr2-reverify-audit-01.txt` 1절)다. **PASS, 현재 차단 결함 0건**이다.
+  - #UI-01·#UI-02는 제품 수정으로 해소됐다. #UI-03은 첫 검증자 시험 채택(`6c4aa0c0`)과 이번 실제 실행으로 해소됐다.
+  - #UI-02의 「창이 열릴 때 짧게 커지며 나타난다」는 요구를 충족한다고 판정했다. 요구 원문은 커지는 대상을 창 내용 전체로 한정하지 않고, 수정 계약은 기존 배치 보존을 요구한다. 테두리만 커지는 방식이 두 조건을 함께 채운다고 봤다. 그래서 사용자 판단이 필요한 요구 변경으로 올리지 않았다. 중간 프레임의 미감은 사용자 플레이 몫이다(판정문 「#UI-02와 「짧게 커지며 나타난다」의 별도 판정」).
+  - 비차단 관찰 둘이다. O1은 기존 T8 시험 이름이 관찰 범위보다 넓다는 것이다. O2는 테두리만 커져 내용이 커지는 것과 인상이 다르다는 것이다. 둘 다 판정을 막지 않는다.
+- 실행(리드 원시 대조 `audit-pr2-reverify-01.sh` → `pr2-reverify-audit-01.txt`)
+  - V-F EditMode 1571건 모두 통과다. 수정 F와 공통 1569건은 결과 변화 0이고, 새 case 2건(검증자 새 시험)은 통과다.
+  - V-F PlayMode 185건: 143 통과, 23 실패, 19 건너뜀. 수정 F와 공통 182건은 결과 변화 0이고, 실패 23은 같은 case다. 새 case 3건은 통과다. 실패 23은 판정문에서 (b) 환경으로 분류됐다.
+  - 판정문 실행 표로는 V-R 3회(새 시험 컴파일 실패 1회 포함), V-F EditMode·PlayMode 각 1회다.
+  - 추적 변경은 SENTIS 한 줄뿐이고 HEAD는 그대로였다. 제품·에셋·장면·Resources diff는 0줄이다. 미추적은 석재 5항목과 새 시험 2파일·`.meta` 2개뿐이고, 새 `.meta` GUID 중복은 0이다. 근거 폴더에서 검증자가 쓰기 폴더 밖에 만든 파일은 없다(감사 12절, 목록에 남은 한 파일은 리드의 `pr2-reverify-contract-v1-pointer-sha-01.txt`다).
+  - 실제 경로: 실제 Town·HuntingGround 인벤토리(I 입력, 일시정지 중 연출 끝)와 실제 CharacterSelect 장면(대역 wire)이다. GUI Editor·실서버·DB·사용자 플레이는 미실행이다(판정문 「실행·실패·실제 진입」).
+- Unity: 검증자 「Unity 시작」은 19:24:30Z다(`msg_0f4a09586f2a`, `lead-wait-155.json`). 마지막 Unity 종료는 19:39:46.3030818Z, engine exit 2다(`pr2-reverify-f-playmode-result-scalars-02.txt`의 unityExitUtc·engineExitCode). 리드가 그 뒤 잰 관문은 물리 여유 18.8 GiB, commit 여유 30.0 GiB, Unity·dotnet·Burst dotnet 0이다(`pr2-reverify-unity-end-gate-01.txt`). 리드는 메인에 시작(`msg_39f49f901390`)과 끝(`msg_06c1b208b5dc`)을 알렸다.
+- 부수 변경: 같은 SENTIS 한 줄(diff sha256 `31e7aaf1…`)을 HEAD로 복원했다(`pr2-reverify-projectsettings-restore-01.txt`). 검증자 pane은 닫았다(`pr2-reverify-close-01.json`, `pr2-reverify-terminals-after-close-01.json`).
+- 리드 결정(사용자 지시 `msg_c5b94381e2d5` 안): 검증자 새 시험 2파일 `03_Client/Assets/Tests/EditMode/WindowOpeningDrawingTests.cs`(196줄), `03_Client/Assets/Tests/PlayMode/WindowOpeningLifetimeTests.cs`(105줄)와 Unity가 만든 `.meta` 둘을 PR2에 넣었다. commit은 `854f347b5e5de603cd117e54b010b5acabab0fef`이고, SHA256은 검증자 동결값과 같다(`check-reverify-tests-commit-01.txt`). 수정 report가 적은 「`Dispose` 뒤 장식이 남지 않는지 직접 보는 시험 없음」을 이 채택이 메운다.
+- 절차 이탈(판정문 「절차 이탈·메인 처분」). 셋 다 메인 결정이며 사용자 결정이 아니다.
+  - P1: 리드가 한 줄 명령으로 만든 근거 파일이다. 메인 `msg_8318932bda47`이 비차단으로 받았다. 아래 반복 표 8행이다.
+  - P2: 수정 구현자 보고의 직접 측정값이다. 메인 `msg_ae7306e00f71`이 비차단으로 받고, 결함 번호 대신 절차 목록에 적게 했다. 계약 문구 틈은 리드 귀속이다(아래 반복 표 끝 줄).
+  - P3: 검증자 자기 메모의 한 줄 시계와 신호 초과 두 구간이다. 메인 `msg_7ee1baac0056`이 비차단으로 받았다.
+  - 리드는 메인 처분 원문을 검증자에게 그대로 전했다(`msg_db6d4585c556`, `msg_8e3d5b8b1f4a`, `msg_beeeb73cf88f`). 첫 질문에는 처분 전 사실만 먼저 답했다(`msg_240802100cd9`).
+
+### 생존 신호 초과 정산
+
+세부 원시와 이유는 근거 폴더 `liveness-settlement-01.md`다. 300초 초과 구간을 면제 없이 적었다. 원인별 시간은 미측정이다.
+
+| 작업 | 초과 구간 |
+|---|---|
+| 재질 원천(ctx_46fa2da6a0b1) | 325초, 311초 |
+| PR275 셋째 실사(ctx_c6c49ae86f61) | 402초(문맥 압축과 복귀), 425초(판정문 작성 중) |
+| 조각 조합(ctx_ef64c2af6316) | 513초, 338초, 343초, 305초, 399초(긴 xhigh 생각 턴) |
+| PR275 넷째 실사(ctx_89fdb7bdfd29) | 537초. 검증자 기록은 그 사이 heartbeat가 있어 399초다. 리드 입력에는 그 heartbeat가 없다. |
+| PR2 선행 시험(ctx_a1ca6d3bca93) | 428초, 644초, 360초(질문 Q2 직전), 441초. 넷 모두 Unity batch 실행 시각과 겹친다. |
+| PR2 시험 결함 수정(ctx_8de1650e00fe), Editor 창 실행(ctx_a82712daaadc) | 없음 |
+| PR2 구현(ctx_d2994cfb9da9) | 없음(신호 20개, 가장 긴 간격 272초) |
+| PR2 구현 뒤 Editor 창 실행(ctx_437a9dda6fe1) | 308초, 363초. 둘 다 「Editor 창 시작」 전 준비·대기 구간(16:13:21Z~16:24:32Z)이다. 실행자 report는 그 사이 우편함 대기 하나가 셸 exit 127로 끝났다고 적었다. 원인은 확인하지 않았다. |
+| PR2 독립 검증(ctx_a5c990055cf2) | 리드 측정(메시지 시각 기준) 308초, 406초, 303초, 371초, 344초, 456초다(`liveness-pr2-verify-01.summary.txt`). 검증자 자기 정산(명령 시작 시각 기준)은 7구간, 가장 긴 것 456.205초다(판정문 「검증자 자기 정산과 남은 일」, `pr2-verify-01/closeout/liveness-accounting.json`). 긴 분석·시험 작성·판정문 작성 구간이다. 메인은 표 기록으로 충분하다고 했다(`msg_88233d71b5d5`). |
+| PR2 결함 수정(ctx_836047d0ad3f) | 없음(신호 14개, 가장 긴 간격 242초, `liveness-pr2-fix-01.summary.txt`) |
+| PR2 재검증(ctx_c9f75a7bed0e) | 360초(문맥 압축·복귀와 V-F PlayMode 대기), 424초(판정문 작성). 신호 19개다(`liveness-pr2-reverify-01.summary.txt`). 검증자 자기 정산도 같은 두 구간(360.040초, 424.149초)이다(판정문 「캡처와 자기 정산·남은 일」). 메인이 비차단으로 받았다(`msg_7ee1baac0056`). |
+
+- 메인은 위 초과를 기록으로 받았다(`msg_f3d062fbb7a4`, `msg_f9a5510a7a5d`). 다음 정산은 검증자 자기 기록과 우편함 전체 목록(`inbox --json`)을 함께 대조한다(메인 `msg_f9a5510a7a5d`).
+- PR2 결함 수정도 같은 방식으로 쟀다(`run-liveness-filtered.sh` → `liveness-pr2-fix-01.*`). 우편함 전체 목록은 `lead-inbox-06.json`이고, 리드 답은 없었다.
+- PR2 재검증도 같은 방식으로 쟀다(`run-liveness-filtered.sh` → `liveness-pr2-reverify-01.*`). 우편함 전체 목록은 `lead-inbox-07.json`, 리드 답 배열은 `pr2-reverify-lead-replies-01.json`(`build-lead-replies.mjs`)이다.
+- PR2 독립 검증도 같은 방식으로 쟀다(`run-liveness-filtered.sh` → `liveness-pr2-verify-01.*`). 우편함 전체 목록은 `lead-inbox-05.json`, 리드 답 배열은 `pr2-verify-lead-replies-01.json`이다.
+- PR2 구현과 구현 뒤 Editor 창 실행도 같은 방식으로 쟀다(`run-liveness-filtered.sh` → `liveness-pr2-workers-03.*`, receipt 입력 149·사용 144). 우편함 전체 목록은 `lead-inbox-04.json`, 리드 답 배열은 `pr2-impl-lead-replies-01.json`(`build-lead-replies.mjs`)이다. 뺀 파일 다섯은 `liveness-pr2-workers-03.excluded.txt`다.
+- PR2 세 작업은 그 방식대로 쟀다(`run-liveness-filtered.sh` → `liveness-pr2-workers-02.*`). 리드 대기 원시에 우편함 전체 목록 `lead-inbox-03.json`과 리드 답 배열 `pr2-workers-lead-replies-01.json`을 더했다. 전체 목록 없이 잰 `liveness-pr2-workers-01.*`에서는 결함 수정 593초와 Editor 창 실행 348초가 초과로 나왔다. 리드 대기 원시에 없는 heartbeat가 전체 목록에 있었기 때문이다. 세부와 뺀 파일은 `liveness-settlement-01.md` 덧붙임에 있다.
+
 ### 운영 교정 첫 발생 — 검증자 허용 폴더 밖 쓰기
 
 - 두 번째 실사 검증자가 apply_patch 호출을 잘못해 허용 폴더(`pr1-doc-review-02/`) 밖에 `evidence-unused-placeholder.txt`를 만들었다. 내용은 `placeholder`와 줄바꿈, 12 bytes, mtime 2026-10-29T01:11:12Z다. 검증자가 바로 escalation으로 알렸다(`msg_c42553ec7f35`).
 - 대상 4파일, 기존 근거, 미추적 58파일은 바뀌지 않았다. 이 파일은 판정 근거가 아니다. 지우지 않고 그대로 둔다.
 - 메인 처분 `msg_79d2bf86419e` 3항: 그 검증자는 결함 목록만 내고 닫는다. 정식 판정은 새 Astra 검증자 한 명이 낸다. 이 goal의 첫 발생이라 기록만 하고, 반복 규칙 후보로는 아직 올리지 않는다.
 
+### 운영 교정 첫 발생 — 리드 우편함 대기 출력 버림
+
+- 리드가 검증자 pane 화면 확인 명령 끝에 우편함 대기(`orca orchestration check … --wait`)를 붙였다. 그 출력을 `/dev/null`로 버리고 `&`로 띄우는 꼴이었다. 우편함 대기는 background 실행 하나로 열고 출력을 근거 폴더 파일로 받는다는 규칙(CLAUDE.md 「Orca로 Codex 세션과 통신」, ORCA 대기 정본)을 어긴 것이다.
+- 세션 hook `session-guard:mailbox-output-loss`가 실행 전에 막았다. 명령 전체가 돌지 않았고, 메시지를 가져간 대기는 없다. 시각은 앞 대기 출력 `lead-wait-143.json`(17:54:49Z)과 다시 돌린 화면 확인 `pr2-verify-screen-06.json`(17:55:12Z) 사이다(`lead-hook-block-mailbox-times-01.txt`). 리드 보고 `msg_c65147daf41c`에는 이 시각을 「18:0xZ」로 잘못 적었다. 바른 시각은 이 줄이다.
+- 리드는 화면 확인과 대기를 나눠 다시 돌렸다(`lead-wait-144.json`, background).
+- 교정 층: 막은 것은 이미 있는 세션 hook이다. 가장 높은 층이 동작했다. 메인은 첫 발생 기록이 맞고 처분은 없다고 했다(`msg_88233d71b5d5`). 반복 규칙 후보로는 올리지 않는다.
+
+### 운영 교정 첫 발생 — 리드 근거 파일 덮어쓰기
+
+- 리드가 수정 구현자 진행을 확인하며 화면을 읽을 때, 기동 기록이 첫 화면 근거로 가리키는 `pr2-fix-screen-01.json`과 같은 이름으로 출력을 받았다. 18:34:03Z에 그 파일이 작업 중 화면으로 덮였다. 지금 그 파일에는 첫 화면 문구(「Opus 5.5 with xhigh effort」)가 없다(`check-fix-screen-overwrite-01.sh` → `pr2-fix-screen-overwrite-check-01.txt`).
+- 앞 시도의 원시를 덮어쓰지 않는다는 근거 보존 원칙을 어긴 것이다. 첫 화면 문구의 남은 원천은 리드 대화 기록의 그 화면 읽기 도구 결과와 기동 기록 본문이다. tui-idle 원시와 대화 기록 model 값은 그대로다. 기동 기록 끝에 덧붙임을 적었다(`pr2-fix-launch-record-01.md`).
+- 교정 층: 리드 도구 층이다. 같은 이름이 있으면 읽지 않고 멈추는 `read-terminal-new.sh`를 만들어 이후 화면 읽기에 쓴다. 이 goal의 첫 발생이라 반복 규칙 후보로는 올리지 않는다. 메인에 알린다.
+
 <a id="saved-analysis-run-repeat"></a>
 
 ### 운영 교정 반복 — 저장 안 한 분석 실행
 
-Art goal 계열에서 같은 종류가 세 번 났다. 근거·판정에 쓴 분석을 인라인 명령으로 돌리고 실행 파일을 남기지 않은 일이다. 규칙 원천은 task-context의 harness 파일 보존이다.
+Art goal 계열에서 같은 종류가 여덟 번 났다(PR275 head `9bab98a0` 때 세 번, 그 뒤 PR2 둘째 커밋 전까지 두 번, PR2 선행 시험·Editor 창 단계에서 한 번, PR2 구현 뒤 리드 재검사로 찾은 한 번, PR2 재검증자가 찾은 한 번). 근거·판정에 쓴 분석을 인라인 명령으로 돌리고 실행 파일을 남기지 않은 일이다. 규칙 원천은 task-context의 harness 파일 보존이다.
 
 - 표의 「번」은 발생 묶음이다. 묶음은 메인 처분의 경계로 나눴다. 2번은 `msg_33a90eb2f56f` 전, 3번은 그 뒤다.
 - 묶음 안의 개수는 셸 명령(Bash 도구 호출 하나)으로 센다. 한 명령 안에서 Node가 여러 번 돌아도 한 개로 센다. 리드 세션의 분류 원천은 근거 폴더 `inline-node-runs-classification-01.md`다. 거기서 「71」은 명령 글에 인라인 node가 든 명령을 텍스트로 찾은 수다. 분석 명령은 그 가운데 13개다.
@@ -264,9 +583,30 @@ Art goal 계열에서 같은 종류가 세 번 났다. 근거·판정에 쓴 분
 | 1 | 2026-10-26 | 석재 goal의 옛 Opus 검증자 | 판정용 분석 실행 | 메인 `msg_bb057dfa6536`(10:50:05Z)이 PASS를 불인수했다. 그 뒤 계약에서 「저장하지 않은 node-e 등 분석 실행」을 금지했다([석재 goal](../2026-10-28-stone-terrain-environment-replacement/goal.md) 「10:50Z Main 처분」). |
 | 2 | 2026-10-29T00:24:50Z~00:47:59Z | Art 리드 | 분석 명령 9개. 19(PR275 첫 링크 검사, #DOC-01), 28·42(검증자·시안 작업자 rollout 모델 확인), 29(시안 입력 다섯 장의 PNG 크기), 40(rollout 모델 확인, 기록에 넣은 것 없음), 51~53(시안 PNG 크기, rollout의 image_gen 줄과 호출 수), 60(DOC-01 원래 호출 찾기, 기록에 넣은 것 없음) | 19는 메인 `msg_33a90eb2f56f`가 비차단으로 처분했다. 나머지 8개는 메인 `msg_2b0bf65b12c0`이 비차단으로 처분했다. 8개가 처음 표에서 빠진 것은 #DOC-05다. |
 | 3 | 2026-10-29T00:56:14Z~00:57:34Z | Art 리드 | 분석 명령 4개(67~70). 위 횟수를 세려고 석재 goal을 인라인으로 세 번 훑었고, 메시지 시각 조회 1회는 구문 오류(exit 1)였다. | 성공한 세 검색의 출력은 저장했다. 구문 오류 1회의 출력은 저장하지 않았다. 네 명령 모두 스크립트는 저장하지 않았다. 메인 `msg_2b0bf65b12c0`이 비차단으로 처분했다(#DOC-03). |
+| 4 | 2026-10-29T02:22:20Z 뒤~02:31:29Z(자기 신고 작성) | Art 리드 | DOC-06 정정 중 값이 기록에 들어간 조회 셸 명령 7개. 자기 신고의 「다섯 묶음」 6개(대화 기록 6350·6362·6500·6508·6526·6602)와 #DOC-08로 다시 분류한 6549다. 메모 mtime, 기동 시각, 규칙 파일 변경 여부·줄 범위, 원천 메시지 위치, 복원 receipt의 두 줄 번호를 셸에서 바로 읽었다. | 사용자 결정 49 A: 한정 인정, 소급 수정 없음, 원 위반 기록 유지(위 「PR275 넷째 독립 실사」). 자기 신고는 근거 폴더 `lead-inline-lookups-doc06-fix-01.md`다. 메인은 이것을 이 리드 세션의 네 번째 발생으로 보고 조건 1을 걸었다(`msg_af08be79ca51`). |
+| 5 | 2026-10-29T12:13Z 무렵, 12:22Z 무렵, 12:34:14Z 전, 12:43:47Z 전 | Art 리드 | 조건 1 뒤의 한 줄 명령 4개. PR275 승인 요청 전 판정 hash를 `sha256sum`으로 받았다(`pr275-approval-sha-01.txt`). 두 base의 시험 기준 줄 출력을 `diff`로 비교했다(`pr2-*-645fe187-vs-dc66b77e-01.diff.txt`). 첫 goal commit push 뒤 `pr2-base-03.txt` 끝에 원격 branch sha 한 줄을 덧붙였다. 조각 명세 `kit-spec.json`의 최상위 키 구조를 `node -e`로 봤다. | 네 값 모두 기록에 쓰지 않았다. 앞 셋은 저장 스크립트로 다시 받은 출력(`pr275-approval-sha-02.txt`, `pr2-anchor-compare-01.receipt.txt`, `pr2-base-04.txt`)만 인용했다. 넷째는 계약이 그 파일을 경로와 SHA256으로 넘긴다. 첫 건은 메인이 받았다(`msg_df7f2bd1f63d`). 둘째·셋째는 리드 보고 `msg_e057299768b0`, 넷째는 `msg_b2bce894272c`로 올렸고 메인이 받았다(`msg_153a92e718d9`, `msg_2549446d42d1`). 앞 두 시각은 시계 원시가 없어 「무렵」이다. 뒤 두 시각은 그 뒤 저장 출력 `pr2-base-04.txt`와 보고 receipt 시각이 상한이다. |
+| 6 | 2026-10-29T13:28:04Z~14:14:13Z | Art 리드 | 조건 1 뒤 값이 기록에 들어간 셸 한 줄 조회 9개(대화 기록 13274·13618·13708·14178·14193·14204·14218·14226·14241). SENTIS 선례 줄 번호, Orca 버전, 작업자 send 출력, 캡처 runner 조건 여섯 가지다. 값은 작업자 `msg_201dd9e0e1e5`, 메인 `msg_1e413788a07a`·`msg_9eb639247671`·`msg_a1625577a53f`, Editor 창 실행 계약 v1에 들어갔다. | 리드 자기 신고 `msg_863cf2f3a3f1`. 메인 처분 `msg_1e160139abea`: 받는다. 원 위반 기록 유지, 보낸 글·계약 v1은 고치지 않는다. 저장 스크립트 재현 값이 넣은 값과 같다는 대조(`pr2-red-inline-values-compare-01.txt`)는 재현일 뿐 원래 조회의 소급 증거가 아니다. PR2 독립 검증 입력에 신고와 대조 파일 셋을 넣고, 검증자가 캡처 runner 조건 6개를 원문 줄과 직접 대조한다. 조회 원천은 `pr2-red-inline-lookup-sources-01.txt`·`-02.txt`다. |
+| 7 | 2026-10-29T02:53:34Z, 03:07:02Z, 13:03:15Z, 13:03:27Z | Art 리드 | 조건 1 뒤 표에 없던 인라인 `node -e` 4개(대화 기록 7860·8634·12854·12868). send receipt의 message ID 출력, 저장한 terminal list의 handle 출력(Content 리드 찾기), worker-start receipt의 필드 모양 출력, RED 작업자 worker-start receipt 요약이다. 넷째의 task·dispatch 값은 기동 기록과 이 goal에 들어갔다. | 리드가 PR2 독립 검증 입력을 모으다 저장 스크립트 재검사로 찾아 자기 신고했다(`msg_d0e3cbbd9753`, 본문 `msg-main-pr2-inline-selfreport-02.txt`). 원천은 `scan-inline-node-runs.mjs` → `lead-inline-node-runs-since-1500-01.txt`, 시각 `transcript-line-times.mjs` → `lead-inline-node-line-times-01.txt`, 명령 원문 `lead-transcript-<줄>-02.txt`다. 메인 처분 `msg_24e5175a0158`: 받는다. 이 표에 적고 소급 수정은 하지 않는다. 기록에 들어간 값(12868의 task·dispatch, 7860의 message ID, 8634의 handle)은 PR2 독립 검증자가 저장 원천과 저장 스크립트로 대조한다. 셸 한 줄 조회의 전수 대조는 하지 않고 검증자가 표본을 본다. 불일치가 나오면 그 값만 고치는 수정 세션을 연다. |
+| 8 | 2026-10-29T15:22:36Z~19:07:32Z(대화 기록 16261~20786) | Art 리드 | 조건 1 뒤 저장 스크립트 없이 값 명령의 출력을 근거 파일로 바로 쓴 셸 명령. 첫 검증 판정의 SHA·줄 수 파일 1개(19137, 18:13:39Z, `pr2-verify-verdict-sha-01.txt`, 위 「PR2 독립 검증 — NOT PASS」 절이 인용), 계약 시작 직전 SHA 파일 3개(기동 기록 3개가 인용), SENTIS diff 후보 SHA 파일 1개(인용 없음), 분할·화면·worker-start 시계 파일 13개(`date -u`, 기동 기록이 12번 인용)다. 화면으로만 간 값 명령은 63개다. | 재검증자 질문 `msg_4fb0142f486a`로 드러났고, 리드가 대화 기록을 저장 스크립트로 훑어 자기 신고했다(`msg_37079aeb74d5`). 원천은 `scan-lead-direct-value-commands-02.mjs` → `scan-lead-direct-value-commands-02.txt`, 재현은 `reproduce-lead-direct-value-files-01.sh` → `reproduce-lead-direct-value-files-01.txt`(다시 잴 수 있는 값 모두 같음)다. 메인 처분 `msg_8318932bda47`: 받는다, 비차단, 소급 수정 없음. 다시 잴 수 있는 값은 재검증자가 표본 대조했고 모두 같았다(재검증 판정문 P1). 시계 13개는 「리드 한 줄 명령 기록, 재측정 불가」이고, 기동 기록 12곳의 인용은 고치지 않는다. 재검증자는 그 시각을 판정 근거로 쓰지 않았다. 화면으로만 간 63개는 전수 대조하지 않는다. |
 
 - 저장 안 한 인라인 분석 — 메인 결정 `msg_2b0bf65b12c0`으로 비차단, 원래 위반 사실 유지. 2행의 8개와 3행이 대상이다. #DOC-01과 같은 기준이다.
 - 2행 8개가 기록에 넣은 사실(PNG 크기, image_gen 1회, rollout 모델)은 저장 스크립트로 다시 쟀고 모두 같았다(`inline-facts-reproduction-01/summary.md`). 이것은 재현일 뿐 원래 실행의 소급 증명이 아니다. 3행 구문 오류의 실패 원시는 남지 않았다.
 - 분석이 아닌 내용 없는 인라인 실행도 두 번 있었다. 2026-10-29T01:11:22Z의 `node -p "1" >/dev/null`과 01:20:06Z의 `node -e 0 2>/dev/null`이다. 둘 다 다른 명령에 섞였고 사실을 만들지 않았다.
+  - 같은 꼴이 PR2 구현 단계에 한 번 더 있었다. 2026-10-29T16:11:05Z 리드가 구현자 질문에 답한 명령 안의 빈 `node -e ""`다(대화 기록 16836, `lead-inline-node-runs-since-1500-01.txt`). 리드가 「Editor 창 시작」 보고에 자기 신고했고(`msg_eba25c5cd9c3`), 메인이 받았다(`msg_a16e9bc7035d`). 작업자 쪽의 같은 꼴은 위 「PR2 구현」·「PR2 구현 뒤 Editor 창 실행」 절에 있다.
 - 메인 원문의 「두 번째 발생」은 1번과 2번을 가리킨다. 교정 정본에 따라 반복 규칙 후보로 BACKLOG `saved-analysis-run-rule`에 연결했다. 정본 반영은 Rules 소유다.
-- 이 goal의 리드는 3번 뒤로 기록용 조회도 저장 스크립트로만 돌린다. 근거는 `lead-opus-doc01-disposition-context-20261029.md`다. 그 뒤의 인라인 실행은 위 내용 없는 두 번뿐이다.
+- 이 goal의 리드는 3번 뒤로 기록용 조회도 저장 스크립트로만 돌린다. 근거는 `lead-opus-doc01-disposition-context-20261029.md`다. 그 뒤의 인라인 실행은 위 내용 없는 두 번뿐이다. 이 문장은 PR275 head `9bab98a0` 당시의 기록이다. 그 뒤 같은 세션에서 4행과 5행이 났다.
+- 4·6·7·8행의 번호는 대화 기록 줄 번호다. 2·3행의 분류표 순번과 다르다. 개수를 세는 단위는 2·3행과 같이 셸 명령이다.
+- 교정 층: 자기 규칙 문장(3행 뒤)은 4행을 막지 못했다. 그래서 리드 쪽은 저장 스크립트 먼저 쓰기(메인 조건 1)로 막고, 정본 층(세션 가드·공통 기록기)은 BACKLOG `saved-analysis-run-rule`에 맡긴다. 5행은 그 조건 뒤에도 습관처럼 한 줄 명령을 쓴 경우다. 값이 기록에 들어가는 것은 인용 출처 확인으로 막았다.
+- 6행은 작업자 질문과 Unity 창 시한에 맞춰 답을 서두르다 그 출처 확인을 건너뛴 경우다. 그 뒤 리드는 값이 든 글·계약을 보내기 전에 값마다 저장 출력 파일 이름을 근거 줄에 적는다. 이름을 적을 수 없는 값은 넣지 않는다(메인 `msg_1e160139abea` 3항). 같은 자기 규칙 층이라 막는 힘이 약하다. 이번 반복을 BACKLOG `saved-analysis-run-rule`에 더할지는 메인이 사용자에게 따로 묻는다.
+- 7행은 위 출처 확인 규칙 전(02:53Z~13:03Z)의 것을 뒤늦게 찾은 경우다. 찾은 층은 저장 스크립트 재검사다. 메인 처분 `msg_24e5175a0158` 4항대로 이 신고 원시 경로를 BACKLOG `saved-analysis-run-rule` 근거에 더했다. 정본 반영은 Rules 몫이고 지금 하지 않는다. 처분은 조건 1을 바꾸지 않는다.
+- 8행은 조건 1의 「값 조회」를 SHA·줄 수·시계 같은 측정에는 적용하지 않은 습관이다. 18:13:39Z 건은 7행 처분 뒤다. 리드는 지금부터 시계·SHA도 저장 스크립트 안에서만 잰다. 첫 적용은 재검증 「Unity 사용 끝」 정산(`measure-pr2-reverify-unity-end-01.sh`)이다. 메인은 같은 꼴이 조건 1 뒤 8행째라고 보고, 아침 사용자 보고의 「남은 우려」에 적는다. 리드 교체는 지금 하지 않고, goal 끝 R-8 재기동 때 새 리드 진입 계약에 저장 실행 규칙을 앞에 둔다(`msg_8318932bda47`의 메인 관찰). 신고 원시 경로는 BACKLOG `saved-analysis-run-rule` 근거에 더했다.
+- 작업자 쪽 같은 꼴(재검증 판정문 P2, 재검증자 escalation `msg_f5de4a45f44b`의 #UI-05 후보): 수정 구현자 보고에 허용 명령(`sha256sum`·`git diff`·`stat`)으로 바로 잰 값이 들어갔다. 출력은 파일로 남았고 보고가 그 파일을 인용했으며, 값은 재검증자 재측정과 같다. 메인 처분 `msg_ae7306e00f71`: 받는다, 비차단, 결함 번호 대신 판정의 절차 목록에 적는다. 원인은 수정 계약 v1 107행이 그 명령을 허용하면서 그 값도 저장 스크립트 안에서 재라는 말을 하지 않은 계약 문구 틈이고, 리드 귀속이다(`check-fix-saved-analysis-escalation-01.txt`). 남은 PR2 계약부터 「허용 명령의 값도 보고·판정에 쓰려면 저장 스크립트 안에서 잰다」를 넣는다. 위임 계약 양식에 같은 문장을 기본으로 두는 것은 규칙 후보다(BACKLOG `saved-analysis-run-rule`, Rules 몫, 지금 반영 안 함).
+- 재검증자 자기 메모의 한 줄 시계(재검증 판정문 P3)는 메인 `msg_7ee1baac0056`이 비차단으로 받았다. 그 시각은 판정 근거에서 뺐다.
+
+### 운영 교정 반복 — R-3 회신 subject
+
+- 두 번째 발생: 리드가 메인 status `msg_f9a5510a7a5d`에 `orchestration reply --id`로 DOC-08 보고를 보냈다(`msg_9fd4552dd94c`, 2026-10-29T03:09:54Z). subject가 「Re: [메인 Claude] …」가 됐고 body 첫머리 태그는 있었다. 첫 발생은 위 「운영 교정 첫 발생 — R-3 회신 subject」다.
+- 같은 내용이라 다시 보내지 않았다. 리드가 바로 메인에 알렸다(`msg_9bbe13a958f6`, 03:10:52Z).
+- 교정 층
+  - 리드 쪽: 근거 폴더에 보내기 스크립트 `send-tagged.sh`를 두었다. subject와 body 첫 줄이 자기 태그로 시작하지 않으면 보내지 않는다. 회신은 `--thread-id`로 묶고, 같은 receipt 경로가 있으면 다시 보내지 않는다. 그 뒤 리드의 일반 메시지 네 건(`msg_9bbe13a958f6`·`msg_fb9d721703dd`·`msg_8a6d5d898261`·`msg_8aa8c37abb19`)은 이 스크립트로 보냈다. 근거는 각 receipt의 스크립트 출력 줄(`msg-main-*.receipt.txt`)이다. `reply --id`는 작업자·검증자의 공식 질문 답에만 쓴다.
+  - 정본 쪽: 두 번째 발생이라 반복 규칙 후보다. Orca CLI는 이 저장소의 코드가 아니라서 `reply`가 받은 메시지 유형을 보고 막는 검사는 리드가 만들 수 없다. 후보는 BACKLOG `orca-general-reply-tag-guard`이고 정본 반영은 Rules 몫이다.

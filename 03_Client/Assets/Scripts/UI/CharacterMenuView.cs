@@ -13,7 +13,13 @@ namespace Dawnholder.Client.UI
     {
         // The goal's approved wording of the server's name rule. The server judges names; the view only states it.
         const string NameRule = "2~12자, 한글·영문·숫자.\n영문은 대소문자만 다르면 같은 이름";
-        static readonly Color s_secondaryText = new(0.8f, 0.8f, 0.8f);
+        // Dark ink on the bright parchment; white stays only on the wood buttons and the dark title band.
+        static readonly Color s_ink = new(0.26f, 0.17f, 0.09f);
+        static readonly Color s_secondaryText = new(0.45f, 0.33f, 0.2f);
+        static readonly Color s_resultText = new(0.6f, 0.25f, 0.08f);
+        // Unchosen characters stand slightly darker so the chosen one reads first.
+        static readonly Color s_restingArt = new(0.78f, 0.78f, 0.78f, 1f);
+        readonly UiWindowSkin _skin;
         readonly GameObject _canvasRoot;
         readonly CanvasGroup _group;
         readonly TMP_Text _status;
@@ -24,6 +30,10 @@ namespace Dawnholder.Client.UI
         readonly TMP_InputField _nameInput;
         readonly Button[] _slotButtons = new Button[3];
         readonly TMP_Text[] _slotLabels = new TMP_Text[3];
+        readonly Image[] _slotFrames = new Image[3];
+        readonly Image[] _slotGlows = new Image[3];
+        readonly Image[] _slotArts = new Image[3];
+        readonly CharacterArtBob[] _slotBobs = new CharacterArtBob[3];
         readonly Button _knight;
         readonly Button _mage;
         readonly TMP_Text _knightLabel;
@@ -54,6 +64,7 @@ namespace Dawnholder.Client.UI
             _backRequested = backRequested ?? throw new ArgumentNullException(nameof(backRequested));
             var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
             if (font == null) throw new InvalidOperationException("Missing project menu font.");
+            _skin = UiWindowAppearance.BrightSkin;
 
             _canvasRoot = new GameObject("CharacterMenu", typeof(RectTransform));
             _canvasRoot.transform.SetParent(owner.transform, false);
@@ -71,47 +82,50 @@ namespace Dawnholder.Client.UI
 
             // Heights reserve the Korean fallback font's line box (about 1.9 em per line, 3.9 em for two):
             // under Ellipsis, TMP drops a line that does not fit instead of clipping it.
-            RectTransform panel = UiWindowAppearance.CreatePanel("Panel", _canvasRoot.transform, raycastTarget: true).rectTransform;
+            RectTransform panel = UiWindowAppearance.CreatePanel("Panel", _canvasRoot.transform, raycastTarget: true,
+                skin: _skin).rectTransform;
             Place(panel, new Vector2(760f, 430f), Vector2.zero);
             panel.anchorMin = panel.anchorMax = panel.pivot = new Vector2(0.5f, 0.5f);
-            Place(UiWindowAppearance.CreateHeader("Header", panel).rectTransform,
+            Place(UiWindowAppearance.CreateHeader("Header", panel, _skin).rectTransform,
                 new Vector2(720f, 46f), new Vector2(20f, -8f));
             TMP_Text title = Label("Title", panel, new Vector2(696f, 46f), new Vector2(32f, -8f), font);
             title.text = "캐릭터 선택";
             title.fontSize = 22f;
             title.fontStyle = FontStyles.Bold;
             _status = Label("Status", panel, new Vector2(720f, 38f), new Vector2(20f, -58f), font);
+            _status.color = s_ink;
 
+            // The three slots stand side by side left of the details: glow, standing art on its pedestal, name plate.
             for (byte slot = 1; slot <= 3; slot++)
             {
                 byte chosenSlot = slot;
-                Button button = MakeButton("Slot" + slot, panel, new Vector2(312f, 72f),
-                    new Vector2(20f, -100f - (slot - 1) * 80f), string.Empty, font, out TMP_Text label);
-                label.alignment = TextAlignmentOptions.MidlineLeft;
-                label.fontSize = 16f;
-                Place(label.rectTransform, new Vector2(288f, 68f), new Vector2(12f, -2f));
-                button.onClick.AddListener(() => OnSlotClicked(chosenSlot));
-                _slotButtons[slot - 1] = button;
-                _slotLabels[slot - 1] = label;
+                _slotButtons[slot - 1] = MakeSlot(slot - 1, panel, new Vector2(20f + (slot - 1) * 110f, -100f), font);
+                _slotButtons[slot - 1].onClick.AddListener(() => OnSlotClicked(chosenSlot));
             }
 
-            Place(UiWindowAppearance.CreateInset("DetailsBackground", panel).rectTransform,
+            Place(UiWindowAppearance.CreateInset("DetailsBackground", panel, _skin).rectTransform,
                 new Vector2(392f, 232f), new Vector2(348f, -100f));
             _selectedTitle = Label("SelectedTitle", panel, new Vector2(368f, 38f), new Vector2(360f, -104f), font);
             _selectedTitle.fontStyle = FontStyles.Bold;
+            _selectedTitle.color = s_ink;
             _details = Label("Details", panel, new Vector2(368f, 182f), new Vector2(360f, -146f), font);
+            _details.color = s_ink;
             RectTransform form = Rect("CreateForm", panel, new Vector2(368f, 184f), new Vector2(360f, -146f));
             _form = form.gameObject;
-            Label("NameLabel", form, new Vector2(48f, 40f), Vector2.zero, font).text = "이름";
-            _nameInput = CreateNameInput(form, font);
+            TMP_Text nameLabel = Label("NameLabel", form, new Vector2(48f, 40f), Vector2.zero, font);
+            nameLabel.text = "이름";
+            nameLabel.color = s_ink;
+            _nameInput = CreateNameInput(form, font, _skin);
             TMP_Text nameRule = Label("NameRule", form, new Vector2(368f, 66f), new Vector2(0f, -42f), font);
             nameRule.text = NameRule;
             nameRule.fontSize = 16f;
             nameRule.color = s_secondaryText;
             _knight = MakeButton("Knight", form, new Vector2(178f, 40f), new Vector2(0f, -110f),
-                "Knight", font, out _knightLabel);
+                "Knight", font, out _knightLabel, _skin);
             _mage = MakeButton("Mage", form, new Vector2(178f, 40f), new Vector2(190f, -110f),
-                "Mage", font, out _mageLabel);
+                "Mage", font, out _mageLabel, _skin);
+            AddClassPicture(_knight, _knightLabel, 0);
+            AddClassPicture(_mage, _mageLabel, 1);
             _knight.onClick.AddListener(() => OnClassClicked(0));
             _mage.onClick.AddListener(() => OnClassClicked(1));
             TMP_Text hint = Label("Hint", form, new Vector2(368f, 32f), new Vector2(0f, -152f), font);
@@ -120,13 +134,13 @@ namespace Dawnholder.Client.UI
             hint.color = s_secondaryText;
 
             _result = Label("Result", panel, new Vector2(720f, 38f), new Vector2(20f, -336f), font);
-            _result.color = new Color(1f, 0.88f, 0.55f);
+            _result.color = s_resultText;
             _back = MakeButton("Back", panel, new Vector2(134f, 40f), new Vector2(20f, -378f),
-                "뒤로", font, out _);
+                "뒤로", font, out _, _skin);
             _refresh = MakeButton("Refresh", panel, new Vector2(146f, 40f), new Vector2(164f, -378f),
-                "목록 새로고침", font, out _);
+                "목록 새로고침", font, out _, _skin);
             _submit = MakeButton("Submit", panel, new Vector2(214f, 40f), new Vector2(526f, -378f),
-                "캐릭터 선택", font, out _submitLabel, UiWindowAppearance.ButtonStyle.Accept);
+                "캐릭터 선택", font, out _submitLabel, _skin, UiWindowAppearance.ButtonStyle.Accept);
             _back.onClick.AddListener(OnBackClicked);
             _refresh.onClick.AddListener(OnRefreshClicked);
             _submit.onClick.AddListener(OnSubmitClicked);
@@ -258,7 +272,23 @@ namespace Dawnholder.Client.UI
                 _slotLabels[slot - 1].text = character == null ? heading + "\n빈 슬롯" :
                     heading + " · " + ClassCaption(character.ClassId) + "\n" + character.Name;
             }
+            for (byte slot = 1; slot <= 3; slot++)
+                ShowSlotArt(slot - 1, slot == _selectedSlot, HasList(_state.CurrentPhase) ? _state.GetSlot(slot) : null);
         }
+
+        // An empty or unknown slot keeps only its pedestal; the chosen slot glows and its character moves.
+        void ShowSlotArt(int index, bool chosen, Slot? character)
+        {
+            _slotFrames[index].sprite = chosen ? _skin.CharacterSlotSelected : _skin.CharacterSlot;
+            _slotGlows[index].enabled = chosen;
+            Sprite? art = character == null ? null : ClassArt(character.ClassId);
+            if (art != null) _slotArts[index].sprite = art;
+            _slotArts[index].enabled = art != null;
+            _slotArts[index].color = chosen ? Color.white : s_restingArt;
+            _slotBobs[index].SetPlaying(chosen && art != null);
+        }
+
+        Sprite? ClassArt(byte classId) => classId == 0 ? _skin.KnightArt : classId == 1 ? _skin.MageArt : null;
 
         void UpdateDetails()
         {
@@ -310,9 +340,42 @@ namespace Dawnholder.Client.UI
             _ => "화면 상태를 확인할 수 없습니다. 메뉴로 돌아가주세요.",
         };
 
-        static TMP_InputField CreateNameInput(Transform parent, TMP_FontAsset font)
+        // Slot card: the button's own image is the name plate frame; glow, art and pedestal are children outside the raycast.
+        Button MakeSlot(int index, Transform panel, Vector2 position, TMP_FontAsset font)
         {
-            Image background = UiWindowAppearance.CreateInset("Name", parent);
+            Image frame = UiWindowAppearance.CreateSliced("Slot" + (index + 1), panel, _skin.CharacterSlot);
+            frame.raycastTarget = true;
+            Place(frame.rectTransform, new Vector2(100f, 232f), position);
+            Button button = frame.gameObject.AddComponent<Button>();
+            button.targetGraphic = frame;
+            // The chosen frame is swapped by the view, so hover and press only tint the frame.
+            button.transition = Selectable.Transition.ColorTint;
+            _slotFrames[index] = frame;
+
+            _slotGlows[index] = UiWindowAppearance.CreateSimple("Glow", frame.transform, _skin.SelectionGlow);
+            Place(_slotGlows[index].rectTransform, new Vector2(72f, 120f), new Vector2(14f, -4f));
+            Image pedestal = UiWindowAppearance.CreateSimple("Pedestal", frame.transform, _skin.Pedestal);
+            Place(pedestal.rectTransform, new Vector2(84f, 42f), new Vector2(8f, -100f));
+            _slotArts[index] = UiWindowAppearance.CreateSimple("ClassArt", frame.transform, _skin.KnightArt);
+            RectTransform art = _slotArts[index].rectTransform;
+            Place(art, new Vector2(88f, 100f), Vector2.zero);
+            // Bottom-centre pivot: preserveAspect then keeps the figure's feet on the pedestal top.
+            art.pivot = new Vector2(0.5f, 0f);
+            art.anchoredPosition = new Vector2(50f, -118f);
+            _slotBobs[index] = CharacterArtBob.Attach(art);
+
+            // Korean fallback line box is about 1.9 em: three 13 pt lines (the heading may wrap once) fit in 90 UI.
+            TMP_Text label = Label("Label", frame.transform, new Vector2(92f, 90f), new Vector2(4f, -138f), font);
+            label.fontSize = 13f;
+            label.color = s_ink;
+            label.alignment = TextAlignmentOptions.Midline;
+            _slotLabels[index] = label;
+            return button;
+        }
+
+        static TMP_InputField CreateNameInput(Transform parent, TMP_FontAsset font, UiWindowSkin skin)
+        {
+            Image background = UiWindowAppearance.CreateSliced("Name", parent, skin.InputField);
             Place(background.rectTransform, new Vector2(312f, 40f), new Vector2(56f, 0f));
             background.raycastTarget = true;
             RectTransform viewport = Rect("Viewport", background.transform, new Vector2(292f, 40f), new Vector2(10f, 0f));
@@ -320,9 +383,10 @@ namespace Dawnholder.Client.UI
             TMP_Text text = Label("Text", viewport, new Vector2(292f, 40f), Vector2.zero, font);
             text.textWrappingMode = TextWrappingModes.NoWrap;
             text.overflowMode = TextOverflowModes.Overflow;
+            text.color = s_ink;
             TMP_Text placeholder = Label("Placeholder", viewport, new Vector2(292f, 40f), Vector2.zero, font);
             placeholder.text = "캐릭터 이름";
-            placeholder.color = new Color(0.75f, 0.75f, 0.75f);
+            placeholder.color = s_secondaryText;
             var input = background.gameObject.AddComponent<TMP_InputField>();
             input.targetGraphic = background;
             input.textViewport = viewport;
@@ -367,16 +431,27 @@ namespace Dawnholder.Client.UI
         }
 
         static Button MakeButton(string name, Transform parent, Vector2 size, Vector2 position,
-            string caption, TMP_FontAsset font, out TMP_Text label,
+            string caption, TMP_FontAsset font, out TMP_Text label, UiWindowSkin skin,
             UiWindowAppearance.ButtonStyle style = UiWindowAppearance.ButtonStyle.Default)
         {
-            Button button = UiWindowAppearance.CreateButton(name, parent, style);
+            Button button = UiWindowAppearance.CreateButton(name, parent, style, skin);
             Place((RectTransform)button.transform, size, position);
             label = Label("Label", button.transform, size, Vector2.zero, font);
             label.text = caption;
             // Midline centres the drawn glyphs; Center would centre the fallback's tall line box and sit Korean low.
             label.alignment = TextAlignmentOptions.Midline;
             return button;
+        }
+
+        // Creation class choice: the class's own art (the same art the slots show) in a column left of the caption.
+        // Unlike the slot art it has no chosen or empty state, so it does not share the slot's art helpers.
+        void AddClassPicture(Button button, TMP_Text caption, byte classId)
+        {
+            Image picture = UiWindowAppearance.CreateSimple("ClassPicture", button.transform, ClassArt(classId)!);
+            Place(picture.rectTransform, new Vector2(36f, 40f), new Vector2(4f, 0f));
+            // Drawn first, under the caption; the caption's left margin keeps its glyphs out of the picture column.
+            picture.transform.SetAsFirstSibling();
+            caption.margin = new Vector4(42f, 0f, 0f, 0f);
         }
     }
 }
