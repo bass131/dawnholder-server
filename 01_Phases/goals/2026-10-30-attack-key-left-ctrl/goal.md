@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 구현자(신규 Opus)가 제품 3파일을 바꾸고 선행 시험과 같은 명령의 통과 원시를 남긴다. 계약은 근거 폴더 `implement-01-contract-v1.md`다. 구현자는 먼저 띄워도 되지만 Unity 실행은 메인 배정 메시지가 온 뒤에만 한다. 창은 메인 대기열 1번이다(`msg_812478372cdf`). 선행 시험 결과는 아래 [선행 시험 결과](#선행-시험-결과)에 있다.
+**다음 첫 일:** 신규 독립 검증자(GPT Astra)가 강 등급으로 검증한다. 계약은 근거 폴더 `verify-01-contract-v1.md`다. Unity 창은 메인 배정 뒤에만 쓴다. 선행 시험과 구현 결과는 아래 [선행 시험 결과](#선행-시험-결과)와 [구현 결과](#구현-결과)에 있다.
 
 | 항목 | 현재 |
 |---|---|
@@ -16,8 +16,8 @@
 
 - [x] goal과 계약 기록
 - [x] 선행 시험과 실패 원시
-- [>] 구현과 통과 원시
-- [ ] 독립 검증 통과
+- [x] 구현과 통과 원시
+- [>] 독립 검증 통과
 - [ ] PR 생성과 확인 항목
 - [ ] PR 병합
 - [ ] 결과 기록과 종료
@@ -183,6 +183,19 @@ TDD 순서: 선행 시험 작성자가 위 시험을 쓰고 구현 전 실패 �
 - 과정 기록(메인 처분 `msg_812478372cdf`, 기록만):
   - 작성자 생존 신호가 300초를 넘은 구간 둘(473초, 312초). 리드가 정본 helper로 쟀다(`lead/settle-pretest-01.json`).
   - 작성자가 출력 없는 빈 인라인 node 명령 3회를 스스로 보고했다. 리드가 대화 기록에서 같은 3건을 확인했다.
+
+## 구현 결과
+
+- 구현자: 신규 `claude-opus-5-5` xhigh(대화 기록 model 값 그대로, backend unknown). task `task_633a784339bc`, worker_done `msg_f05d688111e7`. 보고서는 근거 폴더 `implement-01/report.md`(sha256 `57756537f18d61f65ea6af737c56c86ec0c1dfe2af4a4cc2de59d5cc82fd06b3`)다. 리드 대조는 `lead/accept-implement-01.json`이고 보고서와 같다.
+- 제품 변경(commit `3de26156`, 각 1줄):
+  - `.inputactions` 271행: `"path": "<Mouse>/leftButton",` → `"path": "<Keyboard>/leftCtrl",`. id·groups·UI/Click·`.meta`는 그대로다.
+  - `LocalPlayerInput.cs` 70행 주석: 「(Space 또는 좌클릭)」 → 「(키보드 왼쪽 Ctrl·Enter, 패드·터치 등)」.
+  - `client.md` 40행 문단: 키보드·마우스 공격은 왼쪽 Ctrl과 Enter이고 마우스 버튼은 공격에 묶이지 않는다. UI 위 포인터 차단은 터치 탭에만 남는다.
+- 실행(메인 창 `msg_b359d7652194`, 시한 08:35:00Z 안, 마지막 Unity 종료 08:01:49Z):
+  - EditMode 전체: 1576건 모두 통과. 선행 실패였던 `PlayerAttackBindingTests` 3건이 통과로 바뀌었다.
+  - PlayMode 5클래스(Guild 캡처 폴더 지정): 38건 중 통과 37. 선행 실패였던 7건이 모두 통과했다. 남은 실패 1건은 위 (d) `MenuTransitionAndOutsideTown_NoPurchases`이고 구현 전과 같은 190행 NullReferenceException이다.
+- 끝 확인: drift 두 파일은 알려진 drift만 되돌렸다. 시험 diff는 없다. `GameplayPointerInput.cs`와 보존 두 파일의 blob은 기준과 같다.
+- 과정 기록(앞 처분과 같은 기준, 기록만): 생존 신호 300초 초과 1회(305초, 리드 helper `lead/settle-implement-01.json`). 그 밖의 절차 이탈은 구현자가 보고서에 적었다(목록 밖 git 읽기 명령, 분석 스크립트 v1 정규식 오류와 v2 다시 씀).
 
 ## 다음 계획 후보
 
