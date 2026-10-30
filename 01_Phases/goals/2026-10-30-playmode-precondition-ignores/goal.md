@@ -2,13 +2,14 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 리드가 PR을 만들고(base PR-B branch) 최종 head를 메인에 보낸다. 그 뒤는 사용자 병합 승인 대기다. 병합 순서는 PR281 → PR-B → 이 PR이다.
+**다음 첫 일:** 사용자 병합 승인 대기다(PR #286). 병합 순서는 PR281 → PR-B(PR #285) → PR #286이다. 앞 PR이 병합되면 리드가 base 변경과 head 불변을 확인한다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 메인 승인 초안 v1(`msg_71f0ed6d4994`). 이 goal과의 차이 9곳은 메인이 대조해 통과시켰다(`msg_e302e19ae9fa`, 아래). |
 | 리드 | `[Effect 리드 Opus]`(claude-opus-5-5 xhigh). Run `run_5f3209972e68`, 회신 주소 `run:run_5f3209972e68`. 시험 21건의 소유자 Content 리드와 기술 계약을 직접 조율한다. |
 | branch | `fix/playmode-precondition-ignores-20261030`. Content PR-B(PR #285) branch `feat/content-guild-base-window-20261030`의 head `c41952da` 위에 쌓았다. 처음에는 `6669e2d7`에서 만들었고, PR-B 최종 head 알림 뒤 13:44:28Z에 `ae839e0c`로(`lead/rebase-01.txt`), PR-B goal 기록 commit 뒤 15:22:13Z에 `c41952da`로 옮겼다(`lead/rebase-02.txt`). PR-B가 `GuildWindowIndependentSceneTests.cs`를 이미 고쳤기 때문이다. 선행 시험의 기준 head `429481c2`와 지금 head는 `03_Client`·`DEVELOPMENT.md`가 같다(같은 기록). 작업 공간 effect-active. |
+| PR | #286, base `feat/content-guild-base-window-20261030`. 화면·플레이 변화가 없어 사용자 확인 항목은 없고 병합 승인만 남았다. 설명 원문은 `lead/pr-body-01.md`다. |
 | 근거 폴더 | `.backups/verification/2026-10-30-playmode-precondition-ignores/`(Git 제외). 리드 원시는 `lead/`다. |
 | 실행 창 | Unity는 effect-active `03_Client` batchmode만 쓴다. 창은 메인 배정이다. |
 
@@ -18,8 +19,8 @@
 - [x] 선행 시험(lane 판정 harness)과 실패 원시
 - [x] 구현과 통과 원시
 - [x] 독립 검증 통과
-- [>] PR 생성과 확인 항목
-- [ ] PR 병합
+- [x] PR 생성과 확인 항목
+- [>] PR 병합
 - [ ] 결과 기록과 종료
 
 ## 적용 중인 사용자 결정
