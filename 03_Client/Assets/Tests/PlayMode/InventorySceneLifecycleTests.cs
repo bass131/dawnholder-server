@@ -481,7 +481,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             string[] targetTypes = mirrorTargets
                 .Select(target => target?.GetType().FullName ?? "<null>").ToArray();
             CollectionAssert.AreEquivalent(
-                new[] { typeof(InventoryPanel).FullName, typeof(GuildUiController).FullName, typeof(HudController).FullName },
+                new[] { typeof(InventoryPanel).FullName, typeof(GuildUiController).FullName, typeof(HudController).FullName, typeof(Dawnholder.Client.Combat.KillRewardFloatText).FullName },
                 targetTypes, "inventory consumers: " + string.Join(", ", targetTypes));
             Assert.AreEqual(1, InventoryPanelProbe.Subscribers(requests, "Changed"), "R8 the old panel left the requests");
 
