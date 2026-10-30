@@ -5,34 +5,52 @@ using UnityEngine.UI;
 
 namespace Dawnholder.Client.UI
 {
-    /// <summary>Guild window geometry and visibility; artwork belongs to UiWindowAppearance.</summary>
+    /// <summary>Bright-kit guild window geometry and visibility; artwork belongs to UiWindowAppearance.</summary>
     internal sealed class GuildWindowLayout
     {
         const float Width = 440f;
         const float CompactHeight = 310f;
-        const float HousingHeight = 566f;
+        // The housing window is landscape: its picture spans the inner width under the title (GuildHousingLayout).
+        const float HousingWidth = 484f;
+        const float HousingHeight = 474f;
+        // Clear UI kept between a panel and either side of its slot.
+        const float SlotMargin = 12f;
         // Content reserves lower-left/central panels; the growth effect plays over them in the screen centre
         // (user request 10-27: level-ups read as a centred celebration, and the effect never takes input).
         // These are layout proportions, not measurements of or a query into the HUD's private hierarchy.
         static readonly Rect s_windowArea = Rect.MinMaxRect(0.02f, 0.17f, 0.78f, 0.60f);
         static readonly Rect s_growthArea = Rect.MinMaxRect(0.15f, 0.12f, 0.85f, 0.88f);
-        // The housing window is tall enough for its scenery, so it takes a left column instead of a half of
-        // the window area. The column runs down into the empty lower-left corner and stops below the
-        // character status at the top left.
+        // Alone, the housing window stands between the character status at the top left (to 28.3% of a 16:9 width)
+        // and the minimap at the top right (from 79.0%), so it can run the full height its picture needs.
+        static readonly Rect s_housingAloneArea = Rect.MinMaxRect(0.2781f, 0.02f, 0.7948f, 0.98f);
+        // Beside an open blacksmith it steps into the left column instead and leaves the blacksmith its own place.
+        // The column runs down into the empty lower-left corner and stops below the character status.
         static readonly Rect s_housingArea = Rect.MinMaxRect(0.02f, 0.02f, 0.40f, 0.82f);
+        // Dark ink on the bright parchment; light text only on the dark header pieces and the wood buttons.
+        static readonly Color s_ink = new Color(0.26f, 0.17f, 0.09f);
+        static readonly Color s_quietInk = new Color(0.45f, 0.33f, 0.2f);
+        static readonly Color s_bandText = new Color(1f, 0.92f, 0.2f);
         readonly RectTransform _canvasRect;
         readonly RectTransform _panel;
         readonly CanvasGroup _group;
         readonly TMP_FontAsset? _font;
         readonly Rect _slot;
-        readonly float _height;
+        readonly Rect _sharedSlot;
+        readonly Vector2 _size;
+        readonly bool _housing;
+        // The housing rows are 20 UI high, so their autosize may go further down than the compact rows'.
+        readonly float _minFontSize;
 
         internal GuildWindowLayout(GameObject root, string panelName, string title, bool right, bool housing = false)
         {
             float half = s_windowArea.width * 0.5f;
-            _slot = housing ? s_housingArea
+            _housing = housing;
+            _slot = housing ? s_housingAloneArea
                 : new Rect(s_windowArea.xMin + (right ? half : 0f), s_windowArea.yMin, half, s_windowArea.height);
-            _height = housing ? HousingHeight : CompactHeight;
+            _sharedSlot = housing ? s_housingArea : _slot;
+            _size = housing ? new Vector2(HousingWidth, HousingHeight) : new Vector2(Width, CompactHeight);
+            _minFontSize = housing ? 8f : 14f;
+            Skin = UiWindowAppearance.BrightSkin;
             var canvas = root.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 12; // Above HUD(10), below dungeon rewards(15), menu(20) and fades.
@@ -45,39 +63,75 @@ namespace Dawnholder.Client.UI
             _canvasRect = (RectTransform)root.transform;
             // Use the same project font/global Korean fallback as InventoryPanelView.
             _font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
-            _panel = UiWindowAppearance.CreatePanel(panelName, root.transform, raycastTarget: true).rectTransform;
-            Place(_panel, new Vector2(Width, _height), Vector2.zero);
+            _panel = UiWindowAppearance.CreatePanel(panelName, root.transform, raycastTarget: true, skin: Skin)
+                .rectTransform;
+            Place(_panel, _size, Vector2.zero);
             _panel.anchorMin = _panel.anchorMax = Vector2.zero;
             _panel.pivot = new Vector2(0.5f, 0.5f);
-            Place(UiWindowAppearance.CreateHeader("Header", _panel).rectTransform,
-                new Vector2(132f, 40f), new Vector2(12f, -10f));
-            TMP_Text heading = Label("Title", 12f, 36f, width: 132f);
+            // The housing title band runs along the whole top above the picture; the compact one keeps its corner.
+            TMP_Text heading;
+            if (housing)
+            {
+                Place(UiWindowAppearance.CreateHeader("Header", _panel, Skin).rectTransform,
+                    new Vector2(464f, 28f), new Vector2(10f, -10f));
+                heading = Label("Title", 10f, 28f, left: 22f, width: 220f);
+            }
+            else
+            {
+                Place(UiWindowAppearance.CreateHeader("Header", _panel, Skin).rectTransform,
+                    new Vector2(132f, 40f), new Vector2(12f, -10f));
+                heading = Label("Title", 12f, 36f, width: 132f);
+            }
             heading.text = title;
             heading.fontStyle = FontStyles.Bold;
-            heading.color = new Color(1f, 0.90f, 0.35f);
+            heading.color = s_bandText;
             SetVisibility(false);
             Resize();
         }
+
+        internal UiWindowSkin Skin { get; }
 
         internal TMP_Text Label(string name, float top, float height, float left = 16f, float width = 408f)
         {
             return Text(name, _panel, new Vector2(width, height), new Vector2(left, -top));
         }
 
+        // A value standing on a dark header piece reads in the title's light colour.
+        internal TMP_Text BandLabel(string name, float top, float height, float left, float width)
+        {
+            TMP_Text text = Label(name, top, height, left, width);
+            text.color = s_bandText;
+            return text;
+        }
+
+        // A fixed explanatory line, quieter than the values around it.
+        internal TMP_Text Notice(string name, float top, float height, string caption,
+            float left = 16f, float width = 408f)
+        {
+            TMP_Text notice = Label(name, top, height, left, width);
+            notice.fontSizeMax = 17f;
+            notice.color = s_quietInk;
+            notice.text = caption;
+            return notice;
+        }
+
         internal Button ActionButton(string name, string caption)
         {
             // Share the header with the title/close control to free effect height without shrinking body text.
-            return Button(name, caption, new Vector2(152f, 42f), new Vector2(160f, -8f));
+            return Button(name, caption, new Vector2(152f, 42f), new Vector2(160f, -8f),
+                UiWindowAppearance.ButtonStyle.Accept);
         }
 
-        internal Button CloseButton() => Button("Close", "닫기", new Vector2(100f, 40f), new Vector2(324f, -10f));
+        internal Button CloseButton() => _housing
+            ? Button("Close", "닫기", new Vector2(70f, 24f), new Vector2(398f, -12f))
+            : Button("Close", "닫기", new Vector2(100f, 40f), new Vector2(324f, -10f));
 
         internal Button RefreshButton() => Button("Refresh", "새로고침", new Vector2(130f, 34f), new Vector2(294f, -240f));
 
-        internal void Inset(float top, float height)
+        internal void Inset(float top, float height, float left = 12f, float width = 416f)
         {
-            RectTransform rect = UiWindowAppearance.CreateInset("Inset", _panel).rectTransform;
-            Place(rect, new Vector2(416f, height), new Vector2(12f, -top));
+            RectTransform rect = UiWindowAppearance.CreateInset("Inset", _panel, Skin).rectTransform;
+            Place(rect, new Vector2(width, height), new Vector2(left, -top));
             rect.SetSiblingIndex(1);
         }
 
@@ -90,16 +144,19 @@ namespace Dawnholder.Client.UI
             _group.blocksRaycasts = visible;
         }
 
-        internal void Resize()
+        // Sized by this canvas's own scaled rect, never Screen. besideOpenWindow moves the housing window into its
+        // shared column; a compact window keeps its slot either way.
+        internal void Resize(bool besideOpenWindow = false)
         {
             float width = _canvasRect.rect.width;
             float height = _canvasRect.rect.height;
             if (width <= 0f || height <= 0f) return;
-            float slotWidth = width * _slot.width;
-            float scale = Mathf.Max(0.01f, Mathf.Min(1f, (slotWidth - 12f) / Width,
-                height * _slot.height / _height));
+            Rect slot = besideOpenWindow ? _sharedSlot : _slot;
+            float slotWidth = width * slot.width;
+            float scale = Mathf.Max(0.01f, Mathf.Min(1f, (slotWidth - SlotMargin) / _size.x,
+                height * slot.height / _size.y));
             _panel.localScale = new Vector3(scale, scale, 1f);
-            _panel.anchoredPosition = new Vector2(width * _slot.center.x, height * _slot.center.y);
+            _panel.anchoredPosition = new Vector2(width * slot.center.x, height * slot.center.y);
         }
 
         internal static bool TryGetGrowthArea(RectTransform effectRoot, out Rect area)
@@ -160,8 +217,9 @@ namespace Dawnholder.Client.UI
             if (_font != null) text.font = _font;
             text.fontSize = 22f;
             text.enableAutoSizing = true;
-            text.fontSizeMin = 14f;
+            text.fontSizeMin = _minFontSize;
             text.fontSizeMax = 22f;
+            text.color = s_ink;
             text.alignment = TextAlignmentOptions.MidlineLeft;
             // Rows reserve Korean fallback line height; auto-sizing also accommodates long supplied names/numbers.
             text.textWrappingMode = TextWrappingModes.Normal;
@@ -171,13 +229,15 @@ namespace Dawnholder.Client.UI
             return text;
         }
 
-        Button Button(string name, string caption, Vector2 size, Vector2 position)
+        Button Button(string name, string caption, Vector2 size, Vector2 position,
+            UiWindowAppearance.ButtonStyle style = UiWindowAppearance.ButtonStyle.Default)
         {
-            Button button = UiWindowAppearance.CreateButton(name, _panel);
+            Button button = UiWindowAppearance.CreateButton(name, _panel, style, Skin);
             RectTransform rect = (RectTransform)button.transform;
             Place(rect, size, position);
             TMP_Text label = Text("Label", rect, size, Vector2.zero);
             label.alignment = TextAlignmentOptions.Center;
+            label.color = Color.white;
             label.text = caption;
             return button;
         }

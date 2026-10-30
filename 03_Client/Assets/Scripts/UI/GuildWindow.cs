@@ -16,6 +16,7 @@ namespace Dawnholder.Client.UI
         bool _destroyed;
         GuildWindowLayout? _layout;
         GuildHousingLayout? _housing;
+        BlacksmithWindow? _smithWindow;
         TMP_Text _name = null!;
         TMP_Text _members = null!;
         TMP_Text _online = null!;
@@ -106,7 +107,25 @@ namespace Dawnholder.Client.UI
             RefreshRequested = null;
         }
 
-        void LateUpdate() => _layout?.Resize();
+        void LateUpdate() => _layout?.Resize(BesideOpenBlacksmith());
+
+        // GuildUiController builds the blacksmith under this window's parent. Whoever opens it, this window then steps
+        // into its shared column, so the blacksmith keeps its own place and never has to know about this window.
+        bool BesideOpenBlacksmith()
+        {
+            if (!IsOpen) return false;
+            if (_smithWindow == null) _smithWindow = FindSiblingBlacksmith(); // Unity null also covers a destroyed one.
+            return _smithWindow != null && _smithWindow.isActiveAndEnabled && _smithWindow.IsOpen;
+        }
+
+        BlacksmithWindow? FindSiblingBlacksmith()
+        {
+            Transform parent = transform.parent;
+            if (parent == null) return null;
+            for (int i = 0; i < parent.childCount; i++)
+                if (parent.GetChild(i).TryGetComponent(out BlacksmithWindow smith)) return smith;
+            return null;
+        }
 
         void Subscribe()
         {
@@ -169,27 +188,22 @@ namespace Dawnholder.Client.UI
         void BuildView()
         {
             _layout = new GuildWindowLayout(gameObject, "Guild", "길드 현황", right: false, housing: true);
-            _layout.Inset(354f, 150f);
             _close = _layout.CloseButton();
             _close.onClick.AddListener(Close);
-            _housing = new GuildHousingLayout((RectTransform)_close.transform.parent);
+            _housing = new GuildHousingLayout(_layout, (RectTransform)_close.transform.parent);
             _refresh = _layout.RefreshButton();
             _refresh.onClick.AddListener(RequestRefresh);
-            _name = _layout.Label("GuildName", 54f, 28f);
-            TMP_Text notice = _layout.Label("AutoJoinNotice", 108f, 28f);
-            notice.fontSizeMax = 17f;
-            notice.text = "접속하면 기본 길드에 자동 가입됩니다.";
-            _members = _layout.Label("MemberCount", 82f, 28f, width: 196f);
-            _online = _layout.Label("OnlineCount", 82f, 28f, left: 228f, width: 196f);
-            _treasury = _layout.Label("Treasury", 324f, 28f, width: 196f);
-            _level = _layout.Label("BaseLevel", 324f, 28f, left: 228f, width: 196f);
-            _cost = _layout.Label("LevelUpCost", 356f, 28f, width: 202f);
-            _blacksmith = _layout.Label("BlacksmithStatus", 356f, 28f, left: 228f, width: 196f);
-            _status = _layout.Label("ActionStatus", 384f, 28f);
-            _result = _layout.Label("ActionResult", 412f, 60f);
-            TMP_Text lifetime = _layout.Label("LifetimeNotice", 476f, 28f);
-            lifetime.fontSizeMax = 17f;
-            lifetime.text = "공동 성장은 서버 프로세스 동안 유지됩니다.";
+            _name = _housing.Row("GuildName", 0, right: false);
+            _housing.Notice("AutoJoinNotice", 0, right: true, "접속하면 기본 길드에 자동 가입됩니다.");
+            _members = _housing.Row("MemberCount", 1, right: false);
+            _online = _housing.Row("OnlineCount", 1, right: true);
+            _treasury = _housing.Row("Treasury", 2, right: false);
+            _level = _housing.Row("BaseLevel", 2, right: true);
+            _cost = _housing.Row("LevelUpCost", 3, right: false);
+            _blacksmith = _housing.Row("BlacksmithStatus", 3, right: true);
+            _status = _housing.Row("ActionStatus", 4, right: false);
+            _housing.Notice("LifetimeNotice", 4, right: true, "공동 성장은 서버 프로세스 동안 유지됩니다.");
+            _result = _housing.WideRow("ActionResult", 5);
             _levelUp = _layout.ActionButton("LevelUp", "거점 레벨업");
             _levelUp.onClick.AddListener(RequestLevelUp);
             GuildHousingLayout.PlaceActions(_levelUp, _refresh);

@@ -193,9 +193,7 @@ namespace Dawnholder.Client.UI
             _balance = _layout.Label("PersonalBalance", 224f, 40f, width: 270f);
             _balance.text = "보유 골드 · 재료 확인 중";
             _balance.fontSizeMax = 18f;
-            TMP_Text lifetime = _layout.Label("LifetimeNotice", 276f, 28f);
-            lifetime.fontSizeMax = 17f;
-            lifetime.text = "개인 강화는 현재 접속 동안 유지됩니다.";
+            _layout.Notice("LifetimeNotice", 276f, 28f, "개인 강화는 현재 접속 동안 유지됩니다.");
             _enhance = _layout.ActionButton("Enhance", "무기 강화");
             _enhance.onClick.AddListener(RequestEnhance);
             Render();
