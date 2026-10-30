@@ -5,12 +5,17 @@ using UnityEngine;
 
 namespace Dawnholder.Client.Tests
 {
-    // The approved bright kit (goal 2026-10-29-inventory-character-select-look 완료조건 1·6) as the PR2 bright-look tests
-    // expect it. The rows were printed by a saved script from the approved spec outside the repository, never read from
+    // The approved bright kit (goal 2026-10-29-inventory-character-select-look 완료조건 1·6·10) as the bright-look tests
+    // expect it. The rows were printed by saved scripts from the approved specs outside the repository, never read from
     // the product folder: .backups/verification/2026-10-29-inventory-character-select-look/bright-kit/kit-spec.json
     // (sha256 d89cf84f8eee0f153dad38eaa0a4b4417188dc602b2a620ff7f0e61eacdd97f4) and bright-kit-guids-v1.json
     // (sha256 81c4029169dcf3ea21c20eca297e60ef330832769cdc92abda7b313cf8531304), script pr2-red-01/scripts/
-    // emit-bright-table-v2.ps1, output receipts/emit-bright-table-02.stdout.txt.
+    // emit-bright-table-v2.ps1, output receipts/emit-bright-table-02.stdout.txt, for the first 25 rows. The last 7 rows
+    // are the pieces the default skin shares with the bright skin in PR3 (decision v3 A msg_79d2bf86419e, 완료조건 10):
+    // bright-kit-v2/kit-spec.json (sha256 7853b3a5fd89afcf8156f18169a97a676e58281d772f9049de95e3bead4bfae2) and
+    // pr3-bright-guids-v1.json (sha256 71f1c5cb6e8d6b971645d85f7fc5236b81205bb5dc293156943b24d1ef65b74e), script
+    // pr3-red-01/scripts/emit-pr3-tables.mjs, output receipts/emit-pr3-tables-01.stdout.txt section A
+    // (sha256 b5021ef6356f970301d7ad078d96acf502780f3a81271839450893f19ffb8384).
     internal static class BrightUiKitTestSupport
     {
         internal const string ArtFolder = "Assets/Art/UI/BrightComponents";
@@ -78,6 +83,14 @@ namespace Dawnholder.Client.Tests
             new BrightPiece("Icon_Material", "9f5082fa3c5d6e75b68675a2d3f1a491", "Icon", false, 128, 128, 0, 0, 0, 0),
             new BrightPiece("Icon_CurrencyPouch", "3aadc85f7b3e7ca0c8a31d52cc7910a8", "Icon", false, 128, 128, 0, 0, 0, 0),
             new BrightPiece("Icon_Coin", "87e028dcd3360e891febb86e8d4c61d8", "Icon", false, 128, 128, 0, 0, 0, 0),
+            // PR3 shared-skin pieces (v3 A msg_79d2bf86419e, 완료조건 10): kit v2 rows, emit-pr3-tables-01 section A.
+            new BrightPiece("Panel_Dialog", "5685ac277531981b5554e3a74e56debe", "Panel", true, 512, 384, 24, 24, 24, 24),
+            new BrightPiece("Panel_Emphasis", "3e26a93b5ba3982f399c126a95bf553d", "Panel", true, 512, 384, 24, 24, 24, 24),
+            new BrightPiece("Button_Decline_Normal", "56edcbfaf68f16d0dff50a7bb0e3a466", "Button", true, 256, 96, 16, 16, 16, 16),
+            new BrightPiece("Button_Decline_Highlighted", "11e73ce64b7278c04e4b6a6eff7a7717", "Button", true, 256, 96, 16, 16, 16, 16),
+            new BrightPiece("Button_Decline_Pressed", "470f3c0476ddfd928b5c9a879903f117", "Button", true, 256, 96, 16, 16, 16, 16),
+            new BrightPiece("Button_Decline_Disabled", "7d2ff4c8822f62b46b0e6d8fcf178640", "Button", true, 256, 96, 16, 16, 16, 16),
+            new BrightPiece("PortraitFrame_128", "371e59829a40e0c260a9c8cdff7c4a23", "PortraitFrame", false, 256, 256, 0, 0, 0, 0),
         };
 
         // Declared after Pieces: static initializers run in text order.
@@ -89,7 +102,7 @@ namespace Dawnholder.Client.Tests
         internal static string SourceGuid(Sprite sprite) =>
             sprite != null && AssetDatabase.TryGetGUIDAndLocalFileIdentifier(sprite, out string guid, out long _) ? guid : null;
 
-        // The bright piece a sprite is: the asset behind one of the 25 GUIDs under its own name, not a copy.
+        // The bright piece a sprite is: the asset behind one of the 32 GUIDs under its own name, not a copy.
         internal static BrightPiece PieceOf(Sprite sprite)
         {
             string guid = SourceGuid(sprite);

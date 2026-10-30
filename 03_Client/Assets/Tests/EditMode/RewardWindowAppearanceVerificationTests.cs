@@ -21,13 +21,16 @@ namespace Dawnholder.Client.Tests
     //   three rows; no other layout, colour or wording is chosen.
     // - ui-window-application-scope.md 「보존 계약」: the approved PNGs stay at PPU 200, Single/FullRect, meta border in
     //   PNG px, and Canvas reference PPU 100 is kept apart from the PNG density 2; no tint.
-    // Kept literals come from DungeonClearRewardWindow.BuildView before the art change (39e59d01) and approved values
-    // from Art/UI/Components/import-spec.json and the .meta files. Nothing is computed from the code under test: the
+    // Kept literals come from DungeonClearRewardWindow.BuildView before the art change (39e59d01) and approved values,
+    // since PR3 (decision v3 A msg_79d2bf86419e, goal 완료조건 10), from the bright kit specs (the Pieces rows below).
+    // Nothing is computed from the code under test: the
     // observers read RectTransform corners, draw order, the TextureImporter and the mesh each Image builds for its own
     // canvas. The control test shows each observer reports the deviation it exists to see.
     public sealed class RewardWindowAppearanceVerificationTests
     {
-        const string KitFolder = "Assets/Art/UI/Components/";
+        const string KitFolder = BrightUiKitTestSupport.ArtFolder + "/";
+        // The brown B1 folder, read only by the control that shows the brown piece of the same name is rejected.
+        const string BrownKitFolder = "Assets/Art/UI/Components/";
         // import-spec units.pixelDensity: PNG px per UI unit at Canvas referencePixelsPerUnit 100.
         const float Density = 2f;
         // UI units; the layout literals are whole units and this only absorbs float rounding through transforms.
@@ -58,26 +61,26 @@ namespace Dawnholder.Client.Tests
             internal string AssetPath => KitFolder + Name + ".png";
         }
 
+        // PR3 bright rows (v3 A msg_79d2bf86419e, 완료조건 10), printed by pr3-red-01/scripts/emit-pr3-tables.mjs
+        // (receipts/emit-pr3-tables-01.stdout.txt section D): Panel_Emphasis from bright-kit-v2/kit-spec.json and
+        // pr3-bright-guids-v1.json, the rest from bright-kit/kit-spec.json and the PR2 GUID table. Neither bright kit has
+        // Inset_Selected or Inset_Disabled, so the brown nine become seven; every use of this table is a lookup.
         static readonly Approved[] Pieces =
         {
-            new Approved("Panel_Emphasis", "7dec580f6ab94568af987e047f5a2c36",
-                "42f83c6196753ca98e9827a4c3bbb7702f4f5305cafea65882cdb598ed2faeb2", 512, 384, 24),
-            new Approved("Header", "1371d63dc50f40ebae0726a4d60203b5",
-                "b102ddcb312d5471b7117a9dab26ab74a5e10091332ba04f16578192a9894cb8", 384, 80, 16),
-            new Approved("Inset_Default", "baf557470603430e83015dc40371610a",
-                "e6c0507eb16efd633011b73eb10ef743b100f27630e47998f3e040686ad02220", 192, 128, 12),
-            new Approved("Inset_Selected", "e2c7e2ef02fc41d38527480b1023601b",
-                "1a662ed0208c587c5cbfcdf8fbb8f50b5ef3710a6893d17290eff2133091d086", 192, 128, 12),
-            new Approved("Inset_Disabled", "dd85577f51e84c7188a5a8d8a3b03517",
-                "483b0e0110b8cc6c85b575a7a01e10612ae957564c10284dd95a88a1f69d3422", 192, 128, 12),
-            new Approved("Button_Accept_Normal", "304984e555104bf5b7d8648af717c165",
-                "337b52d28762a586832a08a7dbcf907f8a50bdf8aa23a89bbe730c1544258de8", 256, 96, 16),
-            new Approved("Button_Accept_Highlighted", "ce276490b85b4f7fa5f674b0f2546e87",
-                "c504ce98c7558038b2e0d3f1bd0dc5e7c27c8427a63e4e52687ef80fd4d393c9", 256, 96, 16),
-            new Approved("Button_Accept_Pressed", "0525c0bba70a41ad8bf71baebe25bc9f",
-                "6c62b138f3b631754425d9e68b81b0f8e07b8c22b4b8d4fe1ed227c59e994cf3", 256, 96, 16),
-            new Approved("Button_Accept_Disabled", "296d9f9387434c4cbc07115da1352309",
-                "dac87078c460d1165cc20d15a978ab76671821946e4e69af12339197b0848f3d", 256, 96, 16),
+            new Approved("Panel_Emphasis", "3e26a93b5ba3982f399c126a95bf553d",
+                "7d16da2f2352b51a9cf5672415035bc4356ef5f36a01c7ebf326643fc4d2cd24", 512, 384, 24),
+            new Approved("Header", "7e18e6245ab44c8b34442c1876be07d3",
+                "86b53a347787a8fe04299b9a5fc5067534d03b111d03953af119486b1c6042d5", 384, 80, 16),
+            new Approved("Inset_Default", "d86a90ca34d7ac84244096c673e46475",
+                "4a42dfdb7f366c48acf1f78412f536744d59e28081e3ff75fe5efaae15ea7ca8", 192, 128, 12),
+            new Approved("Button_Accept_Normal", "fdaa805e70f5533488dae81f7234282a",
+                "d39a3490b2aa1e13f17b72028ae1b511d990b2564e1fbd8c5c79a654733dac31", 256, 96, 16),
+            new Approved("Button_Accept_Highlighted", "b19f5a6d0300e566d0fffea8534ac8ca",
+                "141be5647ffb334ebf8967f27818b69dfb7fb912fc6b487b005248e8ecc271dc", 256, 96, 16),
+            new Approved("Button_Accept_Pressed", "819be5b406aaa976f19a17fb72ef6fae",
+                "7c2f8996a1ecf52d8b9b9e865f87a72e0c73fb7225700a1b28bd7d92d9ce3dda", 256, 96, 16),
+            new Approved("Button_Accept_Disabled", "d14f5c1a8a0197176bd076a96fb0009e",
+                "c5dc4cdc0727b769cc1f260b8d1ce3fc475c2d2fa4ae678416550bd40267b7c9", 256, 96, 16),
         };
 
         // Text areas BuildView placed before the art change (39e59d01 DungeonClearRewardWindow.cs BuildView): offset of
@@ -250,6 +253,33 @@ namespace Dawnholder.Client.Tests
             Assert.IsNotEmpty(halvedImport, "control: a meta border divided by the density is reported");
             Assert.IsEmpty(approvedBorder, "control: the built Header draws its 16 px border as 8 UI");
             Assert.IsNotEmpty(denseBorder, "control: a multiplier that halves the drawn border is reported");
+        }
+
+        // PR3 table control (contract 「기대값을 바꾼 시험마다 일부러 틀린 조각」; v3 A msg_79d2bf86419e, 완료조건 10): the
+        // brown piece of each approved name, which the window showed before the swap, is not an approved piece and is
+        // named as non-approved by the drawn inventory; the bright Header, imported in PR2, is. Passes before and after
+        // the implementation.
+        [Test]
+        public void Control_RewardTable_RejectsTheSameNamedBrownPieces_AndAcceptsTheBrightHeader()
+        {
+            Sprite[] brown = Pieces.Select(piece => AssetDatabase.LoadAssetAtPath<Sprite>(BrownKitFolder + piece.Name + ".png")).ToArray();
+            var bright = AssetDatabase.LoadAssetAtPath<Sprite>(KitFolder + "Header.png");
+            GameObject root = Own(new GameObject("Reward table control", typeof(RectTransform)));
+            root.AddComponent<Canvas>();
+            var image = new GameObject("brown Header (control)", typeof(RectTransform)).AddComponent<Image>();
+            image.transform.SetParent(root.transform, false);
+            image.sprite = brown.Single(sprite => sprite != null && sprite.name == "Header");
+            string[] inventory = DrawnInventory(root.transform);
+            Log("control reward table", inventory);
+
+            Assert.AreEqual(Pieces.Length, brown.Count(sprite => sprite != null), "fixture: every approved name has a brown piece to reject");
+            Assert.IsTrue(brown.All(sprite => PieceOf(sprite) == null), "control: no brown piece of an approved name passes the bright table");
+            Assert.IsTrue(inventory.Single().StartsWith("non-approved", StringComparison.Ordinal),
+                "control: the drawn inventory names the brown Header as non-approved");
+            Assert.IsNotNull(bright, "fixture: the bright Header loads");
+            Assert.AreEqual("Header", PieceOf(bright)?.Name, "control: the bright Header is the approved Header");
+            Assert.IsEmpty(ImportProblems(Pieces.Single(piece => piece.Name == "Header")),
+                "control: the bright Header keeps the approved import");
         }
 
         // ---------------------------------------------------------------------------------------------------------
