@@ -278,7 +278,7 @@ namespace Dawnholder.Client.Tests
         // Inventory (InventoryPanelView ctor, the gameplay scene's builder)
         // ---------------------------------------------------------------------------------------------------------
 
-        // Approved preview inventory-0 roles: Panel_Default behind the 550×354 panel, Button_Default states, an
+        // Approved preview inventory-0 roles: Panel_Default behind the 390×720 panel, Button_Default states, an
         // Inset_*/ItemSlot_* piece under each slot row. Max legal state (Shared InventoryLimits and the snapshot rules
         // in client.md): currency 1,000,000,000, the two catalog items sorted with 99 each, six empty slots.
         // The inventory filters by the bright table (decision 43 A, goal 2026-10-29 완료조건 1, Content msg_b9b45522981b,
@@ -392,6 +392,18 @@ namespace Dawnholder.Client.Tests
                 HitNames(rig, raycaster, RowPointLeftOfUse(rig, row))).ToArray();
             Vector2[] decorationPoints = DecorationPoints(rig, window.Root.transform, BrightPiecesByGuid);
             string[] decorationHits = decorationPoints.SelectMany(point => HitNames(rig, raycaster, point)).ToArray();
+            // Title bar grab area (goal 2026-10-30 완료조건 4, contract 「부품 API」): nothing off the bar takes a decoration
+            // hit, the bar's centre reaches the grab area, and a button over the grab area still takes the pointer first.
+            var titleBar = (RectTransform)window.Panel.Find("Header");
+            Rect titleBarRect = ScreenRect(rig, titleBar);
+            string[] offBarHits = decorationPoints.Where(point => !titleBarRect.Contains(point))
+                .SelectMany(point => HitNames(rig, raycaster, point)).ToArray();
+            string[] titleBarCentreHits = HitNames(rig, raycaster, titleBarRect.center);
+            var grab = titleBar.Find("GrabArea") as RectTransform;
+            Button[] barButtons = grab == null ? new Button[0] : window.Root.GetComponentsInChildren<Button>()
+                .Where(button => ScreenRect(rig, (RectTransform)button.transform).Overlaps(ScreenRect(rig, grab))).ToArray();
+            Button[] barButtonsFirstHit = barButtons.Select(button => Hits(rig, raycaster, Centre(rig, (RectTransform)button.transform))
+                .Select(hit => hit.gameObject.GetComponentInParent<Button>()).FirstOrDefault()).ToArray();
 
             GameObject mirrorOwner = Own(new GameObject("Inventory mirror (fixture)"));
             mirrorOwner.SetActive(false);
@@ -442,7 +454,12 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(1, refreshes, "P one real refresh click reaches the refresh callback once");
             Assert.IsEmpty(rowHits, "P slot rows and their art pass the pointer (only buttons take raycasts)");
             Assert.IsNotEmpty(decorationPoints, "P T4 the bright table finds decoration pieces outside the buttons");
-            Assert.IsEmpty(decorationHits, "P approved decoration pieces outside buttons take no raycast");
+            Assert.That(decorationHits, Is.All.EqualTo("GrabArea"),
+                "P approved decoration pieces outside buttons take no raycast except the title bar's grab area (goal 2026-10-30 완료조건 4)");
+            Assert.IsEmpty(offBarHits, "P decoration pieces off the title bar take no raycast");
+            CollectionAssert.AreEqual(new[] { "GrabArea" }, titleBarCentreHits, "P a pointer at the title bar's centre reaches only the grab area");
+            Assert.IsNotEmpty(barButtons, "precondition: at least one button lies in the title bar over the grab area");
+            CollectionAssert.AreEqual(barButtons, barButtonsFirstHit, "P a button over the grab area takes the pointer first");
             Assert.AreEqual(usesBeforeDisabled, uses.Count, "P a disabled use button does not reach the callback");
             Assert.AreEqual(refreshesBeforeDisabled, refreshes, "P a disabled refresh button does not reach the callback");
             Assert.AreEqual("Button_Default_Disabled", disabledShown, "P a disabled button keeps the approved disabled sprite under the pointer");

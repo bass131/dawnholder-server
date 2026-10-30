@@ -162,18 +162,18 @@ namespace Dawnholder.Client.Tests
         // top-left offset from the panel's top-left and size, UI units, y downward.
         static readonly Rect[] InventorySlotRects =
         {
-            new Rect(12f, 134f, 257f, 35f), new Rect(281f, 134f, 257f, 35f),
-            new Rect(12f, 177f, 257f, 35f), new Rect(281f, 177f, 257f, 35f),
-            new Rect(12f, 220f, 257f, 35f), new Rect(281f, 220f, 257f, 35f),
-            new Rect(12f, 263f, 257f, 35f), new Rect(281f, 263f, 257f, 35f),
+            new Rect(12f, 134f, 176f, 109f), new Rect(202f, 134f, 176f, 109f),
+            new Rect(12f, 253f, 176f, 109f), new Rect(202f, 253f, 176f, 109f),
+            new Rect(12f, 372f, 176f, 109f), new Rect(202f, 372f, 176f, 109f),
+            new Rect(12f, 491f, 176f, 109f), new Rect(202f, 491f, 176f, 109f),
         };
 
         static readonly Rect[] InventoryUseRects =
         {
-            new Rect(215f, 134f, 50f, 35f), new Rect(484f, 134f, 50f, 35f),
-            new Rect(215f, 177f, 50f, 35f), new Rect(484f, 177f, 50f, 35f),
-            new Rect(215f, 220f, 50f, 35f), new Rect(484f, 220f, 50f, 35f),
-            new Rect(215f, 263f, 50f, 35f), new Rect(484f, 263f, 50f, 35f),
+            new Rect(75f, 204f, 50f, 35f), new Rect(265f, 204f, 50f, 35f),
+            new Rect(75f, 323f, 50f, 35f), new Rect(265f, 323f, 50f, 35f),
+            new Rect(75f, 442f, 50f, 35f), new Rect(265f, 442f, 50f, 35f),
+            new Rect(75f, 561f, 50f, 35f), new Rect(265f, 561f, 50f, 35f),
         };
 
         readonly List<UnityEngine.Object> _owned = new List<UnityEngine.Object>();
@@ -207,7 +207,7 @@ namespace Dawnholder.Client.Tests
         // A. Approved pieces on the real builders
         // ---------------------------------------------------------------------------------------------------------
 
-        // Approved preview inventory-0: Panel_Default behind the whole 550×354 panel. The inventory now expects the
+        // Approved preview inventory-0: Panel_Default behind the whole 390×720 panel. The inventory now expects the
         // bright kit's Panel_Default (decision 43 A, goal 2026-10-29 완료조건 1, Content msg_b9b45522981b, main
         // msg_e873edba3d2d); only the GUID table changed.
         [Test]
@@ -546,12 +546,12 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(100f, scaler.referencePixelsPerUnit, 1e-4f, "C Canvas reference PPU 100 (scope 「Canvas reference PPU 100」)");
             Assert.IsNotNull(window.Root.GetComponent<GraphicRaycaster>(), "C graphic raycaster (InventoryPanelView.cs:38)");
             Assert.IsEmpty(missingPaths, "C names other code and tests find (InventoryPanelToggleTests, InventorySceneLifecycleTests, Content reward window)");
-            AssertVector(new Vector2(550f, 354f), window.Panel.rect.size, "C panel size (InventoryPanelView.cs:15-16)");
+            AssertVector(new Vector2(390f, 720f), window.Panel.rect.size, "C panel size (InventoryPanelView.cs:15-16)");
             AssertVector(new Vector2(0.5f, 1f), window.Panel.anchorMin, "C panel anchored top centre (InventoryPanelView.cs:45)");
             AssertVector(new Vector2(0.5f, 1f), window.Panel.anchorMax, "C panel anchored top centre (InventoryPanelView.cs:45)");
             AssertVector(new Vector2(0.5f, 1f), window.Panel.pivot, "C panel pivot (InventoryPanelView.cs:46)");
             Assert.IsTrue(titleShown, "C the 「인벤토리」 title text (InventoryPanelView.cs:53)");
-            AssertRect(new Rect(426f, 10f, 112f, 44f), refreshRect, "C refresh input area (InventoryPanelView.cs:58)");
+            AssertRect(new Rect(262f, 10f, 112f, 44f), refreshRect, "C refresh input area (InventoryPanelView.cs:58)");
             for (int i = 0; i < 8; i++)
             {
                 AssertRect(InventorySlotRects[i], slotRects[i], $"C Slot{i + 1} row rect (InventoryPanelView.cs:68-70)");
@@ -561,7 +561,15 @@ namespace Dawnholder.Client.Tests
             CollectionAssert.AreEqual(Enumerable.Repeat(1, 8).ToArray(), useListeners, "C one use listener per slot (InventoryPanelView.cs:77)");
             Assert.AreEqual(1, refreshes, "C refresh click reaches the refresh callback once");
             CollectionAssert.AreEqual(Enumerable.Range(0, 8).ToArray(), uses, "C each use button reports its own slot index once");
-            Assert.IsEmpty(raycastOutsideButtons, "C only the buttons take raycasts; screen and slot backgrounds pass input (InventoryPanelView.cs:95)");
+            CollectionAssert.AreEqual(new[] { $"{root.name}/Inventory/Header/GrabArea" }, raycastOutsideButtons,
+                "C only the buttons and the title bar's grab area take raycasts; screen and slot backgrounds pass input (goal 2026-10-30 완료조건 4)");
+            Image grabArea = root.Find("Inventory/Header/GrabArea")?.GetComponent<Image>();
+            Assert.IsTrue(grabArea != null, "C the title bar's grab area is an Image (contract 「부품 API」)");
+            Rect grabRect = InSpaceOf(window.Panel, grabArea.rectTransform);
+            Rect titleBarRect = InSpaceOf(window.Panel, (RectTransform)window.Panel.Find("Header"));
+            Assert.IsTrue(IsInvisibleHitArea(grabArea), "C the grab area draws nothing: no sprite, alpha 0 (contract 「부품 API」)");
+            Assert.IsTrue(ContainsPoint(titleBarRect, grabRect.min) && ContainsPoint(titleBarRect, grabRect.max),
+                $"C the grab area {grabRect} lies inside the title bar {titleBarRect} (contract 「부품 API」)");
             Assert.IsEmpty(foreignFonts, "C texts keep the LiberationSans SDF font with the Korean fallback (InventoryPanelView.cs:43)");
             Assert.AreEqual(0f, hiddenAlpha, "C hidden alpha (InventoryPanelView.cs:92)");
             Assert.IsFalse(hiddenInteractable, "C hidden is not interactable (InventoryPanelView.cs:93)");
