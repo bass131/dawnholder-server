@@ -4,7 +4,7 @@
 
 ### 현재 재개 카드 — 2026-10-30 종료 기록
 
-**다음 첫 일:** 종료 기록 PR280(`docs/knight-dash-effect-closeout-20261030`)의 문서 실사를 신규 독립 검증자로 열고, PASS 뒤 메인에 병합 승인 요청을 올린다. 결과 기록과 종료 Gardener는 끝났다([종료 Gardener](#종료-gardener)). PR 본문 원문은 근거 폴더 `lead/closeout-01/pr-body-01.md`다. 제품 PR278은 병합됐다(merge `a9910064`, 2026-10-30T05:10:56Z). 사용자 직접 플레이에서 Dash 확인 네 항목은 모두 괜찮았다([사용자 플레이 확인](#사용자-플레이-확인--2026-10-30)). 종료 순서는 결과 기록 → Gardener → 종료 기록 PR 하나 → 종료 점검 → R-8이다(메인 `msg_5f9631da2f6c`). 종료 기록 PR이 열리고 CI가 돌면 메인이 R-8을 한다. 그 뒤 남은 PR 처리는 새 Effect 리드가 이어받는다(메인 `msg_55345fc2fc09`). 새 리드가 맡을 다음 목표 둘은 [이어받을 목표](#이어받을-목표)에 있다.
+**다음 첫 일:** 종료 기록 PR280(`docs/knight-dash-effect-closeout-20261030`)의 1차 문서 실사는 NOT PASS(D4·D5)였고 리드가 고쳤다([PR280 문서 실사](#pr280-문서-실사--2026-10-30)). 신규 독립 검증자의 D4·D5 한정 재검증이 PASS면 메인에 병합 승인 요청을 올린다. 결과 기록과 종료 Gardener는 끝났다([종료 Gardener](#종료-gardener)). PR 본문 원문은 근거 폴더 `lead/closeout-01/pr-body-01.md`다. 제품 PR278은 병합됐다(merge `a9910064`, 2026-10-30T05:10:56Z). 사용자 직접 플레이에서 Dash 확인 네 항목은 모두 괜찮았다([사용자 플레이 확인](#사용자-플레이-확인--2026-10-30)). 종료 순서는 결과 기록 → Gardener → 종료 기록 PR 하나 → 종료 점검 → R-8이다(메인 `msg_5f9631da2f6c`). 종료 기록 PR이 열리고 CI가 돌면 메인이 R-8을 한다. 그 뒤 남은 PR 처리는 새 Effect 리드가 이어받는다(메인 `msg_55345fc2fc09`). 새 리드가 맡을 다음 목표 둘은 [이어받을 목표](#이어받을-목표)에 있다.
 
 | 항목 | 현재 |
 |---|---|
@@ -235,10 +235,10 @@ R-8 뒤 새 Effect 리드가 아래 순서로 맡는다. 둘 다 최신 main에�
 - [x] 제품 반입·Unity
 - [x] 독립 검증
 - [x] 사용자 플레이 확인
-- [x] 제품 PR 병합
+- [x] PR278 병합
 - [x] 결과 기록
 - [x] 종료 Gardener
-- [>] 종료 기록 PR
+- [>] PR280 병합
 - [ ] 종료 점검
 
 ## 단계 결과와 근거
@@ -398,7 +398,8 @@ R-8 뒤 새 Effect 리드가 아래 순서로 맡는다. 둘 다 최신 main에�
   - O7(PR278 본문의 head): GitHub 본문은 지금도 「최종 head는 `90e248e8`」이다. 병합 head는 `325777b7`이고 넷째 커밋은 goal·CURRENT만 바꿨다(`lead/closeout-01/pr278-view-final-01.json`). 병합된 PR이라 본문은 고치지 않는다.
   - O2~O6·O8은 보고서에 두고 이 goal에서 따로 처분하지 않는다.
 - Gardener 자기 이탈(보고서 「자기 쓰기 감사」, 리드는 판단하지 않고 목록으로 올린다)
-  - 계약 허용 실행 목록 밖의 읽기 전용 셸 명령(`ls`·`cat`·`sed -n`·`grep`·`cut`·`head`·`echo`·`cd`, 셸 `for` 1회)을 썼다. 보고서는 상태 변경과 허용 밖 쓰기를 0으로 적었다.
+  - 계약 허용 실행 목록 밖의 읽기 전용 셸 명령(`ls`·`cat`·`sed -n`·`grep`·`cut`·`head`·`echo`·`cd`, 셸 `for` 반복이 든 Bash 호출 4회)을 썼다. 보고서는 상태 변경과 허용 밖 쓰기를 0으로 적었다.
+  - 보고서 자기 감사 수치의 정정(PR280 문서 실사 D5): 보고서 380행 「Edit 6회」는 대화 기록상 성공한 Edit 7회(06:00:00Z~06:02:47Z)다. 383행 「셸 `for` 반복 1회」는 `for`가 든 Bash 호출 4회(05:45:52·05:50:32·05:51:33·05:56:54Z)다. Write 1회는 같다. 원천은 Gardener 대화 기록 `1bc891c8-1e4c-4307-9b45-a49acadebfb3.jsonl`이고, 대조 원시는 근거 폴더 `closeout-verify-01/provenance-summary-01.json`·`process-followup-01.json`, 리드 재대조는 `lead/closeout-verify-01/settle-verifier-01.json`이다. 사본 `gardener.md`는 원본 bytes 그대로 두어 보고서의 오기도 그대로 남는다.
   - heartbeat 간격 449초 한 구간이 있다(아래 생존 신호 정산).
 
 ### 종료 기록 PR 전 점검
@@ -407,6 +408,18 @@ R-8 뒤 새 Effect 리드가 아래 순서로 맡는다. 둘 다 최신 main에�
   - 1회째(`check-candidates-01.json`, 05:43:15Z)는 Gardener 입력 고정 뒤 BACKLOG 행을 만든 다음이라 이미 `allowed`, exit 0이었다. Gardener의 exit 1은 고정본(행 추가 전)에서 돌린 값이다.
   - 2회째(`check-candidates-02.json`, 06:10:49Z)는 GR 처분과 이 절 앞까지의 편집 뒤다. `allowed`, exit 0, 후보 1건, ID 없는 후보 0, 모르는 ID 0, BACKLOG ID 198개 중 중복 0이다.
   - 이 절의 기록은 그 뒤에 썼고 「다음 계획 후보」 절은 바꾸지 않았다.
+
+### PR280 문서 실사 — 2026-10-30
+
+- 새 Effect 리드가 신규 독립 검증자(gpt-6-astra xhigh)를 PR280 head `437c3763`에 열었다. 판정은 NOT PASS다. 원문은 근거 폴더 `closeout-verify-01/verdict.md`(sha256 `1f63ff40f2590d17db0fd4f6ff45a26e11f94ba45129e20a054324678109fbe2`, worker_done `msg_19af985e40c9`)이고 리드 대조는 `lead/closeout-verify-01/lead-acceptance-01.md`다.
+- 차단 둘을 이 goal에서 고쳤다.
+  - D4: 진척 단계의 PR 단계에 PR 번호가 없었다. goal-loop 「기준과 상태」의 「PR 단계는 `PR182 병합`처럼 GitHub PR 번호와 「병합」을 함께 적는다」에 맞춰 `PR278 병합`·`PR280 병합`으로 고쳤다.
+  - D5: Gardener 보고서 자기 감사의 호출 수가 대화 기록과 달랐다. [종료 Gardener](#종료-gardener)의 「Gardener 자기 이탈」에 정정을 적었다.
+- 비차단 셋은 메인 처분으로 기록만 한다. 처분 원문은 판정에 있다.
+  - D1: 앞 리드가 종료 기록을 쓰기 전 맥락 메모를 갱신하지 않았다(메인 `msg_57dbbc559b44`·`msg_68ef27e7bc61`). 첫 발생 기록은 65 A goal(`2026-10-30-attack-key-left-ctrl`)에 적는다.
+  - D2: Gardener의 허용 목록 밖 읽기 전용 셸 명령(메인 `msg_68ef27e7bc61` 1 A).
+  - D3: 앞 리드 보고 「표시용 인라인 `node -e` 1회」(`msg_8fccc5fb5f97`)와 달리 05:10Z 뒤 대화 기록에 `node -e`가 든 Bash 호출이 17개 있었다. 보고와 실제 수행이 다르다. 쓰기가 든 5개는 검증자가 원시와 대조했다(메인 `msg_95bf34fb7e09`).
+- 고친 뒤 D4·D5 한정 재검증은 신규 독립 검증자가 한다.
 
 ### 생존 신호 정산 — 종료 기록
 
