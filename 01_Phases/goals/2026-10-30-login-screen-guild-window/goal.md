@@ -2,12 +2,12 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR-A는 독립 검증을 통과했고 이 commit으로 PR을 연다([로그인 독립 검증](#로그인-독립-검증--unity-창-pr-a-v1b)). 이어서 PR-B branch를 PR-A head 위에 만들고 PR-B 선행 시험을 commit한다. PR-B 구현자(task_27bdad71a9d7)는 초안을 끝내고 대기 중이다. Unity 창은 메인 대기열에서 Effect 65 A 독립 검증 다음이다(`msg_e2eeb638f742`). 배정되면 관문을 다시 재고 「Unity 창 열림·배치 허가」를 보낸다.
+**다음 첫 일:** PR-A는 PR #281로 열렸다. PR-B는 그 head 위의 branch에서 이어 간다([로그인 PR과 길드 창 branch](#로그인-pr과-길드-창-branch)). PR-B 구현자(task_27bdad71a9d7)는 초안을 끝내고 대기 중이다. Unity 창은 메인 대기열에서 Effect 65 A 독립 검증 다음이다(`msg_e2eeb638f742`). 배정되면 관문을 다시 재고 「Unity 창 열림·배치 허가」를 보낸다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_736bf752c0e4`). 초안 원문은 `.backups/verification/2026-10-30-login-screen-guild-window/scope-draft-v1.md`(sha256 `fa745f0ec4672113daa1656b124ac23532a78e1920cc5c93bdea96ed82b76ebb`)다. |
-| branch | `feat/content-login-guild-window-20261030`, base `7bc758987e3816e0690f4df78f8160fbc3da2135`(PR279 병합) |
+| branch | PR-A `feat/content-login-guild-window-20261030`, base `7bc758987e3816e0690f4df78f8160fbc3da2135`(PR279 병합), PR #281. PR-B `feat/content-guild-base-window-20261030`, PR-A head `926dd306cd1c6628e6a9b2e4b9c039b871e08d83` 위 |
 | 리드 | `[Content 리드 Opus]`(claude-opus-5-5 xhigh), 회신 주소 `run:run_978c01afcf2a` |
 | 근거 폴더 | `.backups/verification/2026-10-30-login-screen-guild-window/` |
 
@@ -72,6 +72,7 @@
 | PR-A 화면 코드 | `03_Client/Assets/Scripts/UI/MainMenuController.cs`(view 생성·연결만), 새 view 클래스 `Scripts/UI/` 아래(+.meta, 이름은 계약에서 확정) | 직렬화 필드 7개(참조 4개·값 3개)와 FormerlySerializedAs, `OnStartClicked`·`OnQuitClicked` |
 | PR-A 장면 | `03_Client/Assets/Scenes/00.Menu/MainMenu.unity` | 기존 오브젝트의 fileID·GUID·연결. 옛 오브젝트는 지우지 않고 다시 쓰거나 끈다 |
 | PR-B 화면 코드 | `Scripts/UI/GuildWindowLayout.cs`, `GuildHousingLayout.cs`, `GuildWindow.cs`, 필요하면 `BlacksmithWindow.cs`의 글자 색 | 표시 값·대기·입력 허용·구독 수명·레벨업 의도 이벤트, 레벨 1·2 그림 선택 규칙, 대장간 창 동작 |
+| PR-B 문서 | `00_Document/FEATURE_MAP.md`, `00_Document/domains/client.md`(PR-A 로그인 view와 PR-B 길드 창 배치·스킨, 메인 결정 `msg_b0d2988af33b`) | 그 파일의 다른 줄. 문장은 실제 코드와 맞는 사실만 |
 | 시험 | 새 EditMode·PlayMode 시험 | 기존 시험의 준비 코드·기대값 변경 0이 목표. 바꿔야 하면 전수 분류 표와 메인 결정 뒤 |
 | 기록 | 이 goal, CURRENT Content 줄 | 직전 Content goal 기록은 고치지 않는다 |
 
@@ -195,3 +196,11 @@
 - 판정은 **통과**, 차단 결함 0이다. worker_done `msg_6f77fd68cde1`, 판정 `pr-a-verify-01/verdict.md`(sha256 `11d8ada0…bf43de6`). 기존 실패 38(환경 23, PR-B 선행 시험 15)은 통과로 바꾸지 않았다. 실제 Overlay·물리 키·서버 성공 접속·DB·실제 종료는 미실행이다.
 - 리드 R-2 표본 대조(`pr-a-verify-settlement-01.md`): 결과 수치, 이름 비교, 새 시험 통과, 캡처 sha256, 맥락 메모 선행(검증자 rollout에서 메모 07:57:39Z, 시험 08:03:39Z), 쓰기 범위가 원천과 맞았다. Unity 0 반환과 drift 두 파일 복원을 메인에 보고했다(`msg_5b1cd8a8811a`).
 - 독립 시험은 리드가 `445fa240`으로 commit했다. 사용자 플레이 확인 항목은 검증자의 보완(유효 계정을 다시 넣는 4번)을 반영해 PR 본문에 적는다.
+
+### 로그인 PR과 길드 창 branch
+
+- PR-A는 PR #281(head `926dd306cd1c6628e6a9b2e4b9c039b871e08d83`, base main)이다. 본문에 V1b 결과, 캡처 세 장의 경로, 사용자 플레이 확인 여섯 줄을 적었다.
+- PR-B branch `feat/content-guild-base-window-20261030`을 그 head 위에 만들었다. 이 commit 다음 commit이 PR-B 선행 시험 다섯 파일과 `.meta`다. 파일 sha256은 작성자 보고(`pr-b-red-01/report.md`)와 같다.
+- 「건드릴 곳과 소유」에 PR-B 문서 줄을 더했다(메인 `msg_b0d2988af33b`). 구현자 계약 보충 2(`msg_e9e1ecc9a2f4`)가 두 문서 초안을 쓰게 했다.
+- Art 리드의 GUI 전면 최신화 ④ 겹침 확인(`msg_cb148784a405`)에 「겹침 없음」으로 답했다(`msg_a30621593a6a`). 두 PR은 UI.unity·PauseMenuController·QuestGrantedPopup·EndingController를 쓰지 않고, BrightSkin의 빈 칸도 쓰지 않는다.
+- 일시정지 메뉴 시험(`MenuTransitionAndOutsideTown_NoPurchases`)의 잠정 분류는 (a) 옛 좌표 가정 후보다. 시험의 마지막 변경(10-19) 뒤 HUD 재구성(`0770855b`)과 큰 패널(`94274819`)이 배치를 바꿨다. PR-B U2의 배치 전·뒤 결과와 `menu` 캡처로 확정한다. merge-base 실행은 하지 않는다(메인 `msg_e2eeb638f742`가 받음, 근거 `menu-transition-static-01.md`).
