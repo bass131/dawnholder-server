@@ -69,6 +69,7 @@ namespace Dawnholder.Client.Combat
                 BuildQuestIntro,
                 BuildDungeonClearRewardWindow,
                 BuildDungeonEntranceLabel,
+                BuildKillRewardFloatText,
             };
             foreach (System.Action install in installers)
                 install();
@@ -157,6 +158,9 @@ namespace Dawnholder.Client.Combat
         void BuildDungeonClearRewardWindow() => DungeonClearRewardWindow.BuildRuntime(transform);
 
         void BuildDungeonEntranceLabel() => DungeonEntranceLabel.BuildRuntime(transform);
+
+        // 처치 보상 글 — EnemyRegistry·InventoryState·DungeonClearRewardState를 구독하므로 그 셋보다 뒤에 둔다.
+        void BuildKillRewardFloatText() => KillRewardFloatText.BuildRuntime(transform);
 
         void BuildPartyInvitePopup()
         {

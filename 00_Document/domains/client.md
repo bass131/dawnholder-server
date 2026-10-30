@@ -53,6 +53,10 @@ StageClear 배너는 보상 표시를 덮지 않도록 숨긴다. 15번 뒤 39�
 
 [DungeonEntranceLabel](../../03_Client/Assets/Scripts/UI/DungeonEntranceLabel.cs)은 같은 bootstrap에서 Town 씬의 기존 단일 `PortalTrigger` 위에 「던전 입구」를 붙인다. 포탈 collider의 위쪽에 여백을 둔 world-space TMP 글자이며 raycast를 받지 않는다. 포탈의 자식으로 씬과 함께 사라지고, HuntingGround·BossRoom에는 생성하지 않는다. 맵·포탈 표와 scene·prefab은 이 표시에 관여하지 않는다.
 
+## 처치 보상 글
+
+[KillRewardFloatText](../../03_Client/Assets/Scripts/Combat/Effects/KillRewardFloatText.cs)는 `CombatBootstrap`이 게임플레이 씬에 만드는 월드 공간 TMP 글이며, 몬스터가 죽은 자리 위에 「+금화 N」과 늘어난 아이템마다 「+<카탈로그 이름> N」을 띄워 천천히 올리다가 끝에서 흐리게 지운다. 처치 보상을 따로 알리는 패킷은 없으므로 [KillRewardPairing](../../03_Client/Assets/Scripts/Combat/Effects/KillRewardPairing.cs)이 InventoryState 통지 때 서버가 확정한 스냅숏을 직전 사본과 비교한 증가분만 쓴다. 줄어든 값은 무시하고 접속 뒤와 미러 리셋 뒤의 첫 스냅숏은 기준만 잡는다. 던전 클리어 Success 결과의 몫(증가분)은 바로 다음 스냅숏의 증가에서 빼며, 스냅숏이 뒤따르지 않는 CurrencyCap·InventoryFull 결과는 다음 처치를 깎지 않는다. 사망 기록은 `EnemyRegistry.Despawn`이 레지스트리에서 지우기 직전의 위치를 내보낸 것이다. 늘어난 값은 실제 시간 1.0초 안의 사망 기록과만 짝지어지고 여럿이면 로컬 플레이어에 가장 가까운 것을 쓰며, 사망 기록이 없으면 글도 없다. 출처를 구분할 패킷이 없어 같은 창 안의 다른 증가(재화 주머니 사용 등)도 함께 뜰 수 있다. 글과 사망 기록은 씬 소유라 맵 이동 때 씬과 함께 사라지고, 연결 종료는 InventoryState 리셋 통지로 비운다. 글은 Canvas·collider 없이 TextMeshPro만 써서 raycast를 받지 않으며 공격과 UI 포인터 판정을 바꾸지 않는다.
+
 ## 원격 보간
 
 RemoteInterpolationState가 snapshot buffer·서버 시간축 렌더 시계·보간 계산을 단독 소유하며 명시적인 deltaTime으로 진행한다. RemoteEntity는 기존 공개 component API를 유지하고 Unity 프레임의 결과를 Transform에 적용한다. Initialize는 위치를 즉시 적용하고 시계를 초기화하며, SnapInterpolation은 현재 Transform을 유지한 채 buffer/clock을 초기화하고 ClearBuffer는 buffer만 지운다. 텔레포트 도착 callback은 새 snapshot 적재 직후 한 번 호출한다. registry·적 VisualFootOffset과 프레임당 catch-up의 수치 의미는 유지한다.
