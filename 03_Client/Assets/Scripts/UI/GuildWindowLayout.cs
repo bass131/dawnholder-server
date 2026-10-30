@@ -8,6 +8,11 @@ namespace Dawnholder.Client.UI
     /// <summary>Bright-kit guild window geometry and visibility; artwork belongs to UiWindowAppearance.</summary>
     internal sealed class GuildWindowLayout
     {
+        // Beside an open blacksmith the housing window fills its column at scale 1, so its texts keep the blacksmith's
+        // size: on a 16:9 screen that column is 0.38 x 0.80 of the 960x540 canvas, 352.8 wide after SlotMargin and 432
+        // high. GuildHousingLayout narrows the content to this size.
+        internal const float HousingBesideWidth = 352f;
+        internal const float HousingBesideHeight = 432f;
         const float Width = 440f;
         const float CompactHeight = 310f;
         // The housing window is landscape: its picture spans the inner width under the title (GuildHousingLayout).
@@ -37,6 +42,7 @@ namespace Dawnholder.Client.UI
         readonly Rect _slot;
         readonly Rect _sharedSlot;
         readonly Vector2 _size;
+        readonly Vector2 _sharedSize;
         readonly bool _housing;
         // The housing rows are 20 UI high, so their autosize may go further down than the compact rows'.
         readonly float _minFontSize;
@@ -49,6 +55,7 @@ namespace Dawnholder.Client.UI
                 : new Rect(s_windowArea.xMin + (right ? half : 0f), s_windowArea.yMin, half, s_windowArea.height);
             _sharedSlot = housing ? s_housingArea : _slot;
             _size = housing ? new Vector2(HousingWidth, HousingHeight) : new Vector2(Width, CompactHeight);
+            _sharedSize = housing ? new Vector2(HousingBesideWidth, HousingBesideHeight) : _size;
             _minFontSize = housing ? 8f : 14f;
             Skin = UiWindowAppearance.BrightSkin;
             var canvas = root.AddComponent<Canvas>();
@@ -69,27 +76,30 @@ namespace Dawnholder.Client.UI
             _panel.anchorMin = _panel.anchorMax = Vector2.zero;
             _panel.pivot = new Vector2(0.5f, 0.5f);
             // The housing title band runs along the whole top above the picture; the compact one keeps its corner.
-            TMP_Text heading;
+            Header = UiWindowAppearance.CreateHeader("Header", _panel, Skin).rectTransform;
             if (housing)
             {
-                Place(UiWindowAppearance.CreateHeader("Header", _panel, Skin).rectTransform,
-                    new Vector2(464f, 28f), new Vector2(10f, -10f));
-                heading = Label("Title", 10f, 28f, left: 22f, width: 220f);
+                Place(Header, new Vector2(464f, 28f), new Vector2(10f, -10f));
+                Heading = Label("Title", 10f, 28f, left: 22f, width: 220f);
             }
             else
             {
-                Place(UiWindowAppearance.CreateHeader("Header", _panel, Skin).rectTransform,
-                    new Vector2(132f, 40f), new Vector2(12f, -10f));
-                heading = Label("Title", 12f, 36f, width: 132f);
+                Place(Header, new Vector2(132f, 40f), new Vector2(12f, -10f));
+                Heading = Label("Title", 12f, 36f, width: 132f);
             }
-            heading.text = title;
-            heading.fontStyle = FontStyles.Bold;
-            heading.color = s_bandText;
+            Heading.text = title;
+            Heading.fontStyle = FontStyles.Bold;
+            Heading.color = s_bandText;
             SetVisibility(false);
             Resize();
         }
 
         internal UiWindowSkin Skin { get; }
+
+        // The title band and its title, for GuildHousingLayout to place beside an open blacksmith.
+        internal RectTransform Header { get; }
+
+        internal TMP_Text Heading { get; }
 
         internal TMP_Text Label(string name, float top, float height, float left = 16f, float width = 408f)
         {
@@ -128,11 +138,12 @@ namespace Dawnholder.Client.UI
 
         internal Button RefreshButton() => Button("Refresh", "새로고침", new Vector2(130f, 34f), new Vector2(294f, -240f));
 
-        internal void Inset(float top, float height, float left = 12f, float width = 416f)
+        internal RectTransform Inset(float top, float height, float left = 12f, float width = 416f)
         {
             RectTransform rect = UiWindowAppearance.CreateInset("Inset", _panel, Skin).rectTransform;
             Place(rect, new Vector2(width, height), new Vector2(left, -top));
             rect.SetSiblingIndex(1);
+            return rect;
         }
 
         internal void SetVisibility(bool visible)
@@ -145,16 +156,18 @@ namespace Dawnholder.Client.UI
         }
 
         // Sized by this canvas's own scaled rect, never Screen. besideOpenWindow moves the housing window into its
-        // shared column; a compact window keeps its slot either way.
+        // shared column at its narrow size (GuildHousingLayout.Arrange); a compact window keeps its slot either way.
         internal void Resize(bool besideOpenWindow = false)
         {
             float width = _canvasRect.rect.width;
             float height = _canvasRect.rect.height;
             if (width <= 0f || height <= 0f) return;
             Rect slot = besideOpenWindow ? _sharedSlot : _slot;
+            Vector2 size = besideOpenWindow ? _sharedSize : _size;
+            if (_panel.sizeDelta != size) _panel.sizeDelta = size;
             float slotWidth = width * slot.width;
-            float scale = Mathf.Max(0.01f, Mathf.Min(1f, (slotWidth - SlotMargin) / _size.x,
-                height * slot.height / _size.y));
+            float scale = Mathf.Max(0.01f, Mathf.Min(1f, (slotWidth - SlotMargin) / size.x,
+                height * slot.height / size.y));
             _panel.localScale = new Vector3(scale, scale, 1f);
             _panel.anchoredPosition = new Vector2(width * slot.center.x, height * slot.center.y);
         }
@@ -236,7 +249,8 @@ namespace Dawnholder.Client.UI
             RectTransform rect = (RectTransform)button.transform;
             Place(rect, size, position);
             TMP_Text label = Text("Label", rect, size, Vector2.zero);
-            label.alignment = TextAlignmentOptions.Center;
+            // Midline centres the drawn glyphs; Center would centre the fallback's tall line box and sit Korean low.
+            label.alignment = TextAlignmentOptions.Midline;
             label.color = Color.white;
             label.text = caption;
             return button;

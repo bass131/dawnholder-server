@@ -107,7 +107,12 @@ namespace Dawnholder.Client.UI
             RefreshRequested = null;
         }
 
-        void LateUpdate() => _layout?.Resize(BesideOpenBlacksmith());
+        void LateUpdate()
+        {
+            bool beside = BesideOpenBlacksmith();
+            _housing?.Arrange(beside); // The content's narrow arrangement goes with the panel's narrow size.
+            _layout?.Resize(beside);
+        }
 
         // GuildUiController builds the blacksmith under this window's parent. Whoever opens it, this window then steps
         // into its shared column, so the blacksmith keeps its own place and never has to know about this window.
@@ -206,7 +211,7 @@ namespace Dawnholder.Client.UI
             _result = _housing.WideRow("ActionResult", 5);
             _levelUp = _layout.ActionButton("LevelUp", "거점 레벨업");
             _levelUp.onClick.AddListener(RequestLevelUp);
-            GuildHousingLayout.PlaceActions(_levelUp, _refresh);
+            _housing.PlaceButtons(_levelUp, _refresh, _close);
             Render();
         }
     }
