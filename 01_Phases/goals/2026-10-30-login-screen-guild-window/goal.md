@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR-A 구현자를 띄운다(계약 `pr-a-impl-contract-v1.md`). 그 U2 창을 메인에 요청한다. PR-B 선행 시험 작성자의 보고를 받아 정산한다. PR-B 구현자는 PR-A 검증의 Unity 실행이 끝난 뒤 작업 트리에 쓰도록 계약한다([선행 시험 결과](#선행-시험--unity-창-pr-a-u1pr-b-u1)).
+**다음 첫 일:** PR-A 신규 Astra 독립 검증자를 띄운다(계약 `pr-a-verify-contract-v1.md`). 그 Unity 창은 검증자가 테스트를 다 쓴 뒤 메인에 요청한다. PR-B 구현자(task_27bdad71a9d7)는 초안을 끝내고 대기 중이다. PR-A 검증의 Unity 실행이 끝나면 PR-B branch를 PR-A 위에 만들고 PR-B 선행 시험을 commit한 뒤 「Unity 창 열림·배치 허가」를 보낸다([로그인 화면 구현](#로그인-화면-구현--unity-창-pr-a-u2)).
 
 | 항목 | 현재 |
 |---|---|
@@ -127,13 +127,21 @@
 - PR-B 캡처: 길드 창 거점 레벨 1·2 그림과 대장간 창, 두 해상도.
 - PR-B 플레이 확인: 마을에서 길드 창을 열어 그림 크기, 레벨업 뒤 그림 바뀜과 효과, 닫기·새로고침, 대장간 창.
 
+### 10-30 가려진 길드 시험의 처리 — msg_cf49de75b354·msg_b6fc61f509f6
+
+메인 결정이다(사용자 결정 아님).
+
+- PR-B 선행 시험 보고의 리드 판단 두 건 처분(msg_cf49de75b354): 길드 창 겹침 시험은 RectTransform 사각형 기준을 그대로 둔다. `GuildWindowIndependentSceneTests`의 원인 미확정 11건은 증거 폴더 변수 부재로 실패해 밝은 스킨으로 생길 실패를 가린다. 그래서 PR-B 구현자의 Unity 창에서 이 11건만 `DAWNHOLDER_GUILD_VERIFY_CAPTURE_DIR`를 주고 따로 돌린다. 밝은 스킨 때문에 실패하면 (a) 옛 구현 세부로 분류하고, 고치기 전에 줄 단위 분류 표를 메인에 올린다. 요구 출처는 사용자 원문 「모든 GUI 디자인은 인벤토리와 캐릭터 선택창 기준으로 완전 최신화」와 msg_736bf752c0e4 3번이다.
+- 길드 동작 시험 6건(msg_b6fc61f509f6): Effect가 변수를 주고 돌린 실행에서 `GuildGameplayWindowTests.MenuTransitionAndOutsideTown_NoPurchases`가 실제로 실패했다. 일시정지 메뉴를 연 뒤 대장간 강화 좌표에 메뉴의 MainMenuButton이 있었다. 이 묶음 6건도 11건과 같은 방식으로 배치 전후에 돌리고, 그 1건의 원인을 시험 주인으로서 분류한다. 분류 결과는 Art 리드에게도 알린다(Art의 일시정지 메뉴 최신화가 같은 좌표에 영향을 줄 수 있다).
+- 리드는 두 처분을 PR-B 구현자 계약 v1과 보충 1(msg_040d496feea4)에 넣었다. 배치 전(⓪)과 배치 뒤(③)에 17건을 한 실행으로 돌린다.
+
 ## 진척 단계
 
 - [x] 범위 승인
 - [x] 기준 실행·사후 확인
 - [x] 로그인 선행 시험
-- [>] 로그인 화면 구현
-- [ ] 로그인 독립 검증
+- [x] 로그인 화면 구현
+- [>] 로그인 독립 검증
 - [ ] 길드 창 선행 시험
 - [ ] 길드 창 구현
 - [ ] 길드 창 독립 검증
@@ -169,3 +177,11 @@
 - PR-A U1(메인 배정 `msg_ba6a7ca319a7`, 06:22:42Z~06:33:14Z): EditMode 1574/1574 통과(exit 0), PlayMode 192 중 통과 143·실패 30·건너뜀 19(exit 2). 새 시험 10개 중 장면 연결 보존 3개는 통과했고 7개는 기능 부재로 실패했다. U0 실패 23은 같은 이름·같은 첫 실패 문구다. 작성자 worker_done `msg_5dfdbc7939dc`, 보고 `pr-a-red-01/report.md`, 리드 정산 `pr-a-red-settlement-01.md`.
 - PR-B U1(메인 배정 `msg_da5e9e1b1d3f`, 06:48:30Z~06:59:12Z): EditMode 1580 중 실패 5(전부 새 밝은 스킨 시험), PlayMode 209 중 통과 150·실패 40·건너뜀 19. PR-A U1의 실패 30은 같은 이름·같은 첫 줄이고 새 실패 10은 전부 새 크기·글자 시험이다. base 그림 스냅숏(580.4×326.7)과 대장간 보존·두 창 겹침 없음·HUD 미가림은 통과했다. 글자 온전함 측정은 지금 배치에서 금고·거점 레벨 글자가 그림 위에 겹쳐 실패했다. 새 설계로 풀릴 실패다.
 - 두 창 모두 Unity 0으로 반환했고, drift 두 파일(ProjectSettings SENTIS 정의, MinimapRT 줄 끝)을 복원했다(`pr-a-u1-return/`·`pr-b-u1-return/`). 리드 대조 스크립트는 `scripts/compare-failed-names.mjs`다.
+
+### 로그인 화면 구현 — Unity 창 PR-A U2
+
+- 구현자 계약 `pr-a-impl-contract-v1.md`(sha256 `374fe041…8d9b41`), task_d47d76375765. 바꾼 파일은 `MainMenuController.cs`(+9줄, Start에서 view 생성·Update에서 Tab 전달)와 새 `MainMenuLoginView.cs`(204줄)·`.meta`다. 장면 파일은 바꾸지 않았다. view가 장면의 기존 칸·버튼·오류 글·타이틀을 `LoginWindow` 아래로 옮긴다.
+- U2(메인 배정 `msg_b6fc61f509f6`, 07:37:39Z~07:48:08Z): EditMode 1580 중 통과 1575·실패 5, PlayMode 209 중 통과 157·실패 33·건너뜀 19. PR-B U1과 시험 이름 단위로 비교하면 PR-A 선행 시험 7건이 실패에서 통과로 바뀌었고 새 실패는 0이다. 남은 실패(EditMode 5는 PR-B 밝은 스킨 시험, PlayMode 33은 U0 23과 PR-B 10)는 같은 이름·같은 첫 문구다. 새 컴파일 경고는 0이다. 리드 비교는 `pr-a-u2-return/`에 있다.
+- 캡처 세 장(`pr-a-impl-01/u2/captures/`)을 리드가 열어 봤다. 두 해상도 모두 로고가 위, 밝은 로그인 창이 아래이고 오류 문구는 창 안 한 줄이다. 판정은 독립 검증자가 한다.
+- Unity 0 반환과 drift 두 파일 복원을 메인에 보고했다(`msg_827044895b17`). 구현자 worker_done `msg_667218991a26`, 보고 `pr-a-impl-01/report.md`, 리드 정산 `pr-a-impl-settlement-01.md`.
+- 정산의 후속 후보: `FEATURE_MAP`·`domains/client.md`의 메인 메뉴 항목에 `MainMenuLoginView` 추가(이 goal의 건드릴 곳 밖), 장면 버튼·칸에 밝은 조각을 입히는 함수의 공용화(Art 후보), TMP Awake 글꼴 경고, 실제 플레이어의 Enter 이중 제출 가드 시험 부재.
