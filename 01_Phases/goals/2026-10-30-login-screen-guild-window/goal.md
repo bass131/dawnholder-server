@@ -2,12 +2,12 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR-B 독립 검증은 통과했고 검증자 시험은 commit됐다(`a864e6e1`, [독립 검증](#길드-창-독립-검증--unity-창-pr-b-v1)). 다음은 push와 PR-B 생성(base는 PR-A branch)이다. 그 뒤 최종 캡처를 Art 리드에게 보내고, PR-B head를 Art·Effect 리드에게 알린다. 잉크 10건은 기준 실패로 안고 간다([새 잉크 규칙](#10-30-새-잉크-규칙--msg_5f2256a9b8ccmsg_56e1b4790f84)).
+**다음 첫 일:** 두 PR이 열렸다(#281 로그인, #285 길드 창, [길드 창 PR](#길드-창-pr)). 남은 일은 Art 리드의 최종 외관 의견, 메인 최종 보고용 묶음(잉크 10건 원인 한 줄·교정 규칙 후보·후속 후보), 그리고 병합 뒤 종료 기록이다. 잉크 10건은 기준 실패로 안고 간다([새 잉크 규칙](#10-30-새-잉크-규칙--msg_5f2256a9b8ccmsg_56e1b4790f84)).
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_736bf752c0e4`). 초안 원문은 `.backups/verification/2026-10-30-login-screen-guild-window/scope-draft-v1.md`(sha256 `fa745f0ec4672113daa1656b124ac23532a78e1920cc5c93bdea96ed82b76ebb`)다. |
-| branch | PR-A `feat/content-login-guild-window-20261030`, base `7bc758987e3816e0690f4df78f8160fbc3da2135`(PR279 병합), PR #281. PR-B `feat/content-guild-base-window-20261030`, PR-A head `926dd306cd1c6628e6a9b2e4b9c039b871e08d83` 위 |
+| branch | PR-A `feat/content-login-guild-window-20261030`, base `7bc758987e3816e0690f4df78f8160fbc3da2135`(PR279 병합), PR #281. PR-B `feat/content-guild-base-window-20261030`, PR-A head `926dd306cd1c6628e6a9b2e4b9c039b871e08d83` 위, PR #285(base PR-A branch) |
 | 리드 | `[Content 리드 Opus]`(claude-opus-5-5 xhigh), 회신 주소 `run:run_978c01afcf2a` |
 | 근거 폴더 | `.backups/verification/2026-10-30-login-screen-guild-window/` |
 
@@ -203,8 +203,8 @@
 - [x] 길드 창 구현
 - [x] 길드 시험 보정과 버튼 글자
 - [x] 길드 창 독립 검증
-- [>] PR 두 개 준비
-- [ ] 종료 기록
+- [x] PR 두 개 준비
+- [>] 종료 기록
 
 ## 단계 결과와 근거
 
@@ -323,3 +323,8 @@
   - Game 화면 시험은 한계를 기록한다.
   - 서버 시험은 실행 쪽 선언 변수를 권한다.
   - 「전제를 준 lane의 Ignored는 실패」 검사는 실행 계약에 skipped 0으로 둔다.
+
+### 길드 창 PR
+
+- PR #285, base `feat/content-login-guild-window-20261030`(PR #281). 본문에 V1 결과, 캡처 여섯 장의 경로, 사용자 플레이 확인 여섯 줄, 잉크 10건 처분 대기, 남은 한계를 적었다.
+- merge-tree(`merge-tree-pr-b-02.txt`): origin/main `7bc75898`, PR #284(Art `41568d73`), PR #282와는 충돌 0이다. PR #283(Effect 처치 보상 글 `fef2f850`)과는 `domains/client.md` 한 곳이 충돌한다. 두 PR이 던전 입구 문단 뒤에 새 절을 하나씩 넣어서다. 두 절을 모두 남기면 풀린다. 나중에 병합되는 쪽이 풀며, 본문에 적었다.
