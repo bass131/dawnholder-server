@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 리드가 구현 commit head로 독립 검증 계약을 확정하고 신규 검증자(`gpt-6-astra` xhigh)를 연다. 검증자의 Unity 창은 검증자가 준비되면 예상 시간과 함께 메인에 정식 요청한다.
+**다음 첫 일:** 리드가 PR을 만들고(base PR-B branch) 최종 head를 메인에 보낸다. 그 뒤는 사용자 병합 승인 대기다. 병합 순서는 PR281 → PR-B → 이 PR이다.
 
 | 항목 | 현재 |
 |---|---|
@@ -17,8 +17,8 @@
 - [x] goal과 계약 기록
 - [x] 선행 시험(lane 판정 harness)과 실패 원시
 - [x] 구현과 통과 원시
-- [>] 독립 검증 통과
-- [ ] PR 생성과 확인 항목
+- [x] 독립 검증 통과
+- [>] PR 생성과 확인 항목
 - [ ] PR 병합
 - [ ] 결과 기록과 종료
 
@@ -47,6 +47,15 @@
 ### 메인 결정 — 기존 시험 실패의 전수 분류 — msg_71e41e231d55
 
 - 원문은 [하네스 원칙 goal의 재전달 절](../2026-10-03-harness-principles/goal.md#기존-테스트-대량-실패의-분류)이다. 작업자와 독립 검증자 계약에 그 절 원문을 그대로 붙인다. 이번 23건의 분류는 (b) 환경이다.
+
+### 독립 검증 중 메인 처분(메인 결정, 사용자 결정 아님)
+
+원문 저장본은 `lead/wait-26.json`·`wait-30.json`·`wait-32.json`·`wait-33.json`이다.
+
+- `msg_202151c481c8`: 선행 시험 작성자의 빈 `node -e "" 2>/dev/null;` 1회는 계약 금지 실행 위반이다. 비차단으로 두고 기록하며, 위반이 없었다고 소급하지 않는다. 리드가 두 번 섞은 같은 빈 `node -e`도 받고, 메인이 마지막 보고에 규칙 후보로 기록만 한다. 리드는 앞으로 명령 앞에 빈 `node -e`를 붙이지 않는다.
+- `msg_a2b82a34e33f`: 캡처 변수가 공백만일 때 `GuildGameplayWindowTests` 6건이 건너뛰는 것은 이 PR의 결함이 아니다(관찰 기록). 조건은 goal 「남은 우려」와 PR 설명에 빈 값 판단식 차이를 적는 것이다. Content 답(`msg_5e4d2d7151f9`)이 「공백도 빈 값」이라 처분은 그대로다.
+- `msg_b0795f230724`: 검증자 자신의 이탈 두 건(heartbeat 436.621초 공백, 기록 wrapper 밖 읽기 1회)은 비차단·기록이다. 조건은 실패 분류의 (d)를 「lane 기대 실패」와 「원인 미확정」으로 나누는 것이었다.
+- `msg_e0d1d3c3723f`: 기준과 같은 기존 실패는 이 goal의 PASS를 막지 않는다. 「기준과 같은 기존 (d), 통과로 바꾸지 않음, 사용자 처분 대기」로 남기고, PASS는 완료조건 2(결과 보존)로 판정한다. permit lane 기존 실패 2건은 PR 설명과 마지막 보고에 「원인 미확정, Content 후속」으로 올린다.
 
 ## 파트 간 계약 — Content 리드 조건 — msg_196d2c0ec1d4(리드 간 조율, 사용자 결정 아님)
 
@@ -186,14 +195,37 @@
 - 바꾼 뒤 여섯 실행의 실패 40행은 모두 기준 분류와 같은 행이다. (b) 16, (d) 24, (a)·(c) 0이다. 값이 틀린 L4에서 캡처 6건은 `IOException`, `OverlayAtTarget_*` 3건은 `ArgumentNullException`으로 실패를 유지했다(Content 조건 1).
 - 기본 화면 시험의 GameView 부작용: 뒤 시험의 view 줄이 기준과 같았다(리드 결정 7의 배치).
 
+## 독립 검증 결과
+
+검증 신규 `[Effect 검증자]`(`gpt-6-astra` xhigh, Task `task_c30014122ad5`, rollout turn_context 두 번 모두 `gpt-6-astra`·xhigh, backend unknown). 판정 `verify-01/verdict.md`(sha256 `309ecc70…cbcc`)는 **PASS(전제 분류 변경과 결과 보존 범위)**이고 차단 결함 번호는 없다. 머리 문장은 「(d) 35건은 기준과 같은 기존 실패로 남음, 통과 아님」이다. 검증 head `37dadbec`에서 같은 고정 runner로 Unity를 여덟 번 돌렸다(메인 창 `msg_a485ab2d0091`, 마지막 Unity 종료 17:03:16Z, 반환 `msg_98ba81a275b5`).
+
+| 실행 | 무엇을 주나 | 전체·통과·실패·건너뜀 | 구현 원시와 비교 |
+|---|---|---|---|
+| verify-L0 | 없음(전체) | 230·188·0·42 | 같음 |
+| verify-L1 | 캡처 변수 | 28·14·11·3 | 같음 |
+| verify-L2 | 캡처·memory·permit·token·Task·Dispatch | 3·1·2·0 | 같음 |
+| verify-L3a / L3b | 서버 2건 이름 filter(실서버 없음) | 4·0·4·0 / 3·0·3·0 | 같음 |
+| verify-L4 | 틀린 캡처 경로·틀린 permit 경로 | 28·7·20·1 | 같음 |
+| extra-whitespace(검증자 추가) | 캡처 변수에 공백만 | 28·7·11·10 | 같은 조합의 기준 실행 없음 |
+| extra-permit-only(검증자 추가) | permit만, 캡처 없음 | 3·0·3·0 | 같은 조합의 기준 실행 없음 |
+
+- 고정 판정기: `full` 결함 0, `lane` L1(기준 둘)·L2·L3a·L3b·L4·`u4` 모두 exit 0이다. 음성 검사는 바꾼 L0→L1에서 17건, L1·L0→L2에서 각 3건, 공백 lane→L1에서 6건을 실제로 잡았다.
+- 실패 54행의 최종 구분: 고정 lane 기대 실패 27(틀린 값 L4 20, 서버 없음 L3a·L3b 7), 추가 lane 기대 실패 14(공백 11, permit만 3), 원인 미확정 13(L1 잉크 11, L2 2)이다. 처음 (d) 35로 묶은 행 중 L4·공백 22행은 전체 message에 「no capture folder」가 있어 기대 실패로 옮겼다. 공백 11행은 같은 조합의 기준 실행이 없어 base-L4의 같은 이름·첫 문구를 참고만 했다. 리드가 메인에 쓴 「35건 모두 같은 lane」(`msg_a62bd59fda05`)은 이 11행에서 틀렸고, 검증자가 바로잡았다(`msg_c35e6f6a60ae`).
+- 원인 미확정 13행은 모두 기준 같은 lane에서 같은 fullname·result·label·첫 문구로 실패했다. 통과로 바꾸지 않고 사용자 처분 대기다(메인 `msg_e0d1d3c3723f`).
+- 설계 관찰(비차단): O1 빈 값 판단식 차이, O2 실서버 lane의 `Recorder`(둘 다 남은 우려), O3 `judgeSkips`(:231)는 주지 않은 전제 낱말 하나만 이유에 있어도 허용한다(고정 식의 기록된 한계, `lead/accept-pretest-01.md` 5번), O4 기존 잉크·창 위치 실패.
+- 절차 이탈 셋은 모두 메인 결정으로 비차단·기록이다(위 「독립 검증 중 메인 처분」): 선행 작성자의 빈 `node -e` 1회, 검증자의 heartbeat 436.621초 공백과 기록 밖 읽기 1회다. 리드도 명령 앞에 빈 `node -e`를 두 번 섞었다(`lead/verify-launch-record-01.md`).
+- 리드 원천 대조: 판정기 없이 여덟 원시를 다시 읽었다. 수치, base·after 대비 바뀐 시험, 13행의 기준 일치, 22행의 「no capture folder」, L2 1920 창 위치가 판정서와 같았다(`lead/r2-verify-raw-01.json`). 고정 도구 35개와 freeze 기록 둘도 같다(`lead/r2-tools-verify-01.json`). 검증 뒤 HEAD는 `37dadbec`, git status는 빈 값이다. Unity가 바꾼 알려진 drift 두 파일만 고정 도구로 복원했고 GameViewSizes·Shortcuts는 같다.
+- 미실행: 실서버, Editor 대화형(Game 화면 시험), 직접 플레이, DB, 별도 빌드, CI.
+
 ## 남은 우려
 
 - `DefaultScreen_ApprovedValues`는 Editor 대화형 실행에서만 판정된다. 지금 lane은 모두 batchmode라 사실상 돌지 않는다(Content 조건 3). 바꾼 뒤에는 view가 없으면 「Editor Game 화면 필요」로 건너뛴다. batchmode에서도 앞 시험이 만든 view가 남으면 판정된다(바꾼 L1).
 - `GuildLiveServerWindowTests`(:108)도 GameView event sink로 `Recorder`를 만든다. 실서버 lane이 `DAWNHOLDER_LIVE_CAPTURE_DIR`만 주고 `DAWNHOLDER_GUILD_VERIFY_CAPTURE_DIR`를 빠뜨리면, 그 역할 시험이 실패 대신 건너뛴다. 실서버 lane은 이 goal 밖이고 크리티컬은 아니다. 그 lane 판정에 skipped 0을 넣으면 막힌다. 주인 Content 리드가 받아 Content BACKLOG 후속 후보로 올린다(`msg_8f2d5b2da854`).
 - 전제를 주는 lane이 변수를 빠뜨리는 실수는 시험이 알 수 없다. 문서 규칙과 계약 검사에 기댄다. runner가 Git 밖에 있어 다음 세션이 새 runner를 쓰면 검사가 빠질 수 있다.
 - 서버 2건의 실서버 실행은 이 goal에서 하지 않는다. 이름 filter 선택만 보인다.
-- 잉크 10건의 판정 실패는 사용자 처분 대기로 그대로 남는다.
-- 선행 시험의 L2에서 `OverlayAtTarget_1920x1080`이 permit을 받은 뒤 「memory return: original position returned」로 한 번 실패했다(원인 미확정, Editor 창 배치 부작용인지 확인하지 않음).
+- 잉크 10건의 판정 실패는 사용자 처분 대기로 그대로 남는다. 검증자 실행에서 원인 미확정으로 남은 기존 실패는 13행(L1 잉크 11, L2 2)이고, 모두 기준과 같으며 통과가 아니다.
+- permit lane(L2) 기존 실패 2건은 원인 미확정이고 Content 후속이다(메인 `msg_e0d1d3c3723f`). `OverlayAtTarget_1920x1080`은 잉크가 아니라 「memory return: original position returned」로 실패한다(기대 x:0,y:26, 실제 x:599,y:237). 기준·구현·검증 세 번 모두 같은 자리였고, Editor 창 배치 부작용인지 확인하지 않았다. `OverlayAtTarget_802x451`은 C8/C9 잉크 판정 실패다.
+- Recorder는 `IsNullOrWhiteSpace`, 장면 시험 helper는 `IsNullOrEmpty` — 빈 값 판단식이 두 곳에서 다름(기준 head부터, Content 코드). 캡처 변수가 공백만이면 `GuildGameplayWindowTests` 6건은 건너뛰고 장면 시험은 판정까지 가서 실패한다(검증자 추가 lane 28·7·11·10). 캡처 lane 판정은 그 6건을 결함으로 잡는다. 통일은 Content 후속 후보다(Content `msg_5e4d2d7151f9`, 메인 `msg_a2b82a34e33f`).
 - 잉크 판정 결과가 lane이나 실행 순서에 따라 달라질 수 있다. `RenderTextureAuxiliary_709x399`가 L1에서는 통과, L4에서는 실패했다. 전후 비교는 같은 lane끼리만 한다.
 
 ## 메인 초안과의 차이
