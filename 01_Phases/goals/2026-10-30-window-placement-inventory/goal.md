@@ -2,9 +2,9 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-10-30 선행 시험 뒤
+### 현재 재개 카드 — 2026-10-30 구현 뒤
 
-**다음 첫 일:** 선행 시험(RED)이 끝났다(아래 「선행 시험 — RED」). 다음은 선행 시험 commit·push 뒤 구현 계약을 확정하고 신규 Opus 구현자를 여는 것이다. 구현 Unity 창은 구현자 준비가 끝나면 메인에 정식 요청한다(`msg_78b6ef01487c`). 메인이 Effect와 겹치지 않게 배정한다.
+**다음 첫 일:** 구현이 끝났고 구현자를 정산했다(아래 「구현」). 다음은 구현 commit·push 뒤 merge-tree 대조, 독립 검증 계약, 완료조건 8의 캡처 순서다. merge-tree에서 충돌이 나오면 base를 옮기기 전에 메인에 먼저 알린다(`msg_580c64a10e66`, `msg_c81d46ef6b17`). 검증 Unity 창은 메인 대기열의 도착순이다.
 
 | 항목 | 현재 |
 |---|---|
@@ -12,7 +12,7 @@
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh). 회신 주소는 `run:run_6ae742140ce9`다. |
 | branch | `feat/art-window-placement-20261030`이다. PR279 병합 commit `7bc75898`에서 만들었다. 같은 PR의 첫 commit은 [밝은 외관 goal](../2026-10-29-inventory-character-select-look/goal.md#pr2-사용자-플레이-확인과-병합--2026-10-30)의 PR2 결과 기록이다(문서만, 제품 검증 대상 아님). |
 | 관계 | 같은 worktree의 [인벤토리·캐릭터 선택창 밝은 외관](../2026-10-29-inventory-character-select-look/goal.md#재개-지점) goal이 PR3·PR4를 남기고 열려 있다. 그 goal의 PR3는 이 goal의 branch 위에 쌓는다. 두 PR이 `UiWindowAppearanceContractTests.cs`를 함께 고칠 수 있어서다. |
-| 실행 창 | 이미지 생성 0회다. Unity는 메인이 배정한 batchmode 창 두 번에서 돌렸다. U0 창(09:06:34Z~09:45:00Z)의 Unity는 09:10:41Z~09:23:14Z, U1 창(09:48:32Z~10:25:00Z)의 Unity는 09:51:18Z~10:00:46Z다. 서버 실행은 0이다. |
+| 실행 창 | 이미지 생성 0회다. Unity는 메인이 배정한 batchmode 창 네 번에서 돌렸다. 선행 시험은 U0(Unity 09:10:41Z~09:23:14Z)와 U1(09:51:18Z~10:00:46Z)이다. 구현은 S0(11:04:04Z~11:08:09Z)와 R/F(11:25:47Z~11:42:42Z)다. 서버 실행은 0이다. |
 | 근거 폴더 | `.backups/verification/2026-10-29-inventory-character-select-look/`를 이어 쓴다. Git 제외 폴더다. |
 
 ## 적용 중인 사용자 결정
@@ -136,14 +136,15 @@
 ## 다음 계획 후보
 
 - 나머지 창의 공용 배치 부품 이전(시연 뒤, 소유 파트별): BACKLOG `guild-windows-shared-placement`, `dungeon-reward-window-shared-placement`, `party-invite-popup-shared-placement`, `npc-dialog-panel-shared-placement`
+- 시험 메시지 속 제품 줄 번호 정리: `UiWindowAppearanceContractTests.cs` :161 주석과 :540~:576 메시지가 `InventoryPanelView.cs:<줄>`을 적는다. 대부분은 이 goal 전 기준 commit에서도 이미 그 줄을 가리키지 않았다(근거 폴더 `placement-impl-01/old-view-lines-02.txt`). 완료조건을 막지 않아 이번 PR에서 고치지 않는다. 줄 번호 대신 기능 이름으로 적는 정리가 후보다.
 
 ## 진척 단계
 
 - [x] 범위 승인
 - [x] goal commit
 - [x] 선행 시험
-- [>] 구현
-- [ ] 독립 검증
+- [x] 구현
+- [>] 독립 검증
 - [ ] 사용자 확인(마지막에 한 번에)
 - [ ] 제품 PR 병합
 - [ ] 종료 기록
@@ -207,6 +208,73 @@
 
 - 작성자 pane을 닫았다(`placement-red-writer-pane-close-01.json`, ptyKilled true). 닫기 전 작성자 쪽 orca 대기 0을 저장 스크립트로 확인했다(`placement-red-writer-shells-before-close-02.txt`, `placement-red-writer-ancestors-before-close-03.txt`).
 - SENTIS 한 줄은 계약 :286과 메인 수락(`msg_3ccd6911fb4e`, `msg_78b6ef01487c`)대로 정산 뒤 리드가 복원했다. `restore-projectsettings-sentis.sh` → `placement-red-sentis-restore-1030-01.txt`(10:30:18Z)이고, 복원 뒤 파일이 HEAD blob과 같다. 메인 알림 `msg_063e16658dc1`.
+
+### 구현
+
+- 기준 commit: 선행 시험 commit `eddd61c5`(push 완료, `placement-impl-base-01.txt`).
+- 계약: `placement-impl-contract-v1-02.md`(SHA256 `6a7d0305…`, `placement-impl-contract-v1-02.receipt.txt`). 입력 경로 62개는 bad 0이다(`placement-impl-contract-v1-paths-check-02.txt`). 인용 message ID 4개는 모두 부록 안에 있다(`placement-impl-contract-v1-02-msg-ids-01.txt`).
+  - 먼저 조립한 `placement-impl-contract-v1.md`는 보내지 않았다. 부록 D2(선행 시험 계약)의 작성자용 절이 구현자에게 적용되지 않는다는 한 문장을 더해 `-02`로 다시 조립했다.
+  - 첫 경로 확인은 장면 경로 오기로 bad 1이었다(`-paths-check-01.txt`). 고친 목록을 새 이름으로 다시 쟀다.
+- 계약 안 리드 결정:
+  - 인벤토리 기본 자리의 위 끝은 캐릭터 상태와 파티 정보 중 더 낮은 아래 끝 + 12다. 파티 정보는 숨겨도 켜진 채라 파티 출입으로 창이 뛰지 않는다.
+  - 끌기 handler는 잡는 칸 자신에 둔다. 새로고침은 제목 띠가 아니라 패널의 자식이라, 그래야 새로고침에서 시작한 끌기가 창을 옮기지 않는다.
+  - 시험 결함이 의심되면 구현자는 시험을 고치지 않고 리드에게 묻는다. 시험 메시지 안 옛 제품 줄 번호는 구현 뒤 같은 PR 안에서 리드가 처리를 정한다.
+- 구현자: 신규 `[Art 구현 Opus]`(`claude --model claude-opus-5-5 --effort xhigh`), pane term_353e4b42-f33a-4b68-ab39-b105da3fb7f5, task_37fa6e136b4f / ctx_65173e123a30다. 기동 근거는 `placement-impl-launch-record-01.md`다. 첫 화면 선택창은 없었고, 대화 기록 model 값은 claude-opus-5-5, backend 실제 모델은 unknown이다.
+- 메인 보고 `msg_a141a805b90b`, 메인 수락 `msg_d8591ee21dd6`(10:46:57Z). 메인은 계약·기동 기록·리드 결정 셋을 받았다.
+- 이 절의 리드 발신 msg ID와 시각은 `list-impl-receipt-ids-1030-01.txt`에서 옮겼다.
+
+#### S0 — stub 상태의 부품 시험
+
+- 구현자 「S0 준비됨」 `msg_08eb575b010f`(10:57:17Z): 제품 쓰기는 stub `UiWindowPlacement.cs` 하나였다. 리드 원천 대조 `check-s0-ready-1030-01.txt`·`check-s0-ready-config-1030-01.txt`에서 보고와 같았다.
+- 정식 요청 `msg_76db377d8062`(10:58:18Z), 메인 회신 `msg_8360efcf4074`(Content u3c 뒤 1번), 배정 `msg_e847cae8d699`(11:01:40Z, 시한 11:20:00Z)다.
+- 리드 관문 `placement-impl-s0-window-gate-01.txt`(11:01:53Z, 통과). 구현자에게 `msg_53c7a6cd0a4e`, 메인에 `msg_e9367bfc68a1`을 보냈다.
+- 구현자 「Unity 사용 끝」 `msg_db774c4e4e36`: Unity 11:04:04Z~11:08:09Z, EditMode 1회, 재시도 0이다.
+- 리드 대조 `check-s0-results-1030-01.txt`: 부품 시험 22건이 통과 0·실패 22·건너뜀 0이다. 22건 모두 `NotImplementedException`이고, fixture 밖 0, 컴파일 오류 0이다.
+- 구현자 참고: `ForgetMovedPositions_RunsOnLoadBeforeTheFirstScene`은 본문이 아니라 TearDown의 `ForgetMovedPositions` 호출에서 실패했다. 본문은 속성만 보므로 구현 뒤 통과는 속성 확인만 뜻한다. 독립 검증 계약에 적는다.
+- 반환 점검 `post-s0-drift-check-1030-01.txt`(11:10:18Z): Unity·dotnet·Burst 0, SENTIS diff = 31e7aaf1…, MinimapRT 변화 0이다. 메인 반환 보고 `msg_57fe656a3d18`.
+
+#### R·F — 구현 뒤 거른 실행과 전체 실행
+
+- 구현자 「R 준비됨」 `msg_a6aaf4efadf3`(11:20:15Z): 새 제품 파일 넷(`UiWindowPlacement`·`UiWindowPlacementGeometry`·`UiWindowAreas`·`UiWindowGrabArea`)과 추적 셋(인벤토리 view, 보상 창, client.md)이다.
+- 리드 대조: SHA256이 보고와 같았다(`check-r-ready-1030-01.txt`). 줄 끝은 LF이고 BOM이 없다(`check-line-endings-1030-01.txt`). diff는 세 파일 +31/−52다(`check-r-ready-numstat-1030-01.txt`). 구현자 보고의 +30/−51은 틀린 값이라 보고서에는 저장 출력 값을 쓰게 했다. 리드 결정 셋과 diff의 어긋남은 0이다.
+- 정식 요청 `msg_b75a6f87e4af`(40분), 배정 `msg_a634656ec261`(11:22:58Z, 시한 12:05:00Z)이다. 배정 조건은 「계획 2회를 넘길 때마다 리드가 그 이유를 한 줄로 남겨라」였다.
+- 리드 관문 `placement-impl-rf-window-gate-01.txt`(11:23:20Z, 통과). 구현자에게 `msg_f13784f5c35e`를 보냈다.
+- 회차별 결과(시각은 `check-rf-run-times-1030-01.txt`, 수는 `check-rf-results-1030-02.txt`. 둘 다 원시 result.json·results.xml에서 옮겼다):
+
+  | 회차 | 시작–끝(UTC) | 범위 | 통과/실패/건너뜀 |
+  |---|---|---|---|
+  | R1 EditMode | 11:25:47–11:27:31 | 10개 fixture | 132/0/0 |
+  | R2 PlayMode | 11:27:49–11:29:39 | 11개 fixture | 49/3/2 |
+  | R3 EditMode | 11:30:23–11:31:18 | 고친 영역 | 72/0/0 |
+  | R4 PlayMode | 11:31:38–11:33:03 | 고친 영역 | 18/0/0 |
+  | F EditMode | 11:33:17–11:35:56 | 전체 | 1598/0/0 |
+  | F PlayMode | 11:36:13–11:42:42 | 전체 | 152/23/19 |
+
+- 계획 2회 초과 이유(구현자 `msg_c26b7cf3acc1`, 11:30:14Z, R3 직전): R2 실패 3건(`InventorySceneLifecycleTests`)을 고친 뒤 같은 영역을 다시 돌렸다. 칸 글 높이 30이 한국어 대체 글꼴 한 줄 34.4보다 작았다. 제품 결함이고 시험 결함이 아니다. 수정은 인벤토리 view의 칸 안 값 넷과 주석 한 줄이다(`check-impl-final-1030-01.txt.tracked.diff`).
+- F와 기준(`check-rf-results-1030-02.txt`): U1 대비 새 실패는 0이다. 새 통과는 EditMode 8, PlayMode 8(인벤토리 창 배치 장면 시험)이다. F PlayMode 실패 23건은 U0 실패 23건과 같은 집합이다. 그래서 F2는 돌리지 않았다.
+- 메인 회신 `msg_c81d46ef6b17`(메인 결정): 「이 23건 집합 동일성은 검증자가 원시 XML로 다시 대조하게 하라. 메인은 판정 때 R-2로 표본을 본다.」
+- 반환 점검 `post-rf-drift-check-1030-01.txt`(11:44:55Z): Unity 계열·Windows dotnet·Burst dotnet 0이다. SENTIS는 알려진 한 줄이고 회차별 원시 7개도 같다. MinimapRT는 HEAD와 같다. 메인 반환 보고 `msg_1960a01df61d`.
+- 독립 검증 계약에 넣을 관찰:
+  - R1 EditMode는 132건 모두 통과했지만, 렌더 시험 로그의 칸 글 10줄이 모두 truncated=True였다. EditMode 렌더 시험은 잘림을 기록만 하고, PlayMode 수명 시험이 잡았다.
+  - 4창 합성 fixture(`UiWindowCompositionRenderTests`)는 `HudController.Instance`가 null이라 기본 영역의 대체 규칙(캔버스 위 − 12)만 탄다. 그 캡처에서 인벤토리가 fixture HUD와 겹친다. 실제 장면의 HUD 아래 시험은 통과다(구현 보고 13절).
+
+#### 정산
+
+- 구현자 worker_done `msg_3963475318f1`(11:53:51Z, succeeded). 보고는 `placement-impl-01/report.md`(SHA256 `27c7acb8…`)다.
+- 리드 대조 `check-impl-final-1030-01.txt`(11:54:38Z):
+  - 제품 파일 일곱의 SHA256·bytes가 보고 2절 표와 같다. 모두 LF이고 BOM이 없다.
+  - Unity가 만든 `.meta` 다섯의 guid가 보고 표와 같다. 추적 `.meta`와 겹치는 guid는 0이다.
+  - 추적 diff는 세 파일 +31/−52다. 시험 파일 변경은 `.meta` 하나뿐이고, 제품 코드의 PlayerPrefs·파일 API 줄은 0이다.
+- 구현자 쪽 orca 대기 0을 확인했다(`placement-impl-shells-before-close-01.txt`, `placement-impl-ancestors-before-close-01.txt`). pane을 닫았다(`placement-impl-pane-close-01.json`, ptyKilled true).
+- SENTIS 한 줄은 정산 뒤 리드가 복원했다(`placement-impl-sentis-restore-1030-01.txt`, 11:55:49Z). 복원 뒤 파일이 HEAD blob과 같다. 메인 알림 `msg_d5c28fd18c42`.
+- 구현자가 스스로 적은 것(보고 11절): S0 전에 인라인 `node -e`로 `gates.json`을 한 번 보았다. 그 값은 기록에 넣지 않고 저장 스크립트 출력으로 다시 적었다. 독립 검증이 대화 기록으로 확인한다.
+- 시험 메시지 속 옛 줄 번호는 이번 PR에서 고치지 않는다(「다음 계획 후보」).
+
+### 리드 실수 첫 발생 — 줄 끝 계수와 정규식 이스케이프
+
+- `check-r-ready-1030-01.txt`의 `cr_lines` 칸은 틀린 값이다. Git Bash grep의 `$'\r'` 해석이 줄마다 맞았다. node 바이트 셈(`check-line-endings-1030-01.txt`)으로 다시 쟀다.
+- `check-rf-results-1030-01.mjs`는 템플릿 문자열의 `\b`를 backspace로 읽어 test-run 값을 모두 absent로 냈다. 기록에는 고친 둘째 판(`check-rf-results-1030-02.txt`)만 쓴다.
+- 층: 각각 첫 발생이라 goal 기록만 한다. 두 번째면 줄 끝은 node 스크립트로만 세고, 결과 XML 읽기는 저장된 공용 helper 하나로 모은다.
 
 ### 리드 실수 첫 발생 — 보내기 receipt가 저장소 루트에 생김
 
