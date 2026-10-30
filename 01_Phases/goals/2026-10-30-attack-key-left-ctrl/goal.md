@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 독립 검증자(GPT Astra)가 강 등급으로 검증한다. 계약은 근거 폴더 `verify-01-contract-v1.md`다. Unity 창은 메인 배정 뒤에만 쓴다. 선행 시험과 구현 결과는 아래 [선행 시험 결과](#선행-시험-결과)와 [구현 결과](#구현-결과)에 있다.
+**다음 첫 일:** [PR282](https://github.com/bass131/dawnholder-server/pull/282)는 사용자 직접 확인과 병합 승인을 기다린다. 병합은 마지막에 메인만 한다. 독립 검증 결과는 아래 [독립 검증 결과](#독립-검증-결과)에 있다.
 
 | 항목 | 현재 |
 |---|---|
@@ -17,9 +17,9 @@
 - [x] goal과 계약 기록
 - [x] 선행 시험과 실패 원시
 - [x] 구현과 통과 원시
-- [>] 독립 검증 통과
-- [ ] PR 생성과 확인 항목
-- [ ] PR 병합
+- [x] 독립 검증 통과
+- [x] PR 생성과 확인 항목
+- [>] PR282 병합
 - [ ] 결과 기록과 종료
 
 ## 적용 중인 사용자 결정
@@ -196,6 +196,19 @@ TDD 순서: 선행 시험 작성자가 위 시험을 쓰고 구현 전 실패 �
   - PlayMode 5클래스(Guild 캡처 폴더 지정): 38건 중 통과 37. 선행 실패였던 7건이 모두 통과했다. 남은 실패 1건은 위 (d) `MenuTransitionAndOutsideTown_NoPurchases`이고 구현 전과 같은 190행 NullReferenceException이다.
 - 끝 확인: drift 두 파일은 알려진 drift만 되돌렸다. 시험 diff는 없다. `GameplayPointerInput.cs`와 보존 두 파일의 blob은 기준과 같다.
 - 과정 기록(앞 처분과 같은 기준, 기록만): 생존 신호 300초 초과 1회(305초, 리드 helper `lead/settle-implement-01.json`). 그 밖의 절차 이탈은 구현자가 보고서에 적었다(목록 밖 git 읽기 명령, 분석 스크립트 v1 정규식 오류와 v2 다시 씀).
+
+## 독립 검증 결과
+
+- 검증자: 신규 `gpt-6-astra` xhigh(최초 실행 명령·첫 화면·rollout turn_context 모두 같은 값, backend unknown). task `task_e0f5432c8bc0`, worker_done `msg_976963aa3ecb`. 판정은 근거 폴더 `verify-01/verdict.md`(sha256 `89df38f57939db95467a7cfda145102b45a3f710d18655b3a6ff278326eb496d`)이고 **PASS**(강 등급)다. 리드 표본 대조는 `lead/accept-verify-01.json`, 정산은 `lead/settle-verifier-01.json`이다.
+- 실행(메인 창 `msg_a847616cf709`, 시한 09:30:00Z 안, 마지막 Unity 종료 08:42:06Z):
+  - EditMode 전체: 1578건 모두 통과. 검증자의 새 시험 2건(`PlayerAttackControlIsolationTests`)을 포함한다.
+  - PlayMode 5클래스(실제 loopback TCP 가짜 peer): 38건 중 통과 37. 남은 실패는 위 (d) 1건이고 같은 190행 NullReferenceException이다.
+- 새 시험(commit `1c1ee61c`): 실제 Input System control 해석으로 왼쪽 Ctrl·Enter는 공격이고 오른쪽 Ctrl·마우스 버튼은 공격이 아니며, 왼쪽 Ctrl이 다른 Player 동작에 묶이지 않음을 본다.
+- **V1 — 보고 문장과 실제 실행 범위 불일치(메인 처분 A 기록만, `msg_898736ad5eb6`):** 구현 보고 209행은 「음성 검사 9줄은 … 통과했다」고 적었다. 실제로는 **음성 검사 9줄 중 7줄은 실행 통과, live lane 2줄(`GuildLiveServerWindowTestTools.cs` 441, `GuildLiveServerWindowTests.cs` 383)은 컴파일·정적 보존만**이다. 미실행 사실은 같은 보고 134~135행에 있었다. 원본 보고는 고치지 않는다. 검증자가 두 줄의 보존을 diff로 직접 확인했다. 메인은 마지막 사용자 보고에 이 건을 한 줄로 넣는다.
+- 과정 기록(기록만):
+  - H1 검증자 생존 신호 300초 초과 1회(정본 helper 305초, 검증자 자기 측정 306초). 메인 `msg_2ad9c188b1d8`의 기준을 리드가 적용했다(`msg_0a19f13778b7`).
+  - 허용 목록 밖 읽기 전용 `git branch --show-current` 1회(리드 처분 `msg_b9a065338255`, 기록 후 진행).
+- 정산: rollout 호출 69회 중 git 쓰기·ORCA 전체 조회 0. worker-release는 retained/external_terminal이고, pane은 대기 상태를 보고 닫았다.
 
 ## 다음 계획 후보
 
