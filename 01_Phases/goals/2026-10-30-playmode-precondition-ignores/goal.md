@@ -8,7 +8,7 @@
 |---|---|
 | 승인 | 메인 승인 초안 v1(`msg_71f0ed6d4994`). 이 goal과의 차이 9곳은 메인이 대조해 통과시켰다(`msg_e302e19ae9fa`, 아래). |
 | 리드 | `[Effect 리드 Opus]`(claude-opus-5-5 xhigh). Run `run_5f3209972e68`, 회신 주소 `run:run_5f3209972e68`. 시험 21건의 소유자 Content 리드와 기술 계약을 직접 조율한다. |
-| branch | `fix/playmode-precondition-ignores-20261030`. Content PR-B branch `feat/content-guild-base-window-20261030`의 head `6669e2d7` 위에 쌓았다. PR-B가 `GuildWindowIndependentSceneTests.cs`를 이미 고쳤기 때문이다. 작업 공간 effect-active. |
+| branch | `fix/playmode-precondition-ignores-20261030`. Content PR-B(PR #285) branch `feat/content-guild-base-window-20261030`의 최종 head `ae839e0c` 위에 쌓았다. 처음에는 `6669e2d7`에서 만들었고 PR-B 최종 head 알림 뒤 13:44:28Z에 옮겼다(`lead/rebase-01.txt`). PR-B가 `GuildWindowIndependentSceneTests.cs`를 이미 고쳤기 때문이다. 작업 공간 effect-active. |
 | 근거 폴더 | `.backups/verification/2026-10-30-playmode-precondition-ignores/`(Git 제외). 리드 원시는 `lead/`다. |
 | 실행 창 | Unity는 effect-active `03_Client` batchmode만 쓴다. 창은 메인 배정이다. |
 
@@ -57,6 +57,7 @@
   4. 서버 2건은 Content 파일이 아니다. 「포트에 붙어 보고 안 되면 건너뜀」은 서버가 있어야 하는 lane에서 서버가 죽어도 조용히 넘어가므로 피한다.
 - 장치 위치 의견: 시험 쪽은 조건 1로 값 오류를 막는다. 남는 구멍은 「runner가 변수를 빠뜨림」이다. 지금 runner(`run-u3c.ps1`·`run-u4.ps1`·permit runner)는 모두 Git 밖이라, 검사는 실행 계약의 lane 판정 기준에 둔다. Content는 다음 길드 lane 계약부터 「가려진 lane skipped 0」을 넣는다. 저장소 안 runner는 이번 범위 밖이다.
 - PR-B 상태: 독립 검증 V1이 Unity 창을 쓰는 중이다(시한 13:38Z). PR-B 최종 head에는 검증자 새 시험 `GuildBaseWindowIndependentTransitionTests.cs`와 goal commit이 더 얹힌다. 이 goal의 파일과 겹치지 않는다. 판정 결과로 두 길드 시험 파일을 다시 고치면 Content가 쓰기 전에 알린다.
+- PR-B 최종 head(Content `msg_da63bd767371`, 13:43:17Z): PR #285, head `ae839e0c`, 독립 검증은 계약 범위 통과다. `6669e2d7` 뒤의 commit은 검증자 새 시험 `GuildBaseWindowIndependentTransitionTests.cs`(시험 5건, 캡처·permit 변수를 쓰지 않음)와 goal 기록이다. 두 길드 시험 파일은 바뀌지 않았다(리드 `git diff --stat 6669e2d7 ae839e0c` 확인).
 
 ## 대상 23건
 
