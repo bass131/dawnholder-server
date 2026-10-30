@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** Unity 창 1(첫 가져오기 + 기준 실행 + PR279 사후 시험 + 지금 화면 캡처)을 메인에 요청하고 배정을 기다린다. 그 사이 PR-A 선행 시험 계약을 쓴다.
+**다음 첫 일:** PR-A·PR-B 선행 시험 작성자를 띄운다(계약 `pr-a-red-contract-v1.md`·`pr-b-red-contract-v1.md`). 각 작성자의 U1 창을 메인에 하나씩 요청한다. 창 1 기준선은 끝났다([결과](#기준-실행사후-확인--unity-창-1)).
 
 | 항목 | 현재 |
 |---|---|
@@ -69,7 +69,7 @@
 
 | 영역 | 파일 | 보존 |
 |---|---|---|
-| PR-A 화면 코드 | `03_Client/Assets/Scripts/UI/MainMenuController.cs`(view 생성·연결만), 새 view 클래스 `Scripts/UI/` 아래(+.meta, 이름은 계약에서 확정) | 직렬화 필드 6개와 FormerlySerializedAs, `OnStartClicked`·`OnQuitClicked` |
+| PR-A 화면 코드 | `03_Client/Assets/Scripts/UI/MainMenuController.cs`(view 생성·연결만), 새 view 클래스 `Scripts/UI/` 아래(+.meta, 이름은 계약에서 확정) | 직렬화 필드 7개(참조 4개·값 3개)와 FormerlySerializedAs, `OnStartClicked`·`OnQuitClicked` |
 | PR-A 장면 | `03_Client/Assets/Scenes/00.Menu/MainMenu.unity` | 기존 오브젝트의 fileID·GUID·연결. 옛 오브젝트는 지우지 않고 다시 쓰거나 끈다 |
 | PR-B 화면 코드 | `Scripts/UI/GuildWindowLayout.cs`, `GuildHousingLayout.cs`, `GuildWindow.cs`, 필요하면 `BlacksmithWindow.cs`의 글자 색 | 표시 값·대기·입력 허용·구독 수명·레벨업 의도 이벤트, 레벨 1·2 그림 선택 규칙, 대장간 창 동작 |
 | 시험 | 새 EditMode·PlayMode 시험 | 기존 시험의 준비 코드·기대값 변경 0이 목표. 바꿔야 하면 전수 분류 표와 메인 결정 뒤 |
@@ -130,8 +130,8 @@
 ## 진척 단계
 
 - [x] 범위 승인
-- [>] 기준 실행·사후 확인
-- [ ] 로그인 선행 시험
+- [x] 기준 실행·사후 확인
+- [>] 로그인 선행 시험
 - [ ] 로그인 화면 구현
 - [ ] 로그인 독립 검증
 - [ ] 길드 창 선행 시험
@@ -147,3 +147,12 @@
 - 리드 진입 맥락 메모: `lead-context-memo-v1.md`. Run 생성 receipt: `run-create-receipt.json`(run_978c01afcf2a).
 - READY와 초안 v1 전송 `msg_2092c1f6b5e4`, 메인 처분 `msg_736bf752c0e4`(2026-10-30T05:27:40Z). Art 리드 조율 `msg_0da8455d716f`.
 - PR279 사후 확인의 정적 읽기: `postcheck-pr279-charactermenuview-read-v1.md`. Content 동작 코드 diff는 없었고, 인벤토리 배치 단정은 결정 50 B대로 값이 그대로다. 시험 실행은 창 1에서 한다.
+
+### 기준 실행·사후 확인 — Unity 창 1
+
+- 메인 배정 `msg_e5077ab0039f`. 리드가 `scripts/run-window1.ps1`로 cac54985에서 돌렸다. Unity 시작 05:33:03Z, 반환 관측 05:49:26Z(Unity 0·dotnet 0). 근거는 `window1/`이다.
+- 첫 가져오기는 약 7분 40초였다(Unity 시작 05:33:03Z → EditMode 시험 시작 05:40:44Z). 초안의 30~60분 추정보다 짧았다.
+- EditMode 1571/1571 통과. PR279 사후 확인 대상(CharacterMenu*·MainMenu*·ClientLogin*·InventoryPanel*·UiWindowAppearanceContract·UiWindowCompositionRender·BrightUiKitImport·BrightWindowInteraction)도 모두 통과했다(`window1/editmode-content-classes-01.txt`). PR279 사후 확인은 끝났다.
+- PlayMode 185 중 통과 143·실패 23·건너뜀 19. 실패 23의 분류는 `window1/baseline-classification-01.md`다. 환경 전제(실행기 허가·캡처 폴더 변수·GameView·실서버)가 없어 실패한 것이 12, 길드 창 글자 온전함 판정의 원인 미확정이 11이다. 모두 제품 변경 전 실패다. 이후 실행은 이 목록과 비교해 새 실패만 이번 변경의 영향 후보로 본다.
+- harness가 프로세스 핸들을 잡지 않아 Unity exit code는 null(미관측)이다. 선행 시험 계약에 고치는 방법을 넣었다.
+- 실행 뒤 drift 두 파일(ProjectSettings의 SENTIS 정의 한 줄, MinimapRT.renderTexture 줄 끝만)을 확인하고 git 원본으로 복원했다(`window1/drift-*`).
