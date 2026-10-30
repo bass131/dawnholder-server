@@ -2,21 +2,21 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 리드가 선행 시험 계약(lane 판정 harness와 기준 head 원시)을 확정하고 신규 선행 시험 작성자(`claude-opus-5-5` xhigh)를 연다. Unity 창은 준비되면 예상 시간과 함께 메인에 정식 요청한다.
+**다음 첫 일:** 리드가 구현 계약(전제 판정 다섯 곳·`DEVELOPMENT.md` 새 절·고정 harness로 바꾼 head 실행)을 확정하고 신규 구현자(`claude-opus-5-5` xhigh)를 연다. Unity 창은 구현자가 준비되면 예상 시간과 함께 메인에 정식 요청한다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 메인 승인 초안 v1(`msg_71f0ed6d4994`). 이 goal과의 차이 9곳은 메인이 대조해 통과시켰다(`msg_e302e19ae9fa`, 아래). |
 | 리드 | `[Effect 리드 Opus]`(claude-opus-5-5 xhigh). Run `run_5f3209972e68`, 회신 주소 `run:run_5f3209972e68`. 시험 21건의 소유자 Content 리드와 기술 계약을 직접 조율한다. |
-| branch | `fix/playmode-precondition-ignores-20261030`. Content PR-B(PR #285) branch `feat/content-guild-base-window-20261030`의 최종 head `ae839e0c` 위에 쌓았다. 처음에는 `6669e2d7`에서 만들었고 PR-B 최종 head 알림 뒤 13:44:28Z에 옮겼다(`lead/rebase-01.txt`). PR-B가 `GuildWindowIndependentSceneTests.cs`를 이미 고쳤기 때문이다. 작업 공간 effect-active. |
+| branch | `fix/playmode-precondition-ignores-20261030`. Content PR-B(PR #285) branch `feat/content-guild-base-window-20261030`의 head `c41952da` 위에 쌓았다. 처음에는 `6669e2d7`에서 만들었고, PR-B 최종 head 알림 뒤 13:44:28Z에 `ae839e0c`로(`lead/rebase-01.txt`), PR-B goal 기록 commit 뒤 15:22:13Z에 `c41952da`로 옮겼다(`lead/rebase-02.txt`). PR-B가 `GuildWindowIndependentSceneTests.cs`를 이미 고쳤기 때문이다. 선행 시험의 기준 head `429481c2`와 지금 head는 `03_Client`·`DEVELOPMENT.md`가 같다(같은 기록). 작업 공간 effect-active. |
 | 근거 폴더 | `.backups/verification/2026-10-30-playmode-precondition-ignores/`(Git 제외). 리드 원시는 `lead/`다. |
 | 실행 창 | Unity는 effect-active `03_Client` batchmode만 쓴다. 창은 메인 배정이다. |
 
 ## 진척 단계
 
 - [x] goal과 계약 기록
-- [>] 선행 시험(lane 판정 harness)과 실패 원시
-- [ ] 구현과 통과 원시
+- [x] 선행 시험(lane 판정 harness)과 실패 원시
+- [>] 구현과 통과 원시
 - [ ] 독립 검증 통과
 - [ ] PR 생성과 확인 항목
 - [ ] PR 병합
@@ -58,6 +58,7 @@
 - 장치 위치 의견: 시험 쪽은 조건 1로 값 오류를 막는다. 남는 구멍은 「runner가 변수를 빠뜨림」이다. 지금 runner(`run-u3c.ps1`·`run-u4.ps1`·permit runner)는 모두 Git 밖이라, 검사는 실행 계약의 lane 판정 기준에 둔다. Content는 다음 길드 lane 계약부터 「가려진 lane skipped 0」을 넣는다. 저장소 안 runner는 이번 범위 밖이다.
 - PR-B 상태: 독립 검증 V1이 Unity 창을 쓰는 중이다(시한 13:38Z). PR-B 최종 head에는 검증자 새 시험 `GuildBaseWindowIndependentTransitionTests.cs`와 goal commit이 더 얹힌다. 이 goal의 파일과 겹치지 않는다. 판정 결과로 두 길드 시험 파일을 다시 고치면 Content가 쓰기 전에 알린다.
 - PR-B 최종 head(Content `msg_da63bd767371`, 13:43:17Z): PR #285, head `ae839e0c`, 독립 검증은 계약 범위 통과다. `6669e2d7` 뒤의 commit은 검증자 새 시험 `GuildBaseWindowIndependentTransitionTests.cs`(시험 5건, 캡처·permit 변수를 쓰지 않음)와 goal 기록이다. 두 길드 시험 파일은 바뀌지 않았다(리드 `git diff --stat 6669e2d7 ae839e0c` 확인).
+- PR-B head 변경(메인 `msg_9d2adae269d5`): `c41952da`. 바뀐 것은 Content goal.md뿐이고, 옮길 때는 리드가 정한다고 했다. 리드는 구현 전에 옮겼다(위 branch 줄). 구현자·검증자·PR이 같은 head 위에서 일하게 하려는 것이다.
 
 ## 대상 23건
 
@@ -85,6 +86,10 @@
 3. **시험 실행 안내는 `00_Document/operations/DEVELOPMENT.md`에 새 절로 둔다.** 저장소 문서에 이 변수 이름이 한 번도 나오지 않는다(리드 `git grep`, PR-B head). 「개발과 검증」 문서가 실행 전제·부작용의 진입점이다(AGENTS 「작업 진입점」).
 4. **선행 시험은 새 시험 클래스가 아니라 lane 판정 harness다.** 환경 변수는 프로세스 전체 값이라 시험 안에서 「변수 없는 실행」을 따로 만들 수 없다. 그래서 RED는 저장된 runner와 결과 XML 판정기가 기준 head의 전체 실행에서 23건 실패를 잡는 것이다. 판정기는 근거 폴더에 둔다(Git 밖). 판정 식은 구현 전에 고정하고 sha256을 남기며, 구현자는 고치지 않는다.
 5. **CURRENT는 이 PR에서 고치지 않는다.** Effect 줄을 PR283 branch도 고쳐, base가 다른 두 PR이 같은 줄을 겹쳐 고치게 된다. 이 goal 링크는 PR283 병합 뒤 종료 기록 때 Effect 줄에 넣는다.
+6. **값이 틀린 lane의 `OverlayAtTarget`은 `DAWNHOLDER_GUILD_MEMORY_DIR` 없음을 따로 다루지 않는다.** 선행 시험 작성자는 L4에서 이 3건이 permit 문구가 아니라 `MemoryDirectory()`의 `ArgumentNullException`으로 실패한다고 관찰했다.
+   - 이유: Content 조건 1이 `CheckPermit`에서 permit 한 줄만 바꾸라고 했다. L4는 permit을 틀린 값으로 주는 lane이라 지금처럼 실패해야 한다. 판정 식의 skips는 Skipped만 보고, lane L4는 그 3건이 기준과 같아야 통과다.
+   - 핵심 단점: 그 lane의 실패 문구가 permit 오류를 직접 말하지 않는다. 되돌리기는 검사 한 줄이다.
+7. **기본 화면 두 시험의 건너뜀은 rendering 해상도 읽기 뒤, `CheckModel`·`Judge` 앞에 둔다.** 기준 L0·L4에서 `DefaultScreen_ApprovedValues`는 view 없음으로 시작했고, 그 측정 중에 batchmode의 main GameView(880x531)가 생겨 뒤 시험까지 남았다(`lead/facts-view-side-effect-01.md`). 건너뜀을 더 앞에 두면 뒤 시험의 화면 크기가 바뀔 수 있다. Content 조건 2(판정 단계 전)도 지킨다. 정확히 어느 호출이 GameView를 만드는지는 확인하지 않았다(추정). 대상 밖 결과가 바뀌면 구현자는 다른 시험을 고치지 않고 멈춰 묻는다.
 
 ## 만들 것
 
@@ -145,12 +150,32 @@
 - 관문은 매번 저장 스크립트로 잰다: 물리·commit 여유 각 4 GiB, Unity 0, Windows dotnet 0.
 - 서버·DB는 쓰지 않는다. 사용자 손은 병합 승인뿐이다.
 
+## 선행 시험 결과(구현 전 RED)
+
+작성 신규 `[Effect 구현 Opus]`(Task `task_a91407ca2f11`, 대화 기록 모델 `claude-opus-5-5`만, backend unknown). 보고 `pretest-01/report.md`(sha256 `9c864457…cb09`), 리드 수락 `lead/accept-pretest-01.md`. 기준 head `429481c2`에서 batchmode 일곱 번을 돌렸다(메인 창 `msg_46325a7455d4`, 마지막 Unity 종료 15:02:36Z, 반환 `msg_6df563795cf9`).
+
+| lane | 무엇을 주나 | 전체·통과·실패·건너뜀 |
+|---|---|---|
+| L0 | 없음(전체) | 230·188·23·19 |
+| L1 두 번 | 캡처 변수 | 28·14·14·0, 두 번 같음 |
+| L2 | 캡처·memory·permit·token·Task·Dispatch | 3·1·2·0 |
+| L3a | 서버 2건 class 이름 filter(실서버 없음) | 4·0·4·0 |
+| L3b | 서버 2건 정확한 이름(실서버 없음) | 3·0·3·0 |
+| L4 | 틀린 캡처 경로·틀린 permit 경로 | 28·7·21·0 |
+
+- L0 실패 집합이 대상 23건과 같다(`red` 통과). 같은 L0을 전후에 넣은 `full`은 결함 이름 23개로 실패한다(구현 전 RED). L1 두 번은 정규화 없이 같았고, `skips` 일곱 번과 U4 ⓪ 17건 대조는 통과다.
+- class 이름 filter는 Explicit 시험도 고른다(L3a 탐침 「고름」). 그래서 서버 2건을 Explicit로 바꿔도 이름으로 고른 실행에서는 서버가 없으면 지금처럼 실패한다.
+- 판정 식 고정: freeze-v1 `4b3e429b…71db`(Unity 전), freeze-final `1e8abaa7…8034`(v1 뒤 바뀐 tools 0개, 사양은 기준 원시에서 옮긴 칸만). 리드가 따로 다시 재서 같았다(`lead/accept-pretest-check-01.json`).
+- 일곱 실행의 실패 81행 분류: (a) 0, (b) 46, (c) 0, (d) 35. (d)는 전제를 준 lane의 잉크·글자 판정 34행과 L2 `OverlayAtTarget_1920x1080`의 창 위치 미복원 1행이다. 단정은 하나도 바꾸지 않았다.
+
 ## 남은 우려
 
 - `DefaultScreen_ApprovedValues`는 Editor 대화형 실행에서만 판정된다. 지금 lane은 모두 batchmode라 사실상 돌지 않는다(Content 조건 3).
 - 전제를 주는 lane이 변수를 빠뜨리는 실수는 시험이 알 수 없다. 문서 규칙과 계약 검사에 기댄다. runner가 Git 밖에 있어 다음 세션이 새 runner를 쓰면 검사가 빠질 수 있다.
 - 서버 2건의 실서버 실행은 이 goal에서 하지 않는다. 이름 filter 선택만 보인다.
 - 잉크 10건의 판정 실패는 사용자 처분 대기로 그대로 남는다.
+- 선행 시험의 L2에서 `OverlayAtTarget_1920x1080`이 permit을 받은 뒤 「memory return: original position returned」로 한 번 실패했다(원인 미확정, Editor 창 배치 부작용인지 확인하지 않음).
+- 잉크 판정 결과가 lane이나 실행 순서에 따라 달라질 수 있다. `RenderTextureAuxiliary_709x399`가 L1에서는 통과, L4에서는 실패했다. 전후 비교는 같은 lane끼리만 한다.
 
 ## 메인 초안과의 차이
 
