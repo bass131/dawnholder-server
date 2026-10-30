@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 리드가 구현 계약을 쓰고 구현자(신규 Opus)를 연다. 구현 Unity 창은 메인에 따로 요청한다. 구현자는 배정 전에 제품을 쓰고 Unity는 배정 뒤에만 쓴다.
+**다음 첫 일:** 리드가 캡처 계약을 쓰고 캡처 작업자(신규 Opus)를 연다. 캡처 Unity 창은 Editor 하나만으로, 예상 시간과 함께 메인에 따로 요청한다. 그 뒤 독립 검증자를 연다. 기존 시험 1건 (a)의 수정과 전후 재실행은 검증자가 맡는다(아래 「구현 결과」).
 
 | 항목 | 현재 |
 |---|---|
@@ -10,14 +10,14 @@
 | 리드 | `[Effect 리드 Opus]`(claude-opus-5-5 xhigh). Run `run_5f3209972e68`, 회신 주소 `run:run_5f3209972e68`. |
 | branch | `feat/kill-reward-float-text-20261030`. 65 A branch `feat/attack-key-left-ctrl-20261030`의 PR282 head `70ab4f19` 위에 쌓았다. 두 PR이 `client.md`와 `CURRENT.md` Effect 줄을 함께 고치기 때문이다. PR base는 65 A branch이고, 앞 PR이 병합되면 차례로 바뀐다. 작업 공간 effect-active. |
 | 근거 폴더 | `.backups/verification/2026-10-30-kill-reward-float-text/`(Git 제외). 리드 원시는 `lead/`다. |
-| 실행 창 | Unity는 effect-active `03_Client` batchmode만 쓴다. 창은 메인 배정이다. |
+| 실행 창 | Unity는 effect-active `03_Client`만 쓴다. 시험 실행은 batchmode, 캡처는 Editor 창 하나다. 창은 메인 배정이다. |
 
 ## 진척 단계
 
 - [x] goal과 계약 기록
 - [x] 선행 시험과 실패 원시
-- [>] 구현과 통과 원시
-- [ ] 캡처
+- [x] 구현과 통과 원시(기존 시험 1건 (a)는 독립 검증에서 고친다)
+- [>] 캡처
 - [ ] 독립 검증 통과
 - [ ] PR 생성과 확인 항목
 - [ ] 제품 PR 병합
@@ -42,6 +42,15 @@
 
 - 범위 초안과 goal의 차이 다섯 곳(시험 층, Art 값, `client.md` 자리, 클리어 값이 증가분이라는 사실 교정, 「재화 주머니」 이름)은 리드 결정 또는 사실 교정이고 사용자 판단이 필요 없다.
 - 조건 둘: 계약에 「어떤 시험이 증가분 계산을 가르는가」를 한 줄로 적는다(선행 시험 계약 보충 01로 반영). 캡처는 1920×1080·1280×720 두 장 모두 사용자 확인 묶음에 넣는다.
+
+### 10-30 메인 처분 — 기존 시험 (a) 수정은 독립 검증자가 — msg_b50d7db4c2ab(메인 결정, 사용자 결정 아님)
+
+- 구현 실행에서 실패한 기존 시험 1건(`InventorySceneLifecycleTests` 483~485행, 구독자 형식을 정확히 셋으로 고정)의 분류 (a)를 받는다. 수정을 독립 검증자에게 맡기는 처리도 받는다.
+- 조건 셋:
+  1. 정본대로 줄 단위 분류 표, 같은 명령의 전후 원시(65/1 → 66/0), 요구 출처(goal 「만들 것」 2)를 판정에 남긴다.
+  2. 단정을 약하게 하지 않는다. 「정확히 셋」을 「정확히 넷(새 처치 글 형식 포함)」으로 바꾼다. 개수 단정을 지우거나 「셋 이상」으로 바꾸지 않는다. 이번에 돌지 않은 486~497행(Ending 구독자 0 등)은 수정 뒤 실제로 돌아 통과해야 한다.
+  3. 486~497행이 수정 뒤 처음 돌면서 새 실패가 나면 (d) 미확정으로 두고 통과로 바꾸지 않는다. 그때는 리드를 거쳐 메인에 보고한다.
+- 캡처 창은 Editor 하나만, 예상 시간과 함께 따로 요청한다.
 
 ### 10-27 결정 4 A·10-30 메인 운영 방식
 
@@ -157,6 +166,20 @@
   - 작성자가 첫 입력 대조의 `sha256sum` 1회를 파일로 남기지 않았다고 스스로 보고했고, 저장 스크립트로 다시 재 남겼다.
   - 3.8 raycast 음성 단정은 3D TMP에 collider가 없으면 늘 참이다. 같은 시험의 「누를 때 처치 글이 떠 있다」·「C_Attack 1건 더」 단정이 판별력을 맡는다. 독립 검증 계약에 넣는다.
   - 생존 신호 18회, 최대 간격 293초(정본 helper, `lead/settle-pretest-01.json`).
+
+## 구현 결과
+
+- 구현자: 신규 `claude-opus-5-5` xhigh(대화 기록 model 값 291회 그대로, backend unknown). task `task_d8667182f596`, worker_done `msg_6db565386c32`(outcome failed, 원인은 아래 기존 시험 1건). 보고서는 근거 폴더 `implement-01/report.md`(sha256 `8d9a018a761b88f5334515c0f9122cef098c6ccc99e944604c2d5453a32cdf9b`)다. 리드 대조는 `lead/accept-implement-01.md`, 정산은 `lead/settle-implement-01.json`이다.
+- 제품 commit `ecf8da22`: `EnemyRegistry.Despawn`이 지우기 직전 위치로 `EnemyDied`를 낸다. 계산은 일반 C# `KillRewardPairing`, 표시는 씬 소유 MonoBehaviour `KillRewardFloatText`(둘 다 `Combat/Effects/`)이고 `CombatBootstrap` installer 한 행으로 만든다. `client.md`에 `## 처치 보상 글` 절이 생겼다. 계산 타입 EditMode 시험 11건을 더했다. 상수는 짝짓기 창 1.0초, 수명 1.8초, 흐려짐 마지막 0.5초, 상승 0.9(ease-out), 시작 높이 1.6이다.
+- Unity 창: 메인 배정 `msg_dd51eef0fd31`(시한 11:00:00Z), 리드 관문 10:33:15Z 통과 뒤 전달. 마지막 Unity 끝 10:42:41Z, 반환 보고 `msg_3ce5488c1b97`. drift 두 파일은 알려진 drift로 복원했다.
+- 1회째 EditMode 전체: 1589건 모두 통과(기존 1578 + 새 11).
+- 2회째 PlayMode 10클래스: 66건 중 65 통과·1 실패. 선행 실패 16건은 모두 통과했다. 3.2 표본에서 0.209초→1.005초 사이 0.527 올랐고, 1.392초에 alpha 0.663으로 보였으며, 1.804초에 0개가 됐다. 3.7 전제는 0.21초 < 1.4초, 0.20초 < 1.0초였다. 3.8은 raycast hit 0개, `C_Attack` 0 → 1이었다.
+- 실패 1건: `InventorySceneLifecycleTests.MapTransition_RebuildsOnePanelWithTheStoredMirror_RequeriesAfterReady_AndEndingHasNone`. 483~485행이 `InventoryState.OnInventoryChanged` 구독자 형식을 `InventoryPanel`·`GuildUiController`·`HudController` 셋으로 고정했고, 「만들 것」 2의 새 구독자가 넷째로 보였다. 구현자 분류 (a), 리드 동의(`msg_2b350d347514`), 메인 처분 `msg_b50d7db4c2ab`(위). 시험이 이 단정에서 멈춰 486~497행은 돌지 않았다. 같은 형식의 구독자 집합 단정은 저장소 시험에 이것 하나다(리드 `git grep`).
+- 미실행: 10클래스 밖 PlayMode, 캡처, 게임 화면, 직접 플레이, 빌드.
+- 과정 기록(통과 차단 아님):
+  - 리드 계약 누락(첫 발생): 선행 시험 계약 req5의 영향 grep이 `root` 아래 찾기만 보게 해서 위 구독자 집합 단정을 미리 잡지 못했다. 다음 같은 종류의 계약에는 새 구독이 생기는 이벤트의 구독자 수·형식 단정 grep을 넣는다.
+  - 리드 R-3 이탈(첫 발생, 09:56Z 리드 발견): Art 리드 답 `msg_ae88de6f6d11`에 대한 회신 `msg_084d109e07ee`를 `reply --id`로 보내 subject가 자동 「Re: [Art 리드 Opus] …」가 됐다. R-3은 일반 회신을 `send --subject "[자기 태그] …"`로 보내게 한다. body 첫머리는 `[Effect 리드 Opus]`였다. 이후 일반 회신은 `send`로 보낸다(첫 적용 `msg_8e5730889d6f`). 첫 발생이라 규칙을 새로 만들지 않는다(AGENTS 「설계 우선순위」 교정 층).
+  - 구현자가 스스로 적은 절차 이탈 10건: 첫 명령의 `git branch --show-current`, 빈 `node -e ""` 1회, stderr를 버린 읽기 명령, heartbeat 간격 302초 1건 등이다. 저장소 쓰기는 없고 허용 밖 쓰기 0건이다(정산과 일치).
 
 ## 다음 계획 후보
 
