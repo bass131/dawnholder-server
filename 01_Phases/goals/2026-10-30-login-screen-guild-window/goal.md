@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR-A는 PR #281로 열렸다. PR-B는 그 head 위의 branch에서 이어 간다([로그인 PR과 길드 창 branch](#로그인-pr과-길드-창-branch)). PR-B 구현자(task_27bdad71a9d7)는 초안을 끝내고 대기 중이다. Unity 창은 메인 대기열에서 Effect 65 A 독립 검증 다음이다(`msg_e2eeb638f742`). 배정되면 관문을 다시 재고 「Unity 창 열림·배치 허가」를 보낸다.
+**다음 첫 일:** PR-B 구현은 commit됐다([길드 창 구현](#길드-창-구현--unity-창-pr-b-u2)). 다음은 새 선행 시험 작성자가 옛 단정 시험 12건을 고치고 버튼 글자 세로 가운데 RED를 쓰는 일이다([처분](#10-30-옛-단정-시험-12건-처분--msg_54966502537d)). 그다음 새 구현자가 버튼 글자를 `Midline`으로 고치고, 독립 검증으로 간다. Unity 창은 단계마다 메인에 정식으로 요청한다.
 
 | 항목 | 현재 |
 |---|---|
@@ -74,6 +74,7 @@
 | PR-B 화면 코드 | `Scripts/UI/GuildWindowLayout.cs`, `GuildHousingLayout.cs`, `GuildWindow.cs`, 필요하면 `BlacksmithWindow.cs`의 글자 색 | 표시 값·대기·입력 허용·구독 수명·레벨업 의도 이벤트, 레벨 1·2 그림 선택 규칙, 대장간 창 동작 |
 | PR-B 문서 | `00_Document/FEATURE_MAP.md`, `00_Document/domains/client.md`(PR-A 로그인 view와 PR-B 길드 창 배치·스킨, 메인 결정 `msg_b0d2988af33b`) | 그 파일의 다른 줄. 문장은 실제 코드와 맞는 사실만 |
 | 시험 | 새 EditMode·PlayMode 시험 | 기존 시험의 준비 코드·기대값 변경 0이 목표. 바꿔야 하면 전수 분류 표와 메인 결정 뒤 |
+| PR-B 기존 시험 | `Tests/PlayMode/GuildWindowIndependentSceneTests.cs`의 잉크 판정 11건, `Tests/PlayMode/GuildGameplayWindowTests.cs`의 일시정지 메뉴 1건(메인 `msg_54966502537d`) | 처분의 새 단정 밖 줄. 다른 시험의 기대값 |
 | 기록 | 이 goal, CURRENT Content 줄 | 직전 Content goal 기록은 고치지 않는다 |
 
 제품 코드는 구현자가, 선행 시험은 선행 시험 작성자가, 독립 시험은 검증자가 쓴다. 리드는 goal·CURRENT·근거 폴더와 Git만 쓴다.
@@ -136,6 +137,21 @@
 - 길드 동작 시험 6건(msg_b6fc61f509f6): Effect가 변수를 주고 돌린 실행에서 `GuildGameplayWindowTests.MenuTransitionAndOutsideTown_NoPurchases`가 실제로 실패했다. 일시정지 메뉴를 연 뒤 대장간 강화 좌표에 메뉴의 MainMenuButton이 있었다. 이 묶음 6건도 11건과 같은 방식으로 배치 전후에 돌리고, 그 1건의 원인을 시험 주인으로서 분류한다. 분류 결과는 Art 리드에게도 알린다(Art의 일시정지 메뉴 최신화가 같은 좌표에 영향을 줄 수 있다).
 - 리드는 두 처분을 PR-B 구현자 계약 v1과 보충 1(msg_040d496feea4)에 넣었다. 배치 전(⓪)과 배치 뒤(③)에 17건을 한 실행으로 돌린다.
 
+### 10-30 옛 단정 시험 12건 처분 — msg_54966502537d
+
+메인 결정이다(사용자 결정 아님). 리드의 줄 단위 분류 표 `msg_57fc68d8a166`에 A로 답했다.
+
+- 잉크 판정 11건(`GuildWindowIndependentSceneTests`)과 `GuildGameplayWindowTests.MenuTransitionAndOutsideTown_NoPurchases`를 모두 (a) 옛 구현 세부로 분류하고 이 PR에서 고친다.
+- 근거: 잉크 정의(가장 밝은 채널 ≥150)가 어두운 바탕을 전제한다(시험 주석과 frame ink 15,219 → 149,290, covered·cut 0). 메인이 배치 전·뒤 판정 프레임과 1920 캡처를 직접 보고, 글자가 안 보이는 제품 결함은 아니라고 확인했다.
+- 조건 다섯
+  1. 새 잉크 기준값은 실행 전에 계약에 값과 근거를 적어 고정한다. 결과를 보고 바꾸면 그 실행은 판정에 쓰지 않는다.
+  2. 음성 대조는 새 규칙에서도 손상을 잡아야 하고, 손상 실행마다 기대한 종류를 보고한 원시를 남긴다. 검증자 계약에 이 확인을 넣는다.
+  3. 다른 창 덮개 대조는 손상 방식을 바꾼다. 바뀐 방식이 원래 의도를 그대로 시험하는지 작성자가 한 줄로 적고 검증자가 따로 본다.
+  4. 일시정지 메뉴 시험의 새 단정은 「메뉴가 열린 동안 구매 좌표 누름은 구매 패킷 45·46을 보내지 않고 맞은 대상은 메뉴 쪽」이다. 사용자 확인 한 줄을 PR 본문에 넣는다.
+  5. 작성자는 새 Opus 세션이고 구현자와 나눈다. 기존 시험 수정은 작성자만 한다.
+- 범위 안 결함(버튼 글자가 아래로 처짐)은 루프에서 고친다. PR-A `MainMenuLoginView`의 `Midline` 해법과 주석을 재사용한다.
+- 비차단 관찰: 두 창을 같이 열면 길드 본문 글자가 대장간보다 작다. 결함 판정은 하지 않고 사용자 확인 항목 「두 창을 같이 열었을 때 길드 글자가 읽기 편한가」를 더한다.
+
 ## 진척 단계
 
 - [x] 범위 승인
@@ -144,7 +160,8 @@
 - [x] 로그인 화면 구현
 - [x] 로그인 독립 검증
 - [x] 길드 창 선행 시험
-- [>] 길드 창 구현
+- [x] 길드 창 구현
+- [>] 길드 시험 보정과 버튼 글자
 - [ ] 길드 창 독립 검증
 - [ ] PR 두 개 준비
 - [ ] 종료 기록
@@ -204,3 +221,15 @@
 - 「건드릴 곳과 소유」에 PR-B 문서 줄을 더했다(메인 `msg_b0d2988af33b`). 구현자 계약 보충 2(`msg_e9e1ecc9a2f4`)가 두 문서 초안을 쓰게 했다.
 - Art 리드의 GUI 전면 최신화 ④ 겹침 확인(`msg_cb148784a405`)에 「겹침 없음」으로 답했다(`msg_a30621593a6a`). 두 PR은 UI.unity·PauseMenuController·QuestGrantedPopup·EndingController를 쓰지 않고, BrightSkin의 빈 칸도 쓰지 않는다.
 - 일시정지 메뉴 시험(`MenuTransitionAndOutsideTown_NoPurchases`)의 잠정 분류는 (a) 옛 좌표 가정 후보다. 시험의 마지막 변경(10-19) 뒤 HUD 재구성(`0770855b`)과 큰 패널(`94274819`)이 배치를 바꿨다. PR-B U2의 배치 전·뒤 결과와 `menu` 캡처로 확정한다. merge-base 실행은 하지 않는다(메인 `msg_e2eeb638f742`가 받음, 근거 `menu-transition-static-01.md`).
+
+### 길드 창 구현 — Unity 창 PR-B U2
+
+- 구현자 계약 `pr-b-impl-contract-v1.md`(sha256 `dba03b9e…4601`)와 보충 둘(`msg_040d496feea4`·`msg_e9e1ecc9a2f4`), task_27bdad71a9d7, `[Content 구현 Opus]` claude-opus-5-5 xhigh(backend 실제 모델 unknown).
+- 길드 창이 혼자 열리면 HUD 상태 패널과 미니맵 사이 칸을 쓴다. 1920×1080에서 그림이 928×522로 base의 2.556배다. 대장간이 열리면 길드 창은 왼쪽 기둥으로 돌아가고 대장간 자리는 그대로다. 두 창은 기존 BrightSkin 조각만 쓴다.
+- U2(메인 배정 `msg_b74285914e13`, 08:46:19Z~09:03:53Z): harness의 PowerShell 변수 이름 충돌로 ①이 Unity 전에 멈춰, 같은 창 안에서 u2b로 ①②③을 다시 돌렸다. ⓪은 다시 돌리지 않았다.
+  - PR-A V1b와 시험 이름 단위로 비교하면 EditMode 1582 전부 통과, PlayMode 210 중 통과 168·실패 23·건너뜀 19다. 선행 시험 15건이 통과로 바뀌었고 새 실패는 0이다(`compare-lead-v1b-u2b-*-01.json`).
+  - 가려진 17건(변수 준 별도 실행): 잉크 11건은 배치 전 10 통과·1 실패에서 배치 뒤 11 실패로 바뀌었다. 길드 동작 6건은 전·뒤가 같다. 줄 단위 분류는 리드 결정 요청 `msg_57fc68d8a166`, 처분은 [위](#10-30-옛-단정-시험-12건-처분--msg_54966502537d)다.
+- 리드 R-2 표본 대조(`pr-b-impl-settlement-01.md`): 맥락 메모 선행(07:21:03Z, 제품 초안 07:39:26Z), 선행 시험 23건 통과, diff 6파일 +179/−64가 원천과 맞았다. drift 두 파일은 리드가 복원했다.
+- commit은 `f26e754b`(제품 4파일)와 `6fa7e520`(문서 2파일)이다.
+- 리드가 캡처에서 찾은 범위 안 결함: 버튼 글자가 버튼 세로 가운데보다 아래에 앉아 아래 테두리에 닿는다. `GuildWindowLayout`의 버튼 글자가 `TextAlignmentOptions.Center`라서다. PR-A 로그인 창은 같은 문제를 `Midline`으로 풀었다.
+- Art 리드에게 이른 외관 의견을 요청했다(`msg_5bc90a59016f`).
