@@ -106,13 +106,14 @@ namespace Dawnholder.Client.Tests.PlayMode
                 $"pouch={Held(ItemId.CoinPouch)} panel '{InventoryPanelProbe.Currency}' result '{InventoryPanelProbe.Result}' " +
                 $"hp={_fixture.Session.Entry.CurrentHp}/{_fixture.Session.Entry.MaxHp}");
 
-            // #2 R9 control on the real server: a mouse click on the game world still starts an attack prediction,
-            // which the client starts only after TryAttack sent C_Attack.
+            // #2 R9 control on the real server: Left Ctrl, the keyboard attack binding (decision 65 A), still starts an
+            // attack prediction, which the client starts only after TryAttack sent C_Attack.
             yield return InventoryPanelProbe.AttackReady(_fixture.Player);
-            Vector2 world = InventoryPanelProbe.PlayerScreenPoint(_fixture.Player);
-            yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, world);
-            yield return MapEntryPlayFixture.Wait(() => !_fixture.Player.CanAttack, "world click attack prediction", 2);
-            Debug.Log($"[PR2 verifier real server] world click at {world} started an attack; keyboard kill ran with the pointer on Refresh");
+            _fixture.Keys(Key.LeftCtrl);
+            yield return _fixture.Frames(2);
+            _fixture.Keys();
+            yield return MapEntryPlayFixture.Wait(() => !_fixture.Player.CanAttack, "Left Ctrl attack prediction", 2);
+            Debug.Log("[PR2 verifier real server] Left Ctrl started an attack; keyboard kill ran with the pointer on Refresh");
         }
 
         // Real keyboard only: A/D to close the gap, Enter edges for attacks once the cooldown mirror allows.

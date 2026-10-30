@@ -454,8 +454,10 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return fixture.Frames(3);
         }
 
-        // A world click on the local player's own screen position, the gameplay attack path. A point under a
-        // window that just opened (for example the reward window after the partner's killing hit) is not clicked.
+        // Left Ctrl, the keyboard gameplay attack key (decision 65 A; the mouse is not an attack binding). While a
+        // window that just opened (for example the reward window after the partner's killing hit) covers both the
+        // local player's screen position and the screen centre, the swing is skipped so the scenario does not attack
+        // behind that window.
         internal static IEnumerator Swing(MapEntryPlayFixture fixture, LiveLog log)
         {
             fixture.Keys();
@@ -470,7 +472,9 @@ namespace Dawnholder.Client.Tests.PlayMode
                 log.Event("swing-skipped", "point=" + point + " is under UI: " + string.Join("|", hits.Select(hit => hit.name)));
                 yield break;
             }
-            yield return InventoryPanelProbe.ClickAt(fixture.Mouse, point);
+            fixture.Keys(Key.LeftCtrl);
+            yield return fixture.Frames(2);
+            fixture.Keys();
         }
 
         internal static RemoteEnemy Enemy(int entityId)

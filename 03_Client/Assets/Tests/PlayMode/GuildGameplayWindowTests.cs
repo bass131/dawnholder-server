@@ -334,13 +334,12 @@ namespace Dawnholder.Client.Tests.PlayMode
             _record.Check(!guild.IsOpen && !smith.IsOpen, "both close controls work after priority windows");
             _record.Check(!ScreenUiProbe.RaycastHits(closedPoint).Any(hit => hit.transform.IsChildOf(guild.transform) ||
                 hit.transform.IsChildOf(smith.transform)), "closed windows have zero raycast hits");
-            Vector2 world = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-            _record.Check(ScreenUiProbe.RaycastHits(world).Length == 0, "world-click control is outside all active UI");
+            // The keyboard attack binding (Left Ctrl, decision 65 A) shows gameplay input is back after both windows close.
             yield return InventoryPanelProbe.AttackReady(_fixture.Player);
             int attacks = _fixture.Peer.Count(PacketID.C_Attack);
-            yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, world);
+            yield return KeyFrame(_fixture, Key.LeftCtrl);
             yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_Attack) == attacks + 1,
-                "actual world pointer attack restored", 5);
+                "actual Left Ctrl attack restored", 5);
             _record.Event("closed-world-control", "before attacks=" + attacks + "; after=" + _fixture.Peer.Count(PacketID.C_Attack) +
                 ";45=" + _fixture.Peer.Count(PacketID.C_StrongholdUpgrade) + ";46=" + _fixture.Peer.Count(PacketID.C_WeaponEnhance));
             yield return _record.Capture(_fixture, "closed-gameplay-restored");
