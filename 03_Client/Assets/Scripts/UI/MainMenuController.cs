@@ -24,6 +24,9 @@ namespace Dawnholder.Client.UI
     /// - 실패 시 errorMessageText에 오류 표시 + Scene 진입 차단
     /// - 중복 클릭 차단 (probe 진행 중엔 버튼 비활성)
     ///
+    /// **로그인 창**: Start에서 MainMenuLoginView가 위 칸·버튼·오류 글과 장면 타이틀을 밝은 로그인 창으로 배치한다.
+    /// 두 칸의 Enter는 시작 버튼과 같은 OnStartClicked를 부르고, Tab은 계정 칸에서 서버 주소 칸으로 옮긴다.
+    ///
     /// **MainMenu 복귀 시 Disconnect (ADR-027)**:
     /// Awake에서 NetworkService.Disconnect()를 호출합니다.
     /// NetworkService는 PersistentServices 프리팹 소속이라 항상 존재하지만
@@ -49,6 +52,8 @@ namespace Dawnholder.Client.UI
         const string ServerHostPrefsKey = "ServerHost";
         bool _probing;
         string _pendingAccountName;
+        // 장면과 같은 수명이다. 배치와 Enter·Tab만 맡고 시작 판단은 OnStartClicked에 남는다.
+        MainMenuLoginView _loginView;
 
         void Awake()
         {
@@ -61,6 +66,8 @@ namespace Dawnholder.Client.UI
 
         void Start()
         {
+            _loginView = new MainMenuLoginView(_accountNameInputField, _serverHostInputField, _startButton,
+                _errorMessageText, OnStartClicked);
             AudioManager.Instance?.PlayBgm(SoundKeys.BgmMainMenu);
 
             // PlayerPrefs에 박힌 옛 값 → InputField 자동 채움. 없으면 인스펙터 _defaultHost.
@@ -76,6 +83,8 @@ namespace Dawnholder.Client.UI
 
             ShowError(MainMenuNotice.TryTake(out string notice) ? notice : "");
         }
+
+        void Update() => _loginView?.HandleKeys();
 
         public void OnStartClicked()
         {
