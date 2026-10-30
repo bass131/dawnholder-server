@@ -2,9 +2,9 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-10-30 착수
+### 현재 재개 카드 — 2026-10-30 선행 시험 뒤
 
-**다음 첫 일:** 메인이 범위 초안을 대조해 착수를 허가했다(`msg_a0f50907d201`). 다음은 신규 Opus 선행 시험 작성자를 여는 것이다. Unity 창은 열기 직전에 메인에 시각을 요청하고, 메인이 Effect와 겹치지 않게 배정한다.
+**다음 첫 일:** 선행 시험(RED)이 끝났다(아래 「선행 시험 — RED」). 다음은 선행 시험 commit·push 뒤 구현 계약을 확정하고 신규 Opus 구현자를 여는 것이다. 구현 Unity 창은 구현자 준비가 끝나면 메인에 정식 요청한다(`msg_78b6ef01487c`). 메인이 Effect와 겹치지 않게 배정한다.
 
 | 항목 | 현재 |
 |---|---|
@@ -12,7 +12,7 @@
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh). 회신 주소는 `run:run_6ae742140ce9`다. |
 | branch | `feat/art-window-placement-20261030`이다. PR279 병합 commit `7bc75898`에서 만들었다. 같은 PR의 첫 commit은 [밝은 외관 goal](../2026-10-29-inventory-character-select-look/goal.md#pr2-사용자-플레이-확인과-병합--2026-10-30)의 PR2 결과 기록이다(문서만, 제품 검증 대상 아님). |
 | 관계 | 같은 worktree의 [인벤토리·캐릭터 선택창 밝은 외관](../2026-10-29-inventory-character-select-look/goal.md#재개-지점) goal이 PR3·PR4를 남기고 열려 있다. 그 goal의 PR3는 이 goal의 branch 위에 쌓는다. 두 PR이 `UiWindowAppearanceContractTests.cs`를 함께 고칠 수 있어서다. |
-| 실행 창 | 이미지 생성 0회다. Unity는 아직 열지 않았다. |
+| 실행 창 | 이미지 생성 0회다. Unity는 메인이 배정한 batchmode 창 두 번에서 돌렸다. U0 창(09:06:34Z~09:45:00Z)의 Unity는 09:10:41Z~09:23:14Z, U1 창(09:48:32Z~10:25:00Z)의 Unity는 09:51:18Z~10:00:46Z다. 서버 실행은 0이다. |
 | 근거 폴더 | `.backups/verification/2026-10-29-inventory-character-select-look/`를 이어 쓴다. Git 제외 폴더다. |
 
 ## 적용 중인 사용자 결정
@@ -141,8 +141,8 @@
 
 - [x] 범위 승인
 - [x] goal commit
-- [ ] 선행 시험
-- [ ] 구현
+- [x] 선행 시험
+- [>] 구현
 - [ ] 독립 검증
 - [ ] 사용자 확인(마지막에 한 번에)
 - [ ] 제품 PR 병합
@@ -157,3 +157,60 @@
 - 사용자 피드백 뒤 리드가 범위 초안을 세 번 보냈다. 비율 초안 `msg_b96c75dc1325`, 끌기 초안 `msg_42bea42cc8d2`, 70 A 재추정 `msg_5e41659e51b5`다. 값은 저장 출력 `inventory-ratio-scope-01.txt`·`-02.txt`, `window-drag-scope-01.txt`, `window-placement-scope-01.txt`에서 옮겼다.
 - 첫 초안의 「640×480에서 보상 창과 겹친다」와 「Content 파일 변경 0」은 틀렸다. 보상 창은 열린 인벤토리의 아래 끝을 읽어 그 아래에 놓이므로 겹치지 않고 작아진다. 리드가 두 번째 초안에서 정정했다.
 - goal 범위 초안은 `window-placement-goal-scope-draft-01.txt`(`msg_234cbf0759fa`)다. 메인이 대조 통과와 착수 허가를 줬다(`msg_a0f50907d201`).
+
+### 선행 시험 — RED
+
+- 작성자: 신규 `[Art 구현 Opus]`(`claude --model claude-opus-5-5 --effort xhigh`), pane term_c0f5ecac-03c1-4081-9989-a376304e3e36, task_498f737faf6d / ctx_cd03d0978dcb다. 기동 근거는 `placement-red-launch-record-01.md`다.
+- 계약: `placement-red-contract-v1.md`(SHA256 `90706acb…`, `placement-red-contract-v1.receipt.txt`), 기준 commit 7c94be35다. 목록 밖 기존 단정 세 줄의 처분 원문(메인 `msg_9cbc405339aa` 1항·2항)과 `unity-protection-rules-v1.md`를 부록으로 넣었다.
+- 작성자 보고: 근거 폴더 `placement-red-01/report.md`(SHA256 `e8a0574c…`, worker_done `msg_daf004fcc8c0`, 10:25:41Z, succeeded)다. 아래 수는 그 보고와 보고가 가리키는 `placement-red-01/raw/` 저장 출력에서 옮겼다.
+
+#### U0 — 기준 commit 그대로
+
+- 메인 배정 `msg_7e717e5cd24b`(창 09:06:34Z~09:45:00Z). 리드 관문 `placement-red-u0-window-gate-01.txt`(09:07:59Z, 통과). 작성자에게 `msg_581d99e9cd25`.
+- 작성자 「Unity 사용 끝」 `msg_53bf3c3f873c`: Unity 09:10:41Z~09:23:14Z, 재시도 0이다. EditMode 1571건 통과 1571·실패 0·건너뜀 0, PlayMode 185건 통과 143·실패 23·건너뜀 19다(`placement-red-01/raw/u0-*-results-table.stdout.txt`). 앞 goal PR2 재검증과 같은 수다.
+- PlayMode 실패 23과 건너뜀 19는 모두 (b) 환경으로 분류됐다. 캡처 폴더를 주는 runner 없음, batchmode의 GameView 없음, runner permit 없음, 서버 필요다(보고 6절).
+- 리드 반환 점검 `check-post-u0-drift-1030-01.sh` → `post-u0-drift-check-1030-01.txt`(09:26:44Z): Unity·dotnet·Burst 0, SENTIS diff = 31e7aaf1…(작성자 두 원시도 같음), MinimapRT 변화 0이다. 메인 반환 보고 `msg_1c50f3cefab9`, 메인 수락 `msg_3ccd6911fb4e`.
+- U1 정식 요청 `msg_f24168ab38cc`, 메인 「대기열 1번(Effect 반환 뒤)」 `msg_65f4f6a8582a`.
+
+#### U1 — 바꾼 시험 3 + 새 시험 2
+
+- 메인 배정 `msg_ea4001c0c547`(09:48:32Z, 창 지금부터~10:25:00Z). 리드 관문 `placement-red-u1-window-gate-01.txt`(09:48:57Z, 통과). 작성자에게 `msg_68a43add456e`(09:49:34Z), 메인 보고 `to-main-u1-window-opened-1030-01.receipt.json`.
+- 작성자 pane이 빈 프롬프트라 터미널 안내를 1회 넣었다(`placement-red-writer-nudge-u1-open-01.json`). 턴 시작은 `placement-red-writer-screen-u1-open-03.json`에서 확인했다.
+- 작성자 「Unity 시작」 `msg_290b01c48944`(09:51:08Z): 설정 `placement-red-01/harness/config-u1.json`, EditMode 전체 → PlayMode 전체, 시도 1회씩이다.
+- 작성자 「Unity 사용 끝」 `msg_3049bde9daad`(10:01:48Z): Unity EditMode 09:51:18Z~09:53:58Z, PlayMode 09:54:26Z~10:00:46Z, 재시도 0이다.
+  - EditMode 1576건 통과 1568·실패 8·건너뜀 0, PlayMode 194건 통과 144·실패 31·건너뜀 19다.
+  - 계약의 「구현 전 예상」 18건이 모두 맞았다(`placement-red-01/raw/expect-table-*-01.stdout.txt`). 새로 실패한 16건은 모두 예상 실패이고, 예상 통과 2건은 통과했다.
+  - U0 대비 그 밖에 결과가 바뀐 시험은 0이다(`raw/results-table-*-u0u1-01.stdout.txt`). 두 로그의 컴파일 오류는 0이다.
+  - Unity가 새 시험 두 파일의 `.meta`를 만들었다.
+- 리드 반환 점검 `check-post-u1-drift-1030-01.sh` → `post-u1-drift-check-1030-01.txt`(10:02:02Z): Unity·dotnet·Burst 0, SENTIS diff = 31e7aaf1…(작성자 U1 원시 두 개도 같음), MinimapRT 변화 0이다. 메인 반환 보고 `msg_f04a8a4a0216`, 메인 수락 `msg_78b6ef01487c`.
+- 부품 시험 `UiWindowPlacementTests.cs`는 계약대로 U1 뒤에 놓았다(SHA256 `7d4ff535…`, `.meta` 없음, `raw/place-part-test-01.stdout.txt`). stub이 생기기 전까지 EditMode 시험 어셈블리가 컴파일되지 않는다. 그래서 구현자는 stub을 먼저 쓰고 그 첫 실행의 실패 원시를 남긴다.
+
+#### 바꾼 기존 단정 — 메인 `msg_9cbc405339aa` 조건 대조
+
+- 줄 단위 표는 보고 7절이다. 파일:줄, 시험 이름, 이전 단정, 새 단정, 요구 출처(완료조건 4, `msg_9cbc405339aa`)가 9행이다. 원시 `raw/u1-prep-diff-01.stdout.txt`의 hunk 9개와 하나씩 맞고 표 밖 줄 변경은 0이다.
+- 바꾸지 않은 줄: helper :1301, 보상 창 :586, 대조 :848, `UiWindowLiveCaptureTests` :1060·:1181·:1211, 비교 반복문 :557·:558은 diff에 없다.
+- 새 단정의 대상은 잡는 칸과 겹치는 제목 띠 안의 모든 버튼이다. 버튼마다 중심 포인터의 첫 hit가 그 버튼인지 보고, 그 앞에 「대상 버튼 1개 이상」 전제를 두어 대상 0 통과를 막는다(Render :445 시험).
+- 같은 명령 전후의 단정 수(`raw/count-asserts-u1-prep-01.stdout.txt`): Contract :512 시험 28 → 31, :171 시험 1 → 1, Render :369 시험 21 → 25다. 통과·실패 전후는 U0·U1 원시에 있다.
+- 2항의 「잡는 칸을 누르거나 끌어도 공격 0」 PlayMode 시험은 마우스 binding에 기대지 않는다. 키보드 공격 +1 양성 대조군을 같은 파일에 두었다(`KeyboardAttack_WithThePointerOnTheGrabArea_StillSwingsOnce`).
+- T1 전수 탐색(보고 8절, `raw/t1-layout-search-01.stdout.txt`): 기준 commit 시험 파일 116개에서 표 밖의 옛 배치 상수 단정은 0이다. 그래서 작성자의 blocking ask는 없었다.
+
+#### 계약과 다른 점과 리드 판단
+
+- T5 맵 이동은 포털 걷기 대신 대본 서버의 `S_MapTransition`으로 한다. 리드가 작성자 질문 `msg_787ee778b870`에 승인했다(`msg_9d17df8ce52c`). 받는다.
+- harness 보완: 작성자가 바꾸는 기존 시험 세 개가 계약 부록 A 입력에 들어 있어, 작업 트리 SHA로 재면 U1 진입 관문이 반드시 실패했다. 그 세 행만 기준 commit 내용으로 대조하고 작업 트리 변화는 작업 트리 관문이 맡게 했다(보고 3절). 받는다. 구현 계약은 선행 시험 commit을 기준으로 잡아 이 충돌이 생기지 않는다.
+- T4 (나)를 T5 끌기 시험과 한 시험으로 합쳤다(`TitleBarDrag_MovesThePanelByTheDrag_AndStartsNoAttackOnAnyFrame`). 같은 끌기 동안 매 프레임 공격 0과 끈 만큼 움직임을 함께 본다. 받는다.
+- 부품 시험의 끌기 사건에 uGUI가 실제로 보내는 `initializePotentialDrag`를 더했다. 받는다.
+- 시험 주석·메시지의 옛 제품 줄 번호(`UiWindowAppearanceContractTests.cs`:161의 `InventoryPanelView.cs:68-76` 등)는 구현 뒤 달라진다. 구현자는 시험을 고치지 않는다. 구현 뒤 실제 줄을 본 다음 같은 PR 안에서 처리 방법을 정한다.
+- 남은 위험(보고 16절): U1에서 잡는 칸이 없어 여러 단정이 전제에서 멈췄다. `IsOverUi` reflection, 키보드 공격 control 찾기, 대본 맵 이동 뒤 재조회 같은 시험 쪽 도구는 구현 뒤 첫 실행에서 처음 돈다. 시험 결함이 드러나면 구현자가 리드에게 올린다. 크리티컬은 아니다. 컴파일과 앞 단계 도구(마을 준비, I로 열기, 보상 창 열기)는 U1에서 돌았다.
+
+#### 정산
+
+- 작성자 pane을 닫았다(`placement-red-writer-pane-close-01.json`, ptyKilled true). 닫기 전 작성자 쪽 orca 대기 0을 저장 스크립트로 확인했다(`placement-red-writer-shells-before-close-02.txt`, `placement-red-writer-ancestors-before-close-03.txt`).
+- SENTIS 한 줄은 계약 :286과 메인 수락(`msg_3ccd6911fb4e`, `msg_78b6ef01487c`)대로 정산 뒤 리드가 복원했다. `restore-projectsettings-sentis.sh` → `placement-red-sentis-restore-1030-01.txt`(10:30:18Z)이고, 복원 뒤 파일이 HEAD blob과 같다. 메인 알림 `msg_063e16658dc1`.
+
+### 리드 실수 첫 발생 — 보내기 receipt가 저장소 루트에 생김
+
+- 무엇: 09:27Z·09:28Z 두 보내기(메인 `msg_1c50f3cefab9`, Content `msg_19ba265fd0eb`)의 receipt 접두어에 근거 폴더 경로를 빠뜨렸다. receipt 6개가 저장소 루트에 미추적으로 생겼다.
+- 발견: 작성자의 U1 작업 트리 관문(`msg_c43a97128e5b` 2번)이 Unity를 띄우기 전에 잡았다. U0 끝 뒤라 U0 영향은 0이다.
+- 처리: `move-root-receipts-1030-01.sh` → `move-root-receipts-1030-01.txt`로 근거 폴더에 옮겼다(전후 SHA256 같음). 메인은 기록만 받았다(`msg_65f4f6a8582a`).
+- 층: 첫 발생이라 goal 기록만 한다. 두 번째면 보내기 helper가 근거 폴더 밖 접두어를 거부하게 고친다.
