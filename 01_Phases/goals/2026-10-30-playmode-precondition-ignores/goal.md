@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 리드가 구현 계약(전제 판정 다섯 곳·`DEVELOPMENT.md` 새 절·고정 harness로 바꾼 head 실행)을 확정하고 신규 구현자(`claude-opus-5-5` xhigh)를 연다. Unity 창은 구현자가 준비되면 예상 시간과 함께 메인에 정식 요청한다.
+**다음 첫 일:** 리드가 구현 commit head로 독립 검증 계약을 확정하고 신규 검증자(`gpt-6-astra` xhigh)를 연다. 검증자의 Unity 창은 검증자가 준비되면 예상 시간과 함께 메인에 정식 요청한다.
 
 | 항목 | 현재 |
 |---|---|
@@ -16,8 +16,8 @@
 
 - [x] goal과 계약 기록
 - [x] 선행 시험(lane 판정 harness)과 실패 원시
-- [>] 구현과 통과 원시
-- [ ] 독립 검증 통과
+- [x] 구현과 통과 원시
+- [>] 독립 검증 통과
 - [ ] PR 생성과 확인 항목
 - [ ] PR 병합
 - [ ] 결과 기록과 종료
@@ -168,9 +168,28 @@
 - 판정 식 고정: freeze-v1 `4b3e429b…71db`(Unity 전), freeze-final `1e8abaa7…8034`(v1 뒤 바뀐 tools 0개, 사양은 기준 원시에서 옮긴 칸만). 리드가 따로 다시 재서 같았다(`lead/accept-pretest-check-01.json`).
 - 일곱 실행의 실패 81행 분류: (a) 0, (b) 46, (c) 0, (d) 35. (d)는 전제를 준 lane의 잉크·글자 판정 34행과 L2 `OverlayAtTarget_1920x1080`의 창 위치 미복원 1행이다. 단정은 하나도 바꾸지 않았다.
 
+## 구현 결과
+
+작성 신규 `[Effect 구현 Opus]`(Task `task_860ffe449ef4`, 대화 기록 모델 `claude-opus-5-5`만, backend unknown). 보고 `impl-01/report.md`(sha256 `d93c94f4…cca0`), 리드 수락 `lead/accept-impl-01.md`. 시험 네 파일 +28줄 −4줄과 `DEVELOPMENT.md` 새 절(+13줄) 「Unity PlayMode 실행 전제」다(diff sha256 `d5cdd4cd…4e1a`). 같은 고정 runner로 바꾼 head를 여섯 번 돌렸다(메인 창 `msg_aff3c4e49fde`, 마지막 Unity 종료 16:03:04Z, 다시 돈 횟수 0, 반환 `msg_d7ab2edce401`).
+
+| lane | 기준 전체·통과·실패·건너뜀 | 바꾼 뒤 | 바뀐 시험 |
+|---|---|---|---|
+| L0 | 230·188·23·19 | 230·188·0·42 | 대상 23건만. 21건 Ignored, 서버 2건 Explicit |
+| L1 | 28·14·14·0(두 번) | 28·14·11·3 | `OverlayAtTarget_*` 3건이 permit 이름으로 건너뜀 |
+| L2 | 3·1·2·0 | 3·1·2·0 | 없음 |
+| L3a | 4·0·4·0 | 4·0·4·0 | 없음 |
+| L3b | 3·0·3·0 | 3·0·3·0 | 없음 |
+| L4 | 28·7·21·0 | 28·7·20·1 | `DefaultScreen_ApprovedValues`가 「Editor Game 화면 필요」로 건너뜀 |
+
+- 고정 판정기: `full` 결함 0, `lane` 일곱(L1은 기준 두 번 각각)·`u4` 통과다. 바꾼 L0을 L1 `skips`에 넣으면 결함 17개로 실패한다(완료조건 3).
+- 리드가 판정기 없이 원시를 다시 읽어 같은 결과를 얻었다(`lead/r2-after-raw-02.json`). 고정 도구 35개와 freeze 기록 둘도 수락 때와 같다(`lead/r2-tools-after-01.json`).
+- 바꾼 뒤 여섯 실행의 실패 40행은 모두 기준 분류와 같은 행이다. (b) 16, (d) 24, (a)·(c) 0이다. 값이 틀린 L4에서 캡처 6건은 `IOException`, `OverlayAtTarget_*` 3건은 `ArgumentNullException`으로 실패를 유지했다(Content 조건 1).
+- 기본 화면 시험의 GameView 부작용: 뒤 시험의 view 줄이 기준과 같았다(리드 결정 7의 배치).
+
 ## 남은 우려
 
-- `DefaultScreen_ApprovedValues`는 Editor 대화형 실행에서만 판정된다. 지금 lane은 모두 batchmode라 사실상 돌지 않는다(Content 조건 3).
+- `DefaultScreen_ApprovedValues`는 Editor 대화형 실행에서만 판정된다. 지금 lane은 모두 batchmode라 사실상 돌지 않는다(Content 조건 3). 바꾼 뒤에는 view가 없으면 「Editor Game 화면 필요」로 건너뛴다. batchmode에서도 앞 시험이 만든 view가 남으면 판정된다(바꾼 L1).
+- `GuildLiveServerWindowTests`(:108)도 GameView event sink로 `Recorder`를 만든다. 실서버 lane이 `DAWNHOLDER_LIVE_CAPTURE_DIR`만 주고 `DAWNHOLDER_GUILD_VERIFY_CAPTURE_DIR`를 빠뜨리면, 그 역할 시험이 실패 대신 건너뛴다. 실서버 lane은 이 goal 밖이고 크리티컬은 아니다. 그 lane 판정에 skipped 0을 넣으면 막힌다. 주인 Content 리드가 받아 Content BACKLOG 후속 후보로 올린다(`msg_8f2d5b2da854`).
 - 전제를 주는 lane이 변수를 빠뜨리는 실수는 시험이 알 수 없다. 문서 규칙과 계약 검사에 기댄다. runner가 Git 밖에 있어 다음 세션이 새 runner를 쓰면 검사가 빠질 수 있다.
 - 서버 2건의 실서버 실행은 이 goal에서 하지 않는다. 이름 filter 선택만 보인다.
 - 잉크 10건의 판정 실패는 사용자 처분 대기로 그대로 남는다.
