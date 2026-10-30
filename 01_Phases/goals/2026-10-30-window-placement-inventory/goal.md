@@ -225,7 +225,7 @@
 
 #### S0 — stub 상태의 부품 시험
 
-- 구현자 「S0 준비됨」 `msg_08eb575b010f`(10:57:17Z): 제품 쓰기는 stub `UiWindowPlacement.cs` 하나였다. 리드 원천 대조 `check-s0-ready-1030-01.txt`·`check-s0-ready-config-1030-01.txt`에서 보고와 같았다.
+- 구현자 「S0 준비됨」 `msg_08eb575b010f`(10:57:17Z): 제품 쓰기는 stub `UiWindowPlacement.cs` 하나였다. 리드 원천 대조 `check-s0-ready-1030-01.txt`·`check-s0-ready-config-1030-02.txt`에서 보고와 같았다.
 - 정식 요청 `msg_76db377d8062`(10:58:18Z), 메인 회신 `msg_8360efcf4074`(Content u3c 뒤 1번), 배정 `msg_e847cae8d699`(11:01:40Z, 시한 11:20:00Z)다.
 - 리드 관문 `placement-impl-s0-window-gate-01.txt`(11:01:53Z, 통과). 구현자에게 `msg_53c7a6cd0a4e`, 메인에 `msg_e9367bfc68a1`을 보냈다.
 - 구현자 「Unity 사용 끝」 `msg_db774c4e4e36`: Unity 11:04:04Z~11:08:09Z, EditMode 1회, 재시도 0이다.
@@ -236,7 +236,8 @@
 #### R·F — 구현 뒤 거른 실행과 전체 실행
 
 - 구현자 「R 준비됨」 `msg_a6aaf4efadf3`(11:20:15Z): 새 제품 파일 넷(`UiWindowPlacement`·`UiWindowPlacementGeometry`·`UiWindowAreas`·`UiWindowGrabArea`)과 추적 셋(인벤토리 view, 보상 창, client.md)이다.
-- 리드 대조: SHA256이 보고와 같았다(`check-r-ready-1030-01.txt`). 줄 끝은 LF이고 BOM이 없다(`check-line-endings-1030-01.txt`). diff는 세 파일 +31/−52다(`check-r-ready-numstat-1030-01.txt`). 구현자 보고의 +30/−51은 틀린 값이라 보고서에는 저장 출력 값을 쓰게 했다. 리드 결정 셋과 diff의 어긋남은 0이다.
+- 리드 대조: SHA256이 보고와 같았다(`check-r-ready-1030-01.txt`). 줄 끝은 LF이고 BOM이 없다(`check-line-endings-1030-01.txt`). diff는 커밋 기준(`eddd61c5..af1489fb`) 세 파일 +31/−52다(`check-r-ready-numstat-1030-02.txt`). 구현자 보고의 +30/−51은 틀린 값이라 보고서에는 저장 출력 값을 쓰게 했다. 리드 결정 셋과 diff의 어긋남은 0이다.
+  - `InventoryPanelView.cs`는 R 준비 뒤 R2 수정으로 바뀌었다. 그래서 커밋 blob의 SHA256이 R 준비 때 값과 다르다(같은 출력). 나머지 두 파일은 같다.
 - 정식 요청 `msg_b75a6f87e4af`(40분), 배정 `msg_a634656ec261`(11:22:58Z, 시한 12:05:00Z)이다. 배정 조건은 「계획 2회를 넘길 때마다 리드가 그 이유를 한 줄로 남겨라」였다.
 - 리드 관문 `placement-impl-rf-window-gate-01.txt`(11:23:20Z, 통과). 구현자에게 `msg_f13784f5c35e`를 보냈다.
 - 회차별 결과(시각은 `check-rf-run-times-1030-01.txt`, 수는 `check-rf-results-1030-02.txt`. 둘 다 원시 result.json·results.xml에서 옮겼다):
@@ -269,6 +270,70 @@
 - SENTIS 한 줄은 정산 뒤 리드가 복원했다(`placement-impl-sentis-restore-1030-01.txt`, 11:55:49Z). 복원 뒤 파일이 HEAD blob과 같다. 메인 알림 `msg_d5c28fd18c42`.
 - 구현자가 스스로 적은 것(보고 11절): S0 전에 인라인 `node -e`로 `gates.json`을 한 번 보았다. 그 값은 기록에 넣지 않고 저장 스크립트 출력으로 다시 적었다. 독립 검증이 대화 기록으로 확인한다.
 - 시험 메시지 속 옛 줄 번호는 이번 PR에서 고치지 않는다(「다음 계획 후보」).
+
+### 독립 검증
+
+- 순서: 구현 commit `af1489fb`·push → merge-tree 대조(`merge-tree-placement-1030-01.txt`, 다섯 ref 모두 충돌 0, 메인 보고 `msg_5fad6b8d20b9`) → 계약. 메인이 받은 순서다(`msg_c81d46ef6b17`).
+- 계약 `placement-verify-contract-v1-02.md`(receipt `placement-verify-contract-v1-02.receipt.txt`), 강 등급, 검증 대상 head `af1489fb`. 판정 기준은 12개다. `msg_9cbc405339aa` 1항 원문과 `msg_c81d46ef6b17`의 23건 집합 재대조 조건 원문을 넣었다. 입력 경로 86개 bad 0(`placement-verify-contract-v1-paths-check-02.txt`), 본문이 인용한 message ID 12개가 모두 부록에 있다(`placement-verify-contract-v1-02-msg-ids-01.txt`).
+  - 첫 조립 `placement-verify-contract-v1.md`는 msg ID 대조에서 `msg_1e160139abea`가 부록에 없어 보내지 않았다. 부록 B5를 더해 `-02`로 다시 조립했다.
+  - 부록 E에 없는 검증자용 절(goal-loop 「검증 강도 4주 시범」, templates 「검증 판정」)은 부록 E2로 뽑았다(`extract-placement-verify-extra-rules-01.stdout.txt`).
+- 기동(`placement-verify-launch-record-01.md`): 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`, pane term_ec6b0f6d.
+  - 첫 화면이 Codex 업데이트 선택창(0.165.0 → 0.166.0)이었다. 리드는 아무것도 누르지 않고 메인에 알렸다(`msg_48390023b593`). 메인이 R-6으로 Skip만 골랐고 0.165.0이 그대로다(`msg_7116a97ecd99`).
+  - 다시 잰 첫 화면은 v0.165.0·GPT-6-Astra xhigh·Fast 표시 없음이다. worker-start는 task_0a0b260641d9 / ctx_3b1a4d8c145d다. rollout은 cwd art-active, gpt-6-astra, xhigh, service_tier "default"다. backend 실제 모델은 unknown이다.
+- Content 사후 확인(goal 「건드릴 곳과 소유」): 리드 요청 `msg_2369dc8a6cda`, 회신 `msg_644750668713`(원문 `content-reward-postcheck-reply-msg-01.txt`).
+  - 보상 창 변경은 Content 의도와 맞다고 했다.
+  - PR-B는 아직 push 전이다. PR-B에서는 대장간이 열리면 길드 창이 왼쪽으로 비켜 새 인벤토리 자리와 겹칠 수 있고, 「I」 우선 닫기(`GuildGameplayWindowTests`)가 이를 막는다. 두 PR 가운데 나중 것을 병합하기 전에 합친 트리에서 그 시험을 돌리는 확인을 메인에 제안했다(`msg_cf3263fac604`).
+  - 검증자에게는 보충 입력으로 보냈고 범위는 넓히지 않았다(`msg_8b40b763d723`).
+- 시작 관문: 검증자가 goal.md 추적 변경을 찾고 Unity 전에 멈춰 물었다(`msg_1a742577ec1b`, 12:23:16Z). 리드가 검증 기동 뒤 이 절을 커밋 없이 넣은 것이었다(아래 「리드 실수 첫 발생 — 검증 중 goal.md 쓰기」).
+  - 리드는 그 diff를 `goal-verify-section-pending-1030-01.diff`로 보존하고 goal.md를 HEAD blob으로 되돌렸다(`hold-goal-verify-section-1030-01.txt`). 되돌린 뒤 SHA256이 부록 A 기대값과 같고 추적 변경은 0이다.
+  - 검증자 회신 `msg_32e0ab84da57`, 메인 알림 `msg_3f97d2d20daf`다. 검증자는 시작 관문을 다시 재고 이어 갔다. 보존한 diff는 판정 뒤 이 절로 다시 붙였다.
+- 발견과 처분: 셋 모두 메인 결정이며 사용자 결정은 아니다. 판정은 셋을 지우지 않고 처분과 함께 보존했다.
+
+  | 번호 | 발견 | 메인 처분 |
+  |---|---|---|
+  | WP-01 | 리드가 인라인 명령으로 만든 근거 파일을 goal :228·:239와 기동 기록 :20이 인용했다(검증자 `msg_f0c9fda505c4`). | A `msg_17871944f60d`, 정정 `msg_7318fa7283a1`. :228·:239는 재측정 출력으로 바꿨다(위 「구현」). 기동 기록 :20의 시각 파일은 근거로 쓰지 않음(WP-01, 인라인 date). 기동 기록 파일은 지우지 않는다. |
+  | WP-02 | 구현자 맥락 메모가 SHA·HEAD·시각을 직접 적었다(`msg_38ba25a9a4ec`). 구현자 귀속 규칙 위반이다. | A `msg_848654814bc7`. 메모는 고치지 않는다. SHA·HEAD는 저장 start-state와 같고, 시각 두 개는 근거로 쓰지 않는다. |
+  | WP-03 | 검증자 새 시험의 Rig 필드 표기가 규칙 표와 어긋나 보였다(`msg_2131cd4cd18b`). | A `msg_7e3c6c3aaf61`. 규칙 표가 시험 Rig의 섞인 정적 표기를 정하지 않고, 시험 영역 관례(`survey-test-field-naming-1030-01.txt`)와 맞는다. 시험 파일은 동결본 그대로 넣는다. |
+
+  - 계약 보충: 2(WP-01) `msg_efc021df8110`, 2 정정 `msg_1a5975613c93`, 3(창 열림·WP-02) `msg_dcdbc31a5450`, 4(WP-03) `msg_53a0679b3eed`다.
+  - 보충 2는 메인의 첫 조건대로 기동 기록 :20을 지운다고 전했다. 리드가 :20이 goal이 아니라 기동 기록의 줄이라고 메인에 알렸고(`msg_400ab9dea590`), 메인 정정 뒤 보충 2 정정으로 그 줄을 버리게 했다.
+- 검증 Unity 창: 「V 준비됨」 `msg_e921b3d498d1`(12:43:50Z) → 정식 요청 `msg_000fa054134d`(12:47:04Z) → 배정 `msg_848654814bc7`(12:47:55Z, 시한 13:15:00Z)다. 리드 관문 `placement-verify-window-gate-01.txt`(12:48:37Z)는 통과다. 검증자에게 보충 3으로 창을 열었다.
+  - 회차별 결과(`summarize-verify-unity-runs-1030-01.txt`, 원시 result.json·results.xml에서 옮김). 세 실행 모두 시한 전에 끝났다.
+
+    | 회차 | 시작–끝(UTC) | 범위 | 통과/실패/건너뜀 |
+    |---|---|---|---|
+    | V-R EditMode | 12:52:26–12:56:17 | 새 HUD 경계 fixture | 8/0/0 |
+    | V-F EditMode | 12:57:27–13:00:10 | 전체 | 1606/0/0 |
+    | V-F PlayMode | 13:03:26–13:09:46 | 전체 | 152/23/19 |
+
+  - V-F PlayMode 실패 23건의 이름 집합은 구현자 F PlayMode의 23건과 같다(같은 출력, 리드 표본 대조). 검증자는 원시 XML로 23건을 전수 분류했고, 모두 batchmode·서버 없음 경계에서 빠진 환경 때문인 (b)다(`placement-verify-01/failure-classification.md`).
+  - 검증자 「Unity 시작」 `msg_4a60b312dcfe`, 「Unity 사용 끝」 `msg_d9ebd1836684`(13:10:30Z)다.
+  - 반환 점검 `post-verify-drift-check-1030-01.txt`(13:10:43Z): Unity 계열·Windows dotnet·Burst dotnet 0이다. SENTIS는 알려진 한 줄이고 MinimapRT는 HEAD와 같다. 새 시험 파일은 「V 준비됨」 때 리드 대조 값과 같다. 메인 반환 보고 `msg_99477c5bc1b3`.
+- 판정: `placement-verify-01/verdict.md`, worker_done `msg_465d162a2a07`(13:24:15Z, succeeded)다. **강 등급 PASS, 현재 차단 결함 0, WP-01~03 처분 보존**이다.
+  - 리드 표본 대조 `audit-placement-verdict-1030-02.txt`(13:25:32Z): 판정 SHA256이 worker_done 본문과 같다. 실패 분류 표 23행과 XML 실패 23건이 같은 집합이다. 동결 pin 두 개가 지금 파일과 같다. 실제 진입 시험과 인벤토리 창 배치 장면 시험 9건이 통과다.
+  - 판정이 미실행으로 남긴 것: 실제 GameView 캡처, 서버·DB, 사용자 플레이, PR282·Content PR-B와 합친 트리의 실행이다. merge-tree 무충돌은 실행 통과로 쓰지 않는다.
+  - 설계 관찰(판정 「사람 가독성과 설계 관찰」, 비차단): 끈 인벤토리가 보상 창과 겹치면 보상 창이 위에 그려진다. 4창 합성 fixture는 실제 HUD가 없어 대체 규칙만 탄다. 시험 메시지의 옛 줄 번호(「다음 계획 후보」)가 남았다. EditMode 렌더 로그의 잘림 값은 단정이 아니다.
+- 정산: 검증자 쪽 orca 대기는 0이다. 남은 대기 둘은 메인 Claude의 것이다(`placement-verify-shells-before-close-01.txt`, `placement-verify-ancestors-before-close-01.txt`). pane을 닫았다(`placement-verify-pane-close-01.json`, ptyKilled true).
+  - SENTIS 한 줄은 정산 뒤 리드가 복원했다(`placement-verify-sentis-restore-1030-01.txt`, 13:27:25Z). 복원 뒤 파일이 HEAD blob과 같다.
+  - 새 시험 `UiWindowPlacementBoundaryTests.cs`와 `.meta`는 검증자 쓰기다. 동결 pin과 같은 채로 이 기록 commit에 넣는다(WP-03 A 조건 1).
+- 다음 위임 계약부터 「맥락 메모의 시각·SHA·HEAD도 저장 스크립트 출력으로 적는다」를 넣는다(WP-02 A 조건 3). 이 PR의 남은 작업에도 적용한다.
+- 메인이 마지막 보고에 올릴 규칙 후보: 리드 자가 점검 층(`msg_17871944f60d`), 맥락 메모 양식의 시계 칸(`msg_848654814bc7`), 시험 Rig·자료 묶음의 internal 필드와 섞인 정적 필드 기준(`msg_7e3c6c3aaf61`)이다.
+- 판정 뒤 goal 변경은 메인 조건대로 :228·:239 두 줄과 이 절뿐이다. 재개 카드와 진척 단계는 이 commit에서 바꾸지 않는다. 다음 첫 일은 PR 전 merge-tree 재대조(그때의 Effect head와 Content PR-B head), PR 생성, 완료조건 8의 캡처 창 요청이다.
+- 이 절의 msg ID와 시각은 `list-verify-msg-ids-1030-01.txt`에서 옮겼다.
+
+#### 리드 실수 첫 발생 — 검증 중 goal.md 쓰기
+
+- 무엇: 검증 기동 뒤 리드가 이 절을 goal.md에 커밋 없이 넣었다. 계약이 goal.md를 부록 A input으로 고정한 뒤였다.
+- 발견: 검증자 시작 관문(`msg_1a742577ec1b`)이 Unity 전에 잡았다. 실행 영향은 0이다.
+- 처리: 위 「시작 관문」대로 diff를 보존하고 되돌렸다. 판정 전까지 리드는 goal.md와 계약 input 파일을 쓰지 않았다.
+- 층: 첫 발생이라 goal 기록만 한다. 두 번째면 리드가 검증 기동 때 계약 input 목록을 저장하고, 기록 쓰기 전에 그 목록과 대조하는 helper를 둔다.
+
+#### 리드 실수 반복 — 인라인 조회 값을 근거로 인용(WP-01)
+
+- 무엇: 조건 1(`msg_af08be79ca51`)과 재진입 규칙(`msg_dbc8a605e5c1`) 뒤에도, 인라인 date·sha256sum·node -e로 만든 파일 세 개를 근거로 인용했다(`audit-lead-inline-evidence-1030-01-classification.md`).
+- 층: 반복이라 한 층 올렸다. 리드는 기록 commit과 메인 보고 전마다 자가 점검 `audit-lead-inline-evidence-1030-01.mjs`를 새 출력 번호로 돌려, 인용된 인라인 근거가 0인지 확인한다. 메인이 받았다(`msg_17871944f60d`).
+- 한계: 이 점검은 리드가 화면 값을 손으로 옮겨 적는 경우를 잡지 못한다. 그래서 기록에는 저장 출력의 값만 그 파일 이름과 함께 쓴다.
+- 도구 수정: 첫 판은 HEAD의 goal만 읽어서 커밋 전 새 인용을 보지 못했다. 둘째 판 `audit-lead-inline-evidence-1030-02.mjs`는 작업 트리 goal도 읽는다. 이 commit 전 점검은 `audit-lead-inline-evidence-1030-11.txt`이고, 분류는 `audit-lead-inline-evidence-1030-11-classification.md`다. 작업 트리 goal이 인용한 플래그 출력 넷은 모두 원시 CLI 출력이거나 저장 스크립트 출력이다.
 
 ### 리드 실수 첫 발생 — 줄 끝 계수와 정규식 이스케이프
 
