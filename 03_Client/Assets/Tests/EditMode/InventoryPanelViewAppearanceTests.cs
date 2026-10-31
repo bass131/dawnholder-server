@@ -188,7 +188,8 @@ namespace Dawnholder.Client.Tests
                 ExecuteEvents.ExecuteHierarchy(row, pointer, ExecuteEvents.pointerExitHandler);
             }
 
-            Assert.IsEmpty(outside, "T8 a hovered slot keeps its background and art out of the raycast");
+            CollectionAssert.AreEqual(Enumerable.Range(1, 8).Select(slot => $"Slot{slot} hovered: GrabArea").ToArray(), outside,
+                "T8 a hovered slot keeps its background and art out of the raycast; only the title bar's grab area takes one (goal 2026-10-30 완료조건 4)");
         }
 
         // T8: the opening effect leaves the panel scale and position that Resize sets, right after building and after
