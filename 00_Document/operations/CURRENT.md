@@ -14,7 +14,7 @@
 
 - Rules: [구현자 배정 정본 정렬과 검증 계약 후보 연결](../../01_Phases/goals/2026-10-25-implementer-routing-canon/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/implementer-routing-canon-20261025` · 원·종료 A NOT PASS 각1회/메인 한정 처분 보존·최종 B 원문 대조 후 PR/승인 · [공용 실행 잠금은 10-28 뒤까지 보류·기존 NOT PASS 유지](../../01_Phases/goals/2026-10-15-verification-lightening-execution-lock/goal.md#재개-지점) · [기존 PR2 가드는 동결까지 보류](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점)
 
-- Effect: [기본 공격 키 왼쪽 Ctrl](../../01_Phases/goals/2026-10-30-attack-key-left-ctrl/goal.md#재개-지점) · [처치 보상 떠오르는 글](../../01_Phases/goals/2026-10-30-kill-reward-float-text/goal.md#재개-지점) · [PlayMode 전제 건너뜀](../../01_Phases/goals/2026-10-30-playmode-precondition-ignores/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/effect-active` · `docs/effect-closeout-20261031` · PR282(dd9e755b)·PR283(f5adcf31)·PR286(9cc80a9d) 병합 · 사용자 플레이 괜찮음(결정 78 C) · 종료 기록 PR288 문서 실사(결정 76 A, 종료 Gardener 하나는 끝)
+- Effect: [기본 공격 키 왼쪽 Ctrl](../../01_Phases/goals/2026-10-30-attack-key-left-ctrl/goal.md#재개-지점) · [처치 보상 떠오르는 글](../../01_Phases/goals/2026-10-30-kill-reward-float-text/goal.md#재개-지점) · [PlayMode 전제 건너뜀](../../01_Phases/goals/2026-10-30-playmode-precondition-ignores/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/effect-active` · `docs/effect-closeout-20261031` · PR282(dd9e755b)·PR283(f5adcf31)·PR286(9cc80a9d) 병합 · 사용자 플레이 괜찮음(결정 78 C) · 종료 기록 PR288 1차 실사 NOT PASS(D1·D2) 고침 뒤 재검증(결정 76 A, 종료 Gardener 하나는 끝)
 
 Content goal의 상태·결정·남은 일은 위 상대 링크의 재개 지점에서 확인하며, 작업은 해당 Content worktree에서 이어간다. CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
 

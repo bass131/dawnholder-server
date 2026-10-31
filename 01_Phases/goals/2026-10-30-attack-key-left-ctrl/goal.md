@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** [PR282](https://github.com/bass131/dawnholder-server/pull/282)는 병합됐다(병합 commit `dd9e755b`). 이 goal의 결과 기록과 종료 Gardener는 Effect 세 goal이 함께 쓰는 종료 기록 [PR288](https://github.com/bass131/dawnholder-server/pull/288)(branch `docs/effect-closeout-20261031`)에 넣었다. 다음은 그 PR의 문서 실사를 신규 독립 검증자로 열고, PASS 뒤 메인에 준비 보고를 올리는 일이다. 그 PR이 병합되면 메인이 R-8로 리드를 새로 연다. 결과는 아래 [결과](#결과)에 있다.
+**다음 첫 일:** [PR282](https://github.com/bass131/dawnholder-server/pull/282)는 병합됐다(병합 commit `dd9e755b`). 이 goal의 결과 기록과 종료 Gardener는 Effect 세 goal이 함께 쓰는 종료 기록 [PR288](https://github.com/bass131/dawnholder-server/pull/288)(branch `docs/effect-closeout-20261031`)에 넣었다. 1차 문서 실사는 NOT PASS(D1·D2)였고 고침 commit을 올렸다([PR288 문서 실사](../2026-10-30-kill-reward-float-text/goal.md#pr288-문서-실사--2026-10-31)). 다음은 고친 부분만 새 독립 검증자로 다시 보고, PASS 뒤 메인에 준비 보고를 올리는 일이다. 그 PR이 병합되면 메인이 R-8로 리드를 새로 연다. 결과는 아래 [결과](#결과)에 있다.
 
 | 항목 | 현재 |
 |---|---|

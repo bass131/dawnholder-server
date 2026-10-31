@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** [PR283](https://github.com/bass131/dawnholder-server/pull/283)은 병합됐다(병합 commit `f5adcf31`). 이 goal의 결과 기록과 종료 Gardener는 Effect 세 goal이 함께 쓰는 종료 기록 [PR288](https://github.com/bass131/dawnholder-server/pull/288)(branch `docs/effect-closeout-20261031`)에 넣었다. 다음은 그 PR의 문서 실사를 신규 독립 검증자로 열고, PASS 뒤 메인에 준비 보고를 올리는 일이다. 그 PR이 병합되면 메인이 R-8로 리드를 새로 연다. 결과는 아래 [결과](#결과)에 있다.
+**다음 첫 일:** [PR283](https://github.com/bass131/dawnholder-server/pull/283)은 병합됐다(병합 commit `f5adcf31`). 이 goal의 결과 기록과 종료 Gardener는 Effect 세 goal이 함께 쓰는 종료 기록 [PR288](https://github.com/bass131/dawnholder-server/pull/288)(branch `docs/effect-closeout-20261031`)에 넣었다. 1차 문서 실사는 NOT PASS(D1·D2)였고 고침 commit을 올렸다([PR288 문서 실사](#pr288-문서-실사--2026-10-31)). 다음은 고친 부분만 새 독립 검증자로 다시 보고, PASS 뒤 메인에 준비 보고를 올리는 일이다. 그 PR이 병합되면 메인이 R-8로 리드를 새로 연다. 결과는 아래 [결과](#결과)에 있다.
 
 | 항목 | 현재 |
 |---|---|
@@ -279,6 +279,7 @@
 - 플레이 결과(결정 78 C, 메인 전달 `msg_a2b3903508fb`): 사용자 원문은 「대시보드 결정 응답: 1) 78 - 병합된 GUI 묶음 직접 플레이(카드 20줄) → C 코멘트 「플레이에는 문제가 없음, 근데 캐릭터 선택창에 빨간 박스 부분으로 내가 강조한 부분이 쓸데없이 공간을 많이 차지함, 캐릭터 선택 슬롯을 4개로 하고, 빈 캐릭터칸 선택시 새로운 캐릭터 생성 UI로 진입하게 수정, 나머지는 괜찮음 [Image #2]」」이다.
   - 이 goal과 65 A(PR282·PR283)는 「나머지는 괜찮음」으로 문제가 없다(메인 `msg_a2b3903508fb` 1).
   - 캐릭터 선택창 의견(오른쪽 설명 상자가 넓음, 슬롯 4개, 빈 칸 선택 시 생성 화면)은 두 goal 범위 밖이다. 리드는 처리하지 않았다.
+  - 그 뒤 사용자 결정 85 A(메인 전달 `msg_36f268442791`, 아래 84 A와 같은 원문): 「2) 85 - 캐릭터 칸을 지금 4개로 늘릴지(DB 구조 변경 포함), 3칸으로 화면만 먼저 고칠지 → A 3칸으로 화면만 지금」. 캐릭터 선택창의 일이라 이 goal 범위 밖이고, 리드는 처리하지 않았다.
 - 끝(결정 84 A, 메인 전달 `msg_36f268442791`): 사용자 원문은 「대시보드 결정 응답: 1) 84 - 플레이 끝: DB 서버 끄기(Enter)와 Editor 닫기(네 손) → A 둘 다 끝 · …」이다. 메인이 PID 7404 없음·Unity 0을 확인했다. 리드 확인 루프는 10:11:51Z에 Unity 0을 보았다.
 - 복원(`lead/play-01/play-01-restore.json`, 10:12:04Z, Unity 0 확인 뒤):
   - 바뀐 파일은 `MinimapRT.renderTexture` 하나였고, 플레이 전 사본(HEAD와 같은 bytes)으로 되돌렸다. `ProjectSettings.asset`은 바뀌지 않았다. 알 수 없는 변경은 0이다.
@@ -287,8 +288,9 @@
   - Legacy 서버 탭은 사용자 Ctrl+C 뒤 「Server task finished with exit code 130.」으로 빈 프롬프트였다. 다시 켜지 않고 닫았다(`server-terminal-close-01.json`).
   - 메인에 알렸다(`msg_c3a81be9ec02`). Unity 창은 메인이 Art에 넘긴다.
 - 절차 이탈(리드 자기 신고):
-  - 10:12Z쯤 터미널 목록을 저장하는 명령 앞에 빈 `node -e ""`를 한 번 붙였다. 메인이 하지 말라고 지시한 것이다. 출력과 결과에는 영향이 없다(`msg_c3a81be9ec02`). 종료 기록 중 10:58Z쯤 fetch·점검 명령 끝에 한 번 더 붙였다. 11:01Z쯤에는 점검 결과 JSON을 요약해 보는 데 인라인 `node -p`를 한 번 썼다(읽기만). 둘 다 출력과 결과에는 영향이 없고, 종료 기록 PR 준비 보고에서 메인에 신고했다.
-  - 이 플레이 창의 전 상태 저장·서버·Editor·복원은 맥락 메모 없이 했다. 계획은 각 스크립트 머리 주석과 메인 지시에만 있었다. 그중 저장소 추적 파일 쓰기는 `MinimapRT.renderTexture` 복원 하나다. 메모는 그 뒤 10:14:32Z에 `lead/closeout-01/closeout-context-01-addendum-01.md`로 보충했다. BACKLOG `lead-direct-write-context-memo`의 다섯 번째 관측으로 덧붙였다(종료 Gardener GR-06).
+  - 10:12Z쯤 터미널 목록을 저장하는 명령 앞에 빈 `node -e ""`를 한 번 붙였다. 메인이 하지 말라고 지시한 것이다. 출력과 결과에는 영향이 없다(`msg_c3a81be9ec02`). 종료 기록 중 10:58Z쯤 fetch·점검 명령 끝에 한 번 더 붙였다. 11:01Z쯤에는 점검 결과 JSON을 요약해 보는 데 인라인 `node -p`를 한 번 썼다(읽기만). PR288 head를 고정한 뒤 11:10Z쯤 PR 상태 저장 명령 끝에 빈 `node -e ""`를 세 번째로 붙였고, 바로 메인에 신고했다(`msg_5f3c5a953e2b`). 모두 출력과 결과에는 영향이 없다.
+  - 메인 처분: 10:12Z·10:58Z 빈 `node -e`와 11:01Z `node -p`는 「A. 판정의 절차 이탈 목록에 사실로 적고 차단하지 않는다」(`msg_6cdee7d5ad2e` 1, 메인 결정이며 사용자 결정 아님). 11:10Z 건에는 「출력 저장 명령은 저장 스크립트 파일(.cjs/.mjs)로 만들고 그 파일만 실행해라. 인라인 node -e·node -p를 쓰지 않는다.」와 「이 반복은 BACKLOG contract-exec-allowlist-audit 근거에 그대로 남긴다」가 왔다(`msg_8162a2113c3c` 2·3). 리드는 그 뒤 우편함 대기·읽기도 저장 스크립트로만 한다.
+  - 이 플레이 창의 전 상태 저장·서버·Editor·복원은 맥락 메모 없이 했다. 계획은 각 스크립트 머리 주석과 메인 지시에만 있었다. 그중 저장소 추적 파일 쓰기는 `MinimapRT.renderTexture` 복원 하나다. 메모는 그 뒤 10:14:32Z에 `lead/closeout-01/closeout-context-01-addendum-01.md`로 보충했다. BACKLOG `lead-direct-write-context-memo`의 다섯 번째 관측으로 덧붙였다(종료 Gardener GR-06). 메인 처분은 「A. 기록·비차단」이다(`msg_6cdee7d5ad2e` 2).
 
 ### 종료 Gardener — 2026-10-31(결정 76 A)
 
@@ -308,6 +310,7 @@
 | GR-06 | 플레이 창의 맥락 메모 부재와 `MinimapRT` 복원 쓰기가 goal·BACKLOG에 없다 | 위 플레이 창 절차 이탈에 적고 BACKLOG `lead-direct-write-context-memo`에 다섯 번째 관측으로 덧붙였다 |
 
 - 정리 후보: 후보 1(Editor 기동 기록 사고)은 BACKLOG `verification-harness-powershell-helper`에 덧붙였다. 후보 2(계약 허용 목록 밖 명령)는 맞는 기존 행이 없어 새 행 BACKLOG `contract-exec-allowlist-audit`로 두었다. 둘 다 제안의 이관이며 채택이 아니다. 채택은 메인을 거쳐 사용자가 정한다.
+- 보고서와 원천이 다른 곳(PR288 문서 실사 D1): 후보 2 요약의 「작업자·검증자 7세션」(gardener.md 45·199행)은 같은 보고서 200~202행이 든 세션(공격 키 3, 처치 보상 3, 전제 건너뜀 2)으로 세면 8이다. 「하나하나는 읽기 전용」(206행)도 캡처 작업자의 `Stop-Process` 1건과 맞지 않는다. 보고서는 원본 bytes 사본이라 그대로 두고, 리드가 옮겨 적은 BACKLOG 행만 원천대로 고쳤다.
 - 기존 행에 덧붙인 관측(보고서 「첫 발생·기존 후보 연결」): 단계 정산 때 생존 신호 helper 미실행의 세 번째 발생은 BACKLOG `heartbeat-interval-review`에, 리드 R-3 회신 이탈의 세 번째 관측은 BACKLOG `orca-general-reply-tag-guard`에 적었다. 나머지 연결은 보고서에만 둔다.
 - 설계 관찰(비차단, 리드 처분):
   - O1 PR286의 `DEVELOPMENT.md` 실행 전제 표가 23건만 담는데 범위를 말하지 않는다. 이 종료 기록 PR에서는 고치지 않는다. 다음에 그 표를 고치는 goal이 범위 한 문장이나 캡처 시험 행을 더한다.
@@ -315,4 +318,17 @@
   - O3 GR-01을 goal 링크로 고쳐서, 후보 도착 검사는 원본 위치에서 다시 돌렸다. 세 goal 모두 exit 0이다(`lead/closeout-01/check-closeout-01.json`, 10:58:04Z).
   - O4 공격 키 goal이 다른 goal 근거 폴더의 원시를 든 것. 틀리지 않아 그대로 두고, 다음 종료부터 한 폴더에 모은다.
   - O5 Gardener 계약의 파일 보기 문장. 후보 2 행의 보조 항목에 넣었다.
-- Gardener 자신의 이탈: 계약 허용 목록 밖 읽기 전용 셸 명령 10항목을 스스로 적었다(보고서 「자기 쓰기 감사」). 생존 신호는 15회, 300초 초과 1구간 10:39:04Z→10:46:39Z 455초(heartbeat→heartbeat, `lead/closeout-01/gardener-settle-01.json`)다. 이유는 확인하지 않았다.
+- Gardener 자신의 이탈: 계약 허용 목록 밖 읽기 전용 셸 명령 10항목을 스스로 적었다(보고서 「자기 쓰기 감사」). 메인 처분은 「A. 기록·비차단」이다(`msg_6cdee7d5ad2e` 3). 생존 신호는 15회, 300초 초과 1구간 10:39:04Z→10:46:39Z 455초(heartbeat→heartbeat, `lead/closeout-01/gardener-settle-01.json`)다. 이유는 확인하지 않았다.
+
+### PR288 문서 실사 — 2026-10-31
+
+- 검증자: 신규 `[Effect 검증자]`(gpt-6-astra xhigh, Fast 끔), task `task_a790d3363dbb`, dispatch `ctx_b968e16bb576`. rollout의 turn_context 2회가 모두 `gpt-6-astra`·`xhigh`이고, backend 실제 모델은 unknown이다(`lead/closeout-verify-01/settle-verifier-01.json`).
+- 기동: 첫 화면이 Codex 업데이트 선택창(0.165.0 → 0.166.0)에서 멈췄다. 리드는 키를 누르지 않고 메인에 알렸다. 메인이 Esc로 건너뛰었고(`msg_731328be8151`, 사용자 결정 57 A), Codex는 0.165.0 그대로다(`lead/closeout-verify-01/launch-record-01.md`).
+- 판정: NOT PASS, 차단 D1·D2. 원문은 `closeout-verify-01/verdict.md`(sha256 `3173d43ff67fd08915b1201037ac3dcae27a7d25c38f816be109357619fc3d9b`)이고 worker_done은 `msg_178179a4ce5a`(11:28:14Z)다. 링크 52개, 후보 도착 검사 셋, 쓰기 경계, 종료 순서, 76 A 기록은 지적이 없었다.
+  - D1: BACKLOG `contract-exec-allowlist-audit`의 「7세션」과 「모두 읽기 전용」이 원천(8세션, `Stop-Process` 1건)과 달랐다. 검증자가 실사 중 바로 알렸고(`msg_8ea35d334d9d`), 리드가 메인에 전달했다(`msg_885d4aeb9e4e`). 고침: BACKLOG 행을 원천대로 고치고, 위 종료 Gardener 절에 보고서와 원천이 다른 곳을 적었다.
+  - D2: PR 본문은 세 goal에 85 A 원문과 msg ID를 적었다고 했지만, head의 세 goal에는 85 A가 없었다. 고침: 위 플레이 창 절에 85 A 원문을 적고, PR 본문을 goal별 실제 기록 범위로 고쳤다.
+- 설계 관찰 O1(비차단): 세 goal 재개 카드 표의 branch 줄에 제품 PR 당시 기록과 병합 기록이 섞여 있다. 첫 문단이 현재 상태를 말하므로 이번 고침에서는 바꾸지 않는다.
+- 실사 중 메인 처분: 검증자가 종료 작업 이탈 셋의 처분을 물었다(`msg_325a4ea65592`). 메인은 셋 모두 A(기록·비차단)로 정했다(`msg_6cdee7d5ad2e`, 메인 결정). 위 플레이 창 절과 종료 Gardener 절에 적었다.
+- 검증자 생존 신호: 8회, 300초 초과 1구간 11:19:48Z→11:25:40Z 352초(heartbeat→heartbeat)다. 판정서 작성과 원시 감사 중 주기를 놓쳤다고 검증자가 스스로 적었다(판정 H1, 정본 helper 결과는 `settle-verifier-01.json`).
+- 정산: `apply_patch` 쓰기 대상 15곳은 모두 검증자 폴더 안이고 작업 트리 변경은 0이다. git 실행은 `show`·`diff`·`status`·`rev-parse`·`branch` 읽기뿐이다(`lead/closeout-verify-01/rollout-commands-01.json`). worker-release는 retained·external_terminal이었고, pane은 idle을 확인한 뒤 닫았다(`close-verifier-02.json`).
+- 다음: 고침 commit에서 바뀐 부분만 새 독립 검증자로 다시 본다(메인 `msg_8162a2113c3c` 1).
