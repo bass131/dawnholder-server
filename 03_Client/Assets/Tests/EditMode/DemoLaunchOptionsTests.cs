@@ -60,5 +60,60 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(1f, ZoomOf("-demo-zoom", "1,4"));
             Assert.AreEqual(1f, ZoomOf("-demo-zoom"));
         }
+
+        [Test]
+        public void CharacterArgument_PreservesRawNameAndExistingLaunchOptions()
+        {
+            // PR268 RED contract v1 R1: whitespace is significant; the server alone judges character names.
+            const string rawName = "  데모 기사 ";
+            DemoLaunchOptions? options = DemoLaunchOptions.Parse(new[]
+            {
+                "Dawnholder.exe", "-demo-role", "knight", "-demo-character", rawName,
+                "-demo-account", "demo_extra", "-demo-mute", "-demo-no-bgm", "-demo-zoom", "1.4"
+            });
+
+            Assert.IsNotNull(options, "R1: the role enables the demo");
+            Assert.AreEqual(rawName, options!.Character);
+            Assert.AreEqual(DemoRole.Knight, options.Role);
+            Assert.AreEqual("demo_extra", options.Account);
+            Assert.IsTrue(options.Muted);
+            Assert.IsTrue(options.NoMusic);
+            Assert.AreEqual(1.4f, options.CameraZoom, 1e-5f);
+        }
+
+        [Test]
+        public void WithoutCharacterArgument_CharacterIsNull()
+        {
+            // R1: a matching saved character may be selected without a name argument.
+            DemoLaunchOptions? options = DemoLaunchOptions.Parse(new[] { "Dawnholder.exe", "-demo-role", "knight" });
+
+            Assert.IsNotNull(options);
+            Assert.IsNull(options!.Character);
+        }
+
+        [Test]
+        public void CharacterArgumentWithoutTrailingValue_CharacterIsNull()
+        {
+            // R1: a dangling switch is absent, rather than an empty or invented name.
+            DemoLaunchOptions? options = DemoLaunchOptions.Parse(new[]
+            {
+                "Dawnholder.exe", "-demo-role", "knight", "-demo-character"
+            });
+
+            Assert.IsNotNull(options);
+            Assert.IsNull(options!.Character);
+        }
+
+        [Test]
+        public void CharacterArgumentWithoutDemoRole_StaysOff()
+        {
+            // R1 / goal B1: the character switch cannot enable the autopilot by itself.
+            DemoLaunchOptions? options = DemoLaunchOptions.Parse(new[]
+            {
+                "Dawnholder.exe", "-demo-character", "  데모 기사 "
+            });
+
+            Assert.IsNull(options);
+        }
     }
 }
