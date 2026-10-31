@@ -649,6 +649,18 @@ namespace Dawnholder.Client.Tests.PlayMode
             seen.renderingWidth = -1;
             seen.renderingHeight = -1;
 #endif
+            // Skipped only after the view state and the rendering size are read: in batchmode a main GameView is left
+            // after that reading and the later cases run in it, so an earlier skip would change their screen. Before any
+            // judgement, so a named but missing folder still fails inside Judge and a wrong view still fails below.
+            var missing = new List<string>();
+            if (CaptureDirectoryMissing()) missing.Add(CaptureDirectoryVariable);
+            if (seen.mainPlayModeView == "none") missing.Add("the Editor's Game view (Editor Game 화면 필요)");
+            if (missing.Count > 0)
+            {
+                Debug.Log($"[guild verify {label}] skipped before judgement: Screen {width}x{height}, rendering " +
+                    $"{seen.renderingWidth}x{seen.renderingHeight}, main play mode view {seen.mainPlayModeView}");
+                Assert.Ignore($"the default-screen judgement needs {string.Join(" and ", missing)}");
+            }
             CheckModel(real, expected, pair);
             yield return Judge(overlay, pair.Both, expected, real);
             var raycasts = new List<string>();
@@ -696,6 +708,8 @@ namespace Dawnholder.Client.Tests.PlayMode
 
         IEnumerator MeasureInRenderTexture(int requestedWidth, int requestedHeight)
         {
+            if (CaptureDirectoryMissing())
+                Assert.Ignore($"the RenderTexture judgement keeps its captures only when the runner sets {CaptureDirectoryVariable}");
             var fixtureProblems = new List<string>();
             var allProblems = new List<string>();
             foreach (bool upperBound in new[] { false, true })
@@ -744,6 +758,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             string reportRule, Func<Judgement, string[], bool> reported,
             Func<WindowPair, LabelExpectation[], string[], (string Rule, bool Holds)[]> damagedPreconditions = null)
         {
+            if (CaptureDirectoryMissing())
+                Assert.Ignore($"the negative control keeps its captures only when the runner sets {CaptureDirectoryVariable}");
             WindowPair pair = Build(label, ApprovedGuild(treasury: 30), ApprovedSmith(gold: 20));
             Surface surface = RenderTextureSurface(pair.Holder, Screen.width, Screen.height, pair.Both);
             yield return Settle();
@@ -1336,6 +1352,10 @@ namespace Dawnholder.Client.Tests.PlayMode
             record.raycasts = seen.ToArray();
             return problems;
         }
+
+        // Only an unset variable skips the capture cases: a named folder that is wrong or missing still fails inside the
+        // judgement (KeepOriginal), so a lane that names the folder never passes by skipping.
+        static bool CaptureDirectoryMissing() => string.IsNullOrEmpty(Environment.GetEnvironmentVariable(CaptureDirectoryVariable));
 
         static string MainPlayModeViewState()
         {
@@ -2648,7 +2668,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             {
                 Assert.AreEqual("6000.6.4f1", Application.unityVersion, "exact GameView API version");
                 string path = Environment.GetEnvironmentVariable("DAWNHOLDER_GUILD_MEMORY_PERMIT");
-                Assert.IsFalse(string.IsNullOrEmpty(path), "memory use requires a runner permit");
+                if (string.IsNullOrEmpty(path))
+                    Assert.Ignore("memory use requires a runner permit in DAWNHOLDER_GUILD_MEMORY_PERMIT" +
+                        (CaptureDirectoryMissing() ? $" and a capture folder in {CaptureDirectoryVariable}" : string.Empty));
                 string directory = MemoryDirectory();
                 Assert.AreEqual(Path.Combine(directory, "memory-permit.json"), Path.GetFullPath(path), "permit location");
                 var permit = JsonUtility.FromJson<MemoryPermit>(File.ReadAllText(path));

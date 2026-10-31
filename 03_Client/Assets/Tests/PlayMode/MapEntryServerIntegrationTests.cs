@@ -16,7 +16,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         [SetUp] public void Setup() => _fixture = new MapEntryPlayFixture();
         [UnityTearDown] public IEnumerator Teardown() => _fixture.Cleanup();
 
-        [UnityTest]
+        [UnityTest, Explicit("needs the real GameServer at 127.0.0.1:7777; runs only in a real-server lane that selects it by name")]
         public IEnumerator ProductionServer_TownHuntingGroundTown_KeyboardPortalsPreserveEntityHpAndRoster()
         {
             yield return _fixture.Prepare(true);

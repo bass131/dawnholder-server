@@ -40,7 +40,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         IEnumerator WaitSynchronized(string label) => MapEntryPlayFixture.Wait(() =>
             _fixture.Session.Inventory.IsSynchronized && InventoryPanelProbe.Status == "서버 확인 완료", label, 10);
 
-        [UnityTest]
+        [UnityTest, Explicit("needs the real GameServer at 127.0.0.1:7777; runs only in a real-server lane that selects it by name")]
         public IEnumerator ProductionServer_KeyboardGolemKill_ShowsTheReward_AndAPointerUseIsConfirmedBySnapshot()
         {
             yield return _fixture.Prepare(true);
