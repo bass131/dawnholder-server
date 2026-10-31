@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR #286은 병합됐다(병합 commit `9cc80a9d`). 이 goal의 결과 기록은 Effect 세 goal이 함께 쓰는 종료 기록 PR(branch `docs/effect-closeout-20261031`)에 넣는다. 그 PR이 병합되면 메인이 R-8로 리드를 새로 연다. 결과는 아래 [결과](#결과)에 있다.
+**다음 첫 일:** PR #286은 병합됐다(병합 commit `9cc80a9d`). 이 goal의 결과 기록과 종료 Gardener는 Effect 세 goal이 함께 쓰는 종료 기록 [PR288](https://github.com/bass131/dawnholder-server/pull/288)(branch `docs/effect-closeout-20261031`)에 넣었다. 다음은 그 PR의 문서 실사를 신규 독립 검증자로 열고, PASS 뒤 메인에 준비 보고를 올리는 일이다. 그 PR이 병합되면 메인이 R-8로 리드를 새로 연다. 결과는 아래 [결과](#결과)에 있다.
 
 | 항목 | 현재 |
 |---|---|
