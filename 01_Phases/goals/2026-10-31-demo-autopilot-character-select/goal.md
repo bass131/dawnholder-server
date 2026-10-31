@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 캐릭터 선택창(PR-A) 구현 계약을 발행한다. 선행 시험(RED)은 commit됐고, 기준은 진행 기록 10-31 「캐릭터 선택창 시험」 항목이다. PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
+**다음 첫 일:** 캐릭터 선택창(PR-A) 독립 검증자 계약을 발행한다. 구현은 commit됐고 U2에서 EditMode·PlayMode 실패 0이다(진행 기록 10-31 「캐릭터 선택창 구현」). A8 캡처의 Art 외관 의견도 검증과 함께 받는다. PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
 
 | 항목 | 현재 |
 |---|---|
@@ -126,8 +126,8 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 
 - [x] 범위 승인
 - [x] 캐릭터 선택창 시험
-- [>] 캐릭터 선택창 구현
-- [ ] 캐릭터 선택창 검증
+- [x] 캐릭터 선택창 구현
+- [>] 캐릭터 선택창 검증
 - [ ] 자동 진행기 시험
 - [ ] 자동 진행기 구현
 - [ ] DB 서버 실주행 검증
@@ -147,3 +147,9 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 구현자에게 넘길 관측: 지금 칸 span은 header 720 중 320(44.4%)이다. 100폭 칸에서 12자 이름의 선택 칸 글이 넘친다. T6 대역 흐름은 생성 뒤 목록 응답을 보내지 않는다(Presenter가 생성 성공만으로 칸을 채움).
   - 첫 발생 기록: U1 첫 시도는 `-File`로 넘긴 쉼표 목록이 배열로 풀리지 않아 harness exit 3으로 Unity 기동 전에 멈췄다. 작성자가 harness를 고쳤다(sha256 `9de61bda…`→`754ec592…`).
   - 첫 발생 기록: 작성자가 창 밖(15:17:21~27Z, 직전 Unity 0 관측)에서 Unity 동봉 Windows dotnet으로 오프라인 컴파일했다. 계약 금지 목록에는 없었다. 다음 계약부터 「Windows dotnet도 배정된 창 안에서만」을 적는다.
+  - 메인 대조(`msg_c63f0c6c0b3e` 3항): 그 15:17:21~27Z는 Art PR4 K2 캡처 창(15:12:30~15:32:30Z) 안이었다. K2는 통과해 다시 찍지 않는다. 구현 계약 v1부터 위 문장을 넣었다.
+- 2026-10-31 캐릭터 선택창 구현(GREEN): 구현자 `[Content 구현 Opus]` task_836a399a68fa / ctx_4e160b797a9a, 계약 `lead/pr-a-impl-contract-v1.md`(sha256 `9371be936177b6a43d46a79c2e4ca4b1d93e9a0bbd2299390321565550e7118a`), 보고 `pr-a-impl-01/report.md`(sha256 `efe3084a1de98988363997c1ee458f1d91f1fbe1eed76f00b482e8e78b807fc1`), worker_done `msg_0e085589d119` succeeded, 정산 16:19Z(release·pane close).
+  - 제품: `CharacterMenuView.cs` 한 파일(122+/65−). 설명 상자 세 객체를 없앴고, 세 칸은 232폭·간격 12로 Header 폭 720 전부를 쓴다. `CreateForm`은 칸 줄 자리에 열리고 그동안 칸 줄·`Submit`은 꺼진다. `domains/client.md` 「캐릭터 선택 화면」 절을 더했다.
+  - U2(창 3, `pr-a-impl-01/u2/`, 한 번): EditMode 1707/1707, PlayMode 259 중 216 통과·실패 0·skipped 43(U1과 같은 이름). U1 실패 49건이 모두 통과로 바뀌었고 통과에서 바뀐 시험은 0이다(리드가 결과 XML로 재집계).
+  - 구현자가 남긴 비차단 관찰: `Cancel`이 `Result` 글도 지운다. 생성 화면에 어느 칸을 만드는지 보이는 제목이 없다. 생성 화면이 열린 동안 칸 클릭 guard를 직접 겨냥한 시험은 없다. 보고 1절의 diff 줄 수(120+)는 실제 122+와 다르다.
+  - BACKLOG: 이 goal로 승격된 세 행(`character-select-three-wide-slots`·`demo-autoplay-character-menu`·`demo-recording-build-contract`)에 goal 링크를 달고, `character-menu-selecting-detail-text`는 흡수 폐기했다.
