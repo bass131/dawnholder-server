@@ -2,15 +2,20 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-11-01 종료
+### 현재 재개 카드 — 2026-11-01 오늘 정리, PR5 문서 실사 전
 
-**다음 첫 일:** 없음. 이 goal은 PR5(종료 기록) 병합과 메인 R-8로 닫는다. 이어지는 일은 BACKLOG 두 행이다. 인벤토리 4열 아이콘 격자 `inventory-icon-grid`는 R-8 뒤 새 Art 리드가 범위 초안 v4로 연다. 버튼 조각 대비 `bright-button-piece-contrast`(75 A)는 리셋 뒤에 연다.
+**다음 첫 일:** PR5 종료 기록 [PR292](https://github.com/bass131/dawnholder-server/pull/292)의 문서 실사다. 이 카드 고침 commit은 로컬에만 있다(메인 정리 지시 `msg_b1c24b5c3dea`). 다음 세션은 이 commit을 PR292 branch `docs/art-bright-look-closeout-20261101`에 push하고 PR 본문에 덧붙인 뒤, 그 head를 대상으로 신규 Astra 검증자(`[Art 검증자]`, gpt-6-astra xhigh, Fast 끔)의 문서 실사 계약을 쓴다. 계약 틀은 근거 폴더의 PR4 검증 계약 본문 `pr4-verify-contract-v1-head.md`다. 그 뒤 순서는 merge-tree 대조 → 메인 병합 준비 보고 → 사용자 승인·메인 병합 → 메인 R-8이다(메인 `msg_c7a0484439f0`·`msg_e1d856276e79`). 이어지는 일은 BACKLOG 두 행이다. 인벤토리 4열 아이콘 격자 `inventory-icon-grid`는 R-8 뒤 새 Art 리드가 범위 초안 v4로 연다. 버튼 조각 대비 `bright-button-piece-contrast`(75 A)는 리셋 뒤에 연다.
 
 | 항목 | 현재 |
 |---|---|
-| 상태 | 종료. 완료조건 11의 독립 검증 PASS는 채우지 못했다. 사용자 결정 94 A로 PR4 절차 결함 6건을 기록으로 닫고 PR290을 병합했다(아래 「완료조건 대조 — 종료」). |
+| 상태 | PR1~PR4는 병합됐다. 완료조건 11의 독립 검증 PASS는 채우지 못했다. 사용자 결정 94 A로 PR4 절차 결함 6건을 기록으로 닫고 PR290을 병합했다(아래 「완료조건 대조 — 종료」). PR5 PR292는 열려 있고 문서 실사 전이다. |
 | 병합 | PR1 [PR275](https://github.com/bass131/dawnholder-server/pull/275) `dc66b77e`, PR2 [PR279](https://github.com/bass131/dawnholder-server/pull/279) `7bc75898`, PR3 [PR287](https://github.com/bass131/dawnholder-server/pull/287) `6f5655df`, PR4 [PR290](https://github.com/bass131/dawnholder-server/pull/290) `b8631ccb`. 같은 worktree의 창 배치 goal PR284는 `a0195c84`다. |
-| 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), Run `run_6ae742140ce9`. 메인 R-8로 닫는다. |
+| 열린 결정 | 메인·사용자 결정 대기는 없다. PR292 병합 승인은 문서 실사 뒤 요청한다. 마지막으로 받은 메인 결정은 `msg_e1d856276e79`(1 A 생존 신호 이유 미측정 구간을 그대로 닫음, 2 A 6줄 캡처는 Core 24칸 PR 병합 뒤 격자 goal이 찍음)다. |
+| Core 24칸 계약 | Core 제안 `msg_5254b764b105`, Art 회신 `msg_bacd33a804f4`, Core 동의 `msg_6d95ee3a3f84`, Core 참고 `msg_11d7daa692d2`. 병합 순서는 Art 격자 PR이 먼저다. |
+| 근거 폴더 | `.backups/verification/2026-10-29-inventory-character-select-look/`. 종료 기록 조립·점검은 그 아래 `closeout-01/`이다. |
+| R-8 노트 | 3판 `.backups/verification/2026-10-29-inventory-character-select-look/r8-record-notes-pr4-verify-1031-03.md` |
+| 격자 초안 | v4 `.backups/verification/2026-10-29-inventory-character-select-look/inventory-icon-grid-scope-draft-v4.md`, sha256 `5dd9cce30cd41ca25f442a592082d392fa05a985c6eb4e67d9a9c486d9d0cf2a`(같은 폴더 `inventory-icon-grid-scope-draft-v4-sha-1101-01.txt`) |
+| 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), Run `run_6ae742140ce9`. 사용자가 세션을 마칠 때 pane을 닫는다. |
 | 이미지 생성 | 상한 11회 중 5회다. PR3·PR4는 0회다. |
 | 미추적 파일 | [석재 지형·환경물 교체](../2026-10-28-stone-terrain-environment-replacement/goal.md#closeout-20261029) goal의 미추적 파일은 art-active에 그대로 있고 커밋하지 않는다. |
 
