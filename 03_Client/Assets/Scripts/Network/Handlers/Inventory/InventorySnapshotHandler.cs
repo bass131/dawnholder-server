@@ -8,7 +8,7 @@ namespace Dawnholder.Client.Network.Handlers.Inventory
 {
     internal sealed class InventorySnapshotHandler : IClientPacketHandler
     {
-        const int WireLength = 76; // v17: header + revision + currency + eight (item, count) pairs.
+        const int WireLength = 204; // v23: header + revision + currency + 24 (item, count) pairs.
 
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
         {
@@ -30,6 +30,22 @@ namespace Dawnholder.Client.Network.Handlers.Inventory
                 new InventorySlot((ItemId)packet.slot5ItemId, packet.slot5Count),
                 new InventorySlot((ItemId)packet.slot6ItemId, packet.slot6Count),
                 new InventorySlot((ItemId)packet.slot7ItemId, packet.slot7Count),
+                new InventorySlot((ItemId)packet.slot8ItemId, packet.slot8Count),
+                new InventorySlot((ItemId)packet.slot9ItemId, packet.slot9Count),
+                new InventorySlot((ItemId)packet.slot10ItemId, packet.slot10Count),
+                new InventorySlot((ItemId)packet.slot11ItemId, packet.slot11Count),
+                new InventorySlot((ItemId)packet.slot12ItemId, packet.slot12Count),
+                new InventorySlot((ItemId)packet.slot13ItemId, packet.slot13Count),
+                new InventorySlot((ItemId)packet.slot14ItemId, packet.slot14Count),
+                new InventorySlot((ItemId)packet.slot15ItemId, packet.slot15Count),
+                new InventorySlot((ItemId)packet.slot16ItemId, packet.slot16Count),
+                new InventorySlot((ItemId)packet.slot17ItemId, packet.slot17Count),
+                new InventorySlot((ItemId)packet.slot18ItemId, packet.slot18Count),
+                new InventorySlot((ItemId)packet.slot19ItemId, packet.slot19Count),
+                new InventorySlot((ItemId)packet.slot20ItemId, packet.slot20Count),
+                new InventorySlot((ItemId)packet.slot21ItemId, packet.slot21Count),
+                new InventorySlot((ItemId)packet.slot22ItemId, packet.slot22Count),
+                new InventorySlot((ItemId)packet.slot23ItemId, packet.slot23Count),
             };
             if (!InventorySnapshotState.IsValidSnapshot(packet.currency, slots)) return;
             uint revision = packet.revision;

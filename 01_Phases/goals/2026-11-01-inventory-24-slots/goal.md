@@ -1,0 +1,174 @@
+# 인벤토리 24칸(4×6)
+
+인벤토리 칸 수를 8에서 24로 늘린다. 서버가 보내는 인벤토리 snapshot(36번)과 공유 칸 수 상수를 24로 바꾸고, 클라가 받는 쪽까지 같은 PR에서 맞춘다. 화면 격자(4열 × 6줄)는 Art가 만든다.
+
+**현재 상태(2026-11-01 03:4x KST):** 사용자 지시로 오늘 작업을 안전 지점에서 멈췄다(메인 `msg_6547cf711563`). 구현 1단계는 끝났다. 2단계는 생성기와 WSL 빌드까지 했고, Shared.dll 복사·서버 시험·봇은 남았다. 남은 프로세스는 0이다.
+
+## 재개 지점
+
+- **다음 세션 첫 순서:** 메인에 2단계 나머지 실행 창을 청하고, 새 `[Core Sol]` 구현자(신규 Sol max)를 `impl-02` 계약으로 연다. 이 pane의 구현자는 재사용하지 않는다.
+  - impl-02가 할 일은 다음 순서다.
+    1. `sync-wsl.sh sync`·`build`를 다시 돈다(복제본은 v23 빌드 상태다. 창 8 계획을 거쳤다면 v22일 수 있다).
+    2. 복제본 `03_Client/Assets/Plugins/Shared/Shared.dll` 한 파일을 Windows Plugins에 복사하고 `.meta` 보존을 확인한다.
+    3. `sync-wsl.sh test`, 7777 확인, 봇 `InventorySmoke` 1회를 돈다.
+  - 방법은 `impl-01/lead-reply-sdk-v1.txt`(계약 2단계 보충 v1.1)를 그대로 쓴다. Windows dotnet은 쓰지 않는다. global.json의 SDK 10.0.301이 Windows에 없다.
+  - 그 뒤 순서는 Unity EditMode 창 → Art 격자 PR이 들어간 뒤 PlayMode·실제 접속 → 신규 `[Core 검증자]` 강 등급 독립 검증 → PR·준비 보고다.
+- **멈춘 지점의 파일 상태(2026-10-31T18:4xZ, 로컬 WIP 커밋에 담음):**
+  - 1단계 소스 31파일과 v23 `GenPackets.cs`(WSL 생성, sha256 `62a2ad60353654a0ab652aca2e62717438e4d8d1ee024087e4110dd656505aa9`, CRLF 0)가 바뀌어 있다.
+  - Windows Plugins `Shared.dll`은 아직 v22 그대로다(sha256 `b8b2828e27a1a1667a2b5f703a2c7a97822f70fc47ef974c9f3694dcb5a4ecd3`). `.meta`도 그대로다(`7c6ab891ee57e1a71e200cbea3c27cee36de97404e1d6303711daf59b3be682b`). 그래서 지금 core-active로 Unity를 열면 소스와 DLL 판이 어긋난다.
+  - 2단계 실행: 메모리 확인 통과(18:26:58Z) → Windows 생성기 loader 실패 1회(18:26:59Z 종료, 생성물 변경 0) → WSL sync·생성기·GenPackets 복사(36번 밖 차이 0, 칸 필드 48) → `sync-wsl.sh build` exit 0(wrapper 종료 18:36:47.8104288Z) → 정리 지시로 멈춤.
+  - 남은 프로세스 0: 구현자 `impl-01/raw/process-inspect.out`(18:38:20Z), 리드 `lead-wrapup-process-check-01.txt`(18:39:37Z, Windows dotnet·Unity·Player 0, WSL dotnet·서버·봇 0, 7777 listen 0).
+- **열린 결정:** 메인·사용자 결정 대기는 없다. 적용 중인 결정은 아래 「적용 중인 사용자 결정」과 「적용 중인 메인 결정」이다(97 A `msg_3ce270803253`, 92 B·93 A `msg_e8defeeffd1f`, 범위 승인 `msg_3dfd5496b065`, 99 C 정리 `msg_6547cf711563`).
+- impl-01 기록: 계약 `impl-01/contract-v1.md`, 보충 `impl-01/lead-reply-sdk-v1.txt`(리드 답 `msg_b5e3dcc067a6`), 정리 지시 `impl-01/lead-stop-v1.txt`(`msg_27fc8d686ef9`), 1단계 요약 `impl-01/stage1-summary.md`, 원시 출력 `impl-01/raw/`.
+  - 부분 보고: worker_done `msg_193a4c831f08`(18:44:49Z, outcome `failed`는 사용자 정리에 따른 부분 완료), `impl-01/report.md`(sha256 `deb3fe2ce6dadabd313e127def0e6fc36e58c5133a225833440b9e2226efa3be`). 리드의 원천 대조는 다음 세션 첫 일에 함께 한다.
+  - 다음 세션 확인거리: `git diff --check`가 GenPackets.cs에서 trailing whitespace 64건을 낸다. 리드 grep 기준 HEAD 393줄 → 작업본 457줄로, 생성 템플릿의 기존 성질이 새 칸 16개만큼 는 것이다. 수기 파일의 diff --check는 0이다. 처리 방침은 독립 검증 전에 정한다.
+  - pane `term_c381da69-8cc5-49d3-bd0d-3f45bed6a73b`, Task `task_d81c553e4f6a`, Dispatch `ctx_bfcfb9ffa0af`. worker-release는 `retained`(external_terminal)였고, 18:45:4xZ `terminal close`(ptyKilled true) 뒤 terminal list에서 사라졌다.
+  - 첫 화면은 `GPT-6.1-Sol max · Full Access`, Codex v0.166.0이었다. backend 실제 모델은 unknown이다.
+- Content 창 8(PR268 DB 한 판)은 core-active의 v22 서버로 돈다(Core 답 `msg_0c71d92c392b`). 창 8 전에 리드가 할 일은 셋이다.
+  - 24칸 작업을 이 branch에 커밋한다(이 정리로 WIP 커밋됨).
+  - core-active를 `feat/db-persistence-demo-build-20261031`로 바꾼다.
+  - 창 8 첫 단계로 작업자가 `sync-wsl.sh build` 1회를 돈다. 끝나면 이 branch로 돌아온다. 바꾸는 동안 core-active Unity Editor는 없어야 한다.
+  - 근거: 02_Server·98_Shared는 f5adcf31·58c8d4cb·8b60f725 사이 차이 0줄이다. profile은 core-active `logs/windows-sql-8256bcde…/`에 있다.
+- Art 리드(`run:run_6ae742140ce9`)와 격자 PR 순서를 조율한다. 격자 goal은 Art PR5가 들어가고 R-8 교체가 끝난 뒤 새 Art 리드가 연다. Core PR이 먼저 준비되면 준비 상태로 기다린다(메인 `msg_3dfd5496b065` 2항).
+- 앞 goal(`2026-10-31-db-persistence-demo-build`)은 리허설 대기로 멈춰 있다. 그 branch에 로컬 WIP 커밋 `9d35f5cd`가 있고 원격에 올리지 않았다. 이 goal이 끝나면 그 branch로 돌아가 이 PR이 들어간 기준 branch를 합친다.
+- Run `run_ee7c33fd5873`, 리드 `[Core 리드 Opus]`, Claude 대화 ID `396a3a4c-061f-46a4-94cb-a8cbce46f7a0`. branch `feat/inventory-24-slots-20261101`(base `58c8d4cb9b8a34d66389d5573797e07564c6fa7a`, upstream 없음, 원격에 올리지 않음). 근거 폴더는 `.backups/verification/2026-11-01-inventory-24-slots/`다.
+
+## 적용 중인 사용자 결정
+
+### 2026-11-01 결정 99 C — 오늘은 여기까지 정리
+
+메인 `msg_6547cf711563`(2026-10-31T18:36:00Z)이 전달한 사용자 원문이다. 메인 pane에서 제출됐다.
+
+> 대시보드 결정 응답: 1) 99 - 자동 진행기 DB 서버 두 판(네 손 약 30분)을 오늘 밤에 할지, 일어나서 할지 → C 코멘트 「오늘은 여기까지하고 전부 정리하자」
+
+- 메인 정리 지시: 새 단계·실행·작업자를 시작하지 않는다. 돌던 명령 하나만 끝내고 멈춘다. 남은 프로세스 0을 확인한다. 미커밋 goal 기록은 로컬 커밋까지만 한다. 새 원격 branch는 만들지 않는다. 「정리 끝」 뒤 우편함 대기를 열지 않는다.
+
+### 2026-10-31 결정 97 A — 인벤토리 24칸
+
+메인 `msg_3ce270803253`(2026-10-31T17:52:45Z)이 전달한 사용자 원문이다. 메인 pane에서 Enter로 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 97 - 인벤토리를 24칸(4×6)으로 늘릴지, 8칸(4×2)으로 둘지 → A 24칸으로 늘림
+
+- 그 앞 사용자 원문은 「아니면 인벤토리 크기를 더 늘려도 돼, 내 생각에는 메이플스토리 인벤토리 크기 정도면 상관없어」다.
+- 97 A 선택지 문장은 「Core가 지금 인벤토리 패킷과 서버 칸 수를 24로 바꾸고 서버·Unity 양쪽을 검증한다. Art 격자는 칸 수를 따라 4×6이 되고 창은 지금 390×720 가까이 된다. 시연 빌드는 Core PR까지 기다린다」다.
+
+### 2026-10-31 결정 92 B·93 A와 작업자 Codex 전환
+
+메인 `msg_e8defeeffd1f`(2026-10-31T16:46:14Z)가 전달한 사용자 원문이다.
+
+> 대시보드 결정 응답: 1) 92 - 인벤토리 4칸 격자 개편을 리셋 뒤에 할지, 지금 녹화 준비와 함께 할지 → B 지금 함께 · 2) 93 - 아이콘만 남은 칸에서 아이템을 어떻게 쓸지(지금은 줄마다 「사용」 버튼) → A 우클릭으로 사용
+
+> 그러면 작업자를 Codex로 바꿔줘, 이번에 사용한도 다시 2배 되었거든
+
+- 격자·우클릭 사용은 Art 몫이다.
+- 작업자 전환은 메인 해석이다. 구현자는 신규 `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode`, 태그 `[Core Sol]`이다. 리드는 Claude Opus, 독립 검증자는 신규 GPT-6-Astra xhigh 그대로다.
+
+## 적용 중인 메인 결정
+
+메인 `msg_3dfd5496b065`(2026-10-31T18:04:08Z). 사용자 결정이 아니다. 범위 초안 v1(sha256 `8dba8548c26a4788b1ed5b9671fcf3bad9b3223f58abb0cf5d1a1c96253f1a95`)을 승인했다.
+
+- 패킷 모양: 36번 끝에 slot8~23을 붙이고 ProtocolVersion을 23으로 올린다. 근거는 protocol.md 9줄 「패킷 ID를 재사용하거나 정의 순서를 바꾸지 않는다. 필드 끝 추가도 기존 읽기 코드에 영향을 준다. 버전 일치로 연결을 제한하는 현재 핸드셰이크와 새 동작을 함께 검증한다」다. 같은 패킷 끝 추가는 ID 재사용이 아니다. 메인 `msg_3ce270803253` 2항의 「새 패킷 ID」는 메인이 바로잡았다.
+- 클라 받는 쪽(`InventorySnapshotHandler`, Shared.dll 재빌드·복사, 클라 프로토콜 호환 시험)은 Core가 맡는다. 화면 격자는 Art다. 병합 순서는 Art 격자 PR 먼저, Core 24칸 PR 다음이다.
+- goal 배치: 이 새 goal을 같은 리드가 먼저 끝내고 앞 goal 리허설로 돌아간다. R-8 교체는 두 goal이 다 닫힌 뒤 한 번이다. WIP 커밋은 push하지 않는다.
+- 실행 창은 Content 창 6 뒤 메인이 순서대로 배정한다. WSL 단계도 창 6과 겹치지 않는다. 구현자 코드 작성은 창 없이 지금 시작해도 된다.
+- 76바이트를 직접 만드는 클라 시험의 전수 목록은 계약 전에 받는다. Content 소유 시험이 그 안에 있으면 고치기 전에 Content 리드와 메인에 먼저 알린다.
+
+## 요구사항 원천
+
+- 사용자 97 A와 그 앞 원문(위).
+- 범위 초안 v1: `.backups/verification/2026-11-01-inventory-24-slots/scope-draft-v1.md`.
+- AGENTS 「공학 조건」: 패킷 ID 재사용 금지, PDL·생성 코드·버전·양쪽 직렬화, 공유 DLL은 서버와 Unity 사용처 양쪽 검증, 빌드 전 생성물·DLL 복사 부작용 확인, `.meta`·GUID 보존.
+
+## 범위
+
+### 만들 것
+
+1. PDL 36번 `S_InventorySnapshot` 끝에 slot8~23의 ItemId·Count 32필드를 붙이고, 주석을 24칸으로 바꾼다. GenPackets.cs를 PacketGenerator로 재생성하고 줄 끝을 LF로 맞춘다.
+2. `ProtocolVersion.Current` 23과 이력 줄, `InventoryLimits.MaxSlots` 24와 주석을 바꾼다.
+3. 서버 `InventoryPackets.Snapshot`이 24칸을 싣는다. `InventoryState`·`InventoryTransitions`의 판정 규칙은 바꾸지 않는다.
+4. 클라 `InventorySnapshotHandler`가 204바이트를 받아 24칸을 반영하고 다른 길이는 버린다. Shared.dll을 WSL 고정 SDK 10.0.301로 다시 빌드해 `03_Client/Assets/Plugins/Shared/`에 복사한다(Windows에는 그 SDK가 없다, 구현자 ask `msg_47941767664c`).
+5. 길이·칸 수를 고정한 서버·클라·봇 시험과 봇 소비자를 24칸으로 맞추고, 칸 8~23 오프셋 시험과 76바이트 거부 시험을 더한다.
+6. `00_Document/domains/protocol.md`의 36번 줄과 v23 절, 다른 현재 문서의 8칸 표현을 고친다. CURRENT의 Core 줄을 이 goal로 바꾼다.
+
+### 건드릴 곳
+
+- 공유·생성: `99_Tools/PacketGenerator/PDL.xml`, `98_Shared/Protocol/Generated/GenPackets.cs`, `98_Shared/Protocol/ProtocolVersion.cs`, `98_Shared/GameData/Items/InventoryLimits.cs`, `03_Client/Assets/Plugins/Shared/Shared.dll`(`.meta` 보존).
+- 서버: `02_Server/GameServer/Items/InventoryPackets.cs`, `02_Server/GameServer.Tests/**`의 길이·칸 수·버전 고정 시험.
+- 봇: `99_Tools/headless-bot/Scenarios/Items/InventorySmoke.cs`, `Scenarios/Guild/GuildGrowthProbe.cs` 등 36번 소비자.
+- 클라: `03_Client/Assets/Scripts/Network/Handlers/Inventory/InventorySnapshotHandler.cs`, EditMode 시험 `InventoryClientTestSupport.cs`·`InventoryProtocolCompatibilityTests.cs`·`InventoryClientContractTests.cs`.
+- 문서: `00_Document/domains/protocol.md` 등 영역 문서, `00_Document/operations/CURRENT.md`의 Core 줄, 이 goal.
+
+### 하지 않을 것
+
+- DB 구조·인벤토리 저장. migration 001~005에 인벤토리 칸 테이블이 없고 서버 Persistence에 저장 경로가 없다.
+- 화면 격자·우클릭 사용·마우스 올림 상세 표시와 그 화면 시험(`InventoryPanelView`, `InventoryPanelViewAppearanceTests`, `InventoryWindowPlacementTests`, `UiWindow*`, `BrightUiKitImportTests` 등). Art 몫이다.
+- 새 아이템, MaxStack·MaxCurrency, 보상표, 39·44·47 순서.
+- 캐릭터 칸 수(사용자 85 A로 3칸 유지).
+- 생성기 자체 개선(BACKLOG `packet-generator-line-endings`). 이번엔 생성 뒤 LF로 맞추기만 한다.
+- `.meta`·GUID·씬·프리팹 값.
+
+### 76바이트·8칸을 고정한 시험의 목록(리드 grep, 2026-10-31T18:1xZ)
+
+메인 지시 5에 따른 계약 전 목록이다. 구현자가 같은 범위를 독립으로 다시 열거해 보고한다.
+
+| 영역 | 파일 | 고정한 것 |
+|---|---|---|
+| 클라 EditMode | `InventoryClientTestSupport.cs` | `InventoryWire.SnapshotLength = 76`, `SlotCount = 8`, 손으로 쓴 바이트 인코더 |
+| 클라 EditMode | `InventoryProtocolCompatibilityTests.cs` | `new byte[76]`, 머리 `0x4C,0x00,0x24,0x00`, `Assert.AreEqual(8, InventoryLimits.MaxSlots)` |
+| 클라 EditMode | `InventoryClientContractTests.cs` | `InventoryWire.SnapshotLength`를 쓰는 수신 버퍼 시험, 사례 이름 「header size 80 on 76 bytes」 |
+| 서버 | `Guild/GuildWire.cs` | `InventorySnapshotLength = 76`, `InventorySlotCount = 8` |
+| 서버 | `Items/InventoryLifecycleRaceTests.cs`, `InventoryMigrationLifetimeTests.cs`, `InventoryWireContractTests.cs` | `InventorySnapshotLength = 76`, `SlotCount = 8` |
+| 서버 | `Items/InventoryProtocolContractTests.cs` | `new byte[76]`, 머리 `0x4C,0x00,0x24,0x00` |
+| 서버 | `Items/InventoryRegistrationOwnershipTests.cs` | `const int slotCount = 8` |
+| 서버 | `Network/CharacterMenuPacketContractTests.cs` | `ProtocolVersion.Current must be22` |
+| 봇 | `Scenarios/Items/InventorySmoke.cs` | `SnapshotLength = 76`, `SlotCount = 8` |
+
+- 클라 PlayMode 시험에는 인벤토리 76바이트를 직접 만드는 곳이 없다. 19파일 모두 생성 `Write()`를 쓰거나 `MaxSlots`를 따른다.
+- 클라 EditMode의 `GuildAdmissionPacketCompatibilityTests`·`GuildClientTestTools`·`GuildProtocolCompatibilityTests`, PlayMode `GuildUiConnectionTestTools`의 76은 길드 snapshot(44번)의 길이라 이번과 무관하다.
+- PlayMode `InventorySceneLifecycleTests.cs:263`은 줄 수를 `MaxSlots`와 비교한다. 문구만 「eight」이고 값은 상수를 따른다. Art 격자가 칸 24개를 만들면 통과한다.
+- Content 소유 시험 중 고칠 것은 이 grep에서 나오지 않았다.
+
+### 관찰 가능한 완료조건
+
+1. 서버가 보내는 36번이 204바이트이고 칸 0~23이 서버 상태와 같다. WSL `sync-wsl.sh test`의 서버 시험이 모두 통과한다. 고친 기존 시험은 실패 분류 표로 남긴다.
+2. 클라 handler가 204바이트를 받아 24칸을 반영하고, 76바이트와 다른 길이는 상태를 바꾸지 않는다. Unity EditMode 시험과 인벤토리·길드·보상 관련 PlayMode 시험이 메인이 배정한 Unity 창에서 통과한다.
+3. v22 클라가 v23 서버에 붙으면 handshake에서 거부된다.
+4. 실제 경로 1회(강 등급):
+   - WSL 서버 + headless 봇 `InventorySmoke` 1회.
+   - Art 격자가 들어간 main 위에서 Unity 클라가 v23 서버에 붙어 4×6 격자를 보인다.
+5. GenPackets.cs의 줄 끝이 LF이고, 커밋한 소스로 WSL 고정 SDK 10.0.301에서 다시 빌드한 Shared.dll과 커밋한 Plugins DLL의 bytes가 같다.
+6. 신규 `[Core 검증자]` Astra xhigh의 강 등급 독립 검증이 통과한다.
+
+## 설계 선택과 파트 계약
+
+- 같은 ID 끝 추가: 기존 필드 오프셋은 그대로다. 새 길이는 4 + 4 + 4 + 24×8 = 204바이트다. handshake가 버전 완전 일치라 76과 204가 섞이지 않는다.
+- 판정은 바뀌지 않는다. 정의 아이템이 Material·CoinPouch 둘이고 `InventoryState`가 같은 ItemId 두 칸을 막아 점유 칸은 최대 2다. 지금 `InventoryFull`은 묶음 상한 99에서 난다.
+- Art와의 계약: 격자는 열 4 고정, 줄 = `InventoryLimits.MaxSlots ÷ 4`로 계산한다. Art 격자 PR이 먼저 병합된다.
+- Art 동의(`msg_bacd33a804f4`, Art 격자 범위 v4 sha256 `5dd9cce3…cf2a`):
+  - 열 4 고정, 줄은 MaxSlots ÷ 4(올림)이고 창 높이도 줄 수에서 계산한다. 6줄이면 창 높이는 790~810이다.
+  - Art 격자 PR이 Art 소유 화면 코드·시험의 8칸 고정을 모두 MaxSlots 계산으로 바꾼다.
+  - `InventorySnapshotHandler`·`InventorySnapshotState`는 Art가 쓰지 않는다.
+  - Core는 클라 상태의 공개 모양을 바꾸지 않는다(`msg_6d95ee3a3f84`).
+  - 6줄 창은 Core PR의 Unity 확인에서 처음 생긴다. 거기서 깨지는 시험은 고치기 전에 귀속을 나눈다. Art 소유는 Art 리드에게, Content 소유는 Content 리드와 메인에게 먼저 알린다.
+  - `InventoryServerIntegrationTests`의 주인은 깨질 때 Core·Art·메인이 정한다.
+- Content 동의(`msg_6e1243c63eb4`):
+  - Content가 고칠 파일은 없다. `InventoryClientTestSupport`·`InventoryClientContractTests`는 Content 출처지만 Content가 쓰지 않으니 Core PR에서 고친다.
+  - 병합 뒤에는 그 전에 만든 클라 빌드가 새 서버에 못 붙는다. 녹화 빌드는 병합 뒤 main으로 다시 만든다.
+  - PR268 DB 한 판(창 8)은 Core 병합 전 v22로 돈다. 1판은 새 계정 생성, 같은 창 재시작 뒤 2판은 같은 계정 선택이며, 앞 goal의 Core 확인을 함께 잡는다(Core 동의 `msg_a6e92219cbe1`).
+
+## PR 경계와 검증
+
+- Core PR 하나(제품·시험·DLL·문서·이 goal·CURRENT Core 줄). 앞 goal의 문서 PR과 섞지 않는다.
+- 검증 등급 **강**. 프로토콜·공유 DLL·서버 경제에 닿는다. 줄 수 어림은 수기 제품 약 60줄, 생성물 약 100줄, 시험 약 10~15파일이다(어림, 미측정).
+- 구현자 신규 `[Core Sol]`, 독립 검증자 신규 `[Core 검증자]` Astra xhigh. R-7 비해당.
+
+## 진척 단계
+
+- [x] 범위 초안(v1)
+- [x] 범위 승인(메인 `msg_3dfd5496b065`)
+- [x] 구현 1단계(소스, 실행 없음)
+- [ ] 구현 2단계(생성기·DLL·WSL 빌드·서버 시험·봇, 메인 배정 창) — 생성기·WSL build까지 끝, DLL 복사·test·봇 남음(10-31 정리로 멈춤)
+- [ ] Unity 시험과 실제 접속(메인 배정 창, Art 격자 뒤)
+- [ ] 독립 검증
+- [ ] PR·병합 준비 보고
+- [ ] 결과 기록과 앞 goal 복귀

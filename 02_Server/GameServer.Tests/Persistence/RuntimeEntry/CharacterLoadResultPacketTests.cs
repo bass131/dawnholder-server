@@ -222,7 +222,7 @@ public sealed class CharacterLoadResultPacketTests
 
         Assert.Equal(Enumerable.Range(1, 54), ids);
         Assert.Equal(names, actualNames);
-        Assert.Equal((ushort)22, ProtocolVersion.Current);
+        Assert.Equal((ushort)23, ProtocolVersion.Current);
     }
 
     // Protective, holds today: 48 is a server-to-client packet; the server registers no handler for it, and a client

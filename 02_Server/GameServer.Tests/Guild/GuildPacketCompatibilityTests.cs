@@ -118,7 +118,7 @@ public sealed class GuildPacketCompatibilityTests : IDisposable
             Assert.Single(member.Since(0, GuildWire.GuildSnapshotId)));
 
         Assert.False(refused.ok);
-        Assert.Equal(22, refused.serverVersion);
+        Assert.Equal(23, refused.serverVersion);
         Assert.True(old.IsClosing, "the refused connection is closed");
         Assert.False(old.IsLoggedIn, "a refused connection never logs in");
         Assert.True(old.EntityId < 0, "a refused connection never enters a map");
