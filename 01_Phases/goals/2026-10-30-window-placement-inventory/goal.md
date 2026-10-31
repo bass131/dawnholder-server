@@ -2,7 +2,18 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-10-30 구현 뒤
+### 현재 재개 카드 — 2026-11-01 종료
+
+**다음 첫 일:** 없음. 이 goal은 [PR284](https://github.com/bass131/dawnholder-server/pull/284) 병합(merge commit `a0195c84`)으로 제품 작업을 마쳤고, [밝은 외관 goal](../2026-10-29-inventory-character-select-look/goal.md#재개-지점)의 PR5(종료 기록)와 함께 닫는다. 나머지 창의 공용 배치 이전은 아래 「다음 계획 후보」의 BACKLOG 행이다.
+
+| 항목 | 현재 |
+|---|---|
+| 상태 | 종료. 독립 검증은 강 등급 PASS다. 조건마다의 상태와 남은 미확인은 아래 「완료조건 대조 — 종료」에 있다. |
+| 병합 | PR284 head `41568d73`, merge commit `a0195c84d6b92632e38e619a175963b09b15b8f5`. |
+| 리드 | `[Art 리드 Opus]`, Run `run_6ae742140ce9`. 밝은 외관 goal과 함께 메인 R-8로 닫는다. |
+| Gardener | 밝은 외관 goal과 함께 점검했다. 보고는 [그 goal의 gardener.md](../2026-10-29-inventory-character-select-look/gardener.md)다. 이 goal에 온 반환은 후보 도착 링크(GR-01)와 생존 신호 정산(GR-03)이고, 아래에서 처리했다. |
+
+### 이전 재개 카드 — 2026-10-30 구현 뒤
 
 **다음 첫 일:** 구현이 끝났고 구현자를 정산했다(아래 「구현」). 다음은 구현 commit·push 뒤 merge-tree 대조, 독립 검증 계약, 완료조건 8의 캡처 순서다. merge-tree에서 충돌이 나오면 base를 옮기기 전에 메인에 먼저 알린다(`msg_580c64a10e66`, `msg_c81d46ef6b17`). 검증 Unity 창은 메인 대기열의 도착순이다.
 
@@ -136,7 +147,8 @@
 ## 다음 계획 후보
 
 - 나머지 창의 공용 배치 부품 이전(시연 뒤, 소유 파트별): BACKLOG `guild-windows-shared-placement`, `dungeon-reward-window-shared-placement`, `party-invite-popup-shared-placement`, `npc-dialog-panel-shared-placement`
-- 시험 메시지 속 제품 줄 번호 정리: `UiWindowAppearanceContractTests.cs` :161 주석과 :540~:576 메시지가 `InventoryPanelView.cs:<줄>`을 적는다. 대부분은 이 goal 전 기준 commit에서도 이미 그 줄을 가리키지 않았다(근거 폴더 `placement-impl-01/old-view-lines-02.txt`). 완료조건을 막지 않아 이번 PR에서 고치지 않는다. 줄 번호 대신 기능 이름으로 적는 정리가 후보다.
+- 시험 메시지 속 제품 줄 번호 정리: `UiWindowAppearanceContractTests.cs` :161 주석과 :540~:576 메시지가 `InventoryPanelView.cs:<줄>`을 적는다. 대부분은 이 goal 전 기준 commit에서도 이미 그 줄을 가리키지 않았다(근거 폴더 `placement-impl-01/old-view-lines-02.txt`). 완료조건을 막지 않아 이번 PR에서 고치지 않았다: BACKLOG `ui-appearance-test-message-line-refs`
+- 끈 인벤토리를 보상 창 위에 두면 보상 창이 위에 그려지는 겹침(검증 판정 설계 관찰): BACKLOG `dragged-inventory-reward-overlap`
 
 ## 진척 단계
 
@@ -144,10 +156,10 @@
 - [x] goal commit
 - [x] 선행 시험
 - [x] 구현
-- [>] 독립 검증
-- [ ] 사용자 확인(마지막에 한 번에)
-- [ ] 제품 PR 병합
-- [ ] 종료 기록
+- [x] 독립 검증
+- [x] 사용자 확인(마지막에 한 번에)
+- [x] 제품 PR 병합
+- [x] 종료 기록
 
 ## 단계 결과와 근거
 
@@ -347,3 +359,28 @@
 - 발견: 작성자의 U1 작업 트리 관문(`msg_c43a97128e5b` 2번)이 Unity를 띄우기 전에 잡았다. U0 끝 뒤라 U0 영향은 0이다.
 - 처리: `move-root-receipts-1030-01.sh` → `move-root-receipts-1030-01.txt`로 근거 폴더에 옮겼다(전후 SHA256 같음). 메인은 기록만 받았다(`msg_65f4f6a8582a`).
 - 층: 첫 발생이라 goal 기록만 한다. 두 번째면 보내기 helper가 근거 폴더 밖 접두어를 거부하게 고친다.
+
+### PR 생성·캡처·사용자 확인·병합
+
+- PR: [PR284](https://github.com/bass131/dawnholder-server/pull/284)(`placement-pr-create-1030-01.txt`), 설명 `placement-pr-body-1030-01.md`, head `41568d73a442bc17b2bcfab5c948c18f7c0895b2`(`check-placement-capture-return-1030-02.txt`).
+- 완료조건 8 캡처: 메인 결정 「캡처 A」(`msg_a8db05949eb7`, 사용자 결정 아님). 실행자는 신규 `[Art 구현 Opus]`(claude-opus-5-5 xhigh) task_e09735ee678d다(`placement-capture-launch-record-01.md`). 결정 4A 기간이라 Claude 세션이다.
+  - C1(마을에서 I로 연 인벤토리)과 C2(보상 창과 함께 연 장면)는 각각 Unity exit 0, 1 통과·0 실패·0 건너뜀이다(`placement-capture-01/report.md` 「결과 요약」).
+  - C2는 커밋하지 않은 임시 case로 찍었다. 확인 자료이고 통과 근거가 아니다. 실행 뒤 임시 case를 되돌렸고, 시험 파일이 HEAD blob과 같다.
+  - 리드 반환 점검(`check-placement-capture-return-1030-02.txt`): PNG 4장의 SHA256이 report에 적힌 값과 같다. 결과 XML 원시는 C1·C2 각각 1 통과·0 실패·0 건너뜀이다.
+  - 실행자 자기 신고 다섯 건(빈 `node -e "0"` 1회, 계약 읽기 전 인라인 `sha256sum`·`ls`, 점검 스크립트의 CR 세기 오류, Bash 한 번의 `cd`, 대화 기록 grep 읽기)은 report 「경계 위반과 실수」에 있다. 값으로 쓴 것은 없다.
+- 사용자 확인 항목: `placement-user-check-lines-draft-01.md`(캡처 넷, 직접 플레이 일곱 줄, 알려진 점 셋).
+- 병합: 사용자 승인 줄을 받아 메인이 병합했다. merge commit은 `a0195c84d6b92632e38e619a175963b09b15b8f5`이고, 첫 부모는 PR286 병합 `9cc80a9d`다(`closeout-01/pr-facts-275-279-284-287-290-01.txt`, 메인 `msg_8ee5e8973b07` 2026-10-31T07:57:39Z).
+- 직접 플레이: 사용자가 병합된 main으로 플레이했다(77 A, 메인 `msg_38d8fd806c50`). 78 C(메인 `msg_2863fd2984ea`)의 「나머지는 괜찮음」으로 PR284 창 끌기는 문제 없음이다. 같은 의견의 캐릭터 선택창 요청은 Content의 다음 goal 몫이다(BACKLOG `character-select-three-wide-slots`).
+
+### 생존 신호 정산
+
+- 이 goal 단계의 생존 신호는 단계마다 정산하지 않았다. 외관 goal의 Gardener 반환 GR-03을 처리하면서 정본 helper로 함께 정산했다. 대상은 선행 시험, 구현, 독립 검증, 캡처 네 단계다(`art-active/.backups/verification/2026-10-29-inventory-character-select-look/closeout-01/liveness-settlement-closeout-01.md`).
+- 선행 시험의 301~303초 구간들은 heartbeat 루프가 `sleep 300` 뒤에 보내는 구조 탓이다(`placement-red-01/scripts/heartbeat-loop.sh`). 나머지 초과 구간은 이유 미측정이다. 구간과 초는 위 정산의 표에 있다. 미측정 구간은 메인 결정 1 A(`msg_e1d856276e79`)로 그대로 닫았다.
+
+### 완료조건 대조 — 종료
+
+| 조건 | 상태 | 근거 |
+|---|---|---|
+| 1~6 | 충족 | 위 「선행 시험 — RED」·「구현」, 판정 `placement-verify-01/verdict.md` |
+| 7 | EditMode는 전체 통과다. PlayMode는 실패 23건이 남았고, 검증자가 모두 변경 전부터 있던 환경 실패 (b)로 분류해 PASS로 봤다 | 위 「독립 검증」 회차 표와 `placement-verify-01/failure-classification.md` |
+| 8 | 강 등급 PASS와 캡처 넷은 충족. 직접 플레이는 78 C 「나머지는 괜찮음」이다. 사용자의 캡처 확인 기록은 리드가 받지 않았다 | 위 「독립 검증」, 「PR 생성·캡처·사용자 확인·병합」 |
