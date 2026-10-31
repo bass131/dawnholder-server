@@ -37,12 +37,21 @@ namespace Dawnholder.Client.Scenes
         CharacterMenuPresenter _menu;
         CharacterMenuView _menuView;
 
+        // Last display projection only; the presenter continues to own character IDs and replies.
+        #nullable enable
+        internal CharacterMenuViewState? MenuState { get; private set; }
+        #nullable restore
+
         void Start()
         {
             NetworkService network = NetworkService.Instance;
             // PersistentServices가 없으면(에디터 씬 단독 Play) 기존 버튼 동작만 남는다.
             if (network == null) return;
-            _menu = new CharacterMenuPresenter(state => _menuView?.Render(state), network.Disconnect, OnMenuExit);
+            _menu = new CharacterMenuPresenter(state =>
+            {
+                MenuState = state;
+                _menuView?.Render(state);
+            }, network.Disconnect, OnMenuExit);
             _menuView = new CharacterMenuView(gameObject, _menu.Select, _menu.Create, _menu.Refresh, _menu.Back);
             // 주소를 새로 정하지 않는다: MainMenu가 probe 성공 뒤 저장한 ServerHost와 NetworkService의 포트를 쓴다.
             network.ConnectCharacterMenu();
@@ -93,6 +102,7 @@ namespace Dawnholder.Client.Scenes
             _menu = null;
             _menuView?.Dispose();
             _menuView = null;
+            MenuState = null;
         }
 
         void SaveSelectAndLoad(CharacterClass characterClass)
