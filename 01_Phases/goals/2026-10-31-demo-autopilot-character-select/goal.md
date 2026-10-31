@@ -4,12 +4,12 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR268 자동 진행기의 선행 시험 작성자 계약을 신규 Codex Sol max(`[Content Sol]`)로 발행한다. 그 전에 PR268 branch에 PR-A branch를 합쳐 fast-forward로만 민다. 캐릭터 선택창(PR-A)은 독립 검증을 통과했고(차단 결함 0) PR과 병합 준비 보고를 올렸다(진행 기록 10-31 「캐릭터 선택창 검증」). PR268 base 변경은 리드 명령이 자동 권한 판정에 막혀 메인에 요청했다. PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
+**다음 첫 일:** PR268 자동 진행기 구현자 계약을 신규 Codex Sol max(`[Content Sol]`)로 발행한다. 선행 시험(R1~R5)은 commit됐고 U1에서 새 API 부재로 컴파일이 실패했다(진행 기록 10-31 「자동 진행기 시험」). PR268 branch에는 PR-A와 최신 main을 합쳤다. 캐릭터 선택창(PR-A, PR #291)은 독립 검증을 통과해 병합 준비 보고를 올렸다. PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1을 메인이 원문과 대조해 승인했다(`msg_967d20c30e6d`, 메인 결정). 초안 원문은 `.backups/verification/2026-10-31-demo-autopilot-character-select/lead/scope-draft-v1.md`(sha256 `28fa67062d6395521aad8f8022e87387ca7a43dec18c101c3aed4f157756ed15`)다. |
-| branch | PR-A `feat/content-demo-character-select-20261031`, base main `5bfda911a8ba97a8f9f82b75693dec3ebc59fb54`. PR268 `feat/demo-autoplay-20261028`(head `1237cb58`), PR-A 위에 쌓는다. PR-C `fix/content-guild-entry-gold-overlap-20261031`(아직 없음), base main |
+| branch | PR-A `feat/content-demo-character-select-20261031`(PR #291), base main `5bfda911a8ba97a8f9f82b75693dec3ebc59fb54`. PR268 `feat/demo-autoplay-20261028`, base main 그대로(메인 `msg_db6333b6b1c6`), content-active 로컬 이름 `content/demo-autoplay-20261028`. PR-A와 최신 main을 합쳐 그 위에 쌓는다. PR-C `fix/content-guild-entry-gold-overlap-20261031`(아직 없음), base main |
 | 리드 | `[Content 리드 Opus]`(claude-opus-5-5 xhigh), Run `run_0a58bc3cfea0`, 회신 주소 `run:run_0a58bc3cfea0` |
 | 근거 폴더 | `.backups/verification/2026-10-31-demo-autopilot-character-select/` |
 
@@ -30,7 +30,7 @@
 메인 결정이다(사용자 결정 아님, 2026-10-31T14:48:03Z).
 
 1. 85 A를 먼저 하고 PR268을 그 위에 쌓는다. PR-A 구현 직후 객체 이름을 고정해 PR268 선행 시험을 겹치는 것도 승인.
-2. PR-A 병합 전까지 PR268 base를 PR-A branch로 바꾼다. 바꾼 시각과 receipt를 이 goal에 남긴다.
+2. PR-A 병합 전까지 PR268 base를 PR-A branch로 바꾼다. 바꾼 시각과 receipt를 이 goal에 남긴다. → 메인 `msg_db6333b6b1c6`(2026-10-31T17:21:43Z, 메인 결정)로 대체됐다. 리드의 base 변경 명령이 자동 권한 판정에 막혔으므로 메인이 대신 실행하지 않고 생략한다. PR-A가 먼저 main에 들어가면 PR268 diff는 같아진다. PR268 설명에 「PR-A 병합 전에는 PR-A commit이 함께 보인다」를 한 줄 적는다.
 3. 이 goal 동안 PR268 branch의 commit/push는 Content 리드가 한다. `town-direct-20261027` worktree는 건드리지 않는다. fast-forward만 민다(force push 금지).
 4. PR-C는 NPC 대화·던전 보상 창이 떠 있는 동안 입구를 숨긴다. 사용자가 마지막 캡처에서 다르게 원하면 그때 바꾼다.
 5. DB 영속 서버 실주행(창 8)을 PR268 병합 전 검증의 실제 경로로 삼는다. 서버 기동은 Core 카드 v2 블록 그대로 사용자 손이다. 창 8 시각이 보이면 Core 리드와 먼저 맞추고 메인에 청한다. 같은 서버 세션 안에서 Core 쪽 확인을 함께 하는 등 사용자 손을 줄이는 안이 있으면 같이 올린다.
@@ -140,7 +140,7 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 - [x] 캐릭터 선택창 시험
 - [x] 캐릭터 선택창 구현
 - [x] 캐릭터 선택창 검증
-- [ ] 자동 진행기 시험
+- [x] 자동 진행기 시험
 - [ ] 자동 진행기 구현
 - [ ] DB 서버 실주행 검증
 - [ ] 길드 입구 겹침(리셋 뒤)
@@ -172,3 +172,11 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 정정 기록(비차단 D1·D2, 원문 보고는 그대로 둔다): 구현 보고의 diff 줄 수 120+는 실제 122+/65−다(`git show --numstat 03b2b189`). RED 보고의 T7 분류 (a) 19·(c) 4는 실제 (a) 20·(c) 3이다(`t7-table-v1.md` 23행, 리드가 다시 셈).
   - 설계 관찰 O1~O4는 막지 않는다. `Cancel`이 `Result`도 지우는 동작(O1)은 유지한다. A8 Art 의견 `msg_7f9778ed1c3d`(저장본 sha256 `2be227f1c5ecd477ffb7d8bf6685c22dfe3458f09047b2310c2d9b922a826c11`)는 막을 것이 없었고, 권고 셋은 이 PR에 넣지 않고 종료 기록의 다음 후보로 넘긴다. 셋은 생성 화면 안내 줄 「슬롯 N에 새 캐릭터 만들기」, 고른 직업 버튼 강조와 그림 위치, 칸 그림 1.3배다.
   - PR268 base: 리드의 `gh pr edit 268 --base feat/content-demo-character-select-20261031`은 PR-A push(17:00:43Z) 직후 자동 권한 판정에 막혔다. 다시 시도하지 않고 메인에 요청했다. PR268 base는 아직 main이다.
+  - 그 뒤: PR #291 생성(17:03:39Z). CI 네 workflow 성공(dotnet-tests 17:25:46Z). 병합 준비 보고 `msg_1d5403db75f2`. base 변경은 메인 `msg_db6333b6b1c6`으로 생략했다(「10-31 범위 초안 v1 처분」 2항).
+- 2026-10-31 자동 진행기 시험(RED): 작성자 `[Content Sol]`(신규 Codex `gpt-6.1-sol` max, 첫 화면 「GPT-6.1-Sol max」·v0.166.0) task_17a3e8c1b9fb / ctx_d0c084e473d0, 계약 `lead/pr268-red-contract-v1.md`(sha256 `e8c0fc539f51356378ec5be3c3122997182b608d5d4338f52eba4d3a76e21d73`), 보고 `pr268-red-01/report.md`, worker_done `msg_54f15ab248f6` succeeded, 정산 17:30Z(release retained·pane close).
+  - 준비: PR268 branch(`1237cb58`)에 PR-A head `fb3d65b1`을 합쳤다(`252a59e1`, 글자 충돌 0). 작성 뒤 RED commit `60e0683d`, 이어 최신 main `b8631ccb`(Art PR290)를 합쳤다(충돌 0, 바뀐 파일 겹침 0).
+  - 설계 고정(리드 결정, 계약 「설계 고정」): `DemoLaunchOptions.Character`, `Demo/DemoCharacterMenuStep.cs`의 `DemoCharacterMenuStep(DemoRole, string?)`·`Advance(CharacterMenuViewState?, Transform?)`·`StopReason`·`DemoCharacterMenuOutcome { Waiting, Creating, Selecting, Legacy, Stopped }`, `CharacterSelectController.MenuState`. 생성 거절은 「생성을 보낸 뒤 같은 직업 칸이 없는 `Ready`」 하나로 본다. 클릭은 `CharacterMenu/Panel` 아래 경로로만 찾는다(Legacy 장면에도 `Knight`·`Mage` 단추가 있다).
+  - 시험: `DemoLaunchOptionsTests`에 4개, 새 `DemoCharacterMenuStepTests` 10개 메서드(11 cases)로 모두 15건. 실제 `CharacterMenuPresenter`·`CharacterMenuView`에 연결 대역으로 응답 bytes를 넣는다. 대역 도우미는 `CharacterMenuPresenterTests`의 private 중첩 타입이라 새 파일에 옮겼다.
+  - U1(창 5, `pr268-red-01/u1/`, 17:23:27Z~17:24:18Z): EditMode 한 번, Unity exit 1, 결과 XML 없음. 고유 진단 32개(로그 96회, 각 3회)가 모두 부재 이름(`Character` CS1061 3, `DemoCharacterMenuStep` CS0246 10, `DemoCharacterMenuOutcome` CS0103 19)이고 그 밖의 오류는 0이다(리드가 로그에서 다시 셈). PlayMode는 같은 컴파일에 막혀 돌리지 않았다.
+  - 시험 불가 요구: `CharacterSelectController.MenuState`는 실제 메뉴 접속이 있어야 null이 아니고 PlayMode 어셈블리는 internal을 보지 못한다. 대체 실측은 창 6 Legacy DEBUG 서버 실주행(Legacy 경로)과 창 8 DB 영속 서버 실주행(메뉴 경로), 독립 검증자의 코드 실사다.
+  - 생존 신호: 17:18:37Z→17:23:44Z 구간이 307초로 300초를 7초 넘었다(U1 시작 준비 중). 작성자가 보고에 남겼다.
