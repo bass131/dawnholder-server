@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 955018ccd9f750ac0882b830a8544e2c, type: 3}
+  m_Name: UiWindowSkin
+  m_EditorClassIdentifier: Dawnholder.Client::Dawnholder.Client.UI.UiWindowSkin
+  _panelPrefab: {fileID: 114000, guid: 6946c5c793682c05101dcfffc034ecdb, type: 3}
+  _headerPrefab: {fileID: 114000, guid: 6d91aa27942abc1f4314e281ac447e62, type: 3}
+  _buttonPrefab: {fileID: 114001, guid: fc55fcb3181079fa0c155b50fa9d8af6, type: 3}
+  _insetPrefab: {fileID: 114000, guid: b0ecbdf85e5539b9911d6dc760f79f92, type: 3}
+  _portraitPrefab: {fileID: 114000, guid: c1dccd76328bd322bf35ae63a2d582e2, type: 3}
+  _dialogPanel: {fileID: 21300000, guid: 5685ac277531981b5554e3a74e56debe, type: 3}
+  _emphasisPanel: {fileID: 21300000, guid: 3e26a93b5ba3982f399c126a95bf553d, type: 3}
+  _divider: {fileID: 21300000, guid: 397c7e470f14e2989cc3622e25f75e24, type: 3}
+  _acceptNormal: {fileID: 21300000, guid: fdaa805e70f5533488dae81f7234282a, type: 3}
+  _acceptStates:
+    m_HighlightedSprite: {fileID: 21300000, guid: b19f5a6d0300e566d0fffea8534ac8ca, type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 819be5b406aaa976f19a17fb72ef6fae, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: b19f5a6d0300e566d0fffea8534ac8ca, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: d14f5c1a8a0197176bd076a96fb0009e, type: 3}
+  _declineNormal: {fileID: 21300000, guid: 56edcbfaf68f16d0dff50a7bb0e3a466, type: 3}
+  _declineStates:
+    m_HighlightedSprite: {fileID: 21300000, guid: 11e73ce64b7278c04e4b6a6eff7a7717, type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 470f3c0476ddfd928b5c9a879903f117, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: 11e73ce64b7278c04e4b6a6eff7a7717, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: 7d2ff4c8822f62b46b0e6d8fcf178640, type: 3}
+  _itemSlotEmpty: {fileID: 21300000, guid: e702897eaffb5b94a75480e1d24d43b4, type: 3}
+  _itemSlotFilled: {fileID: 21300000, guid: 74be0b4adcf9029de03d21c58f39d95d, type: 3}
+  _itemSlotSelected: {fileID: 21300000, guid: d44be2e942c90002e105154dfa0f758a, type: 3}
+  _iconBase: {fileID: 21300000, guid: 87b8e15f8cfe6c51f3820283d7a2f67a, type: 3}
+  _materialIcon: {fileID: 21300000, guid: 9f5082fa3c5d6e75b68675a2d3f1a491, type: 3}
+  _currencyPouchIcon: {fileID: 21300000, guid: 3aadc85f7b3e7ca0c8a31d52cc7910a8, type: 3}
+  _coinIcon: {fileID: 21300000, guid: 87e028dcd3360e891febb86e8d4c61d8, type: 3}
+  _characterSlot: {fileID: 21300000, guid: b0d2304d8eeaeac834d357ce350b062c, type: 3}
+  _characterSlotSelected: {fileID: 21300000, guid: 39f038f1abf5257969dd43c5458e0634, type: 3}
+  _pedestal: {fileID: 21300000, guid: 54faccc43070f3ab735dae9c756f651b, type: 3}
+  _selectionGlow: {fileID: 21300000, guid: ae12c245de4289f6e0ba6cabc07b8bf7, type: 3}
+  _inputField: {fileID: 21300000, guid: 38f801c703515178c835f249a4db2983, type: 3}
+  _knightArt: {fileID: 1965577318, guid: 3746a00054fb99846ba1375428e1d37a, type: 3}
+  _mageArt: {fileID: 191104627, guid: 3bc44f695dc715e45bf56d950d3a0052, type: 3}

@@ -20,7 +20,7 @@ public sealed class CharacterAdmissionTickTests
     {
         using AdmissionTestWorld fixture = new();
         EntrySession persisted = await fixture.LogInAsync(PersistedName);
-        persisted.Receive(new C_CharacterSelect { characterClass = (byte)CharacterClass.Knight });
+        fixture.SelectStored(persisted, CharacterClass.Knight);
         Repo.PendingCall<ReadAdmissionRequest, ReadAdmissionResult> probe = await fixture.NextReadAdmissionAsync();
         int mapJobs = 0;
         fixture.World.Map.EnqueueJob(() => mapJobs++);

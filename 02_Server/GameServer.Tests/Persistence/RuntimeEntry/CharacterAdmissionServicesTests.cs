@@ -30,12 +30,11 @@ public sealed class CharacterAdmissionServicesTests
     {
         using AdmissionTestWorld fixture = new();
         Repo secondStore = new();
-        object second = RuntimeEntryApi.NewServices(
-            RuntimeEntryApi.NewSelector(PersistedName, PersistedAccountId), PersistedIdentity, secondStore, fixture.Clock);
+        object second = RuntimeEntryApi.NewCatalogServices(fixture.Catalog, secondStore, fixture.Clock);
 
         Exception? refused = Record.Exception(() => RuntimeEntryApi.AttachPersistence(fixture.World, second));
         EntrySession session = await fixture.LogInAsync(PersistedName);
-        session.Receive(new C_CharacterSelect { characterClass = (byte)CharacterClass.Knight });
+        fixture.SelectStored(session, CharacterClass.Knight);
         Repo.PendingCall<ReadAdmissionRequest, ReadAdmissionResult> probe = await fixture.NextReadAdmissionAsync();
 
         Assert.False(refused is XunitException, refused?.Message);
@@ -48,8 +47,7 @@ public sealed class CharacterAdmissionServicesTests
     public void AttachAfterStart_IsRejected()
     {
         using AdmissionTestWorld fixture = new(attachPersistence: false);
-        object services = RuntimeEntryApi.NewServices(
-            RuntimeEntryApi.NewSelector(PersistedName, PersistedAccountId), PersistedIdentity, fixture.Repository, fixture.Clock);
+        object services = RuntimeEntryApi.NewCatalogServices(fixture.Catalog, fixture.Repository, fixture.Clock);
         fixture.World.Start();
 
         Exception? refused = Record.Exception(() => RuntimeEntryApi.AttachPersistence(fixture.World, services));

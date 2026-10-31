@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Dawnholder.Client.Audio;
@@ -21,6 +22,10 @@ namespace Dawnholder.Client.Combat
     [DisallowMultipleComponent]
     public class EnemyRegistry : MonoBehaviour
     {
+        // S_EntityDeath로 레지스트리에서 지우기 직전의 시각 위치(사망 자리). Clear(맵·연결 정리)는 사망이 아니라 내보내지 않는다.
+        // 구독자(KillRewardFloatText)는 순수 시각 연출만 한다 — 헌법 #1: 판정·보상과 무관.
+        public event Action<Vector3>? EnemyDied;
+
         public static EnemyRegistry? Instance { get; private set; }
 
         readonly struct EnemyEntry
@@ -146,12 +151,15 @@ namespace Dawnholder.Client.Combat
         public void Despawn(int entityId)
         {
             if (!_enemies.TryGetValue(entityId, out EnemyEntry entry)) return;
+            Vector3 spot = entry.Enemy.transform.position;
             _enemies.Remove(entityId);
             _lastAnimState.Remove(entityId);
             entry.Interp.ClearBuffer();
             entry.Motion?.ForceDeathState();
             StartCoroutine(DestroyAfterDeathVfx(entry.Enemy.gameObject));
             Debug.Log($"[EnemyRegistry] Despawn(death vfx) entity {entityId}");
+            // 레지스트리 정리가 끝난 뒤 알린다 — 구독자가 보는 레지스트리에는 이 적이 이미 없다.
+            EnemyDied?.Invoke(spot);
         }
 
         // Death 클립 길이(~0.8s)만큼 대기 후 GO destroy.

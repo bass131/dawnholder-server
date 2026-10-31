@@ -107,6 +107,19 @@ node 99_Tools/Orca/check-message.mjs .backups/수신입력.json
 
 입력 `message/expected`, 빈 heartbeat/공식 blocking ask의 예외와 지원 한계는 [ORCA 수신 정본](ORCA.md#dispatch-message-policy), 순수 API와 명령은 [Tools README](../../99_Tools/README.md#orca-메시지-수신-판정)에 있다. JSON stdout과 exit0(허용)/1(정책 위반)/2(입력·도구 실패)를 반환하고 메시지 전송·ack·라이프사이클·파일/네트워크 쓰기는 하지 않는다. 기존 workflow의 별도 신규 Opus 회귀 진입은 `99_Tools/Orca.Tests/message-policy.test.mjs`이며 부재/load 실패/nonzero는 실패다. 위 과거 CodeRules 실행을 이 신규 회귀의 성공으로 해석하지 않는다.
 
+## Unity PlayMode 실행 전제
+
+아래 PlayMode 시험은 실행이 준 전제가 있을 때만 판정한다. 전제가 없으면 실패하지 않고 건너뛰며(result `Skipped`), 이유 글에 빠진 전제 이름이 들어간다. 전제가 있는데 값이 틀리면 건너뛰지 않고 실패한다. 배경과 판정 근거는 [전제 건너뜀 goal](../../01_Phases/goals/2026-10-30-playmode-precondition-ignores/goal.md)에 있다.
+
+| 전제 | 켜는 방법 | 켜지는 시험 | 없을 때 |
+|---|---|---|---|
+| 캡처 폴더 `DAWNHOLDER_GUILD_VERIFY_CAPTURE_DIR` | runner가 폴더를 정해 Unity 프로세스 환경 변수로 준다 | `GuildGameplayWindowTests` 전부, `GuildWindowIndependentSceneTests`의 `DefaultScreen_*`·`RenderTextureAuxiliary_*`·`NegativeControl_*` | Ignored. 폴더를 못 만들거나 경로가 틀리면 실패 |
+| permit 묶음 `DAWNHOLDER_GUILD_MEMORY_PERMIT`, 함께 `DAWNHOLDER_GUILD_MEMORY_DIR`·`DAWNHOLDER_GUILD_MEMORY_TOKEN`·`DAWNHOLDER_GUILD_EXECUTION_TASK`·`DAWNHOLDER_GUILD_EXECUTION_DISPATCH`와 캡처 폴더 | runner가 Unity 기동 직후 permit 파일을 쓴다. 형식은 `GuildWindowIndependentSceneTests.cs`의 `CheckPermit`이 검사하는 schema `guild-memory-permit-v1`이고, `DAWNHOLDER_GUILD_MEMORY_DIR`은 같은 파일 `MemoryDirectory`대로 캡처 폴더 기준 `../../runs/<캡처 폴더 이름>/memory`다 | `GuildWindowIndependentSceneTests.OverlayAtTarget_*` 3건 | permit 변수가 비면 Ignored. 위치·schema·token·Task·Dispatch·시한·PID가 틀리면 실패 |
+| Editor Game 화면(main play mode view) | batchmode가 아닌 Editor 대화형 실행 | `GuildWindowIndependentSceneTests.DefaultScreen_*` 2건 | view가 없으면 Ignored(이유 「Editor Game 화면 필요」). view의 종류·크기가 틀리면 실패 |
+| 127.0.0.1:7777의 실제 GameServer | 실서버를 띄우고 `-testFilter`로 시험 이름을 고른 실서버 lane | `InventoryServerIntegrationTests`·`MapEntryServerIntegrationTests` 각 1건 | 이름으로 고르지 않은 실행에서는 `Explicit`라 돌지 않는다. 고른 실행은 서버가 없으면 실패 |
+
+캡처 폴더와 permit 묶음은 Unity를 띄우기 전에 프로세스 환경 변수로 주고, Game 화면은 Editor 대화형 실행으로, 실서버는 서버 기동과 `-testFilter` 이름 선택으로 켠다. class 이름 filter도 `Explicit` 시험을 고른다. 전제를 주지 않은 전체 실행에서 이 시험들이 건너뛴 것은 통과가 아니다. 전제를 준 lane의 결과에 위 표에서 그 lane이 켜는 시험의 skipped가 있으면 그 lane은 통과가 아니다. 그 lane이 주지 않은 다른 전제로 건너뛴 시험(예: 캡처 폴더만 주는 lane의 `OverlayAtTarget_*`)은 이유 글의 전제 이름으로 구분한다.
+
 ## 결과 해석
 
 검사 명령·환경·관찰 결과·생략 항목·원본 로그 위치를 목표에 기록한다. 서버·봇 통과와 Unity 에디터·게임 외관·SQL 연결을 구분한다. 이전 실행 수치는 [완료된 셋업 목표](../../01_Phases/goals/2026-09-29-codex-setup/goal.md)의 당시 근거이며 새 변경의 성공을 대신하지 않는다. 현재 main의 SQL 영속화는 구현 완료로 취급하지 않는다.

@@ -8,6 +8,7 @@ namespace Dawnholder.Server.GameServer.Tests.Guild;
 // (user decision 16 A, 10-27: DEBUG servers only). Expected values are the decision's +30 and the approved
 // admission seed 5 per account, written as literals rather than read from GuildRules.
 // Input is the real wire into GameSession.OnRecvPacket; observation is only what each connection receives.
+[Collection("GameWorldRegistryTests")]
 public class GuildDebugTreasuryCheatTests
 {
     static ArraySegment<byte> TreasuryCheat() => new C_CheatCommand { cheatType = 1 }.Write();

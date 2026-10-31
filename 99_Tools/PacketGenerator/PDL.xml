@@ -515,4 +515,52 @@
         <byte name="result"/>
         <byte name="characterClass"/>
     </packet>
+    <!-- Character menu requests use a nonzero requestId and reserved=0.
+         occupiedMask distinguishes empty slots from Knight class0; IDs use D-form strings. -->
+    <packet name="C_CharacterListRequest">
+        <uint name="requestId"/>
+        <byte name="reserved"/>
+    </packet>
+    <packet name="S_CharacterListResult">
+        <uint name="requestId"/>
+        <byte name="result"/>
+        <byte name="invalidField"/>
+        <byte name="occupiedMask"/>
+        <string name="slot1CharacterIdD"/>
+        <string name="slot1Name"/>
+        <byte name="slot1ClassId"/>
+        <string name="slot2CharacterIdD"/>
+        <string name="slot2Name"/>
+        <byte name="slot2ClassId"/>
+        <string name="slot3CharacterIdD"/>
+        <string name="slot3Name"/>
+        <byte name="slot3ClassId"/>
+    </packet>
+    <packet name="C_CharacterCreateRequest">
+        <uint name="requestId"/>
+        <byte name="slot"/>
+        <byte name="classId"/>
+        <byte name="reserved"/>
+        <string name="rawName"/>
+    </packet>
+    <packet name="S_CharacterCreateResult">
+        <uint name="requestId"/>
+        <byte name="result"/>
+        <byte name="invalidField"/>
+        <byte name="slot"/>
+        <string name="characterIdD"/>
+        <string name="name"/>
+        <byte name="classId"/>
+    </packet>
+    <packet name="C_CharacterSelectRequest">
+        <uint name="requestId"/>
+        <byte name="reserved"/>
+        <string name="characterIdD"/>
+    </packet>
+    <packet name="S_CharacterSelectResult">
+        <uint name="requestId"/>
+        <byte name="result"/>
+        <byte name="invalidField"/>
+        <string name="selectedCharacterIdD"/>
+    </packet>
 </PDL>

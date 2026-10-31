@@ -181,7 +181,8 @@ namespace Dawnholder.Client.Gameplay
             dialogTmp.text      = string.Empty;
             dialogTmp.fontSize  = 22f;
             dialogTmp.alignment = TextAlignmentOptions.TopLeft;
-            dialogTmp.color     = Color.white;
+            // Ink and quiet ink of the bright windows (InventoryPanelView s_ink, s_quietInk).
+            dialogTmp.color     = new Color(0.26f, 0.17f, 0.09f);
             if (font != null) dialogTmp.font = font;
 
             // 닫기 안내 TMP_Text — 패널 하단 우측.
@@ -198,7 +199,7 @@ namespace Dawnholder.Client.Gameplay
             hintTmp.text      = string.Empty;   // Awake에서 _defaultCloseHint로 세팅
             hintTmp.fontSize  = 14f;
             hintTmp.alignment = TextAlignmentOptions.Right;
-            hintTmp.color     = new Color(1f, 1f, 1f, 0.7f);
+            hintTmp.color     = new Color(0.45f, 0.33f, 0.2f, 1f);
             if (font != null) hintTmp.font = font;
 
             // 패널 시작 시 숨김.

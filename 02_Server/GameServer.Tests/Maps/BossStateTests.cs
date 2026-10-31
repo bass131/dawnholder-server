@@ -180,6 +180,37 @@ public class BossStateTests : IDisposable
         Assert.True(sawIdleAfterAttack, "Attack 후 BossIdleState 복귀 필요");
     }
 
+    // ─── 시나리오 3b: 예고 중 매 틱 피격 → 멈춤 상한 뒤 공격 ──────────────────
+
+    [Fact]
+    public void BossTelegraph_HitEveryTick_AttacksAfterPauseCap()
+    {
+        // 붙어서 계속 때리면 HitLatchTicks가 0으로 내려가지 않는다.
+        // 예고는 BossTelegraphMaxPauseTicks만큼만 멈추고, 이어서 BossTelegraphTicks를 감아 공격해야 한다.
+        TestGameSession s = SetupSession();
+        EnemyEntity boss = _map.Enemies[BossEntityId];
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceInBossRange(player!);
+        player!.Hp = 9999;
+
+        long t = 2;
+        for (; t <= 80 && boss.Fsm!.CurrentState is not BossTelegraphState; t++)
+            _map.Tick(t);
+        Assert.IsType<BossTelegraphState>(boss.Fsm!.CurrentState);
+
+        s.SentPackets.Clear();
+        int ticksToAttack = 0;
+        while (CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack) == 0 && ticksToAttack < 200)
+        {
+            boss.EnterHitState(1f);
+            _map.Tick(t++);
+            ticksToAttack++;
+        }
+
+        Assert.Equal(Constants.BossTelegraphTicks + CombatConstants.BossTelegraphMaxPauseTicks, ticksToAttack);
+    }
+
     // ─── 시나리오 4: Attack Enter → AttackCooldownTicks 리셋 ──────────────────
 
     [Fact]

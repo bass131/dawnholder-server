@@ -75,7 +75,7 @@ namespace Dawnholder.Client.UI
 
         void LateUpdate()
         {
-            // InventoryPanel resizes in Update. Reserve its space even while closed so I never moves Confirm.
+            // Only the HUD above bounds the window; the inventory's place is never read, so I never moves Confirm.
             UnityEngine.Rect bounds = _canvasRect.rect;
             float bottom = bounds.yMin + 12f;
             float top = bounds.yMax - 12f;
@@ -84,13 +84,6 @@ namespace Dawnholder.Client.UI
                 status.gameObject.activeInHierarchy)
             {
                 status.GetWorldCorners(_layoutCorners);
-                top = Mathf.Min(top, _canvasRect.InverseTransformPoint(_layoutCorners[0]).y - 12f);
-            }
-            var inventory = InventoryPanel.Instance;
-            if (inventory != null && inventory.isActiveAndEnabled && inventory.gameObject.scene == gameObject.scene &&
-                inventory.transform.Find("Inventory") is RectTransform inventoryRect)
-            {
-                inventoryRect.GetWorldCorners(_layoutCorners);
                 top = Mathf.Min(top, _canvasRect.InverseTransformPoint(_layoutCorners[0]).y - 12f);
             }
             float scale = Mathf.Min(1f, (bounds.width - 24f) / Width, (top - bottom) / Height);
@@ -207,6 +200,8 @@ namespace Dawnholder.Client.UI
             title.fontStyle = FontStyles.Bold;
             title.color = new Color(1f, 0.90f, 0.35f);
             _summary = Label("Summary", _panel, new Vector2(472f, 76f), new Vector2(24f, -70f), font);
+            // Ink of the bright windows (InventoryPanelView s_ink).
+            _summary.color = new Color(0.26f, 0.17f, 0.09f);
             _items = new TMP_Text[DungeonClearRewards.MaxItemKinds];
             for (int i = 0; i < _items.Length; i++)
             {
@@ -214,6 +209,7 @@ namespace Dawnholder.Client.UI
                 var rowPosition = new Vector2(24f, -146f - i * 42f);
                 Place(UiWindowAppearance.CreateInset("RewardInset" + i, _panel).rectTransform, rowSize, rowPosition);
                 _items[i] = Label("Reward" + i, _panel, rowSize, rowPosition, font);
+                _items[i].color = new Color(0.26f, 0.17f, 0.09f);
             }
 
             _confirm = UiWindowAppearance.CreateButton("Confirm", _panel, UiWindowAppearance.ButtonStyle.Accept);

@@ -69,6 +69,11 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_Attack) == 1, "actual keyboard attack");
             _fixture.Keys();
             yield return MapEntryPlayFixture.Wait(() => player.CanAttack && !player.IsActionLocked, "attack cooldown");
+            // Left Ctrl is the other keyboard attack key (decision 65 A): after the cooldown, a second C_Attack on real TCP.
+            _fixture.Keys(Key.LeftCtrl);
+            yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_Attack) == 2, "actual Left Ctrl attack", 3);
+            _fixture.Keys();
+            yield return MapEntryPlayFixture.Wait(() => player.CanAttack && !player.IsActionLocked, "attack cooldown after Left Ctrl");
             _fixture.Keys(Key.Q);
             yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_SkillUse) == 1, "actual keyboard skill");
             _fixture.Keys();
