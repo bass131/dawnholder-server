@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq;
+using System.Reflection;
 using Dawnholder.Client.Gameplay;
 using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
@@ -181,9 +182,10 @@ namespace Dawnholder.Client.Tests.PlayMode
                 !InventoryPanelProbe.Interactable(Button(smith, "Enhance")), "menu blocks both purchase actions");
             yield return KeyFrame(_fixture, Key.G);
             yield return _record.Capture(_fixture, "menu");
-            yield return _record.Click(_fixture, Button(guild, "LevelUp"), "menu pointer over purchase45", expectHit: false);
+            GameObject menu = PauseMenuRoot();
+            yield return PressThroughMenu(menu, Button(guild, "LevelUp"), "menu pointer over purchase45");
             if (Time.timeScale == 0f)
-                yield return _record.Click(_fixture, Button(smith, "Enhance"), "menu pointer over purchase46", expectHit: false);
+                yield return PressThroughMenu(menu, Button(smith, "Enhance"), "menu pointer over purchase46");
             _record.Check(Time.timeScale == 0f, "purchase coordinates do not activate menu resume");
             if (Time.timeScale == 0f) yield return KeyFrame(_fixture, Key.Escape);
             _record.Check(Time.timeScale == 1f, "actual Escape resumes");
@@ -212,6 +214,54 @@ namespace Dawnholder.Client.Tests.PlayMode
             _record.Check(_fixture.Peer.Count(PacketID.C_StrongholdUpgrade) == 0 &&
                 _fixture.Peer.Count(PacketID.C_WeaponEnhance) == 0, "menu/transition/outsideTown emit no45/46");
             _record.Finish();
+        }
+
+        // The open pause menu lies over the purchase buttons, so the top raycast hit at a purchase button's centre must
+        // belong to the menu. A menu control there (Resume, MainMenu, Quit or whatever the menu lays out) is not pressed,
+        // since pressing it leaves the menu; any other menu graphic (the backdrop) is pressed and must buy nothing.
+        IEnumerator PressThroughMenu(GameObject menu, Component purchase, string reason)
+        {
+            Vector2 point = ScreenUiProbe.ScreenPoint(purchase);
+            GameObject[] hits = ScreenUiProbe.RaycastHits(point);
+            GameObject top = hits.Length > 0 ? hits[0] : null;
+            bool onMenu = top != null && top.transform.IsChildOf(menu.transform);
+            Component control = onMenu ? MenuControl(top.transform, menu.transform) : null;
+            bool press = onMenu && control == null;
+            _record.Event("menu-top-hit " + reason, "point=" + point + "; top=" +
+                (top == null ? "none" : ScreenUiProbe.PathOf(top.transform, null)) + "; on menu=" + onMenu +
+                "; menu control=" + (control == null ? "none" : control.GetType().Name + " " + control.name) + "; pressed=" + press);
+            _record.Check(top != null, reason + " has a top pointer hit");
+            _record.Check(onMenu, reason + " top pointer hit belongs to the pause menu");
+            if (!press) yield break;
+            yield return _record.ClickAt(_fixture, point, reason, null, expectHit: false);
+            _record.Check(_fixture.Peer.Count(PacketID.C_StrongholdUpgrade) == 0 &&
+                _fixture.Peer.Count(PacketID.C_WeaponEnhance) == 0, reason + " on a menu graphic emits no45/46");
+        }
+
+        // The menu root the product shows and hides (PauseMenuController's private _pauseCanvas), read rather than
+        // named so a re-laid-out menu still counts.
+        static GameObject PauseMenuRoot()
+        {
+            FieldInfo field = typeof(PauseMenuController).GetField("_pauseCanvas", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(field, "fixture: PauseMenuController keeps its menu root in _pauseCanvas");
+            GameObject[] shown = UnityEngine.Object.FindObjectsByType<PauseMenuController>()
+                .Select(controller => (GameObject)field.GetValue(controller))
+                .Where(root => root != null && root.activeInHierarchy)
+                .ToArray();
+            Assert.AreEqual(1, shown.Length, "fixture: exactly one pause menu root is shown");
+            return shown[0];
+        }
+
+        // The nearest Selectable (every menu Button is one) from a hit up to the menu root.
+        static Component MenuControl(Transform hit, Transform menu)
+        {
+            for (Transform current = hit; current != null; current = current.parent)
+            {
+                var control = current.GetComponent<UnityEngine.UI.Selectable>();
+                if (control != null) return control;
+                if (current == menu) break;
+            }
+            return null;
         }
 
         IEnumerator Begin(int width, int height)

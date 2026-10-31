@@ -33,13 +33,15 @@ namespace Dawnholder.Client.Tests.PlayMode
         const string ConfirmLabel = "확인";
         const float OpenSeconds = 3f;
 
-        // Art 06 verification: the approved Accept states, name → .meta GUID (Art/UI/Components, import-spec.json).
+        // Art 06 verification: the approved Accept states, name → .meta GUID. Since PR3 (decision v3 A msg_79d2bf86419e,
+        // goal 완료조건 10) the bright kit (Art/UI/BrightComponents; rows from pr3-red-01/scripts/emit-pr3-tables.mjs
+        // section F).
         static readonly Dictionary<string, string> AcceptGuids = new Dictionary<string, string>
         {
-            ["Button_Accept_Normal"] = "304984e555104bf5b7d8648af717c165",
-            ["Button_Accept_Highlighted"] = "ce276490b85b4f7fa5f674b0f2546e87",
-            ["Button_Accept_Pressed"] = "0525c0bba70a41ad8bf71baebe25bc9f",
-            ["Button_Accept_Disabled"] = "296d9f9387434c4cbc07115da1352309",
+            ["Button_Accept_Normal"] = "fdaa805e70f5533488dae81f7234282a",
+            ["Button_Accept_Highlighted"] = "b19f5a6d0300e566d0fffea8534ac8ca",
+            ["Button_Accept_Pressed"] = "819be5b406aaa976f19a17fb72ef6fae",
+            ["Button_Accept_Disabled"] = "d14f5c1a8a0197176bd076a96fb0009e",
         };
 
         MapEntryPlayFixture _fixture;

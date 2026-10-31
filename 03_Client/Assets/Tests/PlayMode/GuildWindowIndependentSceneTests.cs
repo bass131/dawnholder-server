@@ -430,44 +430,87 @@ namespace Dawnholder.Client.Tests.PlayMode
                 (damaged, target) => target.All(name => damaged.Reports(name, Kinds.Foreign)));
         }
 
-        // The blacksmith panel moved onto the guild panel with its canvas sorted above: every guild text is covered.
+        // The blacksmith panel moved onto the guild panel with its canvas sorted above: every guild text lying wholly under
+        // it is covered. The targets are the guild texts whose glyph quads all fall inside the moved blacksmith panel; the
+        // smaller blacksmith panel leaves the rest of the guild window open, so those are not asked to be covered.
         [UnityTest]
         public IEnumerator NegativeControl_OtherWindowOverText_EveryCoveredTextIsReported()
         {
             yield return NegativeControl("negative-other-window-over-text",
-                (pair, expected) => expected.Where(item => item.Window == pair.Guild).Select(item => item.Name).ToArray(),
-                pair =>
+                (pair, expected) =>
                 {
-                    RectTransform guildPanel = Panel(pair.Guild);
-                    RectTransform smithPanel = Panel(pair.Smith);
-                    Canvas guildCanvas = pair.Guild.GetComponent<Canvas>();
-                    Canvas smithCanvas = pair.Smith.GetComponent<Canvas>();
-                    Vector2 anchorMin = smithPanel.anchorMin;
-                    Vector2 anchorMax = smithPanel.anchorMax;
-                    Vector2 anchored = smithPanel.anchoredPosition;
-                    int order = smithCanvas.sortingOrder;
-                    TMP_Text closeCaption = smithPanel.Find("Close/Label").GetComponent<TMP_Text>();
-                    bool closeCaptionEnabled = closeCaption.enabled;
-                    smithPanel.anchorMin = guildPanel.anchorMin;
-                    smithPanel.anchorMax = guildPanel.anchorMax;
-                    // Offset shared header captions so the covering window cannot redraw the same glyphs in place.
-                    smithPanel.anchoredPosition = guildPanel.anchoredPosition + new Vector2(8f, -8f);
-                    smithCanvas.sortingOrder = guildCanvas.sortingOrder + 1;
-                    // Identical overlaid Close glyphs would preserve the covered caption pixels.
-                    closeCaption.enabled = false;
-                    return () =>
-                    {
-                        smithPanel.anchorMin = anchorMin;
-                        smithPanel.anchorMax = anchorMax;
-                        smithPanel.anchoredPosition = anchored;
-                        smithCanvas.sortingOrder = order;
-                        closeCaption.enabled = closeCaptionEnabled;
-                    };
+                    Action undo = CoverGuild(pair);
+                    string[] covered = CoveredTexts(pair, expected);
+                    undo();
+                    return covered;
                 },
-                "every guild text's F∩S ink drops",
+                CoverGuild,
+                "every covered guild text's F∩S ink drops",
                 (before, after, target) => target.Length > 0 && target.All(name => after.Part(name).inkFS < before.Part(name).inkFS),
-                "every guild text is reported covered",
-                (damaged, target) => target.All(name => damaged.Reports(name, Kinds.Covered)));
+                "every covered guild text is reported covered",
+                (damaged, target) => target.All(name => damaged.Reports(name, Kinds.Covered)),
+                (pair, expected, target) =>
+                {
+                    Camera camera = pair.Guild.GetComponent<Canvas>().worldCamera;
+                    Rect cover = PixelRect(Panel(pair.Smith), camera);
+                    return new[]
+                    {
+                        ($"the moved blacksmith panel {Format(cover)} overlaps the guild panel " +
+                            $"{Format(PixelRect(Panel(pair.Guild), camera))} at the damaged capture",
+                            cover.Overlaps(PixelRect(Panel(pair.Guild), camera))),
+                        ($"at least one guild text lies wholly under the blacksmith panel ({target.Length})", target.Length > 0),
+                        ("every target still lies wholly under the blacksmith panel at the damaged capture",
+                            CoveredTexts(pair, expected).SequenceEqual(target)),
+                    };
+                });
+        }
+
+        // The other-window damage. GuildWindowLayout.Resize rewrites each panel's anchoredPosition and localScale every
+        // LateUpdate and leaves its anchors, so the blacksmith panel is carried onto the guild panel by its anchors: the
+        // world step between the two panel centres (plus 8,-8 so the shared header captions do not land on the same
+        // pixels) in the blacksmith canvas's normalized units. Its canvas is sorted above the guild's and its Close
+        // caption, which would redraw the guild's identical one, is switched off.
+        static Action CoverGuild(WindowPair pair)
+        {
+            RectTransform guildPanel = Panel(pair.Guild);
+            RectTransform smithPanel = Panel(pair.Smith);
+            var smithRoot = (RectTransform)smithPanel.parent;
+            Canvas guildCanvas = pair.Guild.GetComponent<Canvas>();
+            Canvas smithCanvas = pair.Smith.GetComponent<Canvas>();
+            Vector2 anchorMin = smithPanel.anchorMin;
+            Vector2 anchorMax = smithPanel.anchorMax;
+            int order = smithCanvas.sortingOrder;
+            TMP_Text closeCaption = smithPanel.Find("Close/Label").GetComponent<TMP_Text>();
+            bool closeCaptionEnabled = closeCaption.enabled;
+            Vector2 step = (Vector2)smithRoot.InverseTransformVector(guildPanel.position - smithPanel.position) + new Vector2(8f, -8f);
+            Vector2 anchorStep = new Vector2(step.x / smithRoot.rect.width, step.y / smithRoot.rect.height);
+            smithPanel.anchorMin = anchorMin + anchorStep;
+            smithPanel.anchorMax = anchorMax + anchorStep;
+            smithCanvas.sortingOrder = guildCanvas.sortingOrder + 1;
+            closeCaption.enabled = false;
+            return () =>
+            {
+                smithPanel.anchorMin = anchorMin;
+                smithPanel.anchorMax = anchorMax;
+                smithCanvas.sortingOrder = order;
+                closeCaption.enabled = closeCaptionEnabled;
+            };
+        }
+
+        // The guild texts whose glyph quads all lie inside the blacksmith panel's pixel rect where it stands now.
+        static string[] CoveredTexts(WindowPair pair, LabelExpectation[] expected)
+        {
+            Camera camera = pair.Guild.GetComponent<Canvas>().worldCamera;
+            Rect cover = PixelRect(Panel(pair.Smith), camera);
+            return expected
+                .Where(item => item.Window == pair.Guild)
+                .Where(item =>
+                {
+                    Quad[] quads = Quads(item.Text, camera);
+                    return quads.Length > 0 && quads.All(quad => Inside(Rect.MinMaxRect(quad.Min.x, quad.Min.y, quad.Max.x, quad.Max.y), cover, 0f));
+                })
+                .Select(item => item.Name)
+                .ToArray();
         }
 
         // Both canvases switched off: the frame is empty and every text is reported cut.
@@ -606,6 +649,18 @@ namespace Dawnholder.Client.Tests.PlayMode
             seen.renderingWidth = -1;
             seen.renderingHeight = -1;
 #endif
+            // Skipped only after the view state and the rendering size are read: in batchmode a main GameView is left
+            // after that reading and the later cases run in it, so an earlier skip would change their screen. Before any
+            // judgement, so a named but missing folder still fails inside Judge and a wrong view still fails below.
+            var missing = new List<string>();
+            if (CaptureDirectoryMissing()) missing.Add(CaptureDirectoryVariable);
+            if (seen.mainPlayModeView == "none") missing.Add("the Editor's Game view (Editor Game 화면 필요)");
+            if (missing.Count > 0)
+            {
+                Debug.Log($"[guild verify {label}] skipped before judgement: Screen {width}x{height}, rendering " +
+                    $"{seen.renderingWidth}x{seen.renderingHeight}, main play mode view {seen.mainPlayModeView}");
+                Assert.Ignore($"the default-screen judgement needs {string.Join(" and ", missing)}");
+            }
             CheckModel(real, expected, pair);
             yield return Judge(overlay, pair.Both, expected, real);
             var raycasts = new List<string>();
@@ -653,6 +708,8 @@ namespace Dawnholder.Client.Tests.PlayMode
 
         IEnumerator MeasureInRenderTexture(int requestedWidth, int requestedHeight)
         {
+            if (CaptureDirectoryMissing())
+                Assert.Ignore($"the RenderTexture judgement keeps its captures only when the runner sets {CaptureDirectoryVariable}");
             var fixtureProblems = new List<string>();
             var allProblems = new List<string>();
             foreach (bool upperBound in new[] { false, true })
@@ -694,10 +751,15 @@ namespace Dawnholder.Client.Tests.PlayMode
         // One negative control: the undamaged windows, the damaged ones and the undone damage are judged by the same
         // Judge on the same surface against the expectations taken before any damage. The damage and its undo are real
         // product objects; the raw-count rule shows the damage reached the pixels before the report rule is asked.
+        // damagedPreconditions, when given, is read while the damaged frame still stands (after its judgement) and each
+        // of its rules must hold before the damage and its report are asked.
         IEnumerator NegativeControl(string label, Func<WindowPair, LabelExpectation[], string[]> targets,
             Func<WindowPair, Action> damage, string damageRule, Func<Judgement, Judgement, string[], bool> damageIsReal,
-            string reportRule, Func<Judgement, string[], bool> reported)
+            string reportRule, Func<Judgement, string[], bool> reported,
+            Func<WindowPair, LabelExpectation[], string[], (string Rule, bool Holds)[]> damagedPreconditions = null)
         {
+            if (CaptureDirectoryMissing())
+                Assert.Ignore($"the negative control keeps its captures only when the runner sets {CaptureDirectoryVariable}");
             WindowPair pair = Build(label, ApprovedGuild(treasury: 30), ApprovedSmith(gold: 20));
             Surface surface = RenderTextureSurface(pair.Holder, Screen.width, Screen.height, pair.Both);
             yield return Settle();
@@ -711,6 +773,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return Settle();
             var damaged = new Judgement(label + "-damaged", mode);
             yield return Judge(surface, pair.Both, expected, damaged);
+            (string Rule, bool Holds)[] damagedChecks = damagedPreconditions?.Invoke(pair, expected, names) ?? new (string, bool)[0];
             undo();
             yield return Settle();
             var restored = new Judgement(label + "-restored", mode);
@@ -726,11 +789,13 @@ namespace Dawnholder.Client.Tests.PlayMode
             Release(surface);
             UnityEngine.Object.Destroy(pair.Holder);
             yield return Frames(2);
-            Debug.Log($"[guild verify {label}] targets [{string.Join(", ", names)}], damage real {real} ({damageRule}), " +
-                $"reported {detected} ({reportRule})");
+            Debug.Log($"[guild verify {label}] targets [{string.Join(", ", names)}], while damaged " +
+                $"[{string.Join("; ", damagedChecks.Select(check => check.Holds + ": " + check.Rule))}], damage real {real} " +
+                $"({damageRule}), reported {detected} ({reportRule})");
 
             Assert.Greater(judged, 0, "precondition: expected texts were judged");
             Assert.IsEmpty(baselineProblems, "precondition: the undamaged windows are judged whole and apart");
+            foreach ((string rule, bool holds) in damagedChecks) Assert.IsTrue(holds, "precondition: " + rule);
             Assert.IsTrue(real, "precondition: the damage changed the drawn pixels: " + damageRule);
             Assert.IsTrue(detected, "the visibility judgement reports the damage: " + reportRule);
             Assert.IsEmpty(restoredProblems, "control: once the damage is undone the same judgement reports nothing");
@@ -807,18 +872,19 @@ namespace Dawnholder.Client.Tests.PlayMode
         }
 #endif
 
-        // Judges every expected text on one drawn surface (contract supplement v9 section 3). F is the frame as drawn.
-        // For each text, R is a separate unmasked TextMeshPro on its own root canvas (same render mode, camera, sorting
-        // order and scale factor as the product's) with the same font, material, style, colour, size, rectangle and
-        // pixel scale at the same place, carrying the expected string, drawn alone while the product canvases are off.
+        // Judges every expected text on one drawn surface (contract supplement v9 section 3). F is the frame as drawn and
+        // F0 the same frame with every product text switched off (Visibility). For each text, R is a separate unmasked
+        // TextMeshPro on its own root canvas (same render mode, camera, sorting order and scale factor as the product's)
+        // with the same font, material, style, colour, size, rectangle and pixel scale at the same place, carrying the
+        // expected string, drawn alone while the product canvases are off.
         // S is the product text itself while every other Graphic of the windows is switched off for that one capture;
         // its canvases, masks and its own TMP sub-meshes stay as they are and every switched Graphic is put back in a
         // finally block. Per visible character, over R's glyph quad: R must have ink; S may lose at most
         // MinimumSOverR of R's ink, F may hide at most MinimumFOverS of S's ink (each with one pixel of slack); and inside
-        // the quad shrunk by one pixel no F ink may stand where S is dark (another drawing's ink). Text correspondence,
+        // the quad shrunk by one pixel F may not move from F0 where S is dark (another drawing's ink). Text correspondence,
         // the label against R's quads, the surface, any RectMask2D, overflow and the visibility limits are checked too,
-        // and a last capture must show the same ink as F. Nothing here repeats the product's placement formula. Every
-        // capture (F, each R and S, after) is noted and its whole frame kept as a new PNG before it is released
+        // and a last capture must show the same pixels as F. Nothing here repeats the product's placement formula. Every
+        // capture (F, F0, each R and S, after) is noted and its whole frame kept as a new PNG before it is released
         // (Judgement.NoteCapture, contract supplement v12 section 3); the R/S/F crops are only derived from them.
         IEnumerator Judge(Surface surface, Component[] windows, LabelExpectation[] expected, Judgement judgement)
         {
@@ -858,9 +924,33 @@ namespace Dawnholder.Client.Tests.PlayMode
                 yield break;
             }
             record.frameLit = CountAtLeast(full, Visibility.LitLevel);
-            record.frameInk = CountAtLeast(full, Visibility.InkLevel);
             record.panelLit = windows.Select(window => LitFraction(full, Panel(window), surface.Camera)).ToArray();
             LabelState[] states = expected.Select(item => new LabelState(item, surface.Camera)).ToArray();
+
+            // F0 (Visibility): F's state, damage included, with every product text switched off: each TMP_Text and its
+            // TMP_SubMeshUI pieces (the Korean fallback glyphs, kept with their text in S as well). Put back in a finally
+            // block; the closing capture and CheckRestored below show the frame and layout came back.
+            Behaviour[] texts = windows.SelectMany(window => window.GetComponentsInChildren<Behaviour>(true))
+                .Where(behaviour => behaviour is TMP_Text || behaviour is TMP_SubMeshUI).ToArray();
+            bool[] textsEnabled = texts.Select(text => text.enabled).ToArray();
+            Frame plain = null;
+            try
+            {
+                foreach (Behaviour text in texts) text.enabled = false;
+                yield return Capture(surface, frame => plain = frame);
+            }
+            finally
+            {
+                for (int i = 0; i < texts.Length; i++) texts[i].enabled = textsEnabled[i];
+            }
+            judgement.NoteCapture("F0", plain, surface);
+            if (!SameSize(plain, full))
+            {
+                judgement.Add("frame", -1, Kinds.Unjudgeable, "F0 capture is missing or of another size");
+                Release(plain);
+                yield break;
+            }
+            record.frameInk = ChangedPixels(full, plain);
 
             Canvas referenceCanvas = ReferenceCanvas(windows[0].transform.parent, canvases[0]);
             bool[] canvasesEnabled = canvases.Select(canvas => canvas.enabled).ToArray();
@@ -919,10 +1009,11 @@ namespace Dawnholder.Client.Tests.PlayMode
                     for (int i = 0; i < graphics.Length; i++) graphics[i].enabled = enabledBefore[i];
                 }
                 state.OriginalS = judgement.NoteCapture("S " + state.Item.Name, alone, surface);
-                if (SameSize(alone, full)) state.MeasureAlone(full, alone);
+                if (SameSize(alone, full)) state.MeasureAlone(full, plain, alone);
                 else judgement.Add(state.Item.Name, -1, Kinds.Unjudgeable, "S capture is missing or of another size");
                 Release(alone);
             }
+            Release(plain);
 
             yield return null;
             Canvas.ForceUpdateCanvases();
@@ -930,11 +1021,11 @@ namespace Dawnholder.Client.Tests.PlayMode
             Frame after = null;
             yield return Capture(surface, frame => after = frame);
             judgement.NoteCapture("after", after, surface);
-            record.restoredInkDifferences = SameSize(after, full) ? InkDifferences(full, after) : -1;
+            record.restoredInkDifferences = SameSize(after, full) ? ChangedPixels(full, after) : -1;
             Release(after);
             if (record.restoredInkDifferences != 0)
-                judgement.Add("frame", -1, Kinds.Restore, $"after the R and S captures {record.restoredInkDifferences} pixels changed " +
-                    "ink against F (-1: no capture of that size)");
+                judgement.Add("frame", -1, Kinds.Restore, $"after the F0, R and S captures {record.restoredInkDifferences} pixels " +
+                    "changed against F (-1: no capture of that size)");
 
             foreach (LabelState state in states) state.Judge(judgement, full, surface.Camera, graphics);
             record.labels = states.Select(state => state.Record).ToArray();
@@ -1262,6 +1353,10 @@ namespace Dawnholder.Client.Tests.PlayMode
             return problems;
         }
 
+        // Only an unset variable skips the capture cases: a named folder that is wrong or missing still fails inside the
+        // judgement (KeepOriginal), so a lane that names the folder never passes by skipping.
+        static bool CaptureDirectoryMissing() => string.IsNullOrEmpty(Environment.GetEnvironmentVariable(CaptureDirectoryVariable));
+
         static string MainPlayModeViewState()
         {
 #if UNITY_EDITOR
@@ -1387,33 +1482,46 @@ namespace Dawnholder.Client.Tests.PlayMode
             return count;
         }
 
-        static int InkIn(Frame frame, RectInt area)
+        // R's ink in an area: pixels whose linear brightest channel reaches level (InkCoverage of the text's linear P_T).
+        static int InkIn(Frame frame, RectInt area, float level)
         {
             int ink = 0;
             for (int y = area.yMin; y < area.yMax; y++)
             {
                 for (int x = area.xMin; x < area.xMax; x++)
                 {
-                    if (frame.Brightest(x, y) >= Visibility.InkLevel) ink++;
+                    if (frame.LinearBrightest(x, y) >= level) ink++;
                 }
             }
             return ink;
         }
 
-        static int InkDifferences(Frame first, Frame second)
+        // Pixels that changed between two frames of the same size (channel difference of MinContrast or more): F against
+        // F0 gives the frame's drawn text pixels (frameInk), F against the last capture the restore check.
+        static int ChangedPixels(Frame first, Frame second)
         {
-            int differences = 0;
+            int changed = 0;
             for (int y = 0; y < first.Height; y++)
             {
                 for (int x = 0; x < first.Width; x++)
                 {
-                    if ((first.Brightest(x, y) >= Visibility.InkLevel) != (second.Brightest(x, y) >= Visibility.InkLevel)) differences++;
+                    if (ChannelDifference(first.At(x, y), second.At(x, y)) >= Visibility.MinContrast) changed++;
                 }
             }
-            return differences;
+            return changed;
         }
 
-        // How much of a panel's area (two pixels inside its edge) is not black: the panel colour 0.06/0.07/0.10 lights it.
+        // The largest of the red, green and blue differences (contract pr-b-testfix-contract-v1.md 「고정 기준값」 채널 차).
+        static int ChannelDifference(Color32 first, Color32 second) =>
+            Math.Max(Math.Abs(first.r - second.r), Math.Max(Math.Abs(first.g - second.g), Math.Abs(first.b - second.b)));
+
+        // The largest red, green or blue difference in linear light (Visibility.Linear, msg_be0598e0b0b9).
+        static float LinearDifference(Color32 first, Color32 second) =>
+            Mathf.Max(Mathf.Abs(Visibility.Linear(first.r) - Visibility.Linear(second.r)),
+                Mathf.Max(Mathf.Abs(Visibility.Linear(first.g) - Visibility.Linear(second.g)),
+                    Mathf.Abs(Visibility.Linear(first.b) - Visibility.Linear(second.b))));
+
+        // How much of a panel's area (two pixels inside its edge) is not black: any drawn panel colour lights it.
         static float LitFraction(Frame frame, RectTransform panel, Camera camera)
         {
             Rect rect = PixelRect(panel, camera);
@@ -1712,18 +1820,40 @@ namespace Dawnholder.Client.Tests.PlayMode
             return type;
         }
 
-        // Fixed before any v4 run (readiness-v4) and never tuned to a result. Ink is a pixel whose brightest channel
-        // reaches InkLevel: the white and gold texts on the dark panel do, while the panel (0.06/0.07/0.10) and button
-        // (0.20/0.35/0.48) colours stay below it. Below DarkLevel the text alone drew no ink there (its own anti-aliased
-        // edge over the panel cannot reach InkLevel from there). R and S are the same glyph mesh at the same place, so in
-        // an undamaged frame S equals R and F∩S equals S; the ratios leave room for single-pixel rasterisation noise only,
-        // with one pixel of slack so a 4-pixel full stop or middle dot (static/glyph-ink-probe-1.json) is not judged by
-        // noise. A ratio below the Near values or S above R by more than that is listed for review before the next root.
+        // The pixel rules are the lead's, fixed before the run in contract pr-b-testfix-contract-v1.md 「고정 기준값」 (main
+        // decision msg_54966502537d condition 1), its R·S ink, S dark and F ink rules replaced before u3b by the lead's
+        // answer msg_be0598e0b0b9 and its F ink rule replaced again before u3c by the lead's supplement msg_9b1d53bbcaaf
+        // (main decision msg_56e1b4790f84), and never tuned to a result; the ratios and kinds below are older and
+        // unchanged. The project blends in Linear colour space, so glyph coverage is read in linear light (Linear). Each
+        // text T takes its levels from its own R: P_T is the brightest channel R draws inside T's glyph quads and C_T that
+        // pixel's colour, so a light or dark face, any material and any background are read alike. On R's and S's black,
+        // a pixel is ink when its linear brightest channel reaches InkCoverage of P_T's and dark below DarkCoverage of it,
+        // and R draws nothing when P_T is below LitLevel. F is read against F0, the same frame with every product text
+        // switched off, and against D_T, T's largest linear move of F from F0 over its S ink pixels where C_T stands at
+        // least MinContrast from F0. T shows in F when D_T reaches InkCoverage of C_T's linear distance from F0 at that
+        // pixel; then a pixel is F ink when C_T stands at least MinContrast from F0 there and F has moved from F0 by at
+        // least InkCoverage of D_T. A pixel of coverage α moves α times the face's linear distance from F0, and the same
+        // mesh's best pixel moves D_T, so F ink asks for the same share of the text's peak coverage as S ink does, also
+        // where a small glyph covers no pixel whole. A text drawn in about its background's colour does not show and
+        // reads as covered; a text faded evenly still shows while its peak coverage stays at InkCoverage or more. Inside
+        // the quad shrunk by one pixel, F moved at least MinContrast from F0 where S is dark is another drawing's ink. R
+        // and S are the same glyph mesh at the same place, so in an undamaged frame S equals R and F∩S equals S; the
+        // ratios leave room for single-pixel rasterisation noise only, with one pixel of slack so a 4-pixel full stop or
+        // middle dot (static/glyph-ink-probe-1.json) is not judged by noise. A ratio below the Near values or S above R
+        // by more than that is listed for review before the next root.
         static class Visibility
         {
-            internal const int InkLevel = 150;
-            internal const int DarkLevel = 40;
+            // Declared first: the coverage constants below are read from it when the class initialises.
+            static readonly float[] s_linear = Enumerable.Range(0, 256).Select(Decode).ToArray();
+
+            // L(150) and L(40): the coverage the earlier encoded levels 150 and 40 meant for a white text on black under
+            // Linear blending (msg_be0598e0b0b9).
+            internal static readonly float InkCoverage = Linear(150);
+            internal static readonly float DarkCoverage = Linear(40);
             internal const int LitLevel = 8;
+            // The bright skin's least contrasting designed pair (s_quietInk against the inset) differs by 135; under half
+            // of it, a text this close to its background is under 25% contrast and counts as not drawn.
+            internal const int MinContrast = 64;
             internal const float MinimumSOverR = 0.90f;
             internal const float MaximumSOverR = 1.10f;
             internal const float MinimumFOverS = 0.95f;
@@ -1735,6 +1865,16 @@ namespace Dawnholder.Client.Tests.PlayMode
             internal const string GraphicTypeName = "UnityEngine.UI.Graphic";
             internal const string RectMask2DTypeName = "UnityEngine.UI.RectMask2D";
             internal const string MaskTypeName = "UnityEngine.UI.Mask";
+
+            // L(v) of msg_be0598e0b0b9 (contract pr-b-testfix-contract-v1.md supplement) for a 0..255 channel.
+            internal static float Linear(int value) => s_linear[value];
+
+            // The sRGB decoding of IEC 61966-2-1, written out: nothing here shows Mathf.GammaToLinearSpace is this formula.
+            static float Decode(int value)
+            {
+                float x = value / 255f;
+                return x <= 0.04045f ? x / 12.92f : Mathf.Pow((x + 0.055f) / 1.055f, 2.4f);
+            }
         }
 
         // The kinds of finding Judge and CheckModel report.
@@ -1742,7 +1882,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         {
             internal const string Cut = "cut";                 // S has less than MinimumSOverR of R's ink
             internal const string Covered = "covered";         // F shows less than MinimumFOverS of S's ink
-            internal const string Foreign = "foreign";         // F ink where the text alone is dark
+            internal const string Foreign = "foreign";         // F changed from F0 where the text alone is dark
             internal const string Unjudgeable = "unjudgeable"; // a capture, R or R's alignment is missing
             internal const string Text = "text";               // the shown or laid-out text is not the expected one
             internal const string Structure = "structure";     // off the surface, outside a RectMask2D, overflow, visibility limits
@@ -1820,6 +1960,11 @@ namespace Dawnholder.Client.Tests.PlayMode
                 Color32 color = Pixels[y * Width + x];
                 return Math.Max(color.r, Math.Max(color.g, color.b));
             }
+
+            internal Color32 At(int x, int y) => Pixels[y * Width + x];
+
+            // L of the brightest channel, which is the largest of the three channels' L since L only rises.
+            internal float LinearBrightest(int x, int y) => Visibility.Linear(Brightest(x, y));
         }
 
         // A text the player is meant to read, named by its window and its path under the window, with the string it
@@ -1914,7 +2059,7 @@ namespace Dawnholder.Client.Tests.PlayMode
 
             // One entry per capture, in the order taken (its role, frame and size; -1 when none came), and the capture's
             // whole frame kept as it was read (contract supplement v12 section 3, D-CAPTURE-01): a new flat PNG
-            // "<label>.<overlay|rendertexture>-<sequence>-<F|R|S|after>.png" in the harness's capture folder, written before
+            // "<label>.<overlay|rendertexture>-<sequence>-<F|F0|R|S|after>.png" in the harness's capture folder, written before
             // the frame is released, read back and hashed. Returns the capture's 1-based sequence. A capture that never came
             // keeps its reason (the caller already fails the judgement for it); a frame that could not be written, read
             // back or hashed, or a run without a capture folder, is a finding here, so the judgement cannot pass without
@@ -2020,6 +2165,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             internal Color32[] CropS;
             internal int OriginalR = -1;
             internal int OriginalS = -1;
+            // C_T (Visibility): the colour of R's brightest pixel inside the text's quads; Record.peak is P_T.
+            internal Color32 PeakColour;
 
             internal LabelState(LabelExpectation item, Camera camera)
             {
@@ -2051,13 +2198,17 @@ namespace Dawnholder.Client.Tests.PlayMode
                 Record.referenceCharacters = ReferenceQuads.Length;
                 bool comparable = Item.Text.text == Item.Expected && ReferenceQuads.Length == LabelQuads.Length;
                 if (comparable) Record.maxQuadDeviation = Deviation(LabelQuads, ReferenceQuads);
+                MeasurePeak(alone);
+                // Below LitLevel R drew nothing, so no character has R ink and each is unjudgeable (Judge).
+                bool drawn = Record.peak >= Visibility.LitLevel;
                 Record.chars = ReferenceQuads.Select((quad, i) => new CharacterRecord
                 {
                     index = quad.Index,
                     character = quad.Character.ToString(),
                     referenceQuad = quad.Describe(),
                     quad = comparable ? LabelQuads[i].Describe() : string.Empty,
-                    r = InkIn(alone, PixelArea(quad.Min, quad.Max, alone.Width, alone.Height, 0)),
+                    r = drawn ? InkIn(alone, PixelArea(quad.Min, quad.Max, alone.Width, alone.Height, 0),
+                        Visibility.InkCoverage * Visibility.Linear(Record.peak)) : 0,
                 }).ToArray();
                 Record.inkR = Record.chars.Sum(character => character.r);
                 if (ReferenceQuads.Length == 0) return;
@@ -2067,14 +2218,39 @@ namespace Dawnholder.Client.Tests.PlayMode
                 CropR = CropPixels(alone, CropArea);
             }
 
-            internal void MeasureAlone(Frame full, Frame alone)
+            // P_T and C_T (Visibility) from R: the brightest channel over every pixel the text's quads touch, and its colour.
+            void MeasurePeak(Frame alone)
             {
+                Record.peak = 0;
+                foreach (Quad quad in ReferenceQuads)
+                {
+                    RectInt area = PixelArea(quad.Min, quad.Max, alone.Width, alone.Height, 0);
+                    for (int y = area.yMin; y < area.yMax; y++)
+                    {
+                        for (int x = area.xMin; x < area.xMax; x++)
+                        {
+                            if (alone.Brightest(x, y) <= Record.peak) continue;
+                            Record.peak = alone.Brightest(x, y);
+                            PeakColour = alone.At(x, y);
+                        }
+                    }
+                }
+                Record.peakColour = string.Format(CultureInfo.InvariantCulture, "{0},{1},{2}", PeakColour.r, PeakColour.g, PeakColour.b);
+            }
+
+            // plain is F0, the frame without the product texts.
+            internal void MeasureAlone(Frame full, Frame plain, Frame alone)
+            {
+                MeasureReach(full, plain, alone);
+                // A text that does not show in F has no F ink pixel at all.
+                float frameLevel = Record.shown ? Visibility.InkCoverage * Record.reach : float.PositiveInfinity;
                 for (int i = 0; i < Record.chars.Length; i++)
                 {
                     CharacterRecord character = Record.chars[i];
                     Quad quad = ReferenceQuads[i];
-                    Count(full, alone, PixelArea(quad.Min, quad.Max, full.Width, full.Height, 0),
-                        PixelArea(quad.Min, quad.Max, full.Width, full.Height, 1), character);
+                    Count(full, plain, alone, PixelArea(quad.Min, quad.Max, full.Width, full.Height, 0),
+                        PixelArea(quad.Min, quad.Max, full.Width, full.Height, 1), character, Record.peak, PeakColour,
+                        frameLevel);
                     character.sOverR = character.r > 0 ? (float)character.s / character.r : 0f;
                     character.fsOverS = character.s > 0 ? (float)character.fs / character.s : 0f;
                 }
@@ -2083,6 +2259,36 @@ namespace Dawnholder.Client.Tests.PlayMode
                 Record.inkFS = Record.chars.Sum(character => character.fs);
                 Record.foreign = Record.chars.Sum(character => character.foreign);
                 if (CropR != null) CropS = CropPixels(alone, CropArea);
+            }
+
+            // D_T (Visibility) from S (alone), F (full) and F0 (plain): over every pixel the text's quads touch, as P_T, the
+            // largest linear move of F from F0 at an S ink pixel where C_T stands at least MinContrast from F0. The text
+            // shows in F when D_T reaches InkCoverage of C_T's linear distance from F0 at that pixel; with no such pixel
+            // there is nothing to show by, D_T is 0 and the text does not show.
+            void MeasureReach(Frame full, Frame plain, Frame alone)
+            {
+                float inkLevel = Visibility.InkCoverage * Visibility.Linear(Record.peak);
+                float most = -1f;
+                Color32 mostBackground = default;
+                foreach (Quad quad in ReferenceQuads)
+                {
+                    RectInt area = PixelArea(quad.Min, quad.Max, full.Width, full.Height, 0);
+                    for (int y = area.yMin; y < area.yMax; y++)
+                    {
+                        for (int x = area.xMin; x < area.xMax; x++)
+                        {
+                            if (alone.LinearBrightest(x, y) < inkLevel) continue;
+                            Color32 background = plain.At(x, y);
+                            if (ChannelDifference(PeakColour, background) < Visibility.MinContrast) continue;
+                            float change = LinearDifference(full.At(x, y), background);
+                            if (change <= most) continue;
+                            most = change;
+                            mostBackground = background;
+                        }
+                    }
+                }
+                Record.reach = Mathf.Max(most, 0f);
+                Record.shown = most >= 0f && most >= Visibility.InkCoverage * LinearDifference(PeakColour, mostBackground);
             }
 
             internal void CheckRestored(Camera camera)
@@ -2175,20 +2381,31 @@ namespace Dawnholder.Client.Tests.PlayMode
                     .ToArray();
             }
 
-            static void Count(Frame full, Frame alone, RectInt area, RectInt inner, CharacterRecord character)
+            // One quad's counts by the Visibility rules: S ink and S dark against the linear P_T (peak); F ink where C_T
+            // (colour) stands out from F0 (plain) and F moved from F0, in linear light, by frameLevel (InkCoverage of the
+            // text's D_T, or never when the text does not show in F); foreign where F moved from F0 and S is dark.
+            static void Count(Frame full, Frame plain, Frame alone, RectInt area, RectInt inner, CharacterRecord character,
+                int peak, Color32 colour, float frameLevel)
             {
+                float peakLinear = Visibility.Linear(peak);
+                float inkLevel = Visibility.InkCoverage * peakLinear;
+                float darkLevel = Visibility.DarkCoverage * peakLinear;
                 for (int y = area.yMin; y < area.yMax; y++)
                 {
                     for (int x = area.xMin; x < area.xMax; x++)
                     {
-                        int frameInk = full.Brightest(x, y);
-                        int textInk = alone.Brightest(x, y);
-                        bool text = textInk >= Visibility.InkLevel;
-                        bool frame = frameInk >= Visibility.InkLevel;
+                        Color32 background = plain.At(x, y);
+                        Color32 drawn = full.At(x, y);
+                        int contrast = ChannelDifference(colour, background);
+                        int change = ChannelDifference(drawn, background);
+                        float textInk = alone.LinearBrightest(x, y);
+                        bool text = textInk >= inkLevel;
+                        bool frame = contrast >= Visibility.MinContrast && LinearDifference(drawn, background) >= frameLevel;
                         if (text) character.s++;
                         if (frame) character.f++;
                         if (text && frame) character.fs++;
-                        if (frame && textInk < Visibility.DarkLevel && x >= inner.xMin && x < inner.xMax && y >= inner.yMin && y < inner.yMax)
+                        if (change >= Visibility.MinContrast && textInk < darkLevel &&
+                            x >= inner.xMin && x < inner.xMax && y >= inner.yMin && y < inner.yMax)
                             character.foreign++;
                     }
                 }
@@ -2451,7 +2668,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             {
                 Assert.AreEqual("6000.6.4f1", Application.unityVersion, "exact GameView API version");
                 string path = Environment.GetEnvironmentVariable("DAWNHOLDER_GUILD_MEMORY_PERMIT");
-                Assert.IsFalse(string.IsNullOrEmpty(path), "memory use requires a runner permit");
+                if (string.IsNullOrEmpty(path))
+                    Assert.Ignore("memory use requires a runner permit in DAWNHOLDER_GUILD_MEMORY_PERMIT" +
+                        (CaptureDirectoryMissing() ? $" and a capture folder in {CaptureDirectoryVariable}" : string.Empty));
                 string directory = MemoryDirectory();
                 Assert.AreEqual(Path.Combine(directory, "memory-permit.json"), Path.GetFullPath(path), "permit location");
                 var permit = JsonUtility.FromJson<MemoryPermit>(File.ReadAllText(path));
@@ -2727,9 +2946,11 @@ namespace Dawnholder.Client.Tests.PlayMode
             public int[] captureHeights;
             public OriginalRecord[] originals;
             public int frameLit;
+            // Pixels where F and F0 differ by MinContrast or more: where the texts drew (ChangedPixels).
             public int frameInk;
             public int referenceInk;
             public float[] panelLit;
+            // Pixels where the last capture differs from F by MinContrast or more (ChangedPixels).
             public int restoredInkDifferences;
             public string notReviewed;
             public string pngPath;
@@ -2761,6 +2982,12 @@ namespace Dawnholder.Client.Tests.PlayMode
             public int graphicsKept;
             public float restoredFontSize;
             public float restoredQuadDeviation;
+            // P_T and C_T (Visibility), the levels this text's R, S and F pixels were judged by.
+            public int peak;
+            public string peakColour;
+            // D_T and whether the text shows in F (Visibility), the F ink level.
+            public float reach;
+            public bool shown;
             public int inkR;
             public int inkS;
             public int inkF;

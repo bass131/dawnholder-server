@@ -133,20 +133,31 @@ namespace Dawnholder.Client.Tests
             RequireHover(highlights.Select(image => image.enabled).ToArray(), -1);
         }
 
+        // UiWindowSkin.Required: an empty slot throws where it is asked for and never falls back to another kit's piece.
+        // Observed on an empty skin because PR3 fills these bright slots (main msg_c364b75ed5de A); the bright skin's
+        // filled slots are asserted by BrightUiKitImportTests (PR3 T3).
         [TestCase("PortraitPrefab")]
         [TestCase("DialogPanel")]
         [TestCase("EmphasisPanel")]
         [TestCase("DeclineNormal")]
-        public void BrightSkin_MissingLegacySlotsThrowInsteadOfFallingBack(string property)
+        public void EmptySkin_MissingSlotsThrowInsteadOfFallingBack(string property)
         {
             PropertyInfo getter = typeof(UiWindowSkin).GetProperty(property, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(getter, "fixture: requested skin slot exists");
             NegativeControl(() => RequireMissingSlot(() => UiWindowAppearance.BrightSkin.PanelPrefab));
-            RequireMissingSlot(() =>
+            var emptySkin = ScriptableObject.CreateInstance<UiWindowSkin>();
+            try
             {
-                try { return getter.GetValue(UiWindowAppearance.BrightSkin); }
-                catch (TargetInvocationException error) { throw error.InnerException; }
-            });
+                RequireMissingSlot(() =>
+                {
+                    try { return getter.GetValue(emptySkin); }
+                    catch (TargetInvocationException error) { throw error.InnerException; }
+                });
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(emptySkin);
+            }
         }
 
         static string GuidOf(Sprite sprite) => sprite == null ? "none" : AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(sprite));

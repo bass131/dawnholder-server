@@ -15,7 +15,7 @@ namespace Dawnholder.Client.UI
 
         static UiWindowSkin Skin => Load(ref s_skin, "UI/Components/UiWindowSkin");
 
-        /// <summary>The bright kit used only by the inventory and character select; other windows keep the default skin.</summary>
+        /// <summary>The full bright kit: the same shared pieces as the default skin plus the slots only the inventory and character select use.</summary>
         internal static UiWindowSkin BrightSkin => Load(ref s_brightSkin, "UI/BrightComponents/UiWindowSkin");
 
         static UiWindowSkin Load(ref UiWindowSkin? cache, string path)

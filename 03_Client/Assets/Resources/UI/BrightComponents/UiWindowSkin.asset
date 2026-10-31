@@ -16,9 +16,9 @@ MonoBehaviour:
   _headerPrefab: {fileID: 114000, guid: 6d91aa27942abc1f4314e281ac447e62, type: 3}
   _buttonPrefab: {fileID: 114001, guid: fc55fcb3181079fa0c155b50fa9d8af6, type: 3}
   _insetPrefab: {fileID: 114000, guid: b0ecbdf85e5539b9911d6dc760f79f92, type: 3}
-  _portraitPrefab: {fileID: 0}
-  _dialogPanel: {fileID: 0}
-  _emphasisPanel: {fileID: 0}
+  _portraitPrefab: {fileID: 114000, guid: c1dccd76328bd322bf35ae63a2d582e2, type: 3}
+  _dialogPanel: {fileID: 21300000, guid: 5685ac277531981b5554e3a74e56debe, type: 3}
+  _emphasisPanel: {fileID: 21300000, guid: 3e26a93b5ba3982f399c126a95bf553d, type: 3}
   _divider: {fileID: 21300000, guid: 397c7e470f14e2989cc3622e25f75e24, type: 3}
   _acceptNormal: {fileID: 21300000, guid: fdaa805e70f5533488dae81f7234282a, type: 3}
   _acceptStates:
@@ -26,12 +26,12 @@ MonoBehaviour:
     m_PressedSprite: {fileID: 21300000, guid: 819be5b406aaa976f19a17fb72ef6fae, type: 3}
     m_SelectedSprite: {fileID: 21300000, guid: b19f5a6d0300e566d0fffea8534ac8ca, type: 3}
     m_DisabledSprite: {fileID: 21300000, guid: d14f5c1a8a0197176bd076a96fb0009e, type: 3}
-  _declineNormal: {fileID: 0}
+  _declineNormal: {fileID: 21300000, guid: 56edcbfaf68f16d0dff50a7bb0e3a466, type: 3}
   _declineStates:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
+    m_HighlightedSprite: {fileID: 21300000, guid: 11e73ce64b7278c04e4b6a6eff7a7717, type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 470f3c0476ddfd928b5c9a879903f117, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: 11e73ce64b7278c04e4b6a6eff7a7717, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: 7d2ff4c8822f62b46b0e6d8fcf178640, type: 3}
   _itemSlotEmpty: {fileID: 21300000, guid: e702897eaffb5b94a75480e1d24d43b4, type: 3}
   _itemSlotFilled: {fileID: 21300000, guid: 74be0b4adcf9029de03d21c58f39d95d, type: 3}
   _itemSlotSelected: {fileID: 21300000, guid: d44be2e942c90002e105154dfa0f758a, type: 3}
