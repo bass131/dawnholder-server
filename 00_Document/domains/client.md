@@ -15,6 +15,8 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 [ClientConnectionLifetime](../../03_Client/Assets/Scripts/Network/ClientConnectionLifetime.cs)은 연결에 이름과 직업을 고정하고, handshake 성공 뒤 로그인 요청을 한 번, `Accepted` 뒤 직업 선택을 한 번 보낸다. `LoginResultHandler`가 받은 유효 거부(`InvalidName`·`AlreadyOnline`)는 원격 종료가 뒤따라도 세션 정리 전까지 메인 큐에서 적용하며, 소유자는 세대·동일 세션·로그인 요청 여부를 검사한다. `Accepted`·정의 밖 결과와 다른 패킷은 닫힌 전송에서 적용하지 않으며, 정의 밖 결과는 열린 현재 연결의 메인 스레드 gate를 통과했을 때 연결을 끊는다. 거부는 `LoginRejected` → [MainMenuNotice](../../03_Client/Assets/Scripts/UI/MainMenuNotice.cs) → 메인 메뉴의 오류 글자 순서로 전달한다. 메뉴 시작 때 안내를 소비한다. 이전 연결의 늦은 결과는 generation/구독 해제로 무효화한다.
 
+[MainMenuLoginView](../../03_Client/Assets/Scripts/UI/MainMenuLoginView.cs)는 `MainMenuController.Start`에서 만들어져 MainMenu 장면을 로그인 화면으로 배치한다. 장면 Canvas의 CanvasScaler를 실행 중 800×450 높이 맞춤으로 바꾸고, 장면의 `TITLE`을 위쪽에, 계정·서버 주소 입력칸과 시작·종료 버튼, 오류 글자를 밝은 스킨의 `LoginWindow` 안으로 옮긴다. 장면 파일과 컨트롤러의 직렬화 참조·버튼 onClick은 그대로다. view는 배치와 키 입력만 맡는다. 두 입력칸의 Enter는 같은 프레임의 두 번째 제출을 무시하고 시작 버튼과 같은 `MainMenuController.OnStartClicked`를 부르며, 계정 칸의 Tab은 서버 주소 칸을 선택한다(컨트롤러 `Update` → `HandleKeys`). 시작 판단은 `OnStartClicked`에 남는다.
+
 ## 파티 초대 요청과 구독
 
 [PartyInvitePopup](../../03_Client/Assets/Scripts/UI/PartyInvitePopup.cs)은 클릭음·버튼 의도·표시/숨김과 이벤트 구독을 맡고, [PartyInviteResponseCommand](../../03_Client/Assets/Scripts/UI/PartyInviteResponseCommand.cs)는 실행 시 현재 상태/세션 조회·응답 패킷 구성·SendIntent 호출·pending 소비를 맡는다. void SendIntent 정상 반환은 실제 송신 접수나 서버 가입 확정이 아니다. 요청 처리 중 예외가 나면 뒤의 pending 소비와 숨김을 진행하지 않으며 membership은 기존 서버 update로 갱신한다.
@@ -52,6 +54,14 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 StageClear 배너는 보상 표시를 덮지 않도록 숨긴다. 15번 뒤 39번이 오면 보상 창을 공개할 때 `StageClearUI.Hide`를 호출하고, 39번 뒤 15번이 오면 `StageClearUI.Show`가 같은 연결의 pending 보상을 확인해 숨긴 채 반환한다. `Hide`는 진행 중 fade를 먼저 멈춰 다음 프레임에 배너가 다시 나타나지 않게 한다. `StageClearHandler`의 `Show` 뒤 StageClear SFX 호출 경로는 남아 있으며 배너 숨김과 별개다. 이 코드 경로 확인은 실제 소리 청취나 709×399·802×451·1920×1080 화면에서의 겹침 검증을 대신하지 않는다.
 
 [DungeonEntranceLabel](../../03_Client/Assets/Scripts/UI/DungeonEntranceLabel.cs)은 같은 bootstrap에서 Town 씬의 기존 단일 `PortalTrigger` 위에 「던전 입구」를 붙인다. 포탈 collider의 위쪽에 여백을 둔 world-space TMP 글자이며 raycast를 받지 않는다. 포탈의 자식으로 씬과 함께 사라지고, HuntingGround·BossRoom에는 생성하지 않는다. 맵·포탈 표와 scene·prefab은 이 표시에 관여하지 않는다.
+
+## 길드 창 배치와 밝은 스킨
+
+[GuildUiController](../../03_Client/Assets/Scripts/UI/GuildUiController.cs)는 자기와 같은 부모(`CombatBootstrap`) 아래에 [GuildWindow](../../03_Client/Assets/Scripts/UI/GuildWindow.cs)와 [BlacksmithWindow](../../03_Client/Assets/Scripts/UI/BlacksmithWindow.cs)를 만든다. 두 창의 Canvas·배치·표시는 [GuildWindowLayout](../../03_Client/Assets/Scripts/UI/GuildWindowLayout.cs)이, 그림 조각은 `UiWindowAppearance.BrightSkin`이 맡는다. 크기는 Screen이 아니라 각 창 Canvas의 rect(CanvasScaler 결과)로 매 `LateUpdate`에 다시 계산한다.
+
+길드 창은 가로형이다. 혼자 열리면 HUD 왼쪽 위 `character_status`와 오른쪽 위 미니맵 사이의 가운데 칸에 놓인다. 이 칸은 16:9 화면에서 잰 두 HUD 위치로 정한 Canvas 비율이며 HUD 계층을 조회하지 않는다. [GuildHousingLayout](../../03_Client/Assets/Scripts/UI/GuildHousingLayout.cs)이 거점 그림을 제목 띠 바로 아래 안쪽 폭 전체에 1672:941 비율로 두고, 정보 줄을 그림 아래 두 열로, 레벨업·새로고침 버튼을 마지막 줄에 둔다. 거점 레벨 1·2의 정지 그림 선택 규칙은 그대로다.
+
+같은 부모의 대장간 창이 열려 있으면 길드 창만 왼쪽 기둥(Canvas 폭 2~40%, 아래에서 높이 2~82%)으로 비킨다. 이때 창은 통째로 줄지 않고 좁은 배치로 바뀐다. 글자는 대장간 창 글자와 같은 크기로 두고, 거점 그림 칸을 줄이며, 두 안내 문구는 각자 한 줄을 쓴다. 대장간 창이 닫히면 혼자일 때 자리와 크기로 돌아온다. 이 관찰은 `GuildWindow`가 하며, 대장간 창은 길드 창을 모르고 자기 자리·크기를 유지한다. 글자는 밝은 바탕에 진한 잉크, 안내 문구에 옅은 잉크, 어두운 제목 띠와 금고 띠에 금색, 버튼에 흰색이다. 행동 버튼(거점 레벨업·무기 강화)은 Accept, 닫기·새로고침은 Default 조각이다.
 
 ## 원격 보간
 
