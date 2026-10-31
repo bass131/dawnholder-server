@@ -76,8 +76,13 @@ namespace Dawnholder.Client.Tests
         // pr3-contract-facts-counts-41568d73-01 bright_top_level=26: every serialized UiWindowSkin field.
         const int SkinFieldCount = 26;
 
+        // The two HP bar pieces PR4 puts in the bright folder beside the approved table (main 「숨은 HUD A」
+        // msg_8a141e965681, folder test A msg_5b7564e860b7): bright-kit-v2/kit-spec.json rows Bar_Track :258 and
+        // Bar_Fill :288, imported from this folder by BrightRemainingScreensTests.cs :259. They are not Pieces rows.
+        static readonly string[] BarPieceNames = { "Bar_Fill", "Bar_Track" };
+
         // kit-spec sprites[] (PR2) plus the seven kit v2 rows: 32 names, 24 sliced and 8 simple (emit-pr3-tables-01
-        // section G), at the top of the bright folder.
+        // section G), at the top of the bright folder. PR4 adds the two BarPieceNames there, so the folder holds 34.
         [Test]
         public void BrightFolder_HoldsExactlyTheApprovedPngs()
         {
@@ -86,7 +91,8 @@ namespace Dawnholder.Client.Tests
                 ? Directory.GetFiles(ArtFolder, "*.png", SearchOption.TopDirectoryOnly)
                     .Select(Path.GetFileNameWithoutExtension).OrderBy(name => name, StringComparer.Ordinal).ToArray()
                 : Array.Empty<string>();
-            string[] expected = Pieces.Select(piece => piece.Name).OrderBy(name => name, StringComparer.Ordinal).ToArray();
+            string[] expected = Pieces.Select(piece => piece.Name).Concat(BarPieceNames)
+                .OrderBy(name => name, StringComparer.Ordinal).ToArray();
             TestContext.Out.WriteLine($"folder={ArtFolder} exists={folderExists} pngs={actual.Length} [{string.Join(",", actual)}]");
 
             Assert.AreEqual(32, Pieces.Length, "spec table: 32 bright pieces");
