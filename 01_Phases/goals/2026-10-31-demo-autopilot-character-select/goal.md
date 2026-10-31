@@ -4,12 +4,12 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR268 자동 진행기 구현자 계약을 신규 Codex Sol max(`[Content Sol]`)로 발행한다. 선행 시험(R1~R5)은 commit됐고 U1에서 새 API 부재로 컴파일이 실패했다(진행 기록 10-31 「자동 진행기 시험」). PR268 branch에는 PR-A와 최신 main을 합쳤다. 캐릭터 선택창(PR-A, PR #291)은 독립 검증을 통과해 병합 준비 보고를 올렸다. PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
+**다음 첫 일:** PR268 독립 검증자 계약을 신규 GPT-6-Astra xhigh(`[Content 검증자]`)로 발행한다. 검증은 Unity 창(U3·Player 빌드)과 창 8(DB 영속 서버 두 판)이다. 구현은 commit됐고 U2와 Legacy DEBUG 실주행 한 판을 통과했다(진행 기록 10-31 「자동 진행기 구현」). 창 8의 두 판 구성은 Core와 맞췄다. 캐릭터 선택창(PR-A, PR #291)은 main에 들어갔다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1을 메인이 원문과 대조해 승인했다(`msg_967d20c30e6d`, 메인 결정). 초안 원문은 `.backups/verification/2026-10-31-demo-autopilot-character-select/lead/scope-draft-v1.md`(sha256 `28fa67062d6395521aad8f8022e87387ca7a43dec18c101c3aed4f157756ed15`)다. |
-| branch | PR-A `feat/content-demo-character-select-20261031`(PR #291), base main `5bfda911a8ba97a8f9f82b75693dec3ebc59fb54`. PR268 `feat/demo-autoplay-20261028`, base main 그대로(메인 `msg_db6333b6b1c6`), content-active 로컬 이름 `content/demo-autoplay-20261028`. PR-A와 최신 main을 합쳐 그 위에 쌓는다. PR-C `fix/content-guild-entry-gold-overlap-20261031`(아직 없음), base main |
+| branch | PR-A `feat/content-demo-character-select-20261031`(PR #291), base main `5bfda911a8ba97a8f9f82b75693dec3ebc59fb54`, main 반영 commit `58c8d4cb9b8a34d66389d5573797e07564c6fa7a`. PR268 `feat/demo-autoplay-20261028`, base main 그대로(메인 `msg_db6333b6b1c6`), content-active 로컬 이름 `content/demo-autoplay-20261028`. PR-A와 최신 main을 합쳐 그 위에 쌓는다. PR-C `fix/content-guild-entry-gold-overlap-20261031`(아직 없음), base main |
 | 리드 | `[Content 리드 Opus]`(claude-opus-5-5 xhigh), Run `run_0a58bc3cfea0`, 회신 주소 `run:run_0a58bc3cfea0` |
 | 근거 폴더 | `.backups/verification/2026-10-31-demo-autopilot-character-select/` |
 
@@ -59,6 +59,18 @@
 - 적용: PR268 자동 진행기의 다음 선행 시험 작성자·구현자부터다. PR-A 작업자는 이미 Claude로 끝났다.
 - 빌드 입력 보충(메인 `msg_d0012352013c`, 16:48:55Z): 시연 빌드 입력에 「Art 인벤토리 격자 PR 병합」을 PR-A·PR268 병합과 함께 더한다. 빌드는 셋이 모두 main에 들어간 commit에서 만들고, 격자 PR이 늦으면 기다린다. Core는 리허설 착수 조건에 같은 항목을 더했다(Core `msg_4ea40b55db0c`).
 
+### 10-31 사용자 결정 97 A — msg_d783ac17eb63
+
+메인 `msg_d783ac17eb63`(2026-10-31T17:52:47Z)가 전달한 사용자 원문이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 97 - 인벤토리를 24칸(4×6)으로 늘릴지, 8칸(4×2)으로 둘지 → A 24칸으로 늘림
+
+- 앞선 원문: 「아니면 인벤토리 크기를 더 늘려도 돼, 내 생각에는 메이플스토리 인벤토리 크기 정도면 상관없어」.
+- 같은 메시지의 사용자 원문: 「병합 승인: PR291 head fb3d65b19cc253157edc361e0ac237221df32baf」 → 메인이 PR #291을 main `58c8d4cb`로 넣었다(17:51:49Z).
+- 메인 지시: 시연 빌드 입력에 「Core 인벤토리 24칸 PR 병합」을 더한다. 빌드는 PR268·Art 격자 PR·Core 24칸 PR이 모두 main에 들어간 commit에서 만든다. 창 6은 그대로 가고, PR268 branch에 main(`58c8d4cb`)을 합치는 일은 창 6 뒤·구현 commit 전에 한다.
+- 메인 결정(메인 화면 18:04Z, 사용자 결정 아님): 클라 받는 쪽(패킷 읽기·공유 DLL)은 Core, 화면 격자는 Art가 맡는다. 병합은 Art 격자 PR 다음 Core 24칸 PR이다. Core 24칸은 프로토콜 버전을 22에서 23으로 올리므로 그 전 클라 빌드는 새 서버에 붙지 못한다.
+- Content 조율(Core `msg_50bf844d60ce` → 리드 `msg_6e1243c63eb4` → Core `msg_a6e92219cbe1`): Content가 고칠 클라 파일은 없다. 인벤토리 wire 시험 도구(`InventoryClientTestSupport`·`InventoryClientContractTests`)는 Core 24칸 PR이 고친다. 창 8은 Core 24칸 병합 전에 v22로 돈다.
+
 ### 운영 방식(진입 메시지의 메인 결정)
 
 - 병합은 PR마다 사용자 명시 승인으로 메인만 한다. 병합 준비 보고에는 head 40자, 판정 원문 경로·sha256, CI를 넣는다.
@@ -81,7 +93,7 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 - **PR-A 캐릭터 선택창(85 A, 강):** 오른쪽 설명 상자(설명 배경·선택 제목·설명 글)를 없애고 세 칸을 패널 안쪽 폭 전체로 넓힌다. 차 있는 칸을 누르면 선택되고 「선택하고 입장」이 켜진다. 빈 칸을 누르면 칸 줄 대신 생성 화면(이름 칸·이름 규칙·Knight/Mage 그림 버튼·「캐릭터 생성」·「취소」)이 열린다. BACKLOG `character-menu-selecting-detail-text`를 흡수해 닫는다. `domains/client.md`에 캐릭터 선택 화면 절을 더한다.
 - **PR268 자동 진행기(82 B·83 A, 강):** 최신 main과 PR-A를 합치고 캐릭터 메뉴 단계를 더한다. 같은 직업 캐릭터가 있으면 그 칸을 선택해 입장하고, 없으면 첫 빈 칸에 `-demo-character` 이름으로 만든 뒤 다시 골라 입장한다. 만들 수 없으면(이름 인자 없음, 빈 칸 없음, 생성 거절) 다시 시도하지 않고 멈춘다. 한 실행의 생성 요청은 최대 1번이다. Legacy 경로는 그대로 Knight/Mage 버튼이다. 칸 상태는 `CharacterSelectController`의 읽기 전용 통로 하나로 읽는다. 단계 로그에 캐릭터 단계를 더한다.
 - **PR-C 길드 입구(74 A, 약):** NPC 대화·던전 보상 창이 떠 있는 동안 「길드 · G」 입구를 숨긴다(그때 입구는 이미 눌리지 않는다). 창이 닫히면 원래 자리에 다시 보인다.
-- **녹화용 빌드 계약:** Core 리드와 고정 head·Unity 버전과 hash·빌드 경로·exe와 `_Data` sha256·두 클라 실행 명령·로그·빌드 부작용 복원을 이 goal의 계약 절로 맞춘다. 빌드 입력은 PR-A·PR268·Art 인벤토리 격자 PR 병합이다(`msg_d0012352013c`). 빌드 스크립트는 근거 폴더 실행 파일로 둔다.
+- **녹화용 빌드 계약:** Core 리드와 고정 head·Unity 버전과 hash·빌드 경로·exe와 `_Data` sha256·두 클라 실행 명령·로그·빌드 부작용 복원을 이 goal의 계약 절로 맞춘다. 빌드 입력은 PR-A·PR268·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR 병합이다(`msg_d0012352013c`·`msg_d783ac17eb63`). 빌드 스크립트는 근거 폴더 실행 파일로 둔다.
 - **Art PR4 사후 확인:** PR4 head가 오면 main + PR4 트리에서 Content 일시정지 메뉴 좌표·입력 시험의 이름 단위 결과와 `UI.unity` diff를 본다. PR은 없다.
 
 ### 건드릴 곳
@@ -118,7 +130,7 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 | PR-C | C1 | NPC 대화 창 때문에 Gold 칸이 오른쪽 끝으로 옮겨진 동안 입구가 Gold 칸과 화면 사각형으로 겹치지 않는다(1280×720·1920×1080). |
 | PR-C | C2 | 던전 보상 창 경우도 같은 기준이다. |
 | PR-C | C3 | 두 창이 닫히면 입구가 원래 자리에 보이고 눌린다. 기존 Gold·HUD 시험은 그대로 통과한다. |
-| 빌드 | D1 | Core에 고정 head·Unity hash·빌드 경로·exe와 `_Data` sha256·두 클라 실행 명령·로그 경로를 넘긴다. 빌드는 PR-A·PR268·Art 인벤토리 격자 PR이 모두 main에 들어간 commit에서 만들고, 격자 PR이 늦으면 기다린다(`msg_d0012352013c`). 리허설 빌드 뒤 병합이 더 있으면 시연 빌드는 마지막 병합 뒤 고정 head로 다시 만든다. |
+| 빌드 | D1 | Core에 고정 head·Unity hash·빌드 경로·exe와 `_Data` sha256·두 클라 실행 명령·로그 경로를 넘긴다. 빌드는 PR-A·PR268·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR이 모두 main에 들어간 commit에서 만들고, 격자·24칸 PR이 늦으면 기다린다(`msg_d0012352013c`·`msg_d783ac17eb63`). 리허설 빌드 뒤 병합이 더 있으면 시연 빌드는 마지막 병합 뒤 고정 head로 다시 만든다. |
 
 ### 검증 등급
 
@@ -130,7 +142,7 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 ## PR 경계와 순서
 
 1. PR-A(새 PR): 이 goal 문서 + 85 A. base main.
-2. PR268(기존 PR): PR-A 위에 쌓는다. PR-A 병합 전에는 base를 PR-A branch로 둔다. 병합 순서는 PR-A → PR268이다.
+2. PR268(기존 PR): PR-A 위에 쌓는다. base는 main 그대로다(메인 `msg_db6333b6b1c6`, 「10-31 범위 초안 v1 처분」 2항). 병합 순서는 PR-A → PR268이다. PR-A는 main에 들어갔다(`58c8d4cb`).
 3. PR-C(새 PR): base main, 독립. 사용자 결정 90 답 뒤 착수.
 4. 종료 기록 PR: Gardener 뒤.
 
@@ -141,10 +153,10 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 - [x] 캐릭터 선택창 구현
 - [x] 캐릭터 선택창 검증
 - [x] 자동 진행기 시험
-- [ ] 자동 진행기 구현
-- [ ] DB 서버 실주행 검증
+- [x] 자동 진행기 구현
+- [>] DB 서버 실주행 검증
 - [ ] 길드 입구 겹침(리셋 뒤)
-- [>] 선택창 PR 병합
+- [x] 선택창 PR 병합
 - [ ] PR268 병합
 - [ ] 녹화용 빌드 전달
 - [ ] 종료 기록
@@ -180,3 +192,10 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - U1(창 5, `pr268-red-01/u1/`, 17:23:27Z~17:24:18Z): EditMode 한 번, Unity exit 1, 결과 XML 없음. 고유 진단 32개(로그 96회, 각 3회)가 모두 부재 이름(`Character` CS1061 3, `DemoCharacterMenuStep` CS0246 10, `DemoCharacterMenuOutcome` CS0103 19)이고 그 밖의 오류는 0이다(리드가 로그에서 다시 셈). PlayMode는 같은 컴파일에 막혀 돌리지 않았다.
   - 시험 불가 요구: `CharacterSelectController.MenuState`는 실제 메뉴 접속이 있어야 null이 아니고 PlayMode 어셈블리는 internal을 보지 못한다. 대체 실측은 창 6 Legacy DEBUG 서버 실주행(Legacy 경로)과 창 8 DB 영속 서버 실주행(메뉴 경로), 독립 검증자의 코드 실사다.
   - 생존 신호: 17:18:37Z→17:23:44Z 구간이 307초로 300초를 7초 넘었다(U1 시작 준비 중). 작성자가 보고에 남겼다.
+- 2026-10-31 자동 진행기 구현(GREEN): 구현자 `[Content Sol]`(신규 Codex `gpt-6.1-sol` max, 첫 화면 「GPT-6.1-Sol max」) task_8f6b53867201 / ctx_7a13fa46a5dd, 계약 `lead/pr268-impl-contract-v1.md`(sha256 `ceb7bda4b7432d6fcbb0f3fde0bdebcd50fbbf11a400fa4596652810814a1713`), 보고 `pr268-impl-01/report.md`(sha256 `806f21ee8e58a9c9b5b65ce18fed58f181a72e88f7b7ca4723d1e58fb7f17206`), worker_done `msg_7d2b8008e7d9` succeeded, 정산 18:19Z(release retained·external_terminal, pane 닫음).
+  - 제품: `DemoLaunchOptions.Character`, 새 `Demo/DemoCharacterMenuStep.cs`(114줄, `.meta` GUID 저장소 안 하나), `CharacterSelectController.MenuState`, `DemoAutopilot.EnterGame` 연결, `domains/client.md` 한 문단. 선행 시험 두 파일은 바꾸지 않았다.
+  - U2(창 6, `pr268-impl-01/u2/`): EditMode 1745/1745, PlayMode 263 중 217 통과·실패 0·skipped 46. U3 기준 이름의 결과 변화 0·제거 0이다. 새 skipped 3은 Art 캡처 시험(`DAWNHOLDER_UI_CAPTURE_DIR` 미지정)이다. 리드가 결과 XML에서 새 시험 20건(메뉴 단계 11·옵션 9) 전부 Passed를 다시 셌다.
+  - Win64 빌드 exit 0(545.9초), exe sha256 `91a36fa14dd3ccf390b99720805eda0553da1ca1108381b49c98c938f69dc256`(리드 재계산 일치). Legacy DEBUG 서버 + 두 클라 한 판(`run-01/`): 기사·마법사 모두 `[Demo] step 12 done`(18:08:13Z·18:08:17Z), 경로는 Legacy(`class` 로그)다. F9 금고 보충 분기는 이번 판에서 실행되지 않아 통과로 세지 않는다.
+  - 창 6(17:44:00Z~): 구현자 반환 관측 18:09:21Z, 리드 재확인 18:11:28Z 모두 Unity·Windows dotnet·Player·7777 0. Unity 생성 drift 5경로는 patch를 `lead/window6-drift/`에 남기고 리드가 18:11:10Z에 복원했다. 창 끝 `msg_de18b6fadc9c`.
+  - 그 뒤: PR268 branch에 main `58c8d4cb`를 합쳤다(`89646e4f`, 트리 변화 0). 구현 commit `585486f5`.
+  - 창 8 구성(Core `msg_a6e92219cbe1`): 1판 새 계정으로 생성 경로 → 서버 Enter 정지·같은 창 재시작 → 2판 같은 계정으로 선택 경로. Core는 재시작 시간, 정지 요약 두 줄, 2판 목록 캐릭터가 1판과 같은지를 본다. 원시는 Content 근거에 남기고 경로만 Core에 넘긴다. B5 이름은 계정 `v268_knight1101`·`v268_mage1101`, 캐릭터 `V268Knight`·`V268Mage`다(Core 확인).
