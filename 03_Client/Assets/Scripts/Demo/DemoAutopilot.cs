@@ -37,6 +37,7 @@ namespace Dawnholder.Client.Demo
         DemoLaunchOptions _options = null!;
         DemoKeyboard _keys = null!;
         int _step;
+        bool _stopped;
         LocalPlayerMovement? _me;
         float _progressX = float.NaN;
         float _progressCheckedAt;
@@ -96,6 +97,7 @@ namespace Dawnholder.Client.Demo
         {
             Log("start", $"role={_options.Role} account={_options.Account}");
             yield return EnterGame();
+            if (_stopped) yield break;
             yield return FormParty();
             yield return TravelThroughPortal(TownPortalX, "HuntingGround");
             yield return HuntThenUnlockBoss();
@@ -123,9 +125,59 @@ namespace Dawnholder.Client.Demo
             yield return WaitFor(() => SceneIs("CharacterSelect") && FindFirstObjectByType<CharacterSelectController>() != null, 20f, "character select");
             yield return new WaitForSeconds(1f);
             CharacterSelectController? select = FindFirstObjectByType<CharacterSelectController>();
-            if (_options.Role == DemoRole.Knight) select?.OnKnightClicked();
-            else select?.OnMageClicked();
-            Log("class", _options.Role.ToString());
+            if (select == null)
+            {
+                StopDemo("CharacterSelect controller missing.");
+                yield break;
+            }
+
+            var menu = new DemoCharacterMenuStep(_options.Role, _options.Character);
+            bool listLogged = false;
+            bool createLogged = false;
+            DemoCharacterMenuOutcome outcome = DemoCharacterMenuOutcome.Waiting;
+            yield return WaitFor(() =>
+            {
+                if (select == null)
+                {
+                    StopDemo("CharacterSelect controller closed before a character was selected.");
+                    return true;
+                }
+                CharacterMenuViewState? state = select.MenuState;
+                if (!listLogged && state?.CurrentPhase == CharacterMenuViewState.Phase.Ready)
+                {
+                    Log("character list", string.Empty);
+                    listLogged = true;
+                }
+                outcome = menu.Advance(state, select.transform.Find("CharacterMenu/Panel"));
+                if (outcome == DemoCharacterMenuOutcome.Creating && !createLogged)
+                {
+                    Log("character create", _options.Character ?? string.Empty);
+                    createLogged = true;
+                }
+                return outcome == DemoCharacterMenuOutcome.Legacy ||
+                    outcome == DemoCharacterMenuOutcome.Selecting || outcome == DemoCharacterMenuOutcome.Stopped;
+            }, 30f, "character menu");
+            if (_stopped) yield break;
+            if (outcome == DemoCharacterMenuOutcome.Stopped)
+            {
+                StopDemo(menu.StopReason);
+                yield break;
+            }
+            if (outcome == DemoCharacterMenuOutcome.Legacy)
+            {
+                if (_options.Role == DemoRole.Knight) select.OnKnightClicked();
+                else select.OnMageClicked();
+                Log("class", _options.Role.ToString());
+            }
+            else if (outcome == DemoCharacterMenuOutcome.Selecting)
+            {
+                Log("character select", $"slot={menu.SelectedSlot}");
+            }
+            else
+            {
+                StopDemo("Character menu timed out before selection.");
+                yield break;
+            }
 
             yield return WaitUntilPlayable("Town");
             Log("town", string.Empty);
@@ -448,6 +500,13 @@ namespace Dawnholder.Client.Demo
         {
             _step++;
             Debug.Log($"[Demo] step {_step} {step} t={Time.realtimeSinceStartup:F1} utc={DateTime.UtcNow:HH:mm:ss.f} {detail}");
+        }
+
+        void StopDemo(string reason)
+        {
+            _stopped = true;
+            _keys.ReleaseAll();
+            Debug.LogWarning($"[Demo] stopped: {reason}");
         }
     }
 }

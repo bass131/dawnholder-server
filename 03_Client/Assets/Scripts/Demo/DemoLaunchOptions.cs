@@ -12,7 +12,7 @@ namespace Dawnholder.Client.Demo
 
     // Command-line switch for the scripted demo run (user decision 21A, 10-28: record a two-client play
     // without human input). A player launched without -demo-role behaves exactly like the shipped build.
-    //   Dawnholder.exe -demo-role knight -demo-account demo_knight
+    //   Dawnholder.exe -demo-role knight -demo-account demo_knight -demo-character DemoKnight
     // -demo-mute silences one of the two players so the recording has a single copy of the game sound;
     // -demo-no-bgm keeps only effects on the recorded player.
     // -demo-zoom 1.4 draws the camera closer for trailer takes; a value outside 1..3 leaves the camera as is.
@@ -22,14 +22,16 @@ namespace Dawnholder.Client.Demo
 
         public DemoRole Role { get; }
         public string Account { get; }
+        public string? Character { get; }
         public bool Muted { get; }
         public bool NoMusic { get; }
         public float CameraZoom { get; }
 
-        DemoLaunchOptions(DemoRole role, string account, bool muted, bool noMusic, float cameraZoom)
+        DemoLaunchOptions(DemoRole role, string account, string? character, bool muted, bool noMusic, float cameraZoom)
         {
             Role = role;
             Account = account;
+            Character = character;
             Muted = muted;
             NoMusic = noMusic;
             CameraZoom = cameraZoom;
@@ -46,7 +48,8 @@ namespace Dawnholder.Client.Demo
             else return null;
 
             string account = ValueAfter(args, "-demo-account") ?? (parsed == DemoRole.Knight ? "demo_knight" : "demo_mage");
-            return new DemoLaunchOptions(parsed, account, HasFlag(args, "-demo-mute"), HasFlag(args, "-demo-no-bgm"),
+            return new DemoLaunchOptions(parsed, account, ValueAfter(args, "-demo-character"),
+                HasFlag(args, "-demo-mute"), HasFlag(args, "-demo-no-bgm"),
                 CameraZoomFrom(ValueAfter(args, "-demo-zoom")));
         }
 
