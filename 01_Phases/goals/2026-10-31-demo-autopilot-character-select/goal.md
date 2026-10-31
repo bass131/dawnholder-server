@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 캐릭터 선택창(PR-A) 독립 검증자 계약을 발행한다. 구현은 commit됐고 U2에서 EditMode·PlayMode 실패 0이다(진행 기록 10-31 「캐릭터 선택창 구현」). A8 캡처의 Art 외관 의견도 검증과 함께 받는다. PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
+**다음 첫 일:** PR268 자동 진행기의 선행 시험 작성자 계약을 신규 Codex Sol max(`[Content Sol]`)로 발행한다. 그 전에 PR268 branch에 PR-A branch를 합쳐 fast-forward로만 민다. 캐릭터 선택창(PR-A)은 독립 검증을 통과했고(차단 결함 0) PR과 병합 준비 보고를 올렸다(진행 기록 10-31 「캐릭터 선택창 검증」). PR268 base 변경은 리드 명령이 자동 권한 판정에 막혀 메인에 요청했다. PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
 
 | 항목 | 현재 |
 |---|---|
@@ -47,11 +47,23 @@
 - 이 goal에서의 뜻(메인 지시): PR-A → PR268 → 녹화용 빌드 계약까지 진행한다. PR-C(74 A)와 Art PR4 사후 확인은 리셋 뒤 메인이 다시 열 때까지 착수하지 않는다. 범위 초안 v1은 그대로다.
 - 사용량이 리셋 전에 바닥나면 리드·구현자가 함께 멈춘다. 단계 끝마다 이 재개 지점을 고치고 작업자 계약·근거 경로를 파일로 남긴다. 턴을 아끼고 작업자 계약에도 같은 원칙을 적는다.
 
+### 10-31 작업자 Codex 전환 — msg_374115bbd7af
+
+메인 `msg_374115bbd7af`(2026-10-31T16:46:14Z)가 전달한 사용자 원문이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+> 그러면 작업자를 Codex로 바꿔줘, 이번에 사용한도 다시 2배 되었거든
+
+- 같은 메시지로 온 바로 앞 원문: 「대시보드 결정 응답: 1) 92 - 인벤토리 4칸 격자 개편을 리셋 뒤에 할지, 지금 녹화 준비와 함께 할지 → B 지금 함께 · 2) 93 - 아이콘만 남은 칸에서 아이템을 어떻게 쓸지(지금은 줄마다 「사용」 버튼) → A 우클릭으로 사용」. 92 B로 Art가 인벤토리 4열 격자를 녹화 준비와 함께 만든다.
+- 메인 해석(사용자 결정 아님): 「작업자」는 구현자와 선행 시험 작성자다. 둘은 신규 `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode`, 태그 `[Content Sol]`이다. 같은 계약에서 Sol 구현이 두 번째 독립 불합격을 받으면 다음 시도는 신규 `gpt-6-astra` xhigh `[Content 구현 Astra]`다. 리드(Claude Opus)와 독립 검증자(신규 GPT-6-Astra xhigh)는 그대로다.
+- 첫 화면에 지정 모델·max가 없으면 대체하지 않고 메인에 보고한다. 업데이트 창이 뜨면 Esc로 넘긴다. 실행 중인 작업자의 모델은 바꾸지 않는다.
+- 적용: PR268 자동 진행기의 다음 선행 시험 작성자·구현자부터다. PR-A 작업자는 이미 Claude로 끝났다.
+- 빌드 입력 보충(메인 `msg_d0012352013c`, 16:48:55Z): 시연 빌드 입력에 「Art 인벤토리 격자 PR 병합」을 PR-A·PR268 병합과 함께 더한다. 빌드는 셋이 모두 main에 들어간 commit에서 만들고, 격자 PR이 늦으면 기다린다. Core는 리허설 착수 조건에 같은 항목을 더했다(Core `msg_4ea40b55db0c`).
+
 ### 운영 방식(진입 메시지의 메인 결정)
 
 - 병합은 PR마다 사용자 명시 승인으로 메인만 한다. 병합 준비 보고에는 head 40자, 판정 원문 경로·sha256, CI를 넣는다.
 - Unity는 한 번에 하나다. 창마다 메인에 「무엇·예상 시간·관문 측정 출력 경로」 세 줄로 청한다. 관문(물리·commit 여유 각 4 GiB, Unity·Windows dotnet 0, WSL 서버를 함께 쓰면 물리 6 GiB)은 매번 저장 스크립트 `scripts/measure-gate.ps1`로 잰다.
-- 선행 시험 작성자·구현자는 신규 claude-opus-5-5 xhigh, 독립 검증은 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다. 정본 TDD(선행 시험 → 구현 → 검증)이며 결정 34 A의 경량 경로는 넓히지 않는다.
+- 선행 시험 작성자·구현자는 PR-A까지 신규 claude-opus-5-5 xhigh였고, PR268부터 위 「작업자 Codex 전환」을 따른다. 독립 검증은 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다. 정본 TDD(선행 시험 → 구현 → 검증)이며 결정 34 A의 경량 경로는 넓히지 않는다.
 - 질문으로 멈추지 않고 되돌리기 쉬운 쪽으로 진행해 보고에 적는다. 사용자 손이 필요한 일은 메인에 모은다. 근거 값은 저장 스크립트 출력에서만 옮긴다.
 
 ## 요구 원천
@@ -69,7 +81,7 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 - **PR-A 캐릭터 선택창(85 A, 강):** 오른쪽 설명 상자(설명 배경·선택 제목·설명 글)를 없애고 세 칸을 패널 안쪽 폭 전체로 넓힌다. 차 있는 칸을 누르면 선택되고 「선택하고 입장」이 켜진다. 빈 칸을 누르면 칸 줄 대신 생성 화면(이름 칸·이름 규칙·Knight/Mage 그림 버튼·「캐릭터 생성」·「취소」)이 열린다. BACKLOG `character-menu-selecting-detail-text`를 흡수해 닫는다. `domains/client.md`에 캐릭터 선택 화면 절을 더한다.
 - **PR268 자동 진행기(82 B·83 A, 강):** 최신 main과 PR-A를 합치고 캐릭터 메뉴 단계를 더한다. 같은 직업 캐릭터가 있으면 그 칸을 선택해 입장하고, 없으면 첫 빈 칸에 `-demo-character` 이름으로 만든 뒤 다시 골라 입장한다. 만들 수 없으면(이름 인자 없음, 빈 칸 없음, 생성 거절) 다시 시도하지 않고 멈춘다. 한 실행의 생성 요청은 최대 1번이다. Legacy 경로는 그대로 Knight/Mage 버튼이다. 칸 상태는 `CharacterSelectController`의 읽기 전용 통로 하나로 읽는다. 단계 로그에 캐릭터 단계를 더한다.
 - **PR-C 길드 입구(74 A, 약):** NPC 대화·던전 보상 창이 떠 있는 동안 「길드 · G」 입구를 숨긴다(그때 입구는 이미 눌리지 않는다). 창이 닫히면 원래 자리에 다시 보인다.
-- **녹화용 빌드 계약:** Core 리드와 고정 head·Unity 버전과 hash·빌드 경로·exe와 `_Data` sha256·두 클라 실행 명령·로그·빌드 부작용 복원을 이 goal의 계약 절로 맞춘다. 빌드 스크립트는 근거 폴더 실행 파일로 둔다.
+- **녹화용 빌드 계약:** Core 리드와 고정 head·Unity 버전과 hash·빌드 경로·exe와 `_Data` sha256·두 클라 실행 명령·로그·빌드 부작용 복원을 이 goal의 계약 절로 맞춘다. 빌드 입력은 PR-A·PR268·Art 인벤토리 격자 PR 병합이다(`msg_d0012352013c`). 빌드 스크립트는 근거 폴더 실행 파일로 둔다.
 - **Art PR4 사후 확인:** PR4 head가 오면 main + PR4 트리에서 Content 일시정지 메뉴 좌표·입력 시험의 이름 단위 결과와 `UI.unity` diff를 본다. PR은 없다.
 
 ### 건드릴 곳
@@ -106,7 +118,7 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 | PR-C | C1 | NPC 대화 창 때문에 Gold 칸이 오른쪽 끝으로 옮겨진 동안 입구가 Gold 칸과 화면 사각형으로 겹치지 않는다(1280×720·1920×1080). |
 | PR-C | C2 | 던전 보상 창 경우도 같은 기준이다. |
 | PR-C | C3 | 두 창이 닫히면 입구가 원래 자리에 보이고 눌린다. 기존 Gold·HUD 시험은 그대로 통과한다. |
-| 빌드 | D1 | Core에 고정 head·Unity hash·빌드 경로·exe와 `_Data` sha256·두 클라 실행 명령·로그 경로를 넘긴다. 리허설 빌드는 PR268 병합 뒤 main, 시연 빌드는 마지막 병합 뒤 고정 head로 다시 만든다. |
+| 빌드 | D1 | Core에 고정 head·Unity hash·빌드 경로·exe와 `_Data` sha256·두 클라 실행 명령·로그 경로를 넘긴다. 빌드는 PR-A·PR268·Art 인벤토리 격자 PR이 모두 main에 들어간 commit에서 만들고, 격자 PR이 늦으면 기다린다(`msg_d0012352013c`). 리허설 빌드 뒤 병합이 더 있으면 시연 빌드는 마지막 병합 뒤 고정 head로 다시 만든다. |
 
 ### 검증 등급
 
@@ -127,12 +139,12 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 - [x] 범위 승인
 - [x] 캐릭터 선택창 시험
 - [x] 캐릭터 선택창 구현
-- [>] 캐릭터 선택창 검증
+- [x] 캐릭터 선택창 검증
 - [ ] 자동 진행기 시험
 - [ ] 자동 진행기 구현
 - [ ] DB 서버 실주행 검증
 - [ ] 길드 입구 겹침(리셋 뒤)
-- [ ] 선택창 PR 병합
+- [>] 선택창 PR 병합
 - [ ] PR268 병합
 - [ ] 녹화용 빌드 전달
 - [ ] 종료 기록
@@ -153,3 +165,10 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - U2(창 3, `pr-a-impl-01/u2/`, 한 번): EditMode 1707/1707, PlayMode 259 중 216 통과·실패 0·skipped 43(U1과 같은 이름). U1 실패 49건이 모두 통과로 바뀌었고 통과에서 바뀐 시험은 0이다(리드가 결과 XML로 재집계).
   - 구현자가 남긴 비차단 관찰: `Cancel`이 `Result` 글도 지운다. 생성 화면에 어느 칸을 만드는지 보이는 제목이 없다. 생성 화면이 열린 동안 칸 클릭 guard를 직접 겨냥한 시험은 없다. 보고 1절의 diff 줄 수(120+)는 실제 122+와 다르다.
   - BACKLOG: 이 goal로 승격된 세 행(`character-select-three-wide-slots`·`demo-autoplay-character-menu`·`demo-recording-build-contract`)에 goal 링크를 달고, `character-menu-selecting-detail-text`는 흡수 폐기했다.
+- 2026-10-31 캐릭터 선택창 검증: 검증자 `[Content 검증자]`(신규 GPT-6-Astra xhigh) task_8a5535cbf971 / ctx_eaf67d259cea, 계약 `lead/pr-a-verify-contract-v1.md`(sha256 `0a7b2edbf4ecbf5b6dcb82746c4175e60723a0f9075d809a9477e109d94c1aaf`), 판정 `pr-a-verify-01/verdict.md`(sha256 `92c1340d7fd21931acc868a6e6a532117957b6431fda54d097ff8838d938bb94`), worker_done `msg_678676dce5dc`, 정산 16:59Z(pane close·release retained).
+  - 판정: 통과, 차단 결함 0. A1~A8 통과. A7은 `EntryWirePeer` 대역으로만 지났고 실제 GameServer·DB 화면은 PR268 DB 실주행까지 미관측이다.
+  - U3(창 4, `pr-a-verify-01/u3/`): EditMode 1715/1715, PlayMode 259 중 216 통과·실패 0·skipped 43, 둘 다 exit 0. U2→U3에서 결과가 바뀐 기존 시험은 0이다.
+  - 판정 시험 `Tests/EditMode/CharacterSelectWideVerifyInteractionTests.cs`(8 cases)와 `.meta`를 이 PR에 남긴다. 생성 화면이 열린 동안 숨은 칸·`Submit` 클릭 guard를 직접 겨냥한 시험이 그 전까지 없었다(판정 O5).
+  - 정정 기록(비차단 D1·D2, 원문 보고는 그대로 둔다): 구현 보고의 diff 줄 수 120+는 실제 122+/65−다(`git show --numstat 03b2b189`). RED 보고의 T7 분류 (a) 19·(c) 4는 실제 (a) 20·(c) 3이다(`t7-table-v1.md` 23행, 리드가 다시 셈).
+  - 설계 관찰 O1~O4는 막지 않는다. `Cancel`이 `Result`도 지우는 동작(O1)은 유지한다. A8 Art 의견 `msg_7f9778ed1c3d`(저장본 sha256 `2be227f1c5ecd477ffb7d8bf6685c22dfe3458f09047b2310c2d9b922a826c11`)는 막을 것이 없었고, 권고 셋은 이 PR에 넣지 않고 종료 기록의 다음 후보로 넘긴다. 셋은 생성 화면 안내 줄 「슬롯 N에 새 캐릭터 만들기」, 고른 직업 버튼 강조와 그림 위치, 칸 그림 1.3배다.
+  - PR268 base: 리드의 `gh pr edit 268 --base feat/content-demo-character-select-20261031`은 PR-A push(17:00:43Z) 직후 자동 권한 판정에 막혔다. 다시 시도하지 않고 메인에 요청했다. PR268 base는 아직 main이다.
