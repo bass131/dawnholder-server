@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 캐릭터 선택창(PR-A) 선행 시험 계약을 발행하고, Art PR4 캡처 창(15:13:30Z까지)이 끝난 뒤 첫 Unity 창(기준 실행 + 새 시험 실패 확인)을 메인에 청한다. PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
+**다음 첫 일:** 캐릭터 선택창(PR-A) 구현 계약을 발행한다. 선행 시험(RED)은 commit됐고, 기준은 진행 기록 10-31 「캐릭터 선택창 시험」 항목이다. PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
 
 | 항목 | 현재 |
 |---|---|
@@ -74,7 +74,7 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 
 ### 건드릴 곳
 
-- PR-A: `03_Client/Assets/Scripts/UI/CharacterMenuView.cs`, 캐릭터 메뉴 시험(`CharacterMenuViewTests`·`CharacterMenuViewAppearanceTests`·`CharacterMenuViewCaptureTests`·`BrightWindowInteractionTests`의 캐릭터 메뉴 부분·`CharacterMenuMotionSceneTests`), `domains/client.md`, BACKLOG 한 행, CURRENT 한 줄, 이 goal.
+- PR-A: `03_Client/Assets/Scripts/UI/CharacterMenuView.cs`, 캐릭터 메뉴 시험(`CharacterMenuViewTests`·`CharacterMenuViewAppearanceTests`·`CharacterMenuViewCaptureTests`·`BrightWindowInteractionTests`의 캐릭터 메뉴 부분·`CharacterMenuMotionSceneTests`), `CharacterMenuBoundaryTests`·`CharacterMenuPresenterTests`(T7 19~23행, 메인 `msg_e6ef913df2cd`로 추가), 새 시험 `CharacterSelectWide*`, `domains/client.md`, BACKLOG 한 행, CURRENT 한 줄, 이 goal.
 - PR268: `03_Client/Assets/Scripts/Demo/`, `CharacterSelectController.cs`(읽기 전용 통로 하나), EditMode 시험, `domains/client.md` 한 문단, PR268 본문.
 - PR-C: `GuildUiController.cs`(입구 표시 한 곳), PlayMode 시험 하나, `domains/client.md` 한 줄, BACKLOG 한 행.
 
@@ -125,8 +125,8 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 ## 진척 단계
 
 - [x] 범위 승인
-- [>] 캐릭터 선택창 시험
-- [ ] 캐릭터 선택창 구현
+- [x] 캐릭터 선택창 시험
+- [>] 캐릭터 선택창 구현
 - [ ] 캐릭터 선택창 검증
 - [ ] 자동 진행기 시험
 - [ ] 자동 진행기 구현
@@ -140,3 +140,10 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 ## 진행 기록
 
 - 2026-10-31 진입: 메인 `msg_f6f3c9b1a51e`. Run `run_0a58bc3cfea0`(receipt `lead/run-create-01.json`), READY `msg_0d3cf8e912e2`, 범위 초안 v1 `msg_6aac15fe228e`, 승인 `msg_967d20c30e6d`.
+- 2026-10-31 캐릭터 선택창 시험(RED): 작성자 `[Content 구현 Opus]` task_a1373aa975b2 / ctx_7483fcc14f3b, 계약 v2 `lead/pr-a-red-contract-v2.md`(sha256 `f7951db199f878cec2fe5f4c01eb8c1131cd776895607c60f5366fce3861a141`), 보고 `pr-a-red-01/report.md`(sha256 `c16b7d2f6c111e3333d3b871b3138ff5baf5fd98886e06880c5077ac0e4cec22`), worker_done `msg_70dd260bdcd2` succeeded, 정산 15:44Z(release·pane close).
+  - T7: 기존 시험 충돌 23행 표(`pr-a-red-01/t7/t7-table-v1.md`) → 메인 `msg_e6ef913df2cd`가 23행 전부 승인, 15행은 「설명 상자 없음」 한 단정·이름 유지. 쓰기 범위를 넓히려 계약을 v1에서 v2로 올렸다.
+  - 기준 U0(창 1, `baseline-01/`): EditMode 1694/1694, PlayMode 258 중 215 통과·43 Ignored·실패 0.
+  - U1(창 2, `pr-a-red-01/u1b/`): EditMode 1707 중 48 실패, PlayMode 259 중 1 실패·43 skipped. 새 시험 14건 중 12건 실패, 보존 단정 2건(T3 OccupiedSlot·T5) 통과. 같은 이름 기존 시험의 Passed→Failed 35건과 새 이름 2건은 모두 승인된 다섯 파일 안이며 승인 밖 새 실패는 0이다(리드가 결과 XML로 재집계).
+  - 구현자에게 넘길 관측: 지금 칸 span은 header 720 중 320(44.4%)이다. 100폭 칸에서 12자 이름의 선택 칸 글이 넘친다. T6 대역 흐름은 생성 뒤 목록 응답을 보내지 않는다(Presenter가 생성 성공만으로 칸을 채움).
+  - 첫 발생 기록: U1 첫 시도는 `-File`로 넘긴 쉼표 목록이 배열로 풀리지 않아 harness exit 3으로 Unity 기동 전에 멈췄다. 작성자가 harness를 고쳤다(sha256 `9de61bda…`→`754ec592…`).
+  - 첫 발생 기록: 작성자가 창 밖(15:17:21~27Z, 직전 Unity 0 관측)에서 Unity 동봉 Windows dotnet으로 오프라인 컴파일했다. 계약 금지 목록에는 없었다. 다음 계약부터 「Windows dotnet도 배정된 창 안에서만」을 적는다.

@@ -403,7 +403,7 @@ namespace Dawnholder.Client.Tests
                 Click(panel, "Slot2");
                 panel.Find("CreateForm/Name").GetComponent<TMP_InputField>().text = "새벽";
                 Click(panel, "CreateForm/Mage");
-                Click(panel, "Submit");
+                Click(panel, "CreateForm/Create");
                 Assert.AreEqual("새벽", CreateName(_connection.Last));
                 Assert.AreEqual(1, _connection.Last[9], "Mage");
                 _connection.Reply(Created(_connection.LastId, 2, s_created));
@@ -417,8 +417,8 @@ namespace Dawnholder.Client.Tests
                 _connection.Reply(Selected(_connection.LastId, CreatedId));
                 Assert.AreEqual("선택이 승인되었습니다. 서버 입장을 기다리고 있습니다.",
                     panel.Find("Status").GetComponent<TMP_Text>().text);
-                Assert.AreEqual("새벽\n직업: Mage\n이 캐릭터로 입장을 기다리는 중입니다.",
-                    panel.Find("Details").GetComponent<TMP_Text>().text);
+                Assert.That(panel.Find("Slot2/Label").GetComponent<TMP_Text>().text,
+                    Does.Contain("새벽").And.Contain("Mage"));
                 Assert.IsFalse(panel.Find("Submit").GetComponent<Button>().interactable);
                 Assert.IsEmpty(_calls);
 
