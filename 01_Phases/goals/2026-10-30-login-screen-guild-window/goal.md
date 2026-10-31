@@ -443,7 +443,7 @@
 - GR-06 처분: 보존 기한(PR #285 병합)이 지난 이탈 파일 셋은 그 자리에 그대로 둔다. `.backups/tmp/pr-b-fix/`의 `analyze-dryrun.json`·`patch-analyze.cjs`와 근거 폴더 뿌리의 `static-review.md`다. 셋 다 Git 밖이다. 지우거나 옮기면 hash 기록(`fix-temp-root-files-01.txt`, `verify-static-review-stray-01.txt`)과 대조할 원본이 사라진다. 처분 주체는 Content 리드이며 메인에 알린다.
 - 설계 관찰 셋을 반영했다. `UI.unity` 글자색 필드 문장, 병합 표의 시각 열 이름, CI가 Unity 시험을 돌리지 않는다는 줄이다. CURRENT의 Effect 줄이 낡았다는 관찰은 Effect 몫이라 건드리지 않았다.
 - 정리 후보 1(작업자·검증자의 계약 지정 폴더 밖 쓰기, 4개 goal 5건)은 BACKLOG 새 행 `worker-contract-folder-boundary-check`(담당 후보 Rules)다. `worker-harness-only-execution`에 합칠지는 Rules가 정한다. 정리 후보 2(단계 정산의 생존 신호 helper 미실행, 세 번째 발생)는 기존 행 `heartbeat-interval-review`에 더했다. 둘 다 제안의 이관이며 채택이 아니다.
-- Gardener 자기 감사의 이탈은 메인 처분을 기다린다. 계약은 Read·Grep 도구와 git 읽기만 허용했는데, 읽기·표시용 셸 명령(`ls`·`cat`·`sed`·bash `grep`·`for`, `cd … &&` 뒤 우편함 확인, `> /dev/null`, `| sha256sum`)을 썼다. JSON에 돌린 bash `grep -o` 범위 정규식이 120초 제한을 넘겼고, 남은 `grep`·`head` 프로세스는 Gardener가 스스로 껐다. 쓴 파일은 지정 폴더의 보고서 하나다. 리드는 이 이탈을 비차단으로 정하지 않았다.
+- Gardener 자기 감사의 이탈은 메인 처분 A 비차단 기록이다(메인 결정, 사용자 결정 아님, `msg_b3aef68fb3e5` 1, 2026-10-31T11:23:16Z). 메인 근거는 쓴 파일이 보고서 하나이고 남은 프로세스를 스스로 정리했다는 것이며, 같은 날 Effect 종료 Gardener와 같은 처분이다. 계약은 Read·Grep 도구와 git 읽기만 허용했는데, 읽기·표시용 셸 명령(`ls`·`cat`·`sed`·bash `grep`·`for`, `cd … &&` 뒤 우편함 확인, `> /dev/null`, `| sha256sum`)을 썼다. JSON에 돌린 bash `grep -o` 범위 정규식이 120초 제한을 넘겼고, 남은 `grep`·`head` 프로세스는 Gardener가 스스로 껐다. 쓴 파일은 지정 폴더의 보고서 하나다. 리드가 스스로 비차단으로 정하지 않고 메인에 처분을 요청했다(`msg_dd077ba63fdf`).
 - Gardener 실행 중 리드의 우편함 대기 하나가 메모리 부족으로 Claude Code에 의해 꺼졌다. 이 run의 남은 orca 대기 프로세스는 없었다. 대기는 자동으로 다시 열지 않았고, 메인 안내 때 한 번 확인했다(`closeout-01/check-after-main-nudge-01.json`).
 
 ## 다음 계획 후보
