@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 제품 PR 둘(#281 로그인, #285 길드 창)은 병합됐다([병합](#병합)). 사용자 직접 플레이에서 둘 다 문제 없음이었다([사용자 직접 확인](#사용자-직접-확인)). 종료 Gardener도 끝났다([종료 기록](#종료-기록)). 종료 기록 PR #289(branch `docs/content-login-guild-closeout-20261031`)는 문서 실사 1차 D1을 고쳐 재검증과 메인 확인·병합을 기다린다. 그 뒤 R-8로 리드를 바꾼다. 새 리드가 맡을 넷(PR268 자동 진행기 수정, 길드 입구 겹침, 녹화용 빌드 계약, 캐릭터 선택창)은 [다음 계획 후보](#다음-계획-후보) 앞 네 줄이다. 순서와 착수는 메인이 진입 메시지에서 정한다. 원인 미확정 기존 실패 13행은 사용자 결정 73 A로 실패인 채 후보가 됐다.
+**다음 첫 일:** 제품 PR 둘(#281 로그인, #285 길드 창)은 병합됐다([병합](#병합)). 사용자 직접 플레이에서 둘 다 문제 없음이었다([사용자 직접 확인](#사용자-직접-확인)). 종료 Gardener도 끝났다([종료 기록](#종료-기록)). 종료 기록 PR #289(branch `docs/content-login-guild-closeout-20261031`)는 재검증 PASS 뒤 최신 main을 합쳤고, 메인 확인과 병합을 기다린다. 그 뒤 R-8로 리드를 바꾼다. 새 리드가 맡을 넷(PR268 자동 진행기 수정, 길드 입구 겹침, 녹화용 빌드 계약, 캐릭터 선택창)은 [다음 계획 후보](#다음-계획-후보) 앞 네 줄이다. 순서와 착수는 메인이 진입 메시지에서 정한다. 원인 미확정 기존 실패 13행은 사용자 결정 73 A로 실패인 채 후보가 됐다.
 
 | 항목 | 현재 |
 |---|---|
@@ -447,6 +447,10 @@
 - 1차 정산(`closeout-01/verify-prep-01/settle-verifier-01.json`·`rollout-types-01.json`): rollout은 `gpt-6-astra`·`xhigh` 한 가지다. HEAD는 그대로이고 미커밋은 0이다. 생존 신호는 5개이고, 300초 초과는 12:31:21Z→12:36:25Z의 304초 한 구간이다(판정 작성부터 worker_done까지, 원시 감사는 하지 않았다). pane은 tui-idle을 확인하고 닫았다(`close-verifier-01.json`).
 - D1 고침(`lead-context-memo-closeout-03.md`): 판정 대안대로 「PR 두 개 준비」를 「PR #281·#285 병합」에 합쳐 진척 단계를 12개로 줄였다. 같은 규칙의 이름 폭 상한(화면 폭 30)을 넘던 「사용자 직접 플레이 확인(77 A, 결과 78 C)」도 「사용자 직접 플레이」로 줄였다. 이 줄은 리드가 고치며 찾았고 실사자는 짚지 않았다. 고친 부분은 새 검증자가 다시 본다. 비차단 관찰 O1(근거 폴더 메모 01의 완료 칸이 비어 있음)은 저장소 문서가 아니라 고치지 않았다. 완료 위치는 메인 보고 receipt 둘이다.
 - Gardener 실행 중 리드의 우편함 대기 하나가 메모리 부족으로 Claude Code에 의해 꺼졌다. 이 run의 남은 orca 대기 프로세스는 없었다. 대기는 자동으로 다시 열지 않았고, 메인 안내 때 한 번 확인했다(`closeout-01/check-after-main-nudge-01.json`).
+- PR #289 재검증(새 세션): `[Content 검증자]` gpt-6-astra xhigh(Codex 0.166.0), task_0537270936a2·ctx_7f18d559c7b1, head `ba95e90a`, 13:30:05Z 기동, worker_done `msg_03b3c373ac96`(13:39:51Z)다. 판정은 **PASS**다. D1은 해결됐고 새 결함은 0이다. 판정 원문은 `closeout-verify-02/verdict.md`(sha256 `8d1c4dd4…de96`)다.
+- 재검증 정산(`closeout-01/verify-prep-02/settle-verifier-02.json`·`rollout-types-02.json`): rollout은 `gpt-6-astra`·`xhigh` 한 가지다. HEAD는 그대로이고 미커밋은 0이다. 실행 명령 18개 중 git 쓰기 검사식에 걸린 4개는 모두 검증자 근거 폴더(`closeout-verify-02/`)에 파일을 쓰는 patch였다(`rollout-gitlike-detail-02.json`). 생존 신호는 13:30:21Z~13:39:51Z에 5개이고, 최대 간격은 239초로 300초 초과는 없다. pane은 tui-idle을 확인하고 닫았다(`close-verifier-02.json`).
+- 재검증자 읽기 이탈: 계약은 저장소 파일을 head의 git 객체로만 읽게 했다. 재검증자는 첫 스킬 로드에서 `.agents/skills/dawnholder-task-context/SKILL.md` 한 파일을 작업 트리에서 읽었고, 질문 `msg_617802cc3f3d`로 스스로 신고했다. 쓰기는 없다. 작업 트리 파일과 `ba95e90a` 객체는 sha256 `8e7a196d…5475`로 bytes가 같다(`closeout-01/verify-prep-02/worktree-read-identity-01.json`). 메인 처분은 A 비차단 기록이다(메인 결정, 사용자 결정 아님, `msg_17e44517a060`, 2026-10-31T13:34:08Z). 리드는 스스로 정하지 않고 처분을 요청했다(`msg_a37a6171a650`). 메인은 이를 첫 발생으로 봤다. 같은 종류가 다른 goal에서 또 나오면 규칙 후보로 메인에 올린다.
+- 최신 main 통합(메인 `msg_074bae3d51dc`): PR #288 병합(main `dc2eb833`) 뒤 merge commit `85a445c8`(부모 `ba95e90a`·`dc2eb833`)로 합쳤다. BACKLOG 충돌 두 곳은 양쪽 보존으로 풀었다(`closeout-01/merge-main-01/resolve-backlog-01.cjs`, 해결 hunk 원시 `resolution-cc-01.diff`). `heartbeat-interval-review` 행은 main의 덧붙임 뒤에 이 goal의 덧붙임을 이었다. 파일 끝은 main의 새 절 뒤에 이 goal의 절을 두었다. 두 덧붙임은 같은 base에서 따로 세어 둘 다 「세 번째 발생」이라 적었고, 글자는 그대로 두었다. 후보 도착 검사 4차(`closeout-01/check-candidates-run-04.cjs`, merge commit 위)는 `allowed`, exit 0이다. 후보 16줄, BACKLOG ID 222개, 모르는 ID·중복 ID 0이다(`closeout-01/check-candidates-04.json`).
 
 ## 다음 계획 후보
 
