@@ -200,6 +200,8 @@ namespace Dawnholder.Client.UI
             title.fontStyle = FontStyles.Bold;
             title.color = new Color(1f, 0.90f, 0.35f);
             _summary = Label("Summary", _panel, new Vector2(472f, 76f), new Vector2(24f, -70f), font);
+            // Ink of the bright windows (InventoryPanelView s_ink).
+            _summary.color = new Color(0.26f, 0.17f, 0.09f);
             _items = new TMP_Text[DungeonClearRewards.MaxItemKinds];
             for (int i = 0; i < _items.Length; i++)
             {
@@ -207,6 +209,7 @@ namespace Dawnholder.Client.UI
                 var rowPosition = new Vector2(24f, -146f - i * 42f);
                 Place(UiWindowAppearance.CreateInset("RewardInset" + i, _panel).rectTransform, rowSize, rowPosition);
                 _items[i] = Label("Reward" + i, _panel, rowSize, rowPosition, font);
+                _items[i].color = new Color(0.26f, 0.17f, 0.09f);
             }
 
             _confirm = UiWindowAppearance.CreateButton("Confirm", _panel, UiWindowAppearance.ButtonStyle.Accept);

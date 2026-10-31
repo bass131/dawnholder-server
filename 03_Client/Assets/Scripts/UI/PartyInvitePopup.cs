@@ -212,7 +212,8 @@ namespace Dawnholder.Client.UI
             tmp.text      = "파티 초대";
             tmp.fontSize  = 28f;
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color     = Color.white;
+            // Ink of the bright windows (InventoryPanelView s_ink).
+            tmp.color     = new Color(0.26f, 0.17f, 0.09f);
             tmp.fontStyle = FontStyles.Bold;
 
             // TMP 폰트 로드 (ToastUI 패턴 동형).

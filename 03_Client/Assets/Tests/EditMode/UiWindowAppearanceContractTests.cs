@@ -22,7 +22,8 @@ namespace Dawnholder.Client.Tests
     // (01_Phases/goals/2026-10-13-demo-video-art/ui-window-application-scope.md 「만들 것」「보존 계약」「완료조건」 1·3).
     // A  The existing builders (InventoryPanelView ctor, DungeonClearRewardWindow / PartyInvitePopup / NpcDialogPanel
     //    BuildRuntime, PartyMemberHud runtime init on a fixture shaped like Scenes/99.UI/UI.unity Party_Info) must show
-    //    the approved brown B1 pieces. Which piece a role uses comes from the approved kit previews (kit-spec.json
+    //    the approved bright kit pieces (PR2 for the inventory, PR3 v3 A msg_79d2bf86419e for the other four; the brown
+    //    B1 pieces before). Which piece a role uses comes from the approved kit previews (kit-spec.json
     //    previews[].placements, source SHA256 5986771c…); the per-image rules come from Art/UI/Components/README.md and
     //    import-spec.json.
     // B  The shared composition lives under Resources/UI and references the approved sprite GUIDs; no PNG copies.
@@ -37,7 +38,10 @@ namespace Dawnholder.Client.Tests
     public sealed class UiWindowAppearanceContractTests
     {
         const string KitFolder = "Assets/Art/UI/Components/";
+        const string BrightKitFolder = BrightUiKitTestSupport.ArtFolder + "/";
         const string ResourcesUiFolder = "Assets/Resources/UI";
+        // The skin UiWindowAppearance loads for the shared windows (Resources path UI/Components/UiWindowSkin).
+        const string DefaultSkinPath = ResourcesUiFolder + "/Components/UiWindowSkin.asset";
         const string FontPath = "Fonts & Materials/LiberationSans SDF";
         // import-spec units.pixelDensity: PNG px per UI unit (sprite PPU 200 on a Canvas reference PPU of 100).
         const float Density = 2f;
@@ -45,7 +49,8 @@ namespace Dawnholder.Client.Tests
         const float Tolerance = 0.5f;
         const string NpcLine = "대장장이: 오늘도 좋은 쇠가 들어왔다네. 강화가 필요하면 말하게.";
 
-        // The last five are bright-kit kinds only (BrightPieces below; lead msg_8d4e83bd3bb0 4).
+        // The last five are bright-kit kinds only (BrightPieces below; lead msg_8d4e83bd3bb0 4). Since PR3 the bright kit
+        // also has Panel_Dialog, Panel_Emphasis, the Decline states and PortraitFrame_128 (v3 A msg_79d2bf86419e).
         enum Kind
         {
             Panel, Inset, Header, Button, ItemSlot, IconBase, CircleButton, NumberBadge, PortraitFrame, Divider, Corner, HeaderEnd,
@@ -122,10 +127,12 @@ namespace Dawnholder.Client.Tests
         // Declared after Pieces: static initializers run in text order.
         static readonly Dictionary<string, Piece> PiecesByGuid = Pieces.ToDictionary(piece => piece.Guid);
 
-        // The approved bright kit the inventory moves to (decision 43 A, goal 2026-10-29-inventory-character-select-look
-        // 완료조건 1). The inventory tests expect these 25 GUIDs instead of the brown 33, never both (Content
+        // The approved bright kit (decision 43 A, goal 2026-10-29-inventory-character-select-look 완료조건 1; PR3 decision
+        // v3 A msg_79d2bf86419e, 완료조건 10). The inventory tests and, since PR3, the shared-skin window tests (reward,
+        // party invite, party members, NPC dialog) expect these 32 GUIDs instead of the brown 33, never both (Content
         // msg_b9b45522981b: no union; main msg_e873edba3d2d). Rows printed by pr2-red-01/scripts/emit-bright-table-v2.ps1
-        // from the approved spec; BrightUiKitTestSupport names the inputs and their SHA256. The PNGs live under
+        // and, for the last 7, pr3-red-01/scripts/emit-pr3-tables.mjs (section B) from the approved specs;
+        // BrightUiKitTestSupport names the inputs and their SHA256. The PNGs live under
         // BrightUiKitTestSupport.ArtFolder, so these rows are loaded by LoadBright, never by Piece.AssetPath.
         static readonly Piece[] BrightPieces =
         {
@@ -154,6 +161,13 @@ namespace Dawnholder.Client.Tests
             Simple("Icon_Material", "9f5082fa3c5d6e75b68675a2d3f1a491", Kind.Icon),
             Simple("Icon_CurrencyPouch", "3aadc85f7b3e7ca0c8a31d52cc7910a8", Kind.Icon),
             Simple("Icon_Coin", "87e028dcd3360e891febb86e8d4c61d8", Kind.Icon),
+            Sliced("Panel_Dialog", "5685ac277531981b5554e3a74e56debe", Kind.Panel, 24),
+            Sliced("Panel_Emphasis", "3e26a93b5ba3982f399c126a95bf553d", Kind.Panel, 24),
+            Sliced("Button_Decline_Normal", "56edcbfaf68f16d0dff50a7bb0e3a466", Kind.Button, 16),
+            Sliced("Button_Decline_Highlighted", "11e73ce64b7278c04e4b6a6eff7a7717", Kind.Button, 16),
+            Sliced("Button_Decline_Pressed", "470f3c0476ddfd928b5c9a879903f117", Kind.Button, 16),
+            Sliced("Button_Decline_Disabled", "7d2ff4c8822f62b46b0e6d8fcf178640", Kind.Button, 16),
+            Simple("PortraitFrame_128", "371e59829a40e0c260a9c8cdff7c4a23", Kind.PortraitFrame),
         };
 
         static readonly Dictionary<string, Piece> BrightPiecesByGuid = BrightPieces.ToDictionary(piece => piece.Guid);
@@ -266,6 +280,10 @@ namespace Dawnholder.Client.Tests
             Assert.IsEmpty(violations, "A inventory shows no plain colour or foreign sprite and uses each bright piece per spec");
         }
 
+        // PR3 (decision v3 A msg_79d2bf86419e, goal 완료조건 10): the reward, party invite, party member and NPC windows
+        // read the default skin, which now holds the bright kit, so the tests below judge their pieces by
+        // BrightPiecesByGuid instead of the brown table, never both. Roles, states, raycast and layout stay as they were.
+
         // Approved preview dungeon-reward-0: Panel_Emphasis behind the whole 520×364 panel.
         [Test]
         public void RewardWindow_Background_IsTheApprovedEmphasisPanel()
@@ -274,8 +292,8 @@ namespace Dawnholder.Client.Tests
             Image background = Background(window.Panel);
             Log("reward", window.Window.transform);
 
-            Assert.AreEqual("Panel_Emphasis", ApprovedPiece(background?.sprite)?.Name,
-                $"A reward background shows {Describe(background)}, approved Panel_Emphasis");
+            Assert.AreEqual("Panel_Emphasis", ApprovedPiece(background?.sprite, BrightPiecesByGuid)?.Name,
+                $"A reward background shows {Describe(background, BrightPiecesByGuid)}, approved Panel_Emphasis");
         }
 
         // Scope reward 「배경·제목·보상줄·확인 버튼」; approved preview: Header under the title, Inset_* under each row.
@@ -284,8 +302,10 @@ namespace Dawnholder.Client.Tests
         {
             RewardWindow window = BuildReward();
             Assert.IsNotNull(window.Title, "fixture: the 「던전 클리어」 title text (C checks it separately)");
-            bool titleOnHeader = PiecesUnder(window.Panel, Centre(window.Panel, window.Title.rectTransform), Kind.Header).Length > 0;
-            string[] bareRows = window.Rows.Where(row => PiecesUnder(window.Panel, Centre(window.Panel, row.rectTransform), Kind.Inset).Length == 0)
+            bool titleOnHeader = PiecesUnder(window.Panel, Centre(window.Panel, window.Title.rectTransform), BrightPiecesByGuid,
+                Kind.Header).Length > 0;
+            string[] bareRows = window.Rows.Where(row => PiecesUnder(window.Panel, Centre(window.Panel, row.rectTransform), BrightPiecesByGuid,
+                    Kind.Inset).Length == 0)
                 .Select(row => row.name).ToArray();
             Log("reward rows without an inset", bareRows);
 
@@ -298,7 +318,7 @@ namespace Dawnholder.Client.Tests
         public void RewardWindow_Confirm_ShowsTheApprovedAcceptButtonStates()
         {
             RewardWindow window = BuildReward();
-            List<string> problems = ButtonViolations(window.Confirm, "Accept");
+            List<string> problems = ButtonViolations(window.Confirm, "Accept", BrightPiecesByGuid);
             Log("reward confirm", problems);
 
             Assert.IsEmpty(problems, "A 「확인」 uses the approved Button_Accept states");
@@ -308,7 +328,8 @@ namespace Dawnholder.Client.Tests
         public void RewardWindow_Chrome_IsOnlyApprovedPiecesUsedAsSpecified()
         {
             RewardWindow window = BuildReward();
-            List<string> violations = ChromeViolations(window.Window.transform, Background(window.Panel), Array.Empty<Graphic>());
+            List<string> violations = ChromeViolations(window.Window.transform, Background(window.Panel), Array.Empty<Graphic>(),
+                BrightPiecesByGuid);
             Log("reward chrome", violations);
 
             Assert.IsEmpty(violations, "A reward window shows no plain colour or foreign sprite and uses each piece per spec");
@@ -322,8 +343,8 @@ namespace Dawnholder.Client.Tests
             Image background = Background(window.Panel);
             Log("party invite", window.Popup.transform);
 
-            Assert.AreEqual("Panel_Default", ApprovedPiece(background?.sprite)?.Name,
-                $"A party invite background shows {Describe(background)}, approved Panel_Default");
+            Assert.AreEqual("Panel_Default", ApprovedPiece(background?.sprite, BrightPiecesByGuid)?.Name,
+                $"A party invite background shows {Describe(background, BrightPiecesByGuid)}, approved Panel_Default");
         }
 
         // Scope 「보존 계약」 「수락 녹색·거절 적색을 보존」 through the approved Accept / Decline sprites, not a tint.
@@ -332,8 +353,8 @@ namespace Dawnholder.Client.Tests
         {
             InviteWindow window = BuildInvite();
             var problems = new List<string>();
-            problems.AddRange(ButtonViolations(window.Accept, "Accept").Select(p => "수락: " + p));
-            problems.AddRange(ButtonViolations(window.Reject, "Decline").Select(p => "거절: " + p));
+            problems.AddRange(ButtonViolations(window.Accept, "Accept", BrightPiecesByGuid).Select(p => "수락: " + p));
+            problems.AddRange(ButtonViolations(window.Reject, "Decline", BrightPiecesByGuid).Select(p => "거절: " + p));
             Log("party invite buttons", problems);
 
             Assert.IsEmpty(problems, "A 수락 uses Button_Accept and 거절 uses Button_Decline states");
@@ -343,7 +364,8 @@ namespace Dawnholder.Client.Tests
         public void PartyInvite_Chrome_IsOnlyApprovedPiecesUsedAsSpecified()
         {
             InviteWindow window = BuildInvite();
-            List<string> violations = ChromeViolations(window.Popup.transform, Background(window.Panel), Array.Empty<Graphic>());
+            List<string> violations = ChromeViolations(window.Popup.transform, Background(window.Panel), Array.Empty<Graphic>(),
+                BrightPiecesByGuid);
             Log("party invite chrome", violations);
 
             Assert.IsEmpty(violations, "A party invite shows no plain colour or foreign sprite and uses each piece per spec");
@@ -356,14 +378,15 @@ namespace Dawnholder.Client.Tests
         {
             PartyHud hud = BuildPartyHud(runLifecycle: true);
             Image background = Background(hud.Root);
-            string[] bareMembers = hud.Texts.Where(text => PiecesUnder(hud.Root, Centre(hud.Root, text.rectTransform), Kind.Inset).Length == 0)
+            string[] bareMembers = hud.Texts.Where(text => PiecesUnder(hud.Root, Centre(hud.Root, text.rectTransform), BrightPiecesByGuid,
+                    Kind.Inset).Length == 0)
                 .Select(text => text.text).ToArray();
-            List<string> violations = ChromeViolations(hud.Root, background, hud.ClassIcons);
+            List<string> violations = ChromeViolations(hud.Root, background, hud.ClassIcons, BrightPiecesByGuid);
             Log("party members", hud.Root);
             Log("party members chrome", violations);
 
-            Assert.AreEqual("Panel_Default", ApprovedPiece(background?.sprite)?.Name,
-                $"A party member panel shows {Describe(background)}, approved Panel_Default");
+            Assert.AreEqual("Panel_Default", ApprovedPiece(background?.sprite, BrightPiecesByGuid)?.Name,
+                $"A party member panel shows {Describe(background, BrightPiecesByGuid)}, approved Panel_Default");
             Assert.IsEmpty(bareMembers, "A each member row stands on an approved Inset_* piece");
             Assert.IsEmpty(violations, "A the party member panel shows no foreign sprite and uses each piece per spec");
         }
@@ -376,8 +399,8 @@ namespace Dawnholder.Client.Tests
             Image background = Background(window.Panel);
             Log("npc dialog", window.Dialog.transform);
 
-            Assert.AreEqual("Panel_Dialog", ApprovedPiece(background?.sprite)?.Name,
-                $"A NPC dialog background shows {Describe(background)}, approved Panel_Dialog");
+            Assert.AreEqual("Panel_Dialog", ApprovedPiece(background?.sprite, BrightPiecesByGuid)?.Name,
+                $"A NPC dialog background shows {Describe(background, BrightPiecesByGuid)}, approved Panel_Dialog");
         }
 
         // Scope NpcDialogPanel 「초상화틀」; approved preview: PortraitFrame_128 over the 128×128 portrait field.
@@ -385,7 +408,8 @@ namespace Dawnholder.Client.Tests
         public void NpcDialog_ShownPortrait_SitsInTheApprovedPortraitFrame()
         {
             NpcWindow window = BuildNpcDialog(show: true);
-            Piece[] frames = PiecesUnder(window.Panel, Centre(window.Panel, window.Portrait.rectTransform), Kind.PortraitFrame);
+            Piece[] frames = PiecesUnder(window.Panel, Centre(window.Panel, window.Portrait.rectTransform), BrightPiecesByGuid,
+                Kind.PortraitFrame);
 
             Assert.AreEqual(new[] { "PortraitFrame_128" }, frames.Select(frame => frame.Name).ToArray(),
                 "A the shown portrait sits in exactly one approved PortraitFrame_128");
@@ -396,7 +420,8 @@ namespace Dawnholder.Client.Tests
         public void NpcDialog_Chrome_IsOnlyApprovedPiecesUsedAsSpecified()
         {
             NpcWindow window = BuildNpcDialog(show: true);
-            List<string> violations = ChromeViolations(window.Dialog.transform, Background(window.Panel), new Graphic[] { window.Portrait });
+            List<string> violations = ChromeViolations(window.Dialog.transform, Background(window.Panel), new Graphic[] { window.Portrait },
+                BrightPiecesByGuid);
             Log("npc dialog chrome", violations);
 
             Assert.IsEmpty(violations, "A NPC dialog shows no plain colour or foreign sprite and uses each piece per spec");
@@ -423,10 +448,12 @@ namespace Dawnholder.Client.Tests
         // The pieces section A requires must be reachable from the Resources/UI composition, the only runtime path
         // for code-built windows that may not use AssetDatabase. Inventory, party invite, party members and NPC here;
         // the reward window's own pieces are checked by RewardWindow_PiecesAreReachableFromTheResourcesUiComposition.
+        // PR3 (v3 A msg_79d2bf86419e, 완료조건 10): rooted at the default skin those windows load and judged by the bright
+        // kit folder. ReachableFromCompositions would stay true through the unreferenced brown Window*.prefab.
         [Test]
         public void ResourcesUi_CompositionReachesThePiecesOfInventoryPartyAndNpcViews()
         {
-            string[] reachable = ReachableFromCompositions();
+            string[] reachable = ReachableFromDefaultSkin();
             string[] needed =
             {
                 "Panel_Default", "Panel_Dialog", "PortraitFrame_128",
@@ -434,8 +461,8 @@ namespace Dawnholder.Client.Tests
                 "Button_Accept_Normal", "Button_Accept_Highlighted", "Button_Accept_Pressed", "Button_Accept_Disabled",
                 "Button_Decline_Normal", "Button_Decline_Highlighted", "Button_Decline_Pressed", "Button_Decline_Disabled",
             };
-            string[] missing = needed.Where(name => !reachable.Contains(KitFolder + name + ".png")).ToArray();
-            bool insetReachable = reachable.Any(path => path.StartsWith(KitFolder + "Inset_", StringComparison.Ordinal));
+            string[] missing = needed.Where(name => !reachable.Contains(BrightKitFolder + name + ".png")).ToArray();
+            bool insetReachable = reachable.Any(path => path.StartsWith(BrightKitFolder + "Inset_", StringComparison.Ordinal));
             Log("pieces not reachable from Resources/UI", missing);
 
             Assert.IsEmpty(missing, "B every piece the inventory, party and NPC views need is referenced from Resources/UI");
@@ -443,12 +470,13 @@ namespace Dawnholder.Client.Tests
         }
 
         // Reward window only (approved preview dungeon-reward-0): Panel_Emphasis and the title Header.
+        // PR3: reached from the default skin and judged by the bright kit folder, as above.
         [Test]
         public void RewardWindow_PiecesAreReachableFromTheResourcesUiComposition()
         {
-            string[] reachable = ReachableFromCompositions();
+            string[] reachable = ReachableFromDefaultSkin();
             string[] missing = new[] { "Panel_Emphasis", "Header" }
-                .Where(name => !reachable.Contains(KitFolder + name + ".png")).ToArray();
+                .Where(name => !reachable.Contains(BrightKitFolder + name + ".png")).ToArray();
 
             Assert.IsEmpty(missing, "B the reward window's Panel_Emphasis and Header are referenced from Resources/UI");
         }
@@ -954,6 +982,50 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(2, brownTable.Count, "control: the brown table reports the bright panel and button (no union)");
         }
 
+        // PR3 bright-table control (contract 「기대값을 바꾼 시험마다 일부러 틀린 조각」; v3 A msg_79d2bf86419e, 완료조건 10):
+        // the brown pieces the reward, party and NPC windows showed before the swap are rejected by the bright-table
+        // judges their tests now use, while the brown table still sees them, and the bright piece of the same name passes.
+        // Uses only PNGs that exist before the implementation (brown kit, PR2 bright kit), so it passes before and after.
+        [Test]
+        public void Control_BrightTable_RejectsTheBrownPiecesOfTheSharedSkinWindows()
+        {
+            RectTransform panel = ControlPanel();
+            var kinds = new Dictionary<string, Kind>
+            {
+                ["Panel_Default"] = Kind.Panel, ["Panel_Emphasis"] = Kind.Panel, ["Panel_Dialog"] = Kind.Panel,
+                ["Header"] = Kind.Header, ["Inset_Default"] = Kind.Inset, ["PortraitFrame_128"] = Kind.PortraitFrame,
+            };
+            Image[] brown = kinds.Keys.Select(name => ControlImage(panel, "brown " + name, Load(name), new Vector2(100f, 100f))).ToArray();
+            Vector2 point = Centre(panel, brown[0].rectTransform);
+            Kind[] judged = kinds.Values.Distinct().ToArray();
+            Piece[] brownUnderBrownTable = PiecesUnder(panel, point, judged);
+            Piece[] brownUnderBrightTable = PiecesUnder(panel, point, BrightPiecesByGuid, judged);
+            Button brownAccept = ControlButton(panel, "brown accept", "Accept");
+            Button brownDecline = ControlButton(panel, "brown decline", "Decline");
+            Button brightAccept = BrightControlButton(panel, "bright accept", "Accept");
+            RectTransform brightPanel = ControlPanel();
+            Image brightHeader = ControlImage(brightPanel, "bright Header", LoadBright("Header"), new Vector2(100f, 100f));
+            ControlImage(brightPanel, "bright Inset_Default", LoadBright("Inset_Default"), new Vector2(100f, 100f));
+            Piece[] brightUnderBrightTable = PiecesUnder(brightPanel, Centre(brightPanel, brightHeader.rectTransform), BrightPiecesByGuid,
+                Kind.Header, Kind.Inset);
+            Log("control shared-skin brown pieces under the bright table", brownUnderBrightTable.Select(piece => piece.Name));
+
+            Assert.AreEqual(kinds.Count, brownUnderBrownTable.Length, "control: the brown table sees each brown piece at the point (targets exist)");
+            Assert.IsEmpty(brownUnderBrightTable, "control: the bright table finds no brown panel, header, inset or portrait frame");
+            Assert.IsTrue(brown.All(image => ApprovedPiece(image.sprite, BrightPiecesByGuid) == null),
+                "control: no brown piece of the shared-skin windows is a bright piece");
+            Assert.IsEmpty(ButtonViolations(brownAccept, "Accept"), "control: the brown table accepts the brown Accept button");
+            Assert.IsNotEmpty(ButtonViolations(brownAccept, "Accept", BrightPiecesByGuid),
+                "control: a brown Accept button is not accepted as the bright Accept family");
+            Assert.IsEmpty(ButtonViolations(brownDecline, "Decline"), "control: the brown table accepts the brown Decline button");
+            Assert.IsNotEmpty(ButtonViolations(brownDecline, "Decline", BrightPiecesByGuid),
+                "control: a brown Decline button is not accepted as the bright Decline family");
+            Assert.IsEmpty(ButtonViolations(brightAccept, "Accept", BrightPiecesByGuid),
+                "control: a bright Accept button with its four bright states passes the bright table");
+            CollectionAssert.AreEquivalent(new[] { "Header", "Inset_Default" }, brightUnderBrightTable.Select(piece => piece.Name).ToArray(),
+                "control: the bright Header and Inset_Default pass the same PiecesUnder judge");
+        }
+
         // ---------------------------------------------------------------------------------------------------------
         // Window builders: each calls the product's own entry point and only finds what it built.
         // ---------------------------------------------------------------------------------------------------------
@@ -1163,8 +1235,9 @@ namespace Dawnholder.Client.Tests
         // ---------------------------------------------------------------------------------------------------------
 
         // The approved piece an Image shows: its sprite must be the asset behind one of the 33 GUIDs, not a copy.
-        // The table overloads below take the GUID table a window expects (brown PiecesByGuid or the inventory's
-        // BrightPiecesByGuid); the judgement is the same (T3·T4, lead msg_8d4e83bd3bb0 1·2).
+        // The table overloads below take the GUID table a check expects (brown PiecesByGuid for the brown-kit checks and
+        // controls, BrightPiecesByGuid for the windows since PR2 and PR3); the judgement is the same (T3·T4, lead
+        // msg_8d4e83bd3bb0 1·2; PR3 v3 A msg_79d2bf86419e).
         static Piece ApprovedPiece(Sprite sprite) => ApprovedPiece(sprite, PiecesByGuid);
 
         static Piece ApprovedPiece(Sprite sprite, Dictionary<string, Piece> table)
@@ -1367,6 +1440,14 @@ namespace Dawnholder.Client.Tests
 
         static string[] ReachableFromCompositions() => CompositionAssets().Keys
             .SelectMany(path => AssetDatabase.GetDependencies(path, true)).Distinct().ToArray();
+
+        // What the default skin asset reaches: the runtime path of the code-built windows, which load it through
+        // UiWindowAppearance from Resources (PR3 contract T4).
+        static string[] ReachableFromDefaultSkin()
+        {
+            Assert.IsNotNull(AssetDatabase.LoadMainAssetAtPath(DefaultSkinPath), $"fixture: {DefaultSkinPath} exists");
+            return AssetDatabase.GetDependencies(DefaultSkinPath, true);
+        }
 
         static Dictionary<string, string[]> CompositionAssets()
         {

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 using static Dawnholder.Client.Tests.BrightUiKitTestSupport;
 
 namespace Dawnholder.Client.Tests
@@ -15,14 +16,68 @@ namespace Dawnholder.Client.Tests
     // 완료조건 1·6; contract pr2-red-contract-v4 T1 and the default-skin half of T2). Observed through the real folder,
     // .meta files, TextureImporter and loaded Sprite, the same way UiKitImportTests checks the brown B1 kit. Expected
     // names, GUIDs, importer settings, pixel sizes and borders are the approved spec rows in BrightUiKitTestSupport.
-    // A check over the imported pieces first asserts that all 25 exist, so a missing folder cannot pass with no target.
+    // A check over the imported pieces first asserts that all 32 exist, so a missing folder cannot pass with no target.
+    // PR3 (decision v3 A msg_79d2bf86419e, 완료조건 6·10) adds the seven kit v2 pieces the default skin shares with the
+    // bright skin, the default-skin swap (T2) and the bright skin's former empty slots (T3).
     public sealed class BrightUiKitImportTests
     {
         const string BrownFolder = "Assets/Art/UI/Components";
         const string DefaultSkinFolder = "Assets/Resources/UI/Components";
         const int BrownPieceCount = 33;
+        const string DefaultSkinPath = DefaultSkinFolder + "/UiWindowSkin.asset";
+        const string BrightSkinPath = ResourcesFolder + "/UiWindowSkin.asset";
+        const string BrightPortraitPrefabPath = ResourcesFolder + "/WindowPortrait.prefab";
+        // pr3-bright-guids-v1.json (sha256 71f1c5cb…): the GUID the lead assigned to the new bright WindowPortrait.prefab.
+        const string BrightPortraitPrefabGuid = "c1dccd76328bd322bf35ae63a2d582e2";
+        const string BrownPortraitPrefabPath = DefaultSkinFolder + "/WindowPortrait.prefab";
 
-        // kit-spec sprites[]: 25 names, usage slicedCount 18 and simpleCount 7, at the top of the bright folder.
+        // The seven kit v2 pieces of PR3 (pr3-bright-guids-v1.json, the last 7 rows of BrightUiKitTestSupport.Pieces).
+        static readonly string[] SharedSkinPieceNames =
+        {
+            "Panel_Dialog", "Panel_Emphasis", "Button_Decline_Normal", "Button_Decline_Highlighted",
+            "Button_Decline_Pressed", "Button_Decline_Disabled", "PortraitFrame_128",
+        };
+
+        // The twelve UiWindowSkin fields the default skin shares with the bright skin after the swap (contract 「두 스킨
+        // 자산」; pr3-asset-facts-41568d73-01 section 4). The two SpriteState blocks are compared field by field.
+        static readonly string[] SharedSkinFields =
+        {
+            "_panelPrefab", "_headerPrefab", "_buttonPrefab", "_insetPrefab", "_portraitPrefab",
+            "_dialogPanel", "_emphasisPanel", "_divider", "_acceptNormal", "_acceptStates", "_declineNormal", "_declineStates",
+        };
+
+        static readonly string[] SpriteStateFields = { "m_HighlightedSprite", "m_PressedSprite", "m_SelectedSprite", "m_DisabledSprite" };
+
+        // The eight bright skin slots that were empty before PR3 and the piece each takes (contract 「두 스킨 자산」;
+        // pr3-contract-facts-counts-41568d73-01 empty=8). _portraitPrefab is checked through its prefab below.
+        static readonly (string Field, string Piece)[] FormerlyEmptySpriteSlots =
+        {
+            ("_dialogPanel", "Panel_Dialog"),
+            ("_emphasisPanel", "Panel_Emphasis"),
+            ("_declineNormal", "Button_Decline_Normal"),
+            ("_declineStates.m_HighlightedSprite", "Button_Decline_Highlighted"),
+            ("_declineStates.m_PressedSprite", "Button_Decline_Pressed"),
+            ("_declineStates.m_SelectedSprite", "Button_Decline_Highlighted"),
+            ("_declineStates.m_DisabledSprite", "Button_Decline_Disabled"),
+        };
+
+        // The default skin and the five brown Window*.prefab keep their paths and GUIDs (pr3-asset-facts-41568d73-01
+        // section 1). The prefabs stay in the folder unreferenced after the swap (main 1 A: they are not deleted).
+        static readonly (string Path, string Guid)[] KeptDefaultSkinAssets =
+        {
+            (DefaultSkinPath, "a7b7508336f3f3623912e0c8405497c8"),
+            (DefaultSkinFolder + "/WindowButton.prefab", "8ee9b685ca8f1a14b978b0e2fc08c24e"),
+            (DefaultSkinFolder + "/WindowHeader.prefab", "5470df5701dcd91ba1f8ebadfec0edb1"),
+            (DefaultSkinFolder + "/WindowInset.prefab", "74e96bd6480e224f43101ef5f56029cb"),
+            (DefaultSkinFolder + "/WindowPanel.prefab", "8052a591cd1fda1e2ae5b53ff42eda78"),
+            (DefaultSkinFolder + "/WindowPortrait.prefab", "86fad0ca8a358a7dd09f21d45022d057"),
+        };
+
+        // pr3-contract-facts-counts-41568d73-01 bright_top_level=26: every serialized UiWindowSkin field.
+        const int SkinFieldCount = 26;
+
+        // kit-spec sprites[] (PR2) plus the seven kit v2 rows: 32 names, 24 sliced and 8 simple (emit-pr3-tables-01
+        // section G), at the top of the bright folder.
         [Test]
         public void BrightFolder_HoldsExactlyTheApprovedPngs()
         {
@@ -34,9 +89,9 @@ namespace Dawnholder.Client.Tests
             string[] expected = Pieces.Select(piece => piece.Name).OrderBy(name => name, StringComparer.Ordinal).ToArray();
             TestContext.Out.WriteLine($"folder={ArtFolder} exists={folderExists} pngs={actual.Length} [{string.Join(",", actual)}]");
 
-            Assert.AreEqual(25, Pieces.Length, "spec table: 25 bright pieces");
-            Assert.AreEqual(18, Pieces.Count(piece => piece.Sliced), "spec usage: 18 sliced pieces");
-            Assert.AreEqual(7, Pieces.Count(piece => !piece.Sliced), "spec usage: 7 simple pieces");
+            Assert.AreEqual(32, Pieces.Length, "spec table: 32 bright pieces");
+            Assert.AreEqual(24, Pieces.Count(piece => piece.Sliced), "spec usage: 24 sliced pieces");
+            Assert.AreEqual(8, Pieces.Count(piece => !piece.Sliced), "spec usage: 8 simple pieces");
             Assert.IsTrue(folderExists, $"{ArtFolder} must exist");
             CollectionAssert.AreEqual(expected, actual, "the bright folder must hold exactly the approved PNG names");
         }
@@ -125,7 +180,7 @@ namespace Dawnholder.Client.Tests
         public void BrightReimport_WithoutSettingChanges_KeepsGuidMetaAndSourceBytes()
         {
             string[] existing = Pieces.Select(piece => piece.AssetPath).Where(File.Exists).ToArray();
-            Assert.AreEqual(Pieces.Length, existing.Length, "precondition: all 25 bright PNGs exist before the re-import check");
+            Assert.AreEqual(Pieces.Length, existing.Length, "precondition: all 32 bright PNGs exist before the re-import check");
 
             var changed = new List<string>();
             foreach (string path in existing)
@@ -165,7 +220,7 @@ namespace Dawnholder.Client.Tests
                 $"distinct={brightGuids.Distinct().Count()} shared=[{string.Join(",", shared)}] elsewhere=[{string.Join(",", heldElsewhere)}]");
 
             Assert.AreEqual(BrownPieceCount, brownGuids.Length, "precondition: the 33 brown PNGs and their GUIDs are found");
-            Assert.AreEqual(25, brightGuids.Distinct().Count(), "the 25 bright GUIDs are distinct");
+            Assert.AreEqual(32, brightGuids.Distinct().Count(), "the 32 bright GUIDs are distinct");
             Assert.IsEmpty(malformed, "every bright GUID is 32 lowercase hex digits");
             Assert.IsEmpty(shared, "no bright GUID equals a brown kit GUID");
             Assert.IsEmpty(heldElsewhere, "no other asset holds a bright GUID");
@@ -176,7 +231,7 @@ namespace Dawnholder.Client.Tests
         public void ResourcesFolders_HoldNoCopyOfABrightPng()
         {
             string[] existing = Pieces.Select(piece => piece.AssetPath).Where(File.Exists).ToArray();
-            Assert.AreEqual(Pieces.Length, existing.Length, "precondition: the 25 bright PNGs are found, so the copy search has targets");
+            Assert.AreEqual(Pieces.Length, existing.Length, "precondition: the 32 bright PNGs are found, so the copy search has targets");
 
             Dictionary<string, string> brightByHash = Pieces.GroupBy(piece => Sha256(piece.AssetPath))
                 .ToDictionary(group => group.Key, group => string.Join("/", group.Select(piece => piece.Name)));
@@ -190,28 +245,147 @@ namespace Dawnholder.Client.Tests
             Assert.IsEmpty(copies, "no Resources folder holds a byte copy of a bright PNG");
         }
 
-        // T2 (goal 완료조건 1 「나머지 7개 창은 기존 브라운 조각을 그대로 쓴다」): the default skin and its Window*.prefab
-        // reference brown kit PNGs only. No existing test pins this; UiWindowLiveCaptureTests only loads the skin.
+        // PR3 T2 (decision v3 A msg_79d2bf86419e, goal 완료조건 10 and ③; replaces the PR2 brown pin): the default skin
+        // that every shared window and the guild windows load points at the bright kit only, through the same objects as
+        // the bright skin. The skin asset alone is the root: after the swap the five brown Window*.prefab stay in the
+        // folder unreferenced (main 1 A), so enumerating them would bring brown back.
         [Test]
-        public void DefaultSkin_AndItsWindowPrefabs_ReferenceOnlyBrownKitPngs()
+        public void DefaultSkin_ReferencesOnlyBrightKitPngs_AndSharesTheBrightSkinPieces()
         {
-            string[] assets = new[] { DefaultSkinFolder + "/UiWindowSkin.asset" }
-                .Concat(Directory.GetFiles(DefaultSkinFolder, "Window*.prefab", SearchOption.TopDirectoryOnly)
-                    .Select(path => path.Replace('\\', '/')))
-                .ToArray();
-            string[] pngs = assets.SelectMany(asset => AssetDatabase.GetDependencies(asset, false))
+            string[] pngs = AssetDatabase.GetDependencies(DefaultSkinPath, true)
                 .Where(path => path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)).Distinct().ToArray();
+            string[] notBright = pngs.Where(path => !Pieces.Any(piece => piece.AssetPath == path && AssetDatabase.AssetPathToGUID(path) == piece.Guid))
+                .ToArray();
             string[] brown = pngs.Where(path => path.StartsWith(BrownFolder + "/", StringComparison.Ordinal)).ToArray();
-            string[] notBrown = pngs.Except(brown).ToArray();
-            string[] bright = pngs.Where(path => Pieces.Any(piece => AssetDatabase.AssetPathToGUID(path) == piece.Guid)).ToArray();
-            TestContext.Out.WriteLine($"default skin assets=[{string.Join(", ", assets)}] pngs={pngs.Length} " +
-                $"brown={brown.Length} notBrown=[{string.Join(", ", notBrown)}]");
+            string[] missingShared = SharedSkinPieceNames.Where(name => !pngs.Contains(Named(name).AssetPath)).ToArray();
+            string[] movedGuids = KeptDefaultSkinAssets.Where(asset => AssetDatabase.AssetPathToGUID(asset.Path) != asset.Guid)
+                .Select(asset => $"{asset.Path} -> '{AssetDatabase.AssetPathToGUID(asset.Path)}', kept {asset.Guid}").ToArray();
+            TestContext.Out.WriteLine($"default skin pngs={pngs.Length} [{string.Join(", ", pngs)}] brown={brown.Length} " +
+                $"notBright=[{string.Join(", ", notBright)}] missingShared=[{string.Join(",", missingShared)}]");
 
-            Assert.AreEqual(6, assets.Length, "precondition: UiWindowSkin.asset and its five Window*.prefab are found");
-            Assert.IsNotEmpty(brown, "precondition: the default skin references brown kit PNGs");
-            Assert.IsEmpty(bright, "the default skin references no bright piece");
-            Assert.IsEmpty(notBrown, "the default skin references brown kit PNGs only");
+            Assert.IsEmpty(movedGuids, "the default skin and the five brown Window*.prefab keep their paths and GUIDs");
+            Assert.IsNotEmpty(pngs, "precondition: the default skin reaches kit PNGs");
+            Assert.IsEmpty(notBright, "the default skin reaches bright kit PNGs only (no union with the brown kit)");
+            Assert.IsEmpty(brown, "the default skin reaches no brown kit PNG");
+            Assert.IsEmpty(missingShared, "the default skin reaches the seven PR3 pieces, the portrait frame through its prefab");
+            List<string> notShared = FieldsNotShared(DefaultSkinPath, BrightSkinPath);
+            Assert.IsEmpty(notShared, "the twelve shared fields are set and hold the bright skin's own objects");
         }
+
+        // PR3 T1b (Content msg_e187a4454281 2, 「B1과 같은 계약」): each of the seven new sprites keeps the pixel rect and
+        // border of the brown B1 sprite of the same name, so a window keeps its geometry when the skin is swapped.
+        [Test]
+        public void SharedSkinPieces_KeepTheRectAndBorderOfTheSameNamedBrownSprite()
+        {
+            (string Name, Sprite Bright, Sprite Brown)[] pairs = SharedSkinPieceNames
+                .Select(name => (name, AssetDatabase.LoadAssetAtPath<Sprite>(Named(name).AssetPath),
+                    AssetDatabase.LoadAssetAtPath<Sprite>(BrownFolder + "/" + name + ".png")))
+                .ToArray();
+            foreach ((string name, Sprite bright, Sprite brown) in pairs)
+                TestContext.Out.WriteLine($"pair {name}: bright={(bright != null ? $"{bright.rect} {bright.border}" : "missing")} " +
+                    $"brown={(brown != null ? $"{brown.rect} {brown.border}" : "missing")}");
+
+            Assert.AreEqual(SharedSkinPieceNames.Length, pairs.Count(pair => pair.Brown != null),
+                "precondition: the seven same-named brown sprites load");
+            Assert.AreEqual(SharedSkinPieceNames.Length, pairs.Count(pair => pair.Bright != null),
+                "precondition: the seven bright sprites load");
+            string[] different = pairs.Where(pair => pair.Bright.rect.size != pair.Brown.rect.size || pair.Bright.border != pair.Brown.border)
+                .Select(pair => pair.Name).ToArray();
+            Assert.IsEmpty(different, "each bright sprite keeps the brown sprite's pixel size and (L,B,R,T) border");
+        }
+
+        // PR3 T3 (v3 A msg_79d2bf86419e, 완료조건 10): the bright skin fills all 26 fields; the eight slots that were empty
+        // take the new pieces by name and GUID (BrightUiKitTestSupport rows from pr3-bright-guids-v1.json).
+        [Test]
+        public void BrightSkin_FillsEveryField_AndItsFormerlyEmptySlotsShowTheNewBrightPieces()
+        {
+            var skin = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(BrightSkinPath));
+            List<string> fields = TopLevelFields(skin);
+            string[] empty = fields.SelectMany(field => EmptyReferences(skin.FindProperty(field))).ToArray();
+            string[] wrongSlots = FormerlyEmptySpriteSlots
+                .Select(slot => (slot, sprite: skin.FindProperty(slot.Field)?.objectReferenceValue as Sprite))
+                .Where(entry => entry.sprite == null || SourceGuid(entry.sprite) != Named(entry.slot.Piece).Guid ||
+                    entry.sprite.name != entry.slot.Piece)
+                .Select(entry => $"{entry.slot.Field} shows {(entry.sprite != null ? $"'{entry.sprite.name}' {SourceGuid(entry.sprite)}" : "nothing")}, " +
+                    $"approved {entry.slot.Piece} {Named(entry.slot.Piece).Guid}")
+                .ToArray();
+            UnityEngine.Object portrait = skin.FindProperty("_portraitPrefab")?.objectReferenceValue;
+            string portraitPath = portrait != null ? AssetDatabase.GetAssetPath(portrait) : null;
+            TestContext.Out.WriteLine($"bright skin fields={fields.Count} empty=[{string.Join(", ", empty)}] " +
+                $"wrongSlots=[{string.Join("; ", wrongSlots)}] portrait={portraitPath ?? "none"}");
+
+            Assert.AreEqual(SkinFieldCount, fields.Count, "precondition: the bright skin serializes its 26 fields");
+            Assert.IsEmpty(empty, "every bright skin field and SpriteState sub-field is set");
+            Assert.IsEmpty(wrongSlots, "the formerly empty sprite slots show the new bright pieces");
+            Assert.AreEqual(BrightPortraitPrefabPath, portraitPath, "_portraitPrefab is the new bright WindowPortrait.prefab");
+        }
+
+        // PR3 T3: the new bright WindowPortrait.prefab sits at its pre-assigned GUID, shows the bright PortraitFrame_128,
+        // and keeps every Image setting of the brown WindowPortrait.prefab (both read here, not copied as literals).
+        [Test]
+        public void BrightPortraitPrefab_ShowsTheBrightFrame_AndKeepsTheBrownPrefabImageSettings()
+        {
+            var brown = AssetDatabase.LoadAssetAtPath<GameObject>(BrownPortraitPrefabPath)?.GetComponent<Image>();
+            var bright = AssetDatabase.LoadAssetAtPath<GameObject>(BrightPortraitPrefabPath)?.GetComponent<Image>();
+            string guid = AssetDatabase.AssetPathToGUID(BrightPortraitPrefabPath);
+            TestContext.Out.WriteLine($"portrait prefab guid={guid} bright={(bright != null ? Settings(bright) : "missing")} " +
+                $"brown={(brown != null ? Settings(brown) : "missing")}");
+
+            Assert.IsNotNull(brown, "precondition: the brown WindowPortrait.prefab has an Image");
+            Assert.AreEqual(BrightPortraitPrefabGuid, guid, "the bright WindowPortrait.prefab keeps its pre-assigned GUID");
+            Assert.IsNotNull(bright, "the bright WindowPortrait.prefab has an Image");
+            Assert.AreEqual(Named("PortraitFrame_128").Guid, SourceGuid(bright.sprite), "its Image shows the bright PortraitFrame_128");
+            Assert.AreEqual(Settings(brown), Settings(bright), "its Image keeps the brown prefab's size, raycast, type, aspect and colour");
+        }
+
+        static string Settings(Image image) =>
+            $"size={image.rectTransform.sizeDelta} raycast={image.raycastTarget} type={image.type} " +
+            $"preserveAspect={image.preserveAspect} colour={image.color}";
+
+        // The serialized fields of a UiWindowSkin asset below m_Script, in file order.
+        static List<string> TopLevelFields(SerializedObject skin)
+        {
+            var fields = new List<string>();
+            SerializedProperty property = skin.GetIterator();
+            for (bool more = property.NextVisible(true); more; more = property.NextVisible(false))
+                if (property.name != "m_Script") fields.Add(property.name);
+            return fields;
+        }
+
+        // An object field that is empty, or the SpriteState sub-fields that are empty.
+        static IEnumerable<string> EmptyReferences(SerializedProperty property)
+        {
+            if (property.propertyType == SerializedPropertyType.ObjectReference)
+                return property.objectReferenceValue == null ? new[] { property.propertyPath } : Array.Empty<string>();
+            return SpriteStateFields.Where(name => property.FindPropertyRelative(name)?.objectReferenceValue == null)
+                .Select(name => property.propertyPath + "." + name);
+        }
+
+        // Shared fields whose default-skin value is empty or is not the bright skin's object, SpriteState sub-fields
+        // compared one by one.
+        static List<string> FieldsNotShared(string defaultSkinPath, string brightSkinPath)
+        {
+            var defaults = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(defaultSkinPath));
+            var bright = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(brightSkinPath));
+            var problems = new List<string>();
+            foreach (string field in SharedSkinFields)
+            {
+                SerializedProperty mine = defaults.FindProperty(field);
+                string[] paths = mine != null && mine.propertyType == SerializedPropertyType.ObjectReference
+                    ? new[] { field }
+                    : SpriteStateFields.Select(name => field + "." + name).ToArray();
+                foreach (string path in paths)
+                {
+                    UnityEngine.Object value = defaults.FindProperty(path)?.objectReferenceValue;
+                    UnityEngine.Object expected = bright.FindProperty(path)?.objectReferenceValue;
+                    if (value == null || value != expected)
+                        problems.Add($"{path}: default {Name(value)}, bright skin {Name(expected)}");
+                }
+            }
+            return problems;
+        }
+
+        static string Name(UnityEngine.Object value) => value == null ? "nothing" : AssetDatabase.GetAssetPath(value) + " " + value.name;
 
         static IEnumerable<string> AllPieceNames() => Pieces.Select(piece => piece.Name);
 
