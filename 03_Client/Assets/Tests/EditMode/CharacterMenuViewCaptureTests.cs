@@ -80,7 +80,7 @@ namespace Dawnholder.Client.Tests
             Assert.IsTrue(Panel.Find("CreateForm/NameRule").gameObject.activeInHierarchy, "the name rule is shown");
             Check(camera, "2-create-form", directory);
 
-            Click("Submit");
+            Click("CreateForm/Create");
             Assert.AreEqual(1, _creations.Count);
             _view.Render(new CharacterMenuViewState(Phase.Creating, knight, mage));
             // Fake NameTaken(6) reply for slot 3, through the product's wording table.
@@ -89,6 +89,7 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual("슬롯 3: 이미 쓰는 이름입니다. 다른 이름을 입력해 주세요.", Label("Result").text);
             Check(camera, "3-name-taken", directory);
 
+            Click("CreateForm/Cancel");
             Click("Slot1");
             Click("Submit");
             CollectionAssert.AreEqual(new byte[] { 1 }, _selections);
@@ -122,7 +123,7 @@ namespace Dawnholder.Client.Tests
 
             Click("Slot2");
             NameInput().text = "새벽지기";
-            Click("Submit");
+            Click("CreateForm/Create");
             _view.Render(new CharacterMenuViewState(Phase.Ready, knight, slot3: created,
                 message: "슬롯 2: 요청을 보내지 못했습니다. 입력을 확인하고 다시 시도해 주세요."));
             Check(camera, "6-not-sent", directory);

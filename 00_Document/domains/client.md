@@ -17,6 +17,16 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 [MainMenuLoginView](../../03_Client/Assets/Scripts/UI/MainMenuLoginView.cs)는 `MainMenuController.Start`에서 만들어져 MainMenu 장면을 로그인 화면으로 배치한다. 장면 Canvas의 CanvasScaler를 실행 중 800×450 높이 맞춤으로 바꾸고, 장면의 `TITLE`을 위쪽에, 계정·서버 주소 입력칸과 시작·종료 버튼, 오류 글자를 밝은 스킨의 `LoginWindow` 안으로 옮긴다. 장면 파일과 컨트롤러의 직렬화 참조·버튼 onClick은 그대로다. view는 배치와 키 입력만 맡는다. 두 입력칸의 Enter는 같은 프레임의 두 번째 제출을 무시하고 시작 버튼과 같은 `MainMenuController.OnStartClicked`를 부르며, 계정 칸의 Tab은 서버 주소 칸을 선택한다(컨트롤러 `Update` → `HandleKeys`). 시작 판단은 `OnStartClicked`에 남는다.
 
+## 캐릭터 선택 화면
+
+[CharacterMenuView](../../03_Client/Assets/Scripts/UI/CharacterMenuView.cs)는 `CharacterSelectController`가 메뉴 경로에서 만드는 표시 전용 view다. 연결·캐릭터 식별·입장 권한은 [CharacterMenuPresenter](../../03_Client/Assets/Scripts/UI/CharacterMenuPresenter.cs)와 `CharacterMenuClient`가 갖고, view는 받은 상태를 그리며 누른 버튼을 요청 콜백으로 넘긴다. 상태 글 아래에는 한 번에 한 화면만 보인다. 칸 줄과 「선택하고 입장」 버튼이거나, 칸 줄 자리의 생성 화면(`CreateForm`)이다. 메뉴가 닫히는 Legacy 경로의 Knight/Mage 버튼은 `CharacterSelectController`가 따로 소유한다.
+
+칸 줄은 `Slot1~3` 세 칸이 제목 띠(`Header`)의 안쪽 폭 전체를 같은 폭과 간격으로 채운다. 차 있는 칸을 누르면 그 칸이 선택된다. 「선택하고 입장」(`Submit`)은 차 있는 칸이 선택된 Ready에서만 눌리고 선택 요청을 한 번 보내며, 생성하지 않는다. 빈 칸을 한 번 누르면 칸 줄과 `Submit`이 숨고 생성 화면이 열린다. view는 생성 화면을 연 칸을 선택으로 기억하고, 생성 화면이 열린 동안에는 칸이 바뀌지 않는다.
+
+생성 화면은 이름 칸·이름 규칙 글·Knight/Mage 버튼·「캐릭터 생성」(`Create`)·「취소」(`Cancel`)로 이뤄진다. `Create`는 (칸, 직업, 이름 원문)을 생성 콜백에 한 번 넘기고, 다음 상태가 그려지기 전의 두 번째 누름은 무시한다. 이름은 다듬지 않으며 규칙에 어긋난 이름도 서버가 판정하도록 보낸다. `Cancel`은 요청 없이 이름·직업 초안(Knight)·칸 선택·결과 글을 지우고 칸 줄로 돌아온다. 생성 성공으로 그 칸이 찬 Ready가 오면 생성 화면이 닫히고 선택된 칸이 없으므로, 입장하려면 칸을 다시 골라야 한다. 생성 거절이면 칸이 빈 채라 생성 화면과 입력이 남고 `Result`에 결과 글이 보인다. 대기·입장 중과 뒤로·연결 종료 뒤에는 모든 변경 입력이 잠긴다.
+
+EditMode 시험은 view를 직접 만들어 칸 줄·생성 화면·잠금과 두 해상도(1280×720·1920×1080)의 글자 맞춤을 본다. PlayMode [CharacterSelectWideSceneTests](../../03_Client/Assets/Tests/PlayMode/CharacterSelectWideSceneTests.cs)는 출하 CharacterSelect 장면을 `EntryWirePeer` 대역 연결로 띄워 생성 화면 → 생성 요청 → 선택 요청까지 지난다. 실제 GameServer·DB를 상대로 한 이 화면은 자동 진행기(PR268)의 DB 영속 서버 실주행 전까지 미관측 외부 경계다.
+
 ## 파티 초대 요청과 구독
 
 [PartyInvitePopup](../../03_Client/Assets/Scripts/UI/PartyInvitePopup.cs)은 클릭음·버튼 의도·표시/숨김과 이벤트 구독을 맡고, [PartyInviteResponseCommand](../../03_Client/Assets/Scripts/UI/PartyInviteResponseCommand.cs)는 실행 시 현재 상태/세션 조회·응답 패킷 구성·SendIntent 호출·pending 소비를 맡는다. void SendIntent 정상 반환은 실제 송신 접수나 서버 가입 확정이 아니다. 요청 처리 중 예외가 나면 뒤의 pending 소비와 숨김을 진행하지 않으며 membership은 기존 서버 update로 갱신한다.
