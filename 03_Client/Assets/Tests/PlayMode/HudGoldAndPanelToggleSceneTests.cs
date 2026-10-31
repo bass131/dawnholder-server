@@ -66,10 +66,12 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.IsTrue(labelDrawn, "R1 the gold label is drawn");
         }
 
-        // While closed, a mouse click where the Use button lies reaches the game world and attacks; I opens the panel
-        // and the same click uses the pouch without an attack. A map move keeps it open and the next I closes it.
+        // While closed, nothing takes a raycast where the Use button lies, so a mouse click there presses no button,
+        // and Left Ctrl with the pointer there still attacks (the mouse is not an attack binding, decision 65 A).
+        // I opens the panel and the same click uses the pouch without an attack. A map move keeps it open and the
+        // next I closes it.
         [UnityTest]
-        public IEnumerator ClosedPanel_LetsAClickOnItsUseSpotAttack_AndAfterIThatClickUses_AcrossAMapMove()
+        public IEnumerator ClosedPanel_TakesNoClickOnItsUseSpotAndLeftCtrlAttacks_AndAfterIThatClickUses_AcrossAMapMove()
         {
             yield return ReadySyncedTown();
             LocalPlayerMovement player = _fixture.Player;
@@ -79,14 +81,18 @@ namespace Dawnholder.Client.Tests.PlayMode
             bool shownAtEntry = InventoryPanelProbe.Group.alpha > 0f;
             bool raycastsAtEntry = InventoryPanelProbe.Group.blocksRaycasts;
 
-            yield return InventoryPanelProbe.AttackReady(player);
-            int attacks = _fixture.Peer.Count(PacketID.C_Attack);
             LogPanelClickState("before closed click", useSpot);
             yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, useSpot);
-            yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_Attack) == attacks + 1,
-                "a click on the closed panel's Use spot attacks", 3);
             yield return _fixture.Frames(4);
+            int raycastHitsWhileClosed = ScreenUiProbe.RaycastHits(useSpot).Length;
             int usesWhileClosed = _fixture.Peer.Count(PacketID.C_ItemUse);
+            yield return InventoryPanelProbe.AttackReady(player);
+            int attacks = _fixture.Peer.Count(PacketID.C_Attack);
+            _fixture.Keys(Key.LeftCtrl);
+            yield return _fixture.Frames(2);
+            _fixture.Keys();
+            yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_Attack) == attacks + 1,
+                "Left Ctrl attacks with the pointer on the closed panel's Use spot", 3);
 
             yield return PressI();
             bool shownAfterI = InventoryPanelProbe.Group.alpha > 0f;
@@ -119,6 +125,7 @@ namespace Dawnholder.Client.Tests.PlayMode
 
             Assert.IsFalse(shownAtEntry, "R5 the first map of the connection starts with the panel closed");
             Assert.IsFalse(raycastsAtEntry, "R6 the closed panel takes no raycasts");
+            Assert.AreEqual(0, raycastHitsWhileClosed, "R6 nothing takes a raycast at the closed panel's Use spot");
             Assert.AreEqual(0, usesWhileClosed, "R6 a click on the closed panel presses no Use button");
             Assert.IsTrue(shownAfterI, "R4 I opens the panel");
             Assert.AreEqual(0, attacksByOpenClick, "R8 a click on the open panel's Use sends no C_Attack, as before");

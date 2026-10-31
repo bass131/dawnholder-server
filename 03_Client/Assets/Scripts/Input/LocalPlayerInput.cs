@@ -67,7 +67,7 @@ namespace Dawnholder.Client.Input
                 _movement.RequestJump();
         }
 
-        // "Attack" 액션 콜백 (Space 또는 좌클릭) — down 에지만 처리.
+        // "Attack" 액션 콜백 (키보드 왼쪽 Ctrl·Enter, 패드·터치 등) — down 에지만 처리.
         void OnAttack(InputValue value)
         {
             if (!CanAcceptGameplayInput()) return;

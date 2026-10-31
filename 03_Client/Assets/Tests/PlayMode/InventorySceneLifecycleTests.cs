@@ -581,11 +581,12 @@ namespace Dawnholder.Client.Tests.PlayMode
         }
 
         // #2/R8 with R9 positive controls (opus-pr2-review #2). A pointer click on Use or Refresh performs only
-        // that UI action: no C_Attack and no local attack prediction, cooldown or commit lock. The same mouse on
-        // the game world and Enter while the pointer rests on a panel button still attack, so the check cannot
-        // pass because attacks are disabled.
+        // that UI action: no C_Attack and no local attack prediction, cooldown or commit lock. The mouse is not an
+        // attack binding (decision 65 A), so the same mouse clicking the game world sends no C_Attack either. Left
+        // Ctrl with the pointer on the game world and Enter while it rests on a panel button still attack, so the
+        // check cannot pass because attacks are disabled.
         [UnityTest]
-        public IEnumerator PanelPointerClicks_StartNoAttack_WhileWorldClicksAndKeyboardOverThePanelStillAttack()
+        public IEnumerator PanelAndWorldPointerClicks_StartNoAttack_WhileLeftCtrlOverTheWorldAndEnterOverThePanelStillAttack()
         {
             yield return ReadySyncedTown();
             yield return InventoryPanelProbe.OpenWithI(_fixture);
@@ -615,11 +616,24 @@ namespace Dawnholder.Client.Tests.PlayMode
             _fixture.Peer.Send(Snapshot(2, 60, (ItemId.Material, 2)));
             yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Status == "서버 확인 완료", "refresh answered", 3);
 
-            // Positive control 1: the same mouse on the game world (the player's own position) still swings.
+            // The same mouse on the game world (the player's own position) does not swing.
             Vector2 world = InventoryPanelProbe.PlayerScreenPoint(player);
             yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, world);
-            yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_Attack) == attacks + 1, "world click attack", 3);
+            yield return _fixture.Frames(6);
+            int attacksByWorldClick = _fixture.Peer.Count(PacketID.C_Attack) - attacks;
             bool cooldownByWorldClick = !player.CanAttack;
+            Assert.AreEqual(0, attacksByWorldClick, "65 A a world mouse click sends no C_Attack");
+            Assert.IsFalse(cooldownByWorldClick, "65 A a world mouse click starts no predicted attack cooldown");
+
+            // Positive control 1: Left Ctrl with the pointer still on the game world swings.
+            yield return InventoryPanelProbe.AttackReady(player);
+            int attacksBeforeLeftCtrl = _fixture.Peer.Count(PacketID.C_Attack);
+            _fixture.Keys(Key.LeftCtrl);
+            yield return _fixture.Frames(2);
+            _fixture.Keys();
+            yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_Attack) == attacksBeforeLeftCtrl + 1,
+                "Left Ctrl attack with the pointer on the world", 3);
+            bool cooldownByLeftCtrl = !player.CanAttack;
 
             // Positive control 2: Enter while the pointer rests on the Refresh button still swings.
             yield return InventoryPanelProbe.AttackReady(player);
@@ -630,9 +644,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_Attack) == attacks + 2, "keyboard attack over the panel", 3);
             yield return _fixture.Frames(6);
             Debug.Log($"[PR2 verifier] world click point {world}; panel clicks sent C_Attack x{attacksByRefresh}; " +
-                $"world click and Enter-over-panel sent x{_fixture.Peer.Count(PacketID.C_Attack) - attacks}");
+                $"world click x{attacksByWorldClick}; Left Ctrl-over-world and Enter-over-panel sent x{_fixture.Peer.Count(PacketID.C_Attack) - attacks}");
 
-            Assert.IsTrue(cooldownByWorldClick, "R9 control: a world click predicts its attack cooldown");
+            Assert.IsTrue(cooldownByLeftCtrl, "R9 control: Left Ctrl over the world predicts its attack cooldown");
             Assert.AreEqual(2, _fixture.Peer.Count(PacketID.C_InventoryRequest), "R9 Enter over the panel does not press Refresh");
             Assert.AreEqual(1, _fixture.Peer.Count(PacketID.C_ItemUse), "R9 no extra use from the controls");
         }
