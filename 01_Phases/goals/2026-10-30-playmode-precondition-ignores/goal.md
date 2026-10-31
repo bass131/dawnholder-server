@@ -2,14 +2,14 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 사용자 병합 승인 대기다(PR #286). 병합 순서는 PR281 → PR-B(PR #285) → PR #286이다. 앞 PR이 병합되면 리드가 base 변경과 head 불변을 확인한다.
+**다음 첫 일:** PR #286은 병합됐다(병합 commit `9cc80a9d`). 이 goal의 결과 기록은 Effect 세 goal이 함께 쓰는 종료 기록 PR(branch `docs/effect-closeout-20261031`)에 넣는다. 그 PR이 병합되면 메인이 R-8로 리드를 새로 연다. 결과는 아래 [결과](#결과)에 있다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 메인 승인 초안 v1(`msg_71f0ed6d4994`). 이 goal과의 차이 9곳은 메인이 대조해 통과시켰다(`msg_e302e19ae9fa`, 아래). |
 | 리드 | `[Effect 리드 Opus]`(claude-opus-5-5 xhigh). Run `run_5f3209972e68`, 회신 주소 `run:run_5f3209972e68`. 시험 21건의 소유자 Content 리드와 기술 계약을 직접 조율한다. |
 | branch | `fix/playmode-precondition-ignores-20261030`. Content PR-B(PR #285) branch `feat/content-guild-base-window-20261030`의 head `c41952da` 위에 쌓았다. 처음에는 `6669e2d7`에서 만들었고, PR-B 최종 head 알림 뒤 13:44:28Z에 `ae839e0c`로(`lead/rebase-01.txt`), PR-B goal 기록 commit 뒤 15:22:13Z에 `c41952da`로 옮겼다(`lead/rebase-02.txt`). PR-B가 `GuildWindowIndependentSceneTests.cs`를 이미 고쳤기 때문이다. 선행 시험의 기준 head `429481c2`와 지금 head는 `03_Client`·`DEVELOPMENT.md`가 같다(같은 기록). 작업 공간 effect-active. |
-| PR | #286, base `feat/content-guild-base-window-20261030`. 화면·플레이 변화가 없어 사용자 확인 항목은 없고 병합 승인만 남았다. 설명 원문은 `lead/pr-body-01.md`다. |
+| PR | #286, base `feat/content-guild-base-window-20261030`. 화면·플레이 변화가 없어 사용자 확인 항목은 없고 병합 승인만 남았다. 설명 원문은 `lead/pr-body-01.md`다. PR281·PR285 병합 뒤 base가 main으로 바뀌었고, head `bf044c72` 그대로 병합됐다(2026-10-31T07:54:37Z, 병합 commit `9cc80a9d`, `lead/pr-state-16.json`). |
 | 근거 폴더 | `.backups/verification/2026-10-30-playmode-precondition-ignores/`(Git 제외). 리드 원시는 `lead/`다. |
 | 실행 창 | Unity는 effect-active `03_Client` batchmode만 쓴다. 창은 메인 배정이다. |
 
@@ -20,8 +20,8 @@
 - [x] 구현과 통과 원시
 - [x] 독립 검증 통과
 - [x] PR 생성과 확인 항목
-- [>] PR 병합
-- [ ] 결과 기록과 종료
+- [x] PR 병합
+- [>] 결과 기록과 종료
 
 ## 적용 중인 사용자 결정
 
@@ -29,6 +29,16 @@
 
 - 사용자 원문(2026-10-30 22:1x KST 메인 pane 제출, 메인 전달 `msg_71f0ed6d4994`): 「실패 23건도 이참에 병렬로 좀 정리좀 해줘」
 - 파트 분할(Effect 리드가 맡고 Content 리드가 소유자로 조율)은 메인 결정이다. 목표 자체는 사용자 지시다.
+
+### 10-31 결정 73 A — 원인 미확정 기존 실패 13행은 실패로 두고 후속 후보 — msg_20097f42c3e3
+
+- 사용자 원문(2026-10-31 16:5x KST 메인 창에 Enter로 제출, 메인 전달 `msg_20097f42c3e3`): 「대시보드 결정 응답: … · 3) 73 - 원인 미확정 기존 실패 13행(잉크 글자 12·길드 창 위치 1) 처분 → A 실패로 두고 후속 후보 · …」
+- 메인이 전한 적용: [독립 검증 결과](#독립-검증-결과)의 원인 미확정 기존 실패 13행은 「통과 아님」으로 그대로 두고 후속 후보로 간다. 시험 주인 Content가 BACKLOG 후보를 쓴다. Effect는 이 goal에 결정만 기록한다.
+- 13행의 내역은 L1 잉크 11행과 L2 2행(`OverlayAtTarget_802x451` C8/C9 잉크, `OverlayAtTarget_1920x1080` 창 위치)이라 결정 문구의 「잉크 글자 12·길드 창 위치 1」과 같다.
+
+### 10-31 결정 76 A — 종료 Gardener 하나로 묶음 — msg_84d148dc5236
+
+- 원문과 적용은 [개선안 3 goal의 같은 절](../2026-10-30-kill-reward-float-text/goal.md#10-31-결정-76-a77-a--종료-gardener-하나로-묶음-pr283-병합-뒤-바로-플레이--msg_84d148dc5236)이다. 이 goal도 그 Gardener 하나가 본다(정본과 다른 이번 한 번의 사용자 결정 예외).
 
 ### 10-30 메인 승인 초안 v1 — msg_71f0ed6d4994(메인 결정, 사용자 결정 아님)
 
@@ -129,7 +139,7 @@
 ## 하지 않을 것
 
 - 기대값·문턱·잉크 규칙·판정 식 변경, 시험 삭제, 무조건 `[Ignore]` 속성, 제품 코드 변경.
-- 잉크 10건의 판정 실패(전제를 준 실행) 처분. 사용자 처분 대기다.
+- 잉크 10건의 판정 실패(전제를 준 실행) 처분. 범위를 정할 때는 사용자 처분 대기였고, 뒤에 결정 73 A(실패로 두고 후속 후보)로 처분됐다.
 - 저장소 안 lane runner·CI 검사 새로 두기.
 - CURRENT Effect 줄(리드 결정 5).
 
@@ -212,7 +222,7 @@
 
 - 고정 판정기: `full` 결함 0, `lane` L1(기준 둘)·L2·L3a·L3b·L4·`u4` 모두 exit 0이다. 음성 검사는 바꾼 L0→L1에서 17건, L1·L0→L2에서 각 3건, 공백 lane→L1에서 6건을 실제로 잡았다.
 - 실패 54행의 최종 구분: 고정 lane 기대 실패 27(틀린 값 L4 20, 서버 없음 L3a·L3b 7), 추가 lane 기대 실패 14(공백 11, permit만 3), 원인 미확정 13(L1 잉크 11, L2 2)이다. 처음 (d) 35로 묶은 행 중 L4·공백 22행은 전체 message에 「no capture folder」가 있어 기대 실패로 옮겼다. 공백 11행은 같은 조합의 기준 실행이 없어 base-L4의 같은 이름·첫 문구를 참고만 했다. 리드가 메인에 쓴 「35건 모두 같은 lane」(`msg_a62bd59fda05`)은 이 11행에서 틀렸고, 검증자가 바로잡았다(`msg_c35e6f6a60ae`).
-- 원인 미확정 13행은 모두 기준 같은 lane에서 같은 fullname·result·label·첫 문구로 실패했다. 통과로 바꾸지 않고 사용자 처분 대기다(메인 `msg_e0d1d3c3723f`).
+- 원인 미확정 13행은 모두 기준 같은 lane에서 같은 fullname·result·label·첫 문구로 실패했다. 통과로 바꾸지 않고 사용자 처분 대기다(메인 `msg_e0d1d3c3723f`). 사용자 처분은 결정 73 A(실패로 두고 후속 후보)다.
 - 설계 관찰(비차단): O1 빈 값 판단식 차이, O2 실서버 lane의 `Recorder`(둘 다 남은 우려), O3 `judgeSkips`(:231)는 주지 않은 전제 낱말 하나만 이유에 있어도 허용한다(고정 식의 기록된 한계, `lead/accept-pretest-01.md` 5번), O4 기존 잉크·창 위치 실패.
 - 절차 이탈 셋은 모두 메인 결정으로 비차단·기록이다(위 「독립 검증 중 메인 처분」): 선행 작성자의 빈 `node -e` 1회, 검증자의 heartbeat 436.621초 공백과 기록 밖 읽기 1회다. 리드도 명령 앞에 빈 `node -e`를 두 번 섞었다(`lead/verify-launch-record-01.md`).
 - 리드 원천 대조: 판정기 없이 여덟 원시를 다시 읽었다. 수치, base·after 대비 바뀐 시험, 13행의 기준 일치, 22행의 「no capture folder」, L2 1920 창 위치가 판정서와 같았다(`lead/r2-verify-raw-01.json`). 고정 도구 35개와 freeze 기록 둘도 같다(`lead/r2-tools-verify-01.json`). 검증 뒤 HEAD는 `37dadbec`, git status는 빈 값이다. Unity가 바꾼 알려진 drift 두 파일만 고정 도구로 복원했고 GameViewSizes·Shortcuts는 같다.
@@ -224,7 +234,7 @@
 - `GuildLiveServerWindowTests`(:108)도 GameView event sink로 `Recorder`를 만든다. 실서버 lane이 `DAWNHOLDER_LIVE_CAPTURE_DIR`만 주고 `DAWNHOLDER_GUILD_VERIFY_CAPTURE_DIR`를 빠뜨리면, 그 역할 시험이 실패 대신 건너뛴다. 실서버 lane은 이 goal 밖이고 크리티컬은 아니다. 그 lane 판정에 skipped 0을 넣으면 막힌다. 주인 Content 리드가 받아 Content BACKLOG 후속 후보로 올린다(`msg_8f2d5b2da854`).
 - 전제를 주는 lane이 변수를 빠뜨리는 실수는 시험이 알 수 없다. 문서 규칙과 계약 검사에 기댄다. runner가 Git 밖에 있어 다음 세션이 새 runner를 쓰면 검사가 빠질 수 있다.
 - 서버 2건의 실서버 실행은 이 goal에서 하지 않는다. 이름 filter 선택만 보인다.
-- 잉크 10건의 판정 실패는 사용자 처분 대기로 그대로 남는다. 검증자 실행에서 원인 미확정으로 남은 기존 실패는 13행(L1 잉크 11, L2 2)이고, 모두 기준과 같으며 통과가 아니다.
+- 잉크 10건의 판정 실패는 그대로 남는다. 검증자 실행에서 원인 미확정으로 남은 기존 실패는 13행(L1 잉크 11, L2 2)이고, 모두 기준과 같으며 통과가 아니다. 결정 73 A로 이 13행은 실패로 두고 후속 후보로 간다. BACKLOG 후보는 시험 주인 Content가 쓴다.
 - permit lane(L2) 기존 실패 2건은 원인 미확정이고 Content 후속이다(메인 `msg_e0d1d3c3723f`). `OverlayAtTarget_1920x1080`은 잉크가 아니라 「memory return: original position returned」로 실패한다(기대 x:0,y:26, 실제 x:599,y:237). 기준·구현·검증 세 번 모두 같은 자리였고, Editor 창 배치 부작용인지 확인하지 않았다. `OverlayAtTarget_802x451`은 C8/C9 잉크 판정 실패다.
 - Recorder는 `IsNullOrWhiteSpace`, 장면 시험 helper는 `IsNullOrEmpty` — 빈 값 판단식이 두 곳에서 다름(기준 head부터, Content 코드). 캡처 변수가 공백만이면 `GuildGameplayWindowTests` 6건은 건너뛰고 장면 시험은 판정까지 가서 실패한다(검증자 추가 lane 28·7·11·10). 캡처 lane 판정은 그 6건을 결함으로 잡는다. 통일은 Content 후속 후보다(Content `msg_5e4d2d7151f9`, 메인 `msg_a2b82a34e33f`).
 - 잉크 판정 결과가 lane이나 실행 순서에 따라 달라질 수 있다. `RenderTextureAuxiliary_709x399`가 L1에서는 통과, L4에서는 실패했다. 전후 비교는 같은 lane끼리만 한다.
@@ -245,8 +255,26 @@
 
 ## 다음 계획 후보
 
-- 저장소 안 PlayMode lane runner(변수·permit 준비, 결과 XML의 skipped 0 검사 내장). 지금 runner가 근거 폴더마다 따로 있어 같은 책임의 임시 runner가 복제된다(하네스 원칙 2).
+- 저장소 안 PlayMode lane runner(변수·permit 준비, 결과 XML의 skipped 0 검사 내장). 지금 runner가 근거 폴더마다 따로 있어 같은 책임의 임시 runner가 복제된다(하네스 원칙 2). BACKLOG `playmode-lane-runner-in-repo`.
+- 원인 미확정 기존 실패 13행과 Content 몫의 남은 우려(빈 값 판단식 통일, 실서버 lane의 `Recorder`)는 시험 주인 Content가 BACKLOG 후보를 쓴다(결정 73 A, Content `msg_8f2d5b2da854`·`msg_5e4d2d7151f9`). Effect는 행을 만들지 않는다. 도착 위치는 [Content 로그인 화면·길드 창 goal](../2026-10-30-login-screen-guild-window/goal.md)이다. 10-31 리드 확인 때 Content는 자기 종료 기록 branch(`docs/content-login-guild-closeout-20261031`, 아직 병합 전)에 `guild-ink-undetermined-failures`·`guild-capture-blank-predicate`·`capture-lane-skip-guard` 행을 쓰는 중이었다. `capture-lane-skip-guard`는 위 `playmode-lane-runner-in-repo`의 skipped 0 검사와 겹치니, 둘 다 병합된 뒤 Rules나 메인이 묶을지 정한다.
 
 ## 결과
 
-아직 없다.
+- PR #286 병합: 2026-10-31T07:54:37Z, head `bf044c7235d0a956b019b245ca366a3833363980`, 병합 commit `9cc80a9d2b8cf17766831e8f93e06a6322237d33`. 사용자 승인 줄을 받아 메인이 병합했다(메인 `msg_20097f42c3e3` 1). 리드는 병합 뒤 기록으로 base가 main이고 병합된 head가 PR 생성 때와 같음을 확인했다(`lead/pr-state-16.json`). base가 바뀐 뒤 병합 전까지는 확인하지 못했다. 앞 PR 둘(PR281·PR285)과 이 PR이 30초 안에 차례로 병합됐기 때문이다(07:54:07Z~07:54:37Z).
+- PR282와 함께 고친 `InventoryServerIntegrationTests.cs`는 충돌 없이 둘 다 들어갔다. origin/main `dd9e755b`에 이 PR의 `Explicit` 속성(43행)과 PR282의 왼쪽 Ctrl 공격(109~116행)이 함께 있다.
+- 완료조건 대조:
+
+| 조건 | 결과 | 근거 |
+|---|---|---|
+| 1 전체 실행 failed 0 | 충족. 230·188·0·42, 21건 Ignored와 빠진 전제 이름, 서버 2건 Skipped·`Explicit` | [독립 검증 결과](#독립-검증-결과) verify-L0 |
+| 2 전제를 준 실행의 결과 보존 | 충족. 다섯 lane 모두 구현 원시와 같고 기준 head와 같은 명령 전후 비교가 판정서에 있다. Game 화면 시험은 Editor 대화형 미실행, 서버 2건은 「Timed out: handshake」 실패 유지 | 같은 절 표, `verify-01/verdict.md` |
+| 3 조용한 통과 막음 | 충족. `DEVELOPMENT.md` 실행 전제 안내, 바꾼 전체 실행을 캡처 lane 판정에 넣으면 결함 17건 | 같은 절 |
+| 4 기존 단정 변경 절차 | 충족. 분류 (b) 환경, 줄 단위 표와 같은 명령 전후 원시 | [선행 시험 결과](#선행-시험-결과구현-전-red)·[구현 결과](#구현-결과) |
+| 5 TDD 순서와 강 등급 PASS | 충족. 선행 Opus → 구현 Opus → 검증 Astra PASS | 같은 절들 |
+| 6 병합 승인 | 충족. 사용자 승인 줄 제출 뒤 메인 병합 | 위 병합 기록 |
+
+- 통과가 아닌 것: 원인 미확정 기존 실패 13행은 실패 그대로다(결정 73 A). 실서버·Editor 대화형·직접 플레이·DB·별도 빌드는 미실행이다.
+- 생존 신호 정산: 단계마다 정본 helper로 재지 않았다. 종료 때 리드가 이 Run의 저장 우편함 원시 전체를 정본 helper에 넣어 쟀다(근거 폴더 `2026-10-30-kill-reward-float-text/lead/closeout-01/liveness-select-01.json`).
+  - 선행 작성자: 신호 32회, 최대 240초. 구현자: 21회, 최대 298초. 300초 초과는 없다.
+  - 검증자: 26회, 300초 초과 1구간 437초(2026-10-30 17:06:43Z→17:14:00Z, heartbeat→heartbeat)다. 이유는 Unity 반환 뒤 판정서 작성과 문맥 정리였다(`verify-01/verdict.md` 166행). 검증자가 스스로 신고한 436.621초 공백과 같은 구간이고, 메인 처분은 비차단·기록이다(`msg_b0795f230724`).
+- 종료 Gardener: 결정 76 A로 세 goal에 하나를 두었다(정본과 다른 이번 한 번의 사용자 결정 예외). 이 goal에서 차단 관찰은 0이고, 리드 반환 GR-01(다음 계획 후보 둘째 줄의 도착 표시)과 GR-05(생존 신호 이유)를 처분했다. 설계 관찰 O1(`DEVELOPMENT.md` 실행 전제 표가 23건만 담는데 범위를 말하지 않음)은 이 종료 기록에서 고치지 않았다. 결과와 처분 전체는 [개선안 3 goal의 종료 Gardener 절](../2026-10-30-kill-reward-float-text/goal.md#종료-gardener--2026-10-31결정-76-a)과 [보고서](../2026-10-30-kill-reward-float-text/gardener.md)다.

@@ -2,13 +2,13 @@
 
 ## 재개 지점
 
-**다음 첫 일:** [PR282](https://github.com/bass131/dawnholder-server/pull/282)는 사용자 직접 확인과 병합 승인을 기다린다. 병합은 마지막에 메인만 한다. 독립 검증 결과는 아래 [독립 검증 결과](#독립-검증-결과)에 있다.
+**다음 첫 일:** [PR282](https://github.com/bass131/dawnholder-server/pull/282)는 병합됐다(병합 commit `dd9e755b`). 이 goal의 결과 기록은 Effect 세 goal이 함께 쓰는 종료 기록 PR(branch `docs/effect-closeout-20261031`)에 넣는다. 그 PR이 병합되면 메인이 R-8로 리드를 새로 연다. 결과는 아래 [결과](#결과)에 있다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 결정 65 A(사용자). 범위 초안 v1은 메인이 보드 내용과 대조해 통과시켰고 사용자 재승인은 없다(메인 `msg_6d9e5309e129`). 이 goal은 초안 v1을 옮기고 최신 main 사실로 줄 번호를 다시 확인한 것이다. |
 | 리드 | `[Effect 리드 Opus]`(claude-opus-5-5 xhigh). Run `run_5f3209972e68`, 회신 주소 `run:run_5f3209972e68`. |
-| branch | `feat/attack-key-left-ctrl-20261030`. PR280(앞 goal 종료 기록) head `0029c59b` 위에 쌓았다. 그 아래 origin/main은 `7bc75898`(Art PR279 병합까지)다. 쌓은 이유는 이 goal이 고치는 `CURRENT.md` Effect 줄을 PR280도 고치기 때문이다(메인 운영 방식 「같은 파일을 겹쳐 고치는 PR은 앞 PR branch 위에 쌓는다」). PR base는 PR280 branch이고, PR280이 병합되면 main으로 바뀐다. 작업 공간 effect-active. |
+| branch | `feat/attack-key-left-ctrl-20261030`. PR280(앞 goal 종료 기록) head `0029c59b` 위에 쌓았다. 그 아래 origin/main은 `7bc75898`(Art PR279 병합까지)다. 쌓은 이유는 이 goal이 고치는 `CURRENT.md` Effect 줄을 PR280도 고치기 때문이다(메인 운영 방식 「같은 파일을 겹쳐 고치는 PR은 앞 PR branch 위에 쌓는다」). PR base는 PR280 branch이고, PR280이 병합되면 main으로 바뀐다. 작업 공간 effect-active. PR282는 base가 main으로 바뀐 뒤 head `70ab4f19` 그대로 병합됐다(2026-10-31T07:55:44Z, 병합 commit `dd9e755b`). |
 | 근거 폴더 | `.backups/verification/2026-10-30-attack-key-left-ctrl/`(Git 제외). 리드 원시는 `lead/`다. |
 | 실행 창 | Unity는 effect-active `03_Client` batchmode만 쓴다. `Library`(3,088,006,164 B)는 앞 goal에서 미리 가져온 것이라 다시 쓴다(메인 처분). 창은 메인 배정이다. |
 
@@ -19,8 +19,8 @@
 - [x] 구현과 통과 원시
 - [x] 독립 검증 통과
 - [x] PR 생성과 확인 항목
-- [>] PR282 병합
-- [ ] 결과 기록과 종료
+- [x] PR282 병합
+- [>] 결과 기록과 종료
 
 ## 적용 중인 사용자 결정
 
@@ -30,7 +30,18 @@
 - 결정 원문(13:5x KST 메인 pane 제출, 메인 전달 `msg_5462cd99ffc6`): 「대시보드 결정 응답: 1) 65 - 기본 공격 키를 마우스 클릭에서 왼쪽 Ctrl로 바꾸는 작업을 시연 전에 할지 → A 지금 별도 작은 PR로 한다」
 - 메인이 보드에 적은 A의 내용: PR278 병합 뒤 Effect 리드가 새 목표로 맡는다. 키보드·마우스의 공격 바인딩을 왼쪽 클릭에서 왼쪽 Ctrl로 바꾸고 Enter는 그대로 둔다. 관련 시험을 고치고 독립 검증을 받은 뒤, 사용자가 한 번 더 직접 눌러 보고 병합 승인을 한다. A는 추가 파트 Effect에 새 목표 하나를 더 맡기는 승인도 겸한다.
 - 메인 처분(`msg_6d9e5309e129`, 메인 결정): 범위 초안 v1은 보드 내용과 어긋나지 않는다. UI 맵 Click 유지와 「마우스 클릭은 공격하지 않음」 회귀 유지도 범위 안이다. 초안을 다시 사용자 승인에 올리지 않는다.
-- 초안의 질문 1(시연을 Editor Play로 하나 빌드로 하나)은 메인이 사용자에게 물었고 마지막 보고에 묶여 있다. 메인은 빌드 기준으로 진행한다(`msg_3685d4ed0fea`). 그래도 사용자의 마지막 확인이 Editor Play일 수 있어 플레이 확인 항목에 Editor에서 생길 일과 피하는 법을 한 줄 넣는다(같은 msg). Unity 단축키 설정(사용자 전역 profile)은 바꾸지 않는다(같은 msg).
+- 초안의 질문 1(시연을 Editor Play로 하나 빌드로 하나)은 메인이 사용자에게 물었고 마지막 보고에 묶여 있다. 메인은 빌드 기준으로 진행한다(`msg_3685d4ed0fea`). 그래도 사용자의 마지막 확인이 Editor Play일 수 있어 플레이 확인 항목에 Editor에서 생길 일과 피하는 법을 한 줄 넣는다(같은 msg). Unity 단축키 설정(사용자 전역 profile)은 바꾸지 않는다(같은 msg). 질문 1의 답은 아래 결정 72 B(빌드)다.
+
+### 10-31 결정 72 B — 11-06 시연은 빌드로 — msg_20097f42c3e3
+
+- 사용자 원문(2026-10-31 16:5x KST 메인 창에 Enter로 제출, 메인 전달 `msg_20097f42c3e3`): 「대시보드 결정 응답: … · 2) 72 - 11-06 시연을 Editor Play로 할지 빌드로 할지 → B 빌드 · …」
+- 메인이 전한 적용: 11-06 시연은 빌드로 한다. Editor Play의 Ctrl 단축키 회피 처리는 만들지 않는다. 시연 빌드 확인 항목에 왼쪽 Ctrl 공격을 넣는다.
+- 반영: [실행 창과 사용자 손](#실행-창과-사용자-손)에 「시연 빌드 확인 항목」을 두었다. 저장소에는 시연 빌드의 공용 확인 목록이 없어서 이 goal에 둔다. 메인도 별도 시연 목록이 없다고 확인했다(`msg_ea34b7ba5963` 4).
+- 뒤의 결정 79 C(메인 전달 `msg_3412074211cc`): 시연 PC를 이 데스크톱으로 할지에 사용자가 「시연은 영상으로 보여줄 예정임」이라고 답했다. 리드는 시연 빌드 확인 항목을 바꾸지 않았다.
+
+### 10-31 결정 76 A·77 A — 종료 Gardener 하나로 묶음, PR283 병합 뒤 바로 플레이 — msg_84d148dc5236
+
+- 원문과 적용은 [개선안 3 goal의 같은 절](../2026-10-30-kill-reward-float-text/goal.md#10-31-결정-76-a77-a--종료-gardener-하나로-묶음-pr283-병합-뒤-바로-플레이--msg_84d148dc5236)이다. 이 goal도 그 Gardener 하나가 본다(정본과 다른 이번 한 번의 사용자 결정 예외). 플레이는 이 goal의 왼쪽 Ctrl도 함께 본다.
 
 ### 10-27 결정 4 A — 리드·구현자 Claude, 독립 검증만 GPT Astra
 
@@ -166,7 +177,9 @@ TDD 순서: 선행 시험 작성자가 위 시험을 쓰고 구현 전 실패 �
   3. 인벤토리(I) 버튼 클릭은 그대로 된다.
   4. Enter 공격이 그대로다.
   5. 움직이면서 왼쪽 Ctrl로 공격하고 Q·E(Dash)를 쓸 수 있다.
-  6. Editor Play로 확인할 때: Ctrl을 누른 채 다른 키를 누르면 그 조합이 Unity Editor 단축키로 먼저 처리될 수 있다(예: Ctrl+P는 Play 중지). 이동 키를 먼저 누르고 Ctrl은 나중에 짧게 누르면 피할 수 있다. 빌드에서는 해당이 없다.
+  6. Editor Play로 확인할 때: Ctrl을 누른 채 다른 키를 누르면 그 조합이 Unity Editor 단축키로 먼저 처리될 수 있다(예: Ctrl+P는 Play 중지). 이동 키를 먼저 누르고 Ctrl은 나중에 짧게 누르면 피할 수 있다. 빌드에서는 해당이 없다. 결정 72 B로 시연은 빌드라서 이 회피 처리는 만들지 않는다.
+- 시연 빌드 확인 항목(결정 72 B):
+  1. 빌드에서 왼쪽 Ctrl로 기본 공격한다.
 
 ## 선행 시험 결과
 
@@ -212,8 +225,29 @@ TDD 순서: 선행 시험 작성자가 위 시험을 쓰고 구현 전 실패 �
 
 ## 다음 계획 후보
 
-- 터치 탭 공격의 UI 위 포인터 차단을 덮는 시험이 없다. 마우스 공격이 없어지면 `GameplayPointerInput`의 차단은 터치에만 쓰인다. BACKLOG 등록은 종료 기록 때 한다.
+- 터치 탭 공격의 UI 위 포인터 차단을 덮는 시험이 없다. 마우스 공격이 없어지면 `GameplayPointerInput`의 차단은 터치에만 쓰인다. BACKLOG `touch-tap-attack-ui-block-test`.
 
 ## 결과
 
-아직 없다.
+- PR282 병합: 2026-10-31T07:55:44Z, head `70ab4f19f4cada4e9888d6ca6dac223ec6b2ec7b`, 병합 commit `dd9e755b78ba6f19f6e8a882571cc063129d24cd`. 사용자 승인 줄을 받아 메인이 병합했다(메인 `msg_20097f42c3e3` 1). PR280 병합 뒤 base가 main으로 바뀌었고 head는 PR 생성 때와 같다(`.backups/verification/2026-10-30-playmode-precondition-ignores/lead/pr-state-16.json`).
+- 완료조건 대조:
+
+| 조건 | 결과 | 근거 |
+|---|---|---|
+| 1 `.inputactions` diff 한 줄 | 충족. path 한 줄, id·groups·`.meta` 그대로 | [구현 결과](#구현-결과) |
+| 2 EditMode 전체와 영향 PlayMode | 충족. 예외 (d) 1건(`MenuTransitionAndOutsideTown_NoPurchases`)은 구현 전과 같은 190행 실패라 막지 않는다 | [독립 검증 결과](#독립-검증-결과) |
+| 3 시험이 보이는 사실 | 충족. 왼쪽 Ctrl의 실제 TCP C_Attack, Enter 그대로, 월드 클릭·UI 클릭 C_Attack 0 | 같은 절 |
+| 4 실서버·live lane | 미실행. 7777 실서버 창을 열지 않았다. `InventoryServerIntegrationTests`와 live lane은 컴파일만 봤다 | [선행 시험 결과](#선행-시험-결과) |
+| 5 강 등급 PASS | 충족 | 같은 절 |
+| 6 사용자 직접 확인 | 충족. 병합 뒤 플레이(결정 77 A)에서 사용자가 「플레이에는 문제가 없음」·「나머지는 괜찮음」이라 답했다(결정 78 C). 함께 적은 캐릭터 선택창 의견은 이 goal 범위 밖이다 | 메인 `msg_a2b3903508fb` 1, [개선안 3 goal의 플레이 창](../2026-10-30-kill-reward-float-text/goal.md#사용자-직접-플레이-창--2026-10-31결정-77-a) |
+| 7 병합 승인 | 충족 | 위 병합 기록 |
+
+- 생존 신호: 종료 때 리드가 이 Run의 저장 우편함 원시 전체를 정본 helper로 다시 쟀다(`2026-10-30-kill-reward-float-text/lead/closeout-01/liveness-select-01.json`). 300초 초과 구간은 위 단계별 기록과 같은 넷이다. 모두 2026-10-30 UTC이고 heartbeat→heartbeat다.
+  - 작성자 07:05:59Z→07:13:52Z 473초: 리드의 head 변경 알림(`msg_593f084a8b27`, 07:09:41Z) 뒤 입력을 다시 확인한 구간이다. 이유는 작성자 보고서의 시각(`pretest-01/report.md` 21행 07:13:21Z)으로 본 것이고, 작성자가 적은 이유는 없다.
+  - 작성자 07:13:52Z→07:19:04Z 312초: Unity 1회째 실행 중(07:13:51Z~07:18:45Z, 같은 보고서 39행)이다. 이유는 위와 같은 방식으로 본 것이다.
+  - 구현자 07:54:42Z→07:59:47Z 305초: 실행 스크립트가 보낸 시작 heartbeat와 다음 heartbeat 사이이며, 구현자가 절차 이탈 1로 적었다(`implement-01/report.md` 175행).
+  - 검증자 08:43:12Z→08:48:17Z 305초: 판정서 작성 중이며, 검증자가 H1로 적었다(`verify-01/verdict.md` 129행, 원시 기준 306초).
+- 종료 Gardener: 결정 76 A로 세 goal에 하나를 두었다(정본과 다른 이번 한 번의 사용자 결정 예외). 이 goal에서 차단 관찰은 0이고, 리드 반환 GR-05(생존 신호 구간·이유)를 위 줄에 처분했다. 결과와 처분 전체는 [개선안 3 goal의 종료 Gardener 절](../2026-10-30-kill-reward-float-text/goal.md#종료-gardener--2026-10-31결정-76-a)과 [보고서](../2026-10-30-kill-reward-float-text/gardener.md)다.
+- 결정 72 B로 시연은 빌드다. Editor Play 회피 처리는 만들지 않았고, 시연 빌드 확인 항목은 [실행 창과 사용자 손](#실행-창과-사용자-손)에 있다.
+- 통과가 아닌 것: (d) `MenuTransitionAndOutsideTown_NoPurchases`는 이 goal에서 고치지 않았다. 원인 분류는 Content가 맡는다(Content 리드 `msg_1edb48816548`). 「UI 클릭이 공격하지 않는다」 9줄은 포인터 차단 경로의 증명이 아니라 「마우스 클릭은 어디서도 공격하지 않는다」의 회귀 검사로 남는다. 그중 live lane 2줄은 실행하지 않았다(V1).
+- BACKLOG `lead-direct-write-context-memo`에 [PR280 실사 처분](#10-30-메인-결정--pr280-실사의-맥락-메모-부재-처분-a--msg_57dbbc559b44)의 세 번째 관측을 덧붙였다(메인 `msg_68ef27e7bc61` 3 A). 네 번째 관측도 같이 적었다. 2026-10-31에 리드가 PR283 main 통합의 `client.md` 충돌 해소를 맥락 메모 갱신 전에 쓴 일이고, 리드가 메인에 자기 신고했다.

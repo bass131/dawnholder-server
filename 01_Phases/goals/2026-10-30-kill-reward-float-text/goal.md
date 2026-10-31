@@ -2,13 +2,13 @@
 
 ## 재개 지점
 
-**다음 첫 일:** [PR283](https://github.com/bass131/dawnholder-server/pull/283)은 사용자 직접 확인과 병합 승인을 기다린다. 병합 순서는 PR280 → PR282 → PR283이고, 병합은 마지막에 메인만 한다. 독립 검증 결과는 아래 [독립 검증 결과](#독립-검증-결과)에 있다.
+**다음 첫 일:** [PR283](https://github.com/bass131/dawnholder-server/pull/283)은 병합됐다(병합 commit `f5adcf31`). 이 goal의 결과 기록은 Effect 세 goal이 함께 쓰는 종료 기록 PR(branch `docs/effect-closeout-20261031`)에 넣는다. 그 PR이 병합되면 메인이 R-8로 리드를 새로 연다. 결과는 아래 [결과](#결과)에 있다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1(`lead/scope-draft-v1.md`, sha256 `e8a69526…`)을 메인이 사용자 원문과 대조해 통과시켰다(메인 `msg_22555c3ffe7a`). 사용자 중간 승인은 없다(메인 운영 방식). |
 | 리드 | `[Effect 리드 Opus]`(claude-opus-5-5 xhigh). Run `run_5f3209972e68`, 회신 주소 `run:run_5f3209972e68`. |
-| branch | `feat/kill-reward-float-text-20261030`. 65 A branch `feat/attack-key-left-ctrl-20261030`의 PR282 head `70ab4f19` 위에 쌓았다. 두 PR이 `client.md`와 `CURRENT.md` Effect 줄을 함께 고치기 때문이다. PR base는 65 A branch이고, 앞 PR이 병합되면 차례로 바뀐다. 작업 공간 effect-active. |
+| branch | `feat/kill-reward-float-text-20261030`. 65 A branch `feat/attack-key-left-ctrl-20261030`의 PR282 head `70ab4f19` 위에 쌓았다. 두 PR이 `client.md`와 `CURRENT.md` Effect 줄을 함께 고치기 때문이다. PR base는 65 A branch이고, 앞 PR이 병합되면 차례로 바뀐다. 작업 공간 effect-active. 2026-10-31에 PR282가 병합되어 base가 main으로 바뀌었고, PR285와 `client.md`가 부딪혀 DIRTY가 됐다. 리드가 최신 main `dd9e755b`를 통합했다(commit `2fd74253`, 아래 [결과](#결과)). |
 | 근거 폴더 | `.backups/verification/2026-10-30-kill-reward-float-text/`(Git 제외). 리드 원시는 `lead/`다. |
 | 실행 창 | Unity는 effect-active `03_Client`만 쓴다. 시험 실행은 batchmode, 캡처는 Editor 창 하나다. 창은 메인 배정이다. |
 
@@ -20,10 +20,16 @@
 - [x] 캡처
 - [x] 독립 검증 통과
 - [x] PR 생성과 확인 항목
-- [>] PR283 병합
-- [ ] 결과 기록과 종료
+- [x] PR283 병합
+- [>] 결과 기록과 종료
 
 ## 적용 중인 사용자 결정
+
+### 10-31 결정 76 A·77 A — 종료 Gardener 하나로 묶음, PR283 병합 뒤 바로 플레이 — msg_84d148dc5236
+
+- 사용자 원문(2026-10-31 17:3x KST 메인 창에 Enter로 제출, 메인 전달 `msg_84d148dc5236`): 「대시보드 결정 응답: 2) 76 - Effect 종료 점검(Gardener)을 끝난 goal 셋에 하나로 묶을지 → A 하나로 묶음 · 3) 77 - 병합된 GUI 개선 묶음 직접 플레이를 언제 할지 → A PR283 병합 뒤 바로」
+- 76 A: 종료 Gardener는 세 goal(65 A·개선안 3·실패 23건)에 하나만 연다. 보고서 한 파일에 goal별 절을 두고, 각 goal의 입력은 그대로 본다. **정본(goal마다 Gardener)과 다른, 이번 한 번의 사용자 결정 예외다.** 65 A goal과 실패 23건 goal은 이 절을 가리킨다.
+- 77 A: 사용자가 병합된 main으로 직접 플레이한다. 메인이 effect-active에 서버 1개와 Editor 1개를 배정했다. 기록은 아래 [사용자 직접 플레이 창](#사용자-직접-플레이-창--2026-10-31결정-77-a)이다.
 
 ### 10-30 개선안 3 — 몬스터 사망 때 떠오르는 보상 글
 
@@ -220,8 +226,93 @@
 
 ## 다음 계획 후보
 
-- 선행 시험이 `DungeonClearRewardWindowSceneTests`의 private helper(`AfterEarlierPacketsApply`·`EnterReadyTown`)를 복제했다. 기존 시험 쓰기 금지 때문이다. `MapEntryPlayFixture`로 올리는 일은 후속 후보다. 검증자의 새 PlayMode 시험도 작은 입력 helper를 파일 안에 두었다(판정 설계 관찰 O1). 같은 후보에서 함께 본다.
+- 선행 시험이 `DungeonClearRewardWindowSceneTests`의 private helper(`AfterEarlierPacketsApply`·`EnterReadyTown`)를 복제했다. 기존 시험 쓰기 금지 때문이다. `MapEntryPlayFixture`로 올리는 일은 후속 후보다. 검증자의 새 PlayMode 시험도 작은 입력 helper를 파일 안에 두었다(판정 설계 관찰 O1). 같은 후보에서 함께 본다. BACKLOG `dungeon-clear-test-helpers-shared`.
+- 사용자 플레이 창의 Editor 기동 기록 사고가 두 번째로 났다(아래 「사용자 직접 플레이 창」). 종료 Gardener 정리 후보 1이다. 근거 폴더 스크립트 복사를 없애는 저장소 플레이 창 helper와 node 시험을 두고, 자기 실행 시간 상한을 필수로 둔다. BACKLOG `verification-harness-powershell-helper`에 덧붙였다.
+- 계약 허용 실행 목록 밖 명령이 세 goal에서 10건 반복됐다. 종료 Gardener 정리 후보 2이고, 집계 정본 helper와 fixture 시험을 제안했다. BACKLOG `contract-exec-allowlist-audit`.
 
 ## 결과
 
-아직 없다.
+- PR283 병합: 2026-10-31T08:34:08Z, head `2fd74253d894dfd7d1f4bc66ea6e7fb2f6e60945`, 병합 commit `f5adcf31e605af3b30581746c20a64642bb144fc`. 메인이 새 head를 R-2로 대조한 뒤 사용자 승인 줄을 받아 병합했다(메인 `msg_ea34b7ba5963`·`msg_84d148dc5236` 1). 기록은 `lead/closeout-01/pr-merged-01.json`, CI는 `lead/closeout-01/pr283-checks-final-01.json`이다.
+- 완료조건 대조:
+
+| 조건 | 결과 | 근거 |
+|---|---|---|
+| 1 계산·짝짓기 규칙 시험 | 충족 | [독립 검증 결과](#독립-검증-결과) |
+| 2 PlayMode 가짜 peer 시험 | 충족. 66건 모두 통과 | 같은 절 |
+| 3 기존 EditMode 전체와 영향 PlayMode | 충족. 기존 시험 (a) 1건은 메인 처분대로 검증자가 고쳤다 | 같은 절 |
+| 4 사용자가 볼 캡처 | 충족. 1920×1080·1280×720 | [캡처 결과](#캡처-결과) |
+| 5 강 등급 PASS | 충족. main 통합 뒤에도 판정을 유지했다(아래) | 같은 절, 아래 main 통합 |
+| 6 사용자 직접 확인 | 충족. 병합 뒤 플레이에서 「플레이에는 문제가 없음」·「나머지는 괜찮음」(결정 78 C). 병합은 플레이보다 먼저 했다 | 아래 [사용자 직접 플레이 창](#사용자-직접-플레이-창--2026-10-31결정-77-a) |
+| 7 병합 승인 | 충족 | 위 병합 기록 |
+
+- 생존 신호: 종료 때 리드가 이 Run의 저장 우편함 원시 전체를 정본 helper로 다시 쟀다(`lead/closeout-01/liveness-select-01.json`). 네 단계 값은 위 단계별 기록과 같다. 작성자는 최대 293초로 초과가 없다. 300초 초과는 셋이고 모두 2026-10-30 UTC다.
+  - 구현자 10:22:07Z→10:27:09Z 302초(heartbeat→heartbeat): 대기 시한을 길게 잡아 넘었고, 구현자가 절차 이탈 9로 적었다. 뒤로는 240초로 줄였다(`implement-01/report.md` 233행).
+  - 캡처 작업자 11:23:42Z→11:28:49Z 307초(heartbeat→heartbeat): Unity 창 배정 대기 중이었다(`lead/accept-capture-01.md` 35행).
+  - 검증자 12:33:17Z→12:38:50Z 333초(status→heartbeat): 문맥 압축 뒤 실행 확인이 늦었다. 검증자가 자기 이탈로 적었다(`verify-01/verdict.md` 180행, heartbeat만 세면 381초).
+### main 통합 — 2026-10-31
+
+- 계기: 메인 `msg_20097f42c3e3` 2. 앞 PR이 병합된 뒤 PR283은 DIRTY·CONFLICTING이었다(base main, head `fef2f850`). 메인은 받은 승인 줄을 head가 바뀔 것이라 쓰지 않았다.
+- 한 일: 최신 main `dd9e755b`를 통합한 commit 하나 `2fd74253d894dfd7d1f4bc66ea6e7fb2f6e60945`(부모 `fef2f850`·`dd9e755b`). 충돌은 `client.md` 하나다. PR285의 「길드 창 배치와 밝은 스킨」 절은 main 그대로 두고, 그 뒤에 이 goal의 「처치 보상 글」 절을 글자 그대로 붙였다. `CURRENT.md`는 자동 통합됐고 main과 다른 줄은 Effect 줄 하나다.
+- 확인(근거 폴더 `lead/integrate-main-01.md`):
+  - 122경로를 두 부모와 비교했다. 이 PR만 바꾼 20경로는 PR283 head blob, main만 바꾼 100경로는 main blob이다. 양쪽이 바꾼 것은 문서 두 파일뿐이다(`lead/check-merge-blobs-01.json`).
+  - remerge-diff는 `client.md` 하나다(`lead/remerge-diff-01.txt`). 새 head 대 main은 22파일 +2132/−2로 원래와 같다. 21파일은 patch-id가 같고, `client.md`는 더한 4줄의 sha256이 같다(`lead/patch-id-per-file-01.txt`).
+  - 새 head CI 4개(code-rules·module-boundaries·architecture-tests·dotnet-tests) 모두 SUCCESS다(`lead/ci-final-01.json`).
+- 판정: main 통합과 문서 충돌 해소뿐이라 병합 관문대로 기존 독립 판정(PASS)을 유지했다. 메인이 새 head를 R-2로 대조해 같다고 했다(`msg_ea34b7ba5963` 1). 새 head에서 Unity 시험은 다시 돌리지 않았다.
+- 절차 이탈(리드 자기 신고, 메인 `msg_ea34b7ba5963` 5): `client.md` 충돌 해소는 저장소 파일 쓰기인데, 맥락 메모 갱신보다 먼저 했다. 메모는 그 뒤 `lead/closeout-01/closeout-context-01.md`에 썼다. BACKLOG `lead-direct-write-context-memo`의 네 번째 관측으로 덧붙였다.
+
+### 사용자 직접 플레이 창 — 2026-10-31(결정 77 A)
+
+- 메인 배정(`msg_84d148dc5236` 3): effect-active에 서버 1개와 Unity Editor 1개를 연다. 다른 worktree의 Unity는 이 창 동안 쓰지 않는다. 플레이는 병합된 main으로 하고 65 A(왼쪽 Ctrl)와 이 goal을 함께 본다.
+- 플레이 전 상태(`lead/play-01/play-01-preserve.json`, 08:38:26Z):
+  - HEAD `f5adcf31`(main)이고 미커밋은 문서 네 파일뿐이다. 알려진 drift 두 파일은 HEAD와 같다. 사용자 설정 두 곳은 GameViewSizes.asset 없음, Shortcuts 폴더 파일 0으로 남겼다.
+  - 관문은 Unity 0, Windows dotnet 0, 7777 수신 대기 없음, 물리 여유 17.12 GiB, commit 여유 26.56 GiB였다.
+  - 스크립트의 미커밋 검사 하나는 `trim` 결함으로 false가 나왔다. 실제 값은 문서뿐이다(`play-01-preserve-note.md`).
+- 서버: Orca 터미널 `term_cbebc49e-9815-4bb6-b7af-909f8f8000b7`에서 46.2초 만에 「GameServer running on :7777 (PID 1156)」이 나왔다(`play-01-server.json`).
+- Editor: `Unity.exe -projectPath effect-active/03_Client`를 GUI로 열었다. batchmode·장면 자동 열기·자동 Play 인자는 없다. 본체 PID 7404, 판본 6000.6.4f1(12bfff696524)이다(`play-01-launch-state-01.json`).
+- 메모리 사고(같은 원인의 두 번째 발생):
+  - Editor를 띄운 PowerShell(PID 19300, `play-01-editor.ps1`)이 끝나지 않고 메모리를 잡았다.
+  - 측정 둘: 리드가 08:48:40Z에 작업 집합 8.71 GiB·물리 여유 1.92 GiB로 쟀다(`play-01-launch-state-01.json`). 메인이 끄기 직전에 10.03 GiB·물리 여유 0.78 GiB로 쟀다(`msg_476db413d3d1` 1).
+  - 리드의 `taskkill`은 Claude 자동 모드 분류기가 거부했다. 사용자가 메인 창에서 `! taskkill //PID 19300 //F`로 직접 끝냈다. 메인은 08:52:43Z에 19300 없음, Editor 7404 살아 있음, 물리 여유 12.81 GiB로 쟀다(`msg_476db413d3d1` 1). 리드의 08:52:52Z 기록에서도 19300은 없었고 물리 여유는 12.70 GiB였다(`play-01-launch-state-02.json`).
+  - 원인: 앞 goal의 Editor 스크립트를 결함째 출력 경로만 바꿔 옮겼다. 그 스크립트는 `Get-Content`로 읽은 판본 줄을 `ConvertTo-Json -Depth 8`에 그대로 넣는다. PS5.1에서는 그 줄에 붙은 속성 때문에 객체 그래프가 끝없이 펼쳐진다고 본다. 이 펼침은 리드 추론이고, 앞 goal과 마찬가지로 재현하지 않았다. 같은 스크립트가 같은 단계에서 멈췄다는 점에서 [앞 goal의 메모리 사고](../2026-10-29-knight-dash-effect-sheet/goal.md#사용자-플레이-확인--2026-10-30)와 같은 원인이다.
+  - 두 번째 발생이라 반복 규칙 후보다(메인 `msg_476db413d3d1` 3, 채택은 사용자 결정). 판본 줄을 `[string]`으로 바꾼 2판 `play-01-editor-02.ps1`을 만들었고 실행하지 않았다. 가장 높은 교정 층 제안은 `lead/closeout-01/correction-proposal-editor-record-01.md`에 써서 종료 Gardener 입력에 넣었다.
+- 서버 교체(결정 81 A, 메인 `msg_3412074211cc`): 사용자가 새 캐릭터 선택창을 보려고 Legacy 서버 탭을 직접 Ctrl+C로 끄고, core-active의 DB 서버가 7777을 맡았다. 리드는 Legacy를 다시 켜지 않았고 Editor 7404는 그대로 두었다. 결정 80 A로 개발 DB에 시험 계정·캐릭터 행을 만드는 것이 허용됐다. 플레이 화면의 시험 캐릭터는 10-29에 만든 「시험새벽1029」다(메인 `msg_a2b3903508fb`).
+- 플레이 결과(결정 78 C, 메인 전달 `msg_a2b3903508fb`): 사용자 원문은 「대시보드 결정 응답: 1) 78 - 병합된 GUI 묶음 직접 플레이(카드 20줄) → C 코멘트 「플레이에는 문제가 없음, 근데 캐릭터 선택창에 빨간 박스 부분으로 내가 강조한 부분이 쓸데없이 공간을 많이 차지함, 캐릭터 선택 슬롯을 4개로 하고, 빈 캐릭터칸 선택시 새로운 캐릭터 생성 UI로 진입하게 수정, 나머지는 괜찮음 [Image #2]」」이다.
+  - 이 goal과 65 A(PR282·PR283)는 「나머지는 괜찮음」으로 문제가 없다(메인 `msg_a2b3903508fb` 1).
+  - 캐릭터 선택창 의견(오른쪽 설명 상자가 넓음, 슬롯 4개, 빈 칸 선택 시 생성 화면)은 두 goal 범위 밖이다. 리드는 처리하지 않았다.
+- 끝(결정 84 A, 메인 전달 `msg_36f268442791`): 사용자 원문은 「대시보드 결정 응답: 1) 84 - 플레이 끝: DB 서버 끄기(Enter)와 Editor 닫기(네 손) → A 둘 다 끝 · …」이다. 메인이 PID 7404 없음·Unity 0을 확인했다. 리드 확인 루프는 10:11:51Z에 Unity 0을 보았다.
+- 복원(`lead/play-01/play-01-restore.json`, 10:12:04Z, Unity 0 확인 뒤):
+  - 바뀐 파일은 `MinimapRT.renderTexture` 하나였고, 플레이 전 사본(HEAD와 같은 bytes)으로 되돌렸다. `ProjectSettings.asset`은 바뀌지 않았다. 알 수 없는 변경은 0이다.
+  - 사용자 설정 두 곳(GameViewSizes.asset은 플레이 전에도 없음, Shortcuts 폴더는 파일 0)은 플레이 전과 같다. 되돌린 것은 없다.
+  - 복원 뒤 `git status`는 종료 기록 문서 다섯 파일뿐이다(`lead/play-01/git-status-after-restore-01.txt`). 그때 Windows dotnet 0, 7777 수신 대기 없음, 물리 여유 17.38 GiB였다.
+  - Legacy 서버 탭은 사용자 Ctrl+C 뒤 「Server task finished with exit code 130.」으로 빈 프롬프트였다. 다시 켜지 않고 닫았다(`server-terminal-close-01.json`).
+  - 메인에 알렸다(`msg_c3a81be9ec02`). Unity 창은 메인이 Art에 넘긴다.
+- 절차 이탈(리드 자기 신고):
+  - 10:12Z쯤 터미널 목록을 저장하는 명령 앞에 빈 `node -e ""`를 한 번 붙였다. 메인이 하지 말라고 지시한 것이다. 출력과 결과에는 영향이 없다(`msg_c3a81be9ec02`). 종료 기록 중 10:58Z쯤 fetch·점검 명령 끝에 한 번 더 붙였다. 11:01Z쯤에는 점검 결과 JSON을 요약해 보는 데 인라인 `node -p`를 한 번 썼다(읽기만). 둘 다 출력과 결과에는 영향이 없고, 종료 기록 PR 준비 보고에서 메인에 신고했다.
+  - 이 플레이 창의 전 상태 저장·서버·Editor·복원은 맥락 메모 없이 했다. 계획은 각 스크립트 머리 주석과 메인 지시에만 있었다. 그중 저장소 추적 파일 쓰기는 `MinimapRT.renderTexture` 복원 하나다. 메모는 그 뒤 10:14:32Z에 `lead/closeout-01/closeout-context-01-addendum-01.md`로 보충했다. BACKLOG `lead-direct-write-context-memo`의 다섯 번째 관측으로 덧붙였다(종료 Gardener GR-06).
+
+### 종료 Gardener — 2026-10-31(결정 76 A)
+
+- 결정 76 A에 따라 세 goal(65 A·개선안 3·실패 23건)에 Gardener 하나, 보고서 한 파일을 두었다. **정본(goal마다 Gardener)과 다른, 이번 한 번의 사용자 결정 예외다**(사용자 원문은 위 [76 A 절](#10-31-결정-76-a77-a--종료-gardener-하나로-묶음-pr283-병합-뒤-바로-플레이--msg_84d148dc5236), 메인 전달 `msg_84d148dc5236`). 보고서 맨 앞에도 같은 문단이 있다.
+- 보고서: [gardener.md](gardener.md). 근거 폴더 원본 `lead/closeout-01/gardener/context-gardener-report.md`(sha256 `a93523ef267c4e7d0ae7c79e239b8fd3cbb3716a49d7acb5eddac10e5514aadf`, 59,844 B)를 bytes 그대로 옮겼다(`lead/closeout-01/gardener-settle-01.json`). worker_done은 `msg_002fdea7597b`(10:50:40Z)다.
+- 계약·기동: 계약 `lead/closeout-01/gardener-contract-v1.md`, 고정 입력 v2 108파일, 기동 기록 `gardener-launch-record-01.md`. pane `term_feb9fa3b-7e28-4de4-9676-d564a39c34d2`, 첫 화면 「Opus 5.5 with xhigh effort」. 대화 기록의 model 값은 `claude-opus-5-5` 295회다. 쓰기는 보고서 한 파일뿐이다. 정산 정규식이 잡은 쓰기형 git 1건은 `git merge-base` 읽기였다.
+- 결론: 차단 관찰 0, 리드 반환 6, 정리 후보 2. 세 goal의 판정(독립 검증 PASS 셋, 결정 78 C)을 바꿀 근거는 없었다. 후보 도착 검사는 65 A·개선안 3 goal이 exit 0, 실패 23건 goal이 exit 1이었다(GR-01).
+- 리드 반환 처분:
+
+| 번호 | 내용 | 처분 |
+|---|---|---|
+| GR-01 | 실패 23건 goal 「다음 계획 후보」 둘째 줄에 BACKLOG ID·goal 링크가 없다 | Content goal 링크를 넣고, Content가 쓰는 중인 행 이름을 적었다 |
+| GR-02 | 플레이 전 상태의 「사용자 설정 sha256을 남겼다」가 원시와 다르다(파일 없음·0개) | 「GameViewSizes.asset 없음, Shortcuts 폴더 파일 0」으로 고쳤다 |
+| GR-03 | 「08:52:43Z 전에 사라졌다」의 원시가 리드 근거에 없다 | 08:52:43Z는 메인 실측(`msg_476db413d3d1` 1)으로, 리드 기록은 08:52:52Z로 나눠 적었다 |
+| GR-04 | 시험 캐릭터 이름의 원천 msg가 틀렸다 | 원천 `msg_a2b3903508fb`와 「10-29에 만든」을 달았다 |
+| GR-05 | 300초 초과 8구간에 구간·이유가 대부분 없다 | 세 goal 「결과」의 생존 신호 줄에 구간마다 시각과 이유를 적었다. 65 A 작성자 두 구간의 이유는 보고서 시각으로 본 것이라고 밝혔다 |
+| GR-06 | 플레이 창의 맥락 메모 부재와 `MinimapRT` 복원 쓰기가 goal·BACKLOG에 없다 | 위 플레이 창 절차 이탈에 적고 BACKLOG `lead-direct-write-context-memo`에 다섯 번째 관측으로 덧붙였다 |
+
+- 정리 후보: 후보 1(Editor 기동 기록 사고)은 BACKLOG `verification-harness-powershell-helper`에 덧붙였다. 후보 2(계약 허용 목록 밖 명령)는 맞는 기존 행이 없어 새 행 BACKLOG `contract-exec-allowlist-audit`로 두었다. 둘 다 제안의 이관이며 채택이 아니다. 채택은 메인을 거쳐 사용자가 정한다.
+- 기존 행에 덧붙인 관측(보고서 「첫 발생·기존 후보 연결」): 단계 정산 때 생존 신호 helper 미실행의 세 번째 발생은 BACKLOG `heartbeat-interval-review`에, 리드 R-3 회신 이탈의 세 번째 관측은 BACKLOG `orca-general-reply-tag-guard`에 적었다. 나머지 연결은 보고서에만 둔다.
+- 설계 관찰(비차단, 리드 처분):
+  - O1 PR286의 `DEVELOPMENT.md` 실행 전제 표가 23건만 담는데 범위를 말하지 않는다. 이 종료 기록 PR에서는 고치지 않는다. 다음에 그 표를 고치는 goal이 범위 한 문장이나 캡처 시험 행을 더한다.
+  - O2 연속 병합에서 「base 바뀐 뒤 병합 전 확인」이 빠지는 구조. 병합 관문은 메인 몫이라 메인에 알린다.
+  - O3 GR-01을 goal 링크로 고쳐서, 후보 도착 검사는 원본 위치에서 다시 돌렸다. 세 goal 모두 exit 0이다(`lead/closeout-01/check-closeout-01.json`, 10:58:04Z).
+  - O4 공격 키 goal이 다른 goal 근거 폴더의 원시를 든 것. 틀리지 않아 그대로 두고, 다음 종료부터 한 폴더에 모은다.
+  - O5 Gardener 계약의 파일 보기 문장. 후보 2 행의 보조 항목에 넣었다.
+- Gardener 자신의 이탈: 계약 허용 목록 밖 읽기 전용 셸 명령 10항목을 스스로 적었다(보고서 「자기 쓰기 감사」). 생존 신호는 15회, 300초 초과 1구간 10:39:04Z→10:46:39Z 455초(heartbeat→heartbeat, `lead/closeout-01/gardener-settle-01.json`)다. 이유는 확인하지 않았다.
