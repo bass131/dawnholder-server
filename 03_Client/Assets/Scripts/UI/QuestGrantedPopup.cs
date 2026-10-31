@@ -85,7 +85,13 @@ namespace Dawnholder.Client.UI
             panelRt.sizeDelta        = new Vector2(520f, 180f);
 
             Image bg = panel.AddComponent<Image>();
-            bg.color = new Color(0f, 0f, 0f, 0.72f);
+            UiWindowAppearance.ApplyPanel(bg);
+            Image titleBand = UiWindowAppearance.CreateHeader("TitleBand", panel.transform);
+            RectTransform titleBandRt = titleBand.rectTransform;
+            titleBandRt.anchorMin = new Vector2(0f, 0.55f);
+            titleBandRt.anchorMax = new Vector2(1f, 1f);
+            titleBandRt.offsetMin = new Vector2(16f, 0f);
+            titleBandRt.offsetMax = new Vector2(-16f, 0f);
 
             // 제목.
             GameObject titleGo = new GameObject("Title");
@@ -117,7 +123,8 @@ namespace Dawnholder.Client.UI
             body.text      = $"{QuestProgressHud.QuestName}\n{QuestProgressHud.QuestObjective}";
             body.fontSize  = 22f;
             body.alignment = TextAlignmentOptions.Center;
-            body.color     = Color.white;
+            // Ink of the bright windows (InventoryPanelView).
+            body.color     = new Color(0.26f, 0.17f, 0.09f, 1f);
 
             TMP_FontAsset? font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
 #if UNITY_EDITOR
