@@ -2,20 +2,20 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-11-01 오늘 정리, PR5 문서 실사 전
+### 현재 재개 카드 — 2026-11-01 재개, PR5 문서 실사 전
 
-**다음 첫 일:** PR5 종료 기록 [PR292](https://github.com/bass131/dawnholder-server/pull/292)의 문서 실사다. 이 카드 고침 commit은 로컬에만 있다(메인 정리 지시 `msg_b1c24b5c3dea`). 다음 세션은 이 commit을 PR292 branch `docs/art-bright-look-closeout-20261101`에 push하고 PR 본문에 덧붙인 뒤, 그 head를 대상으로 신규 Astra 검증자(`[Art 검증자]`, gpt-6-astra xhigh, Fast 끔)의 문서 실사 계약을 쓴다. 계약 틀은 근거 폴더의 PR4 검증 계약 본문 `pr4-verify-contract-v1-head.md`다. 그 뒤 순서는 merge-tree 대조 → 메인 병합 준비 보고 → 사용자 승인·메인 병합 → 메인 R-8이다(메인 `msg_c7a0484439f0`·`msg_e1d856276e79`). 이어지는 일은 BACKLOG 두 행이다. 인벤토리 4열 아이콘 격자 `inventory-icon-grid`는 R-8 뒤 새 Art 리드가 범위 초안 v4로 연다. 버튼 조각 대비 `bright-button-piece-contrast`(75 A)는 리셋 뒤에 연다.
+**다음 첫 일:** PR5 종료 기록 [PR292](https://github.com/bass131/dawnholder-server/pull/292)의 문서 실사다. 11-01 재개 세션(메인 `msg_0adece212aae`)이 10-31 정리 때 로컬에만 둔 카드 고침 commit을 PR292 branch `docs/art-bright-look-closeout-20261101`에 push하고 PR 본문에 덧붙였다. 이 PR의 마지막 head를 대상으로 신규 Astra 검증자(`[Art 검증자]`, gpt-6-astra xhigh, Fast 끔)의 문서 실사 계약을 쓴다. 계약 틀은 근거 폴더의 PR4 검증 계약 본문 `pr4-verify-contract-v1-head.md`다. 그 뒤 순서는 merge-tree 대조 → 메인 병합 준비 보고 → 사용자 승인·메인 병합 → 메인 R-8이다(메인 `msg_c7a0484439f0`·`msg_e1d856276e79`). 이어지는 일은 BACKLOG 두 행이다. 인벤토리 4열 아이콘 격자 `inventory-icon-grid`는 R-8 뒤 새 Art 리드가 범위 초안 v5로 연다. 버튼 조각 대비 `bright-button-piece-contrast`(75 A)는 리셋 뒤에 연다.
 
 | 항목 | 현재 |
 |---|---|
 | 상태 | PR1~PR4는 병합됐다. 완료조건 11의 독립 검증 PASS는 채우지 못했다. 사용자 결정 94 A로 PR4 절차 결함 6건을 기록으로 닫고 PR290을 병합했다(아래 「완료조건 대조 — 종료」). PR5 PR292는 열려 있고 문서 실사 전이다. |
 | 병합 | PR1 [PR275](https://github.com/bass131/dawnholder-server/pull/275) `dc66b77e`, PR2 [PR279](https://github.com/bass131/dawnholder-server/pull/279) `7bc75898`, PR3 [PR287](https://github.com/bass131/dawnholder-server/pull/287) `6f5655df`, PR4 [PR290](https://github.com/bass131/dawnholder-server/pull/290) `b8631ccb`. 같은 worktree의 창 배치 goal PR284는 `a0195c84`다. |
-| 열린 결정 | 메인·사용자 결정 대기는 없다. PR292 병합 승인은 문서 실사 뒤 요청한다. 마지막으로 받은 메인 결정은 `msg_e1d856276e79`(1 A 생존 신호 이유 미측정 구간을 그대로 닫음, 2 A 6줄 캡처는 Core 24칸 PR 병합 뒤 격자 goal이 찍음)다. |
+| 열린 결정 | 메인·사용자 결정 대기는 없다. PR292 병합 승인은 문서 실사 뒤 요청한다. 마지막으로 받은 메인 결정은 `msg_e1d856276e79`(1 A 생존 신호 이유 미측정 구간을 그대로 닫음, 2 A 6줄 캡처는 Core 24칸 PR 병합 뒤 격자 goal이 찍음)다. 11-01 사용자 결정 100 A·101 A·102 A(`msg_da3be91ab030`)는 아래 「적용 중인 사용자 결정」에 적었다. |
 | Core 24칸 계약 | Core 제안 `msg_5254b764b105`, Art 회신 `msg_bacd33a804f4`, Core 동의 `msg_6d95ee3a3f84`, Core 참고 `msg_11d7daa692d2`. 병합 순서는 Art 격자 PR이 먼저다. |
 | 근거 폴더 | `.backups/verification/2026-10-29-inventory-character-select-look/`. 종료 기록 조립·점검은 그 아래 `closeout-01/`이다. |
 | R-8 노트 | 3판 `.backups/verification/2026-10-29-inventory-character-select-look/r8-record-notes-pr4-verify-1031-03.md` |
-| 격자 초안 | v4 `.backups/verification/2026-10-29-inventory-character-select-look/inventory-icon-grid-scope-draft-v4.md`, sha256 `5dd9cce30cd41ca25f442a592082d392fa05a985c6eb4e67d9a9c486d9d0cf2a`(같은 폴더 `inventory-icon-grid-scope-draft-v4-sha-1101-01.txt`) |
-| 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), Run `run_6ae742140ce9`. 사용자가 세션을 마칠 때 pane을 닫는다. |
+| 격자 초안 | v5 `.backups/verification/2026-10-29-inventory-character-select-look/inventory-icon-grid-scope-draft-v5.md`, sha256 `a499d833e6a631340f5ac90c0a863e38b383c26bab19e9366cc35e4a0f6462ef`(같은 폴더 `apply-1101-decisions-1101-01.txt`). v4(`5dd9cce3…cf2a`)에 사용자 100 A 확정과 102 A 시험 작성자 배정을 더했다. |
+| 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), Run `run_6ae742140ce9`. 11-01 재개 세션은 새 대화 `fbe40291-bff5-4306-aa0b-2c18fbe46943`, pane `term_18da0016-6b2f-4388-bf7f-8eea25cdbb9a`이고 같은 Run을 run-use로 다시 묶었다(근거 폴더 `closeout-01/resume-entry-1101-01.txt`·`closeout-01/run-use-fields-1101-01.txt`). |
 | 이미지 생성 | 상한 11회 중 5회다. PR3·PR4는 0회다. |
 | 미추적 파일 | [석재 지형·환경물 교체](../2026-10-28-stone-terrain-environment-replacement/goal.md#closeout-20261029) goal의 미추적 파일은 art-active에 그대로 있고 커밋하지 않는다. |
 
@@ -34,6 +34,23 @@
 
 ## 적용 중인 사용자 결정
 
+### 11-01 사용자 결정 100 A·101 A·102 A — 창 높이 확정, Gardener·선행 시험 작성자 배정 — msg_da3be91ab030
+
+- 사용자 원문(11-01 08:5x KST, 메인 pane Enter 제출, 메인 `msg_da3be91ab030` 전달): 「대시보드 결정 응답: 1) 100 - 인벤토리 24칸(4열×6줄) 창 높이를 키울지(칸 81px), 지금 높이 720px를 지킬지 → A 창을 키운다(칸 81px) · 2) 101 - 목표 종료 정리 점검 세션(Gardener)을 앞으로도 Codex Sol max로 열지, 정본대로 Claude Opus로 돌릴지 → A Codex Sol max 유지 · 3) 102 - 「작업자를 Codex로」에 선행 시험 작성자도 넣을지(지금 해석), 구현자만으로 좁힐지 → A 시험 작성자 포함(대신 Astra로)」
+- 메인 해석과 적용(같은 메시지)
+  - 101 A: 목표 종료 Gardener(목표가 끝난 뒤 기록·규칙 후보를 훑는 읽기 전용 점검 세션)는 앞으로도 신규 `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode`로 연다.
+  - 102 A: 선행 시험 작성자는 Sol max 대신 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`로 연다. 태그는 `[<파트> 시험 Astra]`다. 「대신 Astra로」는 시험 작성자에만 붙은 말로 읽었다. 구현자는 신규 Sol max(`[<파트> Sol]`) 그대로다. 이미 떠 있는 세션의 모델은 바꾸지 않는다.
+  - 리드는 Claude, 독립 검증자는 신규 GPT-6-Astra xhigh 그대로다.
+  - 메인이 CLAUDE.md 4A 절에 이 배정을 반영하는 PR을 연다. 병합 전에도 이 결정은 지금부터 적용한다.
+- Art 몫(같은 메시지): 100 A: 24칸 창 높이는 칸 81px·창 790~810px로 사용자가 확정했다. 지난 세션 메인 결정과 같다. 격자 goal 초안 v4와 R-8 노트에 「사용자 100 A로 확정」을 적어 새 Art 리드가 읽게 하라.
+- 리드 처리: 격자 초안 v4는 sha가 메인 메시지·카드·BACKLOG에 인용돼 있어 덮지 않았다. v4에 100 A 확정과 102 A 시험 작성자 배정을 더한 v5 `.backups/verification/2026-10-29-inventory-character-select-look/inventory-icon-grid-scope-draft-v5.md`(sha256 `a499d833e6a631340f5ac90c0a863e38b383c26bab19e9366cc35e4a0f6462ef`)를 만들고 카드·BACKLOG의 참조를 v5로 옮겼다. R-8 노트 3판에도 「사용자 100 A로 확정」을 적었다.
+
+### 10-31~11-01 사용자 지시 — 오늘 정리와 재개 — msg_b1c24b5c3dea·msg_0adece212aae
+
+- 10-31 사용자 원문(메인 pane 제출, 메인 `msg_b1c24b5c3dea` 전달): 「대시보드 결정 응답: 1) 99 - 자동 진행기 DB 서버 두 판(네 손 약 30분)을 오늘 밤에 할지, 일어나서 할지 → C 코멘트 「오늘은 여기까지하고 전부 정리하자」」
+  - 리드는 새 단계를 열지 않았다. 재개 카드를 고쳐 로컬 commit까지 하고 멈췄다(「정리 끝」 `msg_a83378553a3f`).
+- 11-01 사용자 원문(메인 pane 제출, 메인 `msg_0adece212aae` 전달): 「지난번에 하던 작업 이어서 진행해서 마무리해보자」
+  - 메인이 이 리드를 `--resume --fork-session`으로 다시 열었다. 리드는 같은 Run을 run-use로 다시 묶고 PR292의 문서 실사부터 잇는다.
 ### 10-31 사용자 결정 94 A와 종료 순서 — msg_021f63e57b9f·msg_04b649a5bef9·msg_c7a0484439f0·msg_d1466a9af034
 
 - 사용자 원문(메인 pane 제출, 메인 `msg_021f63e57b9f` 전달): 「병합 승인: PR290 head 9f0d2d5fbf0b3a469dda11dfa35dc6256477f05e」. 메인은 이 줄을 현황판 94의 A로 읽었다. PR4 판정의 절차 결함 6건(#PR4V-01~06)을 기록으로 닫는다는 뜻이다.
@@ -48,7 +65,7 @@
 - 사용자 원문 2(메인 전달): 「그러면 작업자를 Codex로 바꿔줘, 이번에 사용한도 다시 2배 되었거든」
 - 92의 앞 지시 원문: 「그리고 추가 개선안으로 인벤토리는 4xN 형태로 만들어줘, 그리고 각 칸은 아이콘만 띄우고, 마웃스 포인터로 올려놨을때 상세표기가 나오게 개편하자」
 - 메인 해석: 구현자와 선행 시험 작성자는 새 `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode`, 태그 `[<파트> Sol]`이다. 같은 계약에서 두 번째 독립 불합격 뒤 다음 시도는 새 gpt-6-astra xhigh `[<파트> 구현 Astra]`다. 리드는 Claude Opus, 검증자는 새 GPT-6-Astra xhigh 그대로다.
-- 격자 개편은 이 goal에서 하지 않는다. 다음 goal로 간다(BACKLOG `inventory-icon-grid`, 아래 「다음 계획 후보」). 그 범위 초안 v1은 메인이 승인했다(`msg_8eaa6efd4b3a`, 메인 결정). 95 B·96 A(`msg_021f63e57b9f`) 뒤 v2, 사용자 결정 97 A(24칸, 4×6, 메인 `msg_99abe9fb4182` 전달) 뒤 v3를 메인 지시대로 고쳤다. 메인이 v3를 승인하고 창 높이 A(칸 81, 6줄 790~810)를 정했다(`msg_599b28e18b73`, 메인 결정). 그 메시지대로 고친 v4가 이어받는 리드의 입력이다. 97 A 원문: 「대시보드 결정 응답: 1) 97 - 인벤토리를 24칸(4×6)으로 늘릴지, 8칸(4×2)으로 둘지 → A 24칸으로 늘림」. 칸 수 변경은 Core가 한다. Core 리드와 맺은 24칸 계약(`msg_5254b764b105`·`msg_bacd33a804f4`·`msg_6d95ee3a3f84`)은 BACKLOG 행에 있다. 6줄 사용자 확인 캡처는 Core PR 병합 뒤 격자 goal이 찍는다(메인 결정 2 A `msg_e1d856276e79`). 메인 원문: 「1920×1080 「화면 안」 단정을 줄 수 인자로 6줄까지 볼지는 새 리드가 RED 계약에서 정한다.」
+- 격자 개편은 이 goal에서 하지 않는다. 다음 goal로 간다(BACKLOG `inventory-icon-grid`, 아래 「다음 계획 후보」). 그 범위 초안 v1은 메인이 승인했다(`msg_8eaa6efd4b3a`, 메인 결정). 95 B·96 A(`msg_021f63e57b9f`) 뒤 v2, 사용자 결정 97 A(24칸, 4×6, 메인 `msg_99abe9fb4182` 전달) 뒤 v3를 메인 지시대로 고쳤다. 메인이 v3를 승인하고 창 높이 A(칸 81, 6줄 790~810)를 정했다(`msg_599b28e18b73`, 메인 결정). 그 메시지대로 고친 v4에 사용자 100 A 확정과 102 A 시험 작성자 배정을 더한 v5가 이어받는 리드의 입력이다(위 11-01 절). 97 A 원문: 「대시보드 결정 응답: 1) 97 - 인벤토리를 24칸(4×6)으로 늘릴지, 8칸(4×2)으로 둘지 → A 24칸으로 늘림」. 칸 수 변경은 Core가 한다. Core 리드와 맺은 24칸 계약(`msg_5254b764b105`·`msg_bacd33a804f4`·`msg_6d95ee3a3f84`)은 BACKLOG 행에 있다. 6줄 사용자 확인 캡처는 Core PR 병합 뒤 격자 goal이 찍는다(메인 결정 2 A `msg_e1d856276e79`). 메인 원문: 「1920×1080 「화면 안」 단정을 줄 수 인자로 6줄까지 볼지는 새 리드가 RED 계약에서 정한다.」
 
 ### 10-31 사용자 결정 87 C·89 A·90 A·91 C — Codex 0.166.0과 캡처 창 — msg_4445b69a907b·msg_6cb21b24d3d0·msg_bf85b0566655·msg_e39367a0d2ac
 
