@@ -4,7 +4,12 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR268 독립 검증자 계약을 신규 GPT-6-Astra xhigh(`[Content 검증자]`)로 발행한다. 검증은 Unity 창(U3·Player 빌드)과 창 8(DB 영속 서버 두 판)이다. 구현은 commit됐고 U2와 Legacy DEBUG 실주행 한 판을 통과했다(진행 기록 10-31 「자동 진행기 구현」). 창 8의 두 판 구성은 Core와 맞췄다. 캐릭터 선택창(PR-A, PR #291)은 main에 들어갔다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
+**다음 첫 일:** 새 PR268 독립 검증자(신규 GPT-6-Astra xhigh, `[Content 검증자]`)를 띄운다 → 메인에 Unity 검증 창(U3·Player 빌드)을 청한다 → 창 8(DB 영속 서버 두 판, 사용자 손)을 Core와 맞춰 청한다. 10-31 검증자는 정적 실사만 하고 사용자 지시로 멈췄다(진행 기록 10-31 「자동 진행기 검증(중단)」). 새 계약은 v1(`lead/pr268-verify-contract-v1.md`)을 바탕으로 기준 HEAD와 앞 검증자의 부분 보고를 넣어 v2로 다시 조립한다. 구현은 commit·push됐고 U2와 Legacy DEBUG 실주행 한 판을 통과했다. 캐릭터 선택창(PR-A, PR #291)은 main에 들어갔다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
+
+- 열린 결정: 창 8 시점은 사용자 결정 99 → C(「오늘은 여기까지하고 전부 정리하자」, 메인 `msg_29d5cb57b68d`)라 다음 세션에 메인이 다시 정한다. 그 밖에 Content가 사용자·메인에 올린 열린 결정은 없다. PR268 병합 승인은 검증 뒤 따로 청한다.
+- 창 8 약속(Core `msg_a6e92219cbe1`·`msg_0c71d92c392b`): 서버는 core-active를 DB 시연 branch `feat/db-persistence-demo-build-20261031`(v22)로 바꿔 띄운다. Core가 그 전에 24칸 WIP commit·branch 전환·`sync-wsl.sh build`를 한다. 서버 창 원문은 메인이 사용자 서버 탭을 세 시점에 읽는다. 시각이 정해지면 Core에 먼저 알린다. Core 24칸 PR이 먼저 main에 들어가면 PR268에 main을 다시 합치고 서버·클라를 v23으로 다시 빌드해야 한다.
+- 빌드 계약 입력: PR-A(완료)·PR268·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR 병합(`msg_d0012352013c`·`msg_d783ac17eb63`).
+- 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
 
 | 항목 | 현재 |
 |---|---|
@@ -199,3 +204,8 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 창 6(17:44:00Z~): 구현자 반환 관측 18:09:21Z, 리드 재확인 18:11:28Z 모두 Unity·Windows dotnet·Player·7777 0. Unity 생성 drift 5경로는 patch를 `lead/window6-drift/`에 남기고 리드가 18:11:10Z에 복원했다. 창 끝 `msg_de18b6fadc9c`.
   - 그 뒤: PR268 branch에 main `58c8d4cb`를 합쳤다(`89646e4f`, 트리 변화 0). 구현 commit `585486f5`.
   - 창 8 구성(Core `msg_a6e92219cbe1`): 1판 새 계정으로 생성 경로 → 서버 Enter 정지·같은 창 재시작 → 2판 같은 계정으로 선택 경로. Core는 재시작 시간, 정지 요약 두 줄, 2판 목록 캐릭터가 1판과 같은지를 본다. 원시는 Content 근거에 남기고 경로만 Core에 넘긴다. B5 이름은 계정 `v268_knight1101`·`v268_mage1101`, 캐릭터 `V268Knight`·`V268Mage`다(Core 확인).
+- 2026-10-31 자동 진행기 검증(중단): 검증자 `[Content 검증자]`(신규 GPT-6-Astra xhigh, 첫 화면 「GPT-6-Astra xhigh」·v0.166.0) task_f7562aa13e39 / ctx_2f64b6a4037e, 계약 `lead/pr268-verify-contract-v1.md`(sha256 `91b0f0236bc93be10bd53724b0f6753fe4a08507399578f847db0508e5d3f99a`, 범위 PR268 전체 diff, 10-28 첫 판 포함). 사용자 결정 99 → C(메인 `msg_29d5cb57b68d`)로 정적 실사 중에 멈췄다. 부분 보고 `pr268-verify-01/partial-report.md`(sha256 `9efac4a385e0314763f7ace05959c930e1c72cb0d74b1a2933b98306ae9ff5a9`), worker_done `msg_4f6a54239e8e`(outcome failed = 중단, 제품 불합격 아님), 정산 18:41Z(retained, pane 닫음).
+  - 끝낸 것: 계약·입력 39개 대조, 맥락 메모, 구현자 U2 XML·빌드 hash·Legacy 로그 재계산(일치), 선행 시험이 RED 뒤 바뀌지 않음, B1 코드 경로 확인. Unity·Player·서버는 띄우지 않았다.
+  - 결함 후보 C1(미재현, 확정 아님): presenter는 생성 때 그리지 않아 메뉴 접속이 끝나기 전에도 `MenuState`가 null이다. 장면 뒤 1초에 이 값이 null이면 단계가 Legacy로 판단하고, 메뉴가 열린 동안 직업 단추는 아무것도 하지 않아 입장이 멈출 수 있다(`CharacterSelectController.cs:45~65`, `CharacterMenuPresenter.cs:41~63`, `DemoCharacterMenuStep.cs:42`). 설계 관찰 O1: `WaitFor`는 시간 초과를 경고만 하고 넘어가 `done`만으로 모든 단계 성공을 보장하지 않는다.
+  - 판정용 시험 2파일(미컴파일·미실행, EditMode 8메서드 26 cases + PlayMode 지연 handshake 1건)은 작업 트리에서 빼고 사본과 sha256을 `pr268-verify-01/untracked-tests-saved/`에 남겼다. 다음 검증자가 계약 v2 입력으로 다시 쓸지 정한다.
+  - 남은 것: U3, 검증자 Player 빌드, 창 8 두 판, 판정 결론.
