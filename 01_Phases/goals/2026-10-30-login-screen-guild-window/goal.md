@@ -2,12 +2,12 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 두 PR이 열렸고(#281 로그인, #285 길드 창, [길드 창 PR](#길드-창-pr)) 리드가 할 일은 끝났다. 사용자 확인·병합을 기다린다. 병합 뒤 종료 기록(Gardener·종료 점검)을 하고, 그때 [후속 후보](#후속-후보)를 BACKLOG에 올린다. 잉크 10건은 기준 실패로 안고 간다([새 잉크 규칙](#10-30-새-잉크-규칙--msg_5f2256a9b8ccmsg_56e1b4790f84)).
+**다음 첫 일:** 제품 PR 둘(#281 로그인, #285 길드 창)은 병합됐다([병합](#병합)). 사용자 직접 플레이에서 둘 다 문제 없음이었다([사용자 직접 확인](#사용자-직접-확인)). 종료 Gardener도 끝났다([종료 기록](#종료-기록)). 종료 기록 PR(branch `docs/content-login-guild-closeout-20261031`)의 메인 확인·병합을 기다린다. 그 뒤 R-8로 리드를 바꾼다. 새 리드가 맡을 넷(PR268 자동 진행기 수정, 길드 입구 겹침, 녹화용 빌드 계약, 캐릭터 선택창)은 [다음 계획 후보](#다음-계획-후보) 앞 네 줄이다. 순서와 착수는 메인이 진입 메시지에서 정한다. 원인 미확정 기존 실패 13행은 사용자 결정 73 A로 실패인 채 후보가 됐다.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_736bf752c0e4`). 초안 원문은 `.backups/verification/2026-10-30-login-screen-guild-window/scope-draft-v1.md`(sha256 `fa745f0ec4672113daa1656b124ac23532a78e1920cc5c93bdea96ed82b76ebb`)다. |
-| branch | PR-A `feat/content-login-guild-window-20261030`, base `7bc758987e3816e0690f4df78f8160fbc3da2135`(PR279 병합), PR #281. PR-B `feat/content-guild-base-window-20261030`, PR-A head `926dd306cd1c6628e6a9b2e4b9c039b871e08d83` 위, PR #285(base PR-A branch) |
+| branch | PR-A `feat/content-login-guild-window-20261030`, base `7bc758987e3816e0690f4df78f8160fbc3da2135`(PR279 병합), PR #281 → 병합 `d6ee0e9aa5fa1b59d264b72d783711310e0195ad`. PR-B `feat/content-guild-base-window-20261030`, PR-A head `926dd306cd1c6628e6a9b2e4b9c039b871e08d83` 위, PR #285 → 병합 `3ac8d148e7c296e31153a293743a7043697adb68`. 종료 기록 `docs/content-login-guild-closeout-20261031`, base main `dd9e755b78ba6f19f6e8a882571cc063129d24cd` |
 | 리드 | `[Content 리드 Opus]`(claude-opus-5-5 xhigh), 회신 주소 `run:run_978c01afcf2a` |
 | 근거 폴더 | `.backups/verification/2026-10-30-login-screen-guild-window/` |
 
@@ -40,6 +40,41 @@
 - 선행 시험 방식: **경량 경로 미적용, 정본 TDD**다(선행 시험 Opus → 구현 Opus → 검증 Astra). 결정 34 A는 「선택·생성 화면의 검증 방식」에 대한 결정이라 이 goal로 넓히지 않는다.
 - 길드 창 스킨: `GuildWindowLayout`을 쓰는 두 창(길드 현황·대장간)의 밝은 스킨 적용도 PR-B가 맡는다. 조건은 셋이다. 기존 BrightSkin 부품만 쓴다(새 그림 0). 외관 계약 시험(UiWindowAppearance 쪽)에 두 창이 기대하는 값이 있으면 바꾸기 전에 전수 분류 표를 메인에 올린다. PR-B 캡처를 Art 리드에게 보여 외관 의견을 받는다(판정은 독립 검증자다).
 - Unity 창은 요청 순서대로 메인이 하나씩 배정한다. 요청은 무엇·예상 시간·관문 측정 출력 경로 세 줄이다. 관문은 물리·commit 여유 각 4 GiB와 Unity·Windows dotnet 0이다.
+
+### 10-30~31 밤 메인 처분 — msg_cc0974bdecf9·msg_6abfb530ebd4
+
+메인 결정이다(사용자 결정 아님).
+
+- Gold 겹침(`msg_cc0974bdecf9`, 2026-10-30T19:59:38Z): PR #281·#285의 head와 판정은 그대로 두고 후속 후보로 둔다. 밤에는 새 goal을 열지 않는다. 마지막 보고에서 「지금 작은 목표로 고칠지」를 사용자에게 묻는다. 이 처분은 아래 74 A로 대체됐다.
+- Art PR287 사후 확인(`msg_6abfb530ebd4`, 2026-10-30T23:19:01Z): 1 A는 `_summary.color` 잉크 한 줄을 조건 밖 한 줄로 받는 비차단 처분이다. 2 A는 PR #285와 PR #287을 합친 트리에서 길드 동작 시험 6건을 Content가 돌리는 것이다([병합 순서 확인 — Art PR287과 합친 트리](#병합-순서-확인--art-pr287과-합친-트리)).
+
+### 10-31 사용자 결정 73 A·74 A — msg_ad91509e146b
+
+메인 `msg_ad91509e146b`(2026-10-31T07:57:40Z)가 전달한 사용자 원문이다(16:5x KST 메인 창에 Enter로 제출). 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: … · 3) 73 - 원인 미확정 기존 실패 13행(잉크 글자 12·길드 창 위치 1) 처분 → A 실패로 두고 후속 후보 · 4) 74 - NPC 대화·보상 창 중 「길드 · G」 입구가 Gold 칸을 덮는 겹침 → A 지금 작은 목표로 고침 · …
+
+- 73 A: 13행은 「통과 아님」으로 남고 BACKLOG `guild-ink-undetermined-failures`가 된다. 시험은 고치지도 끄지도 않는다. 원인 둘(문턱 0.305 경계의 반올림, 작은 화면 문장부호 1화소 미만)과 근거 경로를 후보에 적는다(메인 지시 2).
+- 74 A: 겹침을 지금 작은 목표로 고친다. 이 goal의 병합 기록과 결과 기록을 먼저 끝낸다. 그 뒤 메인이 R-8로 리드를 새 세션·새 Run으로 열고, 새 리드가 최신 main에서 범위 초안을 쓴다(메인 지시 3). 넘길 사실은 [다음 계획 후보](#다음-계획-후보)에 있다.
+- 같은 메시지의 병합 결과는 [병합](#병합)에 적었다.
+
+### 10-31 사용자 결정 77 A — msg_6845b2cf838e
+
+메인 `msg_6845b2cf838e`(2026-10-31T08:35:54Z)가 전달한 사용자 원문이다(17:3x KST 메인 창에 Enter로 제출). 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 2) 76 - Effect 종료 점검(Gardener)을 끝난 goal 셋에 하나로 묶을지 → A 하나로 묶음 · 3) 77 - 병합된 GUI 개선 묶음 직접 플레이를 언제 할지 → A PR283 병합 뒤 바로
+
+- 77 A: 사용자가 PR #283까지 병합된 main `f5adcf31`로 직접 플레이한다. 서버와 Editor는 Effect가 effect-active에 연다. content-active는 Unity를 쓰지 않는다.
+- PR #281·#285의 사용자 직접 확인 결과는 플레이가 끝나면 메인이 전달한다. 그 결과는 [사용자 직접 확인](#사용자-직접-확인)에 적고, 전달 전에는 비워 둔다. 종료 Gardener는 그대로 진행한다.
+- 76 A는 Effect goal의 Gardener 묶음 결정이라 이 goal에 적용하지 않는다.
+
+### 10-31 다음 goal 입력 — msg_141a6249a95c·msg_d488173b6d09·msg_45b7227b04ff
+
+이 goal에 적용하는 결정이 아니다. R-8 뒤 새 Content 리드의 다음 goal 입력이다.
+
+- 사용자 결정 82 B·83 A와 메인 배분(`msg_141a6249a95c`, 2026-10-31T09:37:13Z): 메인 지시대로 사용자 원문 대신 메시지 ID로 적는다. 내용은 [다음 계획 후보](#다음-계획-후보)의 PR268·길드 입구·녹화용 빌드 계약 세 줄이다.
+- 사용자 결정 78 C(`msg_d488173b6d09`, 2026-10-31T10:03:05Z): 사용자 원문은 [사용자 직접 확인](#사용자-직접-확인)에 있다. 캐릭터 선택창 의견은 다음 goal 입력이다.
+- 사용자 결정 84 A·85 A(`msg_45b7227b04ff`, 2026-10-31T10:12:26Z): 84 A로 플레이에 쓴 DB 서버와 Editor는 닫혔다. 85 A로 캐릭터 칸은 3개를 유지하고 화면만 지금 고친다. 4칸은 11-06 뒤 후보다.
 
 ## 만들 것
 
@@ -187,10 +222,16 @@
 ## 남은 한계
 
 - 잉크 판정의 셋째 규칙은 글자 전체가 고르게 흐려진 경우를 정점 덮임이 0.305 아래로 갈 때만 covered로 잡는다. 둘째 규칙은 그보다 덜 흐려도 가장자리 화소가 빠져 잡혔다. 음성 대조 7종에는 반투명 덮개가 없다. 이 게임의 창은 불투명 패널이라 시연 영향은 낮다고 메인이 보았다(msg_56e1b4790f84).
-- `GuildWindowIndependentSceneTests`의 잉크 시험은 u3c의 11건 중 709×399 새로고침 1건이 U4부터 통과한다. 나머지 10건은 기준 실패로 남는다(리드 분류: 규칙 측정 잡음, 사용자 처분 대기, msg_10b3a91e6988). 길드 동작 6건과 일시정지 메뉴 시험은 통과다. 이 통과들은 캡처 폴더 변수를 준 따로 실행 기준이다. 변수가 없는 전체 실행에서는 가려진 17건이 모두 실패한다.
-- 검증자 새 시험의 `FindObjectsByType` 정렬 인자 호출 두 곳이 CS0618(없어질 예정인 API 경고) 4줄을 낸다. 정렬 인자 없는 overload로 바꾸는 것은 후속 후보다(검증 관찰 D-3).
-- `GuildHousingLayout.Arrange`는 두 창 배치 플래그가 바뀔 때만 부품을 옮긴다. 나중에 길드 창에 동적 행이 생기면 등록 즉시 현재 배치를 적용해야 한다(검증 관찰 D-2).
-- 서버·DB·수동 Overlay 플레이·Player build·CI는 실행하지 않았다. 실제 게임 안 길드 창은 사용자의 마지막 플레이에서 본다.
+- `GuildWindowIndependentSceneTests`의 잉크 시험은 u3c의 11건 중 709×399 새로고침 1건이 U4부터 통과한다. 나머지 10건은 기준 실패로 남는다(리드 분류: 규칙 측정 잡음, msg_10b3a91e6988). 길드 동작 6건과 일시정지 메뉴 시험은 통과다. 이 통과들은 캡처 폴더 변수를 준 따로 실행 기준이다. Effect PR #286 병합 뒤에는 변수가 없으면 가려진 시험이 실패 대신 건너뛴다.
+- Effect PR #286 검증자의 lane별 실행에서 원인 미확정 기존 실패는 13행이다(캡처 lane 잉크 11, permit lane 잉크 1·창 위치 1). 위 10건과 같은 집합이라고 단정하지 않는다. 사용자 결정 73 A로 13행은 실패인 채 BACKLOG `guild-ink-undetermined-failures`가 됐다.
+- 검증자 새 시험의 `FindObjectsByType` 정렬 인자 호출 두 곳이 CS0618(없어질 예정인 API 경고) 4줄을 낸다(검증 관찰 D-3, BACKLOG `test-find-objects-sort-overload`).
+- `GuildHousingLayout.Arrange`는 두 창 배치 플래그가 바뀔 때만 부품을 옮긴다. 나중에 길드 창에 동적 행이 생기면 등록 즉시 현재 배치를 적용해야 한다(검증 관찰 D-2, BACKLOG `guild-housing-arrange-on-register`).
+- 이 goal의 단계에서는 서버·DB·수동 Overlay 플레이·Player build를 실행하지 않았다. 실제 게임 안 확인은 [사용자 직접 확인](#사용자-직접-확인)이다.
+- PR #281·#285 head의 GitHub CI 네 workflow(test 둘, check 둘)는 병합 전에 모두 성공으로 끝났다. 마지막 완료 시각은 #281이 10-30T09:01:58Z, #285가 10-30T14:23:27Z다(`closeout-01/pr281-285-checks-02.json`).
+- 네 workflow 파일에는 Unity라는 낱말이 없다(`closeout-01/ci-workflows-unity-01.txt`). Unity 시험은 CI에서 돌지 않으므로 위 13행 실패는 CI에 드러나지 않는다.
+- Art PR4(나머지 화면 밝게)의 Content 사후 확인이 남았다. `UI.unity` 일시정지 메뉴에 밝은 Panel Image 하나와 버튼 셋의 sprite가 바뀐다고 Art가 알렸다(`msg_87475f2609f8`). PR4 head가 오면 Content 일시정지 메뉴 좌표·입력 시험의 이름 단위 결과와 `UI.unity` diff를 본다. R-8 뒤에는 새 Content 리드가 맡는다.
+- Effect PR #283과 이 goal의 `domains/client.md` 충돌은 Effect가 두 절을 모두 남겨 풀었다. PR #283은 `f5adcf31`로 병합됐고, 길드 창 배치와 밝은 스킨 절이 남은 것은 메인이 확인했다(`msg_6845b2cf838e`).
+- 사용자 직접 플레이(78 C)의 캐릭터 선택창 의견은 이 goal 밖이다. 다음 goal 입력으로 넘겼다([다음 계획 후보](#다음-계획-후보)).
 
 ## 진척 단계
 
@@ -204,6 +245,8 @@
 - [x] 길드 시험 보정과 버튼 글자
 - [x] 길드 창 독립 검증
 - [x] PR 두 개 준비
+- [x] PR #281·#285 병합
+- [x] 사용자 직접 플레이 확인(77 A, 결과 78 C)
 - [>] 종료 기록
 
 ## 단계 결과와 근거
@@ -278,8 +321,8 @@
 
 - 작성자 계약 `pr-b-testfix-contract-v1.md`(sha256 `aa9f4fc4…5307`), task_becdc378e067, `[Content 구현 Opus]` claude-opus-5-5 xhigh(backend 실제 모델 unknown). 구현자와 다른 새 세션이다.
 - U3(메인 배정 `msg_ee98de084a53`, 10:07:40Z~10:21:56Z): ⓪ 가려진 17건은 통과 6·실패 11이다. 실패 11건은 첫 잉크 규칙 실행이라 판정에 쓰지 않는다. 일시정지 메뉴 시험은 실패에서 통과로 바뀌었다. ① EditMode 1582 전부 통과다. ② PlayMode 225 중 통과 169·실패 37·건너뜀 19다. 구현 U2b와 이름 단위로 비교하면 기존 실패 23건은 같은 이름·같은 첫 문구이고, 새 실패 14건은 모두 새 선행 시험(버튼 글자 6·두 창 글자 크기 8)이다. 양성 대조 1건은 통과다(`compare-u2b-u3-*-01.txt`).
-- u3b(같은 창, 10:23:38Z~10:26:28Z): 둘째 규칙으로 ⓪만 다시 돌렸다. 통과 6·실패 11이다. 처리는 [새 잉크 규칙](#10-30-새-잉크-규칙--msg_5f2256a9b8ccmsg_56e1b4790f84)이다. drift 두 파일은 리드가 복원했다(`drift-after-u3b-01.txt`).
-- u3c(메인 배정 `msg_fb5a90f7eae1`, 10:53:59Z~10:58:15Z): 셋째 규칙으로 ⓪만 돌렸다. 통과 6·실패 11이다. 처분은 [새 잉크 규칙](#10-30-새-잉크-규칙--msg_5f2256a9b8ccmsg_56e1b4790f84)의 u3c 줄이다. drift 두 파일은 리드가 복원했다(`drift-after-u3c-01.txt`).
+- u3b(같은 창, 10:23:38Z~10:26:28Z): 둘째 규칙으로 ⓪만 다시 돌렸다. 통과 6·실패 11이다. 처리는 [새 잉크 규칙](#10-30-새-잉크-규칙--msg_5f2256a9b8ccmsg_56e1b4790f84)이다. drift 기록(`drift-after-u3b-01.txt`)에는 `ProjectSettings.asset` 한 파일의 diff만 있다. `MinimapRT.renderTexture`와 복원 뒤 상태의 원시는 없다(종료 Gardener GR-05).
+- u3c(메인 배정 `msg_fb5a90f7eae1`, 10:53:59Z~10:58:15Z): 셋째 규칙으로 ⓪만 돌렸다. 통과 6·실패 11이다. 처분은 [새 잉크 규칙](#10-30-새-잉크-규칙--msg_5f2256a9b8ccmsg_56e1b4790f84)의 u3c 줄이다. drift 기록(`drift-after-u3c-01.txt`)은 u3b 기록과 sha256이 같은 파일이고, 역시 `ProjectSettings.asset` diff만 있다. `MinimapRT.renderTexture`와 복원 뒤 상태의 원시는 없다(종료 Gardener GR-05).
 - 작성자 worker_done failed(`msg_556596ca1708`, 메인 조건 1), 보고 `pr-b-testfix-01/report.md`. 리드 R-2 정산 `pr-b-testfix-settlement-01.md`: 시험 hash 여섯, 맥락 메모 선행(09:43:23Z, 첫 시험 쓰기 09:48:02Z), 새 세션·응답 모델 `claude-opus-5-5`·Agent 0, 조건 2·3의 368화소 재계산, 음성 대조 표가 원천과 맞았다. 리드 답의 「②에서 잉크 11건이 첫 단계에서 실패」 단정은 틀렸고, ②는 판정 단계까지 갔다.
 - commit `c39826b3`(시험 네 파일과 `.meta` 둘, u3c 판).
 
@@ -291,7 +334,7 @@
 - 측정값(메인 조건 `msg_0ef90a8302b0`): 두 창 배치 길드 글자는 대장간 같은 역할 대비 0.999~1.002다. 1920 두 창 그림 폭은 589.91px다. 단독 그림 면적은 2.556배로 유지된다. 709 새로고침 글자의 F∩S/S는 u3c 0.7895에서 U4 1.0000이 됐다.
 - PlayMode 실패 23건은 가려진 17건(전체 실행에서는 캡처 폴더 변수가 없어 모두 실패)과 창 1의 환경 실패 6건이다. 709 잉크 시험이 ⓪에서 통과하고 ②에서 실패하는 것도 같은 이유다(`unjudgeable evidence … no capture folder`). 그래서 잉크 11건의 판단 원천은 ⓪이다.
 - 구현자 worker_done succeeded(`msg_bf46461ec60d`), 보고 `pr-b-fix-01/report.md`. 리드 R-2 정산 `pr-b-fix-settlement-01.md`: 파일 hash 넷, 맥락 메모 선행(11:13:27Z, 첫 제품 쓰기 11:27:42Z), 응답 모델 `claude-opus-5-5`·Agent 0, U4 수, 측정값 셋과 709 값이 원천과 맞았다. drift 두 파일은 리드가 복원했다(`drift-after-u4-01.txt`).
-- 구현자 이탈 첫 발생(메인 처분 `msg_9d004457a37c`, A 기록하고 비차단): 수정 구현자가 분석 중간 파일 2개(`analyze-dryrun.json`·`patch-analyze.cjs`)를 계약이 정한 `pr-b-fix-01/`이 아니라 TEMP 폴더 뿌리 `.backups/tmp/pr-b-fix/`에 썼다. U4 전 분석 초안이고 최종 결과에 들어가지 않는다. 두 파일은 이 PR이 병합되거나 닫힐 때까지 옮기거나 지우지 않는다. hash는 `fix-temp-root-files-01.txt`다.
+- 구현자 이탈, 이 goal 안 첫 발생(메인 처분 `msg_9d004457a37c`, A 기록하고 비차단, 프로젝트 전체로는 반복이라 종료 Gardener 정리 후보 1): 수정 구현자가 분석 중간 파일 2개(`analyze-dryrun.json`·`patch-analyze.cjs`)를 계약이 정한 `pr-b-fix-01/`이 아니라 TEMP 폴더 뿌리 `.backups/tmp/pr-b-fix/`에 썼다. U4 전 분석 초안이고 최종 결과에 들어가지 않는다. 두 파일은 이 PR이 병합되거나 닫힐 때까지 옮기거나 지우지 않는다. hash는 `fix-temp-root-files-01.txt`다.
 - 리드 교정 첫 발생: 리드가 정산에서 이 규칙 위반을 「비차단」으로 스스로 정했다. 검증자가 질문으로 바로잡았다(`msg_8db1aa15d24a`). 규칙 위반을 비차단으로 넘기려면 리드가 먼저 메인 처분을 받는다.
 - 같은 원인의 다른 버튼 글자(HUD 입구, 인벤토리, 파티 초대, 보상 창)는 이 goal 밖이라 종료 때 후속 후보로 올린다.
 - commit `b42194e1`(제품 3파일과 `client.md` 한 문장).
@@ -338,14 +381,92 @@
 - 실행(창 `msg_abc0623dcc38`, 13:50:54Z~13:53:31Z, `scripts/run-joined-art284.ps1`): total 6·passed 6·skipped 0으로 lane 통과다. 로그에 스크립트 재컴파일이 있고 컴파일 오류는 없다. 리드가 1920 `inventory-priority.png`를 직접 봤다. 인벤토리가 Art의 새 자리(왼쪽 390×720)에 열렸고 두 창은 닫혀 있다. 근거는 `joined-art284-01/`이다.
 - 되돌림(`joined-restore-01.txt`): drift 두 파일을 복원했고, branch와 HEAD `ae839e0c`로 돌아왔다. porcelain은 0줄이다. 메인이 반환과 결과를 따로 대조했다(`msg_a38f5cbd5bcf`). 이 결과는 병합 순서 확인 근거로만 쓰고 두 PR의 판정을 바꾸지 않는다.
 
-### 후속 후보
+### 병합 전 사후 확인 — Effect PR286·Art PR287
 
-종료 기록 때 BACKLOG에 올린다. 모두 이 goal 밖이다.
+- Effect PR #286(head `bf044c7235d0a956b019b245ca366a3833363980`, base PR #285 branch)의 Content 시험 두 파일을 소유자 조건과 정적으로 대조했다. `GuildGameplayWindowTestTools.cs`(+3/−1)와 `GuildWindowIndependentSceneTests.cs`(+23/−1)다. 위반은 없다(`msg_4fa569dcdb6d`). diff 원문은 `pr286-content-files-diff-bf044c72-01.txt`(sha256 `e4a2ff4a…ed44`)다. Unity 실행 판정은 Effect 독립 검증 원문을 따른다.
+- Art PR #287(PR3, head `2d3f65d70b34d199ac740ac84ac4578914fa5822`)의 Content 제품 세 파일을 사후 확인했다(`msg_e1273534ac4d`). 원문은 `pr287-content-product-diff-01.txt`(sha256 `844c9580…37e2`)다.
+  - 조건 1·2·4는 충족했다. 색 값만 바뀌었고, 새 값은 모두 알파 1이며, head 알림을 받았다.
+  - 조건 밖 한 줄 `DungeonClearRewardWindow.cs`의 `_summary.color`는 메인 처분 1 A(`msg_6abfb530ebd4`)로 비차단이다.
+  - 조건 3에서 `GuildGameplayWindowTests` 6건은 Art 실행에 캡처 변수가 없어 판정되지 않았다. 메인 처분 2 A로 아래 합친 트리 실행을 했다.
+  - `UI.unity` diff는 글자색 필드 11곳뿐이다(`pr287-ui-unity-diff-01.txt`). hunk 11개가 각각 `m_fontColor`와 32비트 사본 `m_fontColor32`의 `rgba`를 함께 바꿔, 바뀐 줄은 빠진 줄 22·더한 줄 22다. Art 검증자 설계 관찰 D2(잉크가 세 파일에 인라인)는 BACKLOG `ui-ink-shared-palette`다.
 
-- 같은 원인의 버튼 글자 처짐(`TextAlignmentOptions.Center`): HUD 입구, 인벤토리, 파티 초대, 보상 창.
-- 대장간 창 다듬기 한 묶음: 빈 띠와 「보유 골드」 줄 크기(Art 4·5번), 안쪽 여백(A), 두 창 세로 정렬(C). 주 행동 버튼 자리(B)는 따로 둔다.
-- 잉크 판정 시험: 사용자 처분에 따라 합성 fixture로 민감도를 확인한다(검증 D-1).
-- 길드 창에 동적 행이 생길 때 등록 즉시 현재 배치를 적용한다(검증 D-2).
-- 시험의 `FindObjectsByType` 정렬 인자 호출을 새 overload로 바꾼다(검증 D-3, PR-A 시험·기존 시험 포함).
-- PR-A 정산의 후속: TMP Awake 글꼴 경고, 실제 플레이어 Enter 이중 제출 시험, 밝은 조각 함수 공용화.
-- 「전제를 준 lane의 Ignored는 실패」를 실행 계약의 skipped 0 기준으로 둔다(Effect 조율 `msg_196d2c0ec1d4`).
+### 병합 순서 확인 — Art PR287과 합친 트리
+
+- 메인 처분 2 A(`msg_6abfb530ebd4`)로 시험 주인인 Content가 돌렸다. PR #285 head `c41952da`와 Art PR #287 head `2d3f65d7`을 합친 tree `f2566a1399b7937c8d6c4cfc210bb23c61a49db0`다. `git merge-tree` 충돌은 0이다(`merge-tree-pr285-pr287-01.txt`). 방법은 PR284 합친 트리와 같고, commit·push는 없다(`joined-art287-prepare-01.txt`).
+- 실행(창 `msg_5e6cfeba298d`, 23:21:06Z~23:25:53Z, batchmode, `scripts/run-joined-art287.ps1` sha256 `d7acd183…115c`): `GuildGameplayWindowTests` total 6·passed 6·failed 0·skipped 0이다. 결과 원문은 `joined-art287-01/gameplay-results.xml`(sha256 `04adab90…6a6a`)이다. PR284+PR285 합친 트리의 6/6과 이름·결과가 모두 같다(`compare-joined-art284-art287-01.txt`).
+- 리드가 1920 `npc-priority`·`normal-locked` 캡처를 직접 봤다. NPC 대화의 새 잉크 글자가 크림 바탕 위에서 읽힌다. 길드 현황·대장간 창은 밝은 스킨이고 글자 넘침은 보이지 않는다. NPC 대화 중 길드 입구가 Gold 칸을 덮는 기존 겹침도 그대로 보인다.
+- 되돌림(`joined-art287-restore-01.txt`): drift 두 파일을 복원했고 branch와 HEAD `c41952da`로 돌아왔다. porcelain은 0줄이다. 23:26:33Z 관문 출력에서 Unity 0·dotnet 0이다(`gate-lead-joined-art287-return-01.json`). 반환은 `msg_3ca627311d1a`다. 이 결과는 병합 순서 확인 근거로만 쓰고 두 PR의 판정을 바꾸지 않는다.
+
+### 병합
+
+- 사용자가 PR마다 승인 줄을 제출했고 메인이 병합했다(메인 `msg_ad91509e146b`). 병합 commit의 둘째 부모가 승인 head와 같다(`closeout-01/merge-parents-01.txt`, 병합 목록은 `main-merges-closeout-01.txt`).
+
+| PR | 승인 head | 병합 commit | 병합 commit 시각(UTC) |
+|---|---|---|---|
+| #281 로그인 화면 | `926dd306cd1c6628e6a9b2e4b9c039b871e08d83` | `d6ee0e9aa5fa1b59d264b72d783711310e0195ad` | 2026-10-31T07:54:07Z |
+| #285 길드 창 | `c41952da5f323d3f062ced15a317a8a5fa0d07fe` | `3ac8d148e7c296e31153a293743a7043697adb68` | 2026-10-31T07:54:23Z |
+| #286 Effect 전제 분류(이 goal의 시험 위) | `bf044c7235d0a956b019b245ca366a3833363980` | `9cc80a9d2b8cf17766831e8f93e06a6322237d33` | 2026-10-31T07:54:37Z |
+
+- GitHub `mergedAt`은 #281이 07:54:07Z로 commit 시각과 같고, #285는 1초 늦은 07:54:24Z다(`closeout-01/pr281-285-checks-02.json`).
+
+- 같은 시각대에 Art #284·#287, Effect #280·#282도 병합됐다. 그때 main HEAD는 `dd9e755b78ba6f19f6e8a882571cc063129d24cd`였다. Effect #283은 그 뒤 `f5adcf31e605af3b30581746c20a64642bb144fc`(2026-10-31T08:34:07Z)로 병합됐다(`closeout-01/main-after-pr283-01.txt`).
+
+### 사용자 직접 확인
+
+- 사용자 결정 77 A로 사용자가 main `f5adcf31`에서 직접 플레이했다. 화면은 DB 영속 서버와 effect-active Editor, 10-29 시험 캐릭터 「시험새벽1029」다.
+- 메인 `msg_d488173b6d09`(2026-10-31T10:03:05Z)가 전달한 사용자 원문이다(19:0x KST 메인 창에 Enter로 제출). 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 78 - 병합된 GUI 묶음 직접 플레이(카드 20줄) → C 코멘트 「플레이에는 문제가 없음, 근데 캐릭터 선택창에 빨간 박스 부분으로 내가 강조한 부분이 쓸데없이 공간을 많이 차지함, 캐릭터 선택 슬롯을 4개로 하고, 빈 캐릭터칸 선택시 새로운 캐릭터 생성 UI로 진입하게 수정, 나머지는 괜찮음 [Image #2]」
+
+- 결과: PR #281(로그인 화면)과 #285(길드·대장간 창)는 「나머지는 괜찮음」으로 문제 없음이다(메인 판단, 같은 메시지 1).
+- 빨간 상자는 캐릭터 선택창 오른쪽 설명 상자다(메인 설명). PR #281·#285는 캐릭터 메뉴·선택 파일을 바꾸지 않았다(`closeout-01/character-menu-untouched-01.txt`). 의견은 다음 goal 입력이고, 칸 수는 85 A로 3개 유지다([다음 계획 후보](#다음-계획-후보)).
+- 플레이에 쓴 DB 서버와 Editor는 84 A로 닫혔다(`msg_45b7227b04ff`).
+
+### 종료 기록
+
+- 리드 맥락 메모: `lead-context-memo-closeout-01.md`(08:05:28Z, 종료 기록 대상 파일 첫 쓰기 전). 근거는 `closeout-01/`이다.
+- BACKLOG 「로그인 화면·길드 창 종료에서 연결한 후보」 절에 11행을 올렸다. 이 goal의 후속 후보 일곱 줄, 밤사이 메모 셋, 사용자 결정 73 A·74 A가 원천이다. 그 뒤 5행을 더해 16행이 됐다. 새 리드 입력 넷(`msg_141a6249a95c`·`msg_d488173b6d09`·`msg_45b7227b04ff`)과 Gardener 정리 후보 1이다(`closeout-01/backlog-section-02.md`).
+- 후보 도착 검사(`closeout-01/check-candidates-run-01.cjs`): `allowed`, exit 0이다. 후보 12줄 모두 BACKLOG ID를 인용하고, 모르는 ID·중복 ID는 0이다(`closeout-01/check-candidates-01.json`). Gardener 반환 처리와 새 리드 입력 넷을 더한 뒤 2차(`closeout-01/check-candidates-run-02.cjs`)도 `allowed`, exit 0이다. 후보 16줄, BACKLOG ID 218개, 모르는 ID·중복 ID 0이다(`closeout-01/check-candidates-02.json`).
+- 생존 신호 정산(`closeout-01/liveness-01.cjs`, 정본 helper): 판정 `over`, exit 1이다. 여덟 Dispatch에서 300초 초과가 32구간이고 최대는 758초(PR-B 수정 구현)다. 공식 질문 대기는 0구간이다. 이 goal은 단계마다 정산하지 않아 종료 때 한 번에 쟀다. 구간·이유 한 줄 표는 `closeout-01/liveness-settlement-02.md`다(01판의 분류 기준 문장을 종료 Gardener GR-03으로 고친 판, 표와 수는 같다). 그 Dispatch 자기 Unity 창과 겹친 것이 6구간이고, 겹치지 않은 것이 26구간(작업자 한 턴 안의 읽기·작성·분석)이다. 창 밖 가운데 두 구간은 다른 작업자의 Unity 창과 시각이 겹친다. 원시 감사는 범위 밖 쓰기·실행을 의심할 다른 근거가 없어 하지 않았다.
+- 종료 Gardener: `[Content Gardener]` claude-opus-5-5 xhigh, task_553cd6d24bdf·ctx_6b04c79656ca, 08:21:26Z 기동, worker_done `msg_4f77ba2556c2`(08:53:24Z)다. 보고서는 [gardener.md](gardener.md)이고, 원본 `closeout-01/gardener/context-gardener-report.md`(sha256 `8bb03991…bdf9`, 39,400 B)와 bytes가 같다. 결론은 차단 관찰 0, 리드 반환 6, 정리 후보 2다. 기동 기록은 `closeout-01/gardener-launch-record-01.md`다.
+- Gardener 정산(`closeout-01/gardener-settle-01.json`): 대화 기록의 응답 모델은 `claude-opus-5-5` 336건뿐이고 Agent 호출은 0이다. 지정 TEMP `.backups/tmp/gardener01/`에는 `claude` 한 항목이 있다. 정산 스크립트 안의 생존 신호 실행은 대기 출력 꼬리 때문에 input-error였다. 저장 inbox로 다시 쟀다(`closeout-01/gardener-liveness-02.json`, exit 1, `over`). 08:21:48Z~08:53:24Z에 신호 10개이고, 300초 초과는 08:45:32Z→08:51:43Z의 371초 한 구간이다. 원시 감사는 하지 않았다.
+- 리드 반환 여섯은 모두 고쳤다.
+
+  | 번호 | 고친 곳 |
+  |---|---|
+  | GR-01·02 | BACKLOG `guild-ink-undetermined-failures` 이유 칸: 기준을 PR #285 head `c41952da`로, 덮인 글자 수를 해상도별(880×531 2~3개, 1920×1080 3~5개)로 |
+  | GR-03 | 위 생존 신호 정산 줄과 `liveness-settlement-02.md`(`liveness-settlement-render-02.cjs`) |
+  | GR-04 | [남은 한계](#남은-한계)의 CI 줄. 완료 시각 원시 `pr281-285-checks-02.json`(`pr281-285-checks-02.cjs`) |
+  | GR-05 | [길드 시험 보정](#길드-시험-보정--unity-창-pr-b-u3u3bu3c)의 u3b·u3c drift 문장 |
+  | GR-06 | 아래 줄 |
+
+- GR-06 처분: 보존 기한(PR #285 병합)이 지난 이탈 파일 셋은 그 자리에 그대로 둔다. `.backups/tmp/pr-b-fix/`의 `analyze-dryrun.json`·`patch-analyze.cjs`와 근거 폴더 뿌리의 `static-review.md`다. 셋 다 Git 밖이다. 지우거나 옮기면 hash 기록(`fix-temp-root-files-01.txt`, `verify-static-review-stray-01.txt`)과 대조할 원본이 사라진다. 처분 주체는 Content 리드이며 메인에 알린다.
+- 설계 관찰 셋을 반영했다. `UI.unity` 글자색 필드 문장, 병합 표의 시각 열 이름, CI가 Unity 시험을 돌리지 않는다는 줄이다. CURRENT의 Effect 줄이 낡았다는 관찰은 Effect 몫이라 건드리지 않았다.
+- 정리 후보 1(작업자·검증자의 계약 지정 폴더 밖 쓰기, 4개 goal 5건)은 BACKLOG 새 행 `worker-contract-folder-boundary-check`(담당 후보 Rules)다. `worker-harness-only-execution`에 합칠지는 Rules가 정한다. 정리 후보 2(단계 정산의 생존 신호 helper 미실행, 세 번째 발생)는 기존 행 `heartbeat-interval-review`에 더했다. 둘 다 제안의 이관이며 채택이 아니다.
+- Gardener 자기 감사의 이탈은 메인 처분을 기다린다. 계약은 Read·Grep 도구와 git 읽기만 허용했는데, 읽기·표시용 셸 명령(`ls`·`cat`·`sed`·bash `grep`·`for`, `cd … &&` 뒤 우편함 확인, `> /dev/null`, `| sha256sum`)을 썼다. JSON에 돌린 bash `grep -o` 범위 정규식이 120초 제한을 넘겼고, 남은 `grep`·`head` 프로세스는 Gardener가 스스로 껐다. 쓴 파일은 지정 폴더의 보고서 하나다. 리드는 이 이탈을 비차단으로 정하지 않았다.
+- Gardener 실행 중 리드의 우편함 대기 하나가 메모리 부족으로 Claude Code에 의해 꺼졌다. 이 run의 남은 orca 대기 프로세스는 없었다. 대기는 자동으로 다시 열지 않았고, 메인 안내 때 한 번 확인했다(`closeout-01/check-after-main-nudge-01.json`).
+
+## 다음 계획 후보
+
+모두 이 goal 밖이다. 후보 등록은 착수 승인이 아니다. 앞 네 줄은 R-8 뒤 새 Content 리드가 맡는다(메인 배분 `msg_141a6249a95c`, 캐릭터 선택창은 `msg_d488173b6d09`·`msg_45b7227b04ff`). 순서와 착수는 메인이 진입 메시지에서 정하고, 범위 초안은 새 리드가 최신 main에서 쓴다.
+
+- BACKLOG `demo-autoplay-character-menu`: PR268 시연 자동 진행기 수정이다. 최신 main 통합, 새 캐릭터 메뉴(목록·생성·선택) 단계 추가, 독립 검증, 병합 승인 요청을 한다(`msg_141a6249a95c`). 11-06 녹화의 가장 긴 경로라고 메인이 봤다.
+- BACKLOG `guild-entry-gold-overlap`: NPC 대화·보상 창 중 「길드 · G」 입구가 Gold 칸을 덮는 겹침이다. 사용자 결정 74 A로 지금 작은 목표로 고친다(`msg_ad91509e146b`, 배분 `msg_141a6249a95c`). 넘길 사실은 넷이다.
+  - 캡처: `art-active/.backups/verification/2026-10-29-inventory-character-select-look/pr3-capture-01/raw/k3/attempt-01/captures/npc-dialog-1920x1080.png`. PR285+PR287 합친 트리 캡처 `joined-art287-01/captures/`에서도 같다.
+  - 원인 코드가 들어온 때: 10-19 `451cbf4a`(입구를 `GuildUiController.cs:52`에서 오른쪽 아래 (-16, 16)에 고정), 10-23 `0770855b`(`HudLayout.PlaceBesideBottomWindow`가 대화·보상 창을 피해 Gold 칸을 오른쪽 끝으로 옮김). 리드가 겹침을 처음 본 것은 10-30 Art 캡처다.
+  - 리드 분석: `msg_01db9e5ec9eb`. 보상 창 때의 겹침은 코드 읽기 추론이며 미관측이다.
+  - 이 goal의 PR #285는 입구 자리와 `HudLayout`을 바꾸지 않았다.
+- BACKLOG `demo-recording-build-contract`: Core DB 시연 goal의 녹화용 빌드 계약이다(`msg_141a6249a95c`). Core 리드와 함께 정한다.
+- BACKLOG `character-select-three-wide-slots`: 캐릭터 선택창의 오른쪽 설명 상자를 없애고 3칸을 넓혀 채운다. 빈 칸을 누르면 바로 캐릭터 생성 화면으로 간다. 클라만 바꾼다(`msg_d488173b6d09`·`msg_45b7227b04ff`, 78 C·85 A). 설명 상자 문구 후보 `character-menu-selecting-detail-text`를 흡수할지는 착수 때 정한다.
+- BACKLOG `character-slot-count-four`: 캐릭터 칸 4개는 DB CHECK 제약과 저장 프로시저까지 바꾸는 일이라 85 A로 11-06 뒤 후보다(`msg_45b7227b04ff`).
+- BACKLOG `guild-ink-undetermined-failures`: 원인 미확정 기존 실패 13행이다. 사용자 결정 73 A로 실패인 채 둔다. 검증 관찰 D-1(합성 fixture)을 함께 본다.
+- BACKLOG `ui-button-caption-midline`: 남은 버튼 글자 처짐(HUD 길드 입구, 인벤토리, 파티 초대, 보상 창).
+- BACKLOG `smithy-window-polish`: 대장간 창 다듬기 묶음(Art 의견 A·C, Art 4·5번).
+- BACKLOG `smithy-primary-action-placement`: 대장간 주 행동 버튼 자리(Art 의견 B).
+- BACKLOG `guild-housing-arrange-on-register`: 동적 행 등록 때 현재 배치 적용(검증 D-2).
+- BACKLOG `test-find-objects-sort-overload`: 시험의 `FindObjectsByType` 정렬 인자 호출 교체(검증 D-3).
+- BACKLOG `main-menu-login-view-followups`: TMP Awake 글꼴 경고, Enter 이중 제출 실제 입력 시험, 밝은 조각 함수 공용화.
+- BACKLOG `capture-lane-skip-guard`: 전제를 준 lane의 건너뜀 0 검사와 실서버 lane 두 변수(Effect 관찰 `msg_762fa094e676`).
+- BACKLOG `guild-capture-blank-predicate`: 캡처 변수의 빈 값 판단식 통일(Content 답 A `msg_5e4d2d7151f9`).
+- BACKLOG `ui-ink-shared-palette`: 밝은 조각 위 잉크색을 한곳에 모으기(Art 검증 D2).
+- BACKLOG `main-menu-error-layout`: 기존 후보다. 이 goal이 오류 글을 로그인 창 안 한 줄로 옮겨, 후보의 수정 전 관측이 더 낡았다. 착수 전에 지금 화면에서 다시 잰다.
