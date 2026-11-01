@@ -2,17 +2,17 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-11-01 선행 시험 RED commit·main 받기 뒤
+### 현재 재개 카드 — 2026-11-01 구현 v1 commit 뒤, 맵 이동 시험 고침 전
 
-**다음 첫 일:** 구현 계약 v1(근거 폴더 `grid-impl-contract-v1.md`, `[Art Sol]`)을 메인에 보고한다. 메인에게 Unity 창을 받은 뒤 구현자를 띄운다. 계약에는 아래 「선행 시험 RED — 2026-11-01」의 「구현 계약으로 넘길 것」과 「남은 위험」이 들어 있다. 구현자가 끝날 때까지 리드는 이 파일을 고치지 않는다(같은 절 첫 발생 1). 그동안의 기록은 근거 폴더의 리드 맥락 메모에 쌓고 구현 뒤 옮긴다.
+**다음 첫 일:** 시험 고침 계약 v1(근거 폴더 `grid-fix-contract-v1-head.md`, 새 `[Art 시험 Astra]`)을 마무리해 메인에 보고하고 작성자를 띄운다. 메인 결정 `msg_28eea903507a`대로 맵 이동 시험 한 건의 두 우클릭만 고친다. 고친 뒤 PlayMode 전체를 한 번 돌리고, 그래도 실패하면 제품 결함으로 보고 새 구현자를 연다. 작성자가 끝날 때까지 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모(`art-lead-context-1101-01.md`)에 쌓는다.
 
 | 항목 | 현재 |
 |---|---|
-| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`). 선행 시험 RED를 마치고 시험을 commit했다(`219f7cdb`, 아래 「선행 시험 RED — 2026-11-01」). 그 뒤 main을 받았다(`9e883317`). 구현은 아직 0이다. |
+| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`). 선행 시험 RED commit `219f7cdb`, main 받기 `9e883317` 뒤 구현 v1을 commit했다(`4eddf759`, 아래 「구현 v1 — 2026-11-01」). F PlayMode 실패 1건이 열려 있다. |
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), 대화 ID `c92c0adb-250c-48fd-b4cc-8d6c85df4386`. 회신 주소는 `run:run_6687e0512b2c`다. |
 | branch | `feat/art-inventory-icon-grid-20261101`이다. origin/main `ffe7f983b96eda8002a27169b3e8b7cb5eb32c72`(PR292 병합)에서 만들었다. RED commit 뒤 origin/main `3bb76772`(PR268 병합)을 받았다. 받기 commit은 `9e88331743064b390f6ab1d238dc173825a4bd23`이고 충돌은 0이다(근거 폴더 `main-merge-1101-01.txt`). |
 | 관계 | Core 인벤토리 24칸 goal(`core-active/01_Phases/goals/2026-11-01-inventory-24-slots/goal.md`, Core PR 때 main에 들어간다)이 패킷·서버·공유 칸 수를 바꾼다. 병합 순서는 이 goal의 격자 PR이 먼저다(아래 「Core 24칸 계약 — 확정」). |
-| 실행 창 | W1 Unity 창 세 번을 썼다. U0 04:30~05:00Z, U1 04:56~05:20Z, U1 03 05:18~05:40Z이고 모두 반납했다. Unity·WSL·DB 창은 메인이 배정한다. |
+| 실행 창 | W1 Unity 창 세 번을 썼다. U0 04:30~05:00Z, U1 04:56~05:20Z, U1 03 05:18~05:40Z이다. 구현 v1은 05:57~06:45Z 창을 받아 06:18Z에 일찍 반납했다. 모두 반납했다. Unity·WSL·DB 창은 메인이 배정한다. |
 | 근거 폴더 | `.backups/verification/2026-11-01-inventory-icon-grid/`다. Git 제외 폴더다. 앞 goal의 근거 폴더 `.backups/verification/2026-10-29-inventory-character-select-look/`에 초안 v1~v6과 facts 1031판이 있다. |
 
 ## 적용 중인 사용자 결정
@@ -271,3 +271,36 @@
 - RED commit은 `219f7cdb1c2bfc5b26a4ae741d27ff8b6f459a91`이고 push했다. 18파일이다: 시험 11파일 수정, 새 시험 3파일과 Unity가 만든 `.meta` 3개, 이 goal 파일. 미추적 5개는 그대로다(근거 폴더 `red-commit-1101-01.txt`). 메인 보고는 `msg_ff551fa53383`이다.
 - main 받기: RED commit 뒤 origin/main `3bb76772`(PR268 병합)을 받았다(`9e883317`, `main-merge-1101-01.txt`). 들어온 것은 Demo 자동 진행기 코드·시험, `CharacterSelectController` 15줄, client.md 두 줄이다. Demo 코드 4파일에 인벤토리 참조는 없다. 새 Demo 시험이 들어와 전체 시험 수가 U0·U1과 달라진다. 그래서 구현 결과는 「main 받은 뒤 기준」 실행과 비교한다(구현 계약). client.md의 인벤토리 문장은 InventoryPanel :50, InventoryPanelView :52, 사용 :56이다.
 - 리드 자기 신고: RED commit 뒤 보내기 명령 모양을 찾는 읽기 명령 하나에서 `2>/dev/null`을 썼다. 그 출력의 값은 어떤 기록에도 쓰지 않았다. 규칙은 이미 있다(메인 `msg_4bef008e3fa9`). 메인에 보고한다.
+
+### 구현 v1 — 2026-11-01
+
+- 계약은 근거 폴더 `grid-impl-contract-v1.md`(sha256 `5b2360560ab91a7dfe6722541ecbe445160e8b2d491c98f21f19d86cba9046a5`)다. 메인 보고는 `msg_d29db3a6e0fe`다. 리드가 RED 설계에 더 정한 것은 둘이다. 가림 판정은 TMP 글을 그린 글자 범위로 보고, 상세 창이 켜진 동안 매 프레임 다시 본다. 상세 창 자리는 네 방향을 같은 코드로 화면 안에 맞춘다.
+- 구현자는 `[Art Sol]` gpt-6.1-sol max다. handle `term_2fd3ecb2-661a-4268-8465-a6e4ea12359b`, Task `task_7b979ecc38e5`, Dispatch `ctx_7dc19ffcfd36`이다. rollout으로 cwd·model·effort를 대조했다(`grid-impl-launch-rollout-check-01.txt`). worker_done은 `msg_a1a672b6cd71`(06:26:33Z, outcome failed)이고, 보고는 `grid-impl-01/report.md`(sha256 `0b8e090cdae266d367a196eead006e093c4e3b761b5e0e24b9789bd98378af16`)다. pane은 대기 확인 뒤 닫았다(`impl-pane-close-1101-01.json`).
+- 쓴 것: `InventoryPanelView.cs`, `InventorySlotHoverHighlight.cs`(공용 helper로 바꾼 한 줄), 새 `InventorySlotPointer.cs`·`InventoryPointerGeometry.cs`·`InventoryOverlayOcclusion.cs`와 Unity가 만든 `.meta` 셋, client.md다. 시험·ProjectSettings 쓰기는 0이다(`lead-write-end-check-1101-01.txt`).
+- 결과는 아래 표다. 원시 결과 XML에서 리드 스크립트로 다시 뽑았다(`lead-r2-impl-v1-1101-01.txt`).
+
+| 실행 | 통과 / 실패 / 건너뜀 |
+|---|---|
+| R(격자 시험 묶음만 거른 EditMode) | 116 / 0 / 0 |
+| F EditMode 전체 | 1781 / 0 / 0 |
+| F PlayMode 전체 | 224 / 1 / 46 |
+
+- 리드 원천 대조(`lead-r2-impl-v1-1101-02.txt`, 기준은 RED U1 최종 실행)
+  - EditMode: RED 실패 13건이 모두 통과로 바뀌었다. F에만 있는 46건은 main 받기로 들어온 Demo 시험이고 모두 통과다.
+  - PlayMode: RED 실패 15건 중 14건이 통과로 바뀌었다. F에만 있는 1건은 Demo 시험이고 통과다.
+  - 두 실행 모두 RED에서 통과·건너뜀이던 시험의 결과 변화는 0이다.
+- 열린 실패 D-IMPL-01: `InventorySceneLifecycleTests.MapTransition_RebuildsOnePanelWithTheStoredMirror_RequeriesAfterReady_AndEndingHasNone` :522에서 C_ItemUse가 기대 1·실제 0이다. 구현자 분류는 (d)다.
+  - 이 시험은 RED commit에서 사용 버튼 검사를 「우클릭 → 6프레임 → 사용 1건」으로 바꾼 것이다. 같은 패킷을 보는 형제 시험은 최대 3초를 기다린다. 클릭 좌표는 누르기 전에 한 번만 재고, 패널은 HUD를 따라 자기 Update에서 움직인다(`lead-d-impl-01-look-1101-01.txt`~`-03.txt`).
+  - 리드 가설은 「움직이는 패널을 눌렀거나 6프레임 안에 패킷이 도착하지 않았다」이다. 확정이 아니다.
+  - 리드는 진단 실행 없이 멈추고 보고하게 했다(`msg_5448fbbd3ab0`). 메인 체크포인트 `msg_9de519bcc878`에 메인이 「A」로 답했다(`msg_28eea903507a`). 새 `[Art 시험 Astra]`가 이 시험의 두 우클릭만 고친다. 두 클릭 모두 패널이 멈추기를 기다리고, 사용 패킷은 최대 3초 기다린다. 다시 실패하면 제품 결함으로 보고 새 구현자를 연다. 같은 시험 산출물의 세 번째 수정이며, 네 번째는 사용자 판단이다. 구현 확정 실패 집계와는 따로다.
+- Unity 창: 메인 `msg_463977b9ecb6` 05:57~06:45Z이다. 구현자 쪽 한국어 decoding 실패로 창 메시지를 ASCII 줄과 함께 다시 보냈다(`msg_e1c07936ef5a`). 06:18Z에 일찍 반납했다(`msg_c7385d5ca33b`). 리드 잔류 확인은 0이다(`lead-post-impl-unity-check-1101-01.txt`).
+- 정산: SENTIS 한 줄(diff sha256 `31e7aaf1…83e2`)을 사본(`impl-settle-sentis-diff-1101-01.txt`)으로 남기고 HEAD로 되돌렸다. 구현 commit은 `4eddf75980029fb9999c92428b518bd29845bda3`이고 원격에 올렸다. 9파일이다(`impl-commit-1101-01.txt`).
+- 구현자 자기 신고(`grid-impl-01/entry-self-report.md`): 계약을 읽기 전 첫 메모에 인라인 date/git 값을 적었다. 첫 「쓰기 끝」 보내기는 PS5 UTF-8로 실패해 pwsh로 다시 보냈다. 창 메시지의 한국어 decoding이 깨져 설정 검사기가 거부했다. 정식 메모는 저장 출력으로 보충했다고 했다.
+- 독립 검증 계약으로 넘길 설계 관찰(리드가 diff로 본 것, 판정 아님)
+  - 가림 판정은 칸 위에 있는 동안 매 프레임 `FindObjectsByType<Canvas>`를 부르고 배열을 새로 만든다. 계약의 「켜진 동안 매 프레임」을 따른 것이다. 비용과 할당이 괜찮은지 본다.
+  - 상세 창은 인벤토리 canvas(sortingOrder 5) 안에 있어 HUD(10)와 겹치면 HUD가 위에 그려진다. 사용자 확인 캡처에서 본다.
+  - 자리 계산은 오른쪽·아래로 넘치면 뒤집은 뒤 두 축을 모두 clamp한다. 왼쪽·위쪽 넘침도 코드로 본다(메인 `msg_8a35900d5374`).
+- 교정 층(두 번째 발생인지 메인에 묻는다)
+  - RED 계약 (마)는 사용 버튼 몸짓을 우클릭으로 바꾸라고만 했다. PlayMode 우클릭 사용의 선례(패널이 멈추기를 기다림, 패킷을 최대 3초 기다림)는 가리키지 않았다. 같은 절 첫 발생 4(EditMode 버튼 누름 선례를 가리키지 않음)와 같은 종류로 보면 두 번째 발생이다.
+  - 같은 종류라면 반복 규칙 후보는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 가리킨다」이다. 규칙 정본(.agents)은 Codex 영역이라 리드가 쓰지 않는다. 메인에 올린다.
+  - 구현자 쪽 한국어 decoding 실패는 첫 발생이다. 리드는 앞으로 창 메시지에 ASCII 줄을 함께 넣는다.
