@@ -2,17 +2,17 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-11-01 시험 고침 commit 뒤, 사용자 확인 캡처 전
+### 현재 재개 카드 — 2026-11-01 캡처 commit 뒤, 강 등급 독립 검증 전
 
-**다음 첫 일:** 사용자 확인 캡처(W3) 계약을 쓴다. 캡처 실행자는 새 `[Art Sol]`이다(아래 「작업 방식」). 찍을 것은 완료조건 8이다. 1920×1080·1280×720 각각에 격자(아이템 둘과 빈 칸), 재화 주머니 상세, 재료 상세를 담는다. Editor 창 모드이므로 창은 사용자가 자리를 비울 때 메인이 준다. 캡처 뒤 강 등급 독립 검증 계약을 쓴다. 검증 계약에 넣을 항목은 아래 「구현 v1 — 2026-11-01」의 설계 관찰과 「시험 고침 v1 — 2026-11-01」의 넘길 것이다. 작업자가 일하는 동안 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모(`art-lead-context-1101-01.md`)에 쌓는다. 리드 시험 계약에는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」를 넣는다(메인 `msg_484ea2fa03bb`, 규칙 정본 반영 전까지).
+**다음 첫 일:** 강 등급 독립 검증(W4) 계약을 쓴다. 검증자는 새 `[Art 검증자]`다(아래 「작업 방식」). 검증 계약에 넣을 항목은 아래 세 절의 넘길 것이다: 「구현 v1 — 2026-11-01」의 설계 관찰, 「시험 고침 v1 — 2026-11-01」의 넘길 것, 「사용자 확인 캡처 v1 — 2026-11-01」의 넘길 것. 캡처는 통과 근거가 아니다(완료조건 8). 사용자 그림 확인은 메인이 사용자에게 받는다. 작업자가 일하는 동안 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모(`art-lead-context-1101-01.md`)에 쌓는다. 리드 시험 계약에는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」를 넣는다(메인 `msg_484ea2fa03bb`, 규칙 정본 반영 전까지).
 
 | 항목 | 현재 |
 |---|---|
-| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`). 선행 시험 RED commit `219f7cdb`, main 받기 `9e883317` 뒤 구현 v1을 commit했다(`4eddf759`, 아래 「구현 v1 — 2026-11-01」). F PlayMode 실패 1건은 시험 결함이었고, 시험 고침 commit `7d9d4ff5` 뒤 PlayMode 전체는 실패 0이다(아래 「시험 고침 v1 — 2026-11-01」). |
+| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`). 선행 시험 RED commit `219f7cdb`, main 받기 `9e883317` 뒤 구현 v1을 commit했다(`4eddf759`, 아래 「구현 v1 — 2026-11-01」). F PlayMode 실패 1건은 시험 결함이었고, 시험 고침 commit `7d9d4ff5` 뒤 PlayMode 전체는 실패 0이다(아래 「시험 고침 v1 — 2026-11-01」). 사용자 확인 캡처 세 실행이 모두 통과했고 상세 창 캡처 case 둘을 commit했다(`5aeb415b`, 아래 「사용자 확인 캡처 v1 — 2026-11-01」). |
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), 대화 ID `c92c0adb-250c-48fd-b4cc-8d6c85df4386`. 회신 주소는 `run:run_6687e0512b2c`다. |
 | branch | `feat/art-inventory-icon-grid-20261101`이다. origin/main `ffe7f983b96eda8002a27169b3e8b7cb5eb32c72`(PR292 병합)에서 만들었다. RED commit 뒤 origin/main `3bb76772`(PR268 병합)을 받았다. 받기 commit은 `9e88331743064b390f6ab1d238dc173825a4bd23`이고 충돌은 0이다(근거 폴더 `main-merge-1101-01.txt`). |
 | 관계 | Core 인벤토리 24칸 goal(`core-active/01_Phases/goals/2026-11-01-inventory-24-slots/goal.md`, Core PR 때 main에 들어간다)이 패킷·서버·공유 칸 수를 바꾼다. 병합 순서는 이 goal의 격자 PR이 먼저다(아래 「Core 24칸 계약 — 확정」). |
-| 실행 창 | W1 Unity 창 세 번을 썼다. U0 04:30~05:00Z, U1 04:56~05:20Z, U1 03 05:18~05:40Z이다. 구현 v1은 05:57~06:45Z 창을 받아 06:18Z에 일찍 반납했다. 시험 고침은 06:48~07:10Z 창을 받아 06:57Z에 반납했다. 모두 반납했다. Unity·WSL·DB 창은 메인이 배정한다. |
+| 실행 창 | W1 Unity 창 세 번을 썼다. U0 04:30~05:00Z, U1 04:56~05:20Z, U1 03 05:18~05:40Z이다. 구현 v1은 05:57~06:45Z 창을 받아 06:18Z에 일찍 반납했다. 시험 고침은 06:48~07:10Z 창을 받아 06:57Z에 반납했다. 사용자 확인 캡처는 Editor 창 07:39~08:05Z를 사용자 부재로 받아 07:48Z에 반납했다. 모두 반납했다. Unity·WSL·DB 창은 메인이 배정한다. |
 | 근거 폴더 | `.backups/verification/2026-11-01-inventory-icon-grid/`다. Git 제외 폴더다. 앞 goal의 근거 폴더 `.backups/verification/2026-10-29-inventory-character-select-look/`에 초안 v1~v6과 facts 1031판이 있다. |
 
 ## 적용 중인 사용자 결정
@@ -54,6 +54,11 @@
 
 - 정본은 저장소 `CLAUDE.md`의 「결정 4A 적용 기간의 Claude 리드와 작업자 배정」 절(ffe7f983)이다. 사용자 원문은 그 절과 위 `msg_d75240eadc75`·`msg_da3be91ab030`에 있다.
 - 이 goal의 배정은 아래 「작업 방식」에 적는다.
+
+### 11-01 사용자 결정 111 A — 확인 캡처 동안 PC 비우기 — msg_163fec4ff6c2
+
+- 사용자 결정 원문(메인 pane 제출, 메인 `msg_163fec4ff6c2` 전달): 「대시보드 결정 응답: 1) 111 - 사용자 할 일: 인벤토리 격자 확인 캡처 동안 약 25분 PC를 비우기(마우스·키보드 손대지 않기) → A 지금 비움」
+- 메인 적용(같은 메시지): Editor 창은 2026-11-01T07:39:00Z~08:05:00Z다. 사용자가 일찍 돌아오면 메인이 「멈춤」을 보낸다.
 
 ## 지금 상태(사실)
 
@@ -167,7 +172,7 @@
 ## PR 경계
 
 - PR1 격자·상세 창·우클릭: commit은 기록 → RED → 구현 → 캡처 순이다. 첫 기록 commit은 이 goal 파일·CURRENT의 Art 줄·BACKLOG 승격 칸이다. 강 등급 독립 검증을 받는다. 새 PlayMode 시험은 「마우스 클릭 = 공격」 가정에 기대지 않는다(앞 goal의 msg_9cbc405339aa 조건을 잇는다).
-- PR2 결과 기록·6줄 캡처·Gardener: Core 24칸 PR 병합 뒤 main에서 6줄 캡처를 찍어 넣는다(메인 결정 2 A).
+- PR2 결과 기록·6줄 캡처·Gardener: Core 24칸 PR 병합 뒤 main에서 6줄 캡처를 찍어 넣는다(메인 결정 2 A). 그 캡처 계약에서 격자 case가 창 열림 효과가 끝날 때까지 기다리게 고친다(아래 「사용자 확인 캡처 v1 — 2026-11-01」의 첫 발생).
 - 앞 goal의 #PR5T-01~03 처분: 메인 결정 B-1 A(`msg_b79ad103b86e`)로 PR1의 첫 기록 commit에 [밝은 외관 goal](../2026-10-29-inventory-character-select-look/goal.md#종료-뒤-보충--pr292-문서-재실사-v3와-pr5t-처분)의 「종료 뒤 보충」 절로 넣었다. 원천은 R-8 노트 3판의 마지막 두 절과 메인 `msg_b8eeb4d0a16a`·`msg_5d7952f9d461`이다. 이 절은 앞 PR292 판정 대상 밖이고 PR1 독립 검증 범위에 들어간다. 이유는 PR2가 Core 24칸 병합까지 늦고, 따로 PR을 열면 실사와 병합 승인이 한 번 더 들기 때문이다.
 - branch는 앞 goal의 PR4·PR5가 main에 들어간 뒤 최신 main(`ffe7f983`)에서 만들었다. 열린 PR과 다른 파트 branch의 merge-tree 대조는 근거 폴더 `merge-tree-open-work-1101-01.txt`에 있다.
   - PR268(`23cc2713`): ffe7f983과 충돌 0이다. 격자 대상 중 client.md를 함께 고치지만 :30 근처 두 줄 추가라 :50·:54와 다른 곳이다. 메인 참고(`msg_b79ad103b86e`): PR268 head는 지금 `3e46ea65`다(Content goal.md 한 파일 commit 추가). PR1 병합 전에 그 head로 merge-tree를 다시 잰다. 이어서 PR268은 main에 병합됐다(merge commit `3bb76772`, 메인 사본 `msg_31e4dfa1781f`). 그 main과 이 branch의 merge-tree 충돌은 0이다(근거 폴더 `merge-tree-after-pr268-1101-01.txt`). client.md의 인벤토리 문장은 두 줄 밀려 InventoryPanel이 :50, InventoryPanelView가 :52다. 구현 계약은 main을 받은 뒤의 줄 번호로 쓴다. PR1 병합 전에 그때의 main으로 한 번 더 잰다. RED commit 뒤 이 main을 branch에 받았다(`9e883317`, 아래 「선행 시험 RED — 2026-11-01」의 main 받기).
@@ -211,8 +216,8 @@
 - [x] 범위 초안 승인
 - [x] 선행 시험 RED
 - [x] 구현과 전체 시험
-- [>] 사용자 확인 캡처
-- [ ] 강 등급 독립 검증
+- [x] 사용자 확인 캡처(촬영. 사용자 그림 확인은 메인이 받는다)
+- [>] 강 등급 독립 검증
 - [ ] 격자 PR 병합
 - [ ] 24칸 뒤 6줄 캡처
 - [ ] 결과 기록 PR 병합
@@ -335,3 +340,40 @@
   - 이번 원인(열기 누락)도 RED 계약 (마) 「몸짓 선례」 문제의 한 갈래다. 형제 시험의 선례는 「연 뒤 누른다」였다.
   - 고침 계약 v1도 기다림 선례만 가리켰고 열기 선례는 가리키지 않았다. 작성자가 ask로 찾았다. 메인 A(`msg_484ea2fa03bb`)의 규칙 후보 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」의 「설정」에 든다. 새 첫 발생으로 세지 않는다.
   - 이 규칙 문장은 규칙 정본 반영 전까지 리드 계약에 넣는다.
+
+### 사용자 확인 캡처 v1 — 2026-11-01
+
+- 계약은 근거 폴더 `grid-capture-contract-v1.md`(sha256 `54ac12ecbe5a88100c83d42a78c0cd8824640ab1c40dc55e17794abf9a97cb35`)다. 메인 보고는 `msg_347f04d0559f`다.
+  - 격자는 기존 인벤토리 캡처 case(G1)가 그대로 찍는다.
+  - 상세 창 둘(G2 재화 주머니, G3 재료)은 같은 캡처 파일에 새 case로 더했다. 촬영 도우미가 그 파일의 private라 새 파일이면 약 200줄을 옮겨 써야 하기 때문이다.
+- 실행자는 `[Art Sol]` gpt-6.1-sol max다. handle `term_3dc85efe-5272-4fe8-a505-14259a66e0f4`, Task `task_69639d1023dc`, Dispatch `ctx_1d679e2ed5f8`이다. rollout으로 model·effort를 대조했다(`grid-capture-launch-rollout-check-01.txt`).
+  - worker_done은 `msg_a4d590a280bc`(08:01:40Z, outcome succeeded)다. 보고는 `grid-capture-01/report.md`(sha256 `c07712e0d5b8af7e7bac6b817de9b7f4d4cc8ee943737e6a6c60b906425b46af`)다.
+  - pane은 대기 확인 뒤 닫았다(`capture-pane-close-1101-01.json`).
+- 바꾼 것은 `UiWindowLiveCaptureTests.cs` 하나다(117줄 더함·3줄 뺌, `lead-capture-ready-check-1101-01.txt`).
+  - 새 case 둘은 계약의 몸짓 선례 표 순서대로 연다: 마을 준비 → I → 패널 기다림 → 칸에 가상 마우스 올림 → 두 크기 촬영.
+  - 칸에 올리는 세 단계는 private 도우미 `HoverInventoryDetail(int slotIndex)` 하나에 모았다. 패널 멈춤 기다림 → 칸으로 이동 → 상세 창 기다림 순서이고, 두 크기 모두 이것을 부른다(리드 답 `msg_bbb0cc079556`).
+  - `CaptureBothSizes`에는 선택 인자 `IEnumerator prepareAtMinimum = null` 하나와 줄 하나만 더했다. 기존 호출은 그대로다.
+  - 앞 harness의 입력 관문은 이 파일만 「준비됨」 SHA256으로 대조했다(리드 답 `msg_9e667b09aac4`).
+- 결과: G2 → G3 → G1을 Editor 창 모드 PlayMode로 case 하나씩 돌렸다. 셋 모두 통과 1·실패 0·건너뜀 0이다.
+  - 리드 R-2(`lead-r2-capture-v1-1101-01.txt`)에서 다시 확인했다. 결과 XML의 시험 이름·결과가 맞다. PNG 여섯 장의 SHA256이 record의 capture 줄과 같다. G2·G3는 두 크기 모두 상세 창 표시 True와 이름 「재화 주머니」·「재료」다. 재료는 효과·「우클릭: 사용」 줄이 active False다. teardown에는 Game view 크기 되돌림과 G2·G3의 마우스 되돌림 줄이 있다.
+  - 원본 PNG는 Git 제외 근거 폴더 `grid-capture-01/raw/<g1|g2|g3>/attempt-01/captures/`에 있다.
+- Unity 창: 사용자 결정 111 A(위 「적용 중인 사용자 결정」)로 Editor 창 07:39~08:05Z를 받았다. 실행자 창 메시지는 한국어와 ASCII 줄로 보냈다(`msg_57904e07c925`). 진입 마감은 앞 goal 선례대로 G2가 창 끝 − 8분, G3·G1이 창 끝 − 6분이다. 07:48Z에 반납했다(`msg_84b0cac58870`). 리드 잔류 확인은 Unity·dotnet 0이다(`lead-capture-window-end-check-1101-01.txt`).
+- 정산: SENTIS 한 줄(diff sha256 `31e7aaf1…83e2`)을 사본(`capture-settle-sentis-diff-1101-01.txt`)으로 남기고 HEAD로 되돌렸다. 캡처 commit은 `5aeb415b3f05f92e86e4b8433075485a7601cf60`이고 원격에 올렸다. 1파일이다(`capture-commit-1101-01.txt`).
+- 메인 질문 `msg_c446b0fc6fef`와 리드 원천 답 `msg_8c2ab57ee341`(줄 `lead-capture-question-lines-1101-01.txt`, 화소 `lead-png-pixels-1101-01.txt`·`-02.txt`)
+  - G1 1920×1080은 패널이 반투명하게 찍혔다. 기존 창 열림 효과(`UiWindowOpenMotion.cs` :12, 0.12초, 효과 자체 CanvasGroup `UiWindowOpenEffect.cs` :29·:66)가 끝나기 전에 G1 case가 I 뒤 3프레임 만에 찍었기 때문이다(`UiWindowLiveCaptureTests.cs` :215~:216·:888). 제품 결함이 아니다. 앞 goal의 같은 case 캡처도 같다. G1 1280×720과 G2·G3는 불투명 바탕(`#F6E2BE`)이다. 리드 판단으로 다시 찍지 않는다.
+  - 2줄 격자 아래 빈칸은 설계값이다. 창 높이 식(`InventoryPanelView.cs` :15~:21)이 2줄에서 430이다. 1920에서는 최대 1.3배 맞춤으로 507×559다. 재화 줄 아래는 「마지막 사용 결과」 줄 자리다(`UseResult` :127).
+- 사용자에게 보일 관찰(디자인 확인, 리드가 정하지 않음)
+  - G3 두 크기에서 재료 상세 창이 그 칸 구석 숫자 「3」을 덮는다. 수량은 상세 창 「수량 3」에 있다(실행자 관찰 `msg_8c5b2b2bcffb`).
+  - 상세 창은 2줄째 칸 일부와 패널 오른쪽 밖까지 덮는다. 상세 창 자리 설계대로다.
+- 실행자 자기 신고(report 「자기 신고와 기록 한계」)
+  - 첫 명령 몇 개가 receipt 도구 전에 돌았고, 계약 해시는 인라인 명령으로 저장했다(ask `msg_cdd99b75edef`). 리드는 계속을 답했고, 저장 스크립트로 다시 잰 값은 기준과 같았다.
+  - 「Unity 사용 끝」의 SENTIS 「알려진 쌍 아님」은 `-U0` diff 해시를 기본 context 해시와 비교한 실수였다. 실행자가 정정했고(`msg_b6d59b1c814e`) 리드 측정과 같다.
+  - heartbeat 간격이 899.96초(07:42~07:57Z)로 5분을 넘었다(escalation `msg_c1f3ba6b3ab3`). 그 사이 status 셋이 왔다. 리드는 report 자기 신고로 정산하게 했다(`msg_5f2eeb0c18ac`).
+- 독립 검증으로 넘길 것
+  - 새 case 둘의 stillShown 람다 약 30줄이 칸 번호·이름 문자열만 빼고 같다. 가독성 판정 항목이다(메인 동의 `msg_163fec4ff6c2`).
+  - G1 record의 「panel alpha」는 창 root group만 읽어 열림 효과 group을 보지 않는다.
+  - 실행자 첫 명령 receipt 누락과 heartbeat 간격을 검토한다.
+  - PlayMode batchmode 전체에서 새 캡처 case 둘은 출력 폴더 변수가 없어 건너뜀으로 센다(건너뜀 +2 예상, `UiWindowLiveCaptureTests.cs` `Begin`).
+- 교정 층
+  - 첫 발생: 캡처 case가 창 열림 효과 도중을 찍었다. 앞 goal 캡처부터 있던 일이다. Core 24칸 뒤 6줄 캡처 계약에서 격자 case가 효과 끝까지 기다리게 고친다(위 「PR 경계」 PR2).
+  - 두 번째 발생: 작업자 첫 명령이 receipt 도구 전에 돌았다(첫 발생은 시험 고침 작성자 `msg_858445be8861`). 포인터에 「처음 명령부터 receipt 기록」을 적었는데도 났다. 다음 계약부터 리드가 시작 스크립트(계약 SHA256·HEAD·status를 receipt와 함께 저장)를 만들어 포인터에 경로·SHA256으로 준다. 메인은 이 방향에 이견이 없고 메인 최종 보고의 규칙 후보로 올린다(`msg_163fec4ff6c2`).
