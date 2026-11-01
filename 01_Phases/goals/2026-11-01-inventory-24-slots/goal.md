@@ -2,7 +2,7 @@
 
 인벤토리 칸 수를 8에서 24로 늘린다. 서버가 보내는 인벤토리 snapshot(36번)과 공유 칸 수 상수를 24로 바꾸고, 클라가 받는 쪽까지 같은 PR에서 맞춘다. 화면 격자(4열 × 6줄)는 Art가 만든다.
 
-**현재 상태(2026-11-01 03:4x KST):** 사용자 지시로 오늘 작업을 안전 지점에서 멈췄다(메인 `msg_6547cf711563`). 구현 1단계는 끝났다. 2단계는 생성기와 WSL 빌드까지 했고, Shared.dll 복사·서버 시험·봇은 남았다. 남은 프로세스는 0이다.
+**현재 상태(2026-11-01 10:0x KST):** 구현·서버 시험·봇·Unity EditMode까지 끝났다. 1차 독립 검증(verify-01)을 연다(메인 `msg_9cbd433df89c`). PlayMode·실제 접속·Art 시험 3건은 Art 격자 PR 병합 뒤 좁은 재검증에서 본다.
 
 ## 재개 지점
 
@@ -22,14 +22,19 @@
     - 메인 지적(`msg_2126f554f738`): ±2자 조건 밖일 수 있었다.
     - 사후 대조: rollout `~/.codex/sessions/2026/11/01/rollout-2026-11-01T09-14-09-01a19474-dbcd-7363-b82d-d0d464bfb5e0.jsonl` 12행의 사용자 입력(14,224자, 00:16:05Z)이 계약 전문(줄 끝 개행 제외 9,030자)을 offset 5194부터 끝까지 그대로 담는다. 대조 결과는 일치이고, 원시는 `impl-03/rollout-contract-compare-v1.json`이다.
     - 다음 기동부터는 계약을 짧은 포인터(경로+SHA256)로 넘긴다.
+  - impl-03 끝(worker_done `msg_d93dec1a2f8c`, `impl-03/report.md`). 재시험 결과는 `Failed: 0, Passed: 2552, Skipped: 28`이다(impl-03 `raw/test.out` 260행, 재시험 창 00:31Z~00:55Z `msg_0d670d1d6797`). 창 반납은 `msg_2884ae7621b2`다. 시험 3파일은 로컬 커밋 `53a4724c`에 담았다.
+  - impl-04 진행 중: Unity EditMode 전체 1회(창 00:41Z~01:41Z `msg_d69a1c55932c`, cold import). 계약 `impl-04/contract-v1.md`(sha256 `806c3e5a…e774`)를 짧은 포인터 `impl-04/spec-pointer-v1.txt`(740B)로 넘겼다. worker-start는 ready·observed였다. pane `term_32c48fce-9e48-4f6b-815e-9fd6520cf215`, Task `task_78fbeb45082d`, Dispatch `ctx_4c2a657ae64d`.
+  - impl-04 실행 결과(00:44:30Z~00:54:57Z, 리드가 `impl-04/raw/editmode/results.xml`을 직접 읽음): `total=1744 passed=1741 failed=3 skipped=0`, Unity exit 2, unity.log `error CS` 0줄.
+    - 이번 변경의 Core 시험은 모두 통과했다. `Snapshot204Bytes_AppliesAll24SlotsOnTheMainDrain` 1, `Legacy76BytesOrMismatchedHeader` 2, `InvalidCountInAppendedSlot` 16, `InventoryProtocolCompatibilityTests` 9, 길드 호환 9건이다.
+    - 실패 3건은 Art 소유 화면 시험이다. 지금 main의 목록형 창이 칸 24개를 늘어놓아 깨졌다. `InventoryWindowPlacementTests.CurrencyAndUseResult_TakeSeparateLines_BelowTheEightSlots`와 `UiWindowCompositionRenderTests.Inventory_OnCamera_DrawsApprovedPiecesPerSpecAndKeepsTextReadableAtMaxLegalState`의 (1920,1080)·(1280,720)이다.
+    - drift: Unity가 `ProjectSettings.asset`의 `SENTIS_ANALYTICS_ENABLED;`를 지웠다. `impl-04/raw/drift.patch`로 남기고 그 파일만 복원했다. Unity 기본 `AppData/LocalLow/DefaultCompany/03_Client/TestResults.xml`은 자동 부산물이라 지우지 않았다.
+    - 창 끝은 `msg_0cc2861a5cfa`, 리드의 0 확인은 `lead-unity-window-end-check-01.txt`다.
+    - impl-04 끝(worker_done `msg_5dba07c81615`, `impl-04/report.md` sha256 `b0b0dd0a…e203`). worker-release는 `retained`(external_terminal)였고, 01:07Z `terminal close`(ptyKilled true) 뒤 terminal list에서 사라졌다.
+  - Art 귀속: Art 리드에 알렸다(`msg_49fdbff9fdea`). Art 리드 답(`msg_ffcbf9121d67`)은 세 시험을 Art 소유로 받아 격자 PR이 다루게 R-8 인계에 넣는다는 것이다. 격자 goal은 R-8 뒤 새 Art 리드가 연다. 줄 수는 MaxSlots÷4로 상수에서 읽어, 같은 시험이 main(8칸)에서 2줄, Core PR 뒤 6줄로 통과하는 방향이다. 확정은 새 Art 리드의 RED 계약에서 하며, 새 리드가 정하면 Core 리드에게 먼저 알린다.
+  - verify-01(1차 독립 검증) 준비 중: 계약 `verify-01/contract-v1.md`, 신규 `[Core 검증자]` Astra xhigh. 범위는 메인 `msg_9cbd433df89c`대로다(아래 「적용 중인 메인 결정」).
 
-- **다음 세션 첫 순서:** 메인에 2단계 나머지 실행 창을 청하고, 새 `[Core Sol]` 구현자(신규 Sol max)를 `impl-02` 계약으로 연다. 이 pane의 구현자는 재사용하지 않는다.
-  - impl-02가 할 일은 다음 순서다.
-    1. `sync-wsl.sh sync`·`build`를 다시 돈다(복제본은 v23 빌드 상태다. 창 8 계획을 거쳤다면 v22일 수 있다).
-    2. 복제본 `03_Client/Assets/Plugins/Shared/Shared.dll` 한 파일을 Windows Plugins에 복사하고 `.meta` 보존을 확인한다.
-    3. `sync-wsl.sh test`, 7777 확인, 봇 `InventorySmoke` 1회를 돈다.
-  - 방법은 `impl-01/lead-reply-sdk-v1.txt`(계약 2단계 보충 v1.1)를 그대로 쓴다. Windows dotnet은 쓰지 않는다. global.json의 SDK 10.0.301이 Windows에 없다.
-  - 그 뒤 순서는 Unity EditMode 창 → Art 격자 PR이 들어간 뒤 PlayMode·실제 접속 → 신규 `[Core 검증자]` 강 등급 독립 검증 → PR·준비 보고다.
+- **다음 첫 일:** verify-01 검증자의 「V 준비됨」을 받으면 메인에 V1(WSL)·V2(Unity) 창을 청한다. 판정이 나면 결함을 새 Sol 구현자로 고치거나, 통과면 Art 격자 PR을 기다린다. 격자 PR이 들어가면 main을 합치고 2차 좁은 재검증을 연다. 그 뒤 PR·준비 보고다.
+  - WSL 실행은 `impl-01/lead-reply-sdk-v1.txt`(계약 2단계 보충 v1.1) 방법을 쓴다. Windows dotnet은 쓰지 않는다. global.json의 SDK 10.0.301이 Windows에 없다.
 - **멈춘 지점의 파일 상태(2026-10-31T18:4xZ, 로컬 WIP 커밋에 담음):**
   - 1단계 소스 31파일과 v23 `GenPackets.cs`(WSL 생성, sha256 `62a2ad60353654a0ab652aca2e62717438e4d8d1ee024087e4110dd656505aa9`, CRLF 0)가 바뀌어 있다.
   - Windows Plugins `Shared.dll`은 아직 v22 그대로다(sha256 `b8b2828e27a1a1667a2b5f703a2c7a97822f70fc47ef974c9f3694dcb5a4ecd3`). `.meta`도 그대로다(`7c6ab891ee57e1a71e200cbea3c27cee36de97404e1d6303711daf59b3be682b`). 그래서 지금 core-active로 Unity를 열면 소스와 DLL 판이 어긋난다.
@@ -91,6 +96,19 @@
 - 작업자 전환은 메인 해석이다. 구현자는 신규 `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode`, 태그 `[Core Sol]`이다. 리드는 Claude Opus, 독립 검증자는 신규 GPT-6-Astra xhigh 그대로다.
 
 ## 적용 중인 메인 결정
+
+### 2026-11-01 독립 검증의 두 단계
+
+메인 `msg_9cbd433df89c`(2026-11-01T00:58:04Z). 사용자 결정이 아니며, 메인이 사용자에게 보고할 대상이다.
+
+> 독립 검증은 지금 연다. 이유: Art 격자 PR은 PR292 병합 → R-8 → 새 Art 리드 → 구현·캡처·검증 순서라 몇 시간 뒤다. 서버·프로토콜·봇·Core EditMode 쪽 결함은 지금 찾는 편이 녹화 일정에 안전하다.
+
+- 1차(verify-01) 범위: 서버 시험(WSL)·봇 InventorySmoke·Core 소유 EditMode 시험·프로토콜 v23 호환·diff 실사. 실행 창은 검증자의 「V 준비됨」 뒤 메인에 청한다.
+- 2차(격자 PR 병합 뒤): main을 합친 head로 새 Astra 세션이 좁게 다시 본다. 범위는 PlayMode·실제 접속·Art 시험 3건 재확인과 병합 diff다.
+- 검증자 계약은 짧은 포인터(경로+SHA256)로 넘긴다. 등급은 강이다(프로토콜·패킷 변경).
+- Art 실패 3건의 Art 귀속과 Art 리드 직접 알림에 메인 이견이 없다. Core는 고치지 않는다.
+
+### 2026-10-31 범위 승인
 
 메인 `msg_3dfd5496b065`(2026-10-31T18:04:08Z). 사용자 결정이 아니다. 범위 초안 v1(sha256 `8dba8548c26a4788b1ed5b9671fcf3bad9b3223f58abb0cf5d1a1c96253f1a95`)을 승인했다.
 
@@ -194,8 +212,9 @@
 - [x] 범위 초안(v1)
 - [x] 범위 승인(메인 `msg_3dfd5496b065`)
 - [x] 구현 1단계(소스, 실행 없음)
-- [ ] 구현 2단계(생성기·DLL·WSL 빌드·서버 시험·봇, 메인 배정 창) — 생성기·WSL build까지 끝, DLL 복사·test·봇 남음(10-31 정리로 멈춤)
-- [ ] Unity 시험과 실제 접속(메인 배정 창, Art 격자 뒤)
-- [ ] 독립 검증
+- [x] 구현 2단계(생성기·DLL·WSL 빌드·서버 시험·봇, 메인 배정 창) — impl-02·impl-03
+- [ ] Unity 시험과 실제 접속 — EditMode 끝(impl-04), PlayMode·실제 접속은 Art 격자 뒤
+- [ ] 1차 독립 검증(verify-01)
+- [ ] 2차 좁은 재검증(격자 PR 병합 뒤)
 - [ ] PR·병합 준비 보고
 - [ ] 결과 기록과 앞 goal 복귀
