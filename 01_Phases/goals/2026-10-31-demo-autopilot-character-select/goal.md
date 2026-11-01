@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 녹화용 빌드 계약을 Core 리드와 맺는다. 기준은 Art 인벤토리 격자 PR1, Core 인벤토리 24칸 PR, Art PR2(HUD 골드 제거·스킬칸 좌하단)가 들어간 main이다(메인 `msg_e0b59e962663`·`msg_d0250483d004`). 셋이 아직이면 기다린다. 계약 초안 v6는 근거 폴더 `lead/recording-build-contract-draft-v6.md`다(이름은 사용자 결정 109 A, 창 크기는 110 A, Core 답 `msg_45e700da3330`·`msg_1e8f4d2e6446` 반영). 남은 빈칸은 세 PR의 번호·merge commit과 고정 head다. 셋이 들어가면 Content가 고정 head 40자를 Core에 먼저 보내고, Core는 그 SHA를 서버 branch에 받는다. Art 격자 PR은 04:33Z 기준 아직 없다(Art `msg_3f625498414d`). PR268은 main에 들어갔다(merge commit `3bb76772`, 진행 기록 11-01 「PR268 병합」). 캐릭터 선택창(PR-A, PR #291)도 main에 있다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 PR-C·녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4).
+**다음 첫 일:** 녹화용 빌드 계약을 Core 리드와 맺는다. 기준은 Art 인벤토리 격자 PR1, Core 인벤토리 24칸 PR, Art PR2(HUD 골드 제거·스킬칸 좌하단)가 들어간 main이다(메인 `msg_e0b59e962663`·`msg_d0250483d004`). 셋이 아직이면 기다린다. 계약 초안 v7은 근거 폴더 `lead/recording-build-contract-draft-v7.md`다(이름은 사용자 결정 109 A, 창 크기는 110 A, 병합 순서는 메인 결정 `msg_3031315cf7d1`의 Art PR1 → Core 24칸 → Art PR2, Core 답 `msg_45e700da3330`·`msg_1e8f4d2e6446` 반영). 남은 빈칸은 세 PR의 번호·merge commit과 고정 head다. 셋이 들어가면 Content가 고정 head 40자를 Core에 먼저 보내고, Core는 그 SHA를 서버 branch에 받는다. Art 격자 PR은 04:33Z 기준 아직 없다(Art `msg_3f625498414d`). PR268은 main에 들어갔다(merge commit `3bb76772`, 진행 기록 11-01 「PR268 병합」). 캐릭터 선택창(PR-A, PR #291)도 main에 있다(`58c8d4cb`). PR-C(길드 입구)는 사용자 결정 113 A로 취소했다. Art PR4 사후 확인은 사용자 결정 90 A대로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4).
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
 - 열린 결정: 없음.
@@ -128,6 +128,18 @@
 > 거기까지 진행하고 마무리하고 영상 새로 시연용으로 찍고 마무리하자
 
 - 메인 지시: 실행은 Art가 한다(Art PR2, Art 격자 PR1 병합 뒤). Content는 녹화 빌드 계약 §1의 기준 PR을 넷에서 다섯(Art PR2 추가)으로 고치고, 자동 진행기 코드·시험이 HUD 「Gold」 상자나 스킬칸 자리를 보는지 확인해 Art 리드와 메인에 알린다.
+- 확인 결과: origin/main `3bb76772`의 Demo 코드 4파일·시험 4파일에서 Gold·스킬칸·HUD 참조는 0이다. 자동 진행기는 키(A·D·Enter·F8·F9·G·P·Q·Space·W)와 이름 있는 객체에 기댄다(원시 `lead/autopilot-hud-reference-check-01.txt`, sha256 `1aec31e7e6934af8a4ada5aada8b1f8f9b6b519540e49985df2c5aa4e8be7349`). Art `msg_20500b2b0cc2`·메인 `msg_335bfe15c371`에 알렸다.
+- 병합 순서(메인 결정 `msg_3031315cf7d1`, 08:26:46Z): Art 격자 PR1 → Core 24칸 → Art PR2 → Content 녹화 빌드.
+
+### 11-01 사용자 결정 113 A — msg_478035aa5063
+
+메인 `msg_478035aa5063`(2026-11-01T08:29:38Z)가 전달한 사용자 원문이다(메인 pane 제출). 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 113 - HUD 골드 상자를 없애면 고칠 대상이 사라지는 「길드 입구와 Gold 칸 겹침 고침(PR-C)」을 취소할지 유지할지 → A PR-C 취소
+
+- 메인 지시: PR-C를 만들지 않는다. 완료조건 C1~C3은 「사용자 결정 113 A로 취소」로 적고 종료 기록 PR에서 정리한다.
+- 결정 90 A의 「리셋 뒤 PR-C·Art PR4 사후 확인」 중 PR-C는 빠진다. Art PR4 사후 확인은 그대로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
+- 녹화 빌드 계약은 이 결정과 무관하다(다섯 PR 기준 그대로).
 
 ### 운영 방식(진입 메시지의 메인 결정)
 
@@ -150,7 +162,7 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 
 - **PR-A 캐릭터 선택창(85 A, 강):** 오른쪽 설명 상자(설명 배경·선택 제목·설명 글)를 없애고 세 칸을 패널 안쪽 폭 전체로 넓힌다. 차 있는 칸을 누르면 선택되고 「선택하고 입장」이 켜진다. 빈 칸을 누르면 칸 줄 대신 생성 화면(이름 칸·이름 규칙·Knight/Mage 그림 버튼·「캐릭터 생성」·「취소」)이 열린다. BACKLOG `character-menu-selecting-detail-text`를 흡수해 닫는다. `domains/client.md`에 캐릭터 선택 화면 절을 더한다.
 - **PR268 자동 진행기(82 B·83 A, 강):** 최신 main과 PR-A를 합치고 캐릭터 메뉴 단계를 더한다. 같은 직업 캐릭터가 있으면 그 칸을 선택해 입장하고, 없으면 첫 빈 칸에 `-demo-character` 이름으로 만든 뒤 다시 골라 입장한다. 만들 수 없으면(이름 인자 없음, 빈 칸 없음, 생성 거절) 다시 시도하지 않고 멈춘다. 한 실행의 생성 요청은 최대 1번이다. Legacy 경로는 그대로 Knight/Mage 버튼이다. 칸 상태는 `CharacterSelectController`의 읽기 전용 통로 하나로 읽는다. 단계 로그에 캐릭터 단계를 더한다.
-- **PR-C 길드 입구(74 A, 약):** NPC 대화·던전 보상 창이 떠 있는 동안 「길드 · G」 입구를 숨긴다(그때 입구는 이미 눌리지 않는다). 창이 닫히면 원래 자리에 다시 보인다.
+- **PR-C 길드 입구(74 A, 약) — 사용자 결정 113 A로 취소:** NPC 대화·던전 보상 창이 떠 있는 동안 「길드 · G」 입구를 숨긴다(그때 입구는 이미 눌리지 않는다). 창이 닫히면 원래 자리에 다시 보인다.
 - **녹화용 빌드 계약:** Core 리드와 고정 head·Unity 버전과 hash·빌드 경로·exe와 `_Data` sha256·두 클라 실행 명령·로그·빌드 부작용 복원을 이 goal의 계약 절로 맞춘다. 빌드 입력은 PR-A·PR268·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR 병합이다(`msg_d0012352013c`·`msg_d783ac17eb63`). 빌드 스크립트는 근거 폴더 실행 파일로 둔다.
 - **Art PR4 사후 확인:** PR4 head가 오면 main + PR4 트리에서 Content 일시정지 메뉴 좌표·입력 시험의 이름 단위 결과와 `UI.unity` diff를 본다. PR은 없다.
 
@@ -158,7 +170,7 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 
 - PR-A: `03_Client/Assets/Scripts/UI/CharacterMenuView.cs`, 캐릭터 메뉴 시험(`CharacterMenuViewTests`·`CharacterMenuViewAppearanceTests`·`CharacterMenuViewCaptureTests`·`BrightWindowInteractionTests`의 캐릭터 메뉴 부분·`CharacterMenuMotionSceneTests`), `CharacterMenuBoundaryTests`·`CharacterMenuPresenterTests`(T7 19~23행, 메인 `msg_e6ef913df2cd`로 추가), 새 시험 `CharacterSelectWide*`, `domains/client.md`, BACKLOG 한 행, CURRENT 한 줄, 이 goal.
 - PR268: `03_Client/Assets/Scripts/Demo/`, `CharacterSelectController.cs`(읽기 전용 통로 하나), EditMode 시험, `domains/client.md` 한 문단, PR268 본문. 11-01 D1 회귀 시험으로 PlayMode `DemoAutopilotVerifyConnectionTests.cs` 한 파일을 더한다(메인 `msg_ee36970aad0b`).
-- PR-C: `GuildUiController.cs`(입구 표시 한 곳), PlayMode 시험 하나, `domains/client.md` 한 줄, BACKLOG 한 행.
+- PR-C(사용자 결정 113 A로 취소): `GuildUiController.cs`(입구 표시 한 곳), PlayMode 시험 하나, `domains/client.md` 한 줄, BACKLOG 한 행.
 
 ### 하지 않을 것
 
@@ -185,23 +197,23 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 | PR268 | B3 | 메뉴가 닫히면(Legacy) Knight/Mage 버튼 경로로 간다. |
 | PR268 | B4 | 실제 경로 두 판: 구현자가 Player 빌드 두 클라 + Legacy DEBUG 서버로 `[Demo] step … done`, 독립 검증자가 Player 빌드 두 클라 + DB 영속 서버로 새 시험 계정에서 생성 → 선택 → … → `done`. 단계 로그와 Player.log를 남긴다. |
 | PR268 | B5 | 검증 실주행의 시험 계정·캐릭터 이름은 시험용이 드러나게 정하고 리허설·녹화용 이름과 다르게 미리 적어 메인과 Core에 넘긴다. |
-| PR-C | C1 | NPC 대화 창 때문에 Gold 칸이 오른쪽 끝으로 옮겨진 동안 입구가 Gold 칸과 화면 사각형으로 겹치지 않는다(1280×720·1920×1080). |
-| PR-C | C2 | 던전 보상 창 경우도 같은 기준이다. |
-| PR-C | C3 | 두 창이 닫히면 입구가 원래 자리에 보이고 눌린다. 기존 Gold·HUD 시험은 그대로 통과한다. |
-| 빌드 | D1 | Core에 고정 head·Unity hash·빌드 경로·exe와 `_Data` sha256·두 클라 실행 명령·로그 경로를 넘긴다. 빌드는 PR-A·PR268·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR이 모두 main에 들어간 commit에서 만들고, 격자·24칸 PR이 늦으면 기다린다(`msg_d0012352013c`·`msg_d783ac17eb63`). 리허설 빌드 뒤 병합이 더 있으면 시연 빌드는 마지막 병합 뒤 고정 head로 다시 만든다. |
+| PR-C | C1 | **사용자 결정 113 A로 취소.** 원래 조건: NPC 대화 창 때문에 Gold 칸이 오른쪽 끝으로 옮겨진 동안 입구가 Gold 칸과 화면 사각형으로 겹치지 않는다(1280×720·1920×1080). |
+| PR-C | C2 | **사용자 결정 113 A로 취소.** 원래 조건: 던전 보상 창 경우도 같은 기준이다. |
+| PR-C | C3 | **사용자 결정 113 A로 취소.** 원래 조건: 두 창이 닫히면 입구가 원래 자리에 보이고 눌린다. 기존 Gold·HUD 시험은 그대로 통과한다. |
+| 빌드 | D1 | Core에 고정 head·Unity hash·빌드 경로·exe와 `_Data` sha256·두 클라 실행 명령·로그 경로를 넘긴다. 빌드는 PR-A·PR268·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR·Art PR2(HUD 골드 제거·스킬칸 좌하단)가 모두 main에 들어간 commit에서 만들고, 격자·24칸·Art PR2가 늦으면 기다린다(`msg_d0012352013c`·`msg_d783ac17eb63`·`msg_d0250483d004`). 리허설 빌드 뒤 병합이 더 있으면 시연 빌드는 마지막 병합 뒤 고정 head로 다시 만든다. |
 
 ### 검증 등급
 
 - PR-A 강: 제품+시험 변경이 50줄을 넘는다(`CharacterMenuView.cs`는 457줄이고 배치 대부분을 바꾼다).
 - PR268 강: 제품+시험 50줄 이상, 실제 실행 경로(Player 빌드·서버)를 지난다.
-- PR-C 약: 제품 1파일·50줄 미만 예상, 영속·서버·프로토콜·I/O 도구에 닿지 않는다. 시험까지 50줄을 넘으면 강으로 올린다.
+- PR-C 약(사용자 결정 113 A로 취소): 제품 1파일·50줄 미만 예상, 영속·서버·프로토콜·I/O 도구에 닿지 않는다. 시험까지 50줄을 넘으면 강으로 올린다.
 - 앞 goal의 원인 미확정 기존 실패 13행(73 A)은 실패인 채 둔다. 기준 실행과 이름 단위로 비교해 새 실패만 이번 영향 후보로 본다.
 
 ## PR 경계와 순서
 
 1. PR-A(새 PR): 이 goal 문서 + 85 A. base main.
 2. PR268(기존 PR): PR-A 위에 쌓는다. base는 main 그대로다(메인 `msg_db6333b6b1c6`, 「10-31 범위 초안 v1 처분」 2항). 병합 순서는 PR-A → PR268이다. PR-A는 main에 들어갔다(`58c8d4cb`).
-3. PR-C(새 PR): base main, 독립. 사용자 결정 90 답 뒤 착수.
+3. PR-C(새 PR): 사용자 결정 113 A로 취소, 만들지 않는다.
 4. 종료 기록 PR: Gardener 뒤.
 
 ## 진척 단계
@@ -213,7 +225,7 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 - [x] 자동 진행기 시험
 - [x] 자동 진행기 구현
 - [x] DB 서버 실주행 검증
-- [ ] 길드 입구 겹침(리셋 뒤)
+- [-] 길드 입구 겹침(사용자 결정 113 A로 취소)
 - [x] 선택창 PR 병합
 - [x] PR268 병합
 - [>] 녹화용 빌드 전달
