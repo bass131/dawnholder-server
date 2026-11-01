@@ -4,12 +4,11 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR268 병합 승인을 기다린다. 검증자 v3가 D1 수정을 포함한 PR268 전체를 통과로 판정했다(신규 차단 결함 0, 진행 기록 11-01 「자동 진행기 검증 v3(통과)·창 8」). 창 8에서 DB 영속 서버 두 판(새 계정 생성 → 서버 재시작 → 같은 캐릭터 선택)도 끝났다. 병합 뒤 녹화용 빌드 계약을 Core 리드와 맺는다. 캐릭터 선택창(PR-A, PR #291)은 main에 들어갔다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
+**다음 첫 일:** 녹화용 빌드 계약을 Core 리드와 맺는다. 기준은 Art 인벤토리 격자 PR과 Core 인벤토리 24칸 PR이 들어간 main이다(메인 `msg_e0b59e962663`). 두 PR이 아직이면 기다린다. 계약 초안이 나오면 메인에 경로와 sha256만 보낸다. PR268은 main에 들어갔다(merge commit `3bb76772`, 진행 기록 11-01 「PR268 병합」). 캐릭터 선택창(PR-A, PR #291)도 main에 있다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 PR-C·녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4).
 
-- 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택하면 새 독립 검증이 필요하므로 종료 기록의 다음 후보로 넘긴다.
-- 열린 결정: PR268 병합 승인(메인이 사용자에게 청한다).
-- Core 24칸 PR이 PR268보다 먼저 main에 들어가면 PR268에 main을 다시 합치고 서버·클라를 v23으로 다시 빌드해야 한다.
-- 빌드 계약 입력: PR-A(완료)·PR268·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR 병합(`msg_d0012352013c`·`msg_d783ac17eb63`).
+- 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
+- 열린 결정: 없음.
+- 빌드 계약 입력: PR-A·PR268(둘 다 완료)·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR 병합(`msg_d0012352013c`·`msg_d783ac17eb63`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
 
 | 항목 | 현재 |
@@ -186,8 +185,8 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 - [x] DB 서버 실주행 검증
 - [ ] 길드 입구 겹침(리셋 뒤)
 - [x] 선택창 PR 병합
-- [>] PR268 병합
-- [ ] 녹화용 빌드 전달
+- [x] PR268 병합
+- [>] 녹화용 빌드 전달
 - [ ] 종료 기록
 
 ## 진행 기록
@@ -258,3 +257,6 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 정산 순서: 리드가 `worker-release`를 지원하지 않는 `--run` 옵션으로 불러 실패했고, 그사이 pane을 먼저 닫았다. 바른 옵션으로 다시 해제했다(`lead/release-verify3-02.json`). 첫 발생 기록이다.
   - 리드 R-2 표본: 판정 sha256 일치. HEAD `cb32652f`·tracked diff 0, 채택 시험 `69eb9fdf..cb32652f` diff 0. 네 Player 로그의 step 수(14·14·13·13)·create 수(1·1·0·0)·timeout 0·Exception 0과 두 캐릭터 ID가 판정과 같다. 리드 관측(명령 시작 03:42:35.686Z, 출력 시각 03:42:39Z)에서 Dawnholder·Unity·dotnet 프로세스 0, Windows 7777 Listen 0이다. 이 출력은 바로 저장하지 않아 리드 세션 기록에서 뽑아 `lead/process-port-check-0342-transcript-extract.json`(sha256 `098bfe2cfc11e82ddd3804c91f1a9108cd7185a4472e1cb4d7aecef3a55fefc0`)에 남겼다.
   - main: `58c8d4cb` 뒤 main(`ffe7f983`)은 문서 6파일만 바뀌었고 PR268이 바꾼 파일과 겹치지 않는다. 검증한 head를 지키려고 다시 합치지 않는다.
+- 2026-11-01 PR268 병합: 병합 준비 보고 `msg_3b71b8105ba2`(head `6f4f721aaf104dc002e16eccadf95dc10e12e3f6`, CI 네 workflow success, MERGEABLE·CLEAN, `origin/main` `ffe7f983`과 merge-tree 충돌 0). 사용자 승인 줄 뒤 메인이 병합했다(MERGED 04:22:01Z, merge commit `3bb767726e7e10417c8347e65e003a1fcfb6099c`, 메인 `msg_e0b59e962663`).
+  - 병합 관문 문서 재실사(메인 `msg_a848a7e98689`): 검증 v3 뒤 goal 기록 commit 두 개(`3e46ea65`·`6f4f721a`)를 신규 GPT-6-Astra 검증자가 따로 판정했다. 판정 원문은 `pr268-docs-recheck-01/`·`pr268-docs-recheck-02/`에 있다.
+  - 리드는 병합된 branch를 떠나 최신 main에서 `docs/content-demo-autopilot-closeout-20261101`을 만들었다. 이 branch가 종료 기록 PR이 된다.
