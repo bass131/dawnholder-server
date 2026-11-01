@@ -4,9 +4,10 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 새 PR268 독립 검증자(신규 GPT-6-Astra xhigh, `[Content 검증자]`)를 띄운다 → 메인에 Unity 검증 창(U3·Player 빌드)을 청한다 → 창 8(DB 영속 서버 두 판, 사용자 손)을 Core와 맞춰 청한다. 10-31 검증자는 정적 실사만 하고 사용자 지시로 멈췄다(진행 기록 10-31 「자동 진행기 검증(중단)」). 새 계약은 v1(`lead/pr268-verify-contract-v1.md`)을 바탕으로 기준 HEAD와 앞 검증자의 부분 보고를 넣어 v2로 다시 조립한다. 구현은 commit·push됐고 U2와 Legacy DEBUG 실주행 한 판을 통과했다. 캐릭터 선택창(PR-A, PR #291)은 main에 들어갔다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
+**다음 첫 일:** PR268 차단 결함 D1을 고친다. 채택한 회귀 시험(commit됨) 위에서 → 신규 Sol max 구현자(구현 계약 v2)가 고치고 → 신규 GPT-6-Astra 검증자가 다시 판정하며 → 고친 빌드로 창 8(DB 영속 서버 두 판, 사용자 손)을 한 번 돈다. 11-01 검증자 v2는 불합격(D1 1건)으로 판정했다(진행 기록 11-01 「자동 진행기 검증 v2(불합격)」). D1은 메뉴 접속·로그인이 1초보다 늦으면 자동 진행기가 열린 메뉴를 Legacy로 읽어 입장이 멈추는 결함이고, 원인은 구현 계약 v1 설계 고정의 두 줄(`state == null` → Legacy, render 콜백 캡처로 충분)이다. 수정 설계는 `CharacterSelectController.Start`에서 view를 만든 직후 view가 이미 그리는 첫 상태(`Connecting`, view·presenter의 초기값과 같음)를 `MenuState`에 두는 것이다. 「건드릴 곳」의 컨트롤러 읽기 전용 통로 안에서 끝내고 `CharacterMenuView`·presenter는 바꾸지 않는다. 캐릭터 선택창(PR-A, PR #291)은 main에 들어갔다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
 
-- 열린 결정: 창 8 시점은 사용자 결정 99 → C(「오늘은 여기까지하고 전부 정리하자」, 메인 `msg_29d5cb57b68d`)라 다음 세션에 메인이 다시 정한다. 그 밖에 Content가 사용자·메인에 올린 열린 결정은 없다. PR268 병합 승인은 검증 뒤 따로 청한다.
+- 회귀 시험: 검증자 v2가 쓴 판정용 시험 두 파일을 채택했다(메인 결정 `msg_ee36970aad0b`, 「11-01 D1 회귀 시험 채택」 절). 창 순서는 Core Unity EditMode 창(00:41~01:41Z) → Content 창 A(구현자 U2, 「구현 초안 완료」 뒤 메인이 시각을 줌) → 창 B(검증자 U3·Win64) → 창 8(창 B 뒤 메인이 사용자와 정함, 결함 빌드에 쓰지 않는 데 메인 동의 `msg_865bbc326329`).
+- 열린 결정: 없음. PR268 병합 승인은 검증 뒤 따로 청한다.
 - 창 8 약속(Core `msg_a6e92219cbe1`·`msg_0c71d92c392b`): 서버는 core-active를 DB 시연 branch `feat/db-persistence-demo-build-20261031`(v22)로 바꿔 띄운다. Core가 그 전에 24칸 WIP commit·branch 전환·`sync-wsl.sh build`를 한다. 서버 창 원문은 메인이 사용자 서버 탭을 세 시점에 읽는다. 시각이 정해지면 Core에 먼저 알린다. Core 24칸 PR이 먼저 main에 들어가면 PR268에 main을 다시 합치고 서버·클라를 v23으로 다시 빌드해야 한다.
 - 빌드 계약 입력: PR-A(완료)·PR268·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR 병합(`msg_d0012352013c`·`msg_d783ac17eb63`).
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
@@ -76,11 +77,34 @@
 - 메인 결정(메인 화면 18:04Z, 사용자 결정 아님): 클라 받는 쪽(패킷 읽기·공유 DLL)은 Core, 화면 격자는 Art가 맡는다. 병합은 Art 격자 PR 다음 Core 24칸 PR이다. Core 24칸은 프로토콜 버전을 22에서 23으로 올리므로 그 전 클라 빌드는 새 서버에 붙지 못한다.
 - Content 조율(Core `msg_50bf844d60ce` → 리드 `msg_6e1243c63eb4` → Core `msg_a6e92219cbe1`): Content가 고칠 클라 파일은 없다. 인벤토리 wire 시험 도구(`InventoryClientTestSupport`·`InventoryClientContractTests`)는 Core 24칸 PR이 고친다. 창 8은 Core 24칸 병합 전에 v22로 돈다.
 
+### 11-01 사용자 결정 100 A·101 A·102 A — msg_a12e08143d11
+
+메인 `msg_a12e08143d11`(2026-10-31T23:55:02Z)이 전달한 사용자 원문이다(11-01 08:5x KST, 메인 pane Enter 제출). 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 100 - 인벤토리 24칸(4열×6줄) 창 높이를 키울지(칸 81px), 지금 높이 720px를 지킬지 → A 창을 키운다(칸 81px) · 2) 101 - 목표 종료 정리 점검 세션(Gardener)을 앞으로도 Codex Sol max로 열지, 정본대로 Claude Opus로 돌릴지 → A Codex Sol max 유지 · 3) 102 - 「작업자를 Codex로」에 선행 시험 작성자도 넣을지(지금 해석), 구현자만으로 좁힐지 → A 시험 작성자 포함(대신 Astra로)
+
+- 메인 해석(사용자 결정 아님): 선행 시험 작성자는 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`, 태그 `[<파트> 시험 Astra]`다. 구현자는 신규 Sol max `[<파트> Sol]` 그대로다. 이 goal 종료 Gardener는 신규 Sol max다. 이미 떠 있는 세션의 모델은 바꾸지 않는다. 메인이 CLAUDE.md 4A 절에 반영하는 PR을 열며, 병합 전에도 지금부터 적용한다.
+- 100 A는 Content 파일에 닿지 않는다. 빌드 계약 입력은 그대로다.
+- 기록 시점: 원문이 온 때 검증자 v2가 기준 HEAD·미커밋 0을 실행 직전마다 확인하고 있어, 검증자 종료 뒤 이 절을 썼다(리드 `msg_e342a1af00a7`).
+
+### 11-01 D1 회귀 시험 채택 — msg_ee36970aad0b
+
+메인 결정이다(사용자 결정 아님, 2026-11-01T00:39:57Z). 리드 제안 `msg_a498307170a7`에 대한 답이다.
+
+- 검증자 v2(task_9b58fb5e7fd3)가 쓴 판정용 시험 두 파일을 PR268의 회귀 시험으로 채택한다. 이번 D1 수정에는 별도 `[Content 시험 Astra]`를 두지 않는다.
+- 정본 TDD 문단과의 차이: goal-loop SKILL의 TDD 문단은 시험 작성 역할이 요구사항 시험과 구현 전 실패 원시를 남기게 한다. 이번 시험은 독립 검증자가 썼다. 메인은 그 규칙이 지키려는 두 가지(구현자와 독립된 세션이 시험을 씀, 구현 전 실패 원시가 있음)가 충족됐고, 쓴 세션도 102 A의 시험 작성자 배정과 같은 GPT-6-Astra라는 이유로 승인했다.
+- 구현 전 실패(RED) 원시: `pr268-verify-02/u3/playmode/results.xml`의 `DemoAutopilotVerifyConnectionTests.OpenMenuBeforeHandshake_ExposesConnectingInsteadOfLegacyNull` Failed(「an open connecting menu must not be exposed as null」, 제품 HEAD `23cc2713`). EditMode 26 cases는 같은 HEAD에서 통과했다(`pr268-verify-02/u3/editmode/results.xml`, 보존 단정).
+- 시험 파일 sha256(검증자 `pr268-verify-02/final-audit/test-files.json`과 리드 재계산 일치):
+  - `03_Client/Assets/Tests/EditMode/DemoAutopilotVerifyBoundaryTests.cs` `f281e5274ef49a8aef5a407e0747b8173494da91be0e70374f981b7b7ff8396d`, `.meta` `0e4931bb8fb35bc63717a4c8ea2b0329691484e8b669993bb4e5a5ec3e4898ec`(GUID `f2042b106267a04408811b647c419470`)
+  - `03_Client/Assets/Tests/PlayMode/DemoAutopilotVerifyConnectionTests.cs` `4a45ad635e89765d6e346c89bad3a184803a8066e52468c85ce1b46abcf2a64b`, `.meta` `b0e45cf4440584db43e8dbff9fc4824563a1ce70e86edbc2399bbfb9679964a5`(GUID `49d8b613e1fa70d49b88c85f205f123f`)
+- 다음 검증자는 이 두 시험을 구현자가 고치지 않았는지 이 commit 대비 diff로 확인한다.
+- 구현은 신규 Sol max(구현 계약 v2)가 하고, 계약은 짧은 포인터(경로+SHA256)로 넘긴다.
+
 ### 운영 방식(진입 메시지의 메인 결정)
 
 - 병합은 PR마다 사용자 명시 승인으로 메인만 한다. 병합 준비 보고에는 head 40자, 판정 원문 경로·sha256, CI를 넣는다.
 - Unity는 한 번에 하나다. 창마다 메인에 「무엇·예상 시간·관문 측정 출력 경로」 세 줄로 청한다. 관문(물리·commit 여유 각 4 GiB, Unity·Windows dotnet 0, WSL 서버를 함께 쓰면 물리 6 GiB)은 매번 저장 스크립트 `scripts/measure-gate.ps1`로 잰다.
-- 선행 시험 작성자·구현자는 PR-A까지 신규 claude-opus-5-5 xhigh였고, PR268부터 위 「작업자 Codex 전환」을 따른다. 독립 검증은 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다. 정본 TDD(선행 시험 → 구현 → 검증)이며 결정 34 A의 경량 경로는 넓히지 않는다.
+- 선행 시험 작성자·구현자는 PR-A까지 신규 claude-opus-5-5 xhigh였고, PR268부터 위 「작업자 Codex 전환」을 따른다. 11-01부터 선행 시험 작성자는 「11-01 사용자 결정 100 A·101 A·102 A」대로 신규 Astra xhigh다. 독립 검증은 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다. 정본 TDD(선행 시험 → 구현 → 검증)이며 결정 34 A의 경량 경로는 넓히지 않는다.
 - 질문으로 멈추지 않고 되돌리기 쉬운 쪽으로 진행해 보고에 적는다. 사용자 손이 필요한 일은 메인에 모은다. 근거 값은 저장 스크립트 출력에서만 옮긴다.
 
 ## 요구 원천
@@ -104,7 +128,7 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 ### 건드릴 곳
 
 - PR-A: `03_Client/Assets/Scripts/UI/CharacterMenuView.cs`, 캐릭터 메뉴 시험(`CharacterMenuViewTests`·`CharacterMenuViewAppearanceTests`·`CharacterMenuViewCaptureTests`·`BrightWindowInteractionTests`의 캐릭터 메뉴 부분·`CharacterMenuMotionSceneTests`), `CharacterMenuBoundaryTests`·`CharacterMenuPresenterTests`(T7 19~23행, 메인 `msg_e6ef913df2cd`로 추가), 새 시험 `CharacterSelectWide*`, `domains/client.md`, BACKLOG 한 행, CURRENT 한 줄, 이 goal.
-- PR268: `03_Client/Assets/Scripts/Demo/`, `CharacterSelectController.cs`(읽기 전용 통로 하나), EditMode 시험, `domains/client.md` 한 문단, PR268 본문.
+- PR268: `03_Client/Assets/Scripts/Demo/`, `CharacterSelectController.cs`(읽기 전용 통로 하나), EditMode 시험, `domains/client.md` 한 문단, PR268 본문. 11-01 D1 회귀 시험으로 PlayMode `DemoAutopilotVerifyConnectionTests.cs` 한 파일을 더한다(메인 `msg_ee36970aad0b`).
 - PR-C: `GuildUiController.cs`(입구 표시 한 곳), PlayMode 시험 하나, `domains/client.md` 한 줄, BACKLOG 한 행.
 
 ### 하지 않을 것
@@ -209,3 +233,11 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 결함 후보 C1(미재현, 확정 아님): presenter는 생성 때 그리지 않아 메뉴 접속이 끝나기 전에도 `MenuState`가 null이다. 장면 뒤 1초에 이 값이 null이면 단계가 Legacy로 판단하고, 메뉴가 열린 동안 직업 단추는 아무것도 하지 않아 입장이 멈출 수 있다(`CharacterSelectController.cs:45~65`, `CharacterMenuPresenter.cs:41~63`, `DemoCharacterMenuStep.cs:42`). 설계 관찰 O1: `WaitFor`는 시간 초과를 경고만 하고 넘어가 `done`만으로 모든 단계 성공을 보장하지 않는다.
   - 판정용 시험 2파일(미컴파일·미실행, EditMode 8메서드 26 cases + PlayMode 지연 handshake 1건)은 작업 트리에서 빼고 사본과 sha256을 `pr268-verify-01/untracked-tests-saved/`에 남겼다. 다음 검증자가 계약 v2 입력으로 다시 쓸지 정한다.
   - 남은 것: U3, 검증자 Player 빌드, 창 8 두 판, 판정 결론.
+- 2026-11-01 재기동 진입: 메인 `msg_cf050c154ac8`(사용자 원문 「지난번에 하던 작업 이어서 진행해서 마무리해보자」). 같은 대화를 `--resume`으로 이었고 새 handle은 `term_b5326416-b390-44eb-81ee-fb1ada806846`이다. 재시작 뒤 Run이 옛 handle에 묶여 `check`가 `consumer_fenced`였고, 가이드대로 `run-use --id run_0a58bc3cfea0`로 다시 묶었다(`lead/run-use-resume-01.json`). READY `msg_2c6507493680`.
+- 2026-11-01 자동 진행기 검증 v2(불합격): 검증자 `[Content 검증자]`(신규 GPT-6-Astra xhigh, 첫 화면 「GPT-6-Astra xhigh」·v0.166.0) task_9b58fb5e7fd3 / ctx_12f0c34ddea6, 계약 `lead/pr268-verify-contract-v2.md`(sha256 `547fdf995e1470a4f8948adad29b7be8d2cd266d05d55cf277fa17499025ce32`, 기준 HEAD `23cc2713`, 입력 55개, 앞 검증자 부분 보고·C1·저장 시험 포함), 판정 `pr268-verify-02/verdict.md`(sha256 `42af9b71a5627e46cc41ba6dfd3f04e6d916ffeafa66ae20553fd1bfda14fe20`), worker_done `msg_32cde765a1f9` succeeded, 정산 00:37Z(release retained, pane 닫음).
+  - 판정: 불합격, 차단 결함 D1(높음) 1건. B1 충족, B2·B3 D1로 차단, B4 미완료, B5 이름 고정 확인. 비차단 관찰 O1(`WaitFor` timeout이 경고만 하고 진행)·O2(제품 주석의 승인 날짜)는 이번 수정에 넣지 않는다.
+  - D1: 실제 CharacterSelect 장면과 handshake를 1.2초 늦춘 소유 TCP에서 `panel=True·connected=True·handshake=False·projectionNull=True·outcome=Legacy`를 관측했다(`DemoAutopilotVerifyConnectionTests.OpenMenuBeforeHandshake_ExposesConnectingInsteadOfLegacyNull`). 그 뒤 `EnterGame`이 직업 단추를 누르지만 열린 view 가드로 아무 일도 없고 메뉴 경로로 돌아가지 않는다(코드 경로 판단). 귀속은 구현 commit `585486f5`와 리드 구현 계약 v1의 null 의미 가정이다. 구현 계약(task_8f6b53867201)의 첫 독립 불합격이다.
+  - U3(창, 메인 `msg_8ddb358897ec`, 00:12:00Z~00:55:00Z): EditMode 1771/1771(U2 1745 + 판정용 26), PlayMode 264 중 217 통과·실패 1·skipped 46. 기존 이름의 결과 변화·제거·skipped 차이 0. Win64 빌드 exit 0(108초), exe sha256 `91a36fa14dd3ccf390b99720805eda0553da1ca1108381b49c98c938f69dc256`(207파일 manifest). 리드 R-2 표본(XML Passed 1771, 실패 이름·메시지, exit.json, manifest의 exe hash = 실제 파일) 일치.
+  - 창 8은 리드 결정(`msg_242d513475db`, 메인 동의 `msg_865bbc326329`)으로 미실행이다. 사용자 손 약 30분을 결함 빌드에 쓰지 않고, 고친 빌드로 한 번 돈다.
+  - 창 반환: 검증자 00:28:46Z·리드 00:29:04Z 모두 Unity·Windows dotnet·Player 0. Unity 생성 drift 5경로는 patch를 `lead/u3v2-drift/`에 남기고 리드가 00:29:15Z에 복원했다. 창 끝 `msg_332414fedaa4`. 판정용 시험 2파일과 `.meta`는 작업 트리에 남겼다.
+- 2026-11-01 Core 문의: Content 소유 `02_Server/GameServer.Tests/Dungeon/DungeonClearTestWorld.cs`의 `ViewOf`가 칸 0~7만 센다(Core `msg_e6d433cf9c2c`). 리드 동의 `msg_97c01628f0e1`(메인 사본 `msg_7714c2cc4e9a`): Core 24칸 PR이 배열만 `slot0..slot23`으로 늘리고 주석·판정·기대값은 바꾸지 않는다. PR268은 `02_Server`를 건드리지 않는다.
