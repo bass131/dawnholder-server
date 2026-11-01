@@ -2,7 +2,7 @@
 
 11-06 시연을 Windows 빌드 클라이언트와 DB 영속 서버로 할 수 있게 한다. 시연자가 정해진 순서로 DB 서버를 켜고 끄며, 빌드에서 로그인 → 캐릭터 선택·생성 → 마을 입장이 되는 상태가 목표다.
 
-**현재 상태(2026-10-31 23:56 KST):** 지금 보기(완료조건 1)와 DEVELOPMENT 새 절이 끝났고, DEVELOPMENT 절은 1차 독립 실사를 통과했다(결함 0). 녹화 실행 순서 v1(리허설 전)을 goal에 썼다. 녹화용 리허설은 PR268 병합과 Content main 빌드를 기다린다. 작업자·검증자 pane은 없고 저장소 변경은 커밋 전이다(DEVELOPMENT.md 수정, goal 폴더 새로 만듦).
+**현재 상태(2026-11-01 17:30 KST):** 지금 보기(완료조건 1)와 DEVELOPMENT 새 절이 끝났고, DEVELOPMENT 절은 1차 독립 실사를 통과했다(결함 0). 창 8(PR268 검증의 DB 서버 두 판)이 끝났고 PR268이 병합됐다. 녹화 실행 순서는 v1에 11-01 결정(109 A·110 A·HUD 지시)을 반영했다. 녹화용 리허설은 Art 격자 PR1·Core 24칸·Art PR2 병합과 Content 빌드를 기다린다. 작업자·검증자 pane은 없고, 이 branch는 로컬 WIP 커밋만 있으며 push하지 않았다.
 
 ## 재개 지점
 
@@ -24,17 +24,21 @@
     - Core 값 3, 2판 캐릭터: 두 클라 모두 2판에서 `character create` 없이 1판과 같은 slot 1을 골라 마을까지 갔다(Content 클라 원시 `pr268-verify-03/window8/round-2/`). 재시작 뒤에도 1판 캐릭터가 목록에 남았다는 근거다. 리드는 목록 이름을 따로 대조하지 않았다.
     - Content 중립 관찰(거점 level 2·강화 level 1이 두 판에서 같음)에 Core 해석을 직접 보냈다(`msg_04981e9d8b04`). 두 값은 DB 저장 범위 밖이다(FEATURE_MAP 39·41행, `02_Server`에 `dh.Guild`·`dh.CharacterWeapon`을 읽거나 쓰는 코드 0건). 그래서 판정 근거로 쓰지 않는다. 2판에서 요청 전에 이미 그 값이 보이면 반증이다.
     - P2 전 확인(03:35:13Z): WSL `GameServer.dll` 0, 7777 0, Unity 0, Windows dotnet 0(`.backups/verification/2026-11-01-inventory-24-slots/lead-p2-switch-check-01.txt`).
-  - 창 8 뒤 core-active를 24칸 branch로 되돌린다(서버 0·core-active Unity 0일 때만).
+  - P2: 2026-11-01T03:36:08Z에 core-active를 24칸 branch로 되돌렸다(`.backups/verification/2026-11-01-inventory-24-slots/lead-p2-switch-01.txt`).
   - 다음 서버 실행 카드(리허설)는 결정 107 A대로 1단계 자격 줄을 `$env:DAWNHOLDER_DB_CREDENTIAL_PATH` 우선으로 바꾼다(「적용 중인 사용자 결정」 107 A). 창 8 카드 v3는 바꾸지 않는다.
-- 다음 첫 일: 메인의 리허설 실행 창 배정을 기다린다. 착수 조건은 넷이다.
-  - PR268 병합
-  - Art 인벤토리 격자 PR 병합(결정 92 B, `msg_e8defeeffd1f`)
+- **PR268 병합(메인 사본 `msg_11107f0e032c`):** 사용자 승인 줄(head `6f4f721aaf104dc002e16eccadf95dc10e12e3f6`) 뒤 메인이 2026-11-01T04:22:01Z에 병합했다. merge commit은 `3bb767726e7e10417c8347e65e003a1fcfb6099c`다. PR268이 먼저 들어가 v22 재빌드 조건은 없어졌다.
+- **11-01 기록 전환(08:27Z경):** 이 기록을 쓰려고 core-active를 잠깐 이 branch로 바꿨다. 바꾸기 전 24칸 branch는 `11fd1824`, 변경 0이었다. 사용자 서버 탭은 정지 뒤 입력 화면, Windows dotnet 0, Unity 0이었다(`.backups/verification/2026-11-01-inventory-24-slots/lead-g1-record-switch-01.txt`). 커밋 뒤 24칸 branch로 돌아간다.
+- 다음 첫 일: 메인의 리허설 실행 창 배정을 기다린다. 착수 조건은 다섯이다.
+  - PR268 병합(채움, 위 항목)
+  - Art 인벤토리 격자 PR1 병합(결정 92 B, `msg_e8defeeffd1f`)
   - Core 인벤토리 24칸 PR 병합(결정 97 A, `msg_3ce270803253`)
+  - Art PR2 병합(HUD 골드 제거·스킬칸, 「적용 중인 사용자 결정」 11-01 HUD 지시)
   - Content 빌드 경로·exe sha256
-  - 24칸 PR은 프로토콜 버전을 올린다. 그래서 리허설 전에 이 branch에 그 main을 merge하고 서버를 다시 빌드한다. 새 Core 작업자는 Codex Sol max로 띄운다.
+  - Art 격자 PR1이 Core 24칸과 Art PR2보다 먼저다. Core 24칸과 Art PR2의 앞뒤는 정해지지 않았고, Core는 어느 쪽이 먼저여도 된다(Art `msg_494eb3ba541b`).
+  - 24칸 PR은 프로토콜 버전을 올린다. 그래서 리허설 전에 Content가 알리는 고정 head(다섯 PR이 모두 들어간 main) 40자를 이 branch에 그대로 받고 서버를 다시 빌드한다(Core가 Content에 보낸 답 `msg_45e700da3330`). Core가 돌려줄 것은 이 branch HEAD 40자, 서버 쪽 트리(`02_Server`·`04_ClientNet`·`98_Shared`·`99_Tools`) diff 0 원시, `ProtocolVersion.Current` 줄, R1 exit다. 새 Core 작업자는 Codex Sol max로 띄운다.
 - 24칸 작업: 메인이 범위 초안을 요청했다(`msg_3ce270803253`). 초안은 `.backups/verification/2026-11-01-inventory-24-slots/scope-draft-v1.md`(sha256 `8dba8548…1a95`)다. 메인이 `msg_3dfd5496b065`(18:04:08Z)로 1 가·2 동의·3 가를 승인했다.
   - 새 goal `2026-11-01-inventory-24-slots`를 같은 리드가 먼저 끝내고 이 goal의 리허설로 돌아온다. R-8 교체는 두 goal이 다 닫힌 뒤 한 번이다.
-  - 이 goal의 미커밋은 이 branch에 로컬 WIP 커밋으로 두었고 push하지 않는다. 돌아오면 이 branch로 switch하고 24칸 PR이 들어간 main을 merge한다. 리허설 뒤에는 녹화 순서 v2, 서버 계약 갱신, 바뀐 줄의 재실사, Core PR 순으로 간다.
+  - 이 goal의 미커밋은 이 branch에 로컬 WIP 커밋으로 두었고 push하지 않는다. 돌아오면 이 branch로 switch하고 Content 고정 head를 merge한다. 리허설 뒤에는 녹화 순서 v2, 서버 계약 갱신, 바뀐 줄의 재실사, Core PR 순으로 간다.
 - 그 전에 올 일: Content 리드(`run:run_0a58bc3cfea0`)가 PR268 검증용 DB 서버 한 판의 사용자 서버 기동 시각을 맞추러 연락한다(메인 `msg_f2632f509767`). 받으면 같은 서버 세션 안에서 Core가 함께 볼 확인(같은 창 재시작, 같은 로그인의 같은 캐릭터 등 녹화 순서 v1의 R6·R7)을 Content와 같이 메인에 올린다. 실행 창은 메인 배정 전에는 쓰지 않는다.
 - DEVELOPMENT 절 1차 독립 실사(2026-10-31): 신규 `[Core 검증자]` Astra(Task `task_6b358830c0a3`, Dispatch `ctx_72557501f413`, 계약 `verify-01/contract-v1.md` sha256 `1d9d6401…a98f`)가 확인할 것 1~8을 모두 「검토했고 지적 없음」으로 판정했다. 결론은 **문서 실사 통과, 결함 번호 없음**이다(worker_done `msg_871299b11356`, `verify-01/verdict.md` sha256 `292cb149…0677`).
   - 리드가 판정 원문을 다 읽고 원시를 표본 대조했다(`verify-01/lead-sample-check-v1.md`). 표본은 시작 블록, 기존 줄 보존, 링크, 메모 선작성, 쓰기 범위다.
@@ -165,6 +169,42 @@
 - 변수 이름은 `DAWNHOLDER_DB_CREDENTIAL_PATH`로 고정한다. 사용자가 자기 PowerShell 7 프로필에 직접 넣고, 메인이 그 한 줄을 안내한다. AI는 프로필 파일과 그 변수 값을 읽거나 출력하지 않는다. 카드·계약·스크립트에는 값 대신 변수 이름만 쓴다.
 - 정본(DEVELOPMENT 등) 반영은 시연 뒤 후보로 둔다.
 
+### 2026-11-01 결정 109 A — 녹화·리허설 이름은 Core 초안
+
+메인 `msg_51e76196ae82`(2026-11-01T04:26:35Z)가 전달한 사용자 원문이다. 메인 pane에서 Enter로 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 109 - 11-06 녹화 영상에 보일 캐릭터 이름: Core 초안(새벽기사·새벽법사)으로 갈지, 직접 정할지 → A Core 초안 그대로
+
+- 리허설: 계정 `rh1101_knight`·`rh1101_mage`, 캐릭터 「리허설기사」·「리허설법사」.
+- 녹화: 계정 `rec_knight`·`rec_mage`, 캐릭터 「새벽기사」·「새벽법사」.
+- 원천은 Core 초안 `msg_035b91a40065`(`.backups/verification/2026-11-01-inventory-24-slots/msg-recording-build-answers-to-content.txt` 3절)다. 완료조건 5(리허설과 녹화의 로그인·이름을 미리 다르게 정함)의 이름 부분이 채워졌다.
+
+### 2026-11-01 결정 110 A — 녹화 두 클라 창은 모니터마다 1920×1080
+
+메인 `msg_a675e965eb96`(2026-11-01T04:38:41Z)이 전달한 사용자 원문이다. 메인 pane에서 Enter로 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 110 - 녹화 때 기사·마법사 두 클라 창: 모니터마다 큰 창 하나씩, 한 모니터에 작은 창 둘 나란히 → A 모니터마다 1920×1080
+
+- 기사 클라는 주 모니터, 마법사 클라는 보조 모니터(주 모니터 왼쪽)에 각각 1920×1080 창이다(`-screen-width 1920 -screen-height 1080 -screen-fullscreen 0`).
+- 녹화는 사용자가 쓰는 도구로 두 화면을 따로 잡아 편집에서 합친다. 메인·리드는 녹화 도구를 띄우지 않는다.
+- Core 할 일은 녹화 실행 순서 R2·R4의 창 크기를 이 값으로 맞추는 것뿐이다(메인 지시). R2·R4는 아래 「녹화 실행 순서」에 반영했다. 창 위치·잘림 확인은 Content 계약 고정본 몫이다(Core 답 `.backups/verification/2026-11-01-inventory-24-slots/msg-recording-contract-v4-answers-to-content.txt`).
+
+### 2026-11-01 사용자 직접 지시 — HUD 골드 제거·스킬칸 좌하단 4칸, 녹화는 그 뒤
+
+메인 `msg_6a8fa9c2a0a8`(2026-11-01T08:20:30Z)이 사본으로 전달한 사용자 직접 지시 원문이다. 메인 pane에 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다.
+
+> OK 여기서 이제 인벤토리외에 존재하는 골드 표기 UI는 제거하고, 스킬칸은 좌측 하단으로 옮겨버리자
+> 스킬칸은 최대 4개로 각각 하나씩 표기하고, 빈 스킬칸은 70% 투명도로 표기
+>
+> 거기까지 진행하고 마무리하고 영상 새로 시연용으로 찍고 마무리하자
+
+- 메인 정리: 실행은 Art PR2(Art 격자 PR1 병합 뒤)다. Core 24칸 순서는 그대로다(Art PR1 병합 → Core 24칸).
+- Core 할 일 (1), 확인: 녹화 순서 R0~R8, 자동 진행용 서버 계약 v1, 서버·공유·도구·봇, Core 소유 클라 시험은 HUD 「Gold」 상자나 스킬칸 자리를 보지 않는다. 원시는 `.backups/verification/2026-11-01-inventory-24-slots/lead-hud-gold-skill-grep-01.txt`(24칸 branch HEAD `11fd1824`)다. Art 리드 `msg_20e41580df04`와 메인 `msg_23564042e812`로 알렸다.
+  - Art에 전한 경계 하나: HUD 골드는 `HudController`의 `InventoryState` 구독만 걷고, `InventoryState`와 36번 수신은 그대로 둔다.
+  - 경계 둘: 서버 `SkillCatalog` 기준 기사 1개·마법사 2개라서 4칸이면 빈 칸이 3개·2개다. 빈 칸은 `C_SkillUse`를 보내지 않아야 한다(보내면 서버 `[Trust]` 로그가 녹화 서버 로그에 섞임).
+- Core 할 일 (2), 녹화 기준: 녹화 빌드 기준을 「PR-A·PR268·Art 격자 PR1·Core 24칸·Art PR2가 모두 들어간 main」으로 고쳤다(아래 「녹화 실행 순서」 머리 줄). Content 계약 초안 v6(sha256 `7f56cd4b3279ace6c84694ef85ba094835424fe7d780ec051e703e34a65f107a`, `msg_01d67753c36f`)도 같은 다섯 PR을 적었다. Core 확인 메시지 `msg_e0f89b875125`와 엇갈렸고 내용은 같다.
+- 정정: Core가 처음 메시지에 「Art PR1 → Core 24칸 → Art PR2」로 적은 것은 정해진 순서가 아니었다. Art `msg_494eb3ba541b`·메인 `msg_a3fe4d659794`로 바로잡았다. Core 24칸 PR이 바꾸는 파일은 HUD 쪽 파일과 겹치지 않는다(client.md는 Core 38행, HUD 44·46행). 목록 원시는 `.backups/verification/2026-11-01-inventory-24-slots/lead-core24-changed-files-01.txt`다.
+
 ## 적용 중인 메인 결정
 
 메인 `msg_0d7e73a9805d`(2026-10-31T09:12:08Z). 사용자 결정이 아니다.
@@ -263,16 +303,19 @@
 
 결정 82 B의 한 판 녹화에서 Core가 맡는 서버 쪽 순서다. 클라 순서와 자동 진행 단계는 Content, 녹화 시작·끝은 메인이 정한다. 확인 수준을 칸마다 적었다. 리허설 뒤 실측으로 v2를 만든다.
 
+- **빌드 기준(11-01 고침):** 서버와 녹화 클라는 PR-A·PR268·Art 격자 PR1·Core 24칸·Art PR2(이름은 Content 녹화 빌드 계약을 따름)가 모두 들어간 같은 main(Content가 알리는 고정 head 40자)이다. 프로토콜은 v23이다. 고친 근거는 「적용 중인 사용자 결정」의 11-01 HUD 지시다.
+- R2·R4는 결정 110 A(모니터마다 1920×1080)로 11-01에 고쳤다. 창 8의 960×540 값은 쓰지 않는다.
+
 | 순서 | 할 일 | 누구 | 확인 수준·근거 |
 |---|---|---|---|
 | R0 | 7777을 쓰는 서버가 없는지 본다. Legacy가 떠 있으면 그 창 소유자가 Ctrl+C로 끈다 | 소유자 | 10-31 단계 A 실행. Legacy 정지 키는 `run-server.bat:7` |
 | R1 | 서버 checkout 루트에서 `wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh build`를 1회 돈다. 녹화 직전 서버 소스가 단계 A 빌드와 같으면 생략할 수 있다 | 배정된 Core 작업자 | 10-31 실측 46초, exit 0(`build-01/`) |
-| R2 | 클라 2개·서버·녹화 도구를 함께 띄우기 직전에 물리 여유 6GiB·commit 여유 4GiB를 원시로 남긴다 | 배정 창의 실행자 | 메인 결정 `msg_0d7e73a9805d` |
+| R2 | 서버 Listening 뒤, 1920×1080 Player 두 개와 사용자 녹화 도구를 띄우기 직전에 물리 여유 6GiB·commit 여유 4GiB를 원시로 남긴다. Content Player는 R2 통과 뒤에만 띄운다 | 배정 창의 실행자 | 메인 결정 `msg_0d7e73a9805d`, 결정 110 A. Unity 빌드 창의 관문은 Content 계약 몫 |
 | R3 | 사용자가 서버 창에 DEVELOPMENT 「DB 영속 서버 실행」 시작 블록을 붙여 넣고 자격 경로를 입력한다. 세 줄(PID 줄 → launched 줄 → `[Persistence stdout …] Listening on 0.0.0.0:7777. Press Enter to stop.`)을 기다린다 | 사용자 | 10-31 실측: 프로세스 생성 09:52:15.75Z → Listening 09:52:16.64Z, 약 0.9초(1회) |
-| R4 | Listening 뒤에 두 클라(기사·마법사)를 시작하고 자동 진행을 녹화한다. 플레이 중 서버 로그는 서버 창에 나오지 않는다(launcher는 네 문구만 옮김) | 메인·Content 순서 | launcher 129~136행. 두 클라 동시 선택·파티·보스 흐름은 영속 모드에서 미실행 |
+| R4 | Listening과 R2 뒤에 두 클라를 시작하고 자동 진행을 녹화한다. 기사는 주 모니터, 마법사는 보조 모니터에 각각 `-screen-width 1920 -screen-height 1080 -screen-fullscreen 0`과 `-monitor`로 띄운다. 플레이 중 서버 로그는 서버 창에 나오지 않는다(launcher는 네 문구만 옮김) | 메인·Content 순서 | launcher 129~136행. 결정 110 A. 명령·창 위치·잘림 확인은 Content 계약 고정본. 창 8(PR268 검증)에서 두 클라가 영속 모드로 1판 생성·2판 선택 뒤 마을까지 갔다. 파티·보스 흐름은 Core가 대조하지 않았다 |
 | R5 | DB 장면을 넣으면, 자동 진행이 끝나고 두 클라 연결이 닫힌 뒤에 둔다. 서버 창 Enter → `Server stopped.`와 출력 요약 두 줄 → 입력 화면 | 사용자 | 10-31 정지 실측(`docs-02/stage-a-observed-lines-v1.txt`). 정지에 걸린 시간은 Enter 시각이 없어 미측정 |
 | R6 | 같은 서버 창에서 `& .\99_Tools\Start-PersistenceServer.ps1 @serverArgs` 한 줄로 다시 띄운다. 첫 블록의 변수와 입력한 자격 경로를 그대로 쓴다. 다시 세 줄을 기다린다 | 사용자 | 10-29 합동 창 S5에서 같은 한 줄로 재시작했고 S1~S8이 통과했다(PR272). 재시작 시간은 미측정 |
-| R7 | 같은 로그인으로 접속해 같은 캐릭터가 목록에 남은 것을 보여 주고 입장한다. 진행 상태(퀘스트·길드·금고·강화)는 처음으로 돌아간다 | 메인·Content 순서 | 서버 계약 v1 §2. 10-29 합동 창에서 서버 1(S3 봇 생성) → 재시작 → 서버 2(S6 봇)의 목록에 같은 ID·직업이 남았다 |
+| R7 | R4와 같은 명령(같은 `-monitor` 값)으로 같은 로그인에 접속해 같은 캐릭터가 목록에 남은 것을 보여 주고 입장한다. 진행 상태(퀘스트·길드·금고·강화)는 처음으로 돌아간다 | 메인·Content 순서 | 서버 계약 v1 §2. 10-29 합동 창에서 서버 1(S3 봇 생성) → 재시작 → 서버 2(S6 봇)의 목록에 같은 ID·직업이 남았다 |
 | R8 | 녹화 끝 → 클라 종료 → 서버 창 Enter → `Server stopped.` → 입력 화면. 필요하면 소유자가 Legacy를 다시 띄운다 | 사용자·소유자 | R5와 같음 |
 
 - 녹화마다 새로 만드는 캐릭터의 이름과 칸은 DB에 영구히 남는다. 이름은 서버 전체에서 하나이고 칸은 계정당 3개다. 리허설과 녹화의 로그인·이름은 미리 다르게 정한다(완료조건 5).
