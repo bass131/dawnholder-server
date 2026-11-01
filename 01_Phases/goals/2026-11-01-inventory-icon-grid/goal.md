@@ -4,7 +4,7 @@
 
 ### 현재 재개 카드 — 2026-11-01 PR1(PR294) 병합과 PR2 범위 첫 commit 뒤, PR2 선행 시험 계약 전
 
-**다음 첫 일:** PR2 선행 시험 계약을 이 범위 commit 기준으로 확정해 메인에 보고하고, 새 `[Art 시험 Astra]`를 띄운다(아래 「작업 방식」). 리드 초안은 근거 폴더 `pr2-red-contract-v1-head-draft-01.md`다. 초안의 줄 번호는 head `47cbdcac`에서 쟀으므로 이 commit에서 저장 스크립트로 다시 잰다. Unity 창은 메인이 배정하고, Core 24칸 마지막 확인이 먼저다. Unity 없이 되는 일은 바로 하고, 창이 필요하면 예상 길이(아래 「Unity 창 추정」 W6 약 35분)와 함께 청한다(메인 `msg_8f73d5ae4af3`). 6줄 캡처는 Core 24칸이 main에 든 뒤다. 빈 스킬칸 alpha 0.3 해석은 그 캡처 때 사용자에게 화면으로 확인받는다(같은 메시지). 종료 Gardener와 종료 점검은 PR2 병합 뒤다. 병합 순서는 Art PR1 → Core 24칸 → Art PR2 → Content 녹화 빌드다(메인 `msg_1357f45b9d35`). 작업자가 일하는 동안 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모 3(`art-lead-context-1101-03.md`)에 쌓는다. 메모 1·2는 PR1 기록이다. 리드 시험 계약에는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」를 넣는다(메인 `msg_484ea2fa03bb`, 규칙 정본 반영 전까지). 리드는 시계·SHA256을 인라인 명령으로 만들지 않는다(아래 「두 번째 좁은 재실사 — 2026-11-01」 교정 층).
+**다음 첫 일:** PR2 선행 시험 계약을 이 범위 commit 기준으로 확정해 메인에 보고하고, 새 `[Art 시험 Astra]`를 띄운다(아래 「작업 방식」). 리드 초안은 근거 폴더 `pr2-red-contract-v1-head-draft-01.md`다. 초안의 줄 번호는 head `47cbdcac`에서 쟀으므로 이 commit에서 저장 스크립트로 다시 잰다. 초안의 설계 5(NPC 대화창·보상 창이 뜰 때 스킬칸)는 메인 결정 A로 정해졌다(아래 「11-01 메인 결정 설계5 A」). Unity 창은 메인이 배정하고, Core 24칸 마지막 확인이 먼저다. Unity 없이 되는 일은 바로 하고, 창이 필요하면 예상 길이(아래 「Unity 창 추정」 W6 약 35분)와 함께 청한다(메인 `msg_8f73d5ae4af3`). 6줄 캡처는 Core 24칸이 main에 든 뒤다. 빈 스킬칸 alpha 0.3 해석은 그 캡처 때 사용자에게 화면으로 확인받는다(같은 메시지). 종료 Gardener와 종료 점검은 PR2 병합 뒤다. 병합 순서는 Art PR1 → Core 24칸 → Art PR2 → Content 녹화 빌드다(메인 `msg_1357f45b9d35`). 작업자가 일하는 동안 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모 3(`art-lead-context-1101-03.md`)에 쌓는다. 메모 1·2는 PR1 기록이다. 리드 시험 계약에는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」를 넣는다(메인 `msg_484ea2fa03bb`, 규칙 정본 반영 전까지). 리드는 시계·SHA256을 인라인 명령으로 만들지 않는다(아래 「두 번째 좁은 재실사 — 2026-11-01」 교정 층).
 
 | 항목 | 현재 |
 |---|---|
@@ -93,6 +93,15 @@
   - HUD 그래픽과 패널의 겹침 넓이 0 보존 시험(`InventorySceneLifecycleTests.RealTownAndHuntingGround_HudGraphicsShareNoAreaWithThePanel_AndItsButtonsStillClick`)은 스킬칸에 한해 겹침을 허용하게 바꾼다. 다른 HUD 요소(HP·파티·미니맵·길드 입구)의 겹침 0 단정은 그대로 둔다. 바꾸는 단정과 이유를 줄 단위 표에 적는다.
   - client.md에 「스킬칸은 인벤토리 창과 겹칠 수 있고, 창은 끌어서 옮긴다」를 한 줄로 적는다.
 
+### 11-01 메인 결정 설계5 A(사용자 확인 캡처 전) — NPC 대화창·보상 창이 떠도 스킬칸은 그 자리 — msg_64c1048f4d00
+
+- 이것은 메인 결정이다. 사용자 결정이 아니고, 사용자 확인 캡처에서 그림으로 보인다(같은 메시지 3항).
+- 리드 질문 `msg_6409db85368d`: NPC 대화창·보상 창이 떴을 때 새 왼쪽 아래 스킬칸을 그대로 둘지(A), 대화창 위로 비킬지(B)였다. 근거는 코드 상수에서 낸 추정이다(근거 폴더 `pr2-bottom-window-overlap-estimate-1101-01.txt`, 실행 측정 아님). 1920×1080은 두 창 모두 스킬칸과 겹치지 않는다. 1280×720은 NPC 대화창이 늘 빈 4번째 칸 폭 74.7px 가운데 62px를 덮고, 1~3칸은 겹치지 않는다. 보상 창은 두 크기 모두 겹치지 않는다.
+- 결정(같은 메시지 1항): 「대화창이 덮으면 스킬칸을 비킴」 규칙(`HudLayout.cs:89`~`:114`)을 없앤다. 스킬칸은 대화창·보상 창이 떠도 늘 왼쪽 아래 그 자리다. 그리는 순서는 지금 그대로(대화창이 위)다. 골드 상자 쪽 절반은 골드 상자 제거로 함께 사라진다.
+- 시험(같은 항): `HudBottomWindowLayoutSceneTests`의 「덮으면 비킴」 단정은 「창이 떠도 스킬칸 자리 그대로」로 바꾼다. 줄 단위 표의 요구 출처에 사용자 원문(HUD 지시 `msg_7e7523b25aa1`, 114 `msg_4f325d2f2bfd`)과 이 메시지를 적는다.
+- 이유(같은 메시지 2항): 사용자 지시 「스킬칸은 좌측 하단으로」와 114 「겹쳐도 상관없음」을 메인이 「스킬칸 고정, 아무것도 비키지 않음」으로 읽었다. 녹화는 모니터마다 1920×1080(110 A)이고 그 크기에서는 겹침이 없다. B는 사용자가 원한다는 근거 없이 새 동작과 시험을 더한다.
+- 사용자 확인(같은 메시지 3항): 6줄·HUD 캡처에 「1280×720, NPC 대화창이 뜬 왼쪽 아래」 한 장을 넣는다. 사용자가 그 그림에서 다르게 고르면 그때 고친다.
+
 ## 지금 상태(사실)
 
 기준은 origin/main `ffe7f983b96eda8002a27169b3e8b7cb5eb32c72`다. F1·F2·F3은 근거 폴더의 저장 출력이다.
@@ -146,7 +155,7 @@
 
 PR2 — HUD(사용자 직접 지시 `msg_7e7523b25aa1`)
 
-8. HUD의 골드 표기를 없앤다. 화면 아래 골드 상자(UI 씬 `Gold_bar`와 그 안 `GoldText`)가 보이지 않는다. `HudController`는 골드 글을 그리지 않고 인벤토리 미러 구독도 걷는다. `InventoryState`와 36번 수신은 그대로이고, 인벤토리 창 「재화」 줄·처치 보상 떠오르는 글·길드 창은 같은 미러를 계속 읽는다(Core `msg_20e41580df04` 2절). `HudLayout`의 골드 상자 비킴 규칙도 대상이 없어진다.
+8. HUD의 골드 표기를 없앤다. 화면 아래 골드 상자(UI 씬 `Gold_bar`와 그 안 `GoldText`)가 보이지 않는다. `HudController`는 골드 글을 그리지 않고 인벤토리 미러 구독도 걷는다. `InventoryState`와 36번 수신은 그대로이고, 인벤토리 창 「재화」 줄·처치 보상 떠오르는 글·길드 창은 같은 미러를 계속 읽는다(Core `msg_20e41580df04` 2절). `HudLayout`의 골드 상자 비킴 규칙도 대상이 없어진다. 스킬칸 쪽 비킴 규칙도 없앤다(메인 결정 설계5 A, 아래 완료조건 15).
 9. 스킬칸을 화면 왼쪽 아래로 옮기고 4칸을 칸마다 따로 보인다.
    - 칸 순서와 내용은 기존 키 매핑(`ClientSkillCatalog.SkillKeyMap`)에서만 정한다. 1칸은 Q 스킬, 2칸은 E 스킬이다. 기사는 Q Dash 하나, 마법사는 Q Thunderbolt·E Teleport다. 나머지 칸은 빈 칸이다(기사 빈 칸 3, 마법사 빈 칸 2).
    - 빈 칸은 alpha 0.3으로 그린다(투명도 70%의 메인 해석). 빈 칸에는 키 글자·아이콘·쿨다운이 없다.
@@ -173,7 +182,7 @@ PR2 — HUD(사용자 직접 지시 `msg_7e7523b25aa1`)
 | `00_Document/domains/client.md` :50·:54 | 인벤토리 표시·사용 문장 | Art |
 | 이 goal 파일, CURRENT의 Art 줄, BACKLOG `inventory-icon-grid` 행의 상태 칸(`goal 승격 → 링크`) | 기록 | Art |
 | PR2 `03_Client/Assets/Scripts/UI/HudController.cs` | 골드 글·미러 구독 걷기 | Art |
-| PR2 `03_Client/Assets/Scripts/UI/HudLayout.cs`, `SkillHudController.cs` 또는 같은 폴더의 새 파일 | 왼쪽 아래 4칸 배치, 빈 칸 alpha, 골드 비킴 규칙 정리 | Art |
+| PR2 `03_Client/Assets/Scripts/UI/HudLayout.cs`, `SkillHudController.cs` 또는 같은 폴더의 새 파일 | 왼쪽 아래 4칸 배치, 빈 칸 alpha, 골드·스킬칸 비킴 규칙 걷기(메인 결정 설계5 A) | Art |
 | PR2 `03_Client/Assets/Scenes/99.UI/UI.unity` | `Gold_bar`·`GoldText`, `skill_panel`·`skill_slot_1`~`_5`·`QKey`·`EKey`의 자리·참조. 직렬화 값과 GUID를 보존하고 바뀐 객체만 쓴다. | Art |
 | PR2 HUD 골드·스킬칸을 보는 기존 시험 | 리드 사실 `pr2-hud-facts-1101-01.txt` 4절·`-02.txt` 5절과 Core 목록(EditMode `HudGoldMirrorTests`·`HudPresentationTests`·`HudFrameSkinTests`·`SkillHudControllerTests`·`BrightTextContrastTests`·`BrightTextPaletteBoundaryTests`·`MainMenuAccountSceneTests`, PlayMode `HudGoldAndPanelToggleSceneTests`·`HudGoldFitsGoldBarSceneTests`·`HudGoldFitsGoldBarEdgeAmountsSceneTests`·`HudLayoutSceneTests`·`HudBottomWindowLayoutSceneTests`·`HudPresentationLifecycleTests`·`InventoryWindowPlacementSceneTests`·`InventorySceneLifecycleTests` :763 HUD 겹침·`DungeonClearRewardOverlapSceneTests`·`BrightRemainingScreensCaptureTests`·`UiWindowLiveCaptureTests`). 줄 목록은 PR2 선행 시험 계약의 「바꾸는 기존 단정」 표에서 정한다. Content 소유 시험은 고치기 전에 Content 리드와 메인에 먼저 알린다. | Art(Content 소유는 Content) |
 | PR2 `00_Document/domains/client.md` :46·:48 | HUD 골드·스킬칸 문장, 스킬칸과 인벤토리 창의 겹침 한 줄(사용자 답 114) | Art |
@@ -221,9 +230,9 @@ PR2 — HUD(위 1~10은 PR1 완료조건이고, PR2는 1~7을 24칸 main에서 �
    - 스킬칸에 가린 채운 칸에서는 마우스 올림 상세가 뜨지 않고, 우클릭의 `C_ItemUse`는 0이다. 빈 스킬칸(alpha 0.3)에 가린 칸도 같다.
    - 창을 끌어 스킬칸에서 비키면 같은 칸이 상세를 띄우고, 우클릭은 `C_ItemUse`를 정확히 1개 보낸다.
    - HUD 겹침 넓이 0 보존 시험은 스킬칸에 한해 겹침을 허용하고, 다른 HUD 요소(HP·파티·미니맵·길드 입구)의 겹침 0 단정은 그대로다. 바꾸는 단정은 줄 단위 표와 같은 명령의 전후 원시를 갖춘다.
-15. NPC 대화·보상 창이 떠 있을 때 스킬칸은 지금처럼 창에 가리지 않는다. 지금의 비킴 동작(`HudBottomWindowLayoutSceneTests`)이 새 자리에서 필요한지는 선행 시험 계약에서 정한다.
+15. NPC 대화·보상 창이 떠도 스킬칸은 왼쪽 아래 자리 그대로이고, 창이 스킬칸 위에 그려진다(메인 결정 설계5 A `msg_64c1048f4d00`, 위 「적용 중인 사용자 결정」). 비킴 규칙(`HudLayout.cs:89`~`:114`)은 없다. `HudBottomWindowLayoutSceneTests`의 「덮으면 비킴」 단정은 「창이 떠도 스킬칸 자리 그대로」로 바뀌고, 줄 단위 표와 같은 명령의 전후 원시를 갖춘다.
 16. client.md :46·:48 문장이 새 동작과 맞다.
-17. 사용자 확인 캡처(통과 근거 아님): 24칸 main에서 1920×1080·1280×720 각각에 6줄 격자, 왼쪽 아래 스킬칸(기사·마법사 각 한 장), 골드 상자 없는 HUD가 있다. 빈 칸 alpha 0.3이 「70% 투명도」의 해석임을 캡처 보고에 적는다. 격자 case는 창 열림 효과가 끝난 뒤 찍는다.
+17. 사용자 확인 캡처(통과 근거 아님): 24칸 main에서 1920×1080·1280×720 각각에 6줄 격자, 왼쪽 아래 스킬칸(기사·마법사 각 한 장), 골드 상자 없는 HUD가 있다. 「1280×720, NPC 대화창이 뜬 왼쪽 아래」 한 장을 더한다(메인 결정 설계5 A 3항). 빈 칸 alpha 0.3이 「70% 투명도」의 해석임을 캡처 보고에 적는다. 격자 case는 창 열림 효과가 끝난 뒤 찍는다.
 18. 독립 검증 PASS(강 등급)다. 실제 경로는 실제 장면에서 기사·마법사 각각 칸 4개의 표시, Q 입력의 `C_SkillUse` 1개, 기사 E 입력의 `C_SkillUse` 0을 본다.
 
 ## Core 24칸 계약 — 확정
