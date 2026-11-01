@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 녹화용 빌드 계약을 Core 리드와 맺는다. 기준은 Art 인벤토리 격자 PR과 Core 인벤토리 24칸 PR이 들어간 main이다(메인 `msg_e0b59e962663`). 두 PR이 아직이면 기다린다. 계약 초안 v3는 근거 폴더 `lead/recording-build-contract-draft-v3.md`다(이름은 사용자 결정 109 A, Core 답 `msg_45e700da3330` 반영). 남은 빈칸은 두 PR의 번호·merge commit, 고정 head, 창 크기다. 두 PR이 들어가면 Content가 고정 head 40자를 Core에 먼저 보내고, Core는 그 SHA를 서버 branch에 받는다. Art 격자 PR은 04:33Z 기준 아직 없다(Art `msg_3f625498414d`). PR268은 main에 들어갔다(merge commit `3bb76772`, 진행 기록 11-01 「PR268 병합」). 캐릭터 선택창(PR-A, PR #291)도 main에 있다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 PR-C·녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4).
+**다음 첫 일:** 녹화용 빌드 계약을 Core 리드와 맺는다. 기준은 Art 인벤토리 격자 PR과 Core 인벤토리 24칸 PR이 들어간 main이다(메인 `msg_e0b59e962663`). 두 PR이 아직이면 기다린다. 계약 초안 v4는 근거 폴더 `lead/recording-build-contract-draft-v4.md`다(이름은 사용자 결정 109 A, 창 크기는 110 A, Core 답 `msg_45e700da3330` 반영). 남은 빈칸은 두 PR의 번호·merge commit과 고정 head다. 두 PR이 들어가면 Content가 고정 head 40자를 Core에 먼저 보내고, Core는 그 SHA를 서버 branch에 받는다. Art 격자 PR은 04:33Z 기준 아직 없다(Art `msg_3f625498414d`). PR268은 main에 들어갔다(merge commit `3bb76772`, 진행 기록 11-01 「PR268 병합」). 캐릭터 선택창(PR-A, PR #291)도 main에 있다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 PR-C·녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4).
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
 - 열린 결정: 없음.
@@ -107,6 +107,16 @@
 
 - 리허설: 계정 `rh1101_knight`·`rh1101_mage`, 캐릭터 「리허설기사」·「리허설법사」. 녹화: 계정 `rec_knight`·`rec_mage`, 캐릭터 「새벽기사」·「새벽법사」(Core `msg_035b91a40065` 초안 그대로).
 - 메인 지시: 녹화 빌드 계약에 이 이름을 넣는다. 녹화 이름은 리허설에 먼저 쓰지 않는다.
+
+### 11-01 사용자 결정 110 A — msg_586c6191bec5
+
+메인 `msg_586c6191bec5`(2026-11-01T04:38:41Z)가 전달한 사용자 원문이다(메인 pane 제출). 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 110 - 녹화 때 기사·마법사 두 클라 창: 모니터마다 큰 창 하나씩, 한 모니터에 작은 창 둘 나란히 → A 모니터마다 1920×1080
+
+- 메인 지시: 기사 클라는 주 모니터, 마법사 클라는 보조 모니터(주 모니터 왼쪽)에 각각 1920×1080 창(`-screen-width 1920 -screen-height 1080 -screen-fullscreen 0`)이다. 녹화는 사용자가 쓰는 도구로 두 화면을 따로 잡아 편집에서 합친다. 메인·리드는 녹화 도구를 띄우지 않는다.
+- 모니터 지정 실행 옵션과 보조 모니터에서 창이 잘리는지는 리허설(R4)에서 화면으로 확인하고 원시로 남긴다. 확인 전에는 「계획」으로 적는다. 잘리면 메인에 알린다(창 크기 변경은 사용자 결정).
+- 리허설 R2 관문(물리 6 GiB·commit 4 GiB)은 1920×1080 두 창 기준으로 잰다. 창 8의 960×540 값을 그대로 쓰지 않는다.
 
 ### 운영 방식(진입 메시지의 메인 결정)
 
