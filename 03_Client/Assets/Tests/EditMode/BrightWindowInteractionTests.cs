@@ -1,3 +1,4 @@
+using Shared.GameData;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -111,7 +112,7 @@ namespace Dawnholder.Client.Tests
             Canvas.ForceUpdateCanvases();
             var hover = panel.GetComponent<InventorySlotHoverHighlight>();
             Assert.IsNotNull(hover, "precondition: real view's polling component");
-            var highlights = Enumerable.Range(1, 8).Select(index => panel.Find("Slot" + index)
+            var highlights = Enumerable.Range(1, InventoryLimits.MaxSlots).Select(index => panel.Find("Slot" + index)
                 .GetComponentsInChildren<Image>(true).Single(image => image.sprite == UiWindowAppearance.BrightSkin.ItemSlotSelected)).ToArray();
             _previousMouse = Mouse.current;
             _mouse = InputSystem.AddDevice<Mouse>("WindowObservationMouse");
@@ -122,7 +123,7 @@ namespace Dawnholder.Client.Tests
             InputSystem.Update();
             InvokeLateUpdate(hover);
             TestContext.Out.WriteLine($"mouse={_mouse.position.ReadValue()} highlights=[{string.Join(",", highlights.Select(image => image.enabled))}]");
-            NegativeControl(() => RequireHover(new bool[8], 0));
+            NegativeControl(() => RequireHover(new bool[InventoryLimits.MaxSlots], 0));
             RequireHover(highlights.Select(image => image.enabled).ToArray(), 0);
             Assert.IsTrue(highlights.All(image => !image.raycastTarget), "hover art never takes raycasts");
             view.SetVisibility(true, false);
@@ -178,7 +179,7 @@ namespace Dawnholder.Client.Tests
         }
         static void RequireHover(bool[] actual, int selected)
         {
-            Assert.AreEqual(8, actual.Length);
+            Assert.AreEqual(InventoryLimits.MaxSlots, actual.Length);
             for (int i = 0; i < actual.Length; i++) Assert.AreEqual(i == selected, actual[i], "hover slot " + (i + 1));
         }
         static void RequireMissingSlot(Func<object> get) => Assert.Throws<InvalidOperationException>(() => get());

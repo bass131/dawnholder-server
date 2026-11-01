@@ -1,3 +1,4 @@
+using Grid = Dawnholder.Client.Tests.InventoryIconGridTestSupport;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -460,8 +461,10 @@ namespace Dawnholder.Client.Tests
 
             view.Render(null, null, false);
             string unsyncedCurrency = Text(root, "Inventory/Currency");
-            string unsyncedFirstSlot = Text(root, "Inventory/Slot1/Item");
-            bool unsyncedUseShown = UseButton(root, 2).gameObject.activeSelf;
+            bool unsyncedFirstSlot = Grid.HasSlotValue(root.transform, 0);
+            using var pointer = new Grid.Pointer();
+            pointer.RightClick(root.transform, 1);
+            int unsyncedUses = clicks.Count;
 
             ReadyMap(0);
             Sent();
@@ -469,19 +472,21 @@ namespace Dawnholder.Client.Tests
             view.Render(InventoryState.Instance, Requests, true);
 
             Assert.AreEqual("재화 —", unsyncedCurrency, "R6 no currency before a snapshot");
-            Assert.AreEqual("—", unsyncedFirstSlot, "R6 no slot values before a snapshot");
-            Assert.IsFalse(unsyncedUseShown, "R6 no use offered before a snapshot");
+            Assert.IsFalse(unsyncedFirstSlot, "R6 no slot values before a snapshot");
+            Assert.AreEqual(0, unsyncedUses, "R6 no use offered before a snapshot");
             Assert.AreEqual("재화 120", Text(root, "Inventory/Currency"), "R6 server currency");
-            Assert.AreEqual("재료 ×3", Text(root, "Inventory/Slot1/Item"), "R6 catalog name and server count");
-            Assert.AreEqual("재화 주머니 ×2", Text(root, "Inventory/Slot2/Item"), "R6 catalog name and server count");
-            for (int slot = 3; slot <= 8; slot++)
-                Assert.AreEqual("빈 슬롯", Text(root, $"Inventory/Slot{slot}/Item"), $"R6 empty slot {slot}");
-            Assert.IsFalse(UseButton(root, 1).gameObject.activeSelf, "R6 no use button for Material");
-            Assert.IsTrue(UseButton(root, 2).gameObject.activeSelf, "R6 use button for CoinPouch");
-            Assert.IsTrue(UseButton(root, 2).interactable, "R6 usable on a confirmed Ready entry");
+            Assert.AreEqual("재료 ×3", Grid.SlotText(root.transform, 0), "R6 catalog name and server count");
+            Assert.AreEqual("재화 주머니 ×2", Grid.SlotText(root.transform, 1), "R6 catalog name and server count");
+            for (int slot = 3; slot <= InventoryLimits.MaxSlots; slot++)
+                Assert.AreEqual("빈 슬롯", Grid.SlotText(root.transform, slot - 1), $"R6 empty slot {slot}");
+            pointer.RightClick(root.transform, 0);
+            Assert.AreEqual(0, clicks.Count, "R6 no use callback for Material");
+            pointer.Step(root.transform, Grid.SlotPoint(root.transform, 1));
+            Assert.IsTrue(Grid.Detail(root.transform).gameObject.activeSelf, "R6 detail for CoinPouch");
+            Assert.IsTrue(Grid.DetailLabel(root.transform, "UseHint").gameObject.activeInHierarchy, "R6 usable on a confirmed Ready entry");
             Assert.AreEqual("서버 확인 완료", Text(root, "Inventory/Synchronization"), "R6 confirmed state is marked");
 
-            UseButton(root, 2).onClick.Invoke();
+            pointer.RightClick(root.transform, 1);
             CollectionAssert.AreEqual(new[] { 1 }, clicks, "R6 the CoinPouch row reports slot index 1");
             Assert.AreEqual(0, refreshes);
             view.Dispose();
@@ -543,8 +548,6 @@ namespace Dawnholder.Client.Tests
 
         static string Text(GameObject root, string path) => root.transform.Find(path).GetComponent<TMP_Text>().text;
 
-        static Button UseButton(GameObject root, int slotNumber) =>
-            root.transform.Find($"Inventory/Slot{slotNumber}/Use").GetComponent<Button>();
 
         static int Subscribers(object owner, string eventField)
         {

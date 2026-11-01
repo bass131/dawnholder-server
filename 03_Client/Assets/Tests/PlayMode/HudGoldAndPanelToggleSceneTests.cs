@@ -76,13 +76,13 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return ReadySyncedTown();
             LocalPlayerMovement player = _fixture.Player;
             yield return HudOverlapProbe.WaitForHudAndSettledPanel();
-            Vector2 useSpot = InventoryPanelProbe.ScreenPoint(InventoryPanelProbe.Use(1));
+            Vector2 useSpot = InventoryPanelProbe.SlotPoint(1);
             LogPanelClickState("coordinate captured", useSpot);
             bool shownAtEntry = InventoryPanelProbe.Group.alpha > 0f;
             bool raycastsAtEntry = InventoryPanelProbe.Group.blocksRaycasts;
 
             LogPanelClickState("before closed click", useSpot);
-            yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, useSpot);
+            yield return InventoryPanelProbe.RightClickAt(_fixture.Mouse, useSpot);
             yield return _fixture.Frames(4);
             int raycastHitsWhileClosed = ScreenUiProbe.RaycastHits(useSpot).Length;
             int usesWhileClosed = _fixture.Peer.Count(PacketID.C_ItemUse);
@@ -99,7 +99,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return InventoryPanelProbe.AttackReady(player);
             int attacksBeforeOpenClick = _fixture.Peer.Count(PacketID.C_Attack);
             LogPanelClickState("before open click", useSpot);
-            yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, useSpot);
+            yield return InventoryPanelProbe.RightClickAt(_fixture.Mouse, useSpot);
             try
             {
                 yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_ItemUse) == 1, "the open panel's Use", 3);
@@ -179,7 +179,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 HudController hud = HudController.Instance;
                 InventoryPanel panel = InventoryPanel.Instance;
                 CanvasGroup group = panel == null ? null : panel.GetComponent<CanvasGroup>();
-                Transform use = panel == null ? null : panel.transform.Find("Inventory/Slot2/Use");
+                Transform use = panel == null ? null : panel.transform.Find("Inventory/Slot2");
                 Component button = use == null ? null : use.GetComponents<Component>()
                     .FirstOrDefault(component => component != null && component.GetType().FullName == "UnityEngine.UI.Button");
                 PlayerInput input = _fixture.Player == null ? null : _fixture.Player.GetComponent<PlayerInput>();

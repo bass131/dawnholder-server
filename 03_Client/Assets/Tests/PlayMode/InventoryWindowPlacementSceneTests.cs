@@ -212,7 +212,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             // A newer revision answers the refresh, as InventorySceneLifecycleTests does (:718).
             _fixture.Peer.Send(Snapshot(2, 10, (ItemId.Material, 2), (ItemId.CoinPouch, 1)));
             yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Status == "서버 확인 완료", "refresh answered", 3);
-            yield return InventoryPanelProbe.Click(_fixture.Mouse, InventoryPanelProbe.Use(1));
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
             bool used = false;
             yield return ScreenUiProbe.WaitUntil(() => _fixture.Peer.Count(PacketID.C_ItemUse) == 1, 3f, met => used = met);
             Debug.Log($"[placement RED] panel {before} -> {after}; queries {_fixture.Peer.Count(PacketID.C_InventoryRequest)}, " +

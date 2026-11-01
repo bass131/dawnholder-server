@@ -13,7 +13,12 @@ namespace Dawnholder.Client.UI
     internal sealed class InventoryPanelView : IDisposable
     {
         const float Width = 390f;
-        const float Height = 720f;
+        const int Columns = 4;
+        const float SlotSize = 81f;
+        const float SlotGap = 14f;
+        const float SlotsTop = 134f;
+        const int Rows = (InventoryLimits.MaxSlots + Columns - 1) / Columns;
+        const float Height = SlotsTop + Rows * SlotSize + (Rows - 1) * SlotGap + 120f;
         // Grow past the 1920x1080 design size on large screens; the HUD and screen bounds still cap it.
         const float MaxScale = 1.3f;
         // Dark ink on the bright parchment; white stays only on the wood buttons and the dark title band.
@@ -31,15 +36,26 @@ namespace Dawnholder.Client.UI
         readonly Image[] _slotBackgrounds = new Image[InventoryLimits.MaxSlots];
         readonly Image[] _iconBases = new Image[InventoryLimits.MaxSlots];
         readonly Image[] _icons = new Image[InventoryLimits.MaxSlots];
-        readonly TMP_Text[] _slotLabels = new TMP_Text[InventoryLimits.MaxSlots];
-        readonly Button[] _useButtons = new Button[InventoryLimits.MaxSlots];
+        readonly TMP_Text[] _slotCounts = new TMP_Text[InventoryLimits.MaxSlots];
+        readonly InventorySlot[] _renderedSlots = new InventorySlot[InventoryLimits.MaxSlots];
+        readonly RectTransform[] _slots = new RectTransform[InventoryLimits.MaxSlots];
+        readonly RectTransform _detail;
+        readonly TMP_Text _detailName;
+        readonly TMP_Text _detailCount;
+        readonly TMP_Text _detailEffect;
+        readonly TMP_Text _detailUseHint;
+        readonly Canvas _canvas;
+        readonly InventorySlotPointer _pointer;
+        readonly InventoryOverlayOcclusion _occlusion = new InventoryOverlayOcclusion();
         readonly Button _refreshButton;
+        Action<int>? _useSlot;
         bool _shown;
 
         internal InventoryPanelView(GameObject root, Action<int> useSlot, Action refresh)
         {
             _skin = UiWindowAppearance.BrightSkin;
-            var canvas = root.AddComponent<Canvas>();
+            _useSlot = useSlot;
+            var canvas = _canvas = root.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 5; // Existing HUD(10), menu(20), dialogue, stage clear and fades stay above it.
             var scaler = root.AddComponent<CanvasScaler>();
@@ -73,47 +89,59 @@ namespace Dawnholder.Client.UI
             _status = Label("Synchronization", _panel, new Vector2(366f, 66f), new Vector2(12f, -60f), font);
             _status.fontSize = 17f;
             _status.color = s_quietInk;
-            var rows = new RectTransform[InventoryLimits.MaxSlots];
             var highlights = new Image[InventoryLimits.MaxSlots];
             for (int i = 0; i < InventoryLimits.MaxSlots; i++)
             {
-                int slot = i;
-                float x = 12f + (i % 2) * 190f;
-                float y = -134f - (i / 2) * 119f;
+                float x = 12f + (i % Columns) * (SlotSize + SlotGap);
+                float y = -SlotsTop - (i / Columns) * (SlotSize + SlotGap);
                 _slotBackgrounds[i] = UiWindowAppearance.CreateSliced("Slot" + (i + 1), _panel, _skin.ItemSlotEmpty);
-                RectTransform row = rows[i] = _slotBackgrounds[i].rectTransform;
-                Place(row, new Vector2(176f, 109f), new Vector2(x, y));
-                // First child, so the hover border sits over the slot but under its icon, name and button.
+                RectTransform row = _slots[i] = _slotBackgrounds[i].rectTransform;
+                Place(row, new Vector2(SlotSize, SlotSize), new Vector2(x, y));
+                // First child, so the hover border stays under the icon and corner count.
                 highlights[i] = UiWindowAppearance.CreateSliced("Hover", row, _skin.ItemSlotSelected);
-                Place(highlights[i].rectTransform, new Vector2(176f, 109f), Vector2.zero);
+                Place(highlights[i].rectTransform, new Vector2(SlotSize, SlotSize), Vector2.zero);
                 highlights[i].enabled = false;
-                // Top to bottom on the slot's centre line: the icon, the 「이름 ×수량」 line, then the use button. The
-                // name line keeps the full 35 UI between them; the Korean fallback's line at size 18 needs about 34.4.
                 _iconBases[i] = UiWindowAppearance.CreateSimple("IconBase", row, _skin.IconBase);
-                Place(_iconBases[i].rectTransform, new Vector2(32f, 32f), new Vector2(72f, -3f));
+                Place(_iconBases[i].rectTransform, new Vector2(57f, 57f), new Vector2(12f, -12f));
                 _icons[i] = UiWindowAppearance.CreateSimple("Icon", row, _skin.MaterialIcon);
-                Place(_icons[i].rectTransform, new Vector2(26f, 26f), new Vector2(75f, -6f));
-                _slotLabels[i] = Label("Item", row, new Vector2(160f, 35f), new Vector2(8f, -35f), font);
-                _slotLabels[i].fontSize = 18f;
-                _slotLabels[i].color = s_ink;
-                _slotLabels[i].alignment = TextAlignmentOptions.Center;
-                _useButtons[i] = Button("Use", row, new Vector2(50f, 35f), new Vector2(63f, -70f), "사용", font, _skin);
-                _useButtons[i].onClick.AddListener(() => useSlot(slot));
+                Place(_icons[i].rectTransform, new Vector2(49f, 49f), new Vector2(16f, -16f));
+                TMP_Text count = _slotCounts[i] = Label("Count", row, new Vector2(34f, 24f), new Vector2(44f, -54f), font);
+                count.fontSize = count.fontSizeMax = 18f;
+                count.fontSizeMin = 10f;
+                count.enableAutoSizing = true;
+                count.textWrappingMode = TextWrappingModes.NoWrap;
+                count.color = s_ink;
+                count.alignment = TextAlignmentOptions.BottomRight;
+                count.gameObject.SetActive(false);
                 ShowItem(i, ItemId.None);
             }
             Place(UiWindowAppearance.CreateDivider("Divider", _panel, _skin).rectTransform,
-                new Vector2(350f, 6f), new Vector2(20f, -608f));
+                new Vector2(350f, 6f), new Vector2(20f, -(Height - 112f)));
             // Under the divider the coin and amount take one line and the last use result the line below it.
             Place(UiWindowAppearance.CreateSimple("Coin", _panel, _skin.CoinIcon).rectTransform,
-                new Vector2(26f, 26f), new Vector2(22f, -625f));
-            _currency = Label("Currency", _panel, new Vector2(324f, 36f), new Vector2(54f, -620f), font);
+                new Vector2(26f, 26f), new Vector2(22f, -(Height - 95f)));
+            _currency = Label("Currency", _panel, new Vector2(324f, 36f), new Vector2(54f, -(Height - 100f)), font);
             _currency.fontSize = 18f;
             _currency.fontStyle = FontStyles.Bold;
             _currency.color = s_ink;
-            _result = Label("UseResult", _panel, new Vector2(366f, 44f), new Vector2(12f, -664f), font);
+            _result = Label("UseResult", _panel, new Vector2(366f, 44f), new Vector2(12f, -(Height - 56f)), font);
             _result.fontSize = 16f;
             _result.color = s_ink;
-            InventorySlotHoverHighlight.Attach(_panel.gameObject, canvas, _group, rows, highlights);
+            _detail = UiWindowAppearance.CreatePanel("ItemDetail", root.transform, skin: _skin).rectTransform;
+            Place(_detail, new Vector2(320f, 196f), Vector2.zero);
+            _detailName = Label("Name", _detail, new Vector2(284f, 44f), new Vector2(18f, -12f), font);
+            _detailName.fontStyle = FontStyles.Bold;
+            _detailCount = Label("Count", _detail, new Vector2(284f, 40f), new Vector2(18f, -56f), font);
+            _detailEffect = Label("Effect", _detail, new Vector2(284f, 40f), new Vector2(18f, -100f), font);
+            _detailUseHint = Label("UseHint", _detail, new Vector2(284f, 40f), new Vector2(18f, -142f), font);
+            _detailName.color = _detailCount.color = _detailEffect.color = s_ink;
+            _detailUseHint.color = s_quietInk;
+            _detailUseHint.fontSize = 18f;
+            _detailUseHint.text = "우클릭: 사용";
+            foreach (Graphic graphic in _detail.GetComponentsInChildren<Graphic>(true)) graphic.raycastTarget = false;
+            HideItemDetail();
+            InventorySlotHoverHighlight.Attach(_panel.gameObject, canvas, _group, _slots, highlights);
+            _pointer = InventorySlotPointer.Attach(_panel.gameObject, UpdatePointer, HideItemDetail);
             _openEffect = UiWindowOpenEffect.Attach(_panel);
             _placement = UiWindowPlacement.Attach(_panel, header, "Inventory", MaxScale, UiWindowAlignment.TopLeft);
             _shown = _group.alpha > 0f;
@@ -123,7 +151,9 @@ namespace Dawnholder.Client.UI
         public void Dispose()
         {
             _refreshButton.onClick.RemoveAllListeners();
-            foreach (Button button in _useButtons) button.onClick.RemoveAllListeners();
+            _pointer.Disconnect();
+            _useSlot = null;
+            HideItemDetail();
             // The root stays the owner's to destroy; only the opening's own drawing must not outlive the view.
             if (_openEffect != null) _openEffect.Stop();
         }
@@ -133,6 +163,7 @@ namespace Dawnholder.Client.UI
             _group.alpha = visible ? 1f : 0f;
             _group.interactable = interactive;
             _group.blocksRaycasts = interactive;
+            if (!visible || !interactive) HideItemDetail();
             // Only the small button images and the title bar's grab area are raycast targets; the screen and slot
             // backgrounds pass input through.
             if (visible && !_shown) _openEffect.Play();
@@ -158,18 +189,49 @@ namespace Dawnholder.Client.UI
 
             for (int i = 0; i < InventoryLimits.MaxSlots; i++)
             {
-                InventorySlot slot = hasSnapshot ? mirror!.GetSlot(i) : default;
+                InventorySlot slot = _renderedSlots[i] = hasSnapshot ? mirror!.GetSlot(i) : default;
                 bool occupied = slot.ItemId != ItemId.None;
                 ShowItem(i, occupied ? slot.ItemId : ItemId.None);
-                _slotLabels[i].text = occupied
-                    ? ItemCatalog.For(slot.ItemId).DisplayName + " ×" + slot.Count
-                    : hasSnapshot ? "빈 슬롯" : "—";
-                bool usable = occupied && ItemCatalog.For(slot.ItemId).IsUsable;
-                _useButtons[i].gameObject.SetActive(usable);
-                _useButtons[i].interactable = usable && requests != null && requests.CanUse(slot.ItemId);
+                _slotCounts[i].text = occupied ? slot.Count.ToString() : string.Empty;
+                _slotCounts[i].gameObject.SetActive(occupied && slot.Count >= 2);
             }
+            HideItemDetail();
             _refreshButton.interactable = gameplayReady && requests != null && !requests.IsWaiting;
             _result.text = ResultText(requests);
+        }
+
+        void UpdatePointer(Vector2 point, bool usePressed)
+        {
+            if (_useSlot == null || _group.alpha <= 0f || !_group.blocksRaycasts)
+            {
+                HideItemDetail();
+                return;
+            }
+            Camera? eye = _canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _canvas.worldCamera;
+            int index = InventoryPointerGeometry.FindSlot(_slots, point, eye);
+            if (index < 0 || _renderedSlots[index].ItemId == ItemId.None || _occlusion.IsCovered(_canvas, point))
+            {
+                HideItemDetail();
+                return;
+            }
+
+            // Details follow exactly the values last rendered into the grid, without reading a second state source.
+            InventorySlot slot = _renderedSlots[index];
+            ItemDefinition item = ItemCatalog.For(slot.ItemId);
+            _detailName.text = item.DisplayName;
+            _detailCount.text = "수량 " + slot.Count;
+            _detailEffect.text = "사용 효과: 금화 +" + item.CurrencyOnUse;
+            _detailEffect.gameObject.SetActive(item.IsUsable);
+            _detailUseHint.gameObject.SetActive(item.IsUsable);
+            _detail.sizeDelta = new Vector2(320f, item.IsUsable ? 196f : 112f);
+            bool placed = InventoryPointerGeometry.PlaceDetail(_canvasRect, _detail, point, eye);
+            _detail.gameObject.SetActive(placed);
+            if (placed && usePressed && item.IsUsable) _useSlot(index);
+        }
+
+        void HideItemDetail()
+        {
+            if (_detail != null) _detail.gameObject.SetActive(false);
         }
 
         // An occupied slot stands on the filled piece with its item's icon; an empty one shows only the pale slot.
