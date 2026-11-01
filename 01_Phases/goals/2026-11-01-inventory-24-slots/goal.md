@@ -2,9 +2,25 @@
 
 인벤토리 칸 수를 8에서 24로 늘린다. 서버가 보내는 인벤토리 snapshot(36번)과 공유 칸 수 상수를 24로 바꾸고, 클라가 받는 쪽까지 같은 PR에서 맞춘다. 화면 격자(4열 × 6줄)는 Art가 만든다.
 
-**현재 상태(2026-11-01 20:46 KST):** 1차 독립 검증(verify-01)이 계약 범위에서 통과했고 메인 R-2 대조도 일치했다. 창 8 지원을 마치고 이 branch로 돌아왔다. PR294(Art 격자 PR1)가 병합돼 main을 받았고(client.md는 B-2 A대로), CURRENT Core 줄도 고쳤다. 2차 좁은 재검증 계약과 창 요청을 준비한다. Art PR2(HUD 골드 제거·스킬칸)는 Core 24칸 뒤에 병합한다(메인 결정). PlayMode·실제 접속·Art 시험 3건·CURRENT 줄은 격자 PR 병합 뒤 2차 좁은 재검증에서 본다.
+**현재 상태(2026-11-01 21:53 KST):** 2차 좁은 재검증(verify-02)이 NOT PASS로 끝났다. 결함은 #I24-V02(인벤토리 격자 T6 1건)와 #I24-V03(길드 창 시험 11건)이고, 둘 다 원인 귀속이 미확정이다. 사용자 마무리 지시대로 고치지 않고 멈췄다. PR은 열지 않았고 branch는 원격에 올리지 않았다. 다음 일은 메인의 두 결함 처분이다. 아래 「재개 카드」부터 읽는다.
 
 ## 재개 지점
+
+- **재개 카드(2026-11-01T12:53Z 정리, 사용자 마무리 지시):** 사용자 원문(메인 사본 `msg_4bd2bb8874a1`, 12:11:06Z)은 「슬슬 토큰이 다 끝나서, 마지막 작업 끝나면 재개지점 기록하고 마무리해줘, 나중에 이어서 하자」다. 메인 정리는 「NOT PASS면 고치지 말고 결함 번호와 판정 원문 경로를 재개 카드에 적는다」였다.
+  - 판정: **NOT PASS.** 원문은 `verify-02/verdict.md`(sha256 `0e7954544124692a42dee3530ddda08b35b7bd029cc9f8c835771d3e51f23120`)이고, 검증자 worker_done은 `msg_35e024a23d74`(12:50:25Z)다. 검증 HEAD는 `420307cd0fb6245c702ba7ba9fe4787c9012efe8`다.
+  - 확인된 것: 병합 보존·CURRENT(I24-V01 해소)·DLL과 생성물 bytes 재현, 서버 2569/0/28과 새 시험 17건 이름별 Passed, 봇 PASS 1(snapshot 204B·24쌍), EditMode 1822/1822(Art I24-A01~03 해소), 실서버 lane 1/1(v23 handshake, 640×480에서 24칸)이다.
+  - **#I24-V02(차단, 귀속 미확정):** `InventoryIconGridSceneTests.T6_AfterDraggingToTheRightEdge_AllReachableDetailsStayOnScreen`, `InventoryIconGridSceneTests.cs:210` 「T6 occupied point after dragging」 Expected True, But was False다. Art grid-verify-01(8칸)에서는 Passed였다. 어느 점이 실패했는지, 6줄 높이·HUD 가림·입력·fixture 중 무엇인지는 미확정이다. Art 리드는 Art 소유에 동의했다(`msg_3605c949ddb0`). 판정 경로를 Art에 알렸다(`msg_2c72f19feb83`).
+  - **#I24-V03(차단, 귀속 미확정):** `GuildWindowIndependentSceneTests` 11건(DefaultScreen 2, NegativeControl 7, RenderTextureAuxiliary 2)이다. Effect `pretest-01/runs/base-L1-1/results.xml`과 fullname·result·message가 11/11 같다. 그 실행은 두 class filter·다른 HEAD여서 검증자는 같은 환경 기준선이나 무관성 증거로 쓰지 않았다. 10-30 goal 결정 73 A(기존 실패 유지·후속 후보)는 역사 처분이고 이번 PASS 면제로 넓히지 않았다.
+  - 원시: `verify-02/raw/v2-playmode/results.xml`(274 = 232/12/30), `raw/v2-playmode/analysis.json`, `raw/failure-history-comparison.json`, `raw/final-audit.json`이다. 리드 표본 대조는 `verify-02/lead-r2-sample-check-v1.txt`이고 판정서와 일치한다.
+  - **다음 첫 일:** 메인이 두 결함의 처분을 정한다. 후보는 T6를 Art PR2에서 고치는 것, 길드 11건을 기존 실패로 둘지 정하는 것이다. 처분이 나오면 그에 맞춰 새 계약(수정 또는 좁은 재확인)을 연다. PASS가 되면 PR을 연다. 본문 초안은 `pr/pr-body-draft-v1.md`이고 `{{VERIFY02}}`·`{{MERGE_TREE_CI}}` 자리가 남아 있다.
+  - 남은 기록 하나: DB 시연 goal(`ad5d3442`)의 「앞뒤 미정」 줄은 아직 그대로다. 병합 순서 결정(`msg_495eff183bf0`)은 `.backups/verification/2026-10-31-db-persistence-demo-build/lead/pending-goal-edits.md` 5절에 있고, 그 branch로 바꿀 때 옮긴다.
+  - 정리 상태: 검증자 pane `term_bed07bd7-6edc-44af-9818-978aa3b453ed`는 worker-release(`retained`, external_terminal) 뒤 빈 프롬프트를 확인하고 닫았다(ptyKilled true). 리드의 마지막 확인 `verify-02/lead-post-verdict-window-end-check-01.txt`(12:51:25Z)에서 Windows dotnet·Unity·VBCSCompiler·bee_backend·GameServer, 7777, WSL dotnet·GameServer가 모두 none이었다.
+- **verify-02(2차 좁은 재검증) 기록:** 계약 `verify-02/contract-v1.md`(sha256 `abd1587ef049ef5b845b8e3fe13620537b777f8d139664c2f07688f1aec3d955`, 포인터 기동)다. 신규 `[Core 검증자]` GPT-6-Astra xhigh, pane `term_bed07bd7-6edc-44af-9818-978aa3b453ed`, Task `task_29ed10330521`, Dispatch `ctx_229811656ab7`이다. 첫 화면은 Codex v0.166.0이고 backend는 unknown이다(`verify-02/lead-launch-record-v1.md`).
+  - 창 배정(메인 결정 `msg_885b35bea510`): V1 → V2 → V3 순서로 겹치지 않는다. V1은 WSL 최대 35분, V2는 Unity batchmode 최대 45분, V3는 WSL 서버와 Unity 최대 35분이다. 다음 창은 앞 창 끝 확인 직후 연다.
+  - V1(11:54:52Z~12:06:49Z): logger 인자가 PowerShell→WSL 경계에서 잘렸다(`msg_6901c1e4ef3a`). 리드가 같은 창 안 재실행을 허용했다(`lead-reply-v1-logger-v1.txt`). 리드 끝 확인 `lead-v1-window-end-check-01.txt`는 모두 0이고, 표본은 `lead-sample-check-v1-window.txt`다.
+  - V2(12:07:51Z~12:30:08Z): EditMode 1822/1822, PlayMode 274건 232/12/30이다. 관련 34 class는 207건 180/12/15다. 종료 확인 harness가 PID 재사용을 잔여로 오탐해 소유 계산 수정을 허용했다(`lead-reply-v2-harness-v1.txt`). Unity drift 두 경로(ProjectSettings SENTIS, MinimapRT.renderTexture)는 patch를 남기고 복원을 허용했다(`lead-reply-v2-drift-v1.txt`). 실패 12건은 메인·Art에 사실로 알렸다(`msg-v2-playmode-failures-to-art-main.txt`). 리드 끝 확인은 `lead-v2-window-end-check-01.txt`다.
+  - V3(12:30:43Z~12:36:32Z): 시작 harness가 빈 stdout에서 멈췄고 서버 PID 1150이 먼저 떠 있었다. 리드가 소유를 따로 확인하고(`lead-v3-server-ownership-observe-01.txt`) 이어 가기를 허용했다(`lead-reply-v3-recovery-v1.txt`). 실서버 lane 1/1 Passed, Handshake OK version=23이다. 리드 끝 확인은 `lead-v3-window-end-check-01.txt`, 표본은 `lead-sample-check-v3-window.txt`다.
+  - 검증 중 goal을 고치지 않으려고 모은 기록은 `verify-02/lead-pending-goal-notes.md`다. 이 절로 옮겼다.
 
 - **11-01 재진입(2026-10-31T23:4xZ, 메인 `msg_595eef26f2df`):** 리드는 같은 대화를 이었다(새 handle `term_de9ad49a-99bc-457b-9b06-c888a71b5c37`, run-use consumer_generation 2). 사용자 원문 「지난번에 하던 작업 이어서 진행해서 마무리해보자」.
   - 메인이 2단계 나머지를 WSL 전용 창으로 지금 배정했다. impl-01 report 원천 대조는 통과했다(메인 보고 `msg_f10c78e1f37b`).
@@ -56,7 +72,7 @@
   - `git merge --no-ff --no-commit a888cd35`에서 client.md 한 덩이만 충돌했다(`lead-merge-a888cd35-01.txt`, 원본 `lead-client-md-conflict-raw.md`). B-2 A대로 그 덩이(`InventoryPanelView` 문단)는 격자 PR 문장을 그대로 썼다. 병합 뒤 main과의 client.md 차이는 `InventorySnapshotHandler` 문단 한 줄뿐이다(1차 head 38행, 병합 뒤 40행, `lead-client-md-vs-main-after-resolve.txt`). 병합 commit은 `6b7beca0db788bdec81a91974ec9f366f2795490`다.
   - I24-V01: CURRENT Core 줄을 이 goal로 바꾸고 앞 goal의 리허설 대기와 직전 10-24 goal 상태를 같은 줄에 남겼다(commit `365dfd3d66f81df733612c924590c819b8ffd6ae`, 줄 원문 `lead-current-core-line-v1.txt`).
   - main 대비 이 branch는 39파일 +1103 −73이다(`lead-merge-diff-stat-vs-main.txt`). 1차 검증 head `6b2adad4` 대비 HEAD에서 main과 다른 파일은 client.md·CURRENT.md·이 goal 셋뿐이다(`verify-02/lead-inputs-survey-v1.txt`).
-- **다음 첫 일:** 2차 좁은 재검증(verify-02) 계약을 생성 스크립트로 만들고, 메인에 창 셋(WSL·Unity·WSL+Unity)을 청한다. 범위는 PlayMode·실제 접속·Art 시험 3건·병합 diff·CURRENT 줄·새 서버 시험 17건 이름별 원시다. 그 뒤 PR·준비 보고다.
+- **verify-02 준비(끝남, 위 재개 카드가 다음 첫 일):** 2차 좁은 재검증(verify-02) 계약을 생성 스크립트로 만들고, 메인에 창 셋(WSL·Unity·WSL+Unity)을 청한다. 범위는 PlayMode·실제 접속·Art 시험 3건·병합 diff·CURRENT 줄·새 서버 시험 17건 이름별 원시다. 그 뒤 PR·준비 보고다.
   - 17건은 서버 `InventorySnapshotBoundaryTests`의 `[Theory]` 하나(`[InlineData]` 16)와 `[Fact]` 하나다. I24-A01의 시험 이름은 격자 PR에서 `CurrencyAndUseResult_TakeSeparateLines_BelowEverySlot`로 바뀌었다.
   - V2 PlayMode는 filter 없는 전체 1회다(원시 기준 약 6분, 10-30 전제 건너뜀 goal 169행). class 이름 filter는 `Explicit` 시험도 고르므로(DEVELOPMENT 「Unity PlayMode 실행 전제」) filter를 주지 않고, 실서버 시험 둘은 V3에서만 돈다. 완료조건 2의 관련 class 34개는 `verify-02/lead-playmode-default-classes-v1.txt`로 따로 센다.
   - 2차 재검증 계약 틀: `verify-02/contract-template-v1.md`(리드 초안). 4×6 격자를 보이는 근거와 PlayMode filter는 격자 PR 내용을 보고 채운다. 규칙 원문은 verify-01처럼 스크립트로 붙인다.
@@ -71,7 +87,7 @@
   - Windows Plugins `Shared.dll`은 아직 v22 그대로다(sha256 `b8b2828e27a1a1667a2b5f703a2c7a97822f70fc47ef974c9f3694dcb5a4ecd3`). `.meta`도 그대로다(`7c6ab891ee57e1a71e200cbea3c27cee36de97404e1d6303711daf59b3be682b`). 그래서 지금 core-active로 Unity를 열면 소스와 DLL 판이 어긋난다.
   - 2단계 실행: 메모리 확인 통과(18:26:58Z) → Windows 생성기 loader 실패 1회(18:26:59Z 종료, 생성물 변경 0) → WSL sync·생성기·GenPackets 복사(36번 밖 차이 0, 칸 필드 48) → `sync-wsl.sh build` exit 0(wrapper 종료 18:36:47.8104288Z) → 정리 지시로 멈춤.
   - 남은 프로세스 0: 구현자 `impl-01/raw/process-inspect.out`(18:38:20Z), 리드 `lead-wrapup-process-check-01.txt`(18:39:37Z, Windows dotnet·Unity·Player 0, WSL dotnet·서버·봇 0, 7777 listen 0).
-- **열린 결정:** 메인·사용자 결정 대기는 없다. 적용 중인 결정은 아래 「적용 중인 사용자 결정」과 「적용 중인 메인 결정」이다(97 A `msg_3ce270803253`, 92 B·93 A `msg_e8defeeffd1f`, 범위 승인 `msg_3dfd5496b065`, 99 C 정리 `msg_6547cf711563`).
+- **열린 결정:** #I24-V02·#I24-V03의 처분을 메인이 정한다(위 재개 카드). 그 밖의 메인·사용자 결정 대기는 없다. 적용 중인 결정은 아래 「적용 중인 사용자 결정」과 「적용 중인 메인 결정」이다(97 A `msg_3ce270803253`, 92 B·93 A `msg_e8defeeffd1f`, 범위 승인 `msg_3dfd5496b065`, 99 C 정리 `msg_6547cf711563`).
 - impl-01 기록: 계약 `impl-01/contract-v1.md`, 보충 `impl-01/lead-reply-sdk-v1.txt`(리드 답 `msg_b5e3dcc067a6`), 정리 지시 `impl-01/lead-stop-v1.txt`(`msg_27fc8d686ef9`), 1단계 요약 `impl-01/stage1-summary.md`, 원시 출력 `impl-01/raw/`.
   - 부분 보고: worker_done `msg_193a4c831f08`(18:44:49Z, outcome `failed`는 사용자 정리에 따른 부분 완료), `impl-01/report.md`(sha256 `deb3fe2ce6dadabd313e127def0e6fc36e58c5133a225833440b9e2226efa3be`). 리드의 원천 대조는 다음 세션 첫 일에 함께 한다.
   - 다음 세션 확인거리: `git diff --check`가 GenPackets.cs에서 trailing whitespace 64건을 낸다. 리드 grep 기준 HEAD 393줄 → 작업본 457줄로, 생성 템플릿의 기존 성질이 새 칸 16개만큼 는 것이다. 수기 파일의 diff --check는 0이다. 처리 방침은 독립 검증 전에 정한다.
@@ -83,7 +99,7 @@
   - 창 8 첫 단계로 작업자가 `sync-wsl.sh build` 1회를 돈다. 끝나면 이 branch로 돌아온다. 바꾸는 동안 core-active Unity Editor는 없어야 한다.
   - 근거: 02_Server·98_Shared는 f5adcf31·58c8d4cb·8b60f725 사이 차이 0줄이다. profile은 core-active `logs/windows-sql-8256bcde…/`에 있다.
 - Art 리드(`run:run_6ae742140ce9`)와 격자 PR 순서를 조율한다. 격자 goal은 Art PR5가 들어가고 R-8 교체가 끝난 뒤 새 Art 리드가 연다. Core PR이 먼저 준비되면 준비 상태로 기다린다(메인 `msg_3dfd5496b065` 2항).
-- 앞 goal(`2026-10-31-db-persistence-demo-build`)은 리허설 대기로 멈춰 있다. 그 branch에 로컬 WIP 커밋 `9d35f5cd`가 있고 원격에 올리지 않았다. 이 goal이 끝나면 그 branch로 돌아가 이 PR이 들어간 기준 branch를 합친다.
+- 앞 goal(`2026-10-31-db-persistence-demo-build`)은 리허설 대기로 멈춰 있다. 그 branch의 최신 로컬 커밋은 `ad5d34424c606e898cf01069175723b924e8f6cd`이고 원격에 올리지 않았다. 이 goal이 끝나면 그 branch로 돌아가 이 PR이 들어간 기준 branch를 합친다.
 - Run `run_ee7c33fd5873`, 리드 `[Core 리드 Opus]`, Claude 대화 ID `396a3a4c-061f-46a4-94cb-a8cbce46f7a0`. branch `feat/inventory-24-slots-20261101`(base `58c8d4cb9b8a34d66389d5573797e07564c6fa7a`, upstream 없음, 원격에 올리지 않음). 근거 폴더는 `.backups/verification/2026-11-01-inventory-24-slots/`다.
 
 ## 적용 중인 사용자 결정
@@ -263,8 +279,8 @@
 - [x] 범위 승인(메인 `msg_3dfd5496b065`)
 - [x] 구현 1단계(소스, 실행 없음)
 - [x] 구현 2단계(생성기·DLL·WSL 빌드·서버 시험·봇, 메인 배정 창) — impl-02·impl-03
-- [ ] Unity 시험과 실제 접속 — EditMode 끝(impl-04), PlayMode·실제 접속은 Art 격자 뒤
+- [ ] Unity 시험과 실제 접속 — EditMode 1822/1822, 실서버 lane 1/1, PlayMode 실패 12건 남음(verify-02)
 - [x] 1차 독립 검증(verify-01) — 계약 범위 통과
-- [ ] 2차 좁은 재검증(격자 PR 병합 뒤)
+- [ ] 2차 좁은 재검증(격자 PR 병합 뒤) — NOT PASS(#I24-V02·#I24-V03), 메인 처분 대기
 - [ ] PR·병합 준비 보고
 - [ ] 결과 기록과 앞 goal 복귀
