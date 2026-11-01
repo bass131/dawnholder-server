@@ -2,7 +2,7 @@
 
 인벤토리 칸 수를 8에서 24로 늘린다. 서버가 보내는 인벤토리 snapshot(36번)과 공유 칸 수 상수를 24로 바꾸고, 클라가 받는 쪽까지 같은 PR에서 맞춘다. 화면 격자(4열 × 6줄)는 Art가 만든다.
 
-**현재 상태(2026-11-01 10:4x KST):** 1차 독립 검증(verify-01)이 계약 범위에서 통과했다. Art 격자 PR을 기다린다. PlayMode·실제 접속·Art 시험 3건·CURRENT 줄은 격자 PR 병합 뒤 2차 좁은 재검증에서 본다.
+**현재 상태(2026-11-01 12:3x KST):** 1차 독립 검증(verify-01)이 계약 범위에서 통과했고 메인 R-2 대조도 일치했다. 창 8 지원을 마치고 이 branch로 돌아왔다. Art 격자 PR을 기다린다. PlayMode·실제 접속·Art 시험 3건·CURRENT 줄은 격자 PR 병합 뒤 2차 좁은 재검증에서 본다.
 
 ## 재개 지점
 
@@ -40,12 +40,16 @@
     - **verify-01 통과(계약 범위 한정)**: worker_done `msg_ba2a9160f95d`, 판정 `verify-01/verdict.md`(sha256 `a6b24bfd…047f`). 독립 시험 28건, 서버 2569/0/28, 봇 PASS, Core EditMode 81/81, DLL·생성물 재현 일치다. I24-V02는 원문 전체 실사(`verify-01/rules-full-audit.md`)에서 추가 위반이 없어 메인 결정 A로 풀렸다. I24-A01~03(Art 화면 시험 3건)은 격자 PR 뒤 2차 재검증에서 해소를 본다.
     - 리드 원천 표본 대조: `verify-01/lead-sample-check-v1.md`. 새 서버 시험 17건의 실행 근거는 이름별 원시 없이 수 일치(2552→2569)와 rsync 동기화로 받은 간접 근거다.
     - 검증자 pane은 01:4xZ에 닫았다(worker-release `retained`, ptyKilled true). 새 시험 두 파일과 Unity가 만든 `.meta`는 PR에 넣는다(검증자 작성, 리드 커밋).
+    - 메인 R-2 대조는 일치다(`msg_0db07390adce`, 01:42:52Z). 메인이 verdict.md·lead-sample-check-v1.md의 sha256, results.xml 1755/1752/3과 실패 말단 셋, v1-test.out 끝줄 2569/0/28/2597을 직접 셌다.
+    - 메인 요청(차단 아님) 원문: 「새 서버 시험 17건의 이름별 원시가 없는 한계는 격자 PR 뒤 좁은 재검증 계약에 넣어라. trx 로그나 이름 목록으로 17건이 실제로 돈 것을 직접 남기게 해라.」 2차 재검증 계약은 서버 시험을 trx 로그나 이름별 결과로 남기게 하고, 검증자가 `InventorySnapshotBoundaryTests` 17건의 이름과 결과를 직접 세어 판정하게 한다.
   - **첫 발생 기록(계약의 규칙 원문):** I24-V02. 리드가 낸 impl-01~04 계약의 CODE_CONVENTION 관련 절이 원문 전체가 아니라 발췌였다. 「상태와 책임」은 13항목 중 4, 「C# 공백 서식」은 첫 문단, 「역할별 적용」은 6문단 중 2였다(검증자 `msg_17d5d2e595dc`, `verify-01/raw/r-contract-text.out`·`r-contract-sections.out`).
     - 원인: 리드가 손으로 옮기며 이 작업에 닿는 문장만 골랐다. 정본은 절 전체를 요구한다.
     - 처분: 메인 결정 A(`msg_d379bdf205d1`, 사용자 보고 대상). verify-01이 원문 전체로 생략된 부분까지 실제 diff를 판정한다. 위반이 없으면 이 결정으로 차단을 풀고, 위반이 나오면 결함 번호로 신규 Sol max가 고친다.
     - 재발 방지: Core 계약의 규칙 원문은 `verify-01/scripts/build-contract-v1.cjs`처럼 원본 파일에서 스크립트로 잘라 붙인다. 새 반복 규칙은 만들지 않는다(메인 동의).
 
-- **다음 첫 일:** Art 격자 PR을 기다린다. 그동안 core-active는 창 8을 위해 앞 goal branch로 가 있다(메인 `msg_b40b44ba2d63`). 창 8 뒤 이 branch로 돌아온다. 격자 PR이 들어가면 main을 합치고, CURRENT Core 줄을 고친 뒤 2차 좁은 재검증(새 Astra 세션: PlayMode·실제 접속·Art 시험 3건·병합 diff·CURRENT 줄)을 연다. 그 뒤 PR·준비 보고다.
+- **창 8 다녀옴(2026-11-01T01:41Z~03:36Z):** core-active는 앞 goal branch로 가서 창 8(PR268 DB 서버 두 판)을 지원했다. 기록은 앞 goal 「재개 지점」에 있다. 03:36:08Z에 이 branch `6b2adad4`로 돌아왔다(`lead-p2-switch-01.txt`). 돌아온 뒤 작업 트리는 깨끗하고, Plugins Shared.dll은 v23(`8d471e72…c025`), `ProtocolVersion.Current`는 23이다. 전환 전 확인(`lead-p2-switch-check-01.txt`)에서 WSL 서버·7777·Unity·Windows dotnet은 모두 0이었다.
+  - WSL 복제본은 지금 앞 goal의 v22 빌드다(앞 goal `build-02`). 이 goal의 다음 WSL 실행은 `sync-wsl.sh`가 v23 소스로 다시 동기화·빌드한다. 2차 재검증 계약에 이 사실을 적는다.
+- **다음 첫 일:** Art 격자 PR을 기다린다. 격자 PR이 들어가면 main을 합치고, CURRENT Core 줄을 고친 뒤 2차 좁은 재검증(새 Astra 세션: PlayMode·실제 접속·Art 시험 3건·병합 diff·CURRENT 줄·새 서버 시험 17건 이름별 원시)을 연다. 그 뒤 PR·준비 보고다.
   - WSL 실행은 `impl-01/lead-reply-sdk-v1.txt`(계약 2단계 보충 v1.1) 방법을 쓴다. Windows dotnet은 쓰지 않는다. global.json의 SDK 10.0.301이 Windows에 없다.
 - **멈춘 지점의 파일 상태(2026-10-31T18:4xZ, 로컬 WIP 커밋에 담음):**
   - 1단계 소스 31파일과 v23 `GenPackets.cs`(WSL 생성, sha256 `62a2ad60353654a0ab652aca2e62717438e4d8d1ee024087e4110dd656505aa9`, CRLF 0)가 바뀌어 있다.
