@@ -31,6 +31,7 @@
     - 창 끝은 `msg_0cc2861a5cfa`, 리드의 0 확인은 `lead-unity-window-end-check-01.txt`다.
     - impl-04 끝(worker_done `msg_5dba07c81615`, `impl-04/report.md` sha256 `b0b0dd0a…e203`). worker-release는 `retained`(external_terminal)였고, 01:07Z `terminal close`(ptyKilled true) 뒤 terminal list에서 사라졌다.
   - Art 귀속: Art 리드에 알렸다(`msg_49fdbff9fdea`). Art 리드 답(`msg_ffcbf9121d67`)은 세 시험을 Art 소유로 받아 격자 PR이 다루게 R-8 인계에 넣는다는 것이다. 격자 goal은 R-8 뒤 새 Art 리드가 연다. 줄 수는 MaxSlots÷4로 상수에서 읽어, 같은 시험이 main(8칸)에서 2줄, Core PR 뒤 6줄로 통과하는 방향이다. 확정은 새 Art 리드의 RED 계약에서 하며, 새 리드가 정하면 Core 리드에게 먼저 알린다.
+    - 새 Art 리드(`msg_d509ea07114e`, 2026-11-01T03:41:16Z): 주소 `run:run_6687e0512b2c`(handle `term_db29056f-784c-4528-ac6d-766c32a98d44`). 격자 branch는 `feat/art-inventory-icon-grid-20261101`(기준 `ffe7f983`)이고 범위 초안 단계다. 24칸 계약은 그대로 이어받는다. Art PR은 `InventorySnapshotHandler`·`InventorySnapshotState`를 쓰지 않고, 병합은 Art PR이 먼저이며, I24-A01~03은 격자 PR이 MaxSlots 계산으로 고친다. 클라 상태의 공개 모양을 바꿔야 하면 Core가 이 주소로 먼저 알린다.
   - verify-01(1차 독립 검증) 진행 중: 계약 `verify-01/contract-v1.md`(sha256 `3dea3991…9cee`, 포인터 기동), 신규 `[Core 검증자]` GPT-6-Astra xhigh, pane `term_bb1826a4-b541-4bec-bc34-2dec4139c65e`, Task `task_97438ae0b201`, Dispatch `ctx_c6f33ba9e8e1`. 범위는 메인 `msg_9cbd433df89c`대로다(아래 「적용 중인 메인 결정」).
     - R 끝(「V 준비됨」 `msg_af074258bc4e`). 새 시험은 서버 `02_Server/GameServer.Tests/Items/InventorySnapshotBoundaryTests.cs`(17건)와 클라 `03_Client/Assets/Tests/EditMode/InventorySnapshotBoundaryTests.cs`(11건)이다. 검증자 소유이고 untracked다.
     - 창: V1 WSL 01:16:30Z~01:40:00Z(메인 `msg_4f3f943ff5ba`). V2 Unity는 Content 창 B 뒤다(메인 `msg_b7412bb67113`).
@@ -49,7 +50,7 @@
 
 - **창 8 다녀옴(2026-11-01T01:41Z~03:36Z):** core-active는 앞 goal branch로 가서 창 8(PR268 DB 서버 두 판)을 지원했다. 기록은 앞 goal 「재개 지점」에 있다. 03:36:08Z에 이 branch `6b2adad4`로 돌아왔다(`lead-p2-switch-01.txt`). 돌아온 뒤 작업 트리는 깨끗하고, Plugins Shared.dll은 v23(`8d471e72…c025`), `ProtocolVersion.Current`는 23이다. 전환 전 확인(`lead-p2-switch-check-01.txt`)에서 WSL 서버·7777·Unity·Windows dotnet은 모두 0이었다.
   - WSL 복제본은 지금 앞 goal의 v22 빌드다(앞 goal `build-02`). 이 goal의 다음 WSL 실행은 `sync-wsl.sh`가 v23 소스로 다시 동기화·빌드한다. 2차 재검증 계약에 이 사실을 적는다.
-- **다음 첫 일:** Art 격자 PR을 기다린다. 격자 PR이 들어가면 main을 합치고, CURRENT Core 줄을 고친 뒤 2차 좁은 재검증(새 Astra 세션: PlayMode·실제 접속·Art 시험 3건·병합 diff·CURRENT 줄·새 서버 시험 17건 이름별 원시)을 연다. 그 뒤 PR·준비 보고다.
+- **다음 첫 일:** Art 격자 PR을 기다린다. 격자 PR이 들어가면 main을 합치고(client.md 50행은 격자 PR 쪽을 따르고 38행만 남김, 메인 결정 B-2 A), CURRENT Core 줄을 고친 뒤 2차 좁은 재검증(새 Astra 세션: PlayMode·실제 접속·Art 시험 3건·병합 diff·CURRENT 줄·새 서버 시험 17건 이름별 원시)을 연다. 그 뒤 PR·준비 보고다.
   - WSL 실행은 `impl-01/lead-reply-sdk-v1.txt`(계약 2단계 보충 v1.1) 방법을 쓴다. Windows dotnet은 쓰지 않는다. global.json의 SDK 10.0.301이 Windows에 없다.
 - **멈춘 지점의 파일 상태(2026-10-31T18:4xZ, 로컬 WIP 커밋에 담음):**
   - 1단계 소스 31파일과 v23 `GenPackets.cs`(WSL 생성, sha256 `62a2ad60353654a0ab652aca2e62717438e4d8d1ee024087e4110dd656505aa9`, CRLF 0)가 바뀌어 있다.
@@ -123,6 +124,15 @@
 - 2차(격자 PR 병합 뒤): main을 합친 head로 새 Astra 세션이 좁게 다시 본다. 범위는 PlayMode·실제 접속·Art 시험 3건 재확인과 병합 diff다.
 - 검증자 계약은 짧은 포인터(경로+SHA256)로 넘긴다. 등급은 강이다(프로토콜·패킷 변경).
 - Art 실패 3건의 Art 귀속과 Art 리드 직접 알림에 메인 이견이 없다. Core는 고치지 않는다.
+
+### 2026-11-01 B-2 A — client.md 겹침 해결
+
+메인 사본 `msg_18abd6f81746`(2026-11-01T03:50:26Z). 사용자 결정이 아니다. 메인이 새 Art 리드(`run:run_6687e0512b2c`)의 격자 goal 범위를 승인하면서 정했다.
+
+- 겹침: 이 branch(`7eb3edac`)가 `00_Document/domains/client.md`의 38행(`InventorySnapshotHandler` v23·204바이트·24슬롯)과 50행(`InventoryPanelView` 「공유 칸 수(24)의 슬롯」)을 고친다. 격자 PR도 50행을 다시 쓴다. Art 관측 파일 이름은 `overlap-client-md-hunks-1101-01.txt`다.
+- 결정: 격자 PR이 50행의 칸 수를 숫자 없이 「공유 칸 수(InventoryLimits.MaxSlots)」로 적는다. Core는 격자 PR이 기준 branch에 들어간 뒤 그것을 받을 때 50행의 Core 변경을 버리고 38행만 남긴다.
+- 이 해결은 병합 관문의 「main 병합·충돌 해결」 재실사 대상이다. 2차 재검증 계약에 넣는다.
+- 병합 순서는 그대로 Art 격자 PR → Core 24칸 PR이다.
 
 ### 2026-10-31 범위 승인
 
