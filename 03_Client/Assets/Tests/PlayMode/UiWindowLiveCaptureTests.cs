@@ -32,6 +32,7 @@ namespace Dawnholder.Client.Tests.PlayMode
     // opens by its normal entry: I after the wire inventory snapshot, E inside a scene NPC's trigger, S_PartyInviteRecv
     // and S_DungeonClearResult from the scripted peer. That peer is loopback test authority, not GameServer. Canvases,
     // cameras and Overlay modes stay as the product builds them, and the Game view's final frame is saved without editing.
+    // Inventory detail follows its normal hover entry (인벤토리 상세 창: 가상 마우스를 칸에 올림).
     // Runs only when the capture runner names its output folder, and needs the Editor's Game view (no -batchmode).
     public sealed class UiWindowLiveCaptureTests
     {
@@ -224,6 +225,117 @@ namespace Dawnholder.Client.Tests.PlayMode
             NoteCanvas("panel", InventoryPanel.Instance);
             _hudPopup = InventoryPanel.Instance.transform.Find("Inventory").GetComponent<RectTransform>();
             yield return CaptureBothSizes(() => InventoryPanelProbe.Group.alpha > 0f);
+        }
+
+        [UnityTest, Timeout(240000)]
+        public IEnumerator InventoryDetail_CoinPouchHoveredAfterI_CapturedFromTheGameView()
+        {
+            Begin("inventory-detail-coin-pouch");
+            yield return SelectPrimarySize(approvedSizes: true);
+            yield return ReadySyncedTown();
+            yield return ShowHudParty(0, 1);
+            yield return Press(Key.I);
+            yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Group.alpha > 0f, "I opens the inventory panel", 3);
+            yield return _fixture.Frames(3);
+            yield return HoverInventoryDetail(1);
+            _hudPopup = InventoryPanel.Instance.transform.Find("Inventory").GetComponent<RectTransform>();
+
+            bool primaryObserved = false;
+            bool primaryDetailShown = false, minimumDetailShown = false;
+            string primaryDetailName = null, minimumDetailName = null;
+            yield return CaptureBothSizes(() =>
+            {
+                bool detailShown = InventoryPanelProbe.DetailShown;
+                string detailName = InventoryPanelProbe.DetailLabel("Name").text;
+                if (!primaryObserved)
+                {
+                    primaryObserved = true;
+                    primaryDetailShown = detailShown;
+                    primaryDetailName = detailName;
+                }
+                else if (Screen.width == MinimumWidth && Screen.height == MinimumHeight)
+                {
+                    minimumDetailShown = detailShown;
+                    minimumDetailName = detailName;
+                }
+                string stage = $"inventory detail {Screen.width}x{Screen.height}";
+                Note(stage + " shown / name", $"{detailShown} / '{detailName}'");
+                foreach (string labelName in new[] { "Name", "Count", "Effect", "UseHint" })
+                {
+                    TMP_Text label = InventoryPanelProbe.DetailLabel(labelName);
+                    Note(stage + " label " + labelName, $"'{label.text}' | active {label.gameObject.activeInHierarchy}");
+                }
+                Note(stage + " detail screen rect", ScreenUiProbe.ScreenRect(InventoryPanelProbe.Detail));
+                Note(stage + " panel screen rect", ScreenUiProbe.ScreenRect(_hudPopup));
+                NotePointers(stage);
+                NoteCanvas(stage + " panel", InventoryPanel.Instance);
+                return InventoryPanelProbe.Group.alpha > 0f && detailShown;
+            }, prepareAtMinimum: HoverInventoryDetail(1));
+
+            Assert.IsTrue(primaryDetailShown, "coin pouch detail was shown before the primary capture");
+            Assert.AreEqual("재화 주머니", primaryDetailName, "primary captured detail name");
+            Assert.IsTrue(minimumDetailShown, "coin pouch detail was shown before the minimum capture");
+            Assert.AreEqual("재화 주머니", minimumDetailName, "minimum captured detail name");
+        }
+
+        [UnityTest, Timeout(240000)]
+        public IEnumerator InventoryDetail_MaterialHoveredAfterI_CapturedFromTheGameView()
+        {
+            Begin("inventory-detail-material");
+            yield return SelectPrimarySize(approvedSizes: true);
+            yield return ReadySyncedTown();
+            yield return ShowHudParty(0, 1);
+            yield return Press(Key.I);
+            yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Group.alpha > 0f, "I opens the inventory panel", 3);
+            yield return _fixture.Frames(3);
+            yield return HoverInventoryDetail(0);
+            _hudPopup = InventoryPanel.Instance.transform.Find("Inventory").GetComponent<RectTransform>();
+
+            bool primaryObserved = false;
+            bool primaryDetailShown = false, minimumDetailShown = false;
+            string primaryDetailName = null, minimumDetailName = null;
+            yield return CaptureBothSizes(() =>
+            {
+                bool detailShown = InventoryPanelProbe.DetailShown;
+                string detailName = InventoryPanelProbe.DetailLabel("Name").text;
+                if (!primaryObserved)
+                {
+                    primaryObserved = true;
+                    primaryDetailShown = detailShown;
+                    primaryDetailName = detailName;
+                }
+                else if (Screen.width == MinimumWidth && Screen.height == MinimumHeight)
+                {
+                    minimumDetailShown = detailShown;
+                    minimumDetailName = detailName;
+                }
+                string stage = $"inventory detail {Screen.width}x{Screen.height}";
+                Note(stage + " shown / name", $"{detailShown} / '{detailName}'");
+                foreach (string labelName in new[] { "Name", "Count", "Effect", "UseHint" })
+                {
+                    TMP_Text label = InventoryPanelProbe.DetailLabel(labelName);
+                    Note(stage + " label " + labelName, $"'{label.text}' | active {label.gameObject.activeInHierarchy}");
+                }
+                Note(stage + " detail screen rect", ScreenUiProbe.ScreenRect(InventoryPanelProbe.Detail));
+                Note(stage + " panel screen rect", ScreenUiProbe.ScreenRect(_hudPopup));
+                NotePointers(stage);
+                NoteCanvas(stage + " panel", InventoryPanel.Instance);
+                return InventoryPanelProbe.Group.alpha > 0f && detailShown;
+            }, prepareAtMinimum: HoverInventoryDetail(0));
+
+            Assert.IsTrue(primaryDetailShown, "material detail was shown before the primary capture");
+            Assert.AreEqual("재료", primaryDetailName, "primary captured detail name");
+            Assert.IsTrue(minimumDetailShown, "material detail was shown before the minimum capture");
+            Assert.AreEqual("재료", minimumDetailName, "minimum captured detail name");
+        }
+
+        // Reuse the gesture at both sizes: the panel shrinks and its slot moves at 1280x720.
+        IEnumerator HoverInventoryDetail(int slotIndex)
+        {
+            yield return HudOverlapProbe.WaitForHudAndSettledPanel();
+            if (!_mouseOriginal.HasValue) _mouseOriginal = _fixture.Mouse.position.ReadValue();
+            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, InventoryPanelProbe.SlotPoint(slotIndex));
+            yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.DetailShown, "hover shows the inventory detail", 3);
         }
 
         [UnityTest, Timeout(240000)]
@@ -763,9 +875,10 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _fixture.Frames(4);
         }
 
-        // noteAtMinimum adds a case's own readings at the minimum size and minimumResult receives that frame's result. Both are
-        // optional; the inventory and NPC dialogue cases call this without them.
-        IEnumerator CaptureBothSizes(Func<bool> stillShown, Action noteAtMinimum = null, CaptureResult minimumResult = null)
+        // noteAtMinimum adds a case's own readings at the minimum size and minimumResult receives that frame's result.
+        // prepareAtMinimum waits for a resized case's input before recording; all are optional for existing callers.
+        IEnumerator CaptureBothSizes(Func<bool> stillShown, Action noteAtMinimum = null, CaptureResult minimumResult = null,
+            IEnumerator prepareAtMinimum = null)
         {
             NoteScenesAndCameras();
             NoteHud("primary");
@@ -782,6 +895,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 yield return ScreenUiProbe.WaitUntil(() => Screen.width == MinimumWidth && Screen.height == MinimumHeight, 3f,
                     reached => Note("Screen reached minimum size", reached));
                 yield return _fixture.Frames(3);
+                if (prepareAtMinimum != null) yield return prepareAtMinimum;
                 Note("window still shown at minimum size", stillShown());
                 NoteHud("minimum");
                 noteAtMinimum?.Invoke();
