@@ -51,6 +51,9 @@
 - **창 8 다녀옴(2026-11-01T01:41Z~03:36Z):** core-active는 앞 goal branch로 가서 창 8(PR268 DB 서버 두 판)을 지원했다. 기록은 앞 goal 「재개 지점」에 있다. 03:36:08Z에 이 branch `6b2adad4`로 돌아왔다(`lead-p2-switch-01.txt`). 돌아온 뒤 작업 트리는 깨끗하고, Plugins Shared.dll은 v23(`8d471e72…c025`), `ProtocolVersion.Current`는 23이다. 전환 전 확인(`lead-p2-switch-check-01.txt`)에서 WSL 서버·7777·Unity·Windows dotnet은 모두 0이었다.
   - WSL 복제본은 지금 앞 goal의 v22 빌드다(앞 goal `build-02`). 이 goal의 다음 WSL 실행은 `sync-wsl.sh`가 v23 소스로 다시 동기화·빌드한다. 2차 재검증 계약에 이 사실을 적는다.
 - **다음 첫 일:** Art 격자 PR을 기다린다. 격자 PR이 들어가면 main을 합치고(client.md 50행은 격자 PR 쪽을 따르고 38행만 남김, 메인 결정 B-2 A), CURRENT Core 줄을 고친 뒤 2차 좁은 재검증(새 Astra 세션: PlayMode·실제 접속·Art 시험 3건·병합 diff·CURRENT 줄·새 서버 시험 17건 이름별 원시)을 연다. 그 뒤 PR·준비 보고다.
+  - 2차 재검증 계약 틀: `verify-02/contract-template-v1.md`(리드 초안). 4×6 격자를 보이는 근거와 PlayMode filter는 격자 PR 내용을 보고 채운다. 규칙 원문은 verify-01처럼 스크립트로 붙인다.
+  - 시각(2026-11-01T04:35Z, Content 리드 `msg_f581ef3adf1a`가 전한 Art `msg_3f625498414d`): 격자 PR은 아직 없고 선행 시험 단계다. Art 어림으로 11-01 KST 저녁 전 병합은 어렵다. 프로토콜·빌드 설정 변경 계획은 0이다.
+  - 녹화용 빌드 계약(Content 초안 v3 sha256 `3ae6bfe8…4688`)에 Core 답을 보냈다(`msg_45e700da3330`). 두 PR 병합 뒤 Content가 고정 head 40자를 먼저 알리고, Core가 그 SHA를 DB 시연 branch에 받아 서버 트리 diff 0·`ProtocolVersion.Current`·R1 exit를 돌려준다.
   - WSL 실행은 `impl-01/lead-reply-sdk-v1.txt`(계약 2단계 보충 v1.1) 방법을 쓴다. Windows dotnet은 쓰지 않는다. global.json의 SDK 10.0.301이 Windows에 없다.
 - **멈춘 지점의 파일 상태(2026-10-31T18:4xZ, 로컬 WIP 커밋에 담음):**
   - 1단계 소스 31파일과 v23 `GenPackets.cs`(WSL 생성, sha256 `62a2ad60353654a0ab652aca2e62717438e4d8d1ee024087e4110dd656505aa9`, CRLF 0)가 바뀌어 있다.
