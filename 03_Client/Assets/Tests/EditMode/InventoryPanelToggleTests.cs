@@ -1,3 +1,4 @@
+using Grid = Dawnholder.Client.Tests.InventoryIconGridTestSupport;
 using System;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.State;
@@ -265,10 +266,11 @@ namespace Dawnholder.Client.Tests
             PressI();
             bool opened = Read().Shown;
             string currency = Text("Inventory/Currency");
-            string firstSlot = Text("Inventory/Slot1/Item");
+            string firstSlot = Grid.SlotText(_panel.transform, 0);
             string status = Text("Inventory/Synchronization");
-            Button use = _panel.transform.Find("Inventory/Slot1/Use").GetComponent<Button>();
-            bool useOffered = use.gameObject.activeInHierarchy && use.interactable;
+            using var pointer = new Grid.Pointer();
+            pointer.RightClick(_panel.transform, 0);
+            int useFrames = PeerFrames.Count(_connection.Sent(), (ushort)Shared.Protocol.PacketID.C_ItemUse);
 
             Assert.IsFalse(shownAtStart, "R5/R6 precondition: the panel is closed");
             Assert.AreEqual(1, readyQueries, "R8 the Ready query is sent while the panel is closed");
@@ -278,7 +280,7 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual("재화 250", currency, "R8 opening shows the latest currency");
             Assert.AreEqual("재화 주머니 ×2", firstSlot, "R8 opening shows the latest slots");
             Assert.AreEqual("서버 확인 완료", status, "R8 the answered Ready query still confirms the state");
-            Assert.IsTrue(useOffered, "R8 the open panel offers use of the owned CoinPouch as before");
+            Assert.AreEqual(1, useFrames, "R8 the open panel offers use of the owned CoinPouch as before");
         }
 
         // CombatBootstrap on a map load: one panel under the scene's bootstrap object, then Unity starts it.

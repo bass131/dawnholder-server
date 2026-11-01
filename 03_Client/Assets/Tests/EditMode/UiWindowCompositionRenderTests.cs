@@ -1,3 +1,4 @@
+using Grid = Dawnholder.Client.Tests.InventoryIconGridTestSupport;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -377,11 +378,6 @@ namespace Dawnholder.Client.Tests
                 PieceNamed("Panel_Default", BrightPieces), "inventory background", requireCompared: true));
             builtRoles.AddRange(ButtonStateViolations(window.Refresh, "Button_Default_Normal", BrightPiecesByGuid)
                 .Select(p => "Refresh " + p));
-            for (int i = 0; i < 8; i++)
-                builtRoles.AddRange(ButtonStateViolations(window.Uses[i], "Button_Default_Normal", BrightPiecesByGuid)
-                    .Select(p => $"Slot{i + 1}/Use " + p));
-            builtRoles.AddRange(DrawnPerSpec(rig, built, TargetImage(window.Uses[0]), PieceNamed("Button_Default_Normal", BrightPieces),
-                "Slot1/Use", requireCompared: true));
             string[] bareRows = window.Slots.Where(row => PiecesUnder(rig, window.Root.transform, Centre(rig, row), BrightPiecesByGuid,
                 "Inset_Default", "Inset_Selected", "Inset_Disabled", "ItemSlot_Empty", "ItemSlot_Filled", "ItemSlot_Selected").Length == 0)
                 .Select(row => row.name).ToArray();
@@ -406,10 +402,6 @@ namespace Dawnholder.Client.Tests
             var maxRoles = new List<string>();
             maxRoles.AddRange(ButtonStateViolations(window.Refresh, "Button_Default_Disabled", BrightPiecesByGuid)
                 .Select(p => "Refresh " + p));
-            maxRoles.AddRange(ButtonStateViolations(window.Uses[1], "Button_Default_Disabled", BrightPiecesByGuid)
-                .Select(p => "Slot2/Use " + p));
-            maxRoles.AddRange(DrawnPerSpec(rig, max, TargetImage(window.Uses[1]), PieceNamed("Button_Default_Disabled", BrightPieces),
-                "Slot2/Use disabled", requireCompared: true));
             List<string> maxDrawing = AllPiecesDrawnPerSpec(rig, max, window.Root.transform, BrightPiecesByGuid);
             TMP_Text[] maxTexts = VisibleTexts(window.Root.transform);
             string[] maxHidden = HiddenTexts(rig, max, maxTexts);
@@ -424,16 +416,16 @@ namespace Dawnholder.Client.Tests
             Assert.GreaterOrEqual(builtPieces.Count(name => name == "Panel_Default"), 1, "R T4 the bright table finds the window background");
             Assert.GreaterOrEqual(builtPieces.Count(name => name == "Header"), 1, "R T4 the bright table finds the title band");
             Assert.GreaterOrEqual(builtPieces.Count(name => name.StartsWith("ItemSlot_", StringComparison.Ordinal) ||
-                    name.StartsWith("Inset_", StringComparison.Ordinal)), 8,
-                "R T4 the bright table finds a slot piece for each of the eight slots");
-            Assert.GreaterOrEqual(builtPieces.Count(name => name.StartsWith("Button_Default_", StringComparison.Ordinal)), 9,
-                "R T4 the bright table finds the refresh and the eight use buttons");
+                    name.StartsWith("Inset_", StringComparison.Ordinal)), InventoryLimits.MaxSlots,
+                "R T4 the bright table finds a slot piece for every slot");
+            Assert.GreaterOrEqual(builtPieces.Count(name => name.StartsWith("Button_Default_", StringComparison.Ordinal)), 1,
+                "R T4 the bright table finds the refresh button");
             Assert.IsEmpty(builtRoles, "R panel and button pieces as approved and drawn per spec when built");
             Assert.IsEmpty(bareRows, "R every slot row is drawn on an approved Inset_*/ItemSlot_* piece");
             Assert.IsEmpty(builtDrawing, "R every approved piece the inventory draws matches the spec drawing");
             Assert.IsEmpty(builtHidden, "R built texts are drawn over the art");
             Assert.IsEmpty(builtMissing, "R built texts resolve every glyph through the font and its Korean fallback");
-            Assert.IsEmpty(maxRoles, "R the disabled refresh and coin pouch use show Button_Default_Disabled");
+            Assert.IsEmpty(maxRoles, "R the disabled refresh shows Button_Default_Disabled");
             Assert.IsEmpty(maxDrawing, "R every approved piece matches the spec drawing at the max legal state");
             Assert.IsEmpty(maxHidden, "R max legal state texts are drawn over the art");
             Assert.IsEmpty(maxMissing, "R max legal state texts resolve every glyph");
@@ -452,19 +444,19 @@ namespace Dawnholder.Client.Tests
             InventoryWindow window = BuildInventory(rig, uses.Add, () => refreshes++);
             var raycaster = window.Root.GetComponent<GraphicRaycaster>();
 
-            Press hover = PointerEnter(rig, raycaster, Centre(rig, (RectTransform)window.Uses[0].transform));
-            string hoverShown = ShownPiece(TargetImage(window.Uses[0]), BrightPiecesByGuid)?.Name;
-            List<string> hoverDrawing = DrawnPerSpec(rig, rig.Capture(), TargetImage(window.Uses[0]),
+            Press hover = PointerEnter(rig, raycaster, Centre(rig, (RectTransform)window.Refresh.transform));
+            string hoverShown = ShownPiece(TargetImage(window.Refresh), BrightPiecesByGuid)?.Name;
+            List<string> hoverDrawing = DrawnPerSpec(rig, rig.Capture(), TargetImage(window.Refresh),
                 PieceNamed("Button_Default_Highlighted", BrightPieces), "hover", requireCompared: true);
             PointerDown(hover);
-            string pressShown = ShownPiece(TargetImage(window.Uses[0]), BrightPiecesByGuid)?.Name;
-            List<string> pressDrawing = DrawnPerSpec(rig, rig.Capture(), TargetImage(window.Uses[0]),
+            string pressShown = ShownPiece(TargetImage(window.Refresh), BrightPiecesByGuid)?.Name;
+            List<string> pressDrawing = DrawnPerSpec(rig, rig.Capture(), TargetImage(window.Refresh),
                 PieceNamed("Button_Default_Pressed", BrightPieces), "press", requireCompared: true);
             PointerUp(hover);
             PointerExit(hover);
-            int usesAfterHoverClick = uses.Count;
+            int refreshesAfterHoverClick = refreshes;
 
-            GameObject[] usePressed = window.Uses.Select(use => Click(rig, raycaster, Centre(rig, (RectTransform)use.transform))).ToArray();
+            int refreshesBeforeClick = refreshes;
             GameObject refreshPressed = Click(rig, raycaster, Centre(rig, (RectTransform)window.Refresh.transform));
             string[] rowHits = window.Slots.SelectMany(row =>
                 HitNames(rig, raycaster, RowPointLeftOfUse(rig, row))).ToArray();
@@ -491,15 +483,14 @@ namespace Dawnholder.Client.Tests
             slots[1] = new InventorySlot(ItemId.CoinPouch, 2);
             mirror.ApplySnapshot(1, 120, slots);
             window.View.Render(mirror, null, true);
-            int usesBeforeDisabled = uses.Count, refreshesBeforeDisabled = refreshes;
-            Click(rig, raycaster, Centre(rig, (RectTransform)window.Uses[1].transform));
+            int refreshesBeforeDisabled = refreshes;
             Click(rig, raycaster, Centre(rig, (RectTransform)window.Refresh.transform));
-            string disabledShown = ShownPiece(TargetImage(window.Uses[1]), BrightPiecesByGuid)?.Name;
-            string[] hiddenUseHits = HitNames(rig, raycaster, Centre(rig, (RectTransform)window.Uses[0].transform));
+            string disabledShown = ShownPiece(TargetImage(window.Refresh), BrightPiecesByGuid)?.Name;
+            string[] hiddenUseHits = HitNames(rig, raycaster, Centre(rig, window.Slots[0]));
 
             window.View.SetVisibility(false, false);
             Pixels hidden = rig.Capture();
-            string[] hiddenPanelHits = HitNames(rig, raycaster, Centre(rig, (RectTransform)window.Uses[1].transform));
+            string[] hiddenPanelHits = HitNames(rig, raycaster, Centre(rig, (RectTransform)window.Refresh.transform));
             Canvas canvas = window.Root.GetComponent<Canvas>();
             canvas.enabled = false;
             Pixels absent = rig.Capture();
@@ -512,10 +503,15 @@ namespace Dawnholder.Client.Tests
             var disposedUses = new List<int>();
             int disposedRefreshes = 0;
             InventoryWindow second = BuildInventory(rig, disposedUses.Add, () => disposedRefreshes++);
+            second.View.Render(mirror, null, true);
+            // fixture: Render without requests disables Refresh; the press must reach the button so a missing callback is Dispose's doing.
+            second.Refresh.interactable = true;
             second.View.Dispose();
             var secondRaycaster = second.Root.GetComponent<GraphicRaycaster>();
-            GameObject disposedUsePressed = Click(rig, secondRaycaster, Centre(rig, (RectTransform)second.Uses[0].transform));
+            GameObject disposedUsePressed = Click(rig, secondRaycaster, Centre(rig, (RectTransform)second.Refresh.transform));
             Click(rig, secondRaycaster, Centre(rig, (RectTransform)second.Refresh.transform));
+            using (var pointer = new Grid.Pointer())
+                pointer.RightClick(second.Root.transform, 1, rig.Camera, allowDisposed: true);
 
             Log("inventory hover/press", hoverDrawing.Concat(pressDrawing));
             Log("inventory raycast hits on slot rows", rowHits);
@@ -524,12 +520,9 @@ namespace Dawnholder.Client.Tests
             Assert.IsEmpty(hoverDrawing, "P the highlighted button is drawn per spec");
             Assert.AreEqual("Button_Default_Pressed", pressShown, "P pointer down shows the approved pressed sprite");
             Assert.IsEmpty(pressDrawing, "P the pressed button is drawn per spec");
-            Assert.AreEqual(1, usesAfterHoverClick, "P the hover/press/release sequence is one click");
-            CollectionAssert.AreEqual(window.Uses.Select(use => use.gameObject).ToArray(), usePressed,
-                "P each use button takes the pointer press over its own centre");
+            Assert.AreEqual(1, refreshesAfterHoverClick, "P the hover/press/release sequence is one click");
             Assert.AreSame(window.Refresh.gameObject, refreshPressed, "P the refresh button takes its pointer press");
-            CollectionAssert.AreEqual(new[] { 0, 0, 1, 2, 3, 4, 5, 6, 7 }, uses, "P each real click reports its own slot once");
-            Assert.AreEqual(1, refreshes, "P one real refresh click reaches the refresh callback once");
+            Assert.AreEqual(1, refreshesBeforeDisabled - refreshesBeforeClick, "P one real refresh click reaches the refresh callback once");
             Assert.IsEmpty(rowHits, "P slot rows and their art pass the pointer (only buttons take raycasts)");
             Assert.IsNotEmpty(decorationPoints, "P T4 the bright table finds decoration pieces outside the buttons");
             Assert.That(decorationHits, Is.All.EqualTo("GrabArea"),
@@ -538,13 +531,12 @@ namespace Dawnholder.Client.Tests
             CollectionAssert.AreEqual(new[] { "GrabArea" }, titleBarCentreHits, "P a pointer at the title bar's centre reaches only the grab area");
             Assert.IsNotEmpty(barButtons, "precondition: at least one button lies in the title bar over the grab area");
             CollectionAssert.AreEqual(barButtons, barButtonsFirstHit, "P a button over the grab area takes the pointer first");
-            Assert.AreEqual(usesBeforeDisabled, uses.Count, "P a disabled use button does not reach the callback");
             Assert.AreEqual(refreshesBeforeDisabled, refreshes, "P a disabled refresh button does not reach the callback");
             Assert.AreEqual("Button_Default_Disabled", disabledShown, "P a disabled button keeps the approved disabled sprite under the pointer");
-            Assert.IsEmpty(hiddenUseHits, "P a use button hidden for a non-usable item takes no raycast");
+            Assert.IsEmpty(hiddenUseHits, "P the non-usable material slot takes no raycast");
             Assert.IsEmpty(hiddenPanelHits, "L the closed panel takes no raycast");
             Assert.AreEqual(0, hiddenDrawn, "L the closed panel draws nothing");
-            Assert.AreSame(second.Uses[0].gameObject, disposedUsePressed, "fixture: the disposed panel's button is still pressable");
+            Assert.AreSame(second.Refresh.gameObject, disposedUsePressed, "fixture: the disposed panel's button is still pressable");
             Assert.IsEmpty(disposedUses, "L Dispose leaves no use callback");
             Assert.AreEqual(0, disposedRefreshes, "L Dispose leaves no refresh callback");
         }
@@ -993,7 +985,6 @@ namespace Dawnholder.Client.Tests
                     (popup.transform.Find("Panel/AcceptButton").GetComponent<Button>(), popup.GetComponent<GraphicRaycaster>()),
                     (popup.transform.Find("Panel/RejectButton").GetComponent<Button>(), popup.GetComponent<GraphicRaycaster>()),
                 };
-                buttons.AddRange(inventory.Uses.Select(use => (use, inventory.Root.GetComponent<GraphicRaycaster>())));
                 foreach ((Button button, GraphicRaycaster raycaster) in buttons)
                 {
                     RaycastResult[] hits = Hits(rig, raycaster, Centre(rig, (RectTransform)button.transform));
@@ -1020,7 +1011,6 @@ namespace Dawnholder.Client.Tests
             internal InventoryPanelView View;
             internal RectTransform Panel;
             internal Button Refresh;
-            internal Button[] Uses;
             internal RectTransform[] Slots;
         }
 
@@ -1044,8 +1034,7 @@ namespace Dawnholder.Client.Tests
                 View = view,
                 Panel = panel,
                 Refresh = panel.Find("Refresh").GetComponent<Button>(),
-                Uses = Enumerable.Range(1, 8).Select(n => panel.Find($"Slot{n}/Use").GetComponent<Button>()).ToArray(),
-                Slots = Enumerable.Range(1, 8).Select(n => (RectTransform)panel.Find($"Slot{n}")).ToArray(),
+                Slots = Enumerable.Range(1, InventoryLimits.MaxSlots).Select(n => (RectTransform)panel.Find($"Slot{n}")).ToArray(),
             };
         }
 

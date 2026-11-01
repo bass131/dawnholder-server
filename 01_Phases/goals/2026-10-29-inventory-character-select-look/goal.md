@@ -1093,3 +1093,21 @@ Art goal 계열에서 같은 종류가 여덟 번 났다(PR275 head `9bab98a0` �
 | 구역 표지판(`ZoneVisualizer`의 VILLAGE·COMBAT·BOSS) | 그대로 둠. 설치 목록에 없어 만들어지지 않는다(`closeout-01/ui-table-missing-rows-1101-01.txt`의 `in_installers=false`) | 없음 |
 | 처치 보상 「+금화 N」 떠오르는 글 | Effect 몫(끝남) | 없음 |
 | 인벤토리 「사용」·「새로고침」, 일시정지 버튼 글자 대비 | 다음 계획으로 옮김. 75 A 「버튼 조각을 진하게」는 BACKLOG `bright-button-piece-contrast` 한 행이다(메인 `msg_c7a0484439f0`) | 위 인벤토리·일시정지 캡처 |
+
+### 종료 뒤 보충 — PR292 문서 재실사 v3와 #PR5T 처분
+
+이 절은 종료 뒤 보충이고 앞 PR292 판정 대상 밖이다. [인벤토리 아이콘 격자](../2026-11-01-inventory-icon-grid/goal.md) goal의 첫 PR이 메인 결정(`msg_b79ad103b86e` B-1 A)으로 넣었고, 그 PR의 독립 검증 범위에 들어간다. 원천은 R-8 노트 3판 `.backups/verification/2026-10-29-inventory-character-select-look/r8-record-notes-pr4-verify-1031-03.md`(sha256 `3f907d58d594c2b25d9dbfffc96a6c75b3d40a882da76d7f81f423369e77541b`)의 「PR292 문서 재실사 v3」·「PR292 재실사 v3 처분과 병합 준비」 두 절과 메인 `msg_b8eeb4d0a16a`·`msg_5d7952f9d461`이다. 경로는 모두 근거 폴더 기준이다. 위 재개 카드와 다른 절은 PR292 당시 그대로 둔다.
+
+- 재실사 v3: 신규 `[Art 검증자]` task_cde0b6fbe0c9(dispatch `ctx_657074520c81`, gpt-6-astra xhigh, Fast 끔)다. 대상은 둘째 수정 commit `75ee2e40b40eda157b4ab5c5aad6b40f64996af9`다. 첫 화면은 v0.166.0이고 업데이트 창·선택창은 없었다(`closeout-01/pr5-doc-verify-v3-launch-screen-01.tail.txt`).
+- 판정: worker_done `msg_275991f3f332`, 원문 `closeout-01/pr5-doc-verify-03/verdict.md`(sha256 `7a66b88cc1e92bf064206311d619b3d7d3ff2444180f39721b1ff09ec3466fb4`). **NOT PASS**, 문서 결함 1건과 절차 결함 2건이다. 판정은 저장소 종료 기록 문장에 남은 결함이 없다고 적었다(판정 :184).
+
+| 번호 | 무엇 | 귀속 | 처리 |
+|---|---|---|---|
+| #PR5T-01 | 검증자 절차 결함이다. 첫 SKILL.md 읽기의 전용 원시가 없고, 첫 저장 스크립트가 HEAD·status를 재지 않았다(검증자 자기 신고, 질문 `msg_de590c702ad0`) | 검증자 | 원 위반 그대로 기록하고 닫음(메인 `msg_b8eeb4d0a16a`·`msg_5d7952f9d461`) |
+| #PR5T-02 | 리드 절차 결함이다. 둘째 수정 사전 메모 `closeout-01/pr5-fix2-context-1101-01.md`에 템플릿의 「수동·provider 자동 TEMP의 허용 구분」 필드가 없다. 쓰기 전 필드라 소급할 수 없다 | 리드 | 원 위반 그대로 기록하고 닫음(같은 두 메시지) |
+| #PR5T-03 | 문서 결함이다. 둘째 수정의 완료 자기 쓰기 감사와 그 연결 근거가 없다 | 리드 기록 | 보충 새 파일 `closeout-01/pr5-fix2-context-completion-supplement-1101-01.md`(sha256 `1d9e2711efc95838c8b013eb2b8121bf611b79b7a55ff72df628c0a13ce07498`)로 닫음(`msg_5d7952f9d461`). 둘째 메모는 고치지 않았다 |
+
+- 메인 처분 원문(`msg_b8eeb4d0a16a`, 2026-11-01T02:13:12Z, 메인 결정): 「A — #PR5T-03은 보충 새 파일로 고치고, 메인 표본 대조 뒤 #PR5T-01~03을 메인 결정으로 닫는다.」 「#PR5T-01(검증자 절차)·#PR5T-02(리드 절차, 쓰기 전 필드라 소급 불가)는 앞 처분(05~07, #PR5R-01·03)과 같이 원 위반 그대로 기록하고 닫는다.」
+- 메인 「닫음」 원문(`msg_5d7952f9d461`, 02:27:42Z, 메인 결정): 「처분: #PR5T-01·02는 원 위반 그대로 기록하고 닫는다. #PR5T-03은 이 보충으로 닫는다. 처분 기록은 계획대로 R-8 노트와 메인 R-8 결과 기록에 둔다. head 75ee2e40b40eda157b4ab5c5aad6b40f64996af9 그대로다.」
+- 보충을 쓸 때의 리드 실수: 한 줄 루프의 `grep -c`로 인라인 개수를 한 번 냈다(`closeout-01/pr5-fix3-launcher-subscripts-1101-01.txt`). 그 값은 쓰지 않았다. 메인은 기록만으로 두고, 같은 꼴(리드 인라인 값)을 메인 최종 보고의 규칙 후보에 반복으로 적는다고 했다(`msg_5d7952f9d461`).
+- 병합: PR292는 head `75ee2e40` 그대로 2026-11-01T02:31:26Z에 merge commit `ffe7f983b96eda8002a27169b3e8b7cb5eb32c72`로 병합됐다(메인 `msg_4bef008e3fa9`).
