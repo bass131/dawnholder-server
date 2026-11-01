@@ -6,6 +6,26 @@
 
 ## 재개 지점
 
+- **창 8 준비(2026-11-01T01:41Z, 메인 `msg_b40b44ba2d63`):** PR268 검증의 DB 영속 서버 두 판을 core-active의 v22 서버로 돈다. core-active는 24칸 branch(`6b2adad4`, 로컬 커밋, push 안 함)에서 이 branch(`9d35f5cd`)로 바꿨다(`.backups/verification/2026-11-01-inventory-24-slots/lead-branch-switch-01.txt`). 바꾸기 전 core-active Unity는 0이었다(같은 폴더 `lead-branch-switch-check-01.txt`). 작업 트리 Plugins Shared.dll은 v22(sha256 `b8b2828e…ecd3`)다.
+  - WSL 복제본은 아직 v23 빌드다. 창 8 첫 단계로 새 Core 작업자가 `sync-wsl.sh build`를 1회 돈다. Content 창 B(01:35:30Z~02:18Z) 동안에는 WSL 실행을 하지 않는다.
+  - 사용자 카드 v3: `lead/window8-user-server-card-v3.md`(sha256 `d4a869d0c1a7ca75af844a61c252c385d986ffc7c101ef6a5e7ab6e20d2dbabd`). 1단계 시작 블록은 v2와 bytes가 같다(`lead/window8-card-v3r2-block-compare.txt`). 첫 판(`8f770523…5128`, `msg_3a051b3a622d`)은 origin/main에 없는 DEVELOPMENT 절을 근거로 들었다. 메인 지적(`msg_bb4316bc7ee2`)에 따라 그 근거를 실측 원문 `docs-02/stage-a-observed-lines-v1.txt`와 launcher·Program.cs 줄 번호로 바꿨다(`lead/window8-card-v2-to-v3r2.diff`, `msg_b07763f85e18`). 메인이 sha256·시작 블록 일치를 다시 세고 「창 8은 이 카드로 간다」고 확정했다(`msg_a73bb31b2e79`).
+  - 순서표: Core·사용자 줄(P1·W1~W3·W5·W6·W8·P2)은 Core 초안(`msg_a7aa1edf5eef`), Content 줄(W3b·W4·W6b·W7)은 Content 회신(`msg_4dff57d2a72d`)이다. 클라는 PR268 head `cb32652f`의 v22 빌드다. 창 8은 Content 창 B 통과와 Content 검증자의 차단 결함 0 뒤에만 연다.
+  - Core가 보는 세 값: 재시작 시간((a) 정지 줄 → (b) Listening), 정지 요약 두 줄, 2판 목록의 캐릭터가 1판과 같은지. 원문은 메인이 사용자 서버 창을 읽어 Content 근거(`pr268-verify-03/window8/server-window/`)에 남긴다.
+  - **W1 끝(2026-11-01T02:03Z):** 메인 창 배정 `msg_aad1003cbf55`(01:53:00Z~02:15:00Z). 계약은 생성 스크립트 `build-02/scripts/build-contract-v1.cjs`로 만들었다(`build-02/contract-v1.md` sha256 `bac05af5…2c4c`). 규칙 원문 대조는 ALL VERBATIM이다(`build-02/lead-verbatim-check-v1.txt`).
+    - 신규 `[Core Sol]`(첫 화면 `GPT-6.1-Sol max`, backend unknown, Task `task_6f4aebe47fe8`)가 S1 통과 뒤 `sync-wsl.sh build`를 01:56:49Z~01:57:37Z에 1회 돌려 exit 0을 얻었다. worker_done은 `msg_67fe5268ccb4` succeeded, 보고는 `build-02/report.md`(sha256 `a799dc23…e9ec`)다.
+    - S3 11항이 통과했다. 복제본 소유 표식이 core-active이고, `GameServer.dll` mtime 01:57:21Z가 빌드 시작 뒤다. 복제본 `ProtocolVersion.cs`는 Windows와 같은 sha256이고 `Current = 22`다. 리드가 정산 뒤 복제본을 직접 다시 읽어 같음을 확인했다(`build-02/lead-sample-check-clone-01.txt`).
+    - S4: SQL 서비스 Running, 15433은 sqlservr, 공개 CA hash 일치, 만료 2026-11-17T09:48:58Z. LocalMachine\My에 같은 이름 인증서가 둘 있다. SQL이 실제로 쓰는 thumbprint는 미확인이다.
+    - 작업자 heartbeat 간격이 1회 343초였다. 리드가 비차단 기록으로 판정했다(`build-02/lead-reply-heartbeat-v1.txt`).
+    - 정산 `retained`/`external_terminal`, pane 닫음. 창 끝 확인에서 WSL 서버·7777·Windows dotnet·Unity가 모두 0이었다(`build-02/lead-window-end-check-01.txt`). 메인에 「창 끝」을 보냈다.
+  - **W3(메인 사본 `msg_b5a958fde5e5`):** 사용자 서버가 카드 1단계로 떴다. Owned WSL PID 16172, WSL dotnet PID 505, Listening `2026-11-01T03:11:17.9349601Z`.
+  - **창 8 끝(2026-11-01T03:34:20Z, 메인 사본 `msg_3cbec56e9ea5`):** 두 판이 다 돌았고 사용자가 W8 Enter로 정지했다. Content 리드는 1판(`msg_f0f0f290dd92`)과 2판(`msg_fca24e489a94`)의 통과를 보고했다. 서버 창 원문은 메인이 읽어 Content 근거 `content-active/.backups/verification/2026-10-31-demo-autopilot-character-select/pr268-verify-03/window8/server-window/`의 `w3-listening.txt`·`w5-a-stopped.txt`·`w6-b-restarted.txt`·`w8-c-stopped.txt`에 넣었다.
+    - Core 값 1, 재시작: (a) 정지 `03:27:04.7844611Z` → 새 프로세스 생성 `03:30:01.6497981Z`(PID 22492) → (b) Listening `03:30:02.4558779Z`. 정지에서 Listening까지 약 2분 58초다. 그 대부분은 메인 「지금」을 기다린 사용자 손 시간이다. 프로세스 생성에서 Listening까지는 약 0.81초다(10-31 지금 보기 약 0.89초).
+    - Core 값 2, 정지 요약: (a)·(c) 모두 stdout·stderr `overlong=0, queueDropped=0, decodeErrors=0, readerErrors=0, drained=True`이고 실패 문구는 없다. stdout `excluded`는 (a) 1222, (c) 528이다.
+    - Core 값 3, 2판 캐릭터: 두 클라 모두 2판에서 `character create` 없이 1판과 같은 slot 1을 골라 마을까지 갔다(Content 클라 원시 `pr268-verify-03/window8/round-2/`). 재시작 뒤에도 1판 캐릭터가 목록에 남았다는 근거다. 리드는 목록 이름을 따로 대조하지 않았다.
+    - Content 중립 관찰(거점 level 2·강화 level 1이 두 판에서 같음)에 Core 해석을 직접 보냈다(`msg_04981e9d8b04`). 두 값은 DB 저장 범위 밖이다(FEATURE_MAP 39·41행, `02_Server`에 `dh.Guild`·`dh.CharacterWeapon`을 읽거나 쓰는 코드 0건). 그래서 판정 근거로 쓰지 않는다. 2판에서 요청 전에 이미 그 값이 보이면 반증이다.
+    - P2 전 확인(03:35:13Z): WSL `GameServer.dll` 0, 7777 0, Unity 0, Windows dotnet 0(`.backups/verification/2026-11-01-inventory-24-slots/lead-p2-switch-check-01.txt`).
+  - 창 8 뒤 core-active를 24칸 branch로 되돌린다(서버 0·core-active Unity 0일 때만).
+  - 다음 서버 실행 카드(리허설)는 결정 107 A대로 1단계 자격 줄을 `$env:DAWNHOLDER_DB_CREDENTIAL_PATH` 우선으로 바꾼다(「적용 중인 사용자 결정」 107 A). 창 8 카드 v3는 바꾸지 않는다.
 - 다음 첫 일: 메인의 리허설 실행 창 배정을 기다린다. 착수 조건은 넷이다.
   - PR268 병합
   - Art 인벤토리 격자 PR 병합(결정 92 B, `msg_e8defeeffd1f`)
@@ -115,6 +135,35 @@
 - 그 앞 사용자 원문은 「아니면 인벤토리 크기를 더 늘려도 돼, 내 생각에는 메이플스토리 인벤토리 크기 정도면 상관없어」다.
 - 97 A 선택지 문장은 「Core가 지금 인벤토리 패킷과 서버 칸 수를 24로 바꾸고 서버·Unity 양쪽을 검증한다. Art 격자는 칸 수를 따라 4×6이 되고 창은 지금 390×720 가까이 된다. 시연 빌드는 Core PR까지 기다린다」다.
 - 이 goal에 바뀌는 것은 리허설 착수 조건 하나다(재개 지점). 24칸 작업 자체는 새 goal 기본이다.
+
+### 2026-11-01 결정 104 A — W1 빌드 끝나는 대로 창 8 사용자 손
+
+메인 `msg_1f7f9ba6bd67`(2026-11-01T01:55:16Z)이 전달한 사용자 원문이다. 메인 pane에서 01:54Z경 Enter로 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 104 - 자동 진행기 PR268 마지막 확인(DB 서버 두 판) 사용자 손을 언제 할지 → A 빌드 끝나는 대로 바로
+
+- 메인 지시: W1 「창 끝」(S3 한 줄 포함)이 오면 메인이 바로 사용자 손(카드 v3 `d4a869d0…` 1단계)을 연다. 창 8 동안 core-active는 이 branch(v22) 그대로이고, WSL 실행은 사용자 서버만이다.
+- 메인 지시: P2(24칸 branch 복귀)는 W8 「멈췄음」과 메인의 (c) 화면 확인 뒤에만 한다.
+
+### 2026-11-01 결정 107 A — DB 자격 파일 경로는 사용자 PowerShell 프로필 변수
+
+메인 `msg_cb9dbb9c4100`(2026-11-01T02:45:21Z)이 전달한 사용자 원문이다. 메인 pane에서 02:42Z경 Enter로 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다. 메인은 범위 판단이 아니라 다음 서버 실행 카드의 손 절차 변경이라고 했다.
+
+> 앞으로 자격증명 경로도 같이 결정대기에 포함시켜줘, 코드 내부에 삽입하는게 보안적으로 안 좋은건 알겠는데, 매번 입력하려니까 불편하네
+
+> 대시보드 결정 응답: 2) 107 - DB 자격 파일 경로를 매번 치지 않게: 내 PowerShell 프로필에 한 번 저장할지, 결정 카드에 경로를 넣을지 → A 프로필에 한 번 저장
+
+- 창 8은 카드 v3(`d4a869d0…dbabd`) 그대로 간다. 지금 바꾸지 않는다.
+- 창 8 뒤 다음 서버 실행 카드부터 1단계 블록의 자격 줄 하나를 아래 두 줄로 바꾼다. 나머지 줄과 launcher·제품 코드는 그대로다.
+
+  ~~~powershell
+  $credentialPath = $env:DAWNHOLDER_DB_CREDENTIAL_PATH
+  if ([string]::IsNullOrWhiteSpace($credentialPath)) { $credentialPath = Read-Host '본인이 보관한 DB 자격 파일 전체 경로' }
+  ~~~
+
+- 카드 「준비」 절은 「프로필에 저장했으면 묻지 않는다, 없으면 그 입력 요청 한 곳에만 직접 친다」로 고친다. 「경로를 채팅·메시지에 붙이지 않는다」와 「AI가 파일 내용·크기·hash를 보지 않는다」는 그대로 둔다.
+- 변수 이름은 `DAWNHOLDER_DB_CREDENTIAL_PATH`로 고정한다. 사용자가 자기 PowerShell 7 프로필에 직접 넣고, 메인이 그 한 줄을 안내한다. AI는 프로필 파일과 그 변수 값을 읽거나 출력하지 않는다. 카드·계약·스크립트에는 값 대신 변수 이름만 쓴다.
+- 정본(DEVELOPMENT 등) 반영은 시연 뒤 후보로 둔다.
 
 ## 적용 중인 메인 결정
 
