@@ -6,6 +6,18 @@
 
 ## 재개 지점
 
+- **11-01 재진입(2026-10-31T23:4xZ, 메인 `msg_595eef26f2df`):** 리드는 같은 대화를 이었다(새 handle `term_de9ad49a-99bc-457b-9b06-c888a71b5c37`, run-use consumer_generation 2). 사용자 원문 「지난번에 하던 작업 이어서 진행해서 마무리해보자」.
+  - 메인이 2단계 나머지를 WSL 전용 창으로 지금 배정했다. impl-01 report 원천 대조는 통과했다(메인 보고 `msg_f10c78e1f37b`).
+  - impl-02 진행 중: 계약 `impl-02/contract-v1.md`(sha256 `6023df6b…1fb0`, 실행 전용), pane `term_023624f0-6160-47cc-85d3-fc40fb4256cc`, Task `task_f5b01da72959`, Dispatch `ctx_82966a060f97`, 23:51:17Z worker-start(ready·observed). 첫 화면 `GPT-6.1-Sol max · Full Access`, Codex v0.166.0, 「⚠ 2 warnings」 표시(내용 미확인, impl-01 첫 화면에는 없었다).
+  - GenPackets 공백 64건은 손대지 않는다(메인에 알림 `msg_f10c78e1f37b`).
+  - impl-02 끝(worker_done `msg_16c45ccfd1dd`, `impl-02/report.md` sha256 `fef973aa…7f3e`, 리드 원시 대조함). 결과는 다음과 같다.
+    - sync·build exit 0(80 Warning(s)·0 Error(s)).
+    - Plugins Shared.dll은 v23(sha256 `8d471e729f36b71e7574381bf2772004eaabed362219c87b5f26ca44acd5c025`, 117,248B)이고 `.meta`는 불변이다.
+    - 서버 시험 `Failed: 2, Passed: 2550, Skipped: 28`. 봇 `PASS=1 FAIL=0`, snapshot len=204·칸 24.
+    - pane은 00:10Z에 닫았다. 창 반납은 `msg_d03abe67bd1e`, 리드의 0 확인은 `lead-window-return-check-01.txt`다.
+  - 실패 2건은 36번을 8칸으로 얼려 둔 Core 보존 표 두 행이다(`CharacterMenuPacketFixtures.cs:72`, `CharacterLoadResultPacketTests.cs:73`). 메인이 귀속에 동의했다(`msg_8dd18145aa72`). impl-03(신규 Sol max)이 그 두 행과 v23 주석만 고친다. 재시험 창은 Content U3 창(00:12Z~00:55Z) 뒤 메인이 연다.
+  - Content 소유 `DungeonClearTestWorld.ViewOf`(칸 0~7만 셈, 지금 실패 아님)는 Content 리드에 물었다(`msg_e6d433cf9c2c`). 동의하면 impl-03에 넣고, 아니면 기록만 한다.
+
 - **다음 세션 첫 순서:** 메인에 2단계 나머지 실행 창을 청하고, 새 `[Core Sol]` 구현자(신규 Sol max)를 `impl-02` 계약으로 연다. 이 pane의 구현자는 재사용하지 않는다.
   - impl-02가 할 일은 다음 순서다.
     1. `sync-wsl.sh sync`·`build`를 다시 돈다(복제본은 v23 빌드 상태다. 창 8 계획을 거쳤다면 v22일 수 있다).
@@ -34,6 +46,16 @@
 - Run `run_ee7c33fd5873`, 리드 `[Core 리드 Opus]`, Claude 대화 ID `396a3a4c-061f-46a4-94cb-a8cbce46f7a0`. branch `feat/inventory-24-slots-20261101`(base `58c8d4cb9b8a34d66389d5573797e07564c6fa7a`, upstream 없음, 원격에 올리지 않음). 근거 폴더는 `.backups/verification/2026-11-01-inventory-24-slots/`다.
 
 ## 적용 중인 사용자 결정
+
+### 2026-11-01 결정 100 A·101 A·102 A — 창 높이, Gardener, 선행 시험 작성자
+
+메인 `msg_cf4fa335afea`(2026-10-31T23:55:02Z)가 전달한 사용자 원문이다. 메인 pane에서 Enter로 제출됐다.
+
+> 대시보드 결정 응답: 1) 100 - 인벤토리 24칸(4열×6줄) 창 높이를 키울지(칸 81px), 지금 높이 720px를 지킬지 → A 창을 키운다(칸 81px) · 2) 101 - 목표 종료 정리 점검 세션(Gardener)을 앞으로도 Codex Sol max로 열지, 정본대로 Claude Opus로 돌릴지 → A Codex Sol max 유지 · 3) 102 - 「작업자를 Codex로」에 선행 시험 작성자도 넣을지(지금 해석), 구현자만으로 좁힐지 → A 시험 작성자 포함(대신 Astra로)
+
+- 100 A는 Art 격자 창의 크기다. Core는 화면을 고치지 않는다.
+- 메인 해석 101 A: 목표 종료 Gardener는 신규 `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode`로 연다.
+- 메인 해석 102 A: 선행 시험 작성자는 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`, 태그 `[Core 시험 Astra]`다. 구현자는 신규 Sol max `[Core Sol]` 그대로다. 이미 떠 있는 impl-02는 바꾸지 않는다.
 
 ### 2026-11-01 결정 99 C — 오늘은 여기까지 정리
 
