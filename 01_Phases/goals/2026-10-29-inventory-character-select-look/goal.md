@@ -2,15 +2,15 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-11-01, PR292 첫 문서 실사 NOT PASS 뒤 수정, 새 문서 실사 전
+### 현재 재개 카드 — 2026-11-01, PR292 재실사 v2 NOT PASS 뒤 둘째 수정, 재실사 v3 전
 
-**다음 첫 일:** PR5 종료 기록 [PR292](https://github.com/bass131/dawnholder-server/pull/292)의 새 문서 실사다. 첫 문서 실사(신규 Astra, task_00984efc3feb)는 NOT PASS, 결함 7건이었다(아래 「PR292 문서 실사 — NOT PASS와 수정」). 리드가 문서 결함 4건을 고치고, 메인 처분(`msg_ad79455eb3b9` 1 A·2 A)을 그 절에 적었다. 이 수정을 push한 head를 대상으로 새 신규 Astra 검증자(`[Art 검증자]`, gpt-6-astra xhigh, Fast 끔, 새 세션)의 문서 실사 계약을 쓴다. 계약 틀은 첫 실사 계약 `closeout-01/pr5-doc-verify-contract-v1-head.md`다. 그 뒤 순서는 merge-tree 대조 → 메인 병합 준비 보고 → 사용자 승인·메인 병합 → 메인 R-8이다(메인 `msg_c7a0484439f0`·`msg_e1d856276e79`). 이어지는 일은 BACKLOG 두 행이다. 인벤토리 4열 아이콘 격자 `inventory-icon-grid`는 R-8 뒤 새 Art 리드가 범위 초안 v6으로 연다. 버튼 조각 대비 `bright-button-piece-contrast`(75 A)는 리셋 뒤에 연다.
+**다음 첫 일:** PR5 종료 기록 [PR292](https://github.com/bass131/dawnholder-server/pull/292)의 재실사 v3이다. 첫 문서 실사(신규 Astra, task_00984efc3feb)는 NOT PASS, 결함 7건이었다(아래 「PR292 문서 실사 — NOT PASS와 수정」). 재실사 v2(신규 Astra, task_8a1d36a8a22f)는 NOT PASS, 결함 4건이었다(아래 「PR292 문서 재실사 v2 — NOT PASS와 수정」). 리드가 둘째 수정으로 문서 결함 2건을 고치고, 메인 처분 `msg_2e330989c0f5`(1) A·2) A)와 `/dev/null` 반복을 그 절과 다음 절에 적었다. 이 수정을 push한 head를 대상으로 새 신규 Astra 검증자(`[Art 검증자]`, gpt-6-astra xhigh, Fast 끔, 새 세션)의 재실사 v3 계약을 쓴다. 계약 틀은 v2 계약 `closeout-01/pr5-doc-verify-contract-v2-head.md`다. v3에서 절차 결함이 또 나오면, 처분을 묻기 전에 이 PR을 「기록으로 닫을 것 목록 + 문서 결함 0」으로 끝낼 수 있는지 먼저 메인에 보고한다(메인 `msg_2e330989c0f5`). 그 뒤 순서는 merge-tree 대조 → 메인 병합 준비 보고 → 사용자 승인·메인 병합 → 메인 R-8이다(메인 `msg_c7a0484439f0`·`msg_e1d856276e79`). 이어지는 일은 BACKLOG 두 행이다. 인벤토리 4열 아이콘 격자 `inventory-icon-grid`는 R-8 뒤 새 Art 리드가 범위 초안 v6으로 연다. 버튼 조각 대비 `bright-button-piece-contrast`(75 A)는 리셋 뒤에 연다.
 
 | 항목 | 현재 |
 |---|---|
-| 상태 | PR1~PR4는 병합됐다. 완료조건 11의 독립 검증 PASS는 채우지 못했다. 사용자 결정 94 A로 PR4 절차 결함 6건을 기록으로 닫고 PR290을 병합했다(아래 「완료조건 대조 — 종료」). PR5 PR292는 열려 있다. 첫 문서 실사 NOT PASS(결함 7건) 뒤 수정을 넣었고, 새 문서 실사 전이다. |
+| 상태 | PR1~PR4는 병합됐다. 완료조건 11의 독립 검증 PASS는 채우지 못했다. 사용자 결정 94 A로 PR4 절차 결함 6건을 기록으로 닫고 PR290을 병합했다(아래 「완료조건 대조 — 종료」). PR5 PR292는 열려 있다. 첫 문서 실사 NOT PASS(결함 7건)와 재실사 v2 NOT PASS(결함 4건) 뒤 수정을 넣었고, 재실사 v3 전이다. 이번 둘째 수정이 이 PR에서 goal A의 세 번째 수정이다. |
 | 병합 | PR1 [PR275](https://github.com/bass131/dawnholder-server/pull/275) `dc66b77e`, PR2 [PR279](https://github.com/bass131/dawnholder-server/pull/279) `7bc75898`, PR3 [PR287](https://github.com/bass131/dawnholder-server/pull/287) `6f5655df`, PR4 [PR290](https://github.com/bass131/dawnholder-server/pull/290) `b8631ccb`. 같은 worktree의 창 배치 goal PR284는 `a0195c84`다. |
-| 열린 결정 | 메인·사용자 결정 대기는 없다. PR292 병합 승인은 새 문서 실사 뒤 요청한다. 마지막으로 받은 메인 결정은 `msg_ad79455eb3b9`다. 1 A는 절차 결함 #PR5D-05~07을 원 위반 그대로 기록하고 닫음, 2 A는 생존 신호 두 구간을 미측정으로 옮겨 닫음, O3는 다음 기동 계약이 R-6을 따름이다. 그 전 `msg_e1d856276e79`(1 A 생존 신호 이유 미측정 구간을 그대로 닫음, 2 A 6줄 캡처는 Core 24칸 PR 병합 뒤 격자 goal이 찍음)도 그대로다. 11-01 사용자 결정 100 A·101 A·102 A(`msg_da3be91ab030`)는 아래 「적용 중인 사용자 결정」에 적었다. |
+| 열린 결정 | 메인·사용자 결정 대기는 없다. PR292 병합 승인은 재실사 v3 뒤 요청한다. 마지막으로 받은 메인 결정은 `msg_2e330989c0f5`다. 1) A는 #PR5R-01, 2) A는 #PR5R-03을 원 위반 그대로 기록하고 닫음이다. 같은 메시지에 출력·오류를 `/dev/null`로 버리지 않는 지시와 수정 횟수 체크포인트가 함께 왔다. 그 전 `msg_ad79455eb3b9`(1 A 절차 결함 #PR5D-05~07을 원 위반 그대로 기록하고 닫음, 2 A 생존 신호 두 구간을 미측정으로 옮겨 닫음, O3 다음 기동 계약이 R-6을 따름)도 그대로다. 그보다 전 `msg_e1d856276e79`(1 A 생존 신호 이유 미측정 구간을 그대로 닫음, 2 A 6줄 캡처는 Core 24칸 PR 병합 뒤 격자 goal이 찍음)도 그대로다. 11-01 사용자 결정 100 A·101 A·102 A(`msg_da3be91ab030`)는 아래 「적용 중인 사용자 결정」에 적었다. |
 | Core 24칸 계약 | Core 제안 `msg_5254b764b105`, Art 회신 `msg_bacd33a804f4`, Core 동의 `msg_6d95ee3a3f84`, Core 참고 `msg_11d7daa692d2`. 병합 순서는 Art 격자 PR이 먼저다. Art 격자 PR은 `InventorySnapshotHandler`·`InventorySnapshotState`를 쓰지 않는다(Core가 맡음). 한 곳에 모은 글은 격자 초안 v6의 「Core 24칸 계약 — 확정」이다. |
 | 근거 폴더 | `.backups/verification/2026-10-29-inventory-character-select-look/`. 종료 기록 조립·점검은 그 아래 `closeout-01/`이다. |
 | R-8 노트 | 3판 `.backups/verification/2026-10-29-inventory-character-select-look/r8-record-notes-pr4-verify-1031-03.md` |
@@ -900,7 +900,7 @@ Art goal 계열에서 같은 종류가 여덟 번 났다(PR275 head `9bab98a0` �
 | #PR4V-03 | 캡처의 준비 순서(Preflight 전에 새 파일), 허용 밖 읽기 git, 원시 기록 | 캡처 실행자 |
 | #PR4V-04 | 구현자의 `cd`와 stdout 버림 | 구현자 |
 | #PR4V-05 | 선행 시험의 초기 receipt 누락 | 선행 시험 작성자 |
-| #PR4V-06 | 검증자가 설치 실패(exit 1)를 확인하지 않고 「복사했습니다」로 잘못 보고했고(`msg_b3962d5104a7`), 새 시험이 없는 채로 첫 V-R을 돌렸다. 그 첫 R의 1 Passed는 음성 대조가 아니어서 무효로 제외했다. 시작 읽기 일부의 cmd/exit 파일, 첫 heartbeat의 명령/exit 원천, 바깥 wrapper 저장(`chronology-refined-01` EEXIST)은 완전 receipt가 없다. 스스로 44초 뒤 정정했다(`msg_7782e26d4449`). 원문은 PR4 판정 `pr4-verify-01/verdict.md` :26·:62~70이다. 이 행도 다른 다섯과 같이 94 A로 기록 처분됐다. 이후의 유효 설치·실행은 이 처분과 따로 아래 「실행」 줄에 있다 | 검증자 |
+| #PR4V-06 | 검증자가 설치 실패(exit 1)를 확인하지 않고 「복사했습니다」로 잘못 보고했고(`msg_b3962d5104a7`), 새 시험이 없는 채로 첫 V-R을 돌렸다. 그 첫 R의 1 Passed는 음성 대조가 아니어서 무효로 제외했다. 시작 읽기 일부의 cmd/exit 파일, 첫 heartbeat의 명령/exit 원천, 바깥 wrapper 저장(`chronology-refined-01` EEXIST)은 완전 receipt가 없다. 스스로 44초 뒤 정정했다(`msg_7782e26d4449`). 원시 누락에는 하나가 더 있다. 최초 harness 생성의 SyntaxError는 남은 원천이 자기 신고 파일과 도구 원천뿐이고, 최초 완전 receipt가 아니다(PR4 판정 :68). 원문은 PR4 판정 `pr4-verify-01/verdict.md` :26·:62~70이다. 이 행도 다른 다섯과 같이 94 A로 기록 처분됐다. 이후의 유효 설치·실행은 이 처분과 따로 아래 「실행」 줄에 있다 | 검증자 |
 
 - 실행: EditMode 전체 1670 통과. PlayMode 153 통과·23 실패·22 건너뜀이고 기존 case의 결과 변화는 0이다. 음성 대조로 밝은 폴더에 PNG 한 장을 더 넣으면 폴더 시험이 「34 기대 / 35 실제」로 실패했고, 되돌린 뒤 폴더 목록 전후가 같다. 설치 exit 0 시각 16:27:33.6221119Z가 Unity 시작 16:27:41.2863404Z보다 앞선다(메인 조건 1, `pr4-verify-01/negative/install-02.json`·`pr4-verify-01/raw/final-pins-01.json`). 실제 경로는 Town 입장 → Escape → 일시정지 메뉴 → 실제 포인터로 Resume → 메뉴 닫힘·timeScale 1이다.
 - PlayMode 실패 23건(메인 `msg_c7a0484439f0` 3항): 이름 집합이 PR286의 「대상 23건」 원시(창 배치 goal 구현 F results.xml `9aad93d1…5751`)와 같다(same_set true, `pr4-playmode-failures-vs-pr286-names-1031-03.txt`). 묶음 대조는 6·3·2·3·7·2다(`pr4-playmode-failures-vs-pr286-groups-1031-02.txt`). PR4 branch 기준 merge-base는 `2d3f65d7`이고 PR286 merge `9cc80a9d`는 PR4 head에 없고 origin/main에 있다(`pr286-facts-1031-01.txt`).
@@ -988,6 +988,69 @@ Art goal 계열에서 같은 종류가 여덟 번 났다(PR275 head `9bab98a0` �
   - 검증 중 inbox 엿보기 넷과 메인 화면 확인 하나를 인라인 `node -e`로 화면에만 띄운 5건. 출력 인용 0이다(자기 감사 `audit-lead-inline-evidence-1031-87.txt`).
   - 수정 중 방향을 잡으려고 화면에만 띄운 인라인 조회가 있다. 값 없는 `node -e` 하나, merge commit 목록, 스크립트 SHA 목록, base BACKLOG의 옛 참조 수다. 기록의 값은 모두 저장 스크립트로 다시 쟀다(위 각 출력 파일). 자기 감사 -88(`audit-lead-inline-evidence-1031-88.txt`)은 파일을 쓰는 인라인 조회만 세서 0건이다.
   - 저장 스크립트 `measure-ui-entry-points-1101-02.mjs`의 화면 출력을 `/dev/null`로 보냈다. 같은 내용은 스크립트가 출력 파일에 썼고 stderr도 저장했다.
+
+### PR292 문서 재실사 v2 — NOT PASS와 수정
+
+- 재실사: 신규 `[Art 검증자]` task_8a1d36a8a22f(dispatch `ctx_294498e6737d`, gpt-6-astra xhigh, Fast 끔). 첫 화면은 v0.166.0이고 업데이트 창·선택창은 없었다(`closeout-01/pr5-doc-verify-v2-launch-screen-01.tail.txt`, rollout `closeout-01/pr5-doc-verify-v2-launch-rollout-check-01.txt`). 대상 head는 `a48eb1e1`이고, 계약은 `closeout-01/pr5-doc-verify-contract-v2.md`(sha256 `c202b85b…c396`, `closeout-01/pr5-doc-verify-contract-v2.receipt.txt`)다. 기동 스크립트 `launch-pr5-doc-verify-v2-1101-01.sh`는 sed 복사 없이 새로 썼다.
+- 판정: worker_done `msg_7d4d56d6a997`, 원문 `closeout-01/pr5-doc-verify-02/verdict.md`(sha256 `0e361c93…f971`, `closeout-01/pr5-doc-verify-v2-verdict-sha-1101-01.txt`). **NOT PASS, 결함 4건**이다. 문서 실사 판정이고 제품 실행을 새로 판정한 것은 아니다.
+
+| 번호 | 무엇 | 귀속 | 처리 |
+|---|---|---|---|
+| #PR5R-01 | 첫 실사 수정 때 수정 산출물(생존 신호 이유 입력 둘째 판·정정 표)을 새 사전 맥락 메모보다 먼저 썼다. 리드 NOT PASS 보고의 「새 사전 메모를 먼저 쓴다」 계획과도 달랐다 | 리드 | 원 위반 그대로 기록하고 닫음(메인 1) A). 아래 「#PR5R-01의 실제 순서」 |
+| #PR5R-02 | 창 배치 goal 「생존 신호 정산」의 정정판 줄이 원래 39구간의 1 A와 새 2구간의 2 A를 나눠 적지 않았다 | 리드 기록 | 그 줄에 두 처분과 두 msg ID를 더했다. 그 goal 구간의 처분은 1 A 그대로라고 적었다 |
+| #PR5R-03 | 첫 기동 스크립트를 sed로 만들 때 sed의 stderr를 `2>/dev/null`로 버렸다. 당시 receipt가 없고 메인 처분도 없었다 | 리드 | 원 위반 그대로, 남은 원천과 한계를 함께 기록하고 닫음(메인 2) A). 아래 「#PR5R-03의 남은 원천과 한계」 |
+| #PR5R-04 | 위 #PR4V-06 행이 PR4 판정 :68의 최초 harness SyntaxError 완전 receipt 부재를 빠뜨렸다. #PR5D-01의 잔여다 | 리드 기록 | 그 행에 한 문장을 더했다. 94 A 처분과 이후 유효 실행의 분리는 그대로다 |
+
+- 메인 처분 `msg_2e330989c0f5`(2026-11-01T01:30:44Z, 메인 결정이며 사용자 결정 아님, 사용자 보고 대상)
+  - 1) A: 「#PR5R-01(수정 산출물을 사전 메모보다 먼저 씀)은 원 위반 그대로 종료 기록에 적고 닫는다. 지난 쓰기 순서라 소급 복구가 안 된다.」
+  - 2) A: 「#PR5R-03(sed 실패 stderr를 버림)도 원 위반 그대로, 남은 원천(0바이트 파일·사후 추출)과 한계를 함께 적고 닫는다.」
+  - 수정 횟수: 「다음 수정이 이 PR goal A의 세 번째 수정이다. 수정 3회를 넘기면 체크포인트를 알린다는 네 말대로 해라. 재실사 v3에서 또 절차 결함이 나오면 처분을 묻기 전에, 이번 PR을 「기록으로 닫을 것 목록 + 문서 결함 0」으로 끝낼 수 있는지 먼저 보고해라.」 이번 수정이 그 세 번째다. 앞의 두 수정은 `8e989a8b`와 `a48eb1e1`이다.
+  - 같은 메시지의 `/dev/null` 지시는 아래 「반복 발생 — 명령 출력을 `/dev/null`로 버림」에 적었다.
+- #PR5R-01의 실제 순서(시각은 각 저장 출력)
+  - 메인 처분 `msg_ad79455eb3b9` 도착 00:34:14Z(`closeout-01/pr5-doc-verify-v2-message-bodies-01.txt`)
+  - UI 표 누락 행 측정 `closeout-01/ui-table-missing-rows-1101-01.txt` 00:35:56.446Z(그 파일 첫 줄)
+  - 이유 입력 둘째 판 `closeout-01/liveness-reasons-1101-02.json` 00:36:59.507Z(`closeout-01/liveness-reasons-1101-02.receipt.txt`)
+  - 정정 표 `closeout-01/liveness-table-1101-03.md` 00:36:59.630Z(그 파일 첫 줄 주석)
+  - 첫 수정의 사전 맥락 메모 `closeout-01/pr5-fix-context-1101-01.md`의 시계 00:39:55.651Z(`closeout-01/closeout-state-1101-06.txt`)
+  - 그 메모 :8이 이 순서를 밝혔지만, 판정 :61대로 공개가 사전 의무를 채우지는 않는다. 메모 시각과 기존 원시는 고치지 않았다.
+  - 이번 둘째 수정은 새 사전 메모 `closeout-01/pr5-fix2-context-1101-01.md`를 수정 쓰기와 수정용 측정보다 먼저 썼다. 그 메모가 인용한 시계는 01:31:24.815Z다(`closeout-01/closeout-state-1101-08.txt`).
+- #PR5R-03의 남은 원천과 한계
+  - 원 위반: 2026-11-01T00:04:19.121Z의 명령이 sed 원본 경로를 잘못 줬고, sed의 stderr를 `2>/dev/null`로 버렸다. 명령·exit·stdout·stderr를 파일로 남기지 않았다.
+  - 남은 원천 하나는 0바이트 `closeout-01/launch-pr5-doc-verify-1101-01.sh`다. 지우지 않았고, 크기 0은 판정 :77과 리드 점검 `closeout-01/pr5-fix2-citations-1101-02.txt`에 있다.
+  - 남은 원천 둘은 리드 대화 기록의 도구 기록이다. 저장 스크립트 `extract-transcript-tool-calls-1101-01.mjs`로 `closeout-01/transcript-sed-launcher-call-1101-01.txt`에 옮겼다. 명령 글은 남았고, 결과에는 같은 명령 안 `ls`의 「No such file or directory」만 있다.
+  - 한계: 이 추출은 사후 추출이고 당시 receipt가 아니다. sed의 stderr와 exit는 어디에도 남지 않아 되살릴 수 없다. 성공한 새 기동 스크립트 `launch-pr5-doc-verify-1101-02.sh`를 원 실패의 원시로 대신 쓰지 않는다.
+- 비차단 관찰(판정 :219~221)
+  - O-R1: BACKLOG `inventory-icon-grid` 행이 길다. 격자 초안 v6 :3~4에는 역사 상태 v5의 명령형 문장이 남았다. 후속 가독성 정리로 두고, v6은 고정본이라 고치지 않는다.
+  - O-R2: 위 #PR4V-06 셀이 길다. 짧은 목록으로 나누는 것은 선택 서식 대안이라, 이번에는 필요한 한 문장만 더했다.
+  - O-R3: 점검 helper가 검사 대상 commit과 미커밋 여부를 출력에 함께 보이지 않는다. helper 개선 후보로 둔다.
+- 다음 계획 후보(판정 :64): #PR5R-01은 기존 BACKLOG `contract-context-check`에서 수정 입력·파생 표까지 첫 대상 쓰기로 잇는 관문을 검토하는 후보다. #PR5R-03의 후보는 아래 반복 절에 있다. 이 PR에서 BACKLOG는 고치지 않는다. 메인 지시는 goal 기록이고, BACKLOG를 고치면 이 PR의 실사 범위가 넓어지기 때문이다.
+- 질문과 답
+  - q1 `msg_49f0dcad5ddd`(`lead-wait-488-messages.txt`) → `msg_b90058951402`(`closeout-01/reply-pr5-doc-verify-v2-q1-1101-01-body.txt`)
+  - q2 `msg_c7ff881d360a`(`lead-wait-489-messages.txt`) → `msg_fd55386e5cb5`(`closeout-01/reply-pr5-doc-verify-v2-q2-1101-01-body.txt`)
+  - q3 `msg_f2c162d28edc`(`lead-wait-490-messages.txt`) → `msg_dfc7d54ca984`(`closeout-01/reply-pr5-doc-verify-v2-q3-1101-01-body.txt`)
+  - 사건 순서는 R-8 노트 3판 끝 절에 있다. 그 절의 「질문은 `lead-wait-488/490/491-messages.txt`」는 틀린 이름이고, 바른 이름은 위 세 줄이다(`closeout-01/pr5-fix2-citations-1101-02.txt`). R-8 노트에는 정정 줄을 덧붙인다.
+- 검증자 정산: 닫기 전 화면은 빈 프롬프트였다(`closeout-01/pr5-doc-verifier-v2-screen-before-close-1101-01.tail.txt`). 닫기 전 셸에서 검증자 몫은 0이다(`closeout-01/pr5-doc-verifier-v2-shells-before-close-1101-01.txt`). pane을 닫았다(ptyKilled true `closeout-01/pr5-doc-verifier-v2-pane-close-fields-1101-01.txt`, 닫은 뒤 handle 0회 `closeout-01/pr5-doc-verifier-v2-close-handle-count-1101-01.txt`).
+- 생존 신호(`ctx_294498e6737d`): inbox 엿보기 -08~-12 다섯을 넣어 신호 10개, 최대 간격 282초, 300초 초과 0이다(`closeout-01/liveness-pr5-doc-verify-v2-1101-01.summary.txt`).
+- 이 구간의 리드 실수(값은 기록에 쓰지 않았다)
+  - inbox 엿보기 -06은 없는 `--run` 플래그로, -07은 터미널 한정 조회로 Run 메시지를 못 봤다. -08부터 예전 명령으로 맞췄다. 두 실패 출력(`closeout-01/lead-inbox-peek-1101-06.*`·`-07.*`)은 지우지 않았다.
+  - 엿보기 -11의 `/dev/null`은 아래 반복 표의 3번이다.
+  - 자기 감사 -91은 flagged 0이다(`audit-lead-inline-evidence-1031-91.txt`).
+
+### 반복 발생 — 명령 출력을 `/dev/null`로 버림
+
+- 메인 지시 `msg_2e330989c0f5`: 「출력을 /dev/null로 버리는 일이 이 세션에서 세 번째다(기동 sed, 엿보기 -11 화면 출력, 이번 #PR5R-03). CLAUDE.md 「우편함 대기」와 같은 취지로, 앞으로 어떤 명령도 출력·오류를 /dev/null로 버리지 말고 파일로 남겨라. 이번 goal에 반복으로 기록하라.」
+- 11-01 재개 세션의 실제 발생은 셋이다. 메인이 적은 「기동 sed」와 「#PR5R-03」은 같은 한 건이다. 대신 UI 스크립트의 화면 출력이 한 건 더 있다. 이 차이는 메인 보고에 적는다.
+
+| 번 | 언제(리드 대화 기록) | 무엇 | 버린 출력 | 남은 원천 |
+|---|---|---|---|---|
+| 1 | 00:04:19.121Z | 첫 기동 스크립트 sed(#PR5R-03) | sed의 stderr | 위 「#PR5R-03의 남은 원천과 한계」. 유일한 실패 원시가 사라졌다 |
+| 2 | 00:42:05.174Z | 저장 스크립트 `measure-ui-entry-points-1101-02.mjs` 실행 | 화면 출력 | 같은 본문을 스크립트가 `closeout-01/ui-entry-points-1101-02.txt`에 먼저 썼고 stderr도 저장했다. 판정 :226은 유일 원시의 유실로 보지 않았다 |
+| 3 | 01:21:29.794Z | inbox 엿보기 -11의 경로 읽기 스크립트 `read-message-routing-1101-01.mjs` | 화면 출력 | 전체 출력은 `closeout-01/lead-inbox-peek-1101-11-routing.txt`에 있다 |
+
+- 시각과 명령의 원천은 저장 스크립트 `extract-transcript-tool-calls-1101-01.mjs`의 사후 추출이다. 1번은 `closeout-01/transcript-sed-launcher-call-1101-01.txt`, 2번은 `closeout-01/pr5-fix2-transcript-ui-entry-calls-1101-01.txt`, 3번은 `closeout-01/pr5-fix2-transcript-peek11-calls-1101-01.txt`다.
+- 이 goal의 앞선 같은 꼴은 세 가지다. 리드가 우편함 대기 출력을 버리려다 hook에 막힌 일(위 「운영 교정 첫 발생 — 리드 우편함 대기 출력 버림」), 리드의 내용 없는 인라인 실행 두 번(위 「운영 교정 반복 — 저장 안 한 분석 실행」 끝), PR4 구현자의 wrapper stdout(#PR4V-04, PR4 판정 :52)이다. 그래서 이 goal에서는 반복이다.
+- 교정 층: 가장 높은 층은 세션 hook이다. 지금 hook `session-guard:mailbox-output-loss`는 우편함 대기만 막는다. hook을 넓히는 일은 설정 변경이라 이 goal의 쓰기 범위 밖이다(AGENTS 「공학 조건」). 그래서 리드 도구 층으로 막는다. 이 리드는 메인 지시(01:30:44Z) 뒤 어떤 명령의 출력·오류도 `/dev/null`로 버리지 않는다. 값을 만드는 명령의 출력은 근거 폴더 파일로 받는다.
+- 반복 규칙 후보: 판정 :84가 #PR5R-03의 다음 계획 후보로 기존 BACKLOG `saved-analysis-run-rule`을 들었다. 실패 stderr·exit를 저장하기 전에 다음 단계와 폐기를 막는 실행 wrapper다. 이 반복도 그 후보에 잇는다. 이 PR에서는 BACKLOG를 고치지 않는다(이유는 위 「다음 계획 후보」 줄). 정본 반영은 메인과 Rules가 정한다.
 
 ### 완료조건 대조 — 종료
 

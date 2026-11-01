@@ -376,7 +376,7 @@
 
 - 이 goal 단계의 생존 신호는 단계마다 정산하지 않았다. 외관 goal의 Gardener 반환 GR-03을 처리하면서 정본 helper로 함께 정산했다. 대상은 선행 시험, 구현, 독립 검증, 캡처 네 단계다(`art-active/.backups/verification/2026-10-29-inventory-character-select-look/closeout-01/liveness-settlement-closeout-01.md`).
 - 선행 시험의 301~303초 구간들은 heartbeat 루프가 `sleep 300` 뒤에 보내는 구조 탓이다(`placement-red-01/scripts/heartbeat-loop.sh`). 나머지 초과 구간은 이유 미측정이다. 구간과 초는 위 정산의 표에 있다. 미측정 구간은 메인 결정 1 A(`msg_e1d856276e79`)로 그대로 닫았다.
-- 정정판: 외관 goal PR292 문서 실사(#PR5D-02)로 같은 폴더에 정정판 `closeout-01/liveness-settlement-closeout-02.md`를 만들었다. 바뀐 것은 외관 PR3 둘째 검증의 두 구간뿐이다. 이 goal 네 단계의 구간과 이유는 첫 판과 같다(두 표의 본문에서 바뀐 줄은 그 Dispatch 행과 끝 집계 주석 둘, `closeout-01/liveness-table-02-vs-03-1101-01.txt`). 전체 집계는 이유가 있는 구간 32, 이유 미측정 41이 됐다(정정 표 `closeout-01/liveness-table-1101-03.md` 끝 주석).
+- 정정판: 외관 goal PR292 문서 실사(#PR5D-02)로 같은 폴더에 정정판 `closeout-01/liveness-settlement-closeout-02.md`를 만들었다. 바뀐 것은 외관 PR3 둘째 검증의 두 구간뿐이다. 이 goal 네 단계의 구간과 이유는 첫 판과 같다(두 표의 본문에서 바뀐 줄은 그 Dispatch 행과 끝 집계 주석 둘, `closeout-01/liveness-table-02-vs-03-1101-01.txt`). 전체 집계는 이유가 있는 구간 32, 이유 미측정 41이 됐다(정정 표 `closeout-01/liveness-table-1101-03.md` 끝 주석). 미측정 41의 처분은 둘로 나뉜다. 원래 39구간은 메인 결정 1 A(`msg_e1d856276e79`)로, 새로 미측정이 된 2구간은 메인 결정 2 A(`msg_ad79455eb3b9`)로 미측정 그대로 닫았다. 새 2구간은 외관 goal PR3 둘째 검증(`ctx_e2ded6bce178`)의 것이고, 이 goal 구간의 처분은 위 줄의 1 A 그대로다.
 
 ### 완료조건 대조 — 종료
 
