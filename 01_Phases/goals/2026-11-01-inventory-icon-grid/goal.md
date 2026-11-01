@@ -2,13 +2,13 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-11-01 독립 검증 PASS와 결과 기록 commit 뒤, 좁은 재실사 전
+### 현재 재개 카드 — 2026-11-01 좁은 재실사 NOT PASS(#GRIDR-01)와 고침 commit 뒤, 두 번째 좁은 재실사 전
 
-**다음 첫 일:** 바뀐 줄만 보는 좁은 재실사 계약을 써서 메인 승인을 받은 뒤 새 `[Art 검증자]`를 띄운다(아래 「작업 방식」). 대상은 아래 「독립 검증 — 2026-11-01」의 「좁은 재실사로 넘길 것」이다. PASS 뒤 그때의 main으로 merge-tree를 다시 재고(메인 `msg_31e4dfa1781f`) 메인에 병합 승인 요청을 올린다. 병합은 사용자가 「병합 승인: PR<번호> head <40자>」를 제출한 뒤 메인이 한다. PR1 병합 뒤에는 최신 main에서 PR2 branch를 만든다. 첫 commit은 PR2 goal 범위 patch다. 2판(근거 폴더 `pr2-goal-scope-02.patch`, 메인 보고 `msg_80b6ca150a0b`)은 이 결과 기록 앞의 goal 기준이라, 그때의 goal에 맞춰 다시 만든다(메인 `msg_f1139600734d`). 병합 순서는 Art PR1 → Core 24칸 → Art PR2 → Content 녹화 빌드다(메인 `msg_1357f45b9d35`). 작업자가 일하는 동안 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모 2(`art-lead-context-1101-02.md`)에 쌓는다. 메모 1은 검증 계약에 고정됐고 끝 정정 절만 더했다. 리드 시험 계약에는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」를 넣는다(메인 `msg_484ea2fa03bb`, 규칙 정본 반영 전까지).
+**다음 첫 일:** 고침 commit에서 바뀐 줄만 보는 두 번째 좁은 재실사 계약을 써서 메인에 보고한 뒤 새 `[Art 검증자]`를 띄운다(아래 「작업 방식」). 대상은 아래 「좁은 재실사 — 2026-11-01」의 「두 번째 좁은 재실사로 넘길 것」이다. PASS 뒤 그때의 main으로 merge-tree를 다시 재고(메인 `msg_31e4dfa1781f`) 메인에 병합 승인 요청을 올린다. 병합은 사용자가 「병합 승인: PR<번호> head <40자>」를 제출한 뒤 메인이 한다. PR1 병합 뒤에는 최신 main에서 PR2 branch를 만든다. 첫 commit은 PR2 goal 범위 patch다. 2판(근거 폴더 `pr2-goal-scope-02.patch`, 메인 보고 `msg_80b6ca150a0b`)은 이 결과 기록 앞의 goal 기준이라, 그때의 goal에 맞춰 다시 만든다(메인 `msg_f1139600734d`). 병합 순서는 Art PR1 → Core 24칸 → Art PR2 → Content 녹화 빌드다(메인 `msg_1357f45b9d35`). 작업자가 일하는 동안 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모 2(`art-lead-context-1101-02.md`)에 쌓는다. 메모 1은 검증 계약에 고정됐고 끝 정정 절만 더했다. 리드 시험 계약에는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」를 넣는다(메인 `msg_484ea2fa03bb`, 규칙 정본 반영 전까지).
 
 | 항목 | 현재 |
 |---|---|
-| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`). 선행 시험 RED commit `219f7cdb`, main 받기 `9e883317` 뒤 구현 v1을 commit했다(`4eddf759`, 아래 「구현 v1 — 2026-11-01」). F PlayMode 실패 1건은 시험 결함이었고, 시험 고침 commit `7d9d4ff5` 뒤 PlayMode 전체는 실패 0이다(아래 「시험 고침 v1 — 2026-11-01」). 사용자 확인 캡처 세 실행이 모두 통과했고 상세 창 캡처 case 둘을 commit했다(`5aeb415b`, 아래 「사용자 확인 캡처 v1 — 2026-11-01」). 사용자 그림 확인은 112 「OK」다. 강 등급 독립 검증은 head `47cbdcac`에서 PASS다(아래 「독립 검증 — 2026-11-01」). 결과 기록 commit과 독립 시험 채택 commit 뒤 좁은 재실사 전이다. |
+| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`). 선행 시험 RED commit `219f7cdb`, main 받기 `9e883317` 뒤 구현 v1을 commit했다(`4eddf759`, 아래 「구현 v1 — 2026-11-01」). F PlayMode 실패 1건은 시험 결함이었고, 시험 고침 commit `7d9d4ff5` 뒤 PlayMode 전체는 실패 0이다(아래 「시험 고침 v1 — 2026-11-01」). 사용자 확인 캡처 세 실행이 모두 통과했고 상세 창 캡처 case 둘을 commit했다(`5aeb415b`, 아래 「사용자 확인 캡처 v1 — 2026-11-01」). 사용자 그림 확인은 112 「OK」다. 강 등급 독립 검증은 head `47cbdcac`에서 PASS다(아래 「독립 검증 — 2026-11-01」). 결과 기록 commit과 독립 시험 채택 commit 뒤 좁은 재실사는 head `52fa3286`에서 NOT PASS다. 기록 결함 #GRIDR-01 하나이고 제품 결함은 0이다(아래 「좁은 재실사 — 2026-11-01」). 그 줄을 고친 commit 뒤 두 번째 좁은 재실사 전이다. |
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), 대화 ID `c92c0adb-250c-48fd-b4cc-8d6c85df4386`. 회신 주소는 `run:run_6687e0512b2c`다. |
 | branch | `feat/art-inventory-icon-grid-20261101`이다. origin/main `ffe7f983b96eda8002a27169b3e8b7cb5eb32c72`(PR292 병합)에서 만들었다. RED commit 뒤 origin/main `3bb76772`(PR268 병합)을 받았다. 받기 commit은 `9e88331743064b390f6ab1d238dc173825a4bd23`이고 충돌은 0이다(근거 폴더 `main-merge-1101-01.txt`). |
 | 관계 | Core 인벤토리 24칸 goal(`core-active/01_Phases/goals/2026-11-01-inventory-24-slots/goal.md`, Core PR 때 main에 들어간다)이 패킷·서버·공유 칸 수를 바꾼다. 병합 순서는 이 goal의 격자 PR이 먼저다(아래 「Core 24칸 계약 — 확정」). |
@@ -218,7 +218,7 @@
 - [x] 구현과 전체 시험
 - [x] 사용자 확인 캡처(촬영. 사용자 그림 확인 112 「OK」)
 - [x] 강 등급 독립 검증(PASS)
-- [>] 결과 기록 commit 뒤 좁은 재실사
+- [>] 결과 기록 commit 뒤 좁은 재실사(첫 번째 NOT PASS #GRIDR-01, 고침 commit 뒤 두 번째 전)
 - [ ] 격자 PR 병합
 - [ ] 24칸 뒤 6줄 캡처
 - [ ] 결과 기록 PR 병합
@@ -426,7 +426,7 @@
   - O2 `UiWindowLiveCaptureTests.cs:240`·`:291`: 새 캡처 case 둘의 stillShown 람다 약 30줄이 겹친다. 6줄 캡처 계약에서 같은 파일을 고칠 때 판단한다.
   - O3 상세 창 canvas 5와 HUD 10: HUD 위에 그리라는 요구는 없다. 그림은 사용자 112 「OK」다.
   - O4 맵 이동 시험의 Ready 전 클릭: 칸 적중 공개 신호가 없다. 위 「남은 위험」 둘째 줄 그대로다.
-- 미검증(판정 원문): 사람 플레이, GameServer, DB, 사람 마우스·Editor GUI, 합친 main/PR207 상태의 Unity, Core 실제 24칸 통합, CI, 별도 dotnet build, 그림 품질(사용자 몫)이다.
+- 미검증(판정 원문): 사람 플레이, GameServer, DB, 사람 마우스·Editor GUI, 실화면 캡처, 합친 main/PR207 상태의 Unity, Core 실제 24칸 통합, CI, 별도 dotnet build, 그림 품질(사용자 몫)이다. 모두 독립 검증 세션이 실행하지 않은 것이다. 「실화면 캡처」는 결과 기록 commit에서 빠졌고, 아래 「좁은 재실사 — 2026-11-01」의 #GRIDR-01로 더했다.
 - 메인 처분(검증 중, 모두 A)
   - 「GRIDV-01 A」(`msg_2d6d403def3e`): 인라인 측정 출력이 goal·계약에 쓰였다. 정정 기록으로 검증을 계속하고, 결과 기록 commit에서 출처 설명을 고친 뒤 바뀐 줄만 새 독립 세션이 재실사한다. 위 각 절의 출처 괄호와 계약 인용 정정 줄이 그 고침이다.
   - 「GRIDV-01 추가 A」(`msg_7e3209a42aca`): 추가 다섯 사슬을 첫 처분에 묶는다. 리드 전수에서 같은 종류는 묻지 않고 묶고, 다르거나 재측정할 수 없는 것만 따로 묻는다. 전수 분류는 `provenance-remeasure-03/classification.tsv`이고 개수는 `provenance-remeasure-03/count-classes.txt`다.
@@ -449,3 +449,23 @@
   - 결과 기록 commit에서 바뀐 goal 줄: 출처·재측정 불가 괄호, 계약 인용 정정 줄, 사용자 그림 확인 줄, 이 절, 재개 카드와 진척 단계.
   - 리드 메모 01 끝 정정 절. 앞 280줄은 검증 계약 부록 A의 SHA256 `cd10d368…cb57` 그대로여야 한다.
   - 채택한 독립 시험 4파일. SHA256이 위 표와 같아야 한다.
+
+### 좁은 재실사 — 2026-11-01
+
+- 계약은 근거 폴더 `grid-recheck-contract-v1.md`(sha256 `43bd51d89f14006a9ec76ecc51857700e91d13a17141d09b8d6917bd8cdef399`, 조립 기록 `assemble-grid-recheck-contract-1101-01.txt`)다. 대상은 `47cbdcac..52fa3286`의 5파일과 리드 메모 01 끝 정정 절이다. Unity는 쓰지 않았다. 메인 보고는 계약 `msg_9e458c946944`, 기동 `msg_fd44c518a232`다.
+- 검증자는 새 `[Art 검증자]` gpt-6-astra xhigh다. handle `term_b8038cf9-7d92-4bd6-b228-267bb095fa01`, Task `task_f39656ddac47`, Dispatch `ctx_858821c8d03a`이다. 첫 화면에 업데이트 창·선택창이 없었고(`grid-recheck-launch-screen-01.tail.txt`), rollout으로 model·effort를 대조했다(`grid-recheck-launch-rollout-check-01.txt`).
+  - worker_done은 `msg_227dd4694f0a`(10:25:07Z, NOT PASS)다.
+  - 판정 원문은 `grid-recheck-01/verdict.md`(sha256 `77122af4264bc271d287c83759a86fb327561c1d51cbe543f74cb9cf0989c79b`)다.
+  - pane은 빈 프롬프트를 확인하고 닫았다(`recheck-screen-done-1101-01.json`, `recheck-pane-close-1101-01.json`).
+- 판정은 NOT PASS다. 기록 결함 #GRIDR-01 하나다. 제품 결함은 없고, 앞 독립 검증의 PASS를 다시 판정하지 않았다. 계약 판정 기준 아홉 가운데 5만 결함이고 나머지는 지적이 없다(판정 원문 「계약 판정 기준 1~9」).
+- #GRIDR-01: 위 「독립 검증」 절의 미검증 줄에 앞 판정 원문 `grid-verify-01/verdict.md` :140의 「실화면 캡처」가 빠졌다. 리드가 판정 원문의 목록을 옮길 때 빠뜨렸다. 검증자의 중간 통지는 `msg_0fae9c8716b2`다. 고침은 그 줄에 「실화면 캡처」를 더한 것이다. 고정 계약·앞 판정·원시는 고치지 않았다.
+- 리드 R-2 표본(`lead-r2-recheck-sample-1101-01.mjs` → `lead-r2-recheck-sample-1101-01.txt`, 10:26:26Z): 판정 원문과 모두 같다. verdict SHA256, goal :429와 앞 판정 :140의 원문, 채택 4파일의 HEAD blob SHA256, 시험 고침 계약 :1227·:1444가 RED 계약 :32·:249의 사본인 것, goal의 `grep_exit` 소비 0을 봤다.
+- 생존 신호 정산(ORCA 「생존 신호와 초과 정산」): 정본 helper `99_Tools/Orca/check-liveness.mjs`로 잰 최대 간격은 285초이고 300초 초과는 0이다(`grid-recheck-liveness-1101-01.txt`). 검증자가 자기 신고한 302.291초(`msg_2dc5ca8ba678`)는 heartbeat 호출만 센 간격이다. 정본은 그 사이의 status `msg_0fae9c8716b2`도 신호로 센다.
+- 비차단 관찰(판정 원문 O1~O3, 줄 번호는 head `52fa3286` 기준)과 리드 처리: 지금 고치지 않는다. 고칠 줄이 늘면 두 번째 재실사 범위가 커진다. 결과 기록 PR(6줄 캡처 뒤) 때 다시 본다.
+  - O1 이 파일 :289·:306: 긴 괄호 안에 출처·같음·재측정 불가·교차 근거가 함께 있다.
+  - O2 메모 01 :285: 끝 정정 절이 첫 여섯 사슬의 메모 01 :69와 `provenance-remeasure-01/correction-record.md` :27을 직접 가리키지 않는다.
+  - O3 이 파일 :412·:446: `→ .txt`와 `-02.sh`처럼 줄인 파일 이름이다.
+- 교정 층
+  - 첫 발생: 판정 원문의 미실행 목록을 goal에 옮길 때 항목 하나가 빠졌다(#GRIDR-01). 판정 원문은 앞 판정의 미실행 목록과 결과 기록의 차집합 검사로 옮길 수 있다고 적었다. 동의어는 사람이 판정한다. 이번 범위에서는 만들지 않는다.
+- 두 번째 좁은 재실사로 넘길 것
+  - 고침 commit에서 바뀐 goal 줄: 위 「독립 검증」 절의 미검증 줄, 이 절, 재개 카드, 상태 줄, 진척 단계.
