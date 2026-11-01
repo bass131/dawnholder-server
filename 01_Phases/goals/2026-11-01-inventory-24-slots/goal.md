@@ -2,7 +2,7 @@
 
 인벤토리 칸 수를 8에서 24로 늘린다. 서버가 보내는 인벤토리 snapshot(36번)과 공유 칸 수 상수를 24로 바꾸고, 클라가 받는 쪽까지 같은 PR에서 맞춘다. 화면 격자(4열 × 6줄)는 Art가 만든다.
 
-**현재 상태(2026-11-01 17:30 KST):** 1차 독립 검증(verify-01)이 계약 범위에서 통과했고 메인 R-2 대조도 일치했다. 창 8 지원을 마치고 이 branch로 돌아왔다. Art 격자 PR을 기다린다. Art PR2(HUD 골드 제거·스킬칸)가 새로 생겼고 Core 24칸 뒤에 병합한다(메인 결정). PlayMode·실제 접속·Art 시험 3건·CURRENT 줄은 격자 PR 병합 뒤 2차 좁은 재검증에서 본다.
+**현재 상태(2026-11-01 20:46 KST):** 1차 독립 검증(verify-01)이 계약 범위에서 통과했고 메인 R-2 대조도 일치했다. 창 8 지원을 마치고 이 branch로 돌아왔다. PR294(Art 격자 PR1)가 병합돼 main을 받았고(client.md는 B-2 A대로), CURRENT Core 줄도 고쳤다. 2차 좁은 재검증 계약과 창 요청을 준비한다. Art PR2(HUD 골드 제거·스킬칸)는 Core 24칸 뒤에 병합한다(메인 결정). PlayMode·실제 접속·Art 시험 3건·CURRENT 줄은 격자 PR 병합 뒤 2차 좁은 재검증에서 본다.
 
 ## 재개 지점
 
@@ -50,7 +50,15 @@
 
 - **창 8 다녀옴(2026-11-01T01:41Z~03:36Z):** core-active는 앞 goal branch로 가서 창 8(PR268 DB 서버 두 판)을 지원했다. 기록은 앞 goal 「재개 지점」에 있다. 03:36:08Z에 이 branch `6b2adad4`로 돌아왔다(`lead-p2-switch-01.txt`). 돌아온 뒤 작업 트리는 깨끗하고, Plugins Shared.dll은 v23(`8d471e72…c025`), `ProtocolVersion.Current`는 23이다. 전환 전 확인(`lead-p2-switch-check-01.txt`)에서 WSL 서버·7777·Unity·Windows dotnet은 모두 0이었다.
   - WSL 복제본은 지금 앞 goal의 v22 빌드다(앞 goal `build-02`). 이 goal의 다음 WSL 실행은 `sync-wsl.sh`가 v23 소스로 다시 동기화·빌드한다. 2차 재검증 계약에 이 사실을 적는다.
-- **다음 첫 일:** Art 격자 PR을 기다린다. 격자 PR이 들어가면 main을 합치고(client.md 50행은 격자 PR 쪽을 따르고 38행만 남김, 메인 결정 B-2 A), CURRENT Core 줄을 고친 뒤 2차 좁은 재검증(새 Astra 세션: PlayMode·실제 접속·Art 시험 3건·병합 diff·CURRENT 줄·새 서버 시험 17건 이름별 원시)을 연다. 그 뒤 PR·준비 보고다.
+- **PR294(Art 격자 PR1) 병합과 main 받기(2026-11-01T11:40Z~11:50Z):** 메인 `msg_6a005cf4e2b5`가 PR294 병합을 알렸다(merge commit `a888cd35a5ae7222b44d87b2702d6bd975ed2540`, mergedAt 11:39:33Z). 메인 지시는 「24칸 branch에 최신 main을 받아 두 번째 좁은 재확인을 준비해라. 실행 창은 메인이 배정한다. 예상 길이와 필요한 자원을 적어 창을 요청해라. 겹치는 파일이 있으면 충돌 해소 내용을 재확인 계약에 넣어라」다.
+  - 병합 직전 head는 `aa1970f07d01dfeae364fcf057ce09b681d6940c`다(`lead-pre-merge-head.txt`). 병합 기준 `58c8d4cb` 뒤 양쪽이 함께 바꾼 파일은 `00_Document/domains/client.md` 하나다(`lead-overlap-files-a888cd35.txt`).
+  - 격자 코드는 칸 수를 `InventoryLimits.MaxSlots`에서 계산한다(`InventoryPanelView` 16~41행, 시험의 직접 조립 패킷은 39·37번뿐). 근거는 `lead-grid-slotcount-grep-a888cd35.txt`·`lead-grid-wire-sites-a888cd35.txt`다.
+  - `git merge --no-ff --no-commit a888cd35`에서 client.md 한 덩이만 충돌했다(`lead-merge-a888cd35-01.txt`, 원본 `lead-client-md-conflict-raw.md`). B-2 A대로 그 덩이(`InventoryPanelView` 문단)는 격자 PR 문장을 그대로 썼다. 병합 뒤 main과의 client.md 차이는 `InventorySnapshotHandler` 문단 한 줄뿐이다(1차 head 38행, 병합 뒤 40행, `lead-client-md-vs-main-after-resolve.txt`). 병합 commit은 `6b7beca0db788bdec81a91974ec9f366f2795490`다.
+  - I24-V01: CURRENT Core 줄을 이 goal로 바꾸고 앞 goal의 리허설 대기와 직전 10-24 goal 상태를 같은 줄에 남겼다(commit `365dfd3d66f81df733612c924590c819b8ffd6ae`, 줄 원문 `lead-current-core-line-v1.txt`).
+  - main 대비 이 branch는 39파일 +1103 −73이다(`lead-merge-diff-stat-vs-main.txt`). 1차 검증 head `6b2adad4` 대비 HEAD에서 main과 다른 파일은 client.md·CURRENT.md·이 goal 셋뿐이다(`verify-02/lead-inputs-survey-v1.txt`).
+- **다음 첫 일:** 2차 좁은 재검증(verify-02) 계약을 생성 스크립트로 만들고, 메인에 창 셋(WSL·Unity·WSL+Unity)을 청한다. 범위는 PlayMode·실제 접속·Art 시험 3건·병합 diff·CURRENT 줄·새 서버 시험 17건 이름별 원시다. 그 뒤 PR·준비 보고다.
+  - 17건은 서버 `InventorySnapshotBoundaryTests`의 `[Theory]` 하나(`[InlineData]` 16)와 `[Fact]` 하나다. I24-A01의 시험 이름은 격자 PR에서 `CurrencyAndUseResult_TakeSeparateLines_BelowEverySlot`로 바뀌었다.
+  - V2 PlayMode는 filter 없는 전체 1회다(원시 기준 약 6분, 10-30 전제 건너뜀 goal 169행). class 이름 filter는 `Explicit` 시험도 고르므로(DEVELOPMENT 「Unity PlayMode 실행 전제」) filter를 주지 않고, 실서버 시험 둘은 V3에서만 돈다. 완료조건 2의 관련 class 34개는 `verify-02/lead-playmode-default-classes-v1.txt`로 따로 센다.
   - 2차 재검증 계약 틀: `verify-02/contract-template-v1.md`(리드 초안). 4×6 격자를 보이는 근거와 PlayMode filter는 격자 PR 내용을 보고 채운다. 규칙 원문은 verify-01처럼 스크립트로 붙인다.
   - 시각(2026-11-01T04:35Z, Content 리드 `msg_f581ef3adf1a`가 전한 Art `msg_3f625498414d`): 격자 PR은 아직 없고 선행 시험 단계다. Art 어림으로 11-01 KST 저녁 전 병합은 어렵다. 프로토콜·빌드 설정 변경 계획은 0이다.
   - 녹화용 빌드 계약(Content 초안 v3 sha256 `3ae6bfe8…4688`)에 Core 답을 보냈다(`msg_45e700da3330`). 두 PR 병합 뒤 Content가 고정 head 40자를 먼저 알리고, Core가 그 SHA를 DB 시연 branch에 받아 서버 트리 diff 0·`ProtocolVersion.Current`·R1 exit를 돌려준다.
