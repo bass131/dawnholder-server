@@ -16,14 +16,25 @@
 
 <a id="claude-4a-interim"></a>
 
-### 결정 4A 적용 기간의 Claude 리드·구현자
+### 결정 4A 적용 기간의 Claude 리드와 작업자 배정
 
-10-27 20:00 KST부터 파트 리드와 구현자도 Claude Code 세션이다. AGENTS 「모델 라우팅」에 반영되기 전까지 Claude 세션은 이 절을 위 문장과 AGENTS 라우팅보다 먼저 따른다. 근거는 AGENTS의 「사용자 결정에 따른 런타임 전환은 정본 병합을 기다리지 않는다」이고, 정본 반영은 시연 뒤 Rules 파트가 맡는다.
+10-27 20:00 KST부터 파트 리드는 Claude Code 세션이다. 구현자도 그때부터 Claude였고, 11-01 사용자 지시로 Codex 작업자로 돌아갔다. AGENTS 「모델 라우팅」에 반영되기 전까지 Claude 세션은 이 절을 위 문장과 AGENTS 라우팅보다 먼저 따른다. 근거는 AGENTS의 「사용자 결정에 따른 런타임 전환은 정본 병합을 기다리지 않는다」이고, 정본 반영은 시연 뒤 Rules 파트가 맡는다.
 
 - 사용자 원문(메인 `msg_05f8e5590139`가 리드에 전달): 「그리고 오늘 오후 20시에 클로드 사용량 리셋되면 모든 작업 클로드로 진행, 크로스 체크만 GPT Astra로 진행, 작업 진행에 에러사항이 너무 많고 지체되는게 너무 답답한게 이유야, 내가 둘다 비교해보니 작업 완수 능려의 차이가 너무 많이 나」, 「대시보드 결정 응답: 1) 4 - 20:00 이후 Claude 전환에 리드도 포함하나 → A 리드까지 전부 Claude」.
-- 워크트리에서 리드·구현자로 뜬 Claude 세션은 메인이 아니다. 이 파일의 메인 역할·메인 세션 진입·`[메인 Claude]` 태그·메인의 기록과 알림은 메인 checkout의 메인 세션에만 적용한다.
-- 리드·구현자는 `claude --model claude-opus-5-5 --effort xhigh`로 띄우고 태그는 `[<파트> 리드 Opus]`·`[<파트> 구현 Opus]`다. 독립 검증·리뷰는 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`이고 태그는 `[<파트> 검증자]`다. 이미지 생성만 신규 Sol max 예외다. 세부는 각 goal 「적용 중인 사용자 결정」의 4A 기록을 따른다.
-- 위 「생산 코드는 AGENTS.md 라우팅대로 Codex 작업자가 쓴다」는 이 기간에 「생산 코드는 리드가 연 Claude 구현자가 쓴다」로 읽는다. 구현자와 검증자의 분리, 작업 하나 뒤 정산·종료, 리드의 Git 담당, 병합 관문은 그대로다.
+- 작업자 전환 사용자 원문(11-01 01:4x KST 메인 pane 제출): 「그러면 작업자를 Codex로 바꿔줘, 이번에 사용한도 다시 2배 되었거든」. 범위 확인(11-01 08:5x KST 메인 pane 제출): 「대시보드 결정 응답: … 2) 101 - 목표 종료 정리 점검 세션(Gardener)을 앞으로도 Codex Sol max로 열지, 정본대로 Claude Opus로 돌릴지 → A Codex Sol max 유지 · 3) 102 - 「작업자를 Codex로」에 선행 시험 작성자도 넣을지(지금 해석), 구현자만으로 좁힐지 → A 시험 작성자 포함(대신 Astra로)」.
+- 워크트리에서 리드로 뜬 Claude 세션은 메인이 아니다. 이 파일의 메인 역할·메인 세션 진입·`[메인 Claude]` 태그·메인의 기록과 알림은 메인 checkout의 메인 세션에만 적용한다.
+- 리드는 `claude --model claude-opus-5-5 --effort xhigh`로 띄우고 태그는 `[<파트> 리드 Opus]`다. 독립 검증·리뷰는 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`이고 태그는 `[<파트> 검증자]`다.
+- 11-01 작업자 전환 뒤 리드가 여는 작업자는 아래 배정을 따른다. 이미 떠 있는 세션의 모델은 바꾸지 않는다. 세부는 각 goal 「적용 중인 사용자 결정」의 기록을 따른다.
+
+| 역할 | 신규 세션 기동 명령 | 태그 |
+|---|---|---|
+| 구현자 | `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode` | `[<파트> Sol]` |
+| 같은 계약 Sol 구현의 두 번째 독립 불합격 뒤 다음 구현 시도([배정](.agents/skills/dawnholder-goal-loop/references/implementer-routing.md)) | `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode` | `[<파트> 구현 Astra]` |
+| 선행 시험 작성자 | `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode` | `[<파트> 시험 Astra]` |
+| 목표 종료 Gardener(읽기 전용 정리 점검) | `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode` | `[<파트> Sol]` |
+| 이미지 생성(기존 예외) | `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode` | `[<파트> Sol]` |
+
+- 위 「생산 코드는 AGENTS.md 라우팅대로 Codex 작업자가 쓴다」는 11-01 전환 뒤 그대로 적용한다. 10-27~11-01 사이 Claude 구현자(`[<파트> 구현 Opus]`)가 쓴 기록은 당시 배정으로 읽는다. 구현자와 검증자의 분리, 작업 하나 뒤 정산·종료, 리드의 Git 담당, 병합 관문은 그대로다.
 
 ## 작업 전 맥락과 규칙 준수
 
