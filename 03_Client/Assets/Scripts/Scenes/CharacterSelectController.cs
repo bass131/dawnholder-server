@@ -53,6 +53,9 @@ namespace Dawnholder.Client.Scenes
                 _menuView?.Render(state);
             }, network.Disconnect, OnMenuExit);
             _menuView = new CharacterMenuView(gameObject, _menu.Select, _menu.Create, _menu.Refresh, _menu.Back);
+            // Match the view and presenter's initial Connecting state before the first server reply.
+            // An open menu must already expose its display projection; null is reserved for a closed menu.
+            MenuState = new CharacterMenuViewState(CharacterMenuViewState.Phase.Connecting);
             // 주소를 새로 정하지 않는다: MainMenu가 probe 성공 뒤 저장한 ServerHost와 NetworkService의 포트를 쓴다.
             network.ConnectCharacterMenu();
         }
