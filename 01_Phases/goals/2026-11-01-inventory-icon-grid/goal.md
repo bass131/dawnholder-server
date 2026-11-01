@@ -2,15 +2,15 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-11-01 선행 시험 RED commit 뒤
+### 현재 재개 카드 — 2026-11-01 선행 시험 RED commit·main 받기 뒤
 
-**다음 첫 일:** 구현 계약(`[Art Sol]`)을 쓴다. 아래 「선행 시험 RED — 2026-11-01」의 「구현 계약으로 넘길 것」과 「남은 위험」을 계약에 넣는다. 계약을 메인에 보고한 뒤 구현자를 띄운다.
+**다음 첫 일:** 구현 계약 v1(근거 폴더 `grid-impl-contract-v1.md`, `[Art Sol]`)을 메인에 보고한다. 메인에게 Unity 창을 받은 뒤 구현자를 띄운다. 계약에는 아래 「선행 시험 RED — 2026-11-01」의 「구현 계약으로 넘길 것」과 「남은 위험」이 들어 있다. 구현자가 끝날 때까지 리드는 이 파일을 고치지 않는다(같은 절 첫 발생 1). 그동안의 기록은 근거 폴더의 리드 맥락 메모에 쌓고 구현 뒤 옮긴다.
 
 | 항목 | 현재 |
 |---|---|
-| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`). 선행 시험 RED를 마치고 시험을 commit했다(아래 「선행 시험 RED — 2026-11-01」). 구현은 아직 0이다. |
+| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`). 선행 시험 RED를 마치고 시험을 commit했다(`219f7cdb`, 아래 「선행 시험 RED — 2026-11-01」). 그 뒤 main을 받았다(`9e883317`). 구현은 아직 0이다. |
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), 대화 ID `c92c0adb-250c-48fd-b4cc-8d6c85df4386`. 회신 주소는 `run:run_6687e0512b2c`다. |
-| branch | `feat/art-inventory-icon-grid-20261101`이다. origin/main `ffe7f983b96eda8002a27169b3e8b7cb5eb32c72`(PR292 병합)에서 만들었다. |
+| branch | `feat/art-inventory-icon-grid-20261101`이다. origin/main `ffe7f983b96eda8002a27169b3e8b7cb5eb32c72`(PR292 병합)에서 만들었다. RED commit 뒤 origin/main `3bb76772`(PR268 병합)을 받았다. 받기 commit은 `9e88331743064b390f6ab1d238dc173825a4bd23`이고 충돌은 0이다(근거 폴더 `main-merge-1101-01.txt`). |
 | 관계 | Core 인벤토리 24칸 goal(`core-active/01_Phases/goals/2026-11-01-inventory-24-slots/goal.md`, Core PR 때 main에 들어간다)이 패킷·서버·공유 칸 수를 바꾼다. 병합 순서는 이 goal의 격자 PR이 먼저다(아래 「Core 24칸 계약 — 확정」). |
 | 실행 창 | W1 Unity 창 세 번을 썼다. U0 04:30~05:00Z, U1 04:56~05:20Z, U1 03 05:18~05:40Z이고 모두 반납했다. Unity·WSL·DB 창은 메인이 배정한다. |
 | 근거 폴더 | `.backups/verification/2026-11-01-inventory-icon-grid/`다. Git 제외 폴더다. 앞 goal의 근거 폴더 `.backups/verification/2026-10-29-inventory-character-select-look/`에 초안 v1~v6과 facts 1031판이 있다. |
@@ -170,7 +170,7 @@
 - PR2 결과 기록·6줄 캡처·Gardener: Core 24칸 PR 병합 뒤 main에서 6줄 캡처를 찍어 넣는다(메인 결정 2 A).
 - 앞 goal의 #PR5T-01~03 처분: 메인 결정 B-1 A(`msg_b79ad103b86e`)로 PR1의 첫 기록 commit에 [밝은 외관 goal](../2026-10-29-inventory-character-select-look/goal.md#종료-뒤-보충--pr292-문서-재실사-v3와-pr5t-처분)의 「종료 뒤 보충」 절로 넣었다. 원천은 R-8 노트 3판의 마지막 두 절과 메인 `msg_b8eeb4d0a16a`·`msg_5d7952f9d461`이다. 이 절은 앞 PR292 판정 대상 밖이고 PR1 독립 검증 범위에 들어간다. 이유는 PR2가 Core 24칸 병합까지 늦고, 따로 PR을 열면 실사와 병합 승인이 한 번 더 들기 때문이다.
 - branch는 앞 goal의 PR4·PR5가 main에 들어간 뒤 최신 main(`ffe7f983`)에서 만들었다. 열린 PR과 다른 파트 branch의 merge-tree 대조는 근거 폴더 `merge-tree-open-work-1101-01.txt`에 있다.
-  - PR268(`23cc2713`): ffe7f983과 충돌 0이다. 격자 대상 중 client.md를 함께 고치지만 :30 근처 두 줄 추가라 :50·:54와 다른 곳이다. 메인 참고(`msg_b79ad103b86e`): PR268 head는 지금 `3e46ea65`다(Content goal.md 한 파일 commit 추가). PR1 병합 전에 그 head로 merge-tree를 다시 잰다. 이어서 PR268은 main에 병합됐다(merge commit `3bb76772`, 메인 사본 `msg_31e4dfa1781f`). 그 main과 이 branch의 merge-tree 충돌은 0이다(근거 폴더 `merge-tree-after-pr268-1101-01.txt`). client.md의 인벤토리 문장은 두 줄 밀려 InventoryPanel이 :50, InventoryPanelView가 :52다. 구현 계약은 main을 받은 뒤의 줄 번호로 쓴다. PR1 병합 전에 그때의 main으로 한 번 더 잰다.
+  - PR268(`23cc2713`): ffe7f983과 충돌 0이다. 격자 대상 중 client.md를 함께 고치지만 :30 근처 두 줄 추가라 :50·:54와 다른 곳이다. 메인 참고(`msg_b79ad103b86e`): PR268 head는 지금 `3e46ea65`다(Content goal.md 한 파일 commit 추가). PR1 병합 전에 그 head로 merge-tree를 다시 잰다. 이어서 PR268은 main에 병합됐다(merge commit `3bb76772`, 메인 사본 `msg_31e4dfa1781f`). 그 main과 이 branch의 merge-tree 충돌은 0이다(근거 폴더 `merge-tree-after-pr268-1101-01.txt`). client.md의 인벤토리 문장은 두 줄 밀려 InventoryPanel이 :50, InventoryPanelView가 :52다. 구현 계약은 main을 받은 뒤의 줄 번호로 쓴다. PR1 병합 전에 그때의 main으로 한 번 더 잰다. RED commit 뒤 이 main을 branch에 받았다(`9e883317`, 아래 「선행 시험 RED — 2026-11-01」의 main 받기).
   - PR207(`02fcd8a4`): CURRENT.md 하나로 충돌이 난다. 앞 goal 때도 같았고 메인은 범위 밖으로 둔다(`msg_b8eeb4d0a16a`).
   - Content 캐릭터 선택 로컬 branch(`fb3d65b1`)는 이미 main 안에 있다(merge-base = head). 공유 시험 파일(`UiWindowAppearanceContractTests`·`UiWindowCompositionRenderTests`) 겹침은 지금 0이다. Content의 커밋 안 된 작업본은 보지 못했다.
   - Core 24칸 로컬 branch(`7eb3edac`): ffe7f983과 충돌 0이다. client.md :50은 위 Core 계약의 client.md 줄대로 다룬다.
@@ -268,4 +268,6 @@
 - 기록 차이: report.md는 몇 곳에서 리드 답 대신 작성자 자신의 질문 msg ID를 「리드 msg」로 적었다. 예: 「리드 msg_804c2274a94c가 허용」의 실제 답은 `msg_020ff803ceef`다. 판정 내용은 이 절의 ID가 맞다.
 - 정산: SENTIS 한 줄(diff sha256 `31e7aaf1…83e2`, 앞 goal과 같음)은 사본을 남기고 HEAD로 되돌렸다(`settle-red-tree-1101-01.txt`, `red-settle-sentis-diff-1101-01.txt`). 리드의 잔류 확인은 U0·U1 02·U1 03 뒤 모두 0이다(`proc-after-u0-1101-02.txt`·`proc-after-u1-1101-01.txt`·`proc-after-u1-03-1101-01.txt`).
 - 구현 계약으로 넘길 것(report 「한계·구현 계약으로 넘길 것」): `InventorySlotPointer`는 입력과 연결만 맡고, 칸 찾기·상세 자리·가림 계산은 일반 타입이나 helper로 나눈다. 기존 강조 부품은 그대로 둔다. 가림 판정의 Canvas 탐색 비용, 밝은 바탕 대비 글자 대비, 방향별 상세 창 경계를 구현·검증에서 본다.
-- RED commit: 시험 11파일 수정, 새 시험 3파일과 Unity가 만든 `.meta` 3개, 이 goal 파일이다. commit SHA는 다음 기록에 적는다.
+- RED commit은 `219f7cdb1c2bfc5b26a4ae741d27ff8b6f459a91`이고 push했다. 18파일이다: 시험 11파일 수정, 새 시험 3파일과 Unity가 만든 `.meta` 3개, 이 goal 파일. 미추적 5개는 그대로다(근거 폴더 `red-commit-1101-01.txt`). 메인 보고는 `msg_ff551fa53383`이다.
+- main 받기: RED commit 뒤 origin/main `3bb76772`(PR268 병합)을 받았다(`9e883317`, `main-merge-1101-01.txt`). 들어온 것은 Demo 자동 진행기 코드·시험, `CharacterSelectController` 15줄, client.md 두 줄이다. Demo 코드 4파일에 인벤토리 참조는 없다. 새 Demo 시험이 들어와 전체 시험 수가 U0·U1과 달라진다. 그래서 구현 결과는 「main 받은 뒤 기준」 실행과 비교한다(구현 계약). client.md의 인벤토리 문장은 InventoryPanel :50, InventoryPanelView :52, 사용 :56이다.
+- 리드 자기 신고: RED commit 뒤 보내기 명령 모양을 찾는 읽기 명령 하나에서 `2>/dev/null`을 썼다. 그 출력의 값은 어떤 기록에도 쓰지 않았다. 규칙은 이미 있다(메인 `msg_4bef008e3fa9`). 메인에 보고한다.
