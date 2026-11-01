@@ -4,11 +4,11 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 신규 GPT-6-Astra 검증자 v3(검증 계약 v3)가 D1 수정을 포함한 PR268 전체를 다시 판정하고 → 창 B(U3·Win64) → 고친 빌드로 창 8(DB 영속 서버 두 판, 사용자 손)을 한 번 돈다. D1 수정은 구현 commit `2d7f96f5`로 들어갔다(진행 기록 11-01 「자동 진행기 D1 수정」). 11-01 검증자 v2는 불합격(D1 1건)으로 판정했다(진행 기록 11-01 「자동 진행기 검증 v2(불합격)」). D1은 메뉴 접속·로그인이 1초보다 늦으면 자동 진행기가 열린 메뉴를 Legacy로 읽어 입장이 멈추는 결함이고, 원인은 구현 계약 v1 설계 고정의 두 줄(`state == null` → Legacy, render 콜백 캡처로 충분)이다. 수정 설계는 `CharacterSelectController.Start`에서 view를 만든 직후 view가 이미 그리는 첫 상태(`Connecting`, view·presenter의 초기값과 같음)를 `MenuState`에 두는 것이다. 「건드릴 곳」의 컨트롤러 읽기 전용 통로 안에서 끝내고 `CharacterMenuView`·presenter는 바꾸지 않는다. 캐릭터 선택창(PR-A, PR #291)은 main에 들어갔다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
+**다음 첫 일:** PR268 병합 승인을 기다린다. 검증자 v3가 D1 수정을 포함한 PR268 전체를 통과로 판정했다(신규 차단 결함 0, 진행 기록 11-01 「자동 진행기 검증 v3(통과)·창 8」). 창 8에서 DB 영속 서버 두 판(새 계정 생성 → 서버 재시작 → 같은 캐릭터 선택)도 끝났다. 병합 뒤 녹화용 빌드 계약을 Core 리드와 맺는다. 캐릭터 선택창(PR-A, PR #291)은 main에 들어갔다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
 
-- 회귀 시험: 검증자 v2가 쓴 판정용 시험 두 파일을 채택했다(메인 결정 `msg_ee36970aad0b`, 「11-01 D1 회귀 시험 채택」 절). 창 A(구현자 U2)는 끝났다. 남은 순서는 Core V1(WSL 약 15분) → 창 B(검증자 U3·Win64, 검증자 「U3 준비」가 오면 바로 청함, V1 끝에 준비가 안 됐으면 Core V2가 먼저) → Core V2(Unity 약 20분) → 창 8(창 B 뒤 메인이 사용자와 정함)이다(메인 `msg_f4c9999d85fd`). 결함 빌드에 창 8을 쓰지 않는 데는 메인이 동의했다(`msg_865bbc326329`).
-- 열린 결정: 없음. PR268 병합 승인은 검증 뒤 따로 청한다.
-- 창 8 약속(Core `msg_a6e92219cbe1`·`msg_0c71d92c392b`): 서버는 core-active를 DB 시연 branch `feat/db-persistence-demo-build-20261031`(v22)로 바꿔 띄운다. Core가 그 전에 24칸 WIP commit·branch 전환·`sync-wsl.sh build`를 한다. 서버 창 원문은 메인이 사용자 서버 탭을 세 시점에 읽는다. 시각이 정해지면 Core에 먼저 알린다. Core 24칸 PR이 먼저 main에 들어가면 PR268에 main을 다시 합치고 서버·클라를 v23으로 다시 빌드해야 한다.
+- 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택하면 새 독립 검증이 필요하므로 종료 기록의 다음 후보로 넘긴다.
+- 열린 결정: PR268 병합 승인(메인이 사용자에게 청한다).
+- Core 24칸 PR이 PR268보다 먼저 main에 들어가면 PR268에 main을 다시 합치고 서버·클라를 v23으로 다시 빌드해야 한다.
 - 빌드 계약 입력: PR-A(완료)·PR268·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR 병합(`msg_d0012352013c`·`msg_d783ac17eb63`).
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
 
@@ -183,10 +183,10 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 - [x] 캐릭터 선택창 검증
 - [x] 자동 진행기 시험
 - [x] 자동 진행기 구현
-- [>] DB 서버 실주행 검증
+- [x] DB 서버 실주행 검증
 - [ ] 길드 입구 겹침(리셋 뒤)
 - [x] 선택창 PR 병합
-- [ ] PR268 병합
+- [>] PR268 병합
 - [ ] 녹화용 빌드 전달
 - [ ] 종료 기록
 
@@ -248,3 +248,13 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 창 반환: 구현자 01:13:56Z·리드 01:14Z 모두 Unity·Windows dotnet·Player 0. Unity drift 두 경로(`ProjectSettings.asset`의 Standalone define 한 줄, `MinimapRT.renderTexture`)는 patch를 `lead/windowA-drift/`(sha256 `31e7aaf1de69c44f2f5f38af86cb9c4032b4caddeac71f08dddb2084e1c883e2`)에 남기고 리드가 01:14:42Z에 복원했다. 창 끝 `msg_7f4e4891faaf`.
   - 생존 신호: 01:13:56Z→01:19:11Z 315초(보고서 작성 구간, 생존 신호 helper `lead/liveness-impl2-01.json`). 구현자가 보고에 남겼다.
   - 집계: D1은 계약 귀속 결함이라 구현자 배정의 「두 번째 독립 불합격」 집계에서 뺀다(`implementer-routing.md`).
+- 2026-11-01 자동 진행기 검증 v3(통과)·창 8: 검증자 `[Content 검증자]`(신규 GPT-6-Astra xhigh, 첫 화면 「GPT-6-Astra xhigh」) task_f55cdcc996cd / ctx_4064e2beda5b, 계약 `lead/pr268-verify-contract-v3.md`(sha256 `1f3f1a57cb1d258ea2d246b00a19d564c9fd6913f44a0a53ff41f4408ecb5a2c`, 기준 HEAD `cb32652f`, 입력 80개), 판정 `pr268-verify-03/verdict.md`(sha256 `85c9f0e2ba111c1db58bef9d208c3be0f3fe2b8566a98780775f95f92ad16bde`), worker_done `msg_10993cf3c1e7` succeeded, 정산 03:44Z(release retained·external_terminal, pane 닫음).
+  - 판정: 통과, 신규 차단 결함 0, D1 해소. B1~B5 충족. 비차단 관찰은 새 영어 주석과 주변 한국어 주석의 언어 차이, 기존 O1·O2, 새 T2(채택한 PlayMode 시험은 단계 결과를 출력만 하고 직접 단정하지 않는다. PendingPhase EditMode 시험이 Waiting을 따로 단정한다)다.
+  - 창 B(메인 `msg_065799b45dc0`, 01:35:30Z~02:18:00Z): EditMode 1772/1772, PlayMode 265 중 219 통과·0 실패·46 skipped. 구현자 U2 대비 새 이름은 판정용 시험 각 1개뿐이고 기존 결과 변화는 0이다. Win64 빌드 exit 0(140.6초), exe sha256 `91a36fa14dd3ccf390b99720805eda0553da1ca1108381b49c98c938f69dc256`. Unity drift 5경로는 patch를 `lead/windowB-drift/`(sha256 `acc0c274…f9ad`, 검증 v2 창 drift와 같은 bytes)에 남기고 리드가 01:50:39Z에 복원했다. 창 끝 `msg_61dc2ecaee99`.
+  - 창 8(사용자 결정 104 A, 메인 「W3 Listening 확인」 `msg_69d903544d22`, 03:11:17Z~04:15:00Z): 서버는 core-active `feat/db-persistence-demo-build-20261031`(`9d35f5cd`)·v22, 사용자 손으로 띄우고 껐다. 1판(03:14Z)은 새 계정으로 두 클라 모두 `character list` → `character create` → `character select slot=1` → done이다. 사용자 Enter 정지 03:27:04.78Z 뒤 같은 창 재시작 Listening 03:30:02.46Z(177.67초, 대부분 사용자 손, launcher 자체 0.81초). 2판(03:31Z)은 같은 계정으로 `character list` → `character select slot=1` → done이고 create는 0이다. 1판 생성 ID와 2판 목록 ID가 같다(기사 `f4cc6b33-d180-4ba2-b310-e5b4f91e309d`, 마법사 `8bb7d676-a979-4540-b1aa-96197a34a242`). 마지막 정지 03:34:20.96Z. 두 번의 정지 요약 줄(stdout·stderr)은 모두 `drained=True`이고 유실 항목은 0이다. 서버 창 원문 네 파일은 `pr268-verify-03/window8/server-window/`에 있다.
+  - 7777 listener: Windows 쪽은 내내 0, WSL 쪽은 서버가 떠 있는 동안 1이었다. 리드가 계약의 「listener가 하나 있다」를 두 쪽 합으로 읽어 전달했다(`msg_393f44915e76`). 첫 발생 기록이다.
+  - Core 해석(`msg_04981e9d8b04`, 저장본 `lead/core-msg_04981e9d8b04-stronghold-scope.txt`): 두 판의 기사 거점 level 2·마법사 강화 level 1은 DB 저장 범위 밖이라 영속 근거도 결함도 아니다(`FEATURE_MAP.md` 39·41행). 검증자는 요청 전에 그 값이 보이는 반증 로그가 없음을 확인했다.
+  - 생존 신호(helper `lead/liveness-verify3-02.json`, sha256 `36e44185c714051345eea42e255a85daa95b226439417ab57654cbba6095f715`): 300초를 넘은 구간은 01:54:39Z→02:10:27Z(948초)와 02:14:19Z→02:45:47Z(1888초) 둘이다. 둘 다 창 8 대기 중 50초 공식 대기만 되풀이하고 별도 heartbeat를 보내지 않은 구간이다. 검증자가 `waiting-followup.md`에 남겼고 리드 안내(`msg_d3e10e977e05`) 뒤 4분 이내로 바꿨다. 첫 발생이라 규칙은 만들지 않는다.
+  - 정산 순서: 리드가 `worker-release`를 지원하지 않는 `--run` 옵션으로 불러 실패했고, 그사이 pane을 먼저 닫았다. 바른 옵션으로 다시 해제했다(`lead/release-verify3-02.json`). 첫 발생 기록이다.
+  - 리드 R-2 표본: 판정 sha256 일치. HEAD `cb32652f`·tracked diff 0, 채택 시험 `69eb9fdf..cb32652f` diff 0. 네 Player 로그의 step 수(14·14·13·13)·create 수(1·1·0·0)·timeout 0·Exception 0과 두 캐릭터 ID가 판정과 같다. 03:42:39Z에 Dawnholder·Unity·dotnet 프로세스 0, Windows 7777 Listen 0이다.
+  - main: `58c8d4cb` 뒤 main(`ffe7f983`)은 문서 6파일만 바뀌었고 PR268이 바꾼 파일과 겹치지 않는다. 검증한 head를 지키려고 다시 합치지 않는다.
