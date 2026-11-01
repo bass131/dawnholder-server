@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 녹화용 빌드 계약을 Core 리드와 맺는다. 기준은 Art 인벤토리 격자 PR과 Core 인벤토리 24칸 PR이 들어간 main이다(메인 `msg_e0b59e962663`). 두 PR이 아직이면 기다린다. 계약 초안 v2는 근거 폴더 `lead/recording-build-contract-draft-v2.md`다(이름은 사용자 결정 109 A). 남은 빈칸은 두 PR의 번호·merge commit, 고정 head, 창 크기다. Core 확인과 Art 격자 PR 시각을 기다린다. PR268은 main에 들어갔다(merge commit `3bb76772`, 진행 기록 11-01 「PR268 병합」). 캐릭터 선택창(PR-A, PR #291)도 main에 있다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 PR-C·녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4).
+**다음 첫 일:** 녹화용 빌드 계약을 Core 리드와 맺는다. 기준은 Art 인벤토리 격자 PR과 Core 인벤토리 24칸 PR이 들어간 main이다(메인 `msg_e0b59e962663`). 두 PR이 아직이면 기다린다. 계약 초안 v3는 근거 폴더 `lead/recording-build-contract-draft-v3.md`다(이름은 사용자 결정 109 A, Core 답 `msg_45e700da3330` 반영). 남은 빈칸은 두 PR의 번호·merge commit, 고정 head, 창 크기다. 두 PR이 들어가면 Content가 고정 head 40자를 Core에 먼저 보내고, Core는 그 SHA를 서버 branch에 받는다. Art 격자 PR은 04:33Z 기준 아직 없다(Art `msg_3f625498414d`). PR268은 main에 들어갔다(merge commit `3bb76772`, 진행 기록 11-01 「PR268 병합」). 캐릭터 선택창(PR-A, PR #291)도 main에 있다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 PR-C·녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4).
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
 - 열린 결정: 없음.
