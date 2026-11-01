@@ -2,7 +2,7 @@
 
 인벤토리 칸 수를 8에서 24로 늘린다. 서버가 보내는 인벤토리 snapshot(36번)과 공유 칸 수 상수를 24로 바꾸고, 클라가 받는 쪽까지 같은 PR에서 맞춘다. 화면 격자(4열 × 6줄)는 Art가 만든다.
 
-**현재 상태(2026-11-01 12:3x KST):** 1차 독립 검증(verify-01)이 계약 범위에서 통과했고 메인 R-2 대조도 일치했다. 창 8 지원을 마치고 이 branch로 돌아왔다. Art 격자 PR을 기다린다. PlayMode·실제 접속·Art 시험 3건·CURRENT 줄은 격자 PR 병합 뒤 2차 좁은 재검증에서 본다.
+**현재 상태(2026-11-01 17:30 KST):** 1차 독립 검증(verify-01)이 계약 범위에서 통과했고 메인 R-2 대조도 일치했다. 창 8 지원을 마치고 이 branch로 돌아왔다. Art 격자 PR을 기다린다. Art PR2(HUD 골드 제거·스킬칸)가 새로 생겼고 Core 24칸과의 앞뒤는 미정이다. PlayMode·실제 접속·Art 시험 3건·CURRENT 줄은 격자 PR 병합 뒤 2차 좁은 재검증에서 본다.
 
 ## 재개 지점
 
@@ -55,6 +55,9 @@
   - 시각(2026-11-01T04:35Z, Content 리드 `msg_f581ef3adf1a`가 전한 Art `msg_3f625498414d`): 격자 PR은 아직 없고 선행 시험 단계다. Art 어림으로 11-01 KST 저녁 전 병합은 어렵다. 프로토콜·빌드 설정 변경 계획은 0이다.
   - 녹화용 빌드 계약(Content 초안 v3 sha256 `3ae6bfe8…4688`)에 Core 답을 보냈다(`msg_45e700da3330`). 두 PR 병합 뒤 Content가 고정 head 40자를 먼저 알리고, Core가 그 SHA를 DB 시연 branch에 받아 서버 트리 diff 0·`ProtocolVersion.Current`·R1 exit를 돌려준다.
   - WSL 실행은 `impl-01/lead-reply-sdk-v1.txt`(계약 2단계 보충 v1.1) 방법을 쓴다. Windows dotnet은 쓰지 않는다. global.json의 SDK 10.0.301이 Windows에 없다.
+  - **Art PR2(사용자 직접 지시, 메인 사본 `msg_6a8fa9c2a0a8`, 08:20:30Z):** 인벤토리 밖 HUD 골드 제거와 스킬칸 좌하단 4칸을 Art가 격자 PR1 병합 뒤 PR2로 한다. 원문은 앞 goal 「적용 중인 사용자 결정」에 적었다(앞 goal branch 로컬 커밋 `ad5d3442`, 기록 전환 `lead-g1-record-switch-01.txt`, 08:27Z~08:28:50Z).
+    - 이 goal에 바뀌는 것은 하나다. Core 24칸과 Art PR2의 앞뒤가 정해지지 않았다. Art PR2가 먼저 들어가면 2차 재검증 전에 그 main도 받는다. Core가 바꾸는 파일은 HUD 쪽과 겹치지 않는다(`lead-core24-changed-files-01.txt`, Art `msg_494eb3ba541b`).
+    - Core 확인(서버·시험·문서·녹화 순서는 HUD 골드 상자·스킬칸 자리를 보지 않음)은 `lead-hud-gold-skill-grep-01.txt`이고, Art `msg_20e41580df04`·메인 `msg_23564042e812`로 보냈다.
 - **멈춘 지점의 파일 상태(2026-10-31T18:4xZ, 로컬 WIP 커밋에 담음):**
   - 1단계 소스 31파일과 v23 `GenPackets.cs`(WSL 생성, sha256 `62a2ad60353654a0ab652aca2e62717438e4d8d1ee024087e4110dd656505aa9`, CRLF 0)가 바뀌어 있다.
   - Windows Plugins `Shared.dll`은 아직 v22 그대로다(sha256 `b8b2828e27a1a1667a2b5f703a2c7a97822f70fc47ef974c9f3694dcb5a4ecd3`). `.meta`도 그대로다(`7c6ab891ee57e1a71e200cbea3c27cee36de97404e1d6303711daf59b3be682b`). 그래서 지금 core-active로 Unity를 열면 소스와 DLL 판이 어긋난다.
