@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 녹화용 빌드 계약을 Core 리드와 맺는다. 기준은 Art 인벤토리 격자 PR과 Core 인벤토리 24칸 PR이 들어간 main이다(메인 `msg_e0b59e962663`). 두 PR이 아직이면 기다린다. 계약 초안이 나오면 메인에 경로와 sha256만 보낸다. PR268은 main에 들어갔다(merge commit `3bb76772`, 진행 기록 11-01 「PR268 병합」). 캐릭터 선택창(PR-A, PR #291)도 main에 있다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 PR-C·녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4).
+**다음 첫 일:** 녹화용 빌드 계약을 Core 리드와 맺는다. 기준은 Art 인벤토리 격자 PR과 Core 인벤토리 24칸 PR이 들어간 main이다(메인 `msg_e0b59e962663`). 두 PR이 아직이면 기다린다. 계약 초안 v2는 근거 폴더 `lead/recording-build-contract-draft-v2.md`다(이름은 사용자 결정 109 A). 남은 빈칸은 두 PR의 번호·merge commit, 고정 head, 창 크기다. Core 확인과 Art 격자 PR 시각을 기다린다. PR268은 main에 들어갔다(merge commit `3bb76772`, 진행 기록 11-01 「PR268 병합」). 캐릭터 선택창(PR-A, PR #291)도 main에 있다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 PR-C·녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4).
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
 - 열린 결정: 없음.
@@ -98,6 +98,15 @@
   - `03_Client/Assets/Tests/PlayMode/DemoAutopilotVerifyConnectionTests.cs` `4a45ad635e89765d6e346c89bad3a184803a8066e52468c85ce1b46abcf2a64b`, `.meta` `b0e45cf4440584db43e8dbff9fc4824563a1ce70e86edbc2399bbfb9679964a5`(GUID `49d8b613e1fa70d49b88c85f205f123f`)
 - 다음 검증자는 이 두 시험을 구현자가 고치지 않았는지 이 commit 대비 diff로 확인한다.
 - 구현은 신규 Sol max(구현 계약 v2)가 하고, 계약은 짧은 포인터(경로+SHA256)로 넘긴다.
+
+### 11-01 사용자 결정 109 A — msg_00c45ff1d8e8
+
+메인 `msg_00c45ff1d8e8`(2026-11-01T04:26:34Z)가 전달한 사용자 원문이다(메인 pane 제출). 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+> 대시보드 결정 응답: 1) 109 - 11-06 녹화 영상에 보일 캐릭터 이름: Core 초안(새벽기사·새벽법사)으로 갈지, 직접 정할지 → A Core 초안 그대로
+
+- 리허설: 계정 `rh1101_knight`·`rh1101_mage`, 캐릭터 「리허설기사」·「리허설법사」. 녹화: 계정 `rec_knight`·`rec_mage`, 캐릭터 「새벽기사」·「새벽법사」(Core `msg_035b91a40065` 초안 그대로).
+- 메인 지시: 녹화 빌드 계약에 이 이름을 넣는다. 녹화 이름은 리허설에 먼저 쓰지 않는다.
 
 ### 운영 방식(진입 메시지의 메인 결정)
 
