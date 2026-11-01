@@ -4,11 +4,11 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 녹화용 빌드 계약을 Core 리드와 맺는다. 기준은 Art 인벤토리 격자 PR과 Core 인벤토리 24칸 PR이 들어간 main이다(메인 `msg_e0b59e962663`). 두 PR이 아직이면 기다린다. 계약 초안 v4는 근거 폴더 `lead/recording-build-contract-draft-v4.md`다(이름은 사용자 결정 109 A, 창 크기는 110 A, Core 답 `msg_45e700da3330` 반영). 남은 빈칸은 두 PR의 번호·merge commit과 고정 head다. 두 PR이 들어가면 Content가 고정 head 40자를 Core에 먼저 보내고, Core는 그 SHA를 서버 branch에 받는다. Art 격자 PR은 04:33Z 기준 아직 없다(Art `msg_3f625498414d`). PR268은 main에 들어갔다(merge commit `3bb76772`, 진행 기록 11-01 「PR268 병합」). 캐릭터 선택창(PR-A, PR #291)도 main에 있다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 PR-C·녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4).
+**다음 첫 일:** 녹화용 빌드 계약을 Core 리드와 맺는다. 기준은 Art 인벤토리 격자 PR1, Core 인벤토리 24칸 PR, Art PR2(HUD 골드 제거·스킬칸 좌하단)가 들어간 main이다(메인 `msg_e0b59e962663`·`msg_d0250483d004`). 셋이 아직이면 기다린다. 계약 초안 v6는 근거 폴더 `lead/recording-build-contract-draft-v6.md`다(이름은 사용자 결정 109 A, 창 크기는 110 A, Core 답 `msg_45e700da3330`·`msg_1e8f4d2e6446` 반영). 남은 빈칸은 세 PR의 번호·merge commit과 고정 head다. 셋이 들어가면 Content가 고정 head 40자를 Core에 먼저 보내고, Core는 그 SHA를 서버 branch에 받는다. Art 격자 PR은 04:33Z 기준 아직 없다(Art `msg_3f625498414d`). PR268은 main에 들어갔다(merge commit `3bb76772`, 진행 기록 11-01 「PR268 병합」). 캐릭터 선택창(PR-A, PR #291)도 main에 있다(`58c8d4cb`). PR-C(길드 입구)와 Art PR4 사후 확인은 사용자 결정 90 A로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 PR-C·녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4).
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
 - 열린 결정: 없음.
-- 빌드 계약 입력: PR-A·PR268(둘 다 완료)·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR 병합(`msg_d0012352013c`·`msg_d783ac17eb63`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
+- 빌드 계약 입력: PR-A·PR268(둘 다 완료)·Art 인벤토리 격자 PR·Core 인벤토리 24칸 PR·Art PR2 병합(`msg_d0012352013c`·`msg_d783ac17eb63`·`msg_d0250483d004`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
 
 | 항목 | 현재 |
@@ -117,6 +117,17 @@
 - 메인 지시: 기사 클라는 주 모니터, 마법사 클라는 보조 모니터(주 모니터 왼쪽)에 각각 1920×1080 창(`-screen-width 1920 -screen-height 1080 -screen-fullscreen 0`)이다. 녹화는 사용자가 쓰는 도구로 두 화면을 따로 잡아 편집에서 합친다. 메인·리드는 녹화 도구를 띄우지 않는다.
 - 모니터 지정 실행 옵션과 보조 모니터에서 창이 잘리는지는 리허설(R4)에서 화면으로 확인하고 원시로 남긴다. 확인 전에는 「계획」으로 적는다. 잘리면 메인에 알린다(창 크기 변경은 사용자 결정).
 - 리허설 R2 관문(물리 6 GiB·commit 4 GiB)은 1920×1080 두 창 기준으로 잰다. 창 8의 960×540 값을 그대로 쓰지 않는다.
+
+### 11-01 HUD 골드 제거·스킬칸 좌하단 — msg_d0250483d004
+
+메인 `msg_d0250483d004`(2026-11-01T08:20:31Z)가 사본으로 전달한 사용자 직접 지시 원문이다(메인 pane 입력). 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+> OK 여기서 이제 인벤토리외에 존재하는 골드 표기 UI는 제거하고, 스킬칸은 좌측 하단으로 옮겨버리자
+> 스킬칸은 최대 4개로 각각 하나씩 표기하고, 빈 스킬칸은 70% 투명도로 표기
+>
+> 거기까지 진행하고 마무리하고 영상 새로 시연용으로 찍고 마무리하자
+
+- 메인 지시: 실행은 Art가 한다(Art PR2, Art 격자 PR1 병합 뒤). Content는 녹화 빌드 계약 §1의 기준 PR을 넷에서 다섯(Art PR2 추가)으로 고치고, 자동 진행기 코드·시험이 HUD 「Gold」 상자나 스킬칸 자리를 보는지 확인해 Art 리드와 메인에 알린다.
 
 ### 운영 방식(진입 메시지의 메인 결정)
 
