@@ -2,17 +2,17 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-11-01 캡처 commit 뒤, 강 등급 독립 검증 전
+### 현재 재개 카드 — 2026-11-01 독립 검증 PASS와 결과 기록 commit 뒤, 좁은 재실사 전
 
-**다음 첫 일:** 강 등급 독립 검증(W4) 계약을 쓴다. 검증자는 새 `[Art 검증자]`다(아래 「작업 방식」). 검증 계약에 넣을 항목은 아래 세 절의 넘길 것이다: 「구현 v1 — 2026-11-01」의 설계 관찰, 「시험 고침 v1 — 2026-11-01」의 넘길 것, 「사용자 확인 캡처 v1 — 2026-11-01」의 넘길 것. 캡처는 통과 근거가 아니다(완료조건 8). 사용자 그림 확인은 메인이 사용자에게 받는다. 작업자가 일하는 동안 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모(`art-lead-context-1101-01.md`)에 쌓는다. 리드 시험 계약에는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」를 넣는다(메인 `msg_484ea2fa03bb`, 규칙 정본 반영 전까지).
+**다음 첫 일:** 바뀐 줄만 보는 좁은 재실사 계약을 써서 메인 승인을 받은 뒤 새 `[Art 검증자]`를 띄운다(아래 「작업 방식」). 대상은 아래 「독립 검증 — 2026-11-01」의 「좁은 재실사로 넘길 것」이다. PASS 뒤 그때의 main으로 merge-tree를 다시 재고(메인 `msg_31e4dfa1781f`) 메인에 병합 승인 요청을 올린다. 병합은 사용자가 「병합 승인: PR<번호> head <40자>」를 제출한 뒤 메인이 한다. PR1 병합 뒤에는 최신 main에서 PR2 branch를 만든다. 첫 commit은 PR2 goal 범위 patch다. 2판(근거 폴더 `pr2-goal-scope-02.patch`, 메인 보고 `msg_80b6ca150a0b`)은 이 결과 기록 앞의 goal 기준이라, 그때의 goal에 맞춰 다시 만든다(메인 `msg_f1139600734d`). 병합 순서는 Art PR1 → Core 24칸 → Art PR2 → Content 녹화 빌드다(메인 `msg_1357f45b9d35`). 작업자가 일하는 동안 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모 2(`art-lead-context-1101-02.md`)에 쌓는다. 메모 1은 검증 계약에 고정됐고 끝 정정 절만 더했다. 리드 시험 계약에는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」를 넣는다(메인 `msg_484ea2fa03bb`, 규칙 정본 반영 전까지).
 
 | 항목 | 현재 |
 |---|---|
-| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`). 선행 시험 RED commit `219f7cdb`, main 받기 `9e883317` 뒤 구현 v1을 commit했다(`4eddf759`, 아래 「구현 v1 — 2026-11-01」). F PlayMode 실패 1건은 시험 결함이었고, 시험 고침 commit `7d9d4ff5` 뒤 PlayMode 전체는 실패 0이다(아래 「시험 고침 v1 — 2026-11-01」). 사용자 확인 캡처 세 실행이 모두 통과했고 상세 창 캡처 case 둘을 commit했다(`5aeb415b`, 아래 「사용자 확인 캡처 v1 — 2026-11-01」). |
+| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`). 선행 시험 RED commit `219f7cdb`, main 받기 `9e883317` 뒤 구현 v1을 commit했다(`4eddf759`, 아래 「구현 v1 — 2026-11-01」). F PlayMode 실패 1건은 시험 결함이었고, 시험 고침 commit `7d9d4ff5` 뒤 PlayMode 전체는 실패 0이다(아래 「시험 고침 v1 — 2026-11-01」). 사용자 확인 캡처 세 실행이 모두 통과했고 상세 창 캡처 case 둘을 commit했다(`5aeb415b`, 아래 「사용자 확인 캡처 v1 — 2026-11-01」). 사용자 그림 확인은 112 「OK」다. 강 등급 독립 검증은 head `47cbdcac`에서 PASS다(아래 「독립 검증 — 2026-11-01」). 결과 기록 commit과 독립 시험 채택 commit 뒤 좁은 재실사 전이다. |
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), 대화 ID `c92c0adb-250c-48fd-b4cc-8d6c85df4386`. 회신 주소는 `run:run_6687e0512b2c`다. |
 | branch | `feat/art-inventory-icon-grid-20261101`이다. origin/main `ffe7f983b96eda8002a27169b3e8b7cb5eb32c72`(PR292 병합)에서 만들었다. RED commit 뒤 origin/main `3bb76772`(PR268 병합)을 받았다. 받기 commit은 `9e88331743064b390f6ab1d238dc173825a4bd23`이고 충돌은 0이다(근거 폴더 `main-merge-1101-01.txt`). |
 | 관계 | Core 인벤토리 24칸 goal(`core-active/01_Phases/goals/2026-11-01-inventory-24-slots/goal.md`, Core PR 때 main에 들어간다)이 패킷·서버·공유 칸 수를 바꾼다. 병합 순서는 이 goal의 격자 PR이 먼저다(아래 「Core 24칸 계약 — 확정」). |
-| 실행 창 | W1 Unity 창 세 번을 썼다. U0 04:30~05:00Z, U1 04:56~05:20Z, U1 03 05:18~05:40Z이다. 구현 v1은 05:57~06:45Z 창을 받아 06:18Z에 일찍 반납했다. 시험 고침은 06:48~07:10Z 창을 받아 06:57Z에 반납했다. 사용자 확인 캡처는 Editor 창 07:39~08:05Z를 사용자 부재로 받아 07:48Z에 반납했다. 모두 반납했다. Unity·WSL·DB 창은 메인이 배정한다. |
+| 실행 창 | W1 Unity 창 세 번을 썼다. U0 04:30~05:00Z, U1 04:56~05:20Z, U1 03 05:18~05:40Z이다. 구현 v1은 05:57~06:45Z 창을 받아 06:18Z에 일찍 반납했다. 시험 고침은 06:48~07:10Z 창을 받아 06:57Z에 반납했다. 사용자 확인 캡처는 Editor 창 07:39~08:05Z를 사용자 부재로 받아 07:48Z에 반납했다. 독립 검증은 08:47~09:37Z 창을 받아 09:21Z에 반납했다. 모두 반납했다. Unity·WSL·DB 창은 메인이 배정한다. |
 | 근거 폴더 | `.backups/verification/2026-11-01-inventory-icon-grid/`다. Git 제외 폴더다. 앞 goal의 근거 폴더 `.backups/verification/2026-10-29-inventory-character-select-look/`에 초안 v1~v6과 facts 1031판이 있다. |
 
 ## 적용 중인 사용자 결정
@@ -67,7 +67,7 @@
 - F1: `inventory-grid-scope-facts-1101-01.txt`(스크립트 `inventory-grid-scope-facts-1101-01.sh`, 1031판 사본)
 - F2: `inventory-grid-scope-facts-1101-02.txt`(스크립트 `inventory-grid-scope-facts-1101-02.sh`, 1031판 사본)
 - F3: `inventory-grid-scope-facts-1101-03.txt`(스크립트 `inventory-grid-scope-facts-1101-03.sh`, Core가 짚은 시험과 8칸 가정)
-- 1031판 출력과의 차이: `facts-diff-1031-vs-1101-01.txt`. 코드 줄 번호는 같다. client.md 인용 줄은 10줄씩 밀렸고, probe를 쓰는 시험 파일이 둘 늘었다.
+- 1031판 출력과의 차이: `facts-diff-1031-vs-1101-01.txt`(인라인 명령으로 만든 기록이었다. 저장 스크립트 재측정 `provenance-remeasure-02/out/facts-diff-1031-vs-1101.txt`가 시계 줄 밖 본문이 같음을 보인다. 정정 기록 `provenance-remeasure-02/correction-record.md`). 코드 줄 번호는 같다. client.md 인용 줄은 10줄씩 밀렸고, probe를 쓰는 시험 파일이 둘 늘었다.
 
 | 항목 | 지금 | 근거 |
 |---|---|---|
@@ -163,7 +163,7 @@
 - Art 격자 PR이 쓰지 않는 파일: `InventorySnapshotHandler`·`InventorySnapshotState`. Art 답이 「Art 격자 PR은 두 파일을 쓰지 않는다」·「이번 24칸 변경에서 Core가 두 파일의 주인을 맡는 데 동의한다」고 했고, Core가 동의했다.
 - 클라 상태의 공개 모양: Core PR은 인벤토리 창이 읽는 클라 상태의 공개 모양을 바꾸지 않는다. 칸 목록 멤버의 이름·형식은 그대로이고 길이만 MaxSlots(24)를 따른다. 바꿔야 하면 Core가 Art에 먼저 알린다(Core 동의 1항).
 - Art 격자 PR이 맡는 것: 화면 코드와 화면 시험의 「8칸」 가정을 MaxSlots 계산으로 바꾼다. 대상 줄은 위 「건드릴 곳」의 Core I24-A01~03 행과 8칸 숫자 행이다. `BrightUiKitImportTests`는 같은 표의 행대로 기준 실행으로만 본다. Core PR은 이 파일들을 고치지 않는다.
-- client.md 줄(새 리드 관측): Core 로컬 branch `feat/inventory-24-slots-20261101`(`7eb3edac`)이 client.md :38(받는 쪽)과 :50(InventoryPanelView 문장의 「8슬롯」 → 「공유 칸 수(24)의 슬롯」)을 고친다(근거 폴더 `overlap-client-md-hunks-1101-01.txt`). 격자 PR도 :50을 다시 쓰므로, 격자가 먼저 들어가면 Core PR rebase 때 이 줄이 겹친다. 메인 결정 B-2 A(`msg_b79ad103b86e`): 격자 PR은 client.md :50의 칸 수를 숫자 없이 「공유 칸 수(InventoryLimits.MaxSlots)」로 적는다. Core는 rebase 때 :50 변경을 버리고 :38만 남긴다. Core에는 메인이 그 메시지 사본으로 알린다.
+- client.md 줄(새 리드 관측): Core 로컬 branch `feat/inventory-24-slots-20261101`(`7eb3edac`)이 client.md :38(받는 쪽)과 :50(InventoryPanelView 문장의 「8슬롯」 → 「공유 칸 수(24)의 슬롯」)을 고친다(근거 폴더 `overlap-client-md-hunks-1101-01.txt`. 인라인 명령으로 만든 기록이었다. 저장 스크립트 재측정 `provenance-remeasure-01/overlap-client-md-hunks.txt`가 시계 줄 밖 본문이 같음을 보인다. 정정 기록 `provenance-remeasure-01/correction-record.md`). 격자 PR도 :50을 다시 쓰므로, 격자가 먼저 들어가면 Core PR rebase 때 이 줄이 겹친다. 메인 결정 B-2 A(`msg_b79ad103b86e`): 격자 PR은 client.md :50의 칸 수를 숫자 없이 「공유 칸 수(InventoryLimits.MaxSlots)」로 적는다. Core는 rebase 때 :50 변경을 버리고 :38만 남긴다. Core에는 메인이 그 메시지 사본으로 알린다.
 - 병합 순서: Art 격자 PR이 먼저, Core 24칸 PR이 다음이다. Core PR이 먼저 준비되면 병합 준비 상태로 기다린다(Core 제안 2항). Art 격자 PR의 Unity 시험은 그때의 8칸에서 돈다. Core PR의 Unity 확인은 Art 격자가 들어간 main 위에서 24칸으로 돈다(Core 제안 4항).
 - 6줄 창과 캡처: 6줄 창은 Core PR의 Unity 확인에서 처음 생긴다. 6줄 사용자 확인 캡처는 Core 24칸 PR 병합 뒤 main에서 찍어 이 goal의 결과 기록 PR에 넣는다(메인 결정 2 A). 1920×1080 「화면 안」 단정을 줄 수 인자로 6줄까지 볼지는 RED 계약에서 정한다(같은 결정).
 - 6줄에서 깨지는 시험: 고치기 전에 귀속을 나눈다. Art 소유는 Art 리드에게, Content 소유(보상 창 겹침 시험 등)는 Content 리드와 메인에게 먼저 알린다(Core 동의 2항). `InventoryServerIntegrationTests`의 주인은 24칸 서버에서 칸 수 가정이 깨질 때 Core·Art·메인이 정한다(같은 항).
@@ -216,8 +216,9 @@
 - [x] 범위 초안 승인
 - [x] 선행 시험 RED
 - [x] 구현과 전체 시험
-- [x] 사용자 확인 캡처(촬영. 사용자 그림 확인은 메인이 받는다)
-- [>] 강 등급 독립 검증
+- [x] 사용자 확인 캡처(촬영. 사용자 그림 확인 112 「OK」)
+- [x] 강 등급 독립 검증(PASS)
+- [>] 결과 기록 commit 뒤 좁은 재실사
 - [ ] 격자 PR 병합
 - [ ] 24칸 뒤 6줄 캡처
 - [ ] 결과 기록 PR 병합
@@ -232,7 +233,7 @@
 ### 범위 초안과 승인 — 2026-11-01
 
 - 출발점은 앞 리드가 쓴 초안 v6 `.backups/verification/2026-10-29-inventory-character-select-look/inventory-icon-grid-scope-draft-v6.md`(SHA256 `c96517e1138f4f17f3cfd373ef6c81f941eadc5d05fa68e71cc40cca789e98be`)다. v1~v5 승인 이력은 v6 머리의 상태 줄에 있다. 메인 R-8 진입 지시는 `msg_4bef008e3fa9`(2026-11-01T03:37:09Z)다.
-- 새 리드의 진입: 맥락 메모 `art-lead-context-1101-01.md`, branch 전환 `entry-switch-1101-01.txt`, 미추적 5개 전후 같음(`entry-status-before-switch-1101-01.txt`·`entry-status-after-switch-1101-01.txt`), Run `run_6687e0512b2c`(`entry-run-create-1101-01.json`), 메인 READY `msg_71631483ada4`(03:40:59Z).
+- 새 리드의 진입: 맥락 메모 `art-lead-context-1101-01.md`, branch 전환 `entry-switch-1101-01.txt`, 미추적 5개 전후 같음(`entry-status-before-switch-1101-01.txt`·`entry-status-after-switch-1101-01.txt`. 전환 기록과 이 둘은 인라인 명령의 원시 출력이라 재측정할 수 없다. 교차 근거는 branch reflog 「03:39:38 Created from origin/main」이다: `provenance-remeasure-03/out/summary.txt`. 정정 기록 `provenance-remeasure-03/correction-record.md`), Run `run_6687e0512b2c`(`entry-run-create-1101-01.json`), 메인 READY `msg_71631483ada4`(03:40:59Z).
 - 범위 초안 제출 `msg_eff826366fbc`(03:49:43Z, 본문 `send-main-scope-draft-1101-01-body.md`). v6과의 줄 단위 차이 표(A)와 새 리드의 확인 결과(B)가 그 본문에 있다. 제출 때 goal.md sha256은 `525fc31119d6f2981320e76209d702750a7e6de3d151071b61986ed322b07899`다(`measure-goal-draft-1101-01.txt`).
 - 메인 승인 `msg_b79ad103b86e`(03:50:26Z, 메인 결정, 저장 `lead-wait-1101-01-messages.txt`). 원문 요지: 「승인이다」. 대상은 위 sha256이고 v6을 대신한다. A표의 차이는 줄 번호 이동·기록 위치 이동·이미 내린 결정 문장의 옮겨 적기뿐이라 범위 뜻이 바뀌지 않았고, 사용자 판단 대상이 아니다. B-1 A(#PR5T 처분을 앞 goal 「종료 뒤 보충」 절로), B-2 A(client.md :50의 칸 수를 공유 칸 수로)다.
 - 승인 뒤 이 파일에서 고친 곳은 상태 줄뿐이다. 재개 카드, B-1·B-2를 「제안」에서 결정으로 바꾼 두 줄, PR268 head 참고 한 줄, 진척 단계, 이 절이다. 범위 네 항목과 완료조건은 승인본 그대로다.
@@ -242,7 +243,10 @@
 - 계약 v1 전문은 근거 폴더 `grid-red-contract-v1.md`(sha256 `da7acc6be3b20e9b450701c5bb6f409fe79accc4b1f54ae593c54ef564ac385c`, 조립 receipt `grid-red-contract-v1.receipt.txt`)다. 기준 commit은 `e4b296af`다.
 - 리드 설계는 계약 「리드가 정한 설계」 절과 리드 맥락 메모 「계획 변경 3」에 있다. 메인 `msg_e1d856276e79` 2항이 RED 계약에 맡긴 「1920×1080 화면 안을 줄 수 인자로 6줄까지 볼지」는 쓰지 않기로 정했다. 시험이 MaxSlots에서 기대값을 고르므로 Core PR의 24칸 Unity 실행이 같은 시험으로 6줄을 보고, 실화면 6줄은 W5 캡처가 본다.
 - 작성자 `[Art 시험 Astra]`: handle `term_41ef81bd-d5f7-4575-ae65-35c33c8144ce`, Task `task_57518987f34b`, rollout `01a19554-d6df-7212-bf8f-57b3808a4ec5`(model gpt-6-astra, effort xhigh, service_tier default). 근거는 `grid-red-launch-*` 출력이다. 메인 보고는 `msg_b65f9f51f0a0`다.
-- 시험 주인 차이: `InventoryPresentationTests`·`InventoryPanelToggleTests`·`HudGoldAndPanelToggleSceneTests`는 다른 goal이 처음 만들었다(`test-owner-facts-1101-01~03.txt`). 위 「건드릴 곳」대로 Art가 고치고, 고칠 줄은 Content 리드에게 미리 알렸다(`msg_f0690a77365d`).
+- 시험 주인 차이: `InventoryPresentationTests`·`InventoryPanelToggleTests`·`HudGoldAndPanelToggleSceneTests`는 다른 goal이 처음 만들었다(`test-owner-facts-1101-01~03.txt`. 인라인 명령으로 만든 기록이었다. 재측정 `provenance-remeasure-01/test-owner-facts-01~03.txt`, HEAD는 원 기록 시각의 `e4b296af`로 고정. 정정 기록 `provenance-remeasure-01/correction-record.md`). 위 「건드릴 곳」대로 Art가 고치고, 고칠 줄은 Content 리드에게 미리 알렸다(`msg_f0690a77365d`).
+- 계약 인용 정정(#GRIDV-01): 계약은 고정 입력이라 계약 파일은 고치지 않는다. 줄 번호는 `pr1-result-contract-lines-1101-01.txt`다.
+  - 계약 :32·:249·:436~:438이 가리키는 `test-owner-facts-1101-01~03.txt`는 인라인 명령 출처였다. 정정은 위 시험 주인 줄의 괄호와 같다.
+  - 계약 :771·:877은 goal 절 사본이다. 가리키는 `facts-diff-1031-vs-1101-01.txt`·`overlap-client-md-hunks-1101-01.txt`도 인라인 명령 출처였다. 정정은 「지금 상태(사실)」의 1031판 차이 줄과 「Core 24칸 계약 — 확정」의 client.md 줄 괄호와 같다.
 
 ### 선행 시험 RED — 2026-11-01
 
@@ -254,7 +258,7 @@
 | U0(기준 commit `e4b296af`) | 1725 / 0 / 0 | 217 / 0 / 46 |
 | U1(최종: EditMode 03, PlayMode 02) | 1722 / 13 / 0 | 209 / 15 / 46 |
 
-- 리드 원천 대조(`lead-r2-u0-vs-u1-changes-01.txt`)
+- 리드 원천 대조(`lead-r2-u0-vs-u1-changes-01.txt`. 인라인 명령으로 만든 기록이었다. 재측정 `provenance-remeasure-01/lead-r2-u0-vs-u1-changes.txt`, 파일 SHA256 같음. 정정 기록 `provenance-remeasure-01/correction-record.md`)
   - EditMode에서 사라진 이름은 4개다. 셋은 「eight」→「every」 이름 변경이고 새 이름으로 통과한다. 하나(`InventoryWindowPlacementTests.SlotContents_…StackedIconTextUse…`)는 계약 (다)가 허용한 삭제이고 T2가 대신한다.
   - 기존 시험의 통과→실패는 EditMode 3, PlayMode 8이다. 모두 칸 글→아이콘·수량 읽기 또는 사용 몸짓→우클릭으로 바꾼 시험이다.
   - 새 시험은 EditMode 11 case 중 1개가 통과(칸 수)하고 PlayMode 7개가 모두 실패한다. 실패 28건은 작성자가 모두 (a)로 분류했다(승인된 새 관찰과 옛 구현의 차이).
@@ -262,7 +266,7 @@
 - U1의 세 시도
   - 01: `Assert.Multiple`(Unity NUnit에 없음) 컴파일 오류로 시험 0건이다. PlayMode 01은 돌리지 않았다.
   - 02: 컴파일만 고쳐 다시 돌렸다(리드 `msg_020ff803ceef`, 메인 동의 `msg_51bde59fa91c`).
-  - 03: EditMode만 다시 돌렸다(메인 허용 `msg_e17c8a43dd1c`). 우클릭 helper가 EditMode 버튼 누름 설정을 켜지 않아 생긴 fixture 실패 1건을 선례(`GameplayViewTestSupport.cs` :226~:275)대로 고친 뒤다. 그 1건만 통과로 바뀌었고 나머지 13건은 이름·첫 실패 줄이 02와 같다(`u1-03-vs-02-editmode-lead-01.txt`).
+  - 03: EditMode만 다시 돌렸다(메인 허용 `msg_e17c8a43dd1c`). 우클릭 helper가 EditMode 버튼 누름 설정을 켜지 않아 생긴 fixture 실패 1건을 선례(`GameplayViewTestSupport.cs` :226~:275)대로 고친 뒤다. 그 1건만 통과로 바뀌었고 나머지 13건은 이름·첫 실패 줄이 02와 같다(`u1-03-vs-02-editmode-lead-01.txt`. 인라인 명령으로 만든 기록이었다. 재측정 `provenance-remeasure-01/u1-03-vs-02-editmode.txt`, 파일 SHA256 같음. 정정 기록 `provenance-remeasure-01/correction-record.md`).
   - 같은 시험 산출물의 고침은 두 번이다. 한 번 더면 메인 체크포인트다.
 - 계약 보충(작성자 질의에 리드가 답함, 계약 원문은 그대로): 줄 경계 `msg_1dc06a7fef3b`·`msg_0b5485c8c5f1`·`msg_60b87f37ef68`, snapshot 상태 `msg_6b2af69945fc`, U1 02 `msg_020ff803ceef`, helper `msg_192c78b82e98`이다. 요점은 사용 버튼 단정을 우클릭·Refresh·상세 창 표시로 옮겨 단정 기준을 낮추지 않는 것이다. 지운 단정은 대신할 단정이나 「대상 소멸」 이유와 함께 작성자의 줄 단위 표(`grid-red-01/line-table-final-03.md`)에 있다.
 - 첫 발생 기록(교정 층, 두 번째부터 반복 규칙)
@@ -282,7 +286,7 @@
 
 - 계약은 근거 폴더 `grid-impl-contract-v1.md`(sha256 `5b2360560ab91a7dfe6722541ecbe445160e8b2d491c98f21f19d86cba9046a5`)다. 메인 보고는 `msg_d29db3a6e0fe`다. 리드가 RED 설계에 더 정한 것은 둘이다. 가림 판정은 TMP 글을 그린 글자 범위로 보고, 상세 창이 켜진 동안 매 프레임 다시 본다. 상세 창 자리는 네 방향을 같은 코드로 화면 안에 맞춘다.
 - 구현자는 `[Art Sol]` gpt-6.1-sol max다. handle `term_2fd3ecb2-661a-4268-8465-a6e4ea12359b`, Task `task_7b979ecc38e5`, Dispatch `ctx_7dc19ffcfd36`이다. rollout으로 cwd·model·effort를 대조했다(`grid-impl-launch-rollout-check-01.txt`). worker_done은 `msg_a1a672b6cd71`(06:26:33Z, outcome failed)이고, 보고는 `grid-impl-01/report.md`(sha256 `0b8e090cdae266d367a196eead006e093c4e3b761b5e0e24b9789bd98378af16`)다. pane은 대기 확인 뒤 닫았다(`impl-pane-close-1101-01.json`).
-- 쓴 것: `InventoryPanelView.cs`, `InventorySlotHoverHighlight.cs`(공용 helper로 바꾼 한 줄), 새 `InventorySlotPointer.cs`·`InventoryPointerGeometry.cs`·`InventoryOverlayOcclusion.cs`와 Unity가 만든 `.meta` 셋, client.md다. 시험·ProjectSettings 쓰기는 0이다(`lead-write-end-check-1101-01.txt`).
+- 쓴 것: `InventoryPanelView.cs`, `InventorySlotHoverHighlight.cs`(공용 helper로 바꾼 한 줄), 새 `InventorySlotPointer.cs`·`InventoryPointerGeometry.cs`·`InventoryOverlayOcclusion.cs`와 Unity가 만든 `.meta` 셋, client.md다. 시험·ProjectSettings 쓰기는 0이다(`lead-write-end-check-1101-01.txt`. 인라인 명령이었다. SHA256·줄 수 부분은 저장 스크립트 재측정 본문이 같다: `provenance-remeasure-03/out/summary.txt`. 「쓰기 0」을 받친 status 부분은 인라인 명령의 원시 출력이라 재측정할 수 없다. 교차 근거는 구현 commit `4eddf759`의 diff 9파일에 시험·ProjectSettings가 없다는 것이다: `provenance-remeasure-03/out/lead-write-end-check.diffstat-commit.txt`. 정정 기록 `provenance-remeasure-03/correction-record.md`).
 - 결과는 아래 표다. 원시 결과 XML에서 리드 스크립트로 다시 뽑았다(`lead-r2-impl-v1-1101-01.txt`).
 
 | 실행 | 통과 / 실패 / 건너뜀 |
@@ -296,10 +300,10 @@
   - PlayMode: RED 실패 15건 중 14건이 통과로 바뀌었다. F에만 있는 1건은 Demo 시험이고 통과다.
   - 두 실행 모두 RED에서 통과·건너뜀이던 시험의 결과 변화는 0이다.
 - 열린 실패 D-IMPL-01: `InventorySceneLifecycleTests.MapTransition_RebuildsOnePanelWithTheStoredMirror_RequeriesAfterReady_AndEndingHasNone` :522에서 C_ItemUse가 기대 1·실제 0이다. 구현자 분류는 (d)다.
-  - 이 시험은 RED commit에서 사용 버튼 검사를 「우클릭 → 6프레임 → 사용 1건」으로 바꾼 것이다. 같은 패킷을 보는 형제 시험은 최대 3초를 기다린다. 클릭 좌표는 누르기 전에 한 번만 재고, 패널은 HUD를 따라 자기 Update에서 움직인다(`lead-d-impl-01-look-1101-01.txt`~`-03.txt`).
+  - 이 시험은 RED commit에서 사용 버튼 검사를 「우클릭 → 6프레임 → 사용 1건」으로 바꾼 것이다. 같은 패킷을 보는 형제 시험은 최대 3초를 기다린다. 클릭 좌표는 누르기 전에 한 번만 재고, 패널은 HUD를 따라 자기 Update에서 움직인다(`lead-d-impl-01-look-1101-01.txt`~`-03.txt`. 인라인 명령으로 만든 기록이었다. 재측정 `provenance-remeasure-02/out/lead-d-impl-01-look-01~03.txt`. 01은 끝 종료 코드 줄만 재측정 셸의 pipefail 때문에 다르다: `provenance-remeasure-02/look01-exit-check.txt`. 정정 기록 `provenance-remeasure-02/correction-record.md`).
   - 리드 가설은 「움직이는 패널을 눌렀거나 6프레임 안에 패킷이 도착하지 않았다」이다. 확정이 아니다.
   - 리드는 진단 실행 없이 멈추고 보고하게 했다(`msg_5448fbbd3ab0`). 메인 체크포인트 `msg_9de519bcc878`에 메인이 「A」로 답했다(`msg_28eea903507a`). 새 `[Art 시험 Astra]`가 이 시험의 두 우클릭만 고친다. 두 클릭 모두 패널이 멈추기를 기다리고, 사용 패킷은 최대 3초 기다린다. 다시 실패하면 제품 결함으로 보고 새 구현자를 연다. 같은 시험 산출물의 세 번째 수정이며, 네 번째는 사용자 판단이다. 구현 확정 실패 집계와는 따로다.
-- Unity 창: 메인 `msg_463977b9ecb6` 05:57~06:45Z이다. 구현자 쪽 한국어 decoding 실패로 창 메시지를 ASCII 줄과 함께 다시 보냈다(`msg_e1c07936ef5a`). 06:18Z에 일찍 반납했다(`msg_c7385d5ca33b`). 리드 잔류 확인은 0이다(`lead-post-impl-unity-check-1101-01.txt`).
+- Unity 창: 메인 `msg_463977b9ecb6` 05:57~06:45Z이다. 구현자 쪽 한국어 decoding 실패로 창 메시지를 ASCII 줄과 함께 다시 보냈다(`msg_e1c07936ef5a`). 06:18Z에 일찍 반납했다(`msg_c7385d5ca33b`). 리드 잔류 확인은 0이다(`lead-post-impl-unity-check-1101-01.txt`. 인라인 명령이었다. 새 `.meta`·SENTIS SHA 부분은 저장 스크립트 재측정 본문이 같다: `provenance-remeasure-03/out/summary.txt`. 「잔류 0」을 받친 프로세스 수 부분은 인라인 명령의 원시 출력이라 재측정할 수 없고, 리드 쪽 교차 근거도 없다. 정정 기록 `provenance-remeasure-03/correction-record.md`).
 - 정산: SENTIS 한 줄(diff sha256 `31e7aaf1…83e2`)을 사본(`impl-settle-sentis-diff-1101-01.txt`)으로 남기고 HEAD로 되돌렸다. 구현 commit은 `4eddf75980029fb9999c92428b518bd29845bda3`이고 원격에 올렸다. 9파일이다(`impl-commit-1101-01.txt`).
 - 구현자 자기 신고(`grid-impl-01/entry-self-report.md`): 계약을 읽기 전 첫 메모에 인라인 date/git 값을 적었다. 첫 「쓰기 끝」 보내기는 PS5 UTF-8로 실패해 pwsh로 다시 보냈다. 창 메시지의 한국어 decoding이 깨져 설정 검사기가 거부했다. 정식 메모는 저장 출력으로 보충했다고 했다.
 - 독립 검증 계약으로 넘길 설계 관찰(리드가 diff로 본 것, 판정 아님)
@@ -314,10 +318,14 @@
 ### 시험 고침 v1 — 2026-11-01
 
 - 계약은 근거 폴더 `grid-fix-contract-v1.md`(sha256 `fbfe25554394e77f9e963795ca1cc85315aa2e08a572beffdb364f9ed8ca2d99`)다. 메인 보고는 `msg_a1a973a2bf24`이고, 근거는 메인 체크포인트 답 「A」(`msg_28eea903507a`)다.
+- 계약 인용 정정(#GRIDV-01): 계약은 고정 입력이라 계약 파일은 고치지 않는다. 줄 번호는 `pr1-result-contract-lines-1101-01.txt`다.
+  - 계약 :22는 `grid-fix-facts-1101-01.txt`를 「리드의 저장 스크립트로 쟀다」고 적었다. 실제로는 인라인 명령이었다. 함께 인용한 `grid-fix-facts-1101-02.txt`는 저장 스크립트였다(`lead-provenance-trace-1101-04.txt`).
+  - 계약 :22·:44·:206의 `grid-fix-facts-1101-01.txt`와 :209~:211·:584의 `lead-d-impl-01-look-1101-01~03.txt`는 저장 스크립트 재측정 본문이 같다. look 01은 끝 종료 코드 줄만 pipefail 때문에 다르다(`provenance-remeasure-02/out/summary.txt`, `provenance-remeasure-02/look01-exit-check.txt`).
+  - 계약 :743·:751·:773·:787·:790은 부록 D의 goal 절 사본이라 이 goal의 해당 줄 괄호를 따른다. 부록 F의 :1227·:1444는 선행 시험 계약 :32·:249의 사본이라 「선행 시험 계약 — 2026-11-01」 절의 정정 줄을 따른다.
 - 작성자는 `[Art 시험 Astra]` gpt-6-astra xhigh다. handle `term_2aaadcfb-9cfa-4147-be31-b5050ee81c15`, Task `task_fbfe48c19933`, Dispatch `ctx_087dbb3ec793`이다. rollout으로 model·effort를 대조했다(`grid-fix-launch-rollout-check-01.txt`). worker_done은 `msg_cd42c82302a2`(07:00:00Z, outcome succeeded)이고, 보고는 `grid-fix-01/report.md`(sha256 `fe7d50649194228f8749da2403fd3ae0dbafca82c3634190a6cb2afb68d08e12`)다. pane은 대기 확인 뒤 닫았다(`fix-pane-close-1101-01.json`).
 - 계약 넓힘
   - 작성자가 ask `msg_80792ba97c62`로 알렸다. 이 시험은 `ReadySyncedTown` 뒤 패널을 「I」로 열지 않는다. 열림 상태는 연결이 갖고 처음 값이 닫힘이다. 그래서 클릭이 닫힌 패널로 갔다.
-  - 리드가 다시 쟀다(`lead-fix-open-check-1101-01.txt`). 같은 파일에서 우클릭을 쓰는 시험 다섯은 모두 `OpenWithI`를 부르고, 이 시험만 없다. RED commit은 이 시험의 열기를 건드리지 않았다. 옛 단정 「사용 버튼이 눌릴 수 있는가」는 닫힌 패널에서도 참이었다.
+  - 리드가 다시 쟀다(`lead-fix-open-check-1101-01.txt`. 인라인 명령으로 만든 기록이었다. 재측정 `provenance-remeasure-02/out/lead-fix-open-check.txt`, `0fe7b1a8` 트리. 정정 기록 `provenance-remeasure-02/correction-record.md`). 같은 파일에서 우클릭을 쓰는 시험 다섯은 모두 `OpenWithI`를 부르고, 이 시험만 없다. RED commit은 이 시험의 열기를 건드리지 않았다. 옛 단정 「사용 버튼이 눌릴 수 있는가」는 닫힌 패널에서도 참이었다.
   - ask 답으로 계약을 넓히는 것은 「선행 시험 RED」 때 첫 발생으로 적었다. 그래서 리드가 혼자 정하지 않고 메인에 물었다(`msg_2c8d7a14e138`). 메인이 「A」로 답했고(`msg_c90780508031`), 이것은 같은 시험 산출물 세 번째 수정 안의 내용 넓힘이다. 기록만 한다.
 - 바꾼 것은 대상 메서드 한 곳이다(5줄 더함·1줄 뺌, `lead-fix-ready-check-1101-01.txt`).
   - :494 `OpenWithI` 한 줄.
@@ -377,3 +385,67 @@
 - 교정 층
   - 첫 발생: 캡처 case가 창 열림 효과 도중을 찍었다. 앞 goal 캡처부터 있던 일이다. Core 24칸 뒤 6줄 캡처 계약에서 격자 case가 효과 끝까지 기다리게 고친다(위 「PR 경계」 PR2).
   - 두 번째 발생: 작업자 첫 명령이 receipt 도구 전에 돌았다(첫 발생은 시험 고침 작성자 `msg_858445be8861`). 포인터에 「처음 명령부터 receipt 기록」을 적었는데도 났다. 다음 계약부터 리드가 시작 스크립트(계약 SHA256·HEAD·status를 receipt와 함께 저장)를 만들어 포인터에 경로·SHA256으로 준다. 메인은 이 방향에 이견이 없고 메인 최종 보고의 규칙 후보로 올린다(`msg_163fec4ff6c2`).
+- 사용자 그림 확인: 112 「OK」다(메인 `msg_7e7523b25aa1` 1항). PR1에 바꿀 것은 없다. 같은 사용자 입력의 HUD 새 요구는 PR2다(아래 재개 카드).
+
+### 독립 검증 — 2026-11-01
+
+- 계약은 근거 폴더 `grid-verify-contract-v1.md`(sha256 `6ab7a6451bcd33b5da4670714fd089b5398d9a363f9c818e9a89189909a3b2a3`, 조립 receipt `grid-verify-contract-v1.receipt.txt`)다. 대상 head는 `47cbdcac`다. 메인 보고는 계약 준비 `msg_838bc19793b8`, 기동 `msg_c64b74970dcc`다.
+  - 포인터에 시작 스크립트 `grid-verify-start-1101-01.mjs`를 넣어 첫 명령부터 receipt를 남기게 했다. 위 「사용자 확인 캡처 v1」 교정 층 두 번째 발생의 교정이다. 검증자의 첫 명령은 이 스크립트였다(판정 원문 「대상과 독립성」).
+  - 몸짓 선례 규칙(메인 `msg_484ea2fa03bb`)을 계약에 넣었다.
+- 검증자는 `[Art 검증자]` gpt-6-astra xhigh다. handle `term_1d599bf7-ab27-46aa-9304-6f1994188ed2`, Task `task_946c398e4a36`, Dispatch `ctx_d517c169214c`이다. 첫 화면에 업데이트 창·선택창이 없었고(`grid-verify-launch-screen-01.json`), rollout으로 model·effort를 대조했다(`grid-verify-launch-rollout-check-01.txt`).
+  - worker_done은 `msg_893608d8584d`(09:27:43Z, PASS)다.
+  - 판정 원문은 `grid-verify-01/verdict.md`(sha256 `b175347884b698dee50843f99ea791467964ae30b73d1584869784d86241cbc9`)다.
+  - pane은 빈 프롬프트를 확인하고 닫았다(`verify-pane-close-1101-01.json`).
+- 판정은 PASS다. 제품 차단 결함은 0이다. 리드 기록 결함 #GRIDV-01·02는 아래 메인 처분과 재측정 대조로 처분됐다.
+
+| 실행(판정 원문 「실행과 결과」) | 통과 / 실패 / 건너뜀 |
+|---|---|
+| F EditMode 전체 | 1792 / 0 / 0 |
+| F PlayMode 전체 | 226 / 0 / 48 |
+
+- 결과 읽기
+  - PlayMode 건너뜀 48은 Ignored 44·Explicit 4다. 새 캡처 case 둘은 출력 폴더 변수가 비어 건너뜀에 든다(판정 원문 「기존 결과 비교와 실패 분류」).
+  - 실제 진입 경로: 새 PlayMode 시험 `InventoryPointerEntrySceneTests`가 실제 Town 장면에서 I → 같은 `Mouse.current`로 올림 → 우클릭 → `C_ItemUse`를 봤다. 출력은 `fixtureMouse=193 currentMouse=193 revision=7`, `itemId=2 expectedRevision=7 packets=1 negative=False`다. 서버 쪽은 대본 TCP peer다(완료조건 9).
+  - 보조 실행 R 다섯: EditMode 01은 의도한 음성(경계 8·관문 3), 02는 정상 통과다. PlayMode 03은 새 시험의 Town 진입 준비에서 실패했고, 04는 검증자 시험의 using 누락 컴파일 오류(CS0103)다. 05는 메인 「VR05 A」(`msg_993e07ebd115`)로 허용한 추가 1회이고 의도한 음성 실패다. 03·04는 제품 회귀나 음성 성공으로 세지 않았다.
+  - ask로 바뀐 계약 방법: R PlayMode 05 1회와 어셈블리별 최신성 관문이다(메인 `msg_993e07ebd115`). 검증자 질문의 namespace 오기(Combat)는 실제 `Dawnholder.Client.Network`로 정정했다(리드 `msg_4ddead10f810`, 근거 `lead-vr05-namespace-check-1101-01.txt`).
+  - 최종 runner SHA256은 `f0e4d47d7ba79915289ec8144c0127065d7bdf38a07e6af786f6878b9529599e`이다. 바뀐 줄은 diff 둘(`d144f8bb…5484`, `9db43857…6566`)에 있다(메인 GRIDV-02 처분 `msg_434b69242354`).
+- 리드 R-2 표본(`lead-r2-verify-sample-1101-01.cjs` → `.txt`, 09:28:29Z): 판정 원문과 모두 같다. verdict·F XML 둘의 SHA256, F EditMode 1792 case 전부 통과·고유 이름 1792, F PlayMode 274 case(통과 226·건너뜀 48), 새 독립 시험 EditMode 11·PlayMode 1 통과와 출력 줄, 새 시험 4파일과 최종 runner의 SHA256을 봤다.
+- Unity 창: 08:47:02Z~09:37:02Z였다(`lead-verify-window-open-1101-01.txt`, 메인 미리 배정 `msg_f1139600734d`). 마지막 Unity 종료는 09:17:11Z이고, 메인에 「V 끝, 창 반납」을 보냈다(`msg_9e349bfbdda7`, 09:21:29Z). 리드 잔류 확인은 프로세스 0이다(`lead-verify-window-end-check-1101-01.txt`).
+- 정산(`settle-verify-sentis-1101-01.txt`, 09:28:44Z): SENTIS 한 줄(diff sha256 `31e7aaf1…83e2`)을 검증자 사본과 대조하고 사본(`verify-settle-sentis-diff-1101-01.txt`)을 남긴 뒤 HEAD로 되돌렸다. 추적 변경은 0이다.
+- 독립 시험 채택(리드 결정): 판정이 PR 포함을 제안했고 포함 여부는 리드 몫이라고 적었다. 리드는 새 시험 두 파일과 Unity `.meta` 둘을 PR1에 넣는다. 선례는 PR268의 독립 회귀 시험 채택 `69eb9fdf`다. 메인 보고는 `msg_df285250ec13`이다.
+
+| 채택 파일 | SHA256(판정 원문) |
+|---|---|
+| `03_Client/Assets/Tests/EditMode/InventoryPointerBoundaryTests.cs` | `6225e5c7474b1f3ded484013bcf51e5c5c8565fbd1360cad4c49766e4bf0a0ee` |
+| 같은 `.cs.meta` | `8de7cab2a35d68f285abd82339931bb425cd7bbe9196b55d667dacc983016cf0` |
+| `03_Client/Assets/Tests/PlayMode/InventoryPointerEntrySceneTests.cs` | `b3679ec87e268563339f6d29cad550c9ae8d8ea8cb73e249f8f8c5e27dc4bac5` |
+| 같은 `.cs.meta` | `e5bbbcc2589a03f88850b95ebf29a2911e34ad7af86ccd576596b570dbfe6ed3` |
+
+- 비차단 관찰(판정 원문 O1~O4)과 리드 처리
+  - O1 `InventoryOverlayOcclusion.cs:17`: 채운 칸에 올린 동안 매 프레임 Canvas 배열을 찾고 새로 만든다. 비용은 재지 않았고 성능 요구 위반 근거는 없다. 지금 고치지 않고, 같은 판정을 다시 쓰는 다음 작업에서 다시 본다.
+  - O2 `UiWindowLiveCaptureTests.cs:240`·`:291`: 새 캡처 case 둘의 stillShown 람다 약 30줄이 겹친다. 6줄 캡처 계약에서 같은 파일을 고칠 때 판단한다.
+  - O3 상세 창 canvas 5와 HUD 10: HUD 위에 그리라는 요구는 없다. 그림은 사용자 112 「OK」다.
+  - O4 맵 이동 시험의 Ready 전 클릭: 칸 적중 공개 신호가 없다. 위 「남은 위험」 둘째 줄 그대로다.
+- 미검증(판정 원문): 사람 플레이, GameServer, DB, 사람 마우스·Editor GUI, 합친 main/PR207 상태의 Unity, Core 실제 24칸 통합, CI, 별도 dotnet build, 그림 품질(사용자 몫)이다.
+- 메인 처분(검증 중, 모두 A)
+  - 「GRIDV-01 A」(`msg_2d6d403def3e`): 인라인 측정 출력이 goal·계약에 쓰였다. 정정 기록으로 검증을 계속하고, 결과 기록 commit에서 출처 설명을 고친 뒤 바뀐 줄만 새 독립 세션이 재실사한다. 위 각 절의 출처 괄호와 계약 인용 정정 줄이 그 고침이다.
+  - 「GRIDV-01 추가 A」(`msg_7e3209a42aca`): 추가 다섯 사슬을 첫 처분에 묶는다. 리드 전수에서 같은 종류는 묻지 않고 묶고, 다르거나 재측정할 수 없는 것만 따로 묻는다. 전수 분류는 `provenance-remeasure-03/classification.tsv`이고 개수는 `provenance-remeasure-03/count-classes.txt`다.
+  - 「전수 A」(`msg_3aefb7b0bdc2`): 재측정할 수 없는 기록도 기록과 문장을 그대로 둔다. 「범위 초안과 승인」의 진입 줄, 「구현 v1」의 쓴 것 줄과 Unity 창 줄에 재측정 불가와 교차 근거를 적었다. 리드 메모 01과 메인 보고 본문 쪽은 메모 01 끝 정정 절에만 적는다.
+  - 「GRIDV-02 A」(`msg_434b69242354`): 리드의 `/dev/null` 일곱 호출이다. 원 시점 stderr는 복구할 수 없고, 지금 재실행한 근거로만 본다(`provenance-remeasure-01/correction-record-devnull.md`).
+  - 「VR05 A」(`msg_993e07ebd115`): 위 R PlayMode 05와 어셈블리별 최신성이다.
+  - 「VDELAY A」(`msg_b57c63a172cf`): 아래 교정 층의 첫 발생이다.
+- 교정 층
+  - 두 번째 발생(메인 `msg_2d6d403def3e` 2항): 리드 근거 기록이 저장 스크립트가 아닌 인라인 명령으로 만들어졌다.
+    - #GRIDV-01(검증자 `msg_e0c3e4c09173`)의 여섯과 추가 소비 위치(`msg_9b5f9dfd5907`)의 일곱 파일이다. 리드 전수(`provenance-remeasure-03`)가 같은 종류를 더 찾았다.
+    - 규칙은 이미 있었다(메인 `msg_4bef008e3fa9` 「반복 금지」). 리드 기록도 시작 스크립트·저장 스크립트로만 만든다. 메인 최종 보고의 규칙 후보다.
+  - 반복 발생: 리드 명령의 `/dev/null` 일곱 호출이 신고되지 않았다(#GRIDV-02 `msg_c415be1687f3`, 메인 처분 A `msg_434b69242354`).
+    - 앞 신고 둘은 리드 맥락 메모 01 :76과 위 「선행 시험 RED」의 리드 자기 신고 줄이다. 정정 기록은 `provenance-remeasure-01/correction-record-devnull.md`다.
+    - 기계 검사(프로젝트 hook) 제안은 메인 최종 보고의 규칙 후보다. 설정 변경은 사용자 결정이라 지금 하지 않는다.
+  - 두 번째 발생(메인 `msg_7e3209a42aca` 3항): 리드 요약 파일의 hash 목록이 쓰는 중인 자기 자신을 해시해 자기 줄이 틀렸다.
+    - 첫째는 `provenance-remeasure-01/devnull-rerun-01/summary.txt`(검증자 `msg_74a2abc1aaa0`), 둘째는 `provenance-remeasure-02/out/summary.txt`다.
+    - 교정: 저장 스크립트는 자기 출력 파일을 hash 목록에서 뺀다. manifest는 완성 뒤 폴더 밖에서 따로 잰다(`provenance-manifest-1101-01.sh`·`-02.sh`). 메인 최종 보고의 규칙 후보다.
+  - 첫 발생(메인 「VDELAY A」 `msg_b57c63a172cf`): 검증자의 「Unity 사용 끝」 알림이 마지막 Unity 종료(09:17:11Z) 뒤 약 3분인 09:20:22Z에 갔다(자기 신고 `msg_3c34d6adca16`). 창 안이었고 기다린 파트는 없었다. 다음 계약부터 「Unity 종료를 확인한 직후 「사용 끝」을 먼저 보내고, 잔여 관찰은 그 뒤에 덧붙인다」를 넣는다.
+- 좁은 재실사로 넘길 것(메인 `msg_2d6d403def3e` 2항)
+  - 결과 기록 commit에서 바뀐 goal 줄: 출처·재측정 불가 괄호, 계약 인용 정정 줄, 사용자 그림 확인 줄, 이 절, 재개 카드와 진척 단계.
+  - 리드 메모 01 끝 정정 절. 앞 280줄은 검증 계약 부록 A의 SHA256 `cd10d368…cb57` 그대로여야 한다.
+  - 채택한 독립 시험 4파일. SHA256이 위 표와 같아야 한다.
