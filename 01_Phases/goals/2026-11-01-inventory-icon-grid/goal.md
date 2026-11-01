@@ -2,17 +2,17 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-11-01 범위 승인 뒤
+### 현재 재개 카드 — 2026-11-01 선행 시험 RED commit 뒤
 
-**다음 첫 일:** 선행 시험 계약(Unity 보호 규칙 원문 포함)을 쓰고 새 `[Art 시험 Astra]`를 띄운다. 계약이 준비되면 W1 Unity 창을 메인에 「준비됨」으로 청한다.
+**다음 첫 일:** 구현 계약(`[Art Sol]`)을 쓴다. 아래 「선행 시험 RED — 2026-11-01」의 「구현 계약으로 넘길 것」과 「남은 위험」을 계약에 넣는다. 계약을 메인에 보고한 뒤 구현자를 띄운다.
 
 | 항목 | 현재 |
 |---|---|
-| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`, 아래 「범위 초안과 승인」). 선행 시험 계약 준비 중이다. |
+| 상태 | 범위는 메인이 승인했다(`msg_b79ad103b86e`). 선행 시험 RED를 마치고 시험을 commit했다(아래 「선행 시험 RED — 2026-11-01」). 구현은 아직 0이다. |
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), 대화 ID `c92c0adb-250c-48fd-b4cc-8d6c85df4386`. 회신 주소는 `run:run_6687e0512b2c`다. |
 | branch | `feat/art-inventory-icon-grid-20261101`이다. origin/main `ffe7f983b96eda8002a27169b3e8b7cb5eb32c72`(PR292 병합)에서 만들었다. |
 | 관계 | Core 인벤토리 24칸 goal(`core-active/01_Phases/goals/2026-11-01-inventory-24-slots/goal.md`, Core PR 때 main에 들어간다)이 패킷·서버·공유 칸 수를 바꾼다. 병합 순서는 이 goal의 격자 PR이 먼저다(아래 「Core 24칸 계약 — 확정」). |
-| 실행 창 | 아직 0회다. Unity·WSL·DB 창은 메인이 배정한다. |
+| 실행 창 | W1 Unity 창 세 번을 썼다. U0 04:30~05:00Z, U1 04:56~05:20Z, U1 03 05:18~05:40Z이고 모두 반납했다. Unity·WSL·DB 창은 메인이 배정한다. |
 | 근거 폴더 | `.backups/verification/2026-11-01-inventory-icon-grid/`다. Git 제외 폴더다. 앞 goal의 근거 폴더 `.backups/verification/2026-10-29-inventory-character-select-look/`에 초안 v1~v6과 facts 1031판이 있다. |
 
 ## 적용 중인 사용자 결정
@@ -115,7 +115,7 @@
 | `03_Client/Assets/Scripts/UI/InventorySlotHoverHighlight.cs` 또는 같은 폴더의 새 파일 | 올린 칸을 상세 창·우클릭과 나눠 쓰기. 새 파일이면 이름은 책임으로 짓는다(예: 상세 창). 위치와 이름 근거는 리드 맥락 메모에 남긴다. | Art |
 | 기존 EditMode 시험 | 파일별 참조 줄 수: `InventoryPresentationTests` 11, `UiWindowAppearanceContractTests` 7, `UiWindowCompositionRenderTests` 20, `InventoryPanelToggleTests` 2(F2). 그 밖에 `InventoryWindowPlacementTests`(아이콘·글자·버튼 쌓기), `InventoryPanelViewAppearanceTests`(`SlotHover_KeepsOnlyButtonsAsRaycastTargets` 등) | Art |
 | Core 작업본에서 실패하는 Art 시험 3건(Core I24-A01~03) | `InventoryWindowPlacementTests.CurrencyAndUseResult_TakeSeparateLines_BelowTheEightSlots`(F3 :139), `UiWindowCompositionRenderTests.Inventory_OnCamera_…`의 1920×1080·1280×720 두 경우(F3 :367). 격자 PR이 MaxSlots 계산으로 고친다. | Art |
-| 8칸을 숫자로 박은 Art 시험 줄 | `InventoryPresentationTests` :477~:478(빈 칸 순회 `slot <= 8`, Core 참고 `msg_11d7daa692d2`), `InventoryPanelViewAppearanceTests` :57·:117·:127·:179, `UiWindowAppearanceContractTests` :257·:583·:1051, `UiWindowCompositionRenderTests` :380·:428, `UiWindowLiveCaptureTests` :571, `InventorySceneLifecycleTests` :263(메시지), `InventoryWindowPlacementTests` :136~:154(F3). 만들 것 1대로 MaxSlots에서 기대값을 계산한다. | Art |
+| 8칸을 숫자로 박은 Art 시험 줄 | `InventoryPresentationTests` :477~:478(빈 칸 순회 `slot <= 8`, Core 참고 `msg_11d7daa692d2`), `InventoryPanelViewAppearanceTests` :57·:117·:127·:179, `UiWindowAppearanceContractTests` :257·:583·:1051, `UiWindowCompositionRenderTests` :380·:428, `BrightWindowInteractionTests` :114·:125, `InventorySceneLifecycleTests` :263(메시지), `InventoryWindowPlacementTests` :136~:154(F3). 만들 것 1대로 MaxSlots에서 기대값을 계산한다. 정정: 초안의 `UiWindowLiveCaptureTests` :571은 3D 경계 상자 모서리 8개 순회라 인벤토리 칸 줄이 아니고, `BrightWindowInteractionTests` 두 줄은 초안 목록에 없었다(근거 폴더 `grid-red-facts-1101-03.txt`). 전체 줄 목록은 선행 시험 계약의 「바꾸는 기존 단정」 표다. | Art |
 | `BrightUiKitImportTests` | Core 제안 3항이 든 파일이다. F3의 「eight」·「Slot」 줄(:53·:303~:325)은 밝은 스킨의 빈 sprite 필드 이야기이고, 인벤토리 칸 줄은 0이다. W1 기준 실행에서 깨지는지만 보고, 깨지지 않으면 쓰지 않는다. | Art |
 | 기존 PlayMode 시험 | `InventorySceneLifecycleTests` 20, `HudGoldAndPanelToggleSceneTests` 2, `InventoryServerIntegrationTests` 3, `InventoryWindowPlacementSceneTests` 1, `UiWindowLiveCaptureTests` 1(F2) | Art. 단 `InventoryServerIntegrationTests`는 주인이 미정이다(PR286 goal). 24칸 서버에서 이 시험의 칸 수 가정이 깨지면 Core·Art·메인이 그때 정한다(아래 「Core 24칸 계약 — 확정」). 그 전에는 Art가 고친다고 보고 진행한다. |
 | `InventoryPanelProbe`(`InventorySceneLifecycleTests.cs:24`~`:93`) | `Slot()`·`Use()`를 새 구조에 맞춘다. 이 probe는 보상 창·길드·HUD 시험 등 여러 파일이 쓴다(F2 「InventoryPanelProbe를 쓰는 파일」 목록). 1031판보다 `BrightRemainingScreensCaptureTests`·`PauseMenuAppearanceSceneTests` 둘이 늘었다. 쓰는 파일을 하나씩 고치지 않고 probe에서 맞춘다. | Art |
@@ -170,7 +170,7 @@
 - PR2 결과 기록·6줄 캡처·Gardener: Core 24칸 PR 병합 뒤 main에서 6줄 캡처를 찍어 넣는다(메인 결정 2 A).
 - 앞 goal의 #PR5T-01~03 처분: 메인 결정 B-1 A(`msg_b79ad103b86e`)로 PR1의 첫 기록 commit에 [밝은 외관 goal](../2026-10-29-inventory-character-select-look/goal.md#종료-뒤-보충--pr292-문서-재실사-v3와-pr5t-처분)의 「종료 뒤 보충」 절로 넣었다. 원천은 R-8 노트 3판의 마지막 두 절과 메인 `msg_b8eeb4d0a16a`·`msg_5d7952f9d461`이다. 이 절은 앞 PR292 판정 대상 밖이고 PR1 독립 검증 범위에 들어간다. 이유는 PR2가 Core 24칸 병합까지 늦고, 따로 PR을 열면 실사와 병합 승인이 한 번 더 들기 때문이다.
 - branch는 앞 goal의 PR4·PR5가 main에 들어간 뒤 최신 main(`ffe7f983`)에서 만들었다. 열린 PR과 다른 파트 branch의 merge-tree 대조는 근거 폴더 `merge-tree-open-work-1101-01.txt`에 있다.
-  - PR268(`23cc2713`): ffe7f983과 충돌 0이다. 격자 대상 중 client.md를 함께 고치지만 :30 근처 두 줄 추가라 :50·:54와 다른 곳이다. 메인 참고(`msg_b79ad103b86e`): PR268 head는 지금 `3e46ea65`다(Content goal.md 한 파일 commit 추가). PR1 병합 전에 그 head로 merge-tree를 다시 잰다.
+  - PR268(`23cc2713`): ffe7f983과 충돌 0이다. 격자 대상 중 client.md를 함께 고치지만 :30 근처 두 줄 추가라 :50·:54와 다른 곳이다. 메인 참고(`msg_b79ad103b86e`): PR268 head는 지금 `3e46ea65`다(Content goal.md 한 파일 commit 추가). PR1 병합 전에 그 head로 merge-tree를 다시 잰다. 이어서 PR268은 main에 병합됐다(merge commit `3bb76772`, 메인 사본 `msg_31e4dfa1781f`). 그 main과 이 branch의 merge-tree 충돌은 0이다(근거 폴더 `merge-tree-after-pr268-1101-01.txt`). client.md의 인벤토리 문장은 두 줄 밀려 InventoryPanel이 :50, InventoryPanelView가 :52다. 구현 계약은 main을 받은 뒤의 줄 번호로 쓴다. PR1 병합 전에 그때의 main으로 한 번 더 잰다.
   - PR207(`02fcd8a4`): CURRENT.md 하나로 충돌이 난다. 앞 goal 때도 같았고 메인은 범위 밖으로 둔다(`msg_b8eeb4d0a16a`).
   - Content 캐릭터 선택 로컬 branch(`fb3d65b1`)는 이미 main 안에 있다(merge-base = head). 공유 시험 파일(`UiWindowAppearanceContractTests`·`UiWindowCompositionRenderTests`) 겹침은 지금 0이다. Content의 커밋 안 된 작업본은 보지 못했다.
   - Core 24칸 로컬 branch(`7eb3edac`): ffe7f983과 충돌 0이다. client.md :50은 위 Core 계약의 client.md 줄대로 다룬다.
@@ -201,11 +201,15 @@
 - W1~W4 합계 약 2시간 5분이다. 고침이 한 번 생길 때마다 약 30분을 더한다.
 - 근거: 앞 goal PR4의 검증 창은 40분(msg_e9cfec7f9f2b), K2 캡처 창은 20분(msg_e39367a0d2ac)이었다. 70 A 구현 F의 PlayMode 전체는 336초였다(PR286 goal 원문). W5는 W3와 같은 크기로 본 추정이다.
 
+## 남은 위험
+
+- 상세 창의 아래쪽 넘침, 그리고 마지막 줄·마지막 열의 채운 칸은 지금 시험하지 않는다. 클라 snapshot 검증(`InventorySnapshotState.IsValidSnapshot` :25~:46)은 빈틈 없음·ID 오름차순·중복 없음만 받는다. 아이템이 2종이라 채울 수 있는 칸은 칸 1·2뿐이다. 그래서 그 상태는 제품이 만들 수 없다. 시험은 칸 1·2와 실제 끌기로 오른쪽 끝 넘침만 본다(`msg_6b2af69945fc`). 구현 독립 검증 계약에 「상세 창 자리 계산이 방향과 상관없이 화면 안으로 맞추는지 코드 실사」를 넣는다(메인 `msg_8a35900d5374`). 아이템 종류가 늘면 다시 본다.
+
 ## 진척 단계
 
 - [x] 범위 초안 승인
-- [>] 선행 시험 RED
-- [ ] 구현과 전체 시험
+- [x] 선행 시험 RED
+- [>] 구현과 전체 시험
 - [ ] 사용자 확인 캡처
 - [ ] 강 등급 독립 검증
 - [ ] 격자 PR 병합
@@ -226,3 +230,42 @@
 - 범위 초안 제출 `msg_eff826366fbc`(03:49:43Z, 본문 `send-main-scope-draft-1101-01-body.md`). v6과의 줄 단위 차이 표(A)와 새 리드의 확인 결과(B)가 그 본문에 있다. 제출 때 goal.md sha256은 `525fc31119d6f2981320e76209d702750a7e6de3d151071b61986ed322b07899`다(`measure-goal-draft-1101-01.txt`).
 - 메인 승인 `msg_b79ad103b86e`(03:50:26Z, 메인 결정, 저장 `lead-wait-1101-01-messages.txt`). 원문 요지: 「승인이다」. 대상은 위 sha256이고 v6을 대신한다. A표의 차이는 줄 번호 이동·기록 위치 이동·이미 내린 결정 문장의 옮겨 적기뿐이라 범위 뜻이 바뀌지 않았고, 사용자 판단 대상이 아니다. B-1 A(#PR5T 처분을 앞 goal 「종료 뒤 보충」 절로), B-2 A(client.md :50의 칸 수를 공유 칸 수로)다.
 - 승인 뒤 이 파일에서 고친 곳은 상태 줄뿐이다. 재개 카드, B-1·B-2를 「제안」에서 결정으로 바꾼 두 줄, PR268 head 참고 한 줄, 진척 단계, 이 절이다. 범위 네 항목과 완료조건은 승인본 그대로다.
+
+### 선행 시험 계약 — 2026-11-01
+
+- 계약 v1 전문은 근거 폴더 `grid-red-contract-v1.md`(sha256 `da7acc6be3b20e9b450701c5bb6f409fe79accc4b1f54ae593c54ef564ac385c`, 조립 receipt `grid-red-contract-v1.receipt.txt`)다. 기준 commit은 `e4b296af`다.
+- 리드 설계는 계약 「리드가 정한 설계」 절과 리드 맥락 메모 「계획 변경 3」에 있다. 메인 `msg_e1d856276e79` 2항이 RED 계약에 맡긴 「1920×1080 화면 안을 줄 수 인자로 6줄까지 볼지」는 쓰지 않기로 정했다. 시험이 MaxSlots에서 기대값을 고르므로 Core PR의 24칸 Unity 실행이 같은 시험으로 6줄을 보고, 실화면 6줄은 W5 캡처가 본다.
+- 작성자 `[Art 시험 Astra]`: handle `term_41ef81bd-d5f7-4575-ae65-35c33c8144ce`, Task `task_57518987f34b`, rollout `01a19554-d6df-7212-bf8f-57b3808a4ec5`(model gpt-6-astra, effort xhigh, service_tier default). 근거는 `grid-red-launch-*` 출력이다. 메인 보고는 `msg_b65f9f51f0a0`다.
+- 시험 주인 차이: `InventoryPresentationTests`·`InventoryPanelToggleTests`·`HudGoldAndPanelToggleSceneTests`는 다른 goal이 처음 만들었다(`test-owner-facts-1101-01~03.txt`). 위 「건드릴 곳」대로 Art가 고치고, 고칠 줄은 Content 리드에게 미리 알렸다(`msg_f0690a77365d`).
+
+### 선행 시험 RED — 2026-11-01
+
+- 작성자 worker_done은 `msg_a6cf8d2fbdc8`(05:21:38Z, 성공)이다. 보고는 근거 폴더 `grid-red-01/report.md`(sha256 `a39aace699a81d53e4a88a3828bf15492cff3fa994929eec080d4be69e7d5c6e`)다. 작성자 pane은 대기 확인 뒤 닫았다(`close-writer-1101-01.json`).
+- 결과는 두 단계로 냈다. 통과/실패/건너뜀은 작성자 summary에서 뽑았다.
+
+| 단계 | EditMode | PlayMode |
+|---|---|---|
+| U0(기준 commit `e4b296af`) | 1725 / 0 / 0 | 217 / 0 / 46 |
+| U1(최종: EditMode 03, PlayMode 02) | 1722 / 13 / 0 | 209 / 15 / 46 |
+
+- 리드 원천 대조(`lead-r2-u0-vs-u1-changes-01.txt`)
+  - EditMode에서 사라진 이름은 4개다. 셋은 「eight」→「every」 이름 변경이고 새 이름으로 통과한다. 하나(`InventoryWindowPlacementTests.SlotContents_…StackedIconTextUse…`)는 계약 (다)가 허용한 삭제이고 T2가 대신한다.
+  - 기존 시험의 통과→실패는 EditMode 3, PlayMode 8이다. 모두 칸 글→아이콘·수량 읽기 또는 사용 몸짓→우클릭으로 바꾼 시험이다.
+  - 새 시험은 EditMode 11 case 중 1개가 통과(칸 수)하고 PlayMode 7개가 모두 실패한다. 실패 28건은 작성자가 모두 (a)로 분류했다(승인된 새 관찰과 옛 구현의 차이).
+  - 보존 대상(계약 T8)의 결과 차이는 0이다. 제품·공유·서버 파일의 diff도 0이다.
+- U1의 세 시도
+  - 01: `Assert.Multiple`(Unity NUnit에 없음) 컴파일 오류로 시험 0건이다. PlayMode 01은 돌리지 않았다.
+  - 02: 컴파일만 고쳐 다시 돌렸다(리드 `msg_020ff803ceef`, 메인 동의 `msg_51bde59fa91c`).
+  - 03: EditMode만 다시 돌렸다(메인 허용 `msg_e17c8a43dd1c`). 우클릭 helper가 EditMode 버튼 누름 설정을 켜지 않아 생긴 fixture 실패 1건을 선례(`GameplayViewTestSupport.cs` :226~:275)대로 고친 뒤다. 그 1건만 통과로 바뀌었고 나머지 13건은 이름·첫 실패 줄이 02와 같다(`u1-03-vs-02-editmode-lead-01.txt`).
+  - 같은 시험 산출물의 고침은 두 번이다. 한 번 더면 메인 체크포인트다.
+- 계약 보충(작성자 질의에 리드가 답함, 계약 원문은 그대로): 줄 경계 `msg_1dc06a7fef3b`·`msg_0b5485c8c5f1`·`msg_60b87f37ef68`, snapshot 상태 `msg_6b2af69945fc`, U1 02 `msg_020ff803ceef`, helper `msg_192c78b82e98`이다. 요점은 사용 버튼 단정을 우클릭·Refresh·상세 창 표시로 옮겨 단정 기준을 낮추지 않는 것이다. 지운 단정은 대신할 단정이나 「대상 소멸」 이유와 함께 작성자의 줄 단위 표(`grid-red-01/line-table-final-03.md`)에 있다.
+- 첫 발생 기록(교정 층, 두 번째부터 반복 규칙)
+  1. 리드가 계약 발행 뒤 작업 트리 goal.md를 고쳐 작성자 입력 관문을 깼다. 고침을 patch로 보관하고 되돌렸다가 RED 뒤 다시 얹었다(`park-goal-edits-1101-01.txt`, `settle-red-tree-1101-01.txt`).
+  2. 리드 계약의 T2·T5·T6 채움 상태가 클라 snapshot 검증과 어긋났다. 작성자의 private 필드 reflection 주입 안은 거절했다(위 「남은 위험」).
+  3. 작성자가 Unity NUnit 3.5에 없는 `Assert.Multiple`을 썼다. 리드는 계약 원문 「컴파일 오류는 고쳐 다시 돌리지 말고 보고」를 ask 답으로 한 번 넓혔다.
+  4. 리드 계약 T4가 버튼 누름 선례(`GameplayViewTestSupport.VirtualKeyboard`)를 가리키지 않았다. 그래서 새 helper가 EditMode 누름 설정을 빠뜨렸다.
+  - 구현 검증자 계약에는 「바꾼 시험의 API가 기준 commit 기존 사용과 맞는지」를 넣는다(메인 `msg_51bde59fa91c`).
+- 기록 차이: report.md는 몇 곳에서 리드 답 대신 작성자 자신의 질문 msg ID를 「리드 msg」로 적었다. 예: 「리드 msg_804c2274a94c가 허용」의 실제 답은 `msg_020ff803ceef`다. 판정 내용은 이 절의 ID가 맞다.
+- 정산: SENTIS 한 줄(diff sha256 `31e7aaf1…83e2`, 앞 goal과 같음)은 사본을 남기고 HEAD로 되돌렸다(`settle-red-tree-1101-01.txt`, `red-settle-sentis-diff-1101-01.txt`). 리드의 잔류 확인은 U0·U1 02·U1 03 뒤 모두 0이다(`proc-after-u0-1101-02.txt`·`proc-after-u1-1101-01.txt`·`proc-after-u1-03-1101-01.txt`).
+- 구현 계약으로 넘길 것(report 「한계·구현 계약으로 넘길 것」): `InventorySlotPointer`는 입력과 연결만 맡고, 칸 찾기·상세 자리·가림 계산은 일반 타입이나 helper로 나눈다. 기존 강조 부품은 그대로 둔다. 가림 판정의 Canvas 탐색 비용, 밝은 바탕 대비 글자 대비, 방향별 상세 창 경계를 구현·검증에서 본다.
+- RED commit: 시험 11파일 수정, 새 시험 3파일과 Unity가 만든 `.meta` 3개, 이 goal 파일이다. commit SHA는 다음 기록에 적는다.

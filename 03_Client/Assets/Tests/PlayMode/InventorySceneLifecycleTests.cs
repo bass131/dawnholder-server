@@ -34,14 +34,51 @@ namespace Dawnholder.Client.Tests.PlayMode
         internal static string Currency => Text("Currency");
         internal static string Status => Text("Synchronization");
         internal static string Result => Text("UseResult");
-        internal static string Slot(int index) => Text($"Slot{index + 1}/Item");
-        internal static CanvasGroup Group => Root.GetComponent<CanvasGroup>();
-        internal static Component Use(int index)
+        // 칸이 보이는 아이콘과 수량을 옛 줄 글 모양으로 읽는다.
+        internal static string Slot(int index)
         {
-            Transform row = Root.Find($"Inventory/Slot{index + 1}/Use");
-            Assert.IsNotNull(row, $"Use button of slot {index + 1}");
-            return row.GetComponents<Component>().Single(c => c.GetType().FullName == "UnityEngine.UI.Button");
+            Transform row = Root.Find($"Inventory/Slot{index + 1}");
+            Assert.IsNotNull(row, "slot " + index);
+            Component icon = row.Find("Icon").GetComponents<Component>().Single(c => c.GetType().FullName == "UnityEngine.UI.Image");
+            Sprite sprite = (Sprite)icon.GetType().GetProperty("sprite").GetValue(icon);
+            if (!((Behaviour)icon).isActiveAndEnabled || sprite == null) return "빈 슬롯";
+            Color color = (Color)icon.GetType().GetProperty("color").GetValue(icon);
+            if (color.a <= 0f) return "빈 슬롯";
+            ItemId item = sprite.name == "Icon_Material" ? ItemId.Material : sprite.name == "Icon_CurrencyPouch" ? ItemId.CoinPouch : ItemId.None;
+            Assert.AreNotEqual(ItemId.None, item, "known visible item icon: " + sprite.name);
+            Transform countObject = row.Find("Count");
+            Assert.IsNotNull(countObject, "Count of slot " + index);
+            string count = countObject.gameObject.activeInHierarchy ? countObject.GetComponent<TMP_Text>().text : "1";
+            return ItemCatalog.For(item).DisplayName + " ×" + count;
         }
+        internal static RectTransform Detail
+        {
+            get
+            {
+                var detail = Root.Find("ItemDetail") as RectTransform;
+                Assert.IsNotNull(detail, "ItemDetail not found");
+                return detail;
+            }
+        }
+        internal static bool DetailShown => Detail.gameObject.activeSelf;
+        internal static TMP_Text DetailLabel(string name)
+        {
+            Transform label = Detail.Find(name);
+            Assert.IsNotNull(label, "detail label " + name);
+            return label.GetComponent<TMP_Text>();
+        }
+        internal static Vector2 SlotPoint(int index) => ScreenPoint(Root.Find($"Inventory/Slot{index + 1}"));
+        internal static IEnumerator RightClick(Mouse mouse, int index) => RightClickAt(mouse, SlotPoint(index));
+        internal static IEnumerator RightClickAt(Mouse mouse, Vector2 point)
+        {
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = point });
+            for (int i = 0; i < 2; i++) yield return null;
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = point }.WithButton(MouseButton.Right));
+            for (int i = 0; i < 2; i++) yield return null;
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = point });
+            for (int i = 0; i < 2; i++) yield return null;
+        }
+        internal static CanvasGroup Group => Root.GetComponent<CanvasGroup>();
         internal static bool Interactable(Component button) =>
             (bool)button.GetType().GetProperty("interactable").GetValue(button);
         internal static int LivePanels => Resources.FindObjectsOfTypeAll<InventoryPanel>()
@@ -260,7 +297,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.IsEmpty(drawnOverlaps, $"{moment}: #4/R8 no HUD graphic shares screen area with the inventory panel");
             Assert.IsEmpty(blockedButtons, $"{moment}: R8 no HUD raycast target lies over a panel button");
             Assert.IsTrue(Contains(ScreenArea, panel), $"{moment}: the whole panel {panel} is on the {Screen.width}x{Screen.height} screen");
-            Assert.AreEqual(InventoryLimits.MaxSlots, slotRows, $"{moment}: all eight slot rows are on screen");
+            Assert.AreEqual(InventoryLimits.MaxSlots, slotRows, $"{moment}: all shared slot rows are on screen");
             Assert.IsTrue(labels.All(label => Contains(ScreenArea, label)), $"{moment}: every non-empty panel label is on screen");
             InventoryPanelProbe.AssertEveryLabelIsDrawn();
         }
@@ -397,14 +434,16 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual("재료 ×2", InventoryPanelProbe.Slot(0));
             Assert.AreEqual("재화 주머니 ×1", InventoryPanelProbe.Slot(1));
             Assert.AreEqual("빈 슬롯", InventoryPanelProbe.Slot(2));
-            Assert.IsFalse(InventoryPanelProbe.Use(0).gameObject.activeSelf, "R6 Material is not usable");
-            Component use = InventoryPanelProbe.Use(1);
-            Assert.IsTrue(use.gameObject.activeSelf && InventoryPanelProbe.Interactable(use), "R6 owned CoinPouch is usable");
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 0);
+            yield return _fixture.Frames(6);
+            Assert.AreEqual(0, _fixture.Peer.Count(PacketID.C_ItemUse), "R6 Material is not usable");
+            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, InventoryPanelProbe.SlotPoint(1));
+            Assert.IsTrue(InventoryPanelProbe.DetailShown && InventoryPanelProbe.DetailLabel("UseHint").gameObject.activeInHierarchy, "R6 owned CoinPouch is usable");
             Assert.AreEqual(1f, InventoryPanelProbe.Group.alpha);
             Assert.IsTrue(InventoryPanelProbe.Group.blocksRaycasts);
 
             int attacksBefore = _fixture.Peer.Count(PacketID.C_Attack);
-            yield return InventoryPanelProbe.Click(_fixture.Mouse, use);
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
             yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_ItemUse) == 1, "C_ItemUse from a pointer click", 3);
             var sent = _fixture.Peer.Last<C_ItemUse>(PacketID.C_ItemUse);
             Assert.AreEqual((int)ItemId.CoinPouch, sent.itemId);
@@ -413,10 +452,12 @@ namespace Dawnholder.Client.Tests.PlayMode
             Debug.Log($"[PR2 verifier] pointer click on Use also sent C_Attack x{extraAttacks}");
             Assert.AreEqual(0, extraAttacks, "#2/R8 a pointer click on Use sends no C_Attack (C_Attack precedes the release's C_ItemUse on TCP)");
             Assert.AreEqual("아이템 사용 결과를 기다리는 중입니다.", InventoryPanelProbe.Status);
-            Assert.IsFalse(InventoryPanelProbe.Interactable(use), "R6 no second use while one is outstanding");
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
+            yield return _fixture.Frames(6);
+            Assert.AreEqual(1, _fixture.Peer.Count(PacketID.C_ItemUse), "R6 no second use while one is outstanding");
             Assert.AreEqual("재화 10", InventoryPanelProbe.Currency, "R6 the client never adds the +50 itself");
 
-            yield return InventoryPanelProbe.Click(_fixture.Mouse, use);
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
             yield return _fixture.Frames(6);
             Assert.AreEqual(1, _fixture.Peer.Count(PacketID.C_ItemUse), "R6 a repeated click is not resent");
 
@@ -429,7 +470,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Currency == "재화 60", "the following snapshot", 3);
             Assert.AreEqual("재료 ×2", InventoryPanelProbe.Slot(0));
             Assert.AreEqual("빈 슬롯", InventoryPanelProbe.Slot(1));
-            Assert.IsFalse(InventoryPanelProbe.Use(1).gameObject.activeSelf, "the spent pouch row offers no use");
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
+            yield return _fixture.Frames(6);
+            Assert.AreEqual(1, _fixture.Peer.Count(PacketID.C_ItemUse), "the spent pouch row offers no use");
             Assert.AreEqual("아이템 사용이 완료되었습니다.", InventoryPanelProbe.Result);
             Assert.AreEqual("서버 확인 완료", InventoryPanelProbe.Status);
             Assert.AreEqual(1, _fixture.Peer.Count(PacketID.C_InventoryRequest), "a delivered snapshot needs no requery");
@@ -460,7 +503,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreSame(mirror, InventoryState.Instance, "R8 the same connection keeps its mirror");
             Assert.AreEqual("재화 10", InventoryPanelProbe.Currency, "stored mirror is rebound into the new scene");
             Assert.AreEqual("입장 준비 중 · 서버 확인 후 사용할 수 있어요.", InventoryPanelProbe.Status);
-            Assert.IsFalse(InventoryPanelProbe.Interactable(InventoryPanelProbe.Use(1)), "R6 no use before the new entry is Ready");
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
+            yield return _fixture.Frames(6);
+            Assert.AreEqual(0, _fixture.Peer.Count(PacketID.C_ItemUse), "R6 no use before the new entry is Ready");
             Assert.AreEqual(1, _fixture.Peer.Count(PacketID.C_InventoryRequest), "R4 no query while the entry waits");
 
             // R4: the kill reward push of the move gap is lost; only the requery after Ready can reveal it.
@@ -472,7 +517,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Status == "서버 확인 완료", "requery answer", 3);
             Assert.AreEqual("재화 20", InventoryPanelProbe.Currency);
             Assert.AreEqual("재료 ×3", InventoryPanelProbe.Slot(0));
-            Assert.IsTrue(InventoryPanelProbe.Interactable(InventoryPanelProbe.Use(1)));
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
+            yield return _fixture.Frames(6);
+            Assert.AreEqual(1, _fixture.Peer.Count(PacketID.C_ItemUse));
             yield return _fixture.AssertHud();
             object[] mirrorTargets = InventoryPanelProbe.Targets(mirror, "OnInventoryChanged");
             Assert.AreEqual(1, mirrorTargets.Count(target => target is InventoryPanel), "R8 the old panel left the mirror");
@@ -514,7 +561,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             _fixture.Keys();
             yield return _fixture.Frames(3);
             Assert.IsTrue(InventoryPanelProbe.Group.interactable);
-            yield return InventoryPanelProbe.Click(_fixture.Mouse, InventoryPanelProbe.Use(1));
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
             yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_ItemUse) == 1, "use after resume", 3);
         }
 
@@ -594,7 +641,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return InventoryPanelProbe.AttackReady(player);
             int attacks = _fixture.Peer.Count(PacketID.C_Attack);
 
-            yield return InventoryPanelProbe.Click(_fixture.Mouse, InventoryPanelProbe.Use(1));
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
             yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_ItemUse) == 1, "C_ItemUse from the pointer", 3);
             int attacksByUse = _fixture.Peer.Count(PacketID.C_Attack) - attacks;
             bool cooldownByUse = !player.CanAttack;
@@ -721,7 +768,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return HudOverlapProbe.AssertPanelClearOfHud("Town synced");
 
             int attacks = _fixture.Peer.Count(PacketID.C_Attack);
-            yield return InventoryPanelProbe.Click(_fixture.Mouse, InventoryPanelProbe.Use(1));
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
             yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_ItemUse) == 1, "pointer Use beside the HUD", 3);
             _fixture.Peer.Send(new S_ItemUseResult { result = (byte)InventoryResult.Success, itemId = (int)ItemId.CoinPouch, revision = 2 }.Write());
             _fixture.Peer.Send(Snapshot(2, 999_999_950, (ItemId.Material, 99), (ItemId.CoinPouch, 98)));
@@ -749,9 +796,10 @@ namespace Dawnholder.Client.Tests.PlayMode
         IEnumerator UseAndAnswer(S_ItemUseResult answer)
         {
             int uses = _fixture.Peer.Count(PacketID.C_ItemUse);
-            Component use = InventoryPanelProbe.Use(1);
-            yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Interactable(use), "usable pouch", 3);
-            yield return InventoryPanelProbe.Click(_fixture.Mouse, use);
+            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, InventoryPanelProbe.SlotPoint(1));
+            yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.DetailShown &&
+                InventoryPanelProbe.DetailLabel("UseHint").gameObject.activeInHierarchy, "usable pouch hint", 3);
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
             yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_ItemUse) == uses + 1, "pointer use", 3);
             _fixture.Peer.Send(answer.Write());
         }

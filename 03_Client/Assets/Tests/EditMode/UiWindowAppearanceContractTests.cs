@@ -1,3 +1,5 @@
+using Grid = Dawnholder.Client.Tests.InventoryIconGridTestSupport;
+using Shared.GameData;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -174,21 +176,8 @@ namespace Dawnholder.Client.Tests
 
         // Approved preview "current" rects kept by the composition (inventory-0 window, InventoryPanelView.cs:68-76):
         // top-left offset from the panel's top-left and size, UI units, y downward.
-        static readonly Rect[] InventorySlotRects =
-        {
-            new Rect(12f, 134f, 176f, 109f), new Rect(202f, 134f, 176f, 109f),
-            new Rect(12f, 253f, 176f, 109f), new Rect(202f, 253f, 176f, 109f),
-            new Rect(12f, 372f, 176f, 109f), new Rect(202f, 372f, 176f, 109f),
-            new Rect(12f, 491f, 176f, 109f), new Rect(202f, 491f, 176f, 109f),
-        };
+        static readonly Rect[] InventorySlotRects = Grid.SlotRects;
 
-        static readonly Rect[] InventoryUseRects =
-        {
-            new Rect(75f, 204f, 50f, 35f), new Rect(265f, 204f, 50f, 35f),
-            new Rect(75f, 323f, 50f, 35f), new Rect(265f, 323f, 50f, 35f),
-            new Rect(75f, 442f, 50f, 35f), new Rect(265f, 442f, 50f, 35f),
-            new Rect(75f, 561f, 50f, 35f), new Rect(265f, 561f, 50f, 35f),
-        };
 
         readonly List<UnityEngine.Object> _owned = new List<UnityEngine.Object>();
         readonly List<Action> _cleanups = new List<Action>();
@@ -244,8 +233,6 @@ namespace Dawnholder.Client.Tests
             InventoryWindow window = BuildInventory(_ => { }, () => { });
             var problems = new List<string>();
             problems.AddRange(ButtonViolations(window.Refresh, "Default", BrightPiecesByGuid).Select(p => "Refresh: " + p));
-            for (int i = 0; i < window.Uses.Length; i++)
-                problems.AddRange(ButtonViolations(window.Uses[i], "Default", BrightPiecesByGuid).Select(p => $"Slot{i + 1}/Use: " + p));
             Log("inventory buttons", problems);
 
             Assert.IsEmpty(problems, "A inventory buttons use the approved bright Button_Default states");
@@ -254,7 +241,7 @@ namespace Dawnholder.Client.Tests
         // Scope 「제품 쓰기 경계」 inventory 「칸」; approved preview rows: Inset_* row and ItemSlot_* square per slot.
         // Bright table: decision 43 A, 완료조건 1, Content msg_b9b45522981b, main msg_e873edba3d2d.
         [Test]
-        public void InventoryPanel_EachOfTheEightSlots_StandsOnAnApprovedSlotPiece()
+        public void InventoryPanel_EverySlot_StandsOnAnApprovedSlotPiece()
         {
             InventoryWindow window = BuildInventory(_ => { }, () => { });
             string[] bare = Enumerable.Range(0, window.Slots.Length)
@@ -548,18 +535,15 @@ namespace Dawnholder.Client.Tests
             var group = window.Root.GetComponent<CanvasGroup>();
             Rect refreshRect = FromTopLeft(window.Panel, (RectTransform)window.Refresh.transform);
             Rect[] slotRects = window.Slots.Select(slot => FromTopLeft(window.Panel, slot)).ToArray();
-            Rect[] useRects = window.Uses.Select(use => FromTopLeft(window.Panel, (RectTransform)use.transform)).ToArray();
             int refreshListeners = Listeners(window.Refresh.onClick);
-            int[] useListeners = window.Uses.Select(use => Listeners(use.onClick)).ToArray();
             string[] missingPaths = new[] { "Inventory", "Inventory/Currency", "Inventory/Synchronization", "Inventory/Refresh" }
-                .Concat(Enumerable.Range(1, 8).SelectMany(n => new[] { $"Inventory/Slot{n}/Item", $"Inventory/Slot{n}/Use" }))
+                .Concat(Enumerable.Range(1, InventoryLimits.MaxSlots).SelectMany(n => new[] { $"Inventory/Slot{n}/IconBase", $"Inventory/Slot{n}/Icon", $"Inventory/Slot{n}/Count" }))
                 .Where(path => root.Find(path) == null).ToArray();
             string[] raycastOutsideButtons = RaycastTargetsOutsideButtons(root);
             string[] foreignFonts = TextsWithoutProjectFont(root);
             bool titleShown = root.GetComponentsInChildren<TMP_Text>(true).Any(text => text.text == "인벤토리");
 
             window.Refresh.onClick.Invoke();
-            foreach (Button use in window.Uses) use.onClick.Invoke();
             window.View.SetVisibility(false, false);
             float hiddenAlpha = group.alpha;
             bool hiddenInteractable = group.interactable, hiddenBlocks = group.blocksRaycasts;
@@ -574,21 +558,18 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(100f, scaler.referencePixelsPerUnit, 1e-4f, "C Canvas reference PPU 100 (scope 「Canvas reference PPU 100」)");
             Assert.IsNotNull(window.Root.GetComponent<GraphicRaycaster>(), "C graphic raycaster (InventoryPanelView.cs:38)");
             Assert.IsEmpty(missingPaths, "C names other code and tests find (InventoryPanelToggleTests, InventorySceneLifecycleTests, Content reward window)");
-            AssertVector(new Vector2(390f, 720f), window.Panel.rect.size, "C panel size (InventoryPanelView.cs:15-16)");
+            AssertVector(new Vector2(390f, Grid.Heights[Grid.HeightIndex]), window.Panel.rect.size, "C panel size (InventoryPanelView.cs:15-16)");
             AssertVector(new Vector2(0.5f, 1f), window.Panel.anchorMin, "C panel anchored top centre (InventoryPanelView.cs:45)");
             AssertVector(new Vector2(0.5f, 1f), window.Panel.anchorMax, "C panel anchored top centre (InventoryPanelView.cs:45)");
             AssertVector(new Vector2(0.5f, 1f), window.Panel.pivot, "C panel pivot (InventoryPanelView.cs:46)");
             Assert.IsTrue(titleShown, "C the 「인벤토리」 title text (InventoryPanelView.cs:53)");
             AssertRect(new Rect(262f, 10f, 112f, 44f), refreshRect, "C refresh input area (InventoryPanelView.cs:58)");
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < InventoryLimits.MaxSlots; i++)
             {
                 AssertRect(InventorySlotRects[i], slotRects[i], $"C Slot{i + 1} row rect (InventoryPanelView.cs:68-70)");
-                AssertRect(InventoryUseRects[i], useRects[i], $"C Slot{i + 1} use input area (InventoryPanelView.cs:76)");
             }
             Assert.AreEqual(1, refreshListeners, "C one refresh listener (InventoryPanelView.cs:60)");
-            CollectionAssert.AreEqual(Enumerable.Repeat(1, 8).ToArray(), useListeners, "C one use listener per slot (InventoryPanelView.cs:77)");
             Assert.AreEqual(1, refreshes, "C refresh click reaches the refresh callback once");
-            CollectionAssert.AreEqual(Enumerable.Range(0, 8).ToArray(), uses, "C each use button reports its own slot index once");
             CollectionAssert.AreEqual(new[] { $"{root.name}/Inventory/Header/GrabArea" }, raycastOutsideButtons,
                 "C only the buttons and the title bar's grab area take raycasts; screen and slot backgrounds pass input (goal 2026-10-30 완료조건 4)");
             Image grabArea = root.Find("Inventory/Header/GrabArea")?.GetComponent<Image>();
@@ -1036,7 +1017,6 @@ namespace Dawnholder.Client.Tests
             internal InventoryPanelView View;
             internal RectTransform Panel;
             internal Button Refresh;
-            internal Button[] Uses;
             internal RectTransform[] Slots;
         }
 
@@ -1046,12 +1026,10 @@ namespace Dawnholder.Client.Tests
             var view = new InventoryPanelView(root, useSlot, refresh);
             _cleanups.Add(view.Dispose);
             Button refreshButton = One(ButtonsLabelled(root.transform, "새로고침"), "the 「새로고침」 button");
-            var slots = new RectTransform[8];
-            var uses = new Button[8];
-            for (int i = 0; i < 8; i++)
+            var slots = new RectTransform[InventoryLimits.MaxSlots];
+            for (int i = 0; i < InventoryLimits.MaxSlots; i++)
             {
                 slots[i] = (RectTransform)One(Descendants(root.transform, "Slot" + (i + 1)), "Slot" + (i + 1));
-                uses[i] = One(ButtonsLabelled(slots[i], "사용"), $"the 「사용」 button of Slot{i + 1}");
             }
             return new InventoryWindow
             {
@@ -1059,7 +1037,6 @@ namespace Dawnholder.Client.Tests
                 View = view,
                 Panel = PanelOf(root.transform, refreshButton),
                 Refresh = refreshButton,
-                Uses = uses,
                 Slots = slots,
             };
         }
