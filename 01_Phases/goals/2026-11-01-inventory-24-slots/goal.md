@@ -16,7 +16,12 @@
     - 서버 시험 `Failed: 2, Passed: 2550, Skipped: 28`. 봇 `PASS=1 FAIL=0`, snapshot len=204·칸 24.
     - pane은 00:10Z에 닫았다. 창 반납은 `msg_d03abe67bd1e`, 리드의 0 확인은 `lead-window-return-check-01.txt`다.
   - 실패 2건은 36번을 8칸으로 얼려 둔 Core 보존 표 두 행이다(`CharacterMenuPacketFixtures.cs:72`, `CharacterLoadResultPacketTests.cs:73`). 메인이 귀속에 동의했다(`msg_8dd18145aa72`). impl-03(신규 Sol max)이 그 두 행과 v23 주석만 고친다. 재시험 창은 Content U3 창(00:12Z~00:55Z) 뒤 메인이 연다.
-  - Content 소유 `DungeonClearTestWorld.ViewOf`(칸 0~7만 셈, 지금 실패 아님)는 Content 리드에 물었다(`msg_e6d433cf9c2c`). 동의하면 impl-03에 넣고, 아니면 기록만 한다.
+  - Content 소유 `DungeonClearTestWorld.ViewOf`(칸 0~7만 셈, 지금 실패 아님)는 Content 리드에 물었다(`msg_e6d433cf9c2c`). Content가 동의했다(`msg_97c01628f0e1`). 범위는 slots 배열만이고, PR 본문에 「Content 소유 시험 1파일 수정(Content 리드 동의)」을 적는다.
+  - impl-03 진행 중: 계약 `impl-03/contract-v1.md`(sha256 `08a49cbf…bcbc`), pane `term_6902d00c-6eaa-4aa4-bd4d-7acb421217aa`, Task `task_a94af9d802c1`, Dispatch `ctx_c9adeebf6a5a`, 00:14:03Z split.
+  - **첫 발생 기록(기동 방식):** worker-start(00:15:13Z)가 `turn_start_unobserved`였다. 입력창 draft는 literal 537자와 붙여넣기 조각 셋(1036·2255·9986)으로 나뉘어 있었다. 글자 합 13,814가 예상 약 13,818과 4자 차이였는데, 리드가 텍스트 없는 Enter 1회로 제출했다.
+    - 메인 지적(`msg_2126f554f738`): ±2자 조건 밖일 수 있었다.
+    - 사후 대조: rollout `~/.codex/sessions/2026/11/01/rollout-2026-11-01T09-14-09-01a19474-dbcd-7363-b82d-d0d464bfb5e0.jsonl` 12행의 사용자 입력(14,224자, 00:16:05Z)이 계약 전문(줄 끝 개행 제외 9,030자)을 offset 5194부터 끝까지 그대로 담는다. 대조 결과는 일치이고, 원시는 `impl-03/rollout-contract-compare-v1.json`이다.
+    - 다음 기동부터는 계약을 짧은 포인터(경로+SHA256)로 넘긴다.
 
 - **다음 세션 첫 순서:** 메인에 2단계 나머지 실행 창을 청하고, 새 `[Core Sol]` 구현자(신규 Sol max)를 `impl-02` 계약으로 연다. 이 pane의 구현자는 재사용하지 않는다.
   - impl-02가 할 일은 다음 순서다.
