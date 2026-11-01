@@ -460,7 +460,7 @@
 - 판정은 NOT PASS다. 기록 결함 #GRIDR-01 하나다. 제품 결함은 없고, 앞 독립 검증의 PASS를 다시 판정하지 않았다. 계약 판정 기준 아홉 가운데 5만 결함이고 나머지는 지적이 없다(판정 원문 「계약 판정 기준 1~9」).
 - #GRIDR-01: 위 「독립 검증」 절의 미검증 줄에 앞 판정 원문 `grid-verify-01/verdict.md` :140의 「실화면 캡처」가 빠졌다. 리드가 판정 원문의 목록을 옮길 때 빠뜨렸다. 검증자의 중간 통지는 `msg_0fae9c8716b2`다. 고침은 그 줄에 「실화면 캡처」를 더한 것이다. 고정 계약·앞 판정·원시는 고치지 않았다.
 - 리드 R-2 표본(`lead-r2-recheck-sample-1101-01.mjs` → `lead-r2-recheck-sample-1101-01.txt`, 10:26:26Z): 판정 원문과 모두 같다. verdict SHA256, goal :429와 앞 판정 :140의 원문, 채택 4파일의 HEAD blob SHA256, 시험 고침 계약 :1227·:1444가 RED 계약 :32·:249의 사본인 것, goal의 `grep_exit` 소비 0을 봤다.
-- 생존 신호 정산(ORCA 「생존 신호와 초과 정산」): 정본 helper `99_Tools/Orca/check-liveness.mjs`로 잰 최대 간격은 285초이고 300초 초과는 0이다(`grid-recheck-liveness-1101-01.txt`). 검증자가 자기 신고한 302.291초(`msg_2dc5ca8ba678`)는 heartbeat 호출만 센 간격이다. 정본은 그 사이의 status `msg_0fae9c8716b2`도 신호로 센다.
+- 생존 신호 정산(ORCA 「생존 신호와 초과 정산」): 정본 helper `99_Tools/Orca/check-liveness.mjs`로 잰 최대 간격은 285초이고 300초 초과는 0이다(저장 스크립트 `grid-recheck-liveness-1101-02.sh`의 출력 `grid-recheck-liveness-1101-02.txt`). 리드가 helper를 인라인 인자로 먼저 돌린 `grid-recheck-liveness-1101-01.txt`와 결과 JSON이 같다. 검증자가 자기 신고한 302.291초(`msg_2dc5ca8ba678`)는 heartbeat 호출만 센 간격이다. 정본은 그 사이의 status `msg_0fae9c8716b2`도 신호로 센다.
 - 비차단 관찰(판정 원문 O1~O3, 줄 번호는 head `52fa3286` 기준)과 리드 처리: 지금 고치지 않는다. 고칠 줄이 늘면 두 번째 재실사 범위가 커진다. 결과 기록 PR(6줄 캡처 뒤) 때 다시 본다.
   - O1 이 파일 :289·:306: 긴 괄호 안에 출처·같음·재측정 불가·교차 근거가 함께 있다.
   - O2 메모 01 :285: 끝 정정 절이 첫 여섯 사슬의 메모 01 :69와 `provenance-remeasure-01/correction-record.md` :27을 직접 가리키지 않는다.
