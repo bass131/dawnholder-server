@@ -27,6 +27,8 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 EditMode 시험은 view를 직접 만들어 칸 줄·생성 화면·잠금과 두 해상도(1280×720·1920×1080)의 글자 맞춤을 본다. PlayMode [CharacterSelectWideSceneTests](../../03_Client/Assets/Tests/PlayMode/CharacterSelectWideSceneTests.cs)는 출하 CharacterSelect 장면을 `EntryWirePeer` 대역 연결로 띄워 생성 화면 → 생성 요청 → 선택 요청까지 지난다. 실제 GameServer·DB를 상대로 한 이 화면은 자동 진행기(PR268)의 DB 영속 서버 실주행 전까지 미관측 외부 경계다.
 
+자동 진행기 [DemoAutopilot](../../03_Client/Assets/Scripts/Demo/DemoAutopilot.cs)는 `-demo-role knight|mage`로 켜고 `-demo-account`로 계정을, `-demo-character`로 생성할 이름 원문을 받는다. 캐릭터 메뉴에서는 같은 직업의 가장 낮은 번호 칸을 선택하고, 없으면 첫 빈 칸에 생성한 뒤 선택한다. 이름 인자가 없거나 빈 칸이 없거나 생성이 거절되면 경고를 남기고 멈추며, 한 실행의 생성 요청은 최대 한 번이다. 메뉴가 닫힌 Legacy 경로에서는 기존 Knight/Mage 버튼으로 입장하고, `-demo-role`이 없는 일반 실행은 자동 진행기를 만들지 않는다.
+
 ## 파티 초대 요청과 구독
 
 [PartyInvitePopup](../../03_Client/Assets/Scripts/UI/PartyInvitePopup.cs)은 클릭음·버튼 의도·표시/숨김과 이벤트 구독을 맡고, [PartyInviteResponseCommand](../../03_Client/Assets/Scripts/UI/PartyInviteResponseCommand.cs)는 실행 시 현재 상태/세션 조회·응답 패킷 구성·SendIntent 호출·pending 소비를 맡는다. void SendIntent 정상 반환은 실제 송신 접수나 서버 가입 확정이 아니다. 요청 처리 중 예외가 나면 뒤의 pending 소비와 숨김을 진행하지 않으며 membership은 기존 서버 update로 갱신한다.
