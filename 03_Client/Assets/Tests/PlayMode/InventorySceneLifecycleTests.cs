@@ -491,6 +491,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         public IEnumerator MapTransition_RebuildsOnePanelWithTheStoredMirror_RequeriesAfterReady_AndEndingHasNone()
         {
             yield return ReadySyncedTown();
+            yield return InventoryPanelProbe.OpenWithI(_fixture);
             InventoryState mirror = InventoryState.Instance;
             InventoryRequestController requests = _fixture.Session.Inventory;
             InventoryPanel townPanel = InventoryPanel.Instance;
@@ -503,6 +504,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreSame(mirror, InventoryState.Instance, "R8 the same connection keeps its mirror");
             Assert.AreEqual("재화 10", InventoryPanelProbe.Currency, "stored mirror is rebound into the new scene");
             Assert.AreEqual("입장 준비 중 · 서버 확인 후 사용할 수 있어요.", InventoryPanelProbe.Status);
+            yield return HudOverlapProbe.WaitForHudAndSettledPanel();
+            Assert.AreEqual(1f, InventoryPanelProbe.Group.alpha, "R8 the connection keeps the new panel open before Ready");
             yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
             yield return _fixture.Frames(6);
             Assert.AreEqual(0, _fixture.Peer.Count(PacketID.C_ItemUse), "R6 no use before the new entry is Ready");
@@ -517,8 +520,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Status == "서버 확인 완료", "requery answer", 3);
             Assert.AreEqual("재화 20", InventoryPanelProbe.Currency);
             Assert.AreEqual("재료 ×3", InventoryPanelProbe.Slot(0));
+            yield return HudOverlapProbe.WaitForHudAndSettledPanel();
             yield return InventoryPanelProbe.RightClick(_fixture.Mouse, 1);
-            yield return _fixture.Frames(6);
+            yield return MapEntryPlayFixture.Wait(() => _fixture.Peer.Count(PacketID.C_ItemUse) == 1, "C_ItemUse after map requery", 3);
             Assert.AreEqual(1, _fixture.Peer.Count(PacketID.C_ItemUse));
             yield return _fixture.AssertHud();
             object[] mirrorTargets = InventoryPanelProbe.Targets(mirror, "OnInventoryChanged");
