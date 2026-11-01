@@ -2,7 +2,7 @@
 
 인벤토리 칸 수를 8에서 24로 늘린다. 서버가 보내는 인벤토리 snapshot(36번)과 공유 칸 수 상수를 24로 바꾸고, 클라가 받는 쪽까지 같은 PR에서 맞춘다. 화면 격자(4열 × 6줄)는 Art가 만든다.
 
-**현재 상태(2026-11-01 17:30 KST):** 1차 독립 검증(verify-01)이 계약 범위에서 통과했고 메인 R-2 대조도 일치했다. 창 8 지원을 마치고 이 branch로 돌아왔다. Art 격자 PR을 기다린다. Art PR2(HUD 골드 제거·스킬칸)가 새로 생겼고 Core 24칸과의 앞뒤는 미정이다. PlayMode·실제 접속·Art 시험 3건·CURRENT 줄은 격자 PR 병합 뒤 2차 좁은 재검증에서 본다.
+**현재 상태(2026-11-01 17:30 KST):** 1차 독립 검증(verify-01)이 계약 범위에서 통과했고 메인 R-2 대조도 일치했다. 창 8 지원을 마치고 이 branch로 돌아왔다. Art 격자 PR을 기다린다. Art PR2(HUD 골드 제거·스킬칸)가 새로 생겼고 Core 24칸 뒤에 병합한다(메인 결정). PlayMode·실제 접속·Art 시험 3건·CURRENT 줄은 격자 PR 병합 뒤 2차 좁은 재검증에서 본다.
 
 ## 재개 지점
 
@@ -56,7 +56,7 @@
   - 녹화용 빌드 계약(Content 초안 v3 sha256 `3ae6bfe8…4688`)에 Core 답을 보냈다(`msg_45e700da3330`). 두 PR 병합 뒤 Content가 고정 head 40자를 먼저 알리고, Core가 그 SHA를 DB 시연 branch에 받아 서버 트리 diff 0·`ProtocolVersion.Current`·R1 exit를 돌려준다.
   - WSL 실행은 `impl-01/lead-reply-sdk-v1.txt`(계약 2단계 보충 v1.1) 방법을 쓴다. Windows dotnet은 쓰지 않는다. global.json의 SDK 10.0.301이 Windows에 없다.
   - **Art PR2(사용자 직접 지시, 메인 사본 `msg_6a8fa9c2a0a8`, 08:20:30Z):** 인벤토리 밖 HUD 골드 제거와 스킬칸 좌하단 4칸을 Art가 격자 PR1 병합 뒤 PR2로 한다. 원문은 앞 goal 「적용 중인 사용자 결정」에 적었다(앞 goal branch 로컬 커밋 `ad5d3442`, 기록 전환 `lead-g1-record-switch-01.txt`, 08:27Z~08:28:50Z).
-    - 이 goal에 바뀌는 것은 하나다. Core 24칸과 Art PR2의 앞뒤가 정해지지 않았다. Art PR2가 먼저 들어가면 2차 재검증 전에 그 main도 받는다. Core가 바꾸는 파일은 HUD 쪽과 겹치지 않는다(`lead-core24-changed-files-01.txt`, Art `msg_494eb3ba541b`).
+    - 순서는 메인 결정으로 Art PR1 → Core 24칸 → Art PR2다(「적용 중인 메인 결정」, `msg_495eff183bf0`). 이 goal의 계획은 그대로다. Core가 바꾸는 파일은 HUD 쪽과 겹치지 않는다(`lead-core24-changed-files-01.txt`, Art `msg_494eb3ba541b`).
     - Core 확인(서버·시험·문서·녹화 순서는 HUD 골드 상자·스킬칸 자리를 보지 않음)은 `lead-hud-gold-skill-grep-01.txt`이고, Art `msg_20e41580df04`·메인 `msg_23564042e812`로 보냈다.
 - **멈춘 지점의 파일 상태(2026-10-31T18:4xZ, 로컬 WIP 커밋에 담음):**
   - 1단계 소스 31파일과 v23 `GenPackets.cs`(WSL 생성, sha256 `62a2ad60353654a0ab652aca2e62717438e4d8d1ee024087e4110dd656505aa9`, CRLF 0)가 바뀌어 있다.
@@ -138,6 +138,16 @@
 - 겹침: 이 branch(`7eb3edac`)가 `00_Document/domains/client.md`의 38행(`InventorySnapshotHandler` v23·204바이트·24슬롯)과 50행(`InventoryPanelView` 「공유 칸 수(24)의 슬롯」)을 고친다. 격자 PR도 50행을 다시 쓴다. Art 관측 파일 이름은 `overlap-client-md-hunks-1101-01.txt`다.
 - 결정: 격자 PR이 50행의 칸 수를 숫자 없이 「공유 칸 수(InventoryLimits.MaxSlots)」로 적는다. Core는 격자 PR이 기준 branch에 들어간 뒤 그것을 받을 때 50행의 Core 변경을 버리고 38행만 남긴다.
 - 이 해결은 병합 관문의 「main 병합·충돌 해결」 재실사 대상이다. 2차 재검증 계약에 넣는다.
+
+### 2026-11-01 병합 순서 — Art PR1 → Core 24칸 → Art PR2
+
+메인 `msg_495eff183bf0`(2026-11-01T08:26:45Z). 사용자 결정이 아니다. Core 정정(`msg_a3fe4d659794`)에 메인이 순서를 정했다.
+
+> 병합 순서(메인 결정): Art 격자 PR1 → Core 24칸 → Art PR2(HUD 골드 제거·스킬칸 좌하단 4칸·6줄 캡처) → Content 녹화 빌드.
+
+- 이유: Art PR2의 6줄 캡처는 24칸이 main에 있어야 찍힌다. Core 24칸은 Art PR1 병합 뒤 약 1.5~2.5시간으로 먼저 준비된다.
+- Art PR2의 선행 시험·구현은 PR1 병합 뒤 최신 main branch에서 Core 24칸과 나란히 진행해도 된다. Core 24칸이 병합되면 Art PR2 branch가 그 main을 받은 뒤 6줄 캡처와 전체 시험·독립 검증을 한다.
+- Core는 Art PR1 병합 알림을 받으면 이 branch에 main을 받고 2차 재검증으로 간다(앞 계획 그대로). 그래서 이 goal의 2차 재검증 기준에는 Art PR2가 들어가지 않는다.
 - 병합 순서는 그대로 Art 격자 PR → Core 24칸 PR이다.
 
 ### 2026-10-31 범위 승인
