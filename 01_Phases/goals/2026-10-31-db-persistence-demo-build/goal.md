@@ -2,10 +2,14 @@
 
 11-06 시연을 Windows 빌드 클라이언트와 DB 영속 서버로 할 수 있게 한다. 시연자가 정해진 순서로 DB 서버를 켜고 끄며, 빌드에서 로그인 → 캐릭터 선택·생성 → 마을 입장이 되는 상태가 목표다.
 
-**현재 상태(2026-11-01 17:30 KST):** 지금 보기(완료조건 1)와 DEVELOPMENT 새 절이 끝났고, DEVELOPMENT 절은 1차 독립 실사를 통과했다(결함 0). 창 8(PR268 검증의 DB 서버 두 판)이 끝났고 PR268이 병합됐다. 녹화 실행 순서는 v1에 11-01 결정(109 A·110 A·HUD 지시)을 반영했다. 녹화용 리허설은 Art 격자 PR1·Core 24칸·Art PR2 병합과 Content 빌드를 기다린다. 작업자·검증자 pane은 없고, 이 branch는 로컬 WIP 커밋만 있으며 push하지 않았다.
+**현재 상태(2026-11-04 23:07 KST):** 인벤토리 24칸 goal이 PR295·PR296 병합으로 끝났다. core-active를 이 branch로 되돌려 main `5dd67b09`를 받았다(로컬 commit `867d967a`). 녹화용 리허설 착수 조건 다섯 중 셋(PR268·Art 격자 PR1·Core 24칸)이 채워졌고, Art PR2 병합과 Content 빌드가 남았다. 지금 보기(완료조건 1)와 DEVELOPMENT 새 절(1차 독립 실사 통과, 결함 0)과 창 8(PR268 검증의 DB 서버 두 판)은 끝난 그대로다. 녹화 실행 순서는 v1이다. 작업자·검증자 pane은 없고, 이 branch는 로컬 commit만 있으며 push하지 않았다. 아래 「11-04 복귀」부터 읽는다.
 
 ## 재개 지점
 
+- **11-04 복귀(메인 `msg_32944fc24916`·`msg_4b7239950d8f`):** 인벤토리 24칸 goal이 끝났다. 제품 PR295는 `fbf00de9`, 종료 기록 PR296은 `5dd67b09`로 들어갔고, 리드가 [종료 점검](../2026-11-01-inventory-24-slots/goal.md#종료-점검-준비)을 `msg_0f1aa79e5418`로 보냈다. 메인은 지금 리드를 교체하지 않고 이 pane이 이 goal을 잇게 했다(아래 「적용 중인 메인 결정」 11-04).
+  - 2026-11-04T14:06:48Z에 core-active를 24칸 종료 branch(`6a5c53ad`, 변경 0)에서 이 branch(`ad5d3442`)로 바꿨다. 바꾸기 전 core-active 터미널은 리드 하나였고, Unity·dotnet·WSL 세션 프로세스는 0이었다. 사용자 서버 탭은 터미널 목록에 없었다. 근거는 `.backups/verification/2026-10-31-db-persistence-demo-build/lead/return-01/`의 `branch-switch-01.txt`·`terminal-list-before-switch-01.json`·`tasklist-before-switch-01.csv`다.
+  - main `5dd67b09`를 받았다(`867d967a`, 충돌 0, tree가 미리보기 `lead/return-preview-5dd67b09-01.txt`와 같음). 서버 쪽 트리(`02_Server`·`04_ClientNet`·`98_Shared`·`99_Tools`)는 `5dd67b09`와 diff 0이다. `ProtocolVersion.Current = 23`이고, 작업 트리 Shared.dll은 v23(sha256 `8d471e72…c025`)이다(같은 폴더 `take-base-verify-01.txt`).
+  - 메인 지시: 녹화 순서의 Core 몫(리허설 절차·서버 기동 순서) 준비 계획을 Unity·WSL 창이 필요한 시각·길이와 함께 보고한다. Art PR2가 Unity 창을 약 40분 쓸 예정이라 메인이 겹치지 않게 배정한다.
 - **창 8 준비(2026-11-01T01:41Z, 메인 `msg_b40b44ba2d63`):** PR268 검증의 DB 영속 서버 두 판을 core-active의 v22 서버로 돈다. core-active는 24칸 branch(`6b2adad4`, 로컬 커밋, push 안 함)에서 이 branch(`9d35f5cd`)로 바꿨다(`.backups/verification/2026-11-01-inventory-24-slots/lead-branch-switch-01.txt`). 바꾸기 전 core-active Unity는 0이었다(같은 폴더 `lead-branch-switch-check-01.txt`). 작업 트리 Plugins Shared.dll은 v22(sha256 `b8b2828e…ecd3`)다.
   - WSL 복제본은 아직 v23 빌드다. 창 8 첫 단계로 새 Core 작업자가 `sync-wsl.sh build`를 1회 돈다. Content 창 B(01:35:30Z~02:18Z) 동안에는 WSL 실행을 하지 않는다.
   - 사용자 카드 v3: `lead/window8-user-server-card-v3.md`(sha256 `d4a869d0c1a7ca75af844a61c252c385d986ffc7c101ef6a5e7ab6e20d2dbabd`). 1단계 시작 블록은 v2와 bytes가 같다(`lead/window8-card-v3r2-block-compare.txt`). 첫 판(`8f770523…5128`, `msg_3a051b3a622d`)은 origin/main에 없는 DEVELOPMENT 절을 근거로 들었다. 메인 지적(`msg_bb4316bc7ee2`)에 따라 그 근거를 실측 원문 `docs-02/stage-a-observed-lines-v1.txt`와 launcher·Program.cs 줄 번호로 바꿨다(`lead/window8-card-v2-to-v3r2.diff`, `msg_b07763f85e18`). 메인이 sha256·시작 블록 일치를 다시 세고 「창 8은 이 카드로 간다」고 확정했다(`msg_a73bb31b2e79`).
@@ -30,11 +34,11 @@
 - **11-01 기록 전환(08:27Z경):** 이 기록을 쓰려고 core-active를 잠깐 이 branch로 바꿨다. 바꾸기 전 24칸 branch는 `11fd1824`, 변경 0이었다. 사용자 서버 탭은 정지 뒤 입력 화면, Windows dotnet 0, Unity 0이었다(`.backups/verification/2026-11-01-inventory-24-slots/lead-g1-record-switch-01.txt`). 커밋 뒤 24칸 branch로 돌아간다.
 - 다음 첫 일: 메인의 리허설 실행 창 배정을 기다린다. 착수 조건은 다섯이다.
   - PR268 병합(채움, 위 항목)
-  - Art 인벤토리 격자 PR1 병합(결정 92 B, `msg_e8defeeffd1f`)
-  - Core 인벤토리 24칸 PR 병합(결정 97 A, `msg_3ce270803253`)
+  - Art 인벤토리 격자 PR1 병합(결정 92 B, `msg_e8defeeffd1f`). 채움: PR294 `a888cd35`(2026-11-01T11:39:32Z)
+  - Core 인벤토리 24칸 PR 병합(결정 97 A, `msg_3ce270803253`). 채움: PR295 `fbf00de9`(2026-11-04T12:13:47Z)
   - Art PR2 병합(HUD 골드 제거·스킬칸, 「적용 중인 사용자 결정」 11-01 HUD 지시)
   - Content 빌드 경로·exe sha256
-  - Art 격자 PR1이 Core 24칸과 Art PR2보다 먼저다. Core 24칸과 Art PR2의 앞뒤는 정해지지 않았고, Core는 어느 쪽이 먼저여도 된다(Art `msg_494eb3ba541b`).
+  - 병합 순서(메인 결정 `msg_495eff183bf0`): Art 격자 PR1 → Core 24칸 → Art PR2(HUD 골드 제거·스킬칸 좌하단 4칸·6줄 캡처) → Content 녹화 빌드. Art PR2의 6줄 캡처는 24칸이 main에 있어야 찍힌다. 녹화 빌드 기준(다섯 PR이 모두 들어간 main)은 그대로다.
   - 24칸 PR은 프로토콜 버전을 올린다. 그래서 리허설 전에 Content가 알리는 고정 head(다섯 PR이 모두 들어간 main) 40자를 이 branch에 그대로 받고 서버를 다시 빌드한다(Core가 Content에 보낸 답 `msg_45e700da3330`). Core가 돌려줄 것은 이 branch HEAD 40자, 서버 쪽 트리(`02_Server`·`04_ClientNet`·`98_Shared`·`99_Tools`) diff 0 원시, `ProtocolVersion.Current` 줄, R1 exit다. 새 Core 작업자는 Codex Sol max로 띄운다.
 - 24칸 작업: 메인이 범위 초안을 요청했다(`msg_3ce270803253`). 초안은 `.backups/verification/2026-11-01-inventory-24-slots/scope-draft-v1.md`(sha256 `8dba8548…1a95`)다. 메인이 `msg_3dfd5496b065`(18:04:08Z)로 1 가·2 동의·3 가를 승인했다.
   - 새 goal `2026-11-01-inventory-24-slots`를 같은 리드가 먼저 끝내고 이 goal의 리허설로 돌아온다. R-8 교체는 두 goal이 다 닫힌 뒤 한 번이다.
@@ -238,6 +242,17 @@
 - PR268 병합 전 검증에서 독립 검증자가 DB 영속 서버로 한 판을 돈다. 사용자 서버 기동이 한 번 더 필요하다. Content 리드가 그 시각을 Core와 맞추러 연락한다.
 - 같은 사용자 서버 세션 안에서 Core 쪽 확인을 함께 할 수 있으면 그 안을 Content와 같이 올린다.
 - 기다리는 동안 대기 종료·heartbeat는 한 줄로 끝낸다. 메인이 현황판 Core 상태를 「대기」로 둔다.
+
+메인 `msg_495eff183bf0`(2026-11-01T08:26:45Z). 사용자 결정이 아니다.
+
+- 병합 순서는 Art 격자 PR1 → Core 24칸 → Art PR2 → Content 녹화 빌드다. 재개 지점의 착수 조건에 반영했다. 11-01에는 24칸 branch에서 받아 `lead/pending-goal-edits.md` 5절에 두었고, 11-04 복귀 때 옮겼다.
+
+메인 `msg_4b7239950d8f`(리드 수신 2026-11-04T14:04:22Z). 사용자 결정이 아니다. 「Goal까지 마무리 진행」은 메인이 전달한 사용자 지시다(메인 `msg_9a38be78866f`).
+
+- 리드 교체([R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)): 지금 하지 않는다. 이 pane이 이 goal의 맥락을 갖고 있어, 제출 기한(11-09 14:00)까지 이어 가는 편이 인수 비용보다 싸다. 교체는 이 goal이 끝날 때 다시 판단한다.
+- 24칸 종료 점검의 다음 계획 초안 1(이 goal 복귀·녹화 Core 몫 우선)은 사용자 지시 「Goal까지 마무리 진행」 범위로 진행한다. 초안 2~4(길드 창 11건 대조, SENTIS define 반복, 운영 규칙 후보)는 제출 뒤로 두고 BACKLOG 관측 그대로 둔다.
+- 24칸 goal 상단 상태 줄과 CURRENT Core 줄의 병합 전 표현은 이 goal 복귀 기록 commit에서 함께 고친다.
+- 녹화 Core 몫 계획 보고에 Unity·WSL 창이 필요한 시각과 길이를 넣는다. Art PR2가 Unity 창을 약 40분 쓸 예정이다.
 
 ## 요구사항 원천
 
