@@ -2,13 +2,28 @@
 
 인벤토리 칸 수를 8에서 24로 늘린다. 서버가 보내는 인벤토리 snapshot(36번)과 공유 칸 수 상수를 24로 바꾸고, 클라가 받는 쪽까지 같은 PR에서 맞춘다. 화면 격자(4열 × 6줄)는 Art가 만든다.
 
-**현재 상태(2026-11-04 20:03 KST):** 2차 좁은 재검증(verify-02)은 NOT PASS였다(#I24-V02 T6 1건, #I24-V03 길드 창 시험 11건). 11-04 처분이 나왔다. #I24-V02는 사용자 결정 116 A로 Art PR2가 고친다. #I24-V03은 main 기준선 PlayMode 1회로 기존 실패인지 가린다. 같으면 PR을 연다. 아래 「11-04 재진입」부터 읽는다.
+**현재 상태(2026-11-04 20:41 KST):** 2차 좁은 재검증(verify-02)은 NOT PASS였다(#I24-V02 T6 1건, #I24-V03 길드 창 시험 11건). 두 결함은 처분됐다. #I24-V02는 사용자 결정 116 A로 Art PR2가 고친다. #I24-V03은 main 기준선 PlayMode에서 같은 11건이 같게 실패해 기존 실패로 분류했다. PR을 연다. 아래 「11-04 기준선 결과」부터 읽는다.
 
 ## 재개 지점
 
+- **11-04 기준선 결과(#I24-V03 처분 끝, 2026-11-04T11:41Z):** 메인 결정대로 main `a888cd35` PlayMode 전체를 1회 돌았다. 계약은 `baseline-playmode-01/contract-v1.md`(sha256 `acd72597a6bea6140e391668b1a35a654d07139299c2a686fd2a2fe03a9426b0`, 실행 전용)다.
+  - 작업자: 신규 `[Core 구현 Astra]` GPT-6-Astra high(첫 화면 Codex v0.166.0, backend unknown)다. pane `term_3f30c6b4-ba88-4b89-8b39-b7ed00d5b474`, Task `task_c9ac613a1c1a`, Dispatch `ctx_1cabb09d22eb`다. worker_done은 `msg_221830df96ba`, 보고는 `baseline-playmode-01/report.md`(sha256 `aaa0f25df663295f8ad0ada2e42ac997dabcefb27d0da63793e7ba0f15fd4b6e`)다.
+  - 창(메인 배정 `msg_cace3ce14381`): 11:22:03Z~11:37:07Z였다.
+    - 리드가 core-active를 `a888cd35` detached로 바꿨다. Shared.dll v22 `b8b2828e…`, `ProtocolVersion.Current` 22였다(`baseline-playmode-01/lead-to-base-01.txt`).
+    - Unity는 11:25:13Z~11:36:21Z에 돌았다. 667.6초, exit 2(실패 시험 포함), 강제 종료는 없었다.
+    - 끝난 뒤 이 branch `3215a4ef`로 돌아왔다. v23 `8d471e72…`, Current 23, 변경 0이다(`lead-to-branch-01.txt`, 작업자 `raw/c-return-result.json`).
+    - 메인 알림은 시작 `msg_594e063c0cb0`, 끝 `msg_fa0abe01ba9b`다.
+  - 결과: 274건 = 통과 233 / 실패 11 / 건너뜀 30이다(`raw/b-playmode/results.xml` sha256 `12c9fff309420deb68254bfe0feba035ffeb63f4fcf500324ef3a6f88fab3573`).
+    - 길드 11건은 V2와 fullname·result·message가 모두 같다(`raw/baseline-comparison.json`의 `guild11Identical` true). 리드가 두 XML을 직접 읽은 대조 `baseline-playmode-01/lead-sample-compare-01.txt`도 같다.
+    - 기준선에만 있는 실패는 0건, 이름 집합 차이도 0건이다. 결과가 다른 이름은 T6 하나다. 기준 commit에서 Passed, 24칸 HEAD(V2)에서 Failed다.
+  - 판정(메인 결정의 규칙): #I24-V03 11건은 24칸과 무관한 기존 실패로 분류하고 PR을 막지 않는다. #I24-V02 T6는 위 사실만 남기고, 116 A대로 Art PR2가 고친다.
+  - drift: 허용된 두 경로(ProjectSettings SENTIS 줄, MinimapRT 줄 끝)만 작업자가 복원했다(`raw/b-drift.patch`).
+  - merge-tree(11:38:28Z): 원격 기준 `a888cd35`는 HEAD의 조상이다. 충돌 없이 HEAD tree와 같았다(`baseline-playmode-01/lead-merge-tree-01.txt`).
+  - 정리: worker-release `retained`(external_terminal) 뒤 빈 프롬프트를 보고 pane을 닫았다(ptyKilled true).
+  - **다음 첫 일:** 이 기록을 commit·push하고 PR을 연다(본문 `pr/pr-body-v2.md`). CI를 본 뒤 메인에 PR 준비 보고를 한다. 메인 R-2 표본은 그 보고 뒤 메인이 한다.
 - **11-04 재진입(2026-11-04T11:02Z, 메인 `msg_76097190e071`):** 리드는 같은 대화를 이었다(새 handle `term_27ba8dab-5127-4da4-a6e9-a7a5b3985f66`). Run을 `run-use`로 다시 묶었다(`reentry-1104/run-use-01.json`). 새 메인 handle은 `term_751a1f26-7aac-4a33-8a57-a3d4cec8a3d4`다.
   - 처분: #I24-V02는 사용자 결정 116 A로 Core PR에서 고치지 않는다. #I24-V03은 메인 결정으로 main `a888cd35` 기준선 PlayMode 1회를 돈다(「적용 중인 메인 결정」).
-  - **다음 첫 일:** 기준선 실행 계약(실행 전용)을 쓰고, 새 `[Core 구현 Astra]`(Astra high)를 연다. 창을 청한다. 결과가 같으면 PR, 다르면 사실 보고 뒤 멈춘다.
+  - 기준선 실행 계약을 쓰고 새 `[Core 구현 Astra]`(Astra high)를 열어 창을 청했다. 결과는 위 「11-04 기준선 결과」다.
 - **재개 카드(2026-11-01T12:53Z 정리, 사용자 마무리 지시):** 사용자 원문(메인 사본 `msg_4bd2bb8874a1`, 12:11:06Z)은 「슬슬 토큰이 다 끝나서, 마지막 작업 끝나면 재개지점 기록하고 마무리해줘, 나중에 이어서 하자」다. 메인 정리는 「NOT PASS면 고치지 말고 결함 번호와 판정 원문 경로를 재개 카드에 적는다」였다.
   - 판정: **NOT PASS.** 원문은 `verify-02/verdict.md`(sha256 `0e7954544124692a42dee3530ddda08b35b7bd029cc9f8c835771d3e51f23120`)이고, 검증자 worker_done은 `msg_35e024a23d74`(12:50:25Z)다. 검증 HEAD는 `420307cd0fb6245c702ba7ba9fe4787c9012efe8`다.
   - 확인된 것: 병합 보존·CURRENT(I24-V01 해소)·DLL과 생성물 bytes 재현, 서버 2569/0/28과 새 시험 17건 이름별 Passed, 봇 PASS 1(snapshot 204B·24쌍), EditMode 1822/1822(Art I24-A01~03 해소), 실서버 lane 1/1(v23 handshake, 640×480에서 24칸)이다.
@@ -90,7 +105,7 @@
   - Windows Plugins `Shared.dll`은 아직 v22 그대로다(sha256 `b8b2828e27a1a1667a2b5f703a2c7a97822f70fc47ef974c9f3694dcb5a4ecd3`). `.meta`도 그대로다(`7c6ab891ee57e1a71e200cbea3c27cee36de97404e1d6303711daf59b3be682b`). 그래서 지금 core-active로 Unity를 열면 소스와 DLL 판이 어긋난다.
   - 2단계 실행: 메모리 확인 통과(18:26:58Z) → Windows 생성기 loader 실패 1회(18:26:59Z 종료, 생성물 변경 0) → WSL sync·생성기·GenPackets 복사(36번 밖 차이 0, 칸 필드 48) → `sync-wsl.sh build` exit 0(wrapper 종료 18:36:47.8104288Z) → 정리 지시로 멈춤.
   - 남은 프로세스 0: 구현자 `impl-01/raw/process-inspect.out`(18:38:20Z), 리드 `lead-wrapup-process-check-01.txt`(18:39:37Z, Windows dotnet·Unity·Player 0, WSL dotnet·서버·봇 0, 7777 listen 0).
-- **열린 결정:** #I24-V02·#I24-V03의 처분을 메인이 정한다(위 재개 카드). 그 밖의 메인·사용자 결정 대기는 없다. 적용 중인 결정은 아래 「적용 중인 사용자 결정」과 「적용 중인 메인 결정」이다(97 A `msg_3ce270803253`, 92 B·93 A `msg_e8defeeffd1f`, 범위 승인 `msg_3dfd5496b065`, 99 C 정리 `msg_6547cf711563`).
+- **열린 결정:** #I24-V02·#I24-V03의 처분은 11-04에 끝났다(위 「11-04 기준선 결과」). 남은 것은 PR 병합의 사용자 승인 하나다. 적용 중인 결정은 아래 「적용 중인 사용자 결정」과 「적용 중인 메인 결정」이다(97 A `msg_3ce270803253`, 92 B·93 A `msg_e8defeeffd1f`, 범위 승인 `msg_3dfd5496b065`, 99 C 정리 `msg_6547cf711563`).
 - impl-01 기록: 계약 `impl-01/contract-v1.md`, 보충 `impl-01/lead-reply-sdk-v1.txt`(리드 답 `msg_b5e3dcc067a6`), 정리 지시 `impl-01/lead-stop-v1.txt`(`msg_27fc8d686ef9`), 1단계 요약 `impl-01/stage1-summary.md`, 원시 출력 `impl-01/raw/`.
   - 부분 보고: worker_done `msg_193a4c831f08`(18:44:49Z, outcome `failed`는 사용자 정리에 따른 부분 완료), `impl-01/report.md`(sha256 `deb3fe2ce6dadabd313e127def0e6fc36e58c5133a225833440b9e2226efa3be`). 리드의 원천 대조는 다음 세션 첫 일에 함께 한다.
   - 다음 세션 확인거리: `git diff --check`가 GenPackets.cs에서 trailing whitespace 64건을 낸다. 리드 grep 기준 HEAD 393줄 → 작업본 457줄로, 생성 템플릿의 기존 성질이 새 칸 16개만큼 는 것이다. 수기 파일의 diff --check는 0이다. 처리 방침은 독립 검증 전에 정한다.
@@ -103,7 +118,7 @@
   - 근거: 02_Server·98_Shared는 f5adcf31·58c8d4cb·8b60f725 사이 차이 0줄이다. profile은 core-active `logs/windows-sql-8256bcde…/`에 있다.
 - Art 리드(`run:run_6ae742140ce9`)와 격자 PR 순서를 조율한다. 격자 goal은 Art PR5가 들어가고 R-8 교체가 끝난 뒤 새 Art 리드가 연다. Core PR이 먼저 준비되면 준비 상태로 기다린다(메인 `msg_3dfd5496b065` 2항).
 - 앞 goal(`2026-10-31-db-persistence-demo-build`)은 리허설 대기로 멈춰 있다. 그 branch의 최신 로컬 커밋은 `ad5d34424c606e898cf01069175723b924e8f6cd`이고 원격에 올리지 않았다. 이 goal이 끝나면 그 branch로 돌아가 이 PR이 들어간 기준 branch를 합친다.
-- Run `run_ee7c33fd5873`, 리드 `[Core 리드 Opus]`, Claude 대화 ID `396a3a4c-061f-46a4-94cb-a8cbce46f7a0`. branch `feat/inventory-24-slots-20261101`(base `58c8d4cb9b8a34d66389d5573797e07564c6fa7a`, upstream 없음, 원격에 올리지 않음). 근거 폴더는 `.backups/verification/2026-11-01-inventory-24-slots/`다.
+- Run `run_ee7c33fd5873`, 리드 `[Core 리드 Opus]`, Claude 대화 ID `396a3a4c-061f-46a4-94cb-a8cbce46f7a0`. branch `feat/inventory-24-slots-20261101`(base `58c8d4cb9b8a34d66389d5573797e07564c6fa7a`, 11-04 원격 백업 push로 upstream `origin/feat/inventory-24-slots-20261101`이 있다). 근거 폴더는 `.backups/verification/2026-11-01-inventory-24-slots/`다.
 
 ## 적용 중인 사용자 결정
 
@@ -188,6 +203,13 @@
 - 창은 길이 추정과 함께 메인에 청한다.
 - 그 뒤 PR을 연다. PR 전에 branch를 push해 원격 백업을 둬도 된다. 병합은 사용자 승인 줄 뒤 메인만 한다.
 - 메인 R-2 표본(판정서 107행)은 PR 준비 보고 뒤 메인이 직접 한다. 보고에 T6 XML 행, 길드 비교 JSON, 서버 17건 이름 원시, V3 원시 경로를 적는다.
+
+### 2026-11-04 기준선 창 배정
+
+메인 `msg_cace3ce14381`. 사용자 결정이 아니다.
+
+- core-active Unity batchmode 1개, 최대 35분이다. 시작은 작업자 「준비됨」을 받은 즉시이고, 시작 시각을 메인에 한 줄로 알린다. 그동안 다른 파트 Unity·WSL 실행은 열지 않는다.
+- 창 끝을 확인하면 바로 알린다. 다음 창은 Art W6다.
 
 ### 2026-11-01 독립 검증의 두 단계
 
@@ -324,8 +346,8 @@
 - [x] 범위 승인(메인 `msg_3dfd5496b065`)
 - [x] 구현 1단계(소스, 실행 없음)
 - [x] 구현 2단계(생성기·DLL·WSL 빌드·서버 시험·봇, 메인 배정 창) — impl-02·impl-03
-- [ ] Unity 시험과 실제 접속 — EditMode 1822/1822, 실서버 lane 1/1, PlayMode 실패 12건 남음(verify-02)
+- [x] Unity 시험과 실제 접속 — EditMode 1822/1822, 실서버 lane 1/1, PlayMode 실패 12건은 처분됨(T6는 116 A로 Art PR2, 길드 11건은 기준선 같음)
 - [x] 1차 독립 검증(verify-01) — 계약 범위 통과
-- [ ] 2차 좁은 재검증(격자 PR 병합 뒤) — NOT PASS(#I24-V02·#I24-V03), 메인 처분 대기
+- [x] 2차 좁은 재검증(격자 PR 병합 뒤) — NOT PASS(#I24-V02·#I24-V03), 11-04 처분 끝(116 A, main 기준선 PlayMode)
 - [ ] PR·병합 준비 보고
 - [ ] 결과 기록과 앞 goal 복귀
