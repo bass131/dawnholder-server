@@ -14,10 +14,15 @@ using UnityEngine.TestTools;
 
 namespace Dawnholder.Client.Tests.PlayMode
 {
-    // T6/T7: real scene/input/connection path with the existing scripted TCP authority. No state injection and no
+    // T6/T7: real scene/input/connection path with the existing scripted TCP authority and no
     // assumed mouse-to-attack binding. Every negative-use scenario has a positive use in the same test.
+    // Only the drag T6 sets the quest HUD reveal flag to its fresh-session value; TearDown restores it.
     public sealed class InventoryIconGridSceneTests
     {
+        // Session-wide reveal flag of the quest HUD (QuestProgressHud.cs:28). Only T6 resets it; TearDown restores it.
+        static readonly FieldInfo QuestHudRevealed = typeof(QuestProgressHud).GetField("_revealed", BindingFlags.Static | BindingFlags.NonPublic);
+        bool? _questHudRevealedBefore;
+
         MapEntryPlayFixture _fixture;
         readonly List<GameObject> _owned = new List<GameObject>();
         int Uses => _fixture.Peer.Count(PacketID.C_ItemUse);
@@ -28,6 +33,12 @@ namespace Dawnholder.Client.Tests.PlayMode
         [UnityTearDown]
         public IEnumerator TearDown()
         {
+            if (_questHudRevealedBefore.HasValue)
+            {
+                QuestHudRevealed.SetValue(null, _questHudRevealedBefore.Value);
+                Debug.Log("[T6 quest-hud] restored=" + _questHudRevealedBefore.Value);
+                _questHudRevealedBefore = null;
+            }
             foreach (GameObject owner in _owned) if (owner != null) UnityEngine.Object.Destroy(owner);
             _owned.Clear();
             yield return _fixture.Cleanup();
@@ -190,8 +201,20 @@ namespace Dawnholder.Client.Tests.PlayMode
         [UnityTest]
         public IEnumerator T6_AfterDraggingToTheRightEdge_AllReachableDetailsStayOnScreen()
         {
+            // Earlier hunting-area tests can leave this session flag revealed (QuestProgressHud.cs:28,49).
+            // Recreate the state of a fresh session that has only visited town.
+            Assert.IsNotNull(QuestHudRevealed, "fixture: QuestProgressHud._revealed session flag");
+            _questHudRevealedBefore = (bool)QuestHudRevealed.GetValue(null);
+            QuestHudRevealed.SetValue(null, false);
+            Debug.Log("[T6 quest-hud] before=" + _questHudRevealedBefore.Value + " set=False");
             yield return ReadySyncedTown();
             yield return ScreenUiProbe.WaitForEventSystem();
+            QuestProgressHud questHud = QuestProgressHud.Instance;
+            Assert.IsNotNull(questHud, "fixture: quest HUD of this town scene");
+            CanvasGroup questGroup = questHud.GetComponent<CanvasGroup>();
+            Debug.Log("[T6 quest-hud] alpha=" + questGroup.alpha + " blocksRaycasts=" + questGroup.blocksRaycasts);
+            Assert.AreEqual(0f, questGroup.alpha, 0.001f, "fixture: a fresh-session town keeps the quest HUD hidden");
+            Assert.IsFalse(questGroup.blocksRaycasts, "fixture: the hidden quest HUD takes no pointer");
             var panel = (RectTransform)InventoryPanelProbe.Root.Find("Inventory");
             var grab = (RectTransform)panel.Find("Header/GrabArea");
             Assert.IsNotNull(grab, "fixture: title bar grab area");
