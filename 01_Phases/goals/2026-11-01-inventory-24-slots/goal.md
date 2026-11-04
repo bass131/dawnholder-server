@@ -2,17 +2,25 @@
 
 인벤토리 칸 수를 8에서 24로 늘린다. 서버가 보내는 인벤토리 snapshot(36번)과 공유 칸 수 상수를 24로 바꾸고, 클라가 받는 쪽까지 같은 PR에서 맞춘다. 화면 격자(4열 × 6줄)는 Art가 만든다.
 
-**현재 상태(2026-11-04 21:48 KST):** PR295가 병합됐다(merge commit `fbf00de9`, 2026-11-04T12:13:47Z). 종료 Gardener는 미처분 제품 차단 0, 정리 후보 2개(둘 다 기존 BACKLOG 행의 추가 관측)로 끝났다. 남은 것은 종료 기록 문서 실사, 종료 기록 PR, 종료 점검이다. 아래 「11-04 종료 Gardener」, 「결과와 남은 위험」, 「종료 점검 준비」부터 읽는다.
+**현재 상태(2026-11-04 22:13 KST):** PR295가 병합됐다(merge commit `fbf00de9`, 2026-11-04T12:13:47Z). 종료 Gardener는 미처분 제품 차단 0, 정리 후보 2개(둘 다 기존 BACKLOG 행의 추가 관측)로 끝났다. 종료 기록 PR은 PR296이다. 그 문서 실사 1차는 NOT PASS(낮은 문서 결함 CLOSE-01·02)였고 리드가 고쳤다. 남은 것은 수정본 재실사, PR296 병합, 종료 점검이다. 아래 「11-04 종료 기록 실사 1차」, 「11-04 종료 Gardener」, 「결과와 남은 위험」, 「종료 점검 준비」부터 읽는다.
 
 ## 재개 지점
 
+- **11-04 종료 기록 실사 1차(2026-11-04T12:57Z~13:10Z):** 신규 `[Core 검증자]` GPT-6-Astra high(11-02 사용자 결정, 첫 화면 Codex v0.166.0, backend unknown)가 `fbf00de9..5302ddb5`를 문서 실사했다. 판정은 **NOT PASS**다.
+  - 계약 `closeout-01/review-contract-v1.md`(sha256 `b65d0ac23bf42d72899db0b2356384011450980020b287dfd9bde31e5f58620d`), 입력 41파일 `closeout-01/review-inputs.json`. pane `term_5eec9d5e-524f-45be-9511-409ff3a87851`, Task `task_be20fc5aabf2`, Dispatch `ctx_05f5b3c4e002`다. 기동 기록은 `closeout-01/review-launch-record-v1.md`다.
+  - 판정 `closeout-01/reviewer/verdict-v1.md`(19,774 B, sha256 `f52c0e8a85382bdb2727412c811df34377609ccbb0ff264428d43bd707cb5c4b`), worker_done `msg_0d6059de9d64`.
+  - CLOSE-01: 진척 단계 8번이 PR 번호 없이 「종료 기록 병합」이었고, 9번 이름에 내부 약어 `R-8`이 있었다. 리드는 PR296을 먼저 만들고 8번을 「PR296 병합」으로, 9번을 「종료 점검」으로 고쳤다. R-8은 설명의 링크로 옮겼다.
+  - CLOSE-02: 아래 「11-04 종료 Gardener」의 메모 시각이 시계 조회 시각(12:45:38Z)을 메모를 쓴 시각처럼 적었다. 실제 최초 Write 성공은 12:46:24.457Z다. 그 문장과 BACKLOG `lead-direct-write-context-memo` 출처를 고쳤고, 메모 `closeout-01/closeout-context-01.md`에는 원 줄을 두고 끝에 정정 절을 더했다.
+  - 메모 선행 자체는 확인됐다. 검증자가 메모 파일 시각(12:51:27Z)을 보고 공식 질문 `msg_895213bd4f63`을 보냈고, 리드는 대화 기록 원시 추출 `closeout-01/memo-write-evidence-v2/`로 답했다(`msg_c72e2bcdd94f`). 첫 추출 v1은 exit 6으로 실패해 그대로 남겼다.
+  - 수정 메모는 `closeout-01/fix-01/lead-context-before-v1.md`다. 비차단 관찰 O-01(상태 줄의 「다음 계획 후보」 안내)은 판정 결함이 아니라서 이번 수정에 넣지 않았다.
+  - 정리: worker-release `retained`(external_terminal), 빈 프롬프트 확인 뒤 pane을 닫았다(ptyKilled true, `closeout-01/review-close-v1.json`).
 - **11-04 종료 Gardener(2026-11-04T12:25Z~12:43Z):** 신규 `[Core Sol]` GPT-6.1-Sol max(사용자 결정 101 A, 첫 화면 Codex v0.166.0, backend unknown)가 읽기 전용으로 점검했다. 계약은 `closeout-01/gardener-contract-v1.md`(sha256 `feae46b62fc56461fea398a9c63e1b523f516f9136f8dfb8fa8072234a87f8f3`)이고, 입력 33파일을 hash로 고정했다(`closeout-01/gardener-inputs.json`).
   - pane `term_b69c62de-85eb-4a22-917e-898707342a09`, Task `task_0284309bc5bf`, Dispatch `ctx_70acd655d16e`다. worker_done은 `msg_dddd379091f0`, 쓰기 종료는 12:40:50Z다. 기동 기록은 `closeout-01/gardener-launch-record-v1.md`다.
   - 보고서는 이 폴더의 [gardener.md](gardener.md)다. 원본 `closeout-01/gardener/context-gardener-report.md`와 bytes가 같다(38,374 B, sha256 `d7aca3cc8989f5dd2931d109a3ec8ac86403c056793cfd4b31072863b743a67e`, `closeout-01/gardener-md-copy-01.txt`).
   - 결론: 미처분 제품 차단 0이다. verify-01 계약 범위 PASS, verify-02 NOT PASS, 기준선 실행 전용의 지위를 그대로 보존했다. 정리 후보 2개는 아래 「다음 계획 후보」의 BACKLOG 추가 관측으로 옮겼다.
   - 리드 반환 G-01(진척 단계 14개, 상한 12 초과): 완료 단계를 묶어 10개로 고쳤다(「진척 단계」).
   - 정리: worker-release `retained`(external_terminal), 빈 프롬프트 확인 뒤 pane을 닫았다(ptyKilled true, `closeout-01/gardener-close-v1.json`).
-  - 리드 메모 선행 이탈(자기 신고): 위 「11-04 병합 결과」의 로컬 결과 기록 commit `fef83844`(goal·CURRENT)는 종료 작업 맥락 메모 없이 썼다. 종료 맥락 메모는 12:45:38Z에야 썼다(`closeout-01/closeout-context-01.md`). 메인 처분 A(`msg_9a38be78866f`, 12:47Z 수신)로 commit `fef83844` 하나만 한정 인정하며 메모 소급은 0이다. BACKLOG `lead-direct-write-context-memo`의 여섯 번째 관측으로 적었다.
+  - 리드 메모 선행 이탈(자기 신고): 위 「11-04 병합 결과」의 로컬 결과 기록 commit `fef83844`(goal·CURRENT)는 종료 작업 맥락 메모 없이 썼다. 종료 맥락 메모는 12:46:24Z에야 처음 썼다(최초 Write 성공 12:46:24.457Z, `closeout-01/closeout-context-01.md`). 메모 머리의 12:45:38Z는 그 직전의 시계 조회 시각이다(`closeout-01/memo-write-evidence-v2/timeline.txt`). 이 시각 문구는 위 「11-04 종료 기록 실사 1차」의 CLOSE-02로 고쳤다. 메인 처분 A(`msg_9a38be78866f`, 12:47Z 수신)로 commit `fef83844` 하나만 한정 인정하며 메모 소급은 0이다. BACKLOG `lead-direct-write-context-memo`의 여섯 번째 관측으로 적었다.
 - **11-04 병합 결과(2026-11-04T12:13:47Z):** PR295가 병합됐다. 메인 알림은 `msg_c9f0b0c0f562`(12:14:45Z)다.
   - 메인이 R-2 표본을 본 뒤 사용자 승인 줄 「병합 승인: PR295 head 082f71b660d2851186bfb9f2aed71abf1cf150f2」(메인 pane 제출, 메인 알림의 사본)을 받았다. 메인이 head를 다시 대조하고 단독 명령으로 병합했다.
   - merge commit `fbf00de9a57fb26baaef89c12daa7d84ace92631`이다. head `082f71b6`, base `a888cd35`이고 state MERGED다(`closeout-01/pr295-view-merged-01.json`).
@@ -390,7 +398,7 @@ PR295 병합본(main `fbf00de9`) 기준이다. 근거 경로는 모두 `.backups
 - 종료 Gardener: 미처분 제품 차단 0, 후보 2개, 리드 반환 G-01 1건이다(위 「11-04 종료 Gardener」). 보고서는 [gardener.md](gardener.md)다.
 - 남은 한계: 직접 사람 플레이, 대화형 Editor, DB, permit lane, V3 스크린샷, 204바이트 직접 길이 로그는 실행하거나 관측하지 않았다.
 - 보존 자원: 이 goal은 DB 행을 만들지 않았다. 종료 기록에서는 Unity·WSL·DB·서버 실행이나 자원 삭제를 하지 않는다.
-- 종료 기록 문서 실사: 신규 `[Core 검증자]` Astra high가 이 종료 기록 diff를 실사한다. PASS여야 종료 기록 PR의 병합 준비 보고로 간다.
+- 종료 기록 문서 실사: 1차는 NOT PASS(CLOSE-01·02, `closeout-01/reviewer/verdict-v1.md`)였고 리드가 고쳤다. 신규 `[Core 검증자]` Astra high가 수정본을 재실사한다. PASS여야 PR296의 병합 준비 보고로 간다.
 - 다음 계획 초안: 메인·사용자가 결과·남은 위험·BACKLOG를 확인한 뒤 정한다. 앞 goal(DB 영속 시연) 복귀는 메인 지시 `msg_c9f0b0c0f562`에 따른 기존 goal의 재개이며 새 goal 착수가 아니다.
 
 ## 진척 단계
@@ -402,6 +410,6 @@ PR295 병합본(main `fbf00de9`) 기준이다. 근거 경로는 모두 `.backups
 - [x] PR295 병합 — CI 4건 SUCCESS, PR 준비 보고 `msg_3461ddaf5f97`, merge commit `fbf00de9`(12:13:47Z, `msg_c9f0b0c0f562`)
 - [x] 로컬 결과 기록 — 「11-04 병합 결과」·「결과와 남은 위험」
 - [x] 종료 Gardener — 신규 Codex Sol max(101 A), 「11-04 종료 Gardener」
-- [>] 종료 기록 병합 — 결과와 `gardener.md`, 문서 실사
-- [ ] 종료 점검·R-8 — 메인 판단
+- [>] PR296 병합 — 종료 기록과 `gardener.md`, 문서 실사 1차 NOT PASS(CLOSE-01·02) 수정, 재실사 남음
+- [ ] 종료 점검 — 메인 판단, 리드 교체는 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)
 - [ ] 앞 goal 복귀 — main `fbf00de9` 받기
