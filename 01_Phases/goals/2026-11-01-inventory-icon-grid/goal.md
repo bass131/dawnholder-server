@@ -2,22 +2,24 @@
 
 ## 재개 지점
 
-### 현재 재개 카드 — 2026-11-01 PR2 선행 시험 계약 조립 뒤(초안, 기동 전), 사용자 마무리 지시로 세션 정리
+### 현재 재개 카드 — 2026-11-04 재진입, PR2 선행 시험 계약에 116 A(T6) 반영 중
 
-**다음 세션 첫 순서(메인 `msg_8d7022b8a0b7`):** ① 계약 확정 → ② 메인 보고 → ③ 시험 작성자 `[Art 시험 Astra]` 기동 → ④ Unity 창 요청(약 35분, Core 2차 재검증 뒤).
+**다음 첫 순서(메인 `msg_00063127006f`):** ① 계약 확정(116 A를 넣어 새 이름으로 다시 조립) → ② 메인 보고 → ③ 시험 작성자 `[Art 시험 Astra]` 기동 → ④ Unity 창 요청.
 
-- 계약 상태는 「초안, 기동 전」이다. 사용자 마무리 지시(메인 `msg_8d7022b8a0b7` 원문 「슬슬 토큰이 다 끝나서, 마지막 작업 끝나면 재개지점 기록하고 마무리해줘, 나중에 이어서 하자」)로 메인 보고와 기동을 멈췄다.
-  - 조립본은 근거 폴더 `pr2-red-contract-v1-r2.md`이고 머리는 `pr2-red-contract-v1-head.md`다. SHA256과 조각은 `assemble-pr2-red-contract-1101-02.txt`·`pr2-red-contract-v1-r2.receipt.txt`에 있다. 포인터는 `pr2-red-contract-v1-r2-pointer.md`다.
-  - 첫 조립본 `pr2-red-contract-v1.md`는 부록 B의 메시지 둘이 빠져 내보내지 않는다(`assemble-pr2-red-contract-1101-01.txt` 2절).
-  - ① 확정: 리드가 머리를 다시 읽는다. 바꾸면 새 이름으로 다시 조립한다. 기준 commit이 바뀌면 사실 스크립트(`pr2-red-facts-1101-03.sh`·`-04.sh`)부터 새 번호로 다시 잰다.
+- 11-04 재진입: 같은 대화 ID로 새 pane에 이어졌고 Run을 다시 묶었다(근거 폴더 `lead-run-use-1104-01.json`). READY는 `msg_36741023cb0f`다. 값은 `reentry-facts-1104-01.txt`에 있다.
+- 사용자 결정 116 A(아래 「11-04 사용자 결정 116 A」)로 24칸 드래그 시험 T6 실패(#I24-V02)가 PR2 완료조건이 됐다. 계약 머리 v1에는 이것이 없으므로 새 판을 쓴다.
+- 앞 세션의 계약은 「초안, 기동 전」이었다(사용자 마무리 지시, 메인 `msg_8d7022b8a0b7` 원문 「슬슬 토큰이 다 끝나서, 마지막 작업 끝나면 재개지점 기록하고 마무리해줘, 나중에 이어서 하자」).
+  - 앞 조립본은 근거 폴더 `pr2-red-contract-v1-r2.md`이고 머리는 `pr2-red-contract-v1-head.md`다. 116 A 전이라 내보내지 않는다. 첫 조립본 `pr2-red-contract-v1.md`도 내보내지 않는다(부록 B의 메시지 둘 빠짐, `assemble-pr2-red-contract-1101-01.txt` 2절).
+  - ① 확정: 기준 commit이 이 goal 기록 commit으로 바뀌므로 사실 스크립트부터 새 번호로 다시 잰다.
   - ③ 전: 기동 단계 스크립트를 `launch-grid-recheck2-astra-1101-01.sh`에서 새로 쓴다. Content 리드에게 `GuildGrowthEffectConsumerLifecycleTests` :705(`HudReferences`의 `Gold_bar`) 후보 한 줄을 미리 알린다.
+- T6 순서(메인 `msg_00063127006f`): Core 24칸 PR이 먼저 병합되고 PR2 branch가 그 main을 받는다. 8칸 main에서는 T6가 재현되지 않을 수 있다. 그래서 원인 가리기는 24칸 main을 받은 뒤의 실행에서 한다. Core PR이 계약 기동 전에 병합되면 그 main을 먼저 받고 계약을 다시 조립한다.
 - 설계 5(NPC 대화창·보상 창이 뜰 때 스킬칸)는 메인 결정 A다(아래 「11-01 메인 결정 설계5 A」). 기록은 리드 맥락 메모 3의 「선행 시험 계약 조립」 절에 있다.
 - Unity 창은 메인이 배정하고, Core 24칸 마지막 확인이 먼저다. Unity 없이 되는 일은 바로 하고, 창이 필요하면 예상 길이(아래 「Unity 창 추정」 W6 약 35분)와 함께 청한다(메인 `msg_8f73d5ae4af3`). 6줄 캡처는 Core 24칸이 main에 든 뒤다. 빈 스킬칸 alpha 0.3 해석은 그 캡처 때 사용자에게 화면으로 확인받는다(같은 메시지). 종료 Gardener와 종료 점검은 PR2 병합 뒤다. 병합 순서는 Art PR1 → Core 24칸 → Art PR2 → Content 녹화 빌드다(메인 `msg_1357f45b9d35`). 작업자가 일하는 동안 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모 3(`art-lead-context-1101-03.md`)에 쌓는다. 메모 1·2는 PR1 기록이다. 리드 시험 계약에는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」를 넣는다(메인 `msg_484ea2fa03bb`, 규칙 정본 반영 전까지). 리드는 시계·SHA256을 인라인 명령으로 만들지 않는다(아래 「두 번째 좁은 재실사 — 2026-11-01」 교정 층).
 
 | 항목 | 현재 |
 |---|---|
-| 상태 | PR1(격자·상세 창·우클릭)은 PR294로 main에 들어갔다(merge commit `a888cd35`, 아래 「격자 PR1 병합 — 2026-11-01」). 그 전에 강 등급 독립 검증은 head `47cbdcac`에서 PASS였다(아래 「독립 검증 — 2026-11-01」). 좁은 재실사 두 번은 리드 기록 결함만 냈고 제품 결함은 0이었다. 첫 번째 #GRIDR-01은 고쳤다(아래 「좁은 재실사 — 2026-11-01」). 두 번째 #GRIDR2-01은 메인이 「GRIDR2-01 A」로 닫았다(아래 「두 번째 좁은 재실사 — 2026-11-01」). PR2(HUD 골드 제거·왼쪽 아래 스킬칸 4칸·6줄 캡처)는 범위 첫 commit과 설계5 A 기록 commit 뒤, 선행 시험 계약을 조립했고 메인 보고·기동 전이다(위 재개 카드). |
-| 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), 대화 ID `c92c0adb-250c-48fd-b4cc-8d6c85df4386`. 회신 주소는 `run:run_6687e0512b2c`다. |
+| 상태 | PR1(격자·상세 창·우클릭)은 PR294로 main에 들어갔다(merge commit `a888cd35`, 아래 「격자 PR1 병합 — 2026-11-01」). 그 전에 강 등급 독립 검증은 head `47cbdcac`에서 PASS였다(아래 「독립 검증 — 2026-11-01」). 좁은 재실사 두 번은 리드 기록 결함만 냈고 제품 결함은 0이었다. 첫 번째 #GRIDR-01은 고쳤다(아래 「좁은 재실사 — 2026-11-01」). 두 번째 #GRIDR2-01은 메인이 「GRIDR2-01 A」로 닫았다(아래 「두 번째 좁은 재실사 — 2026-11-01」). PR2(HUD 골드 제거·왼쪽 아래 스킬칸 4칸·6줄 캡처)는 범위 첫 commit과 설계5 A 기록 commit 뒤, 선행 시험 계약을 조립했다. 11-04에 116 A(T6)가 더해져 계약을 새 판으로 확정하는 중이고 메인 보고·기동 전이다(위 재개 카드). |
+| 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh), 대화 ID `c92c0adb-250c-48fd-b4cc-8d6c85df4386`. 회신 주소는 `run:run_6687e0512b2c`다. 11-04부터 pane handle은 `term_ba2b9edd-54e4-4341-8bb4-2d70e0b7ada9`이고, 메인 handle은 `term_751a1f26-7aac-4a33-8a57-a3d4cec8a3d4`다(`reentry-facts-1104-01.txt`, 메인 `msg_00063127006f`). |
 | branch | PR2 branch는 `feat/art-hud-skill-slots-20261101`이다. PR1 병합 뒤 origin/main `a888cd35a5ae7222b44d87b2702d6bd975ed2540`에서 만들었다(근거 폴더 `pr2-branch-create-1101-01.txt`). PR1 branch `feat/art-inventory-icon-grid-20261101`은 origin/main `ffe7f983`(PR292 병합)에서 만들었고, RED commit 뒤 `3bb76772`(PR268 병합)을 받았다(`9e883317`, 충돌 0, `main-merge-1101-01.txt`). 그 원격 branch는 병합 뒤 지워졌다. |
 | 관계 | Core 인벤토리 24칸 goal(`core-active/01_Phases/goals/2026-11-01-inventory-24-slots/goal.md`, Core PR 때 main에 들어간다)이 패킷·서버·공유 칸 수를 바꾼다. 격자 PR1이 먼저 들어갔고, 다음은 Core 24칸 PR이다(아래 「Core 24칸 계약 — 확정」). |
 | 실행 창 | W1 Unity 창 세 번을 썼다. U0 04:30~05:00Z, U1 04:56~05:20Z, U1 03 05:18~05:40Z이다. 구현 v1은 05:57~06:45Z 창을 받아 06:18Z에 일찍 반납했다. 시험 고침은 06:48~07:10Z 창을 받아 06:57Z에 반납했다. 사용자 확인 캡처는 Editor 창 07:39~08:05Z를 사용자 부재로 받아 07:48Z에 반납했다. 독립 검증은 08:47~09:37Z 창을 받아 09:21Z에 반납했다. 모두 반납했다. Unity·WSL·DB 창은 메인이 배정한다. |
@@ -110,6 +112,28 @@
 - 이유(같은 메시지 2항): 사용자 지시 「스킬칸은 좌측 하단으로」와 114 「겹쳐도 상관없음」을 메인이 「스킬칸 고정, 아무것도 비키지 않음」으로 읽었다. 녹화는 모니터마다 1920×1080(110 A)이고 그 크기에서는 겹침이 없다. B는 사용자가 원한다는 근거 없이 새 동작과 시험을 더한다.
 - 사용자 확인(같은 메시지 3항): 6줄·HUD 캡처에 「1280×720, NPC 대화창이 뜬 왼쪽 아래」 한 장을 넣는다. 사용자가 그 그림에서 다르게 고르면 그때 고친다.
 
+### 11-04 재기동·제출 기한·11-02 작업자 배정 — msg_00063127006f
+
+- 재기동 사용자 원문(11-04 메인 pane 제출, 메인 `msg_00063127006f` 전달): 「이어서 진행」
+- 제출 기한 사용자 원문(11-04 19:59 KST 이전 메인 pane 제출, 같은 메시지): 「제출기한이 좀 늘어났어, 11월 9일 14시까지야」
+  - 사용자가 붙인 학교 공지 요약(메인 전달): 2026-11-09(월) 14:00까지 브로슈어·PPT(시연 영상 삽입 필수)·시연 영상 파일을 USB로 제출한다. 발표는 2026-11-11(수) 16:00이고 발표 10분·질의응답 5분이다.
+  - 메인 적용: 기존 「시연 11-06」 문구는 새 기한으로 읽는다.
+- 작업자 배정 사용자 원문(11-02 Codex 메인 세션의 사용자 직접 입력, 원천 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-11-02/worker-routing.md`, 같은 메시지 전달)
+  - 「그리고 지금 Codex 토큰 사용량이 다시 2배 증가서 넉넉해져서 작업자도 Astra High로 바꿔도 될 거 같아」
+  - 「검증자도 xhigh로 두니까 너무 검증이 오래 걸리는데 앞으로 그냥 high로 둬야겠다」
+- 메인 적용(같은 메시지): 새 구현자와 새 독립 검증자는 `codex --model gpt-6-astra -c model_reasoning_effort=high --disable fast_mode`로 연다. 태그는 구현자 `[<파트> 구현 Astra]`, 검증자 `[<파트> 검증자]`다. 선행 시험 작성자는 지금 배정(`gpt-6-astra` xhigh, `[<파트> 시험 Astra]`) 그대로다. 리드는 Claude Opus 그대로다. 저장소 CLAUDE.md 4A 표는 아직 Sol max라서 이 결정이 앞선다(사용자 결정에 따른 런타임 전환은 정본 병합을 기다리지 않는다). 이 goal의 배정은 아래 「작업 방식」에 적는다.
+
+### 11-04 사용자 결정 116 A — 드래그 시험 T6는 PR2가 고친다 — msg_00063127006f
+
+- 사용자 결정 원문(11-04 메인 pane 제출, 메인 `msg_00063127006f` 전달): 「대시보드 결정 응답: 1) 116 - Core 24칸 PR을 인벤토리 드래그 시험 1건 실패를 안고 먼저 올릴지, 그 시험을 고친 뒤 올릴지 → A 안고 진행, Art PR2가 고침」
+- 대상: Core verify-02의 결함 #I24-V02다. `InventoryIconGridSceneTests.T6_AfterDraggingToTheRightEdge_AllReachableDetailsStayOnScreen`이 24칸 6줄에서 210행 「T6 occupied point after dragging」로 실패했다. 검증자 분류는 (d) 원인 미확정이다. 판정 원문은 core-active 근거 폴더 `2026-11-01-inventory-24-slots/verify-02/verdict.md`(SHA256 `0e7954544124692a42dee3530ddda08b35b7bd029cc9f8c835771d3e51f23120`, Core `msg_2c72f19feb83`, 리드 재측정 `reentry-facts-1104-01.txt` 4절)다.
+- 메인 적용(같은 메시지)
+  - PR2 완료조건에 「Core 24칸이 든 main에서 T6 통과」를 넣는다(아래 완료조건 19).
+  - 원인(창 높이·HUD 가림·입력·시험 준비)은 PR2 선행 시험 단계에서 가린다.
+  - 검증자의 비차단 관찰 O1(205~210행의 세 점이 같은 실패 문구를 써서 어느 점이 실패했는지 원시에 남지 않음)도 함께 다룰지 리드가 판단해 보고에 적는다.
+  - Core PR이 먼저 병합되고 PR2가 그 main을 받는다. 그 전 Unity 실행에서는 T6가 24칸 없이 재현되지 않을 수 있으니 계약에 그 순서를 적는다.
+- 같은 판정의 #I24-V03(길드 창 시험 11건)은 Art 소유가 아니다(Core `msg_2c72f19feb83`).
+
 ## 지금 상태(사실)
 
 기준은 origin/main `ffe7f983b96eda8002a27169b3e8b7cb5eb32c72`다. F1·F2·F3은 근거 폴더의 저장 출력이다.
@@ -172,6 +196,10 @@ PR2 — HUD(사용자 직접 지시 `msg_7e7523b25aa1`)
    - 지금 활성 칸만 가운데로 모으는 배치(`HudLayout` :74~:84)는 4칸 고정 배치로 바뀐다. 이름은 책임으로 짓고 위치 근거를 리드 맥락 메모에 남긴다.
 10. 인벤토리 창과 스킬칸은 겹쳐도 된다(사용자 답 114, 위 「적용 중인 사용자 결정」). 스킬칸은 왼쪽 아래에 고정되고, 인벤토리 창의 기본 자리와 그리는 순서(HUD 10 > 인벤토리 5)는 그대로다. 겹친 칸은 스킬칸에 가려 마우스 올림 상세와 우클릭을 받지 않는다. 이 막음은 PR1의 `InventoryOverlayOcclusion`을 쓰고 새 장치를 만들지 않는다. 그것이 막지 못하면 선행 시험 RED로 드러낸다. 창을 끌어 비키면 그 칸은 다시 상세와 우클릭을 받는다.
 11. client.md :46(HUD 골드)·:48(HudLayout의 Q/E 칸 배치) 문장을 새 동작에 맞추고, 「스킬칸은 인벤토리 창과 겹칠 수 있고, 창은 끌어서 옮긴다」를 한 줄로 적는다(메인 `msg_4f325d2f2bfd` 2항). Core 24칸 PR은 client.md :38만 바꾸므로 겹치지 않는다(Core `msg_494eb3ba541b` 2절, 줄 번호는 main `3bb76772` 기준).
+12. 24칸 드래그 시험 T6 실패(#I24-V02)를 고친다(사용자 결정 116 A). 먼저 원인을 가린다. 후보는 창 높이·HUD 가림·입력·시험 준비다.
+   - 원인이 제품이면 PR1 제품 파일(위 「건드릴 곳」의 인벤토리 줄)을 고친다. 원인이 시험 준비면 T6를 고치고, 바꾸는 단정은 줄 단위 표와 같은 명령의 전후 원시를 갖춘다.
+   - 원인을 가리려고, 실패 문구가 어느 점(칸 번호와 좌표)에서 실패했는지 남기게 한다. 이것이 검증자 관찰 O1의 처리다.
+   - 「다른 그래픽에 가린 칸은 상세를 띄우지 않는다」는 PR1 동작(만들 것 4, 완료조건 4)은 그대로 둔다. 가림이 원인이면 그 동작을 끄지 않고, 가리지 않은 칸의 상세가 화면 안인지를 본다.
 
 ## 건드릴 곳
 
@@ -194,6 +222,7 @@ PR2 — HUD(사용자 직접 지시 `msg_7e7523b25aa1`)
 | PR2 `03_Client/Assets/Scenes/99.UI/UI.unity` | `Gold_bar`·`GoldText`, `skill_panel`·`skill_slot_1`~`_5`·`QKey`·`EKey`의 자리·참조. 직렬화 값과 GUID를 보존하고 바뀐 객체만 쓴다. | Art |
 | PR2 HUD 골드·스킬칸을 보는 기존 시험 | 리드 사실 `pr2-hud-facts-1101-01.txt` 4절·`-02.txt` 5절과 Core 목록(EditMode `HudGoldMirrorTests`·`HudPresentationTests`·`HudFrameSkinTests`·`SkillHudControllerTests`·`BrightTextContrastTests`·`BrightTextPaletteBoundaryTests`·`MainMenuAccountSceneTests`, PlayMode `HudGoldAndPanelToggleSceneTests`·`HudGoldFitsGoldBarSceneTests`·`HudGoldFitsGoldBarEdgeAmountsSceneTests`·`HudLayoutSceneTests`·`HudBottomWindowLayoutSceneTests`·`HudPresentationLifecycleTests`·`InventoryWindowPlacementSceneTests`·`InventorySceneLifecycleTests` :763 HUD 겹침·`DungeonClearRewardOverlapSceneTests`·`BrightRemainingScreensCaptureTests`·`UiWindowLiveCaptureTests`). 줄 목록은 PR2 선행 시험 계약의 「바꾸는 기존 단정」 표에서 정한다. Content 소유 시험은 고치기 전에 Content 리드와 메인에 먼저 알린다. | Art(Content 소유는 Content) |
 | PR2 `00_Document/domains/client.md` :46·:48 | HUD 골드·스킬칸 문장, 스킬칸과 인벤토리 창의 겹침 한 줄(사용자 답 114) | Art |
+| PR2 `03_Client/Assets/Tests/PlayMode/InventoryIconGridSceneTests.cs` T6(:191~:214) | 24칸 드래그 시험 실패(#I24-V02)의 원인 가리기와 고침, 점마다 다른 실패 문구(O1). 원인이 제품이면 위 인벤토리 제품 줄도 쓴다(사용자 결정 116 A). | Art |
 
 ## 하지 않을 것
 
@@ -214,6 +243,7 @@ PR2 — HUD(사용자 직접 지시 `msg_7e7523b25aa1`)
   - 자동 진행기가 기대는 키와 이름 있는 객체(위 「적용 중인 사용자 결정」의 Content 줄)를 바꾸지 않는다.
   - 「길드 · G」 입구, NPC 대화·보상 창, 파티·퀘스트 HUD, 미니맵, HP 막대는 자리·모양을 바꾸지 않는다. Content의 PR-C(74 A, 입구가 Gold 칸을 덮는 겹침)는 사용자 결정 113 A로 취소됐다(위 「적용 중인 사용자 결정」의 PR-C 줄).
   - 인벤토리 창의 기본 자리, 캔버스 정렬 순서, 창 끌기 동작을 바꾸지 않는다. 스킬칸과의 겹침 때문에 새 가림 장치를 만들지 않는다(사용자 답 114).
+  - Core verify-02의 길드 창 시험 실패 11건(#I24-V03)은 Art 몫이 아니라 고치지 않는다(Core `msg_2c72f19feb83`).
 
 ## 관찰 가능한 완료조건
 
@@ -242,6 +272,10 @@ PR2 — HUD(위 1~10은 PR1 완료조건이고, PR2는 1~7을 24칸 main에서 �
 16. client.md :46·:48 문장이 새 동작과 맞다.
 17. 사용자 확인 캡처(통과 근거 아님): 24칸 main에서 1920×1080·1280×720 각각에 6줄 격자, 왼쪽 아래 스킬칸(기사·마법사 각 한 장), 골드 상자 없는 HUD가 있다. 「1280×720, NPC 대화창이 뜬 왼쪽 아래」 한 장을 더한다(메인 결정 설계5 A 3항). 빈 칸 alpha 0.3이 「70% 투명도」의 해석임을 캡처 보고에 적는다. 격자 case는 창 열림 효과가 끝난 뒤 찍는다.
 18. 독립 검증 PASS(강 등급)다. 실제 경로는 실제 장면에서 기사·마법사 각각 칸 4개의 표시, Q 입력의 `C_SkillUse` 1개, 기사 E 입력의 `C_SkillUse` 0을 본다.
+19. Core 24칸이 든 main을 받은 PR2 branch에서 `InventoryIconGridSceneTests.T6_AfterDraggingToTheRightEdge_AllReachableDetailsStayOnScreen`이 통과한다(사용자 결정 116 A, #I24-V02).
+   - 원인 분류(창 높이·HUD 가림·입력·시험 준비)와 그 근거 원시가 있다. 실패 문구는 점마다 칸 번호와 좌표를 남긴다(O1).
+   - 시험을 고쳤다면 바꾼 단정마다 줄 단위 표, 같은 명령의 전후 원시, 요구 출처를 갖춘다. 기대값을 완화해 통과시키지 않는다.
+   - 24칸 main을 받기 전 실행의 T6 통과는 이 조건의 근거가 아니다.
 
 ## Core 24칸 계약 — 확정
 
@@ -279,11 +313,11 @@ PR2 — HUD(위 1~10은 PR1 완료조건이고, PR2는 1~7을 24칸 main에서 �
 ## 작업 방식
 
 - 리드는 Claude Opus(`[Art 리드 Opus]`)다.
-- 배정은 저장소 `CLAUDE.md` 4A 절의 11-01 표, 사용자 결정 102 A·101 A(메인 msg_da3be91ab030), 메인 msg_d75240eadc75를 따른다.
-  - 선행 시험 작성자: 새 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`, 태그 `[Art 시험 Astra]`.
-  - 구현자: 새 `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode`, 태그 `[Art Sol]`. 캡처 실행자도 작업자라 같은 배정이다. 같은 계약에서 Sol 구현이 두 번째 독립 불합격을 받으면 다음 시도는 새 gpt-6-astra xhigh `[Art 구현 Astra]`다.
-  - 독립 검증자: 새 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`, 태그 `[Art 검증자]`.
-  - 종료 Gardener: 새 `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode`, 태그 `[Art Sol]`(101 A).
+- 배정은 저장소 `CLAUDE.md` 4A 절의 11-01 표, 사용자 결정 102 A·101 A(메인 msg_da3be91ab030), 메인 msg_d75240eadc75를 따른다. 11-04부터 새로 여는 구현자·독립 검증자는 11-02 사용자 배정(위 「11-04 재기동·제출 기한·11-02 작업자 배정」)이 앞선다. 이미 떠 있는 세션의 모델은 바꾸지 않는다.
+  - 선행 시험 작성자: 새 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`, 태그 `[Art 시험 Astra]`. 11-02 배정에서도 그대로다.
+  - 구현자(11-04부터): 새 `codex --model gpt-6-astra -c model_reasoning_effort=high --disable fast_mode`, 태그 `[Art 구현 Astra]`. 캡처 실행자도 작업자라 같은 배정이다. 11-01까지는 새 gpt-6.1-sol max `[Art Sol]`이었다.
+  - 독립 검증자(11-04부터): 새 `codex --model gpt-6-astra -c model_reasoning_effort=high --disable fast_mode`, 태그 `[Art 검증자]`. 11-01까지는 xhigh였다.
+  - 종료 Gardener: 새 `codex --model gpt-6.1-sol -c model_reasoning_effort=max --disable fast_mode`, 태그 `[Art Sol]`(101 A). 11-02 배정은 구현자·검증자만 말하므로 그대로 둔다.
 - R-5 첫 화면에 지정 모델이나 max가 없으면 바꿔 띄우지 않고 메인에 보고한다. 첫 화면에 업데이트 창·선택창이 뜨면 아무것도 누르지 않고 메인에 보고한다(메인 결정 `msg_ad79455eb3b9` O3).
 - Unity는 한 번에 하나이고 창은 메인이 준다. 다른 파트 창과 겹치지 않게 「준비됨」 뒤 청한다. 창마다 저장 스크립트로 관문을 잰다. 계약마다 `unity-protection-rules-v1.md`를 원문 그대로 붙이고, SENTIS 한 줄은 정산 때 되돌린다.
 - 값 기록 규칙(msg_dbc8a605e5c1)을 그대로 적용한다. 시계와 SHA도 저장 스크립트 안에서 잰다. 명령 출력을 `/dev/null`로 버리지 않고, 인라인 셈 값을 계약·보고 값으로 쓰지 않는다(메인 `msg_4bef008e3fa9`).
@@ -300,10 +334,12 @@ PR2 — HUD(위 1~10은 PR1 완료조건이고, PR2는 1~7을 24칸 main에서 �
 | W6 | PR2 선행 시험: 기준 전체와 RED(8칸 main) | 약 35분 |
 | W7 | PR2 구현 F: 전체(8칸 main) | 약 30분 |
 | W8 | PR2: 24칸 main 받은 뒤 전체 | 약 30분 |
+| W8T | PR2: 24칸 main에서 T6 원인 가리기(116 A). W8과 붙여 청할 수 있다(메인 `msg_07af13c2d382`). | 약 20분 |
 | W9 | PR2 독립 검증 | 약 40분 |
 
 - W1~W4 합계 약 2시간 5분이다. 고침이 한 번 생길 때마다 약 30분을 더한다.
-- PR2(W5~W9)는 합계 약 2시간 35분이다. W5 캡처는 W8 뒤에 찍는다. W6·W7 크기는 PR1의 W1·W2와 같게 본 추정이다.
+- PR2(W5~W9, W8T 포함)는 합계 약 2시간 55분이다. W5 캡처는 W8 뒤에 찍는다. W6·W7 크기는 PR1의 W1·W2와 같게 본 추정이다. T6 고침이 제품이든 시험이든 한 번 생기면 약 30분을 더한다.
+- 창 순서(메인 `msg_07af13c2d382`): Unity는 한 번에 하나다. Core의 main 기준선 PlayMode가 먼저이고, W6는 계약 보고와 시험 작성 뒤 청하면 그 창이 끝난 뒤 열린다. 기한이 11-09 14:00이라 창은 끝 확인 뒤 다음 창을 연다.
 - 근거: 앞 goal PR4의 검증 창은 40분(msg_e9cfec7f9f2b), K2 캡처 창은 20분(msg_e39367a0d2ac)이었다. 70 A 구현 F의 PlayMode 전체는 336초였다(PR286 goal 원문). W5는 W3와 같은 크기로 본 추정이다.
 
 ## 남은 위험
@@ -313,6 +349,7 @@ PR2 — HUD(위 1~10은 PR1 완료조건이고, PR2는 1~7을 24칸 main에서 �
 - PR2 인벤토리 창과 스킬칸의 겹침(사용자 답 114로 겹침 허용): 인벤토리 창의 기본 자리는 화면 왼쪽이다. 위는 캐릭터 상태·파티 정보 아래이고 아래는 화면 아래 + 12다(창 배치 goal `2026-10-30-window-placement-inventory`의 기본 자리). 그래서 왼쪽 아래 스킬칸은 열린 창의 아래쪽 칸을 가린다. 24칸 6줄 창이면 가리는 칸이 늘 수 있다. 사용자는 창을 끌어 옮기면 된다고 답했다. 남은 위험은 가림 판정이다. 리드가 PR1 `InventoryOverlayOcclusion.IsCovered`를 정적으로 읽었다. 이 판정은 인벤토리보다 정렬이 높은 Screen Space Overlay 루트 캔버스의 보이는 그래픽(alpha > 0)이 포인터를 덮으면 칸을 가린 것으로 본다. 상세와 우클릭은 같은 관문(`InventoryPanelView.UpdatePointer`)을 지난다. 그래서 alpha 0.3 빈 칸도 막을 것으로 보이지만 실행 확인 전이다. 선행 시험이 실제 장면에서 확인하고, 막지 못하면 RED로 드러낸다.
 - PR2 「70% 투명도」 해석: 메인 해석은 alpha 0.3이다. 사용자가 캡처에서 다르게 보면 그 값만 바꾼다.
 - PR2와 Content PR-C(74 A): 사용자 결정 113 A로 취소됐다(Content `msg_478035aa5063` 전달, Content goal commit `6aa5b9c9`, 메인 `msg_dd705992032f` 1항). PR2에 남는 위험은 없다.
+- PR2 T6(#I24-V02, 116 A): 원인이 확인되지 않았다. 판정 원문은 「패널이 화면 안·오른쪽 끝」 단정 뒤 세 점 가운데 한 곳에서 상세가 뜨지 않았다고만 적는다(verify-02 `verdict.md` :96). 실패 문구가 세 점에 같아 어느 점인지 원시에 없다(O1). 8칸 main에서는 재현되지 않을 수 있어, 원인은 Core 24칸 PR 병합 뒤에야 확인된다. 원인이 제품이면 PR2 범위가 인벤토리 제품 파일까지 넓어진다. 이 경우는 116 A 「Art PR2가 고침」 안에 든다.
 
 ## 진척 단계
 
@@ -324,9 +361,10 @@ PR2 — HUD(위 1~10은 PR1 완료조건이고, PR2는 1~7을 24칸 main에서 �
 - [x] 결과 기록 commit 뒤 좁은 재실사(첫 번째 NOT PASS #GRIDR-01 고침, 두 번째 NOT PASS #GRIDR2-01 메인 처분 A)
 - [x] 격자 PR 병합(PR294, `a888cd35`)
 - [x] PR2 범위 첫 commit(이 추가분)
-- [>] PR2 선행 시험 RED(계약 조립됨, 초안·기동 전)
+- [>] PR2 선행 시험 RED(116 A를 넣어 계약 확정 중, 기동 전)
 - [ ] PR2 구현과 전체 시험(8칸 main)
-- [ ] Core 24칸 병합 뒤 main 받기와 전체 시험
+- [ ] Core 24칸 병합 뒤 main 받기와 전체 시험, T6 원인 가리기(116 A)
+- [ ] T6 고침(116 A, 완료조건 19)
 - [ ] 6줄·새 HUD 사용자 확인 캡처
 - [ ] PR2 강 등급 독립 검증
 - [ ] PR2 병합(결과 기록 포함)
