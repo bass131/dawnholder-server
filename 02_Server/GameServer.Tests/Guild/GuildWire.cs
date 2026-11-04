@@ -15,8 +15,8 @@ internal static class GuildWire
     internal const ushort InventoryRequestId = 35;
     internal const ushort InventorySnapshotId = 36;
     internal const ushort ItemUseId = 37;
-    internal const int InventorySnapshotLength = 76;
-    internal const int InventorySlotCount = 8;
+    internal const int InventorySnapshotLength = 204;
+    internal const int InventorySlotCount = 24;
 
     internal const ushort GuildRequestId = 43;
     internal const ushort GuildSnapshotId = 44;

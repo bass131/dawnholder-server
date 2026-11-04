@@ -99,6 +99,13 @@ namespace Dawnholder.Client.Scenes
             _hintGroup.interactable   = false;
             _hintGroup.blocksRaycasts = false;
 
+            Image band = UiWindowAppearance.CreateInset("HintBand", root.transform);
+            RectTransform bandRt = band.rectTransform;
+            bandRt.anchorMin        = new Vector2(0.5f, 0f);
+            bandRt.anchorMax        = new Vector2(0.5f, 0f);
+            bandRt.pivot            = new Vector2(0.5f, 0f);
+            bandRt.anchoredPosition = new Vector2(0f, 70f);
+            bandRt.sizeDelta        = new Vector2(720f, 80f);
             GameObject textGo = new GameObject("HintText");
             textGo.transform.SetParent(root.transform, worldPositionStays: false);
             RectTransform rt = textGo.AddComponent<RectTransform>();
@@ -113,7 +120,8 @@ namespace Dawnholder.Client.Scenes
             text.fontSize  = 36f;
             text.fontStyle = FontStyles.Bold;
             text.alignment = TextAlignmentOptions.Center;
-            text.color     = new Color(1f, 1f, 1f, 1f);
+            // Ink of the bright windows (InventoryPanelView).
+            text.color     = new Color(0.26f, 0.17f, 0.09f, 1f);
 
             // ⚠️ 폰트(머티리얼)를 outline보다 *먼저* 할당 (QuestAlert 6R 교훈: 머티리얼 null이면 예외).
             TMP_FontAsset? font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");

@@ -131,9 +131,11 @@ namespace Dawnholder.Client.Tests
             Assert.IsFalse(Control("Submit").interactable);
             Assert.IsFalse(Control("Refresh").interactable);
             Assert.IsFalse(NameInput().interactable);
+            Assert.IsFalse(Control("CreateForm/Create").interactable);
             Click("Slot2");
             Click("CreateForm/Mage");
             Click("Submit");
+            Click("CreateForm/Create");
             Click("Refresh");
             Assert.IsEmpty(_creations);
             Assert.IsEmpty(_selections);
@@ -148,7 +150,7 @@ namespace Dawnholder.Client.Tests
             Click("Slot2");
             NameInput().text = rawName;
             Click("CreateForm/Mage");
-            Click("Submit");
+            Click("CreateForm/Create");
 
             Assert.AreEqual(1, _creations.Count);
             Assert.AreEqual((byte)2, _creations[0].Slot);
@@ -163,8 +165,8 @@ namespace Dawnholder.Client.Tests
             _view.Render(new CharacterMenuViewState(Phase.Ready));
             Click("Slot1");
             NameInput().text = "기사";
-            Click("Submit");
-            Click("Submit");
+            Click("CreateForm/Create");
+            Click("CreateForm/Create");
             Click("Refresh");
             Click("Slot3");
 
@@ -173,6 +175,7 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual((byte)0, _creations[0].ClassId);
             Assert.Zero(_refreshes);
             Assert.IsFalse(Control("Submit").interactable);
+            Assert.IsFalse(Control("CreateForm/Create").interactable);
         }
 
         [Test]
@@ -193,7 +196,7 @@ namespace Dawnholder.Client.Tests
             _view.Render(new CharacterMenuViewState(Phase.Ready));
             Click("Slot1");
             NameInput().text = "새기사";
-            Click("Submit");
+            Click("CreateForm/Create");
             _view.Render(new CharacterMenuViewState(Phase.Creating));
             _view.Render(new CharacterMenuViewState(Phase.Ready, new Slot("새기사", 0),
                 message: "슬롯 1: 캐릭터를 만들었습니다. 입장할 캐릭터를 선택하세요."));
@@ -213,15 +216,16 @@ namespace Dawnholder.Client.Tests
             Click("Slot1");
             NameInput().text = "이전이름";
             Click("CreateForm/Mage");
-            Click("Submit");
+            Click("CreateForm/Create");
             _view.Render(new CharacterMenuViewState(Phase.Ready, message: "슬롯 1: 이미 사용 중인 이름입니다."));
             Assert.That(Label("Result").text, Does.Contain("슬롯 1"));
 
+            Click("CreateForm/Cancel");
             Click("Slot2");
 
             Assert.AreEqual(string.Empty, NameInput().text);
             Assert.AreEqual(string.Empty, Label("Result").text);
-            Click("Submit");
+            Click("CreateForm/Create");
             Assert.AreEqual((byte)2, _creations[1].Slot);
             Assert.AreEqual((byte)0, _creations[1].ClassId);
             Assert.AreEqual(string.Empty, _creations[1].Name);
@@ -236,6 +240,7 @@ namespace Dawnholder.Client.Tests
             _view.Render(new CharacterMenuViewState(Phase.Ready, new Slot("늦은응답", 0)));
             Click("Back");
             Click("Submit");
+            Click("CreateForm/Create");
             Click("Refresh");
 
             Assert.AreEqual(1, _backs);
@@ -254,9 +259,11 @@ namespace Dawnholder.Client.Tests
             _view.Render(new CharacterMenuViewState(Phase.Disconnected));
             _view.Render(new CharacterMenuViewState(Phase.Ready));
             Click("Submit");
+            Click("CreateForm/Create");
             Click("Refresh");
 
             Assert.IsFalse(Control("Submit").interactable);
+            Assert.IsFalse(Control("CreateForm/Create").interactable);
             Assert.IsFalse(Control("Slot1").interactable);
             Assert.IsFalse(NameInput().interactable);
             Assert.IsEmpty(_creations);
@@ -290,7 +297,7 @@ namespace Dawnholder.Client.Tests
             Assert.IsNotNull(font, "fixture: existing runtime font with project Korean fallback");
             Assert.AreEqual("Panel_Default", Panel.GetComponent<Image>().sprite.name);
             Assert.IsNotNull(Panel.Find("Header").GetComponent<Image>().sprite);
-            Assert.IsNotNull(Panel.Find("DetailsBackground").GetComponent<Image>().sprite);
+            Assert.IsNull(Panel.Find("DetailsBackground"), "A1 the details box is gone");
             foreach (TMP_Text text in _root.GetComponentsInChildren<TMP_Text>(true))
             {
                 Assert.AreSame(font, text.font, text.name);
@@ -317,22 +324,22 @@ namespace Dawnholder.Client.Tests
             rule.rectTransform.GetWorldCorners(ruleCorners);
             ((RectTransform)NameInput().transform).GetWorldCorners(inputCorners);
             Assert.LessOrEqual(ruleCorners[1].y, inputCorners[0].y + 0.001f, "the rule's top is under the input's bottom");
-            Click("Submit");
+            Click("CreateForm/Create");
             Assert.AreEqual("a", _creations[0].Name, "the server, not the view, judges the name");
         }
 
         [Test]
-        public void EntryWait_DetailsStopAskingForTheSelectButton()
+        public void EntryWait_StatusShowsTheWaitAndSubmitLocks()
         {
             var knight = new Slot("가람", 0);
             _view.Render(new CharacterMenuViewState(Phase.Ready, knight));
             Click("Slot1");
-            Assert.AreEqual("가람\n직업: Knight\n입장하려면 선택 버튼을 누르세요.", Label("Details").text);
+            Assert.AreEqual("선택하고 입장", Label("Submit/Label").text);
             Click("Submit");
             _view.Render(new CharacterMenuViewState(Phase.Selecting, knight));
             _view.Render(new CharacterMenuViewState(Phase.Entering, knight));
 
-            Assert.AreEqual("가람\n직업: Knight\n이 캐릭터로 입장을 기다리는 중입니다.", Label("Details").text);
+            Assert.AreEqual("선택이 승인되었습니다. 서버 입장을 기다리고 있습니다.", Label("Status").text);
             Assert.IsFalse(Control("Submit").interactable);
         }
 

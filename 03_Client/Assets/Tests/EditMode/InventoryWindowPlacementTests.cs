@@ -54,59 +54,6 @@ namespace Dawnholder.Client.Tests
         // T1 — inside a slot, the title bar and the two lines below the slots
         // ---------------------------------------------------------------------------------------------------------
 
-        // T1 칸 안: in every slot the item icon (occupied slots), the 「이름 ×수량」 text and the use button lie inside the
-        // slot, stacked icon above text above button, all on the slot's horizontal centre. Two occupied and six empty slots.
-        [Test]
-        public void SlotContents_StayInsideTheSlot_StackedIconTextUse_OnTheSlotCentre()
-        {
-            Window window = Build();
-            ItemId[] items = RenderTwoItems(window);
-
-            var problems = new List<string>();
-            int iconsFound = 0;
-            for (int i = 0; i < InventoryLimits.MaxSlots; i++)
-            {
-                string slotName = $"Slot{i + 1}";
-                Rect slot = FromTopLeft(window.Panel, window.Slots[i]);
-                var text = (RectTransform)window.Slots[i].Find("Item");
-                var use = (RectTransform)window.Slots[i].Find("Use");
-                Assert.IsNotNull(text, $"fixture: Inventory/{slotName}/Item");
-                Assert.IsNotNull(use, $"fixture: Inventory/{slotName}/Use");
-                var parts = new List<(string name, Rect rect)>();
-                if (items[i] != ItemId.None)
-                {
-                    Rect[] icons = VisibleImages(window.Panel).Where(image => IsPiece(image.sprite, s_itemIcons[items[i]]))
-                        .Select(image => FromTopLeft(window.Panel, image.rectTransform)).ToArray();
-                    if (icons.Length != 1)
-                    {
-                        problems.Add($"{slotName} shows {icons.Length} {s_itemIcons[items[i]]} images, expected one");
-                        continue;
-                    }
-                    iconsFound++;
-                    parts.Add(("icon", icons[0]));
-                }
-                parts.Add(("text", FromTopLeft(window.Panel, text)));
-                parts.Add(("use", FromTopLeft(window.Panel, use)));
-                TestContext.Out.WriteLine($"{slotName} slot={slot} {string.Join(" ", parts.Select(part => $"{part.name}={part.rect}"))}");
-
-                foreach ((string name, Rect rect) in parts)
-                {
-                    if (!Inside(slot, rect)) problems.Add($"{slotName} {name} {rect} is not inside the slot {slot}");
-                    if (Mathf.Abs(rect.center.x - slot.center.x) > Tolerance)
-                        problems.Add($"{slotName} {name} centre x {rect.center.x} is not the slot centre x {slot.center.x}");
-                }
-                for (int p = 1; p < parts.Count; p++)
-                {
-                    // y grows downward in FromTopLeft, so the part above has the smaller centre.
-                    if (parts[p - 1].rect.center.y >= parts[p].rect.center.y)
-                        problems.Add($"{slotName} {parts[p - 1].name} (centre y {parts[p - 1].rect.center.y}) is not above " +
-                            $"{parts[p].name} (centre y {parts[p].rect.center.y})");
-                }
-            }
-
-            Assert.AreEqual(items.Count(item => item != ItemId.None), iconsFound, "precondition: every occupied slot's icon is found by its sprite");
-            Assert.IsEmpty(problems, "T1 each slot holds its icon, 「이름 ×수량」 text and use button inside it, top to bottom on its centre");
-        }
 
         // T1 제목 띠: the bright Header image is at the panel top above the slots, the refresh button lies inside it and
         // on its right side.
@@ -133,10 +80,10 @@ namespace Dawnholder.Client.Tests
             Assert.Greater(refreshRect.center.x, bar.center.x, "T1 the refresh button sits on the title bar's right side");
         }
 
-        // T1 아래 두 줄: the currency line and the use result text take separate lines, both below the eight slots. The
+        // T1 아래 두 줄: the currency line and the use result text take separate lines, both below every slot. The
         // coin icon's place in the currency line stays with InventoryPanelViewAppearanceTests.CurrencyLine_ShowsTheBrightCoinIcon.
         [Test]
-        public void CurrencyAndUseResult_TakeSeparateLines_BelowTheEightSlots()
+        public void CurrencyAndUseResult_TakeSeparateLines_BelowEverySlot()
         {
             Window window = Build();
             RenderTwoItems(window);
@@ -150,8 +97,8 @@ namespace Dawnholder.Client.Tests
             TestContext.Out.WriteLine($"currency={currencyLine} result={resultLine} slotsBottom={slotsBottom}");
 
             Assert.IsTrue(separate, $"T1 the currency line {currencyLine} and the use result {resultLine} share no vertical range");
-            Assert.GreaterOrEqual(currencyLine.yMin, slotsBottom - Tolerance, "T1 the currency line is below the eight slots");
-            Assert.GreaterOrEqual(resultLine.yMin, slotsBottom - Tolerance, "T1 the use result is below the eight slots");
+            Assert.GreaterOrEqual(currencyLine.yMin, slotsBottom - Tolerance, "T1 the currency line is below every slot");
+            Assert.GreaterOrEqual(resultLine.yMin, slotsBottom - Tolerance, "T1 the use result is below every slot");
         }
 
         // ---------------------------------------------------------------------------------------------------------

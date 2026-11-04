@@ -17,6 +17,18 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 [MainMenuLoginView](../../03_Client/Assets/Scripts/UI/MainMenuLoginView.cs)는 `MainMenuController.Start`에서 만들어져 MainMenu 장면을 로그인 화면으로 배치한다. 장면 Canvas의 CanvasScaler를 실행 중 800×450 높이 맞춤으로 바꾸고, 장면의 `TITLE`을 위쪽에, 계정·서버 주소 입력칸과 시작·종료 버튼, 오류 글자를 밝은 스킨의 `LoginWindow` 안으로 옮긴다. 장면 파일과 컨트롤러의 직렬화 참조·버튼 onClick은 그대로다. view는 배치와 키 입력만 맡는다. 두 입력칸의 Enter는 같은 프레임의 두 번째 제출을 무시하고 시작 버튼과 같은 `MainMenuController.OnStartClicked`를 부르며, 계정 칸의 Tab은 서버 주소 칸을 선택한다(컨트롤러 `Update` → `HandleKeys`). 시작 판단은 `OnStartClicked`에 남는다.
 
+## 캐릭터 선택 화면
+
+[CharacterMenuView](../../03_Client/Assets/Scripts/UI/CharacterMenuView.cs)는 `CharacterSelectController`가 메뉴 경로에서 만드는 표시 전용 view다. 연결·캐릭터 식별·입장 권한은 [CharacterMenuPresenter](../../03_Client/Assets/Scripts/UI/CharacterMenuPresenter.cs)와 `CharacterMenuClient`가 갖고, view는 받은 상태를 그리며 누른 버튼을 요청 콜백으로 넘긴다. 상태 글 아래에는 한 번에 한 화면만 보인다. 칸 줄과 「선택하고 입장」 버튼이거나, 칸 줄 자리의 생성 화면(`CreateForm`)이다. 메뉴가 닫히는 Legacy 경로의 Knight/Mage 버튼은 `CharacterSelectController`가 따로 소유한다.
+
+칸 줄은 `Slot1~3` 세 칸이 제목 띠(`Header`)의 안쪽 폭 전체를 같은 폭과 간격으로 채운다. 차 있는 칸을 누르면 그 칸이 선택된다. 「선택하고 입장」(`Submit`)은 차 있는 칸이 선택된 Ready에서만 눌리고 선택 요청을 한 번 보내며, 생성하지 않는다. 빈 칸을 한 번 누르면 칸 줄과 `Submit`이 숨고 생성 화면이 열린다. view는 생성 화면을 연 칸을 선택으로 기억하고, 생성 화면이 열린 동안에는 칸이 바뀌지 않는다.
+
+생성 화면은 이름 칸·이름 규칙 글·Knight/Mage 버튼·「캐릭터 생성」(`Create`)·「취소」(`Cancel`)로 이뤄진다. `Create`는 (칸, 직업, 이름 원문)을 생성 콜백에 한 번 넘기고, 다음 상태가 그려지기 전의 두 번째 누름은 무시한다. 이름은 다듬지 않으며 규칙에 어긋난 이름도 서버가 판정하도록 보낸다. `Cancel`은 요청 없이 이름·직업 초안(Knight)·칸 선택·결과 글을 지우고 칸 줄로 돌아온다. 생성 성공으로 그 칸이 찬 Ready가 오면 생성 화면이 닫히고 선택된 칸이 없으므로, 입장하려면 칸을 다시 골라야 한다. 생성 거절이면 칸이 빈 채라 생성 화면과 입력이 남고 `Result`에 결과 글이 보인다. 대기·입장 중과 뒤로·연결 종료 뒤에는 모든 변경 입력이 잠긴다.
+
+EditMode 시험은 view를 직접 만들어 칸 줄·생성 화면·잠금과 두 해상도(1280×720·1920×1080)의 글자 맞춤을 본다. PlayMode [CharacterSelectWideSceneTests](../../03_Client/Assets/Tests/PlayMode/CharacterSelectWideSceneTests.cs)는 출하 CharacterSelect 장면을 `EntryWirePeer` 대역 연결로 띄워 생성 화면 → 생성 요청 → 선택 요청까지 지난다. 실제 GameServer·DB를 상대로 한 이 화면은 자동 진행기(PR268)의 DB 영속 서버 실주행 전까지 미관측 외부 경계다.
+
+자동 진행기 [DemoAutopilot](../../03_Client/Assets/Scripts/Demo/DemoAutopilot.cs)는 `-demo-role knight|mage`로 켜고 `-demo-account`로 계정을, `-demo-character`로 생성할 이름 원문을 받는다. 캐릭터 메뉴에서는 같은 직업의 가장 낮은 번호 칸을 선택하고, 없으면 첫 빈 칸에 생성한 뒤 선택한다. 이름 인자가 없거나 빈 칸이 없거나 생성이 거절되면 경고를 남기고 멈추며, 한 실행의 생성 요청은 최대 한 번이다. 메뉴가 닫힌 Legacy 경로에서는 기존 Knight/Mage 버튼으로 입장하고, `-demo-role`이 없는 일반 실행은 자동 진행기를 만들지 않는다.
+
 ## 파티 초대 요청과 구독
 
 [PartyInvitePopup](../../03_Client/Assets/Scripts/UI/PartyInvitePopup.cs)은 클릭음·버튼 의도·표시/숨김과 이벤트 구독을 맡고, [PartyInviteResponseCommand](../../03_Client/Assets/Scripts/UI/PartyInviteResponseCommand.cs)는 실행 시 현재 상태/세션 조회·응답 패킷 구성·SendIntent 호출·pending 소비를 맡는다. void SendIntent 정상 반환은 실제 송신 접수나 서버 가입 확정이 아니다. 요청 처리 중 예외가 나면 뒤의 pending 소비와 숨김을 진행하지 않으며 membership은 기존 서버 update로 갱신한다.
@@ -25,7 +37,7 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 ## 인벤토리 표시와 요청 수명
 
-[InventorySnapshotHandler](../../03_Client/Assets/Scripts/Network/Handlers/Inventory/InventorySnapshotHandler.cs)는 v17의 고정 길이·header·ID와 8슬롯의 상한·compact·정렬을 확인하고 수신 버퍼가 재사용되기 전에 값을 캡처한다. 현재 연결의 `EnqueueApply`를 통과한 snapshot만 [InventorySnapshotState](../../03_Client/Assets/Scripts/State/InventorySnapshotState.cs)의 재화·슬롯·revision을 바꾼다. 초기 미동기화와 유효한 revision 0을 구분하며, 낮은 revision과 같은 revision의 다른 값은 거부하고 동일 snapshot은 통지를 반복하지 않는다.
+[InventorySnapshotHandler](../../03_Client/Assets/Scripts/Network/Handlers/Inventory/InventorySnapshotHandler.cs)는 v23의 고정 길이 204바이트·header·ID와 24슬롯의 상한·compact·정렬을 확인하고 수신 버퍼가 재사용되기 전에 값을 캡처한다. 현재 연결의 `EnqueueApply`를 통과한 snapshot만 [InventorySnapshotState](../../03_Client/Assets/Scripts/State/InventorySnapshotState.cs)의 재화·슬롯·revision을 바꾼다. 초기 미동기화와 유효한 revision 0을 구분하며, 낮은 revision과 같은 revision의 다른 값은 거부하고 동일 snapshot은 통지를 반복하지 않는다.
 
 [InventoryState](../../03_Client/Assets/Scripts/State/InventoryState.cs)는 맵 사이에 유지되는 root MonoBehaviour다. CombatBootstrap 또는 먼저 도착한 유효 snapshot이 생성하고, NetworkService의 연결 종료 정리가 파티·퀘스트·인벤토리의 모든 값을 비운 뒤 관찰자에게 통지한다. 사용 결과·대기 작업은 각 UnityClientSession의 [InventoryRequestController](../../03_Client/Assets/Scripts/Network/InventoryRequestController.cs)가 소유하고 세션 cleanup에서 폐기한다. 옛 연결의 packet·지연 callback·늦은 종료는 새 미러를 변경하지 않는다.
 
@@ -37,11 +49,11 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 [InventoryPanel](../../03_Client/Assets/Scripts/UI/InventoryPanel.cs)은 게임플레이 씬의 패널 하나를 만들고 실제 구독한 미러와 요청 controller를 보관해 disable/destroy 또는 source 교체 때 같은 참조에서 해제한다. 늦게 생긴 UI도 현재 snapshot을 다시 표시한다. 「I」 키의 새 눌림마다 열림·닫힘을 바꾸며, 열림 상태의 단일 소유자는 [UnityClientSession](../../03_Client/Assets/Scripts/Network/UnityClientSession.cs)의 `IsInventoryPanelOpen`이다. 새 연결은 닫힘으로 시작하고 같은 연결의 맵 이동 뒤 새 패널도 마지막 상태를 따른다. 연결 cleanup은 끝난 세션의 Instance를 해제하므로 다음 세션은 다시 닫힘으로 시작한다. 닫힌 동안에도 패널의 구독과 연결의 Ready 재조회는 유지하고, 열 때 최신 snapshot을 다시 표시한다.
 
-[InventoryPanelView](../../03_Client/Assets/Scripts/UI/InventoryPanelView.cs)는 기존 TMP 한국어 fallback·Canvas 관례로 8슬롯·표시명/수량·재화·동기화 안내·사용 버튼과 서버 결과를 표시한다. 패널은 씬 소유이며 메뉴/캐릭터 선택/Ending에는 남지 않는다. 닫힌 패널은 CanvasGroup의 alpha·interactable·blocksRaycasts를 꺼 표시·클릭·raycast를 받지 않는다. 열린 패널은 버튼과 제목 띠의 잡는 칸만 raycast를 받으며 메뉴·페이드 아래에서 표시한다. 일시정지·진행 중 씬 전환·게임플레이 Ready 전에는 「I」와 버튼 입력을 막되 열림 상태는 유지한다. 패널의 크기와 자리는 공용 배치 부품 [UiWindowPlacement](../../03_Client/Assets/Scripts/UI/UiWindowPlacement.cs)가 정한다. 기본 자리는 화면 왼쪽 12, HUD의 `character_status`·`Party_Info` 아래 끝에서 12 아래이며, 그 영역에 최대 1.3배까지 맞춘다. 제목 띠의 보이지 않는 잡는 칸을 끌면 패널이 끈 만큼 움직이고, 패널 전체는 화면 안에 머문다. 옮긴 자리는 게임을 켜 둔 동안만 기억해 「I」로 닫았다 열거나 맵을 옮겨도 유지하고, 다시 켜면 기본 자리다.
+[InventoryPanelView](../../03_Client/Assets/Scripts/UI/InventoryPanelView.cs)는 기존 TMP 한국어 fallback·Canvas 관례로 공유 칸 수(`InventoryLimits.MaxSlots`)의 4열 격자·재화·동기화 안내·서버 결과를 표시한다. 줄 수와 창 높이는 공유 칸 수에서 계산하며 칸에는 아이콘과 수량 2 이상일 때의 오른쪽 아래 숫자만 표시한다. [InventorySlotPointer](../../03_Client/Assets/Scripts/UI/InventorySlotPointer.cs)가 채운 칸 위 마우스 올림을 읽어 이름·수량 상세 창을 띄우고, 쓸 수 있는 아이템에는 사용 효과와 「우클릭: 사용」을 표시하며 그 칸 우클릭으로 사용한다. 상세 창은 raycast를 받지 않고 화면 안에 맞춘다. 패널은 씬 소유이며 메뉴/캐릭터 선택/Ending에는 남지 않는다. 닫힌 패널은 CanvasGroup의 alpha·interactable·blocksRaycasts를 꺼 표시·클릭·raycast를 받지 않는다. 열린 패널은 새로고침 버튼과 제목 띠의 잡는 칸만 raycast를 받으며 메뉴·페이드 아래에서 표시한다. 일시정지·진행 중 씬 전환·게임플레이 Ready 전에는 「I」·버튼·우클릭 입력과 상세 창을 막되 열림 상태는 유지한다. 패널의 크기와 자리는 공용 배치 부품 [UiWindowPlacement](../../03_Client/Assets/Scripts/UI/UiWindowPlacement.cs)가 정한다. 기본 자리는 화면 왼쪽 12, HUD의 `character_status`·`Party_Info` 아래 끝에서 12 아래이며, 그 영역에 최대 1.3배까지 맞춘다. 제목 띠의 보이지 않는 잡는 칸을 끌면 패널이 끈 만큼 움직이고, 패널 전체는 화면 안에 머문다. 옮긴 자리는 게임을 켜 둔 동안만 기억해 「I」로 닫았다 열거나 맵을 옮겨도 유지하고, 다시 켜면 기본 자리다.
 
 [LocalPlayerInput](../../03_Client/Assets/Scripts/Input/LocalPlayerInput.cs)은 공격 액션의 실제 activeControl을 [GameplayPointerInput](../../03_Client/Assets/Scripts/Input/GameplayPointerInput.cs)에 넘긴다. 키보드·마우스의 공격은 왼쪽 Ctrl과 Enter이며 마우스 버튼은 공격 동작에 묶이지 않는다. 그래서 UI 위 포인터 차단은 포인터 바인딩인 터치 탭에만 남고, 그 터치의 현재 좌표에서 EventSystem uGUI raycast가 맞으면 공격 송신·예측·쿨다운 전에 반환한다. InputSystem 콜백 시점에는 EventSystem의 이전 프레임 포인터 캐시를 사용하지 않는다. UI 밖 포인터와 키보드·게임패드 공격은 기존 gate/전략을 유지한다. EventSystem 또는 장치가 없으면 기존 입력을 유지하며, 포인터 raycast 예외는 로그 후 해당 탭의 공격을 막는다.
 
-사용은 현재 연결·게임플레이 Ready·snapshot 확인·소유량·ItemCatalog의 사용 가능 조건을 다시 읽고 현재 revision으로 요청한다. Material은 사용할 수 없고 소유 CoinPouch만 사용한다. 중복 클릭은 결과 대기 중 막으며 사용 요청을 자동 반복하지 않는다. 송신 반환은 사용 성공이 아니고, [ItemUseResultHandler](../../03_Client/Assets/Scripts/Network/Handlers/Inventory/ItemUseResultHandler.cs)의 검증된 서버 결과만 성공/거부 신호다. 성공·Stale 뒤의 snapshot이 누락되거나 결과가 오지 않으면 제한된 재조회로 회복한다. 로컬에서 수량·재화를 바꾸지 않으며 낮은 revision의 결과는 현재 표시를 덮지 않는다.
+사용은 현재 연결·게임플레이 Ready·snapshot 확인·소유량·ItemCatalog의 사용 가능 조건을 다시 읽고 현재 revision으로 요청한다. Material은 사용할 수 없고 소유 CoinPouch만 사용한다. 중복 우클릭은 결과 대기 중 막으며 사용 요청을 자동 반복하지 않는다. 송신 반환은 사용 성공이 아니고, [ItemUseResultHandler](../../03_Client/Assets/Scripts/Network/Handlers/Inventory/ItemUseResultHandler.cs)의 검증된 서버 결과만 성공/거부 신호다. 성공·Stale 뒤의 snapshot이 누락되거나 결과가 오지 않으면 제한된 재조회로 회복한다. 로컬에서 수량·재화를 바꾸지 않으며 낮은 revision의 결과는 현재 표시를 덮지 않는다.
 
 ## 던전 보상 창과 입구 글자
 

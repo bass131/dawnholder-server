@@ -103,14 +103,14 @@ namespace Dawnholder.Client.Tests
             OpenEmptyMenu();
             Click("Slot3");
             NameInput().SetTextWithoutNotify("새벽");
-            Click("Submit");
+            Click("CreateForm/Create");
 
             Assert.IsTrue(Receive(Refused(RequestId, (byte)result, (byte)field)));
 
             Assert.AreEqual("슬롯 3: " + text, Label("Result").text);
             Assert.AreEqual(Phase.Ready, Last.CurrentPhase);
             Assert.AreEqual(2, _sent.Count);
-            Assert.IsTrue(Control("Submit").interactable);
+            Assert.IsTrue(Control("CreateForm/Create").interactable);
             Assert.IsEmpty(_calls);
         }
 
@@ -179,7 +179,7 @@ namespace Dawnholder.Client.Tests
             Click("Slot2");
             NameInput().SetTextWithoutNotify("새벽");
 
-            Click("Submit");
+            Click("CreateForm/Create");
 
             CollectionAssert.AreEqual(new ushort[] { 49, 51 }, _sent.Select(Kind).ToArray());
             Assert.AreEqual(Phase.Ready, Last.CurrentPhase);
@@ -273,23 +273,23 @@ namespace Dawnholder.Client.Tests
             Click("Slot1");
             string tooLong = new string('a', 37);
             NameInput().SetTextWithoutNotify(tooLong);
-            Click("Submit");
+            Click("CreateForm/Create");
 
             Assert.AreEqual(1, _sent.Count);
             Assert.IsFalse(_client.HasPending);
             Assert.AreEqual(Phase.Ready, Last.CurrentPhase);
             Assert.AreEqual(tooLong, NameInput().text);
-            Assert.IsTrue(Control("Submit").interactable);
+            Assert.IsTrue(Control("CreateForm/Create").interactable);
             Assert.AreEqual("슬롯 1: 요청을 보내지 못했습니다. 입력을 확인하고 다시 시도해 주세요.", Label("Result").text);
 
             NameInput().SetTextWithoutNotify(" a ");
-            Click("Submit");
+            Click("CreateForm/Create");
             Assert.AreEqual(2, _sent.Count);
             var request = new C_CharacterCreateRequest();
             request.Read(new ArraySegment<byte>(_sent[1]));
             Assert.AreEqual(" a ", request.rawName, "UI must not trim or reproduce server name policy");
             Assert.AreEqual(Phase.Creating, Last.CurrentPhase);
-            Assert.IsFalse(Control("Submit").interactable);
+            Assert.IsFalse(Control("CreateForm/Create").interactable);
         }
 
         void OpenEmptyMenu()

@@ -5,7 +5,7 @@ using Shared.GameData;
 namespace Dawnholder.Server.GameServer.Items;
 
 // Immutable, canonical value owned by InventoryRegistry on the world tick. Construction copies
-// caller storage, validates every slot, then orders and pads the fixed eight-slot snapshot.
+// caller storage, validates every slot, then orders and pads to InventoryLimits.MaxSlots.
 internal sealed class InventoryState
 {
     static readonly InventoryState s_empty = new(0, 0, Array.Empty<InventorySlot>());

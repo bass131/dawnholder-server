@@ -33,6 +33,7 @@ public sealed class CharacterLoadResultPacketTests
     };
 
     // Core PDL at 6e398abe: IDs 1..42 in file order, fields as "type name" in declaration order.
+    // Only ID 36 appends slot8..23 in v23 (2026-11-01 inventory-24-slots, user decision 97 A); all other Core rows keep the 6e398abe snapshot.
     static readonly (string Name, int Id, string Fields)[] CorePackets =
     {
         ("C_Ping", 1, "long clientTimestampMs"),
@@ -70,7 +71,7 @@ public sealed class CharacterLoadResultPacketTests
         ("S_PortalLocked", 33, "int requiredCount, int currentCount"),
         ("C_CheatCommand", 34, "byte cheatType"),
         ("C_InventoryRequest", 35, "byte reserved"),
-        ("S_InventorySnapshot", 36, "uint revision, int currency, int slot0ItemId, int slot0Count, int slot1ItemId, int slot1Count, int slot2ItemId, int slot2Count, int slot3ItemId, int slot3Count, int slot4ItemId, int slot4Count, int slot5ItemId, int slot5Count, int slot6ItemId, int slot6Count, int slot7ItemId, int slot7Count"),
+        ("S_InventorySnapshot", 36, "uint revision, int currency, int slot0ItemId, int slot0Count, int slot1ItemId, int slot1Count, int slot2ItemId, int slot2Count, int slot3ItemId, int slot3Count, int slot4ItemId, int slot4Count, int slot5ItemId, int slot5Count, int slot6ItemId, int slot6Count, int slot7ItemId, int slot7Count, int slot8ItemId, int slot8Count, int slot9ItemId, int slot9Count, int slot10ItemId, int slot10Count, int slot11ItemId, int slot11Count, int slot12ItemId, int slot12Count, int slot13ItemId, int slot13Count, int slot14ItemId, int slot14Count, int slot15ItemId, int slot15Count, int slot16ItemId, int slot16Count, int slot17ItemId, int slot17Count, int slot18ItemId, int slot18Count, int slot19ItemId, int slot19Count, int slot20ItemId, int slot20Count, int slot21ItemId, int slot21Count, int slot22ItemId, int slot22Count, int slot23ItemId, int slot23Count"),
         ("C_ItemUse", 37, "int itemId, uint expectedRevision"),
         ("S_ItemUseResult", 38, "byte result, int itemId, uint revision"),
         ("S_DungeonClearResult", 39, "byte result, int currency, int reward0ItemId, int reward0Count, int reward1ItemId, int reward1Count, int reward2ItemId, int reward2Count"),
@@ -222,7 +223,7 @@ public sealed class CharacterLoadResultPacketTests
 
         Assert.Equal(Enumerable.Range(1, 54), ids);
         Assert.Equal(names, actualNames);
-        Assert.Equal((ushort)22, ProtocolVersion.Current);
+        Assert.Equal((ushort)23, ProtocolVersion.Current);
     }
 
     // Protective, holds today: 48 is a server-to-client packet; the server registers no handler for it, and a client

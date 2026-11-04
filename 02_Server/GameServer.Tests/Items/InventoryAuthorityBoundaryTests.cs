@@ -124,7 +124,7 @@ public sealed class InventoryAuthorityBoundaryTests
     [InlineData("duplicate-stack")]
     public void CorruptedInternalState_IsRejected_NotNormalized(string variant)
     {
-        // Two defined item kinds cannot exceed eight slots without duplicates, so the slot-capacity
+        // Two defined item kinds cannot exceed 24 slots without duplicates, so the slot-capacity
         // branch is unreachable here; duplicates are rejected first.
         Exception? thrown = Record.Exception(() => CorruptedState(variant));
 
@@ -276,11 +276,11 @@ public sealed class InventoryAuthorityBoundaryTests
     static (ItemId ItemId, int Count)[] Items(InventoryReward reward)
         => reward.Items.Select(item => (item.ItemId, item.Count)).OrderBy(item => item.ItemId).ToArray();
 
-    // Occupied stacks in ItemId order, then 0/0 up to the fixed eight slots.
+    // Occupied stacks in ItemId order, then 0/0 up to the fixed 24 slots.
     static void AssertState(InventoryState state, uint revision, int currency, params (ItemId ItemId, int Count)[] occupied)
     {
         (ItemId ItemId, int Count)[] expectedSlots = occupied
-            .Concat(Enumerable.Repeat((ItemId.None, 0), 8 - occupied.Length))
+            .Concat(Enumerable.Repeat((ItemId.None, 0), 24 - occupied.Length))
             .ToArray();
         (ItemId ItemId, int Count)[] actualSlots = state.Slots.Select(slot => (slot.ItemId, slot.Count)).ToArray();
 

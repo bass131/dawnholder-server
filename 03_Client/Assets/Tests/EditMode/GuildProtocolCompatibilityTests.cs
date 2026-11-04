@@ -42,9 +42,9 @@ namespace Dawnholder.Client.Tests
         }
 
         [Test]
-        public void ProtocolVersion_IsTwentyTwo()
+        public void ProtocolVersion_IsTwentyThree()
         {
-            Assert.AreEqual(22, ProtocolVersion.Current);
+            Assert.AreEqual(23, ProtocolVersion.Current);
         }
 
         [Test]

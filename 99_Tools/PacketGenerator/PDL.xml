@@ -413,7 +413,7 @@
     <packet name="C_CheatCommand">
         <byte name="cheatType"/>
     </packet>
-    <!-- Server-authoritative economy. Fixed eight slots, ItemId order, empty slots = 0/0.
+    <!-- Server-authoritative economy. v23: fixed 24 slots, ItemId order, empty slots = 0/0.
          Append-only IDs 35..38; reserved must be zero, expectedRevision prevents use replay. -->
     <packet name="C_InventoryRequest">
         <byte name="reserved"/>
@@ -437,6 +437,38 @@
         <int name="slot6Count"/>
         <int name="slot7ItemId"/>
         <int name="slot7Count"/>
+        <int name="slot8ItemId"/>
+        <int name="slot8Count"/>
+        <int name="slot9ItemId"/>
+        <int name="slot9Count"/>
+        <int name="slot10ItemId"/>
+        <int name="slot10Count"/>
+        <int name="slot11ItemId"/>
+        <int name="slot11Count"/>
+        <int name="slot12ItemId"/>
+        <int name="slot12Count"/>
+        <int name="slot13ItemId"/>
+        <int name="slot13Count"/>
+        <int name="slot14ItemId"/>
+        <int name="slot14Count"/>
+        <int name="slot15ItemId"/>
+        <int name="slot15Count"/>
+        <int name="slot16ItemId"/>
+        <int name="slot16Count"/>
+        <int name="slot17ItemId"/>
+        <int name="slot17Count"/>
+        <int name="slot18ItemId"/>
+        <int name="slot18Count"/>
+        <int name="slot19ItemId"/>
+        <int name="slot19Count"/>
+        <int name="slot20ItemId"/>
+        <int name="slot20Count"/>
+        <int name="slot21ItemId"/>
+        <int name="slot21Count"/>
+        <int name="slot22ItemId"/>
+        <int name="slot22Count"/>
+        <int name="slot23ItemId"/>
+        <int name="slot23Count"/>
     </packet>
     <packet name="C_ItemUse">
         <int name="itemId"/>

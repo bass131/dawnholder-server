@@ -8,9 +8,15 @@ PDL 수정 → 생성기 실행 → 생성 diff와 [ProtocolVersion](../../98_Sh
 
 패킷 ID를 재사용하거나 정의 순서를 바꾸지 않는다. 필드 끝 추가도 기존 읽기 코드에 영향을 준다. 버전 일치로 연결을 제한하는 현재 핸드셰이크와 새 동작을 함께 검증한다. 전송의 프레임 길이 검사는 [서버](../../02_Server/Network/FrameValidator.cs)와 [클라이언트](../../04_ClientNet/FrameValidator.cs)에 각각 있다.
 
+## v23 인벤토리 24칸
+
+`ProtocolVersion.Current=23`이며 equality handshake가 v22와 그 이전 연결을 거부한다. 36번 `S_InventorySnapshot`의 `slot7Count` 뒤에 int `slot8ItemId`·`slot8Count`부터 `slot23ItemId`·`slot23Count`까지 붙였다. 기존 ID·필드 순서와 칸 0..7의 오프셋은 보존한다. 전체 길이는 머리 4 + revision 4 + currency 4 + 24×8 = 204바이트다. 칸 8은 offset76, 칸 23은 offset196에서 시작한다.
+
+서버 [InventoryPackets.Snapshot](../../02_Server/GameServer/Items/InventoryPackets.cs)은 24칸을 보내고 클라이언트 [InventorySnapshotHandler](../../03_Client/Assets/Scripts/Network/Handlers/Inventory/InventorySnapshotHandler.cs)는 정확한 204바이트·머리 길이·ID를 확인한 뒤 반영한다. 옛 76바이트와 머리 길이가 다른 입력은 상태를 바꾸지 않고 버린다. 공유 [InventoryLimits.MaxSlots](../../98_Shared/GameData/Items/InventoryLimits.cs)는 24이며 빈 칸 0/0·정렬·스택·재화·revision 판정은 유지한다. 서버와 Unity의 Shared.dll은 같은 v23 계약으로 빌드해야 한다.
+
 ## v22 캐릭터 목록·생성·선택
 
-`ProtocolVersion.Current=22`이며 equality handshake가 v21 연결을 거부한다. v21은 Core의 [저장 재시작 진입 변경](../../01_Phases/goals/2026-10-14-persistence-runtime-entry/goal.md)(`bcafb6bc`, 2026-10-15)이며 이 문서에 절이 아직 없다. 기존 1..48 번호와 필드는 보존하고 PDL 끝에 아래를 추가한다. LittleEndian이고 전체 길이는 4바이트 머리를 포함한다. string은 UInt16 바이트 길이 + UTF-16 LE이며 ID는 36자 D형 Guid(72바이트)다.
+v22에서 캐릭터 메뉴 49..54를 추가했다. v21은 Core의 [저장 재시작 진입 변경](../../01_Phases/goals/2026-10-14-persistence-runtime-entry/goal.md)(`bcafb6bc`, 2026-10-15)이며 이 문서에 절이 아직 없다. 기존 1..48 번호와 필드는 보존하고 PDL 끝에 아래를 추가했다. LittleEndian이고 전체 길이는 4바이트 머리를 포함한다. string은 UInt16 바이트 길이 + UTF-16 LE이며 ID는 36자 D형 Guid(72바이트)다.
 
 | ID·이름 | 머리 뒤 필드 순서 | 전체 길이 |
 |---|---|---|
@@ -72,12 +78,12 @@ v18에서 `ProtocolVersion.Current`를 18로 올렸고 v17 연결은 기존 버�
 
 ## v17 경제 패킷
 
-v17에서 기존 ID 1..34와 필드 순서를 보존하고 PDL 끝에 아래 4개를 추가했다. 필드는 LittleEndian이며 전체 길이는 ushort size + ushort id의 4바이트 헤더를 포함한다. 슬롯은 ItemId 오름차순으로 조밀하게 채운 고정 8개이고 빈 슬롯은 0/0이다.
+v17에서 기존 ID 1..34와 필드 순서를 보존하고 PDL 끝에 아래 4개를 추가했다. 필드는 LittleEndian이며 전체 길이는 ushort size + ushort id의 4바이트 헤더를 포함한다. 아래 표는 v23의 현재 모양이다. 슬롯은 ItemId 오름차순으로 조밀하게 채운 고정 24개이고 빈 슬롯은 0/0이다.
 
 | ID | 패킷 | 헤더 뒤 필드 순서 | 전체 길이 |
 |---|---|---|---|
 | 35 | C_InventoryRequest | byte reserved(0만 허용) | 5 |
-| 36 | S_InventorySnapshot | uint revision, int currency, int slot0ItemId, int slot0Count, …, int slot7ItemId, int slot7Count | 76 |
+| 36 | S_InventorySnapshot | uint revision, int currency, int slot0ItemId, int slot0Count, …, int slot23ItemId, int slot23Count | 204 |
 | 37 | C_ItemUse | int itemId, uint expectedRevision | 12 |
 | 38 | S_ItemUseResult | byte result, int itemId, uint revision | 13 |
 

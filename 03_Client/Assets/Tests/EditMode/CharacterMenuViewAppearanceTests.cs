@@ -27,14 +27,13 @@ namespace Dawnholder.Client.Tests
         const string MageIdleGuid = "3bc44f695dc715e45bf56d950d3a0052";
         // UI units; only absorbs float rounding through transforms.
         const float Tolerance = 0.5f;
-        // Baseline 14192a49 CharacterMenuView builds 18 TMP texts; user decision 51 A adds no new wording object.
-        const int BaselineTextCount = 18;
 
         // Content boundary msg_3a2dfa53e814 (goal 「건드릴 곳과 소유」): names other code and tests find under Panel.
+        // Goal 2026-10-31-demo-autopilot-character-select A1 removed the details box; its 「설계 고정」 adds Create and Cancel.
         static readonly string[] s_contentPaths =
         {
-            "Header", "DetailsBackground", "Slot1", "Slot2", "Slot3", "Refresh", "Submit", "Details", "Status", "Result",
-            "CreateForm/Name", "CreateForm/NameRule",
+            "Header", "Slot1", "Slot2", "Slot3", "Refresh", "Submit", "Status", "Result",
+            "CreateForm/Name", "CreateForm/NameRule", "CreateForm/Create", "CreateForm/Cancel",
         };
 
         GameObject _root;
@@ -56,17 +55,17 @@ namespace Dawnholder.Client.Tests
             if (_root != null) UnityEngine.Object.DestroyImmediate(_root);
         }
 
-        // T6 조각: Panel, Header and DetailsBackground show the bright Panel_Default, Header and Inset_Default.
+        // T6 조각: Panel and Header show the bright Panel_Default and Header. The details box (once Inset_Default) is gone
+        // (goal 2026-10-31-demo-autopilot-character-select A1).
         [Test]
-        public void PanelHeaderAndDetails_ShowTheBrightPieces()
+        public void PanelAndHeader_ShowTheBrightPieces_AndNoDetailsBox()
         {
             string panel = PieceOf(Panel.GetComponent<Image>()?.sprite)?.Name;
             string header = PieceOf(Panel.Find("Header").GetComponent<Image>()?.sprite)?.Name;
-            string details = PieceOf(Panel.Find("DetailsBackground").GetComponent<Image>()?.sprite)?.Name;
 
             Assert.AreEqual("Panel_Default", panel, "T6 the panel background is the bright Panel_Default");
             Assert.AreEqual("Header", header, "T6 the header is the bright Header");
-            Assert.AreEqual("Inset_Default", details, "T6 the details background is the bright Inset_Default");
+            Assert.IsNull(Panel.Find("DetailsBackground"), "A1 the details box is gone");
         }
 
         // T6 조각: Back and Refresh show the bright Button_Default states, Submit the bright Button_Accept states
@@ -186,39 +185,33 @@ namespace Dawnholder.Client.Tests
             Assert.IsEmpty(ClassArtOver(SlotRects()[0]), "T6 an unknown class shows neither Knight nor Mage art");
         }
 
-        // 51 A: choosing an empty slot titles it 「새 캐릭터」 and no new wording object is added. No existing test pins
-        // the title (CharacterMenuViewTests pins the 「슬롯 N\n빈 슬롯」 label at :62~:64).
+        // Goal 2026-10-31-demo-autopilot-character-select A1 and A3 replace 51 A's 「새 캐릭터」 title and fixed count of 18
+        // texts: choosing an empty slot opens the create form, and the removed details wording does not come back.
         [Test]
-        public void ChoosingAnEmptySlot_TitlesItNewCharacter_WithoutNewWordingObjects()
+        public void ChoosingAnEmptySlot_OpensTheCreateForm_WithoutTheDetailsWording()
         {
             _view.Render(new CharacterMenuViewState(Phase.Ready));
             Click("Slot1");
-            string title = Panel.Find("SelectedTitle").GetComponent<TMP_Text>().text;
-            string[] texts = _root.GetComponentsInChildren<TMP_Text>(true).Select(text => PathUnder(text.transform)).ToArray();
-            TestContext.Out.WriteLine($"title=「{title}」 texts={texts.Length} [{string.Join(", ", texts)}]");
+            bool formOpen = Panel.Find("CreateForm").gameObject.activeInHierarchy;
+            TMP_Text[] texts = _root.GetComponentsInChildren<TMP_Text>(true);
+            string[] names = texts.Select(text => text.name).ToArray();
+            TestContext.Out.WriteLine($"form open={formOpen} texts={texts.Length} " +
+                $"[{string.Join(", ", texts.Select(text => PathUnder(text.transform)))}]");
 
-            Assert.That(title, Does.Contain("새 캐릭터"), "51 A an empty slot, once chosen, is titled 「새 캐릭터」");
-            Assert.AreEqual(BaselineTextCount, texts.Length, "51 A no new wording object is added");
+            Assert.IsTrue(formOpen, "A3 an empty slot opens the create form");
+            CollectionAssert.DoesNotContain(names, "SelectedTitle", "A1 the selected title text is gone");
+            CollectionAssert.DoesNotContain(names, "Details", "A1 the details text is gone");
         }
 
-        // Decision 45: the details area shows server values only; no face or icon-row image sits in it.
+        // Decision 45 kept the details area free of face and icon images. Goal 2026-10-31-demo-autopilot-character-select
+        // A1 removes that area; the name stays as decision 45's trace (main msg_e6ef913df2cd).
         [Test]
         public void Details_ShowNoFaceOrIconImages()
         {
             _view.Render(new CharacterMenuViewState(Phase.Ready, new Slot("가람", 0)));
             Click("Slot1");
-            // Decision 45, contract pr2-red-fix-contract-v1: both window backgrounds are seen and only they are skipped.
-            var panelBackground = Panel.GetComponent<Image>();
-            var detailsBackground = Panel.Find("DetailsBackground")?.GetComponent<Image>();
-            Image[] visible = Visible();
-            CollectionAssert.Contains(visible, panelBackground, "precondition: the observer sees the panel background");
-            CollectionAssert.Contains(visible, detailsBackground, "precondition: the observer sees the details background");
-            Rect details = RectOf(detailsBackground);
-            string[] inside = visible.Where(image => image != panelBackground && image != detailsBackground)
-                .Where(image => ContainsPoint(details, RectOf(image).center))
-                .Select(image => PathUnder(image.transform)).ToArray();
 
-            Assert.IsEmpty(inside, "decision 45: no face or icon image sits in the details area");
+            Assert.IsNull(Panel.Find("DetailsBackground"), "A1 the details box is gone");
         }
 
         // T6: raycasts are taken only by the buttons, the name input and the panel background (which already blocks

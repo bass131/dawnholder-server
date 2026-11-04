@@ -9,10 +9,30 @@ using Slot = Dawnholder.Client.UI.CharacterMenuViewState.Slot;
 namespace Dawnholder.Client.UI
 {
     /// <summary>Scene-owned menu geometry and temporary input. No connection, character identity or entry authority.</summary>
+    /// <remarks>
+    /// Under the status line the panel shows one screen at a time: the slot row with Submit, or the create form in the
+    /// slot row's place while the chosen slot is empty. Submit only selects an occupied slot; the form's Create creates
+    /// and its Cancel goes back to the slot row.
+    /// </remarks>
     internal sealed class CharacterMenuView : IDisposable
     {
         // The goal's approved wording of the server's name rule. The server judges names; the view only states it.
         const string NameRule = "2~12자, 한글·영문·숫자.\n영문은 대소문자만 다르면 같은 이름";
+        // The panel's inner width is the header's; the status, slot row, create form and result lines all span it.
+        const float InnerLeft = 20f;
+        const float InnerWidth = 720f;
+        // Three equal slot cards and two gaps fill the inner width. The create form takes the same rectangle.
+        const float SlotGap = 12f;
+        const float SlotWidth = (InnerWidth - 2f * SlotGap) / 3f;
+        const float SlotHeight = 232f;
+        const float SlotRowTop = -100f;
+        // The create form's controls stand in one centred column; paired buttons split it with the slot gap.
+        const float FormColumnWidth = 480f;
+        const float FormColumnLeft = (InnerWidth - FormColumnWidth) / 2f;
+        const float FormHalfWidth = (FormColumnWidth - SlotGap) / 2f;
+        const float FormRightHalfLeft = FormColumnLeft + FormHalfWidth + SlotGap;
+        // The 「이름」 caption and its gap; the input and the rule text under it start after them.
+        const float NameCaptionWidth = 56f;
         // Dark ink on the bright parchment; white stays only on the wood buttons and the dark title band.
         static readonly Color s_ink = new(0.26f, 0.17f, 0.09f);
         static readonly Color s_secondaryText = new(0.45f, 0.33f, 0.2f);
@@ -24,8 +44,6 @@ namespace Dawnholder.Client.UI
         readonly CanvasGroup _group;
         readonly TMP_Text _status;
         readonly TMP_Text _result;
-        readonly TMP_Text _selectedTitle;
-        readonly TMP_Text _details;
         readonly GameObject _form;
         readonly TMP_InputField _nameInput;
         readonly Button[] _slotButtons = new Button[3];
@@ -38,8 +56,9 @@ namespace Dawnholder.Client.UI
         readonly Button _mage;
         readonly TMP_Text _knightLabel;
         readonly TMP_Text _mageLabel;
+        readonly Button _create;
+        readonly Button _cancel;
         readonly Button _submit;
-        readonly TMP_Text _submitLabel;
         readonly Button _refresh;
         readonly Button _back;
         Action<byte>? _selectRequested;
@@ -87,60 +106,66 @@ namespace Dawnholder.Client.UI
             Place(panel, new Vector2(760f, 430f), Vector2.zero);
             panel.anchorMin = panel.anchorMax = panel.pivot = new Vector2(0.5f, 0.5f);
             Place(UiWindowAppearance.CreateHeader("Header", panel, _skin).rectTransform,
-                new Vector2(720f, 46f), new Vector2(20f, -8f));
+                new Vector2(InnerWidth, 46f), new Vector2(InnerLeft, -8f));
             TMP_Text title = Label("Title", panel, new Vector2(696f, 46f), new Vector2(32f, -8f), font);
             title.text = "캐릭터 선택";
             title.fontSize = 22f;
             title.fontStyle = FontStyles.Bold;
-            _status = Label("Status", panel, new Vector2(720f, 38f), new Vector2(20f, -58f), font);
+            _status = Label("Status", panel, new Vector2(InnerWidth, 38f), new Vector2(InnerLeft, -58f), font);
             _status.color = s_ink;
 
-            // The three slots stand side by side left of the details: glow, standing art on its pedestal, name plate.
+            // The slot row: three cards side by side, each with glow, standing art on its pedestal and name plate.
             for (byte slot = 1; slot <= 3; slot++)
             {
                 byte chosenSlot = slot;
-                _slotButtons[slot - 1] = MakeSlot(slot - 1, panel, new Vector2(20f + (slot - 1) * 110f, -100f), font);
+                var position = new Vector2(InnerLeft + (slot - 1) * (SlotWidth + SlotGap), SlotRowTop);
+                _slotButtons[slot - 1] = MakeSlot(slot - 1, panel, position, font);
                 _slotButtons[slot - 1].onClick.AddListener(() => OnSlotClicked(chosenSlot));
             }
 
-            Place(UiWindowAppearance.CreateInset("DetailsBackground", panel, _skin).rectTransform,
-                new Vector2(392f, 232f), new Vector2(348f, -100f));
-            _selectedTitle = Label("SelectedTitle", panel, new Vector2(368f, 38f), new Vector2(360f, -104f), font);
-            _selectedTitle.fontStyle = FontStyles.Bold;
-            _selectedTitle.color = s_ink;
-            _details = Label("Details", panel, new Vector2(368f, 182f), new Vector2(360f, -146f), font);
-            _details.color = s_ink;
-            RectTransform form = Rect("CreateForm", panel, new Vector2(368f, 184f), new Vector2(360f, -146f));
+            // The create form, in the slot row's rectangle: name, rule, class, hint, then Cancel and Create.
+            RectTransform form = Rect("CreateForm", panel, new Vector2(InnerWidth, SlotHeight),
+                new Vector2(InnerLeft, SlotRowTop));
             _form = form.gameObject;
-            TMP_Text nameLabel = Label("NameLabel", form, new Vector2(48f, 40f), Vector2.zero, font);
+            const float nameLeft = FormColumnLeft + NameCaptionWidth;
+            const float nameWidth = FormColumnWidth - NameCaptionWidth;
+            var halfButton = new Vector2(FormHalfWidth, 40f);
+            TMP_Text nameLabel = Label("NameLabel", form, new Vector2(48f, 40f), new Vector2(FormColumnLeft, 0f), font);
             nameLabel.text = "이름";
             nameLabel.color = s_ink;
-            _nameInput = CreateNameInput(form, font, _skin);
-            TMP_Text nameRule = Label("NameRule", form, new Vector2(368f, 66f), new Vector2(0f, -42f), font);
+            _nameInput = CreateNameInput(form, new Vector2(nameWidth, 40f), new Vector2(nameLeft, 0f), font, _skin);
+            TMP_Text nameRule = Label("NameRule", form, new Vector2(nameWidth, 64f), new Vector2(nameLeft, -44f), font);
             nameRule.text = NameRule;
             nameRule.fontSize = 16f;
             nameRule.color = s_secondaryText;
-            _knight = MakeButton("Knight", form, new Vector2(178f, 40f), new Vector2(0f, -110f),
+            _knight = MakeButton("Knight", form, halfButton, new Vector2(FormColumnLeft, -112f),
                 "Knight", font, out _knightLabel, _skin);
-            _mage = MakeButton("Mage", form, new Vector2(178f, 40f), new Vector2(190f, -110f),
+            _mage = MakeButton("Mage", form, halfButton, new Vector2(FormRightHalfLeft, -112f),
                 "Mage", font, out _mageLabel, _skin);
             AddClassPicture(_knight, _knightLabel, 0);
             AddClassPicture(_mage, _mageLabel, 1);
             _knight.onClick.AddListener(() => OnClassClicked(0));
             _mage.onClick.AddListener(() => OnClassClicked(1));
-            TMP_Text hint = Label("Hint", form, new Vector2(368f, 32f), new Vector2(0f, -152f), font);
+            TMP_Text hint = Label("Hint", form, new Vector2(FormColumnWidth, 32f),
+                new Vector2(FormColumnLeft, -156f), font);
             hint.text = "생성 후 입장할 캐릭터를 다시 선택해주세요.";
             hint.fontSize = 15f;
             hint.color = s_secondaryText;
+            _cancel = MakeButton("Cancel", form, halfButton, new Vector2(FormColumnLeft, -192f),
+                "취소", font, out _, _skin);
+            _create = MakeButton("Create", form, halfButton, new Vector2(FormRightHalfLeft, -192f),
+                "캐릭터 생성", font, out _, _skin, UiWindowAppearance.ButtonStyle.Accept);
+            _cancel.onClick.AddListener(OnCancelClicked);
+            _create.onClick.AddListener(OnCreateClicked);
 
-            _result = Label("Result", panel, new Vector2(720f, 38f), new Vector2(20f, -336f), font);
+            _result = Label("Result", panel, new Vector2(InnerWidth, 38f), new Vector2(InnerLeft, -336f), font);
             _result.color = s_resultText;
             _back = MakeButton("Back", panel, new Vector2(134f, 40f), new Vector2(20f, -378f),
                 "뒤로", font, out _, _skin);
             _refresh = MakeButton("Refresh", panel, new Vector2(146f, 40f), new Vector2(164f, -378f),
                 "목록 새로고침", font, out _, _skin);
             _submit = MakeButton("Submit", panel, new Vector2(214f, 40f), new Vector2(526f, -378f),
-                "캐릭터 선택", font, out _submitLabel, _skin, UiWindowAppearance.ButtonStyle.Accept);
+                "선택하고 입장", font, out _, _skin, UiWindowAppearance.ButtonStyle.Accept);
             _back.onClick.AddListener(OnBackClicked);
             _refresh.onClick.AddListener(OnRefreshClicked);
             _submit.onClick.AddListener(OnSubmitClicked);
@@ -173,6 +198,8 @@ namespace Dawnholder.Client.UI
             // Back and transport closure are terminal for this view. Reconnection uses a new scene-owned view.
             if (_disposed || _closed || _disconnected) return;
             if (state == null) throw new ArgumentNullException(nameof(state));
+            // A choice, and with it an open create form, lasts only while its slot shows the same thing: a created
+            // character closes the form with no slot chosen, a refusal (slot still empty) keeps the form and its draft.
             if (!HasList(state.CurrentPhase) ||
                 (_selectedSlot != 0 && !SameDisplaySlot(_state.GetSlot(_selectedSlot), state.GetSlot(_selectedSlot))))
                 ResetSelection();
@@ -181,46 +208,64 @@ namespace Dawnholder.Client.UI
             _disconnected = state.CurrentPhase == Phase.Disconnected;
             _status.text = PhaseCaption(state.CurrentPhase);
             _result.text = state.Message;
-            UpdateSlots();
-            UpdateDetails();
-            UpdateInteraction();
+            Redraw();
         }
 
         bool CanEdit() => !_disposed && !_closed && !_disconnected && !_localPending && _state.CurrentPhase == Phase.Ready;
 
+        // The form is open while the chosen slot is empty; the choice is the view's memory of which slot it fills.
+        bool CreateFormOpen => _selectedSlot != 0 && _state.GetSlot(_selectedSlot) == null;
+
         void OnSlotClicked(byte slot)
         {
-            if (!CanEdit() || slot < 1 || slot > 3 || slot == _selectedSlot) return;
+            // The slot row is hidden while the form is open, so nothing may change the slot the form fills.
+            if (!CanEdit() || CreateFormOpen || slot < 1 || slot > 3 || slot == _selectedSlot) return;
             _selectedSlot = slot;
             ResetDraft();
             _result.text = string.Empty;
-            UpdateSlots();
-            UpdateDetails();
-            UpdateInteraction();
+            Redraw();
         }
 
         void OnClassClicked(byte classId)
         {
-            if (!CanEdit() || _selectedSlot == 0 || _state.GetSlot(_selectedSlot) != null) return;
+            if (!CanEdit() || !CreateFormOpen) return;
             _draftClass = classId;
             _result.text = string.Empty;
             UpdateInteraction();
         }
 
-        void OnSubmitClicked()
+        void OnCreateClicked()
         {
-            if (!CanEdit() || _selectedSlot == 0) return;
+            if (!CanEdit() || !CreateFormOpen) return;
             byte slot = _selectedSlot;
-            bool creating = _state.GetSlot(slot) == null;
             // Capture the raw draft before a synchronous caller can render a replacement snapshot.
             string rawName = _nameInput.text;
             byte classId = _draftClass;
             _localPending = true;
             _result.text = string.Empty;
-            _status.text = creating ? "캐릭터 생성 요청 중입니다." : "캐릭터 선택 요청 중입니다.";
+            _status.text = "캐릭터 생성 요청 중입니다.";
             UpdateInteraction();
-            if (creating) _createRequested?.Invoke(slot, classId, rawName);
-            else _selectRequested?.Invoke(slot);
+            _createRequested?.Invoke(slot, classId, rawName);
+        }
+
+        // Leaves the form without a request. Dropping the choice also clears the last result, as choosing a slot does.
+        void OnCancelClicked()
+        {
+            if (!CanEdit() || !CreateFormOpen) return;
+            ResetSelection();
+            _result.text = string.Empty;
+            Redraw();
+        }
+
+        void OnSubmitClicked()
+        {
+            if (!CanEdit() || _selectedSlot == 0 || CreateFormOpen) return;
+            byte slot = _selectedSlot;
+            _localPending = true;
+            _result.text = string.Empty;
+            _status.text = "캐릭터 선택 요청 중입니다.";
+            UpdateInteraction();
+            _selectRequested?.Invoke(slot);
         }
 
         void OnRefreshClicked()
@@ -240,7 +285,7 @@ namespace Dawnholder.Client.UI
             _closed = true;
             _status.text = "메뉴로 돌아가는 중입니다.";
             ResetSelection();
-            UpdateInteraction();
+            Redraw();
             _backRequested?.Invoke();
         }
 
@@ -254,6 +299,13 @@ namespace Dawnholder.Client.UI
         {
             _draftClass = 0;
             _nameInput.SetTextWithoutNotify(string.Empty);
+        }
+
+        void Redraw()
+        {
+            UpdateSlots();
+            UpdateScreen();
+            UpdateInteraction();
         }
 
         void UpdateSlots()
@@ -290,29 +342,27 @@ namespace Dawnholder.Client.UI
 
         Sprite? ClassArt(byte classId) => classId == 0 ? _skin.KnightArt : classId == 1 ? _skin.MageArt : null;
 
-        void UpdateDetails()
+        // The open form replaces the slot row and Submit; otherwise the row and Submit show and the form hides.
+        void UpdateScreen()
         {
-            bool selected = _selectedSlot != 0;
-            Slot? character = selected ? _state.GetSlot(_selectedSlot) : null;
-            bool creating = selected && character == null;
-            _form.SetActive(creating);
-            _details.gameObject.SetActive(!creating);
-            _selectedTitle.text = selected ? $"슬롯 {_selectedSlot} · {(creating ? "새 캐릭터" : "선택")}" : "캐릭터를 선택하세요";
-            _details.text = character == null ? "기존 캐릭터를 고르거나\n빈 슬롯에 새 캐릭터를 만드세요." :
-                character.Name + "\n직업: " + ClassCaption(character.ClassId) + (_state.CurrentPhase == Phase.Entering
-                    ? "\n이 캐릭터로 입장을 기다리는 중입니다." : "\n입장하려면 선택 버튼을 누르세요.");
-            _submitLabel.text = creating ? "캐릭터 생성" : "선택하고 입장";
+            bool formOpen = CreateFormOpen;
+            _form.SetActive(formOpen);
+            foreach (Button slotButton in _slotButtons) slotButton.gameObject.SetActive(!formOpen);
+            _submit.gameObject.SetActive(!formOpen);
         }
 
         void UpdateInteraction()
         {
             bool editing = CanEdit();
+            bool formOpen = CreateFormOpen;
+            bool creating = editing && formOpen;
             foreach (Button button in _slotButtons) button.interactable = editing;
-            bool creating = editing && _selectedSlot != 0 && _state.GetSlot(_selectedSlot) == null;
             _nameInput.interactable = _knight.interactable = _mage.interactable = creating;
+            _create.interactable = _cancel.interactable = creating;
             _knightLabel.text = _draftClass == 0 ? "Knight · 선택" : "Knight";
             _mageLabel.text = _draftClass == 1 ? "Mage · 선택" : "Mage";
-            _submit.interactable = editing && _selectedSlot != 0;
+            // Submit only selects: it needs an occupied slot chosen in Ready.
+            _submit.interactable = editing && _selectedSlot != 0 && !formOpen;
             _refresh.interactable = !_closed && !_disposed && !_disconnected && !_localPending &&
                 (_state.CurrentPhase == Phase.Ready || _state.CurrentPhase == Phase.ListFailed);
             _back.interactable = !_closed && !_disposed;
@@ -340,12 +390,14 @@ namespace Dawnholder.Client.UI
             _ => "화면 상태를 확인할 수 없습니다. 메뉴로 돌아가주세요.",
         };
 
-        // Slot card: the button's own image is the name plate frame; glow, art and pedestal are children outside the raycast.
+        // Slot card: the button's own image is the name plate frame; glow, art and pedestal are children outside the
+        // raycast, centred on the card.
         Button MakeSlot(int index, Transform panel, Vector2 position, TMP_FontAsset font)
         {
+            const float centre = SlotWidth / 2f;
             Image frame = UiWindowAppearance.CreateSliced("Slot" + (index + 1), panel, _skin.CharacterSlot);
             frame.raycastTarget = true;
-            Place(frame.rectTransform, new Vector2(100f, 232f), position);
+            Place(frame.rectTransform, new Vector2(SlotWidth, SlotHeight), position);
             Button button = frame.gameObject.AddComponent<Button>();
             button.targetGraphic = frame;
             // The chosen frame is swapped by the view, so hover and press only tint the frame.
@@ -353,38 +405,43 @@ namespace Dawnholder.Client.UI
             _slotFrames[index] = frame;
 
             _slotGlows[index] = UiWindowAppearance.CreateSimple("Glow", frame.transform, _skin.SelectionGlow);
-            Place(_slotGlows[index].rectTransform, new Vector2(72f, 120f), new Vector2(14f, -4f));
+            Place(_slotGlows[index].rectTransform, new Vector2(72f, 120f), new Vector2(centre - 36f, -4f));
             Image pedestal = UiWindowAppearance.CreateSimple("Pedestal", frame.transform, _skin.Pedestal);
-            Place(pedestal.rectTransform, new Vector2(84f, 42f), new Vector2(8f, -100f));
+            Place(pedestal.rectTransform, new Vector2(84f, 42f), new Vector2(centre - 42f, -100f));
             _slotArts[index] = UiWindowAppearance.CreateSimple("ClassArt", frame.transform, _skin.KnightArt);
             RectTransform art = _slotArts[index].rectTransform;
             Place(art, new Vector2(88f, 100f), Vector2.zero);
             // Bottom-centre pivot: preserveAspect then keeps the figure's feet on the pedestal top.
             art.pivot = new Vector2(0.5f, 0f);
-            art.anchoredPosition = new Vector2(50f, -118f);
+            art.anchoredPosition = new Vector2(centre, -118f);
             _slotBobs[index] = CharacterArtBob.Attach(art);
 
-            // Korean fallback line box is about 1.9 em: three 13 pt lines (the heading may wrap once) fit in 90 UI.
-            TMP_Text label = Label("Label", frame.transform, new Vector2(92f, 90f), new Vector2(4f, -138f), font);
-            label.fontSize = 13f;
+            // The wide card keeps the heading and a 12-character name on one line each, two 15 pt lines in 90 UI;
+            // a heading that still wrapped would need three lines of about 1.9 em, which also fit.
+            TMP_Text label = Label("Label", frame.transform, new Vector2(SlotWidth - 8f, 90f),
+                new Vector2(4f, -138f), font);
+            label.fontSize = 15f;
             label.color = s_ink;
             label.alignment = TextAlignmentOptions.Midline;
             _slotLabels[index] = label;
             return button;
         }
 
-        static TMP_InputField CreateNameInput(Transform parent, TMP_FontAsset font, UiWindowSkin skin)
+        static TMP_InputField CreateNameInput(Transform parent, Vector2 size, Vector2 position, TMP_FontAsset font,
+            UiWindowSkin skin)
         {
             Image background = UiWindowAppearance.CreateSliced("Name", parent, skin.InputField);
-            Place(background.rectTransform, new Vector2(312f, 40f), new Vector2(56f, 0f));
+            Place(background.rectTransform, size, position);
             background.raycastTarget = true;
-            RectTransform viewport = Rect("Viewport", background.transform, new Vector2(292f, 40f), new Vector2(10f, 0f));
+            // 10 UI of the input frame stays clear on each side of the typed text.
+            var textSize = new Vector2(size.x - 20f, size.y);
+            RectTransform viewport = Rect("Viewport", background.transform, textSize, new Vector2(10f, 0f));
             viewport.gameObject.AddComponent<RectMask2D>();
-            TMP_Text text = Label("Text", viewport, new Vector2(292f, 40f), Vector2.zero, font);
+            TMP_Text text = Label("Text", viewport, textSize, Vector2.zero, font);
             text.textWrappingMode = TextWrappingModes.NoWrap;
             text.overflowMode = TextOverflowModes.Overflow;
             text.color = s_ink;
-            TMP_Text placeholder = Label("Placeholder", viewport, new Vector2(292f, 40f), Vector2.zero, font);
+            TMP_Text placeholder = Label("Placeholder", viewport, textSize, Vector2.zero, font);
             placeholder.text = "캐릭터 이름";
             placeholder.color = s_secondaryText;
             var input = background.gameObject.AddComponent<TMP_InputField>();

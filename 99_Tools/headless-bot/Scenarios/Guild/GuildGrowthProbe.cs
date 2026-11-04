@@ -219,6 +219,14 @@ sealed class GuildGrowthProbe : ProbeBase
             (inventory.slot2ItemId, inventory.slot2Count), (inventory.slot3ItemId, inventory.slot3Count),
             (inventory.slot4ItemId, inventory.slot4Count), (inventory.slot5ItemId, inventory.slot5Count),
             (inventory.slot6ItemId, inventory.slot6Count), (inventory.slot7ItemId, inventory.slot7Count),
+            (inventory.slot8ItemId, inventory.slot8Count), (inventory.slot9ItemId, inventory.slot9Count),
+            (inventory.slot10ItemId, inventory.slot10Count), (inventory.slot11ItemId, inventory.slot11Count),
+            (inventory.slot12ItemId, inventory.slot12Count), (inventory.slot13ItemId, inventory.slot13Count),
+            (inventory.slot14ItemId, inventory.slot14Count), (inventory.slot15ItemId, inventory.slot15Count),
+            (inventory.slot16ItemId, inventory.slot16Count), (inventory.slot17ItemId, inventory.slot17Count),
+            (inventory.slot18ItemId, inventory.slot18Count), (inventory.slot19ItemId, inventory.slot19Count),
+            (inventory.slot20ItemId, inventory.slot20Count), (inventory.slot21ItemId, inventory.slot21Count),
+            (inventory.slot22ItemId, inventory.slot22Count), (inventory.slot23ItemId, inventory.slot23Count),
         };
         return slots.Where(slot => slot.Id == (int)item).Sum(slot => slot.Count);
     }
