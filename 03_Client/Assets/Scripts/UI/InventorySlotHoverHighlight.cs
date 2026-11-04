@@ -37,7 +37,7 @@ namespace Dawnholder.Client.UI
             Camera? eye = _canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _canvas.worldCamera;
             for (int i = 0; i < _rows.Length; i++)
             {
-                bool hovered = active && RectTransformUtility.RectangleContainsScreenPoint(_rows[i], point, eye);
+                bool hovered = active && InventoryPointerGeometry.Contains(_rows[i], point, eye);
                 if (_highlights[i].enabled != hovered) _highlights[i].enabled = hovered;
             }
         }

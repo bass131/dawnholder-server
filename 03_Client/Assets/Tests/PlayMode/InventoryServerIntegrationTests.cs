@@ -84,10 +84,10 @@ namespace Dawnholder.Client.Tests.PlayMode
             uint rewardRevision = InventoryState.Instance.Revision;
             int rewardCurrency = InventoryState.Instance.Currency;
             int rewardPouch = Held(ItemId.CoinPouch);
-            Component use = InventoryPanelProbe.Use(pouchSlot);
-            Assert.IsTrue(InventoryPanelProbe.Interactable(use), "R6 the owned pouch is usable on the synchronized entry");
+            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, InventoryPanelProbe.SlotPoint(pouchSlot));
+            Assert.IsTrue(InventoryPanelProbe.DetailShown && InventoryPanelProbe.DetailLabel("UseHint").gameObject.activeInHierarchy, "R6 the owned pouch is usable on the synchronized entry");
             yield return InventoryPanelProbe.AttackReady(_fixture.Player);
-            yield return InventoryPanelProbe.Click(_fixture.Mouse, use);
+            yield return InventoryPanelProbe.RightClick(_fixture.Mouse, pouchSlot);
             bool cooldownByUse = !_fixture.Player.CanAttack;
             bool lockByUse = _fixture.Player.IsActionLocked;
             Assert.IsFalse(cooldownByUse, "#2 a pointer Use click predicts no attack cooldown on the real server path");

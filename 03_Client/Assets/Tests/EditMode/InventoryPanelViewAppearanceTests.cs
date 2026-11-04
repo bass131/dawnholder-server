@@ -54,7 +54,7 @@ namespace Dawnholder.Client.Tests
             RenderTwoItems(window);
 
             var problems = new List<string>();
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < InventoryLimits.MaxSlots; i++)
             {
                 string[] under = BrightPiecesUnder(window.Panel, Centre(window.Panel, window.Slots[i]));
                 string expected = i < 2 ? "ItemSlot_Filled" : "ItemSlot_Empty";
@@ -76,7 +76,7 @@ namespace Dawnholder.Client.Tests
 
             string[] materialIcons = ItemIconNames(window, 0);
             string[] pouchIcons = ItemIconNames(window, 1);
-            string[] emptyWithIcons = Enumerable.Range(2, 6)
+            string[] emptyWithIcons = Enumerable.Range(2, InventoryLimits.MaxSlots - 2)
                 .Where(i => ItemIconNames(window, i).Length > 0)
                 .Select(i => $"Slot{i + 1}: {string.Join(",", ItemIconNames(window, i))}").ToArray();
             TestContext.Out.WriteLine($"material=[{string.Join(",", materialIcons)}] pouch=[{string.Join(",", pouchIcons)}]");
@@ -114,7 +114,7 @@ namespace Dawnholder.Client.Tests
         // T5 재화 줄 (user decision 50 B 「재화 줄은 아래」): the top of Inventory/Currency is below the lowest slot bottom,
         // both measured in the same panel with y downward as the layout test's FromTopLeft.
         [Test]
-        public void CurrencyLine_SitsBelowTheEightSlots()
+        public void CurrencyLine_SitsBelowEverySlot()
         {
             Window window = Build();
             RenderTwoItems(window);
@@ -124,7 +124,7 @@ namespace Dawnholder.Client.Tests
             TestContext.Out.WriteLine($"currency={currency} slotsBottom={slotsBottom}");
 
             Assert.AreSame(window.Panel, window.Currency.parent, "fixture: Inventory/Currency is a direct child of the panel");
-            Assert.GreaterOrEqual(currency.yMin, slotsBottom - Tolerance, "T5 the currency line starts below the eight slots");
+            Assert.GreaterOrEqual(currency.yMin, slotsBottom - Tolerance, "T5 the currency line starts below every slot");
         }
 
         // T5 재화 아이콘: a bright Icon_Coin image inside the panel, its vertical centre within the currency line.
@@ -176,7 +176,7 @@ namespace Dawnholder.Client.Tests
             var pointer = new PointerEventData(eventSystem.GetComponent<EventSystem>());
 
             var outside = new List<string>();
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < InventoryLimits.MaxSlots; i++)
             {
                 GameObject row = window.Slots[i].gameObject;
                 Button use = row.GetComponentInChildren<Button>(true);
@@ -188,7 +188,7 @@ namespace Dawnholder.Client.Tests
                 ExecuteEvents.ExecuteHierarchy(row, pointer, ExecuteEvents.pointerExitHandler);
             }
 
-            CollectionAssert.AreEqual(Enumerable.Range(1, 8).Select(slot => $"Slot{slot} hovered: GrabArea").ToArray(), outside,
+            CollectionAssert.AreEqual(Enumerable.Range(1, InventoryLimits.MaxSlots).Select(slot => $"Slot{slot} hovered: GrabArea").ToArray(), outside,
                 "T8 a hovered slot keeps its background and art out of the raycast; only the title bar's grab area takes one (goal 2026-10-30 완료조건 4)");
         }
 
@@ -237,8 +237,8 @@ namespace Dawnholder.Client.Tests
             Assert.IsNotNull(panel, "fixture: the builder makes the Inventory panel");
             var currency = (RectTransform)panel.Find("Currency");
             Assert.IsNotNull(currency, "fixture: Inventory/Currency");
-            RectTransform[] slots = Enumerable.Range(1, 8).Select(n => (RectTransform)panel.Find("Slot" + n)).ToArray();
-            Assert.IsTrue(slots.All(slot => slot != null), "fixture: Inventory/Slot1~8");
+            RectTransform[] slots = Enumerable.Range(1, InventoryLimits.MaxSlots).Select(n => (RectTransform)panel.Find("Slot" + n)).ToArray();
+            Assert.IsTrue(slots.All(slot => slot != null), "fixture: Inventory/all shared slots");
             return new Window { Root = root, View = view, Panel = panel, Currency = currency, Slots = slots };
         }
 
