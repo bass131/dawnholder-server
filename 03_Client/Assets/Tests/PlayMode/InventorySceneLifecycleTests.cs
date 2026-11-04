@@ -166,8 +166,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             return handler == null ? 0 : handler.GetInvocationList().Length;
         }
 
-        // The objects an event calls back. The HUD also follows the mirror (dungeon goal R1), so the panel's own
-        // subscription is told apart from the HUD's by target.
+        // The objects an event calls back. Several consumers follow the mirror (panel, guild window, kill reward text),
+        // so the panel's own subscription is told apart by target.
         internal static object[] Targets(object owner, string eventField)
         {
             var handler = (Delegate)owner.GetType()
@@ -531,11 +531,11 @@ namespace Dawnholder.Client.Tests.PlayMode
             object[] mirrorTargets = InventoryPanelProbe.Targets(mirror, "OnInventoryChanged");
             Assert.AreEqual(1, mirrorTargets.Count(target => target is InventoryPanel), "R8 the old panel left the mirror");
             Assert.Contains(InventoryPanel.Instance, mirrorTargets, "R8 the new panel follows the mirror");
-            Assert.AreEqual(1, mirrorTargets.Count(target => target is HudController), "dungeon R1 the map's HUD follows the mirror once");
+            Assert.AreEqual(0, mirrorTargets.Count(target => target is HudController), "inventory grid goal 8: the map's HUD no longer follows the mirror (HUD gold removed)");
             string[] targetTypes = mirrorTargets
                 .Select(target => target?.GetType().FullName ?? "<null>").ToArray();
             CollectionAssert.AreEquivalent(
-                new[] { typeof(InventoryPanel).FullName, typeof(GuildUiController).FullName, typeof(HudController).FullName, typeof(Dawnholder.Client.Combat.KillRewardFloatText).FullName },
+                new[] { typeof(InventoryPanel).FullName, typeof(GuildUiController).FullName, typeof(Dawnholder.Client.Combat.KillRewardFloatText).FullName },
                 targetTypes, "inventory consumers: " + string.Join(", ", targetTypes));
             Assert.AreEqual(1, InventoryPanelProbe.Subscribers(requests, "Changed"), "R8 the old panel left the requests");
 

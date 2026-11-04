@@ -710,7 +710,9 @@ namespace Dawnholder.Client.Tests.PlayMode
                 Action = action.anchoredPosition;
                 ActionRect = PartyInviteLayout.ScreenRectOf(action);
                 ActionShown = ScreenUiProbe.IsShown(action);
-                HudOrder = action.GetComponentInParent<Canvas>().rootCanvas.sortingOrder;
+                // The HUD is also observed while disabled, and GetComponentInParent skips inactive parents.
+                Canvas[] hudCanvases = action.GetComponentsInParent<Canvas>(true);
+                HudOrder = hudCanvases[hudCanvases.Length - 1].sortingOrder;
                 if (window != null && ScreenUiProbe.IsShown(window))
                 {
                     Window = PartyInviteLayout.ScreenRectOf(window);
