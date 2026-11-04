@@ -13,7 +13,7 @@ using UnityEngine.UI;
 namespace Dawnholder.Client.UI
 {
     /// <summary>
-    /// 스킬 쿨다운 HUD — Q/E 슬롯 fill 표시 전담.
+    /// 스킬 HUD — 왼쪽 아래 고정 4칸의 채움·빈 칸 표시와 Q/E 쿨다운 fill 전담.
     ///
     /// **헌법 #1 (Server Authority)**: 이 컨트롤러는 LocalPlayerMovement의 *예측 타이머*를
     /// 시각화할 뿐입니다. 시전 허용/거부 권위는 서버 — 클라 타이머가 어긋나도 서버가 최종 판정.
@@ -25,13 +25,17 @@ namespace Dawnholder.Client.UI
     {
         public static SkillHudController? Instance { get; private set; }
 
+        // 사용자 지시 「70% 투명도」의 메인 해석(goal 만들 것 9).
+        // 사용자가 캡처에서 다르게 보면 이 값만 바꾼다.
+        const float EmptySlotAlpha = 0.3f;
+
         [Header("Q 슬롯 (클래스별 — Mage: Thunderbolt / Knight: Dash)")]
         [FormerlySerializedAs("_qSlotImage")]
         [SerializeField] Image? _qCooldownImage;
         [SerializeField] Image? _qIconImage;
         [SerializeField] TMP_Text? _qCooldownText;
 
-        [Header("E 슬롯 (Mage: Teleport / Knight: 미사용 — 숨김)")]
+        [Header("E 슬롯 (Mage: Teleport / Knight: 미사용 — 빈 칸)")]
         [FormerlySerializedAs("_eSlotImage")]
         [SerializeField] Image? _eCooldownImage;
         [SerializeField] Image? _eIconImage;
@@ -42,6 +46,7 @@ namespace Dawnholder.Client.UI
         [SerializeField] GameObject? _eSlotRoot;
         [SerializeField] TMP_Text? _qKeyText;
         [SerializeField] TMP_Text? _eKeyText;
+        [SerializeField] Image[] _unmappedSlots = System.Array.Empty<Image>();
 
         [Header("스킬 아이콘 매핑 에셋")]
         [SerializeField] SkillIconSet? _iconSet;
@@ -118,14 +123,26 @@ namespace Dawnholder.Client.UI
             _eSkill = e;
             ApplyIcon(_qIconImage, q);
             ApplyIcon(_eIconImage, e);
-            SetSlotVisible(_qSlotRoot, _qCooldownImage, _qCooldownText, _qKeyText, q != SkillId.None, "Q");
-            SetSlotVisible(_eSlotRoot, _eCooldownImage, _eCooldownText, _eKeyText, e != SkillId.None, "E");
+            ApplySlotState(_qSlotRoot, _qCooldownImage, _qCooldownText, _qKeyText, q != SkillId.None, "Q");
+            ApplySlotState(_eSlotRoot, _eCooldownImage, _eCooldownText, _eKeyText, e != SkillId.None, "E");
+            foreach (Image slot in _unmappedSlots)
+            {
+                if (slot == null) continue;
+                Color color = slot.color;
+                color.a = EmptySlotAlpha;
+                slot.color = color;
+            }
         }
 
-        static void SetSlotVisible(GameObject? root, Image? cooldown, TMP_Text? timer, TMP_Text? key,
+        static void ApplySlotState(GameObject? root, Image? cooldown, TMP_Text? timer, TMP_Text? key,
             bool visible, string keyName)
         {
-            if (root != null) root.SetActive(visible);
+            if (root != null && root.TryGetComponent(out Image image))
+            {
+                Color color = image.color;
+                color.a = visible ? 1f : EmptySlotAlpha;
+                image.color = color;
+            }
             if (cooldown != null) cooldown.gameObject.SetActive(visible);
             if (timer != null) timer.gameObject.SetActive(visible);
             if (key != null)
