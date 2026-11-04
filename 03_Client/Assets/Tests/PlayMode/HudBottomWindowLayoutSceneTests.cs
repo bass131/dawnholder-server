@@ -586,7 +586,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 stage + ": empty E slot shows no key or cooldown text");
         }
 
-        // A window over the bars' default place must move them, and the move must not leave more of them covered.
+        // A window over the bars' default place leaves them where they were, and the window is drawn above them.
         static void AssertReactsToCover(Placement idle, Placement open, bool coverRequired)
         {
             Assert.IsTrue(open.Window.HasValue, open.Stage + ": the window is shown");

@@ -171,6 +171,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return EnterReadyTown(CharacterClass.Mage);
             int before = Skills;
             yield return SendSkill(Key.Q, SkillId.Thunderbolt, before + 1);
+            yield return MapEntryPlayFixture.Wait(() => _fixture.Player.CanUseTeleport && !_fixture.Player.IsActionLocked,
+                "H5 mage E waits for the Q action lock to clear", 8);
             yield return SendSkill(Key.E, SkillId.Teleport, before + 2);
         }
 
@@ -182,59 +184,78 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual((int)expected, _fixture.Peer.Last<C_SkillUse>(PacketID.C_SkillUse).skillId, "H5 fixed skill id");
         }
 
-        [UnityTest] public IEnumerator H6_FilledSlotCoversInventory_AndDraggingClearRestoresUse() => OverlapThenClear(1);
-        [UnityTest] public IEnumerator H6_EmptySlotCoversInventory_AndDraggingClearRestoresUse() => OverlapThenClear(3);
-
-        IEnumerator OverlapThenClear(int skillNumber)
+        [UnityTest]
+        public IEnumerator H6_InventoryDraggedUnderTheSkillSlots_SlotsStayDrawnInPlace_AndUncoveredFilledSlotsStillWork()
         {
             yield return EnterReadyTown(CharacterClass.Knight);
-            var snapshot = new S_InventorySnapshot { revision = 1, currency = 1250 };
-            // Literal eight-slot baseline's lower row; every candidate is an occupied usable slot.
-            foreach (int index in new[] { 4, 5, 6, 7 })
-            {
-                typeof(S_InventorySnapshot).GetField($"slot{index}ItemId").SetValue(snapshot, (int)ItemId.CoinPouch);
-                typeof(S_InventorySnapshot).GetField($"slot{index}Count").SetValue(snapshot, 1);
-            }
-            _fixture.Peer.Send(snapshot.Write());
-            yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Status == "서버 확인 완료", "H6 lower-row snapshot", 3);
+            _fixture.Peer.Send(OverlapSnapshot());
+            yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Status == "서버 확인 완료", "H6 valid compact snapshot", 3);
+            Assert.AreEqual(1u, InventoryState.Instance.Revision, "H6 snapshot applied");
+            RectTransform skills = SkillPanel();
+            Vector2 anchoredBefore = skills.anchoredPosition;
+            Rect screenBefore = ScreenUiProbe.ScreenRect(skills);
             yield return InventoryPanelProbe.OpenWithI(_fixture);
             yield return HudOverlapProbe.WaitForHudAndSettledPanel();
+            yield return ScreenUiProbe.WaitForEventSystem();
             var panel = (RectTransform)InventoryPanelProbe.Root.Find("Inventory");
             var grab = (RectTransform)panel.Find("Header/GrabArea");
             Assert.IsNotNull(grab, "fixture: title bar grab area");
             Vector2 from = InventoryPanelProbe.ScreenPoint(grab);
             yield return Drag(from, new Vector2(1, 1) - from);
             yield return HudOverlapProbe.WaitForHudAndSettledPanel();
-            RectTransform skill = Slot(SkillPanel(), skillNumber);
-            Assert.IsNotNull(skill, "H6 chosen skill slot exists");
-            Rect cover = ScreenUiProbe.ScreenRect(skill);
-            int selected = -1;
-            Rect intersection = default;
-            foreach (int index in new[] { 4, 5, 6, 7 })
-            {
-                Rect slot = ScreenUiProbe.ScreenRect((RectTransform)panel.Find("Slot" + (index + 1)));
-                Rect overlap = Rect.MinMaxRect(Mathf.Max(slot.xMin, cover.xMin), Mathf.Max(slot.yMin, cover.yMin),
-                    Mathf.Min(slot.xMax, cover.xMax), Mathf.Min(slot.yMax, cover.yMax));
-                if (overlap.width > 0 && overlap.height > 0) { selected = index; intersection = overlap; break; }
-            }
-            Assert.GreaterOrEqual(selected, 0, $"H6 occupied lower-row slot intersects skill_slot_{skillNumber}; skill={cover}, panel={ScreenUiProbe.ScreenRect(panel)}");
-            Assert.IsTrue(skill.gameObject.activeInHierarchy && Drawn(skill.GetComponent<Image>()), "H6 covering skill artwork is actually shown");
-            Vector2 point = intersection.center;
-            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, point);
-            Assert.IsFalse(InventoryPanelProbe.DetailShown, "H6 covered occupied slot has no detail");
+            RectTransform filled = Slot(skills, 1);
+            Assert.IsNotNull(filled, "H6 filled skill slot exists");
+            Rect panelRect = ScreenUiProbe.ScreenRect(panel);
+            Rect filledRect = ScreenUiProbe.ScreenRect(filled);
+            Assert.Greater(OverlapArea(panelRect, filledRect), 0f,
+                $"H6 inventory intersects skill_slot_1; inventory={panelRect}, skill={filledRect}, Screen={Screen.width}x{Screen.height}");
+
+            Rect skillsRect = ScreenUiProbe.ScreenRect(skills);
+            AssertVector(anchoredBefore, skills.anchoredPosition, "H6 skill panel anchored position stays unchanged");
+            AssertVector(screenBefore.min, skillsRect.min, "H6 skill panel screen origin stays unchanged");
+            AssertVector(screenBefore.size, skillsRect.size, "H6 skill panel screen size stays unchanged");
+            Canvas skillCanvas = skills.GetComponentInParent<Canvas>().rootCanvas;
+            Canvas inventoryCanvas = panel.GetComponentInParent<Canvas>().rootCanvas;
+            Assert.AreEqual(RenderMode.ScreenSpaceOverlay, skillCanvas.renderMode, "H6 skills use an Overlay root canvas");
+            Assert.AreEqual(RenderMode.ScreenSpaceOverlay, inventoryCanvas.renderMode, "H6 inventory uses an Overlay root canvas");
+            Assert.Greater(skillCanvas.sortingOrder, inventoryCanvas.sortingOrder, "H6 skills are drawn above inventory");
+            Assert.IsTrue(Drawn(filled.GetComponent<Image>()), "H6 filled skill artwork is actually drawn");
+            RectTransform empty = Slot(skills, 3);
+            Assert.IsNotNull(empty, "H6 empty skill slot exists");
+            Assert.IsTrue(Drawn(empty.GetComponent<Image>()), "H6 empty skill artwork is actually drawn");
+
+            Vector2 materialPoint = InventoryPanelProbe.SlotPoint(0);
+            Vector2 pouchPoint = InventoryPanelProbe.SlotPoint(1);
+            Assert.IsFalse(skillsRect.Contains(materialPoint), $"H6 material point {materialPoint} is outside skills {skillsRect}");
+            Assert.IsFalse(skillsRect.Contains(pouchPoint), $"H6 pouch point {pouchPoint} is outside skills {skillsRect}");
+            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, materialPoint);
+            Assert.IsTrue(InventoryPanelProbe.DetailShown, "H6 uncovered material slot shows detail while inventory overlaps skills");
+            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, pouchPoint);
+            Assert.IsTrue(InventoryPanelProbe.DetailShown, "H6 uncovered pouch slot shows detail while inventory overlaps skills");
             int before = Uses;
-            yield return InventoryPanelProbe.RightClickAt(_fixture.Mouse, point);
-            yield return _fixture.Frames(6);
-            Assert.AreEqual(before, Uses, "H6 cover blocks C_ItemUse");
-            from = InventoryPanelProbe.ScreenPoint(grab);
-            yield return Drag(from, new Vector2(Screen.width - 1, Screen.height - 1) - from);
-            yield return HudOverlapProbe.WaitForHudAndSettledPanel();
-            point = InventoryPanelProbe.SlotPoint(selected);
-            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, point);
-            Assert.IsTrue(InventoryPanelProbe.DetailShown, "H6 positive control: same occupied slot shows detail after moving clear");
-            yield return InventoryPanelProbe.RightClickAt(_fixture.Mouse, point);
-            yield return MapEntryPlayFixture.Wait(() => Uses == before + 1, "H6 same slot positive use", 3);
-            Assert.AreEqual(before + 1, Uses, "H6 positive control: exactly one use after moving clear");
+            yield return InventoryPanelProbe.RightClickAt(_fixture.Mouse, pouchPoint);
+            yield return MapEntryPlayFixture.Wait(() => Uses == before + 1, "H6 uncovered pouch positive use", 3);
+            Assert.AreEqual(before + 1, Uses, "H6 exactly one use while inventory overlaps skills");
+            C_ItemUse sent = _fixture.Peer.Last<C_ItemUse>(PacketID.C_ItemUse);
+            Assert.AreEqual((int)ItemId.CoinPouch, sent.itemId, "H6 uses the uncovered pouch");
+            Assert.AreEqual(1u, sent.expectedRevision, "H6 use carries the observed snapshot revision");
+        }
+
+        static ArraySegment<byte> OverlapSnapshot()
+        {
+            var packet = new S_InventorySnapshot { revision = 1, currency = 10 };
+            typeof(S_InventorySnapshot).GetField("slot0ItemId").SetValue(packet, (int)ItemId.Material);
+            typeof(S_InventorySnapshot).GetField("slot0Count").SetValue(packet, 2);
+            typeof(S_InventorySnapshot).GetField("slot1ItemId").SetValue(packet, (int)ItemId.CoinPouch);
+            typeof(S_InventorySnapshot).GetField("slot1Count").SetValue(packet, 1);
+            return packet.Write();
+        }
+
+        static float OverlapArea(Rect a, Rect b)
+        {
+            float width = Mathf.Min(a.xMax, b.xMax) - Mathf.Max(a.xMin, b.xMin);
+            float height = Mathf.Min(a.yMax, b.yMax) - Mathf.Max(a.yMin, b.yMin);
+            return width > 0f && height > 0f ? width * height : 0f;
         }
 
         IEnumerator EnterReadyTown(CharacterClass characterClass)

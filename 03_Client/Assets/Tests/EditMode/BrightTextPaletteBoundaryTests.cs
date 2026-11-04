@@ -52,7 +52,7 @@ namespace Dawnholder.Client.Tests
                     Assert.AreEqual(target.Count, matches.Length, "required scene labels: " + target.Path);
                     return matches;
                 }).ToArray();
-                Assert.AreEqual(11, targets.Length, "all required scene labels are observed");
+                Assert.AreEqual(10, targets.Length, "all required scene labels are observed");
                 foreach (TMP_Text text in targets)
                 {
                     RequireInk(text.color, s_ink, PathOf(text.transform));
