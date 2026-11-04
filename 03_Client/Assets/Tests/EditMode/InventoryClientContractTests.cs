@@ -1,4 +1,5 @@
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -22,9 +23,9 @@ namespace Dawnholder.Client.Tests
     {
         static readonly Dictionary<string, Func<byte[]>> s_invalidSnapshots = new()
         {
-            ["length 75"] = () => InventoryWire.Resized(NewerValidSnapshot(), 75),
-            ["length 77"] = () => InventoryWire.Resized(NewerValidSnapshot(), 77),
-            ["header size 80 on 76 bytes"] = () => InventoryWire.WithHeaderSize(NewerValidSnapshot(), 80),
+            ["length 203"] = () => InventoryWire.Resized(NewerValidSnapshot(), 203),
+            ["length 205"] = () => InventoryWire.Resized(NewerValidSnapshot(), 205),
+            ["header size 208 on 204 bytes"] = () => InventoryWire.WithHeaderSize(NewerValidSnapshot(), 208),
             ["currency -1"] = () => InventoryWire.Snapshot(2, -1, (1, 2)),
             ["currency 1000000001"] = () => InventoryWire.Snapshot(2, 1_000_000_001, (1, 2)),
             ["count 100"] = () => InventoryWire.Snapshot(2, 20, (1, 100)),
@@ -223,9 +224,9 @@ namespace Dawnholder.Client.Tests
 
         // R2: a malformed snapshot with a newer revision is rejected as a whole, without an exception, a
         // partial update or default values. The newer revision isolates validation from the revision guard.
-        [TestCase("length 75")]
-        [TestCase("length 77")]
-        [TestCase("header size 80 on 76 bytes")]
+        [TestCase("length 203")]
+        [TestCase("length 205")]
+        [TestCase("header size 208 on 204 bytes")]
         [TestCase("currency -1")]
         [TestCase("currency 1000000001")]
         [TestCase("count 100")]
@@ -248,6 +249,73 @@ namespace Dawnholder.Client.Tests
             DeliverAllowingDiagnostics(session, s_invalidSnapshots[invalid](), "R2");
 
             baseline.AssertShownBy(mirror, $"R2 rejected snapshot ({invalid}) keeps the previous mirror");
+        }
+
+        [Test]
+        public void Snapshot204Bytes_AppliesAll24SlotsOnTheMainDrain()
+        {
+            var session = Session();
+            InventoryMirrorProbe mirror = _mirror.Require();
+            var received = new ServerInventory(3, 30, (ItemId.Material, 7), (ItemId.CoinPouch, 9));
+            byte[] wire = received.Wire();
+            Assert.AreEqual(204, wire.Length, "v23 fixed wire table");
+
+            Deliver(session, wire);
+            Assert.IsFalse(mirror.HasSnapshot, "receipt waits for the main drain");
+            _queue.Drain();
+
+            received.AssertShownBy(mirror, "v23 includes empty slots 2..23");
+            Assert.AreEqual(ItemId.None, mirror.Slot(23).ItemId);
+            Assert.AreEqual(0, mirror.Slot(23).Count);
+        }
+
+        [TestCase(76, true)]
+        [TestCase(204, false)]
+        public void Legacy76BytesOrMismatchedHeader_PreservesThePreviousSnapshot(int length, bool headerMatchesLength)
+        {
+            var session = Session();
+            InventoryMirrorProbe mirror = _mirror.Require();
+            var baseline = new ServerInventory(1, 10, (ItemId.Material, 1));
+            Deliver(session, baseline.Wire());
+            _queue.Drain();
+
+            byte[] wire = InventoryWire.Resized(NewerValidSnapshot(), length);
+            if (!headerMatchesLength) wire = InventoryWire.WithHeaderSize(wire, 76);
+            DeliverAllowingDiagnostics(session, wire, "v23 rejects legacy length or mismatched header");
+
+            baseline.AssertShownBy(mirror, "invalid frame leaves the full mirror unchanged");
+        }
+
+        [TestCase(8)]
+        [TestCase(9)]
+        [TestCase(10)]
+        [TestCase(11)]
+        [TestCase(12)]
+        [TestCase(13)]
+        [TestCase(14)]
+        [TestCase(15)]
+        [TestCase(16)]
+        [TestCase(17)]
+        [TestCase(18)]
+        [TestCase(19)]
+        [TestCase(20)]
+        [TestCase(21)]
+        [TestCase(22)]
+        [TestCase(23)]
+        public void InvalidCountInAppendedSlot_PreservesThePreviousSnapshot(int slot)
+        {
+            var session = Session();
+            InventoryMirrorProbe mirror = _mirror.Require();
+            var baseline = new ServerInventory(1, 10, (ItemId.Material, 1));
+            Deliver(session, baseline.Wire());
+            _queue.Drain();
+
+            byte[] wire = NewerValidSnapshot();
+            // The v23 wire table puts each count at byte16 + slot*8; empty means item=0,count=0.
+            BinaryPrimitives.WriteInt32LittleEndian(wire.AsSpan(16 + (slot * 8)), 1);
+            DeliverAllowingDiagnostics(session, wire, $"v23 validates appended slot {slot}");
+
+            baseline.AssertShownBy(mirror, "invalid appended slot cannot partially apply");
         }
 
         // R2 / INV-19: a delayed lower revision is ignored, the same revision neither repeats nor flips shown
@@ -287,7 +355,7 @@ namespace Dawnholder.Client.Tests
             InventoryMirrorProbe mirror = _mirror.Require();
             var received = new ServerInventory(3, 30, (ItemId.Material, 3));
             byte[] laterBytes = new ServerInventory(4, 40, (ItemId.CoinPouch, 4)).Wire();
-            byte[] receiveBuffer = new byte[160];
+            byte[] receiveBuffer = new byte[InventoryWire.SnapshotLength + 80];
             int offset = 37;
             for (int i = 0; i < receiveBuffer.Length; i++) receiveBuffer[i] = 0xEE;
             Buffer.BlockCopy(received.Wire(), 0, receiveBuffer, offset, InventoryWire.SnapshotLength);

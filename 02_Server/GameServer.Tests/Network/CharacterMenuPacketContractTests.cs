@@ -21,13 +21,13 @@ public sealed class CharacterMenuPacketContractTests
     public static TheoryData<string> FrameNames => Names(Frames.Select(frame => frame.Label));
 
     [Fact]
-    public void ProtocolVersion_IsTwentyTwo()
+    public void ProtocolVersion_IsTwentyThree()
     {
         Type type = RequireSharedType("ProtocolVersion");
         FieldInfo field = RequireField(type, "Current", BindingFlags.Public | BindingFlags.Static);
         Assert.True(field.FieldType == typeof(ushort), $"{Requirement}: ProtocolVersion.Current must be ushort");
-        Assert.True(Equals((ushort)22, field.GetValue(null)),
-            $"{Requirement}: ProtocolVersion.Current must be22, actual={field.GetValue(null)}");
+        Assert.True(Equals((ushort)23, field.GetValue(null)),
+            $"{Requirement}: ProtocolVersion.Current must be23, actual={field.GetValue(null)}");
     }
 
     [Fact]
