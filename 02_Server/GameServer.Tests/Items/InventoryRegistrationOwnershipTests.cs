@@ -180,10 +180,10 @@ public sealed class InventoryRegistrationOwnershipTests : IDisposable
     }
 
     // Snapshot oracle from the PR1 acceptance wire table: header 4 bytes, uint revision, int currency,
-    // then eight (int itemId, int count) slots in ascending ItemId order, empty slots 0/0.
+    // then 24 (int itemId, int count) slots in ascending ItemId order, empty slots 0/0.
     static void AssertSnapshot(byte[] packet, uint revision, int currency, params (int ItemId, int Count)[] occupied)
     {
-        const int slotCount = 8;
+        const int slotCount = 24;
         (int ItemId, int Count)[] expectedSlots = occupied
             .Concat(Enumerable.Repeat((0, 0), slotCount - occupied.Length))
             .ToArray();
@@ -192,7 +192,7 @@ public sealed class InventoryRegistrationOwnershipTests : IDisposable
                 BinaryPrimitives.ReadInt32LittleEndian(packet.AsSpan(16 + (i * 8), 4))))
             .ToArray();
 
-        Assert.Equal(76, packet.Length);
+        Assert.Equal(204, packet.Length);
         Assert.Equal(36, BinaryPrimitives.ReadUInt16LittleEndian(packet.AsSpan(2, 2)));
         Assert.Equal(revision, BinaryPrimitives.ReadUInt32LittleEndian(packet.AsSpan(4, 4)));
         Assert.Equal(currency, BinaryPrimitives.ReadInt32LittleEndian(packet.AsSpan(8, 4)));

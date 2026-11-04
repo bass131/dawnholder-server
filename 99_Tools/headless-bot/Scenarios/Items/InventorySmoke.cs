@@ -290,9 +290,9 @@ public class InventorySmoke
         internal const ushort ItemUseResultId = 38;
         internal const byte Success = 0;
         internal const byte Stale = 1;
-        const int SnapshotLength = 76;
+        const int SnapshotLength = 204;
         const int UseResultLength = 13;
-        const int SlotCount = 8;
+        const int SlotCount = 24;
 
         internal static byte[] InventoryRequest() => Frame(InventoryRequestId, new byte[] { 0 });
 

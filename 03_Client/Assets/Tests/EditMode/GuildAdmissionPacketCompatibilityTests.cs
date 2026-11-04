@@ -78,7 +78,7 @@ namespace Dawnholder.Client.Tests
                 26, 0, 47, 0, 2, 1, 4, 3, 2, 1,
                 212, 195, 178, 161, 68, 51, 34, 17, 8, 7, 6, 5, 4, 3, 2, 1,
             };
-            Assert.AreEqual(22, ProtocolVersion.Current);
+            Assert.AreEqual(23, ProtocolVersion.Current);
             Assert.AreEqual(76, snapshot.Length);
             byte[] chunk = admission.Concat(snapshot).Concat(result).ToArray();
             object guild = GuildClientProduct.State(_session);

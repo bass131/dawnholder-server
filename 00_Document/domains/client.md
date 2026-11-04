@@ -37,7 +37,7 @@ EditMode 시험은 view를 직접 만들어 칸 줄·생성 화면·잠금과 �
 
 ## 인벤토리 표시와 요청 수명
 
-[InventorySnapshotHandler](../../03_Client/Assets/Scripts/Network/Handlers/Inventory/InventorySnapshotHandler.cs)는 v17의 고정 길이·header·ID와 8슬롯의 상한·compact·정렬을 확인하고 수신 버퍼가 재사용되기 전에 값을 캡처한다. 현재 연결의 `EnqueueApply`를 통과한 snapshot만 [InventorySnapshotState](../../03_Client/Assets/Scripts/State/InventorySnapshotState.cs)의 재화·슬롯·revision을 바꾼다. 초기 미동기화와 유효한 revision 0을 구분하며, 낮은 revision과 같은 revision의 다른 값은 거부하고 동일 snapshot은 통지를 반복하지 않는다.
+[InventorySnapshotHandler](../../03_Client/Assets/Scripts/Network/Handlers/Inventory/InventorySnapshotHandler.cs)는 v23의 고정 길이 204바이트·header·ID와 24슬롯의 상한·compact·정렬을 확인하고 수신 버퍼가 재사용되기 전에 값을 캡처한다. 현재 연결의 `EnqueueApply`를 통과한 snapshot만 [InventorySnapshotState](../../03_Client/Assets/Scripts/State/InventorySnapshotState.cs)의 재화·슬롯·revision을 바꾼다. 초기 미동기화와 유효한 revision 0을 구분하며, 낮은 revision과 같은 revision의 다른 값은 거부하고 동일 snapshot은 통지를 반복하지 않는다.
 
 [InventoryState](../../03_Client/Assets/Scripts/State/InventoryState.cs)는 맵 사이에 유지되는 root MonoBehaviour다. CombatBootstrap 또는 먼저 도착한 유효 snapshot이 생성하고, NetworkService의 연결 종료 정리가 파티·퀘스트·인벤토리의 모든 값을 비운 뒤 관찰자에게 통지한다. 사용 결과·대기 작업은 각 UnityClientSession의 [InventoryRequestController](../../03_Client/Assets/Scripts/Network/InventoryRequestController.cs)가 소유하고 세션 cleanup에서 폐기한다. 옛 연결의 packet·지연 callback·늦은 종료는 새 미러를 변경하지 않는다.
 

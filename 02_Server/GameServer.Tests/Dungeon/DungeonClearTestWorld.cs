@@ -91,6 +91,10 @@ internal sealed class DungeonClearTestWorld : IDisposable
         {
             (s.slot0ItemId, s.slot0Count), (s.slot1ItemId, s.slot1Count), (s.slot2ItemId, s.slot2Count), (s.slot3ItemId, s.slot3Count),
             (s.slot4ItemId, s.slot4Count), (s.slot5ItemId, s.slot5Count), (s.slot6ItemId, s.slot6Count), (s.slot7ItemId, s.slot7Count),
+            (s.slot8ItemId, s.slot8Count), (s.slot9ItemId, s.slot9Count), (s.slot10ItemId, s.slot10Count), (s.slot11ItemId, s.slot11Count),
+            (s.slot12ItemId, s.slot12Count), (s.slot13ItemId, s.slot13Count), (s.slot14ItemId, s.slot14Count), (s.slot15ItemId, s.slot15Count),
+            (s.slot16ItemId, s.slot16Count), (s.slot17ItemId, s.slot17Count), (s.slot18ItemId, s.slot18Count), (s.slot19ItemId, s.slot19Count),
+            (s.slot20ItemId, s.slot20Count), (s.slot21ItemId, s.slot21Count), (s.slot22ItemId, s.slot22Count), (s.slot23ItemId, s.slot23Count),
         };
         return new InventoryView(
             s.revision,
