@@ -2,10 +2,31 @@
 
 인벤토리 칸 수를 8에서 24로 늘린다. 서버가 보내는 인벤토리 snapshot(36번)과 공유 칸 수 상수를 24로 바꾸고, 클라가 받는 쪽까지 같은 PR에서 맞춘다. 화면 격자(4열 × 6줄)는 Art가 만든다.
 
-**현재 상태(2026-11-04 20:41 KST):** 2차 좁은 재검증(verify-02)은 NOT PASS였다(#I24-V02 T6 1건, #I24-V03 길드 창 시험 11건). 두 결함은 처분됐다. #I24-V02는 사용자 결정 116 A로 Art PR2가 고친다. #I24-V03은 main 기준선 PlayMode에서 같은 11건이 같게 실패해 기존 실패로 분류했다. PR을 연다. 아래 「11-04 기준선 결과」부터 읽는다.
+**현재 상태(2026-11-04 22:13 KST):** PR295가 병합됐다(merge commit `fbf00de9`, 2026-11-04T12:13:47Z). 종료 Gardener는 미처분 제품 차단 0, 정리 후보 2개(둘 다 기존 BACKLOG 행의 추가 관측)로 끝났다. 종료 기록 PR은 PR296이다. 그 문서 실사 1차는 NOT PASS(낮은 문서 결함 CLOSE-01·02)였고 리드가 고쳤다. 남은 것은 수정본 재실사, PR296 병합, 종료 점검이다. 아래 「11-04 종료 기록 실사 1차」, 「11-04 종료 Gardener」, 「결과와 남은 위험」, 「종료 점검 준비」부터 읽는다.
 
 ## 재개 지점
 
+- **11-04 종료 기록 실사 1차(2026-11-04T12:57Z~13:10Z):** 신규 `[Core 검증자]` GPT-6-Astra high(11-02 사용자 결정, 첫 화면 Codex v0.166.0, backend unknown)가 `fbf00de9..5302ddb5`를 문서 실사했다. 판정은 **NOT PASS**다.
+  - 계약 `closeout-01/review-contract-v1.md`(sha256 `b65d0ac23bf42d72899db0b2356384011450980020b287dfd9bde31e5f58620d`), 입력 41파일 `closeout-01/review-inputs.json`. pane `term_5eec9d5e-524f-45be-9511-409ff3a87851`, Task `task_be20fc5aabf2`, Dispatch `ctx_05f5b3c4e002`다. 기동 기록은 `closeout-01/review-launch-record-v1.md`다.
+  - 판정 `closeout-01/reviewer/verdict-v1.md`(19,774 B, sha256 `f52c0e8a85382bdb2727412c811df34377609ccbb0ff264428d43bd707cb5c4b`), worker_done `msg_0d6059de9d64`.
+  - CLOSE-01: 진척 단계 8번이 PR 번호 없이 「종료 기록 병합」이었고, 9번 이름에 내부 약어 `R-8`이 있었다. 리드는 PR296을 먼저 만들고 8번을 「PR296 병합」으로, 9번을 「종료 점검」으로 고쳤다. R-8은 설명의 링크로 옮겼다.
+  - CLOSE-02: 아래 「11-04 종료 Gardener」의 메모 시각이 시계 조회 시각(12:45:38Z)을 메모를 쓴 시각처럼 적었다. 실제 최초 Write 성공은 12:46:24.457Z다. 그 문장과 BACKLOG `lead-direct-write-context-memo` 출처를 고쳤고, 메모 `closeout-01/closeout-context-01.md`에는 원 줄을 두고 끝에 정정 절을 더했다.
+  - 메모 선행 자체는 확인됐다. 검증자가 메모 파일 시각(12:51:27Z)을 보고 공식 질문 `msg_895213bd4f63`을 보냈고, 리드는 대화 기록 원시 추출 `closeout-01/memo-write-evidence-v2/`로 답했다(`msg_c72e2bcdd94f`). 첫 추출 v1은 exit 6으로 실패해 그대로 남겼다.
+  - 수정 메모는 `closeout-01/fix-01/lead-context-before-v1.md`다. 비차단 관찰 O-01(상태 줄의 「다음 계획 후보」 안내)은 판정 결함이 아니라서 이번 수정에 넣지 않았다.
+  - 정리: worker-release `retained`(external_terminal), 빈 프롬프트 확인 뒤 pane을 닫았다(ptyKilled true, `closeout-01/review-close-v1.json`).
+- **11-04 종료 Gardener(2026-11-04T12:25Z~12:43Z):** 신규 `[Core Sol]` GPT-6.1-Sol max(사용자 결정 101 A, 첫 화면 Codex v0.166.0, backend unknown)가 읽기 전용으로 점검했다. 계약은 `closeout-01/gardener-contract-v1.md`(sha256 `feae46b62fc56461fea398a9c63e1b523f516f9136f8dfb8fa8072234a87f8f3`)이고, 입력 33파일을 hash로 고정했다(`closeout-01/gardener-inputs.json`).
+  - pane `term_b69c62de-85eb-4a22-917e-898707342a09`, Task `task_0284309bc5bf`, Dispatch `ctx_70acd655d16e`다. worker_done은 `msg_dddd379091f0`, 쓰기 종료는 12:40:50Z다. 기동 기록은 `closeout-01/gardener-launch-record-v1.md`다.
+  - 보고서는 이 폴더의 [gardener.md](gardener.md)다. 원본 `closeout-01/gardener/context-gardener-report.md`와 bytes가 같다(38,374 B, sha256 `d7aca3cc8989f5dd2931d109a3ec8ac86403c056793cfd4b31072863b743a67e`, `closeout-01/gardener-md-copy-01.txt`).
+  - 결론: 미처분 제품 차단 0이다. verify-01 계약 범위 PASS, verify-02 NOT PASS, 기준선 실행 전용의 지위를 그대로 보존했다. 정리 후보 2개는 아래 「다음 계획 후보」의 BACKLOG 추가 관측으로 옮겼다.
+  - 리드 반환 G-01(진척 단계 14개, 상한 12 초과): 완료 단계를 묶어 10개로 고쳤다(「진척 단계」).
+  - 정리: worker-release `retained`(external_terminal), 빈 프롬프트 확인 뒤 pane을 닫았다(ptyKilled true, `closeout-01/gardener-close-v1.json`).
+  - 리드 메모 선행 이탈(자기 신고): 위 「11-04 병합 결과」의 로컬 결과 기록 commit `fef83844`(goal·CURRENT)는 종료 작업 맥락 메모 없이 썼다. 종료 맥락 메모는 12:46:24Z에야 처음 썼다(최초 Write 성공 12:46:24.457Z, `closeout-01/closeout-context-01.md`). 메모 머리의 12:45:38Z는 그 직전의 시계 조회 시각이다(`closeout-01/memo-write-evidence-v2/timeline.txt`). 이 시각 문구는 위 「11-04 종료 기록 실사 1차」의 CLOSE-02로 고쳤다. 메인 처분 A(`msg_9a38be78866f`, 12:47Z 수신)로 commit `fef83844` 하나만 한정 인정하며 메모 소급은 0이다. BACKLOG `lead-direct-write-context-memo`의 여섯 번째 관측으로 적었다.
+- **11-04 병합 결과(2026-11-04T12:13:47Z):** PR295가 병합됐다. 메인 알림은 `msg_c9f0b0c0f562`(12:14:45Z)다.
+  - 메인이 R-2 표본을 본 뒤 사용자 승인 줄 「병합 승인: PR295 head 082f71b660d2851186bfb9f2aed71abf1cf150f2」(메인 pane 제출, 메인 알림의 사본)을 받았다. 메인이 head를 다시 대조하고 단독 명령으로 병합했다.
+  - merge commit `fbf00de9a57fb26baaef89c12daa7d84ace92631`이다. head `082f71b6`, base `a888cd35`이고 state MERGED다(`closeout-01/pr295-view-merged-01.json`).
+  - CI는 4건 모두 SUCCESS였다. 시작 11:44:35Z, 마지막 끝 12:02:23Z(dotnet-tests)다(`pr/pr-checks-02.json`). PR 준비 보고는 `msg_3461ddaf5f97`이다(`pr/send-pr-ready-main-01.json`).
+  - 종료 기록은 branch `docs/inventory-24-slots-closeout-20261104`(main `fbf00de9` 위)에서 쓴다.
+  - **(끝남) 당시 다음 첫 일:** 종료 Gardener를 연다. 모델은 신규 Codex Sol max다(사용자 결정 101 A). 보고서 한 파일을 받아 `gardener.md`로 넣고 종료 기록 PR 하나를 연다. 종료 점검과 R-8은 메인이 판단한다. 그 뒤 메인 지시대로 앞 goal branch로 돌아간다. 결과는 위 「11-04 종료 Gardener」다.
 - **11-04 기준선 결과(#I24-V03 처분 끝, 2026-11-04T11:41Z):** 메인 결정대로 main `a888cd35` PlayMode 전체를 1회 돌았다. 계약은 `baseline-playmode-01/contract-v1.md`(sha256 `acd72597a6bea6140e391668b1a35a654d07139299c2a686fd2a2fe03a9426b0`, 실행 전용)다.
   - 작업자: 신규 `[Core 구현 Astra]` GPT-6-Astra high(첫 화면 Codex v0.166.0, backend unknown)다. pane `term_3f30c6b4-ba88-4b89-8b39-b7ed00d5b474`, Task `task_c9ac613a1c1a`, Dispatch `ctx_1cabb09d22eb`다. worker_done은 `msg_221830df96ba`, 보고는 `baseline-playmode-01/report.md`(sha256 `aaa0f25df663295f8ad0ada2e42ac997dabcefb27d0da63793e7ba0f15fd4b6e`)다.
   - 창(메인 배정 `msg_cace3ce14381`): 11:22:03Z~11:37:07Z였다.
@@ -20,7 +41,7 @@
   - drift: 허용된 두 경로(ProjectSettings SENTIS 줄, MinimapRT 줄 끝)만 작업자가 복원했다(`raw/b-drift.patch`).
   - merge-tree(11:38:28Z): 원격 기준 `a888cd35`는 HEAD의 조상이다. 충돌 없이 HEAD tree와 같았다(`baseline-playmode-01/lead-merge-tree-01.txt`).
   - 정리: worker-release `retained`(external_terminal) 뒤 빈 프롬프트를 보고 pane을 닫았다(ptyKilled true).
-  - **다음 첫 일:** 이 기록을 commit·push하고 PR을 연다(본문 `pr/pr-body-v2.md`). CI를 본 뒤 메인에 PR 준비 보고를 한다. 메인 R-2 표본은 그 보고 뒤 메인이 한다.
+  - **그 뒤(끝남):** 이 기록을 commit `082f71b6`으로 push하고 PR295를 열었다(본문 `pr/pr-body-v3.md`). CI 4건 SUCCESS 뒤 메인에 PR 준비 보고 `msg_3461ddaf5f97`을 보냈다. 결과는 위 「11-04 병합 결과」다.
 - **11-04 재진입(2026-11-04T11:02Z, 메인 `msg_76097190e071`):** 리드는 같은 대화를 이었다(새 handle `term_27ba8dab-5127-4da4-a6e9-a7a5b3985f66`). Run을 `run-use`로 다시 묶었다(`reentry-1104/run-use-01.json`). 새 메인 handle은 `term_751a1f26-7aac-4a33-8a57-a3d4cec8a3d4`다.
   - 처분: #I24-V02는 사용자 결정 116 A로 Core PR에서 고치지 않는다. #I24-V03은 메인 결정으로 main `a888cd35` 기준선 PlayMode 1회를 돈다(「적용 중인 메인 결정」).
   - 기준선 실행 계약을 쓰고 새 `[Core 구현 Astra]`(Astra high)를 열어 창을 청했다. 결과는 위 「11-04 기준선 결과」다.
@@ -105,7 +126,7 @@
   - Windows Plugins `Shared.dll`은 아직 v22 그대로다(sha256 `b8b2828e27a1a1667a2b5f703a2c7a97822f70fc47ef974c9f3694dcb5a4ecd3`). `.meta`도 그대로다(`7c6ab891ee57e1a71e200cbea3c27cee36de97404e1d6303711daf59b3be682b`). 그래서 지금 core-active로 Unity를 열면 소스와 DLL 판이 어긋난다.
   - 2단계 실행: 메모리 확인 통과(18:26:58Z) → Windows 생성기 loader 실패 1회(18:26:59Z 종료, 생성물 변경 0) → WSL sync·생성기·GenPackets 복사(36번 밖 차이 0, 칸 필드 48) → `sync-wsl.sh build` exit 0(wrapper 종료 18:36:47.8104288Z) → 정리 지시로 멈춤.
   - 남은 프로세스 0: 구현자 `impl-01/raw/process-inspect.out`(18:38:20Z), 리드 `lead-wrapup-process-check-01.txt`(18:39:37Z, Windows dotnet·Unity·Player 0, WSL dotnet·서버·봇 0, 7777 listen 0).
-- **열린 결정:** #I24-V02·#I24-V03의 처분은 11-04에 끝났다(위 「11-04 기준선 결과」). 남은 것은 PR 병합의 사용자 승인 하나다. 적용 중인 결정은 아래 「적용 중인 사용자 결정」과 「적용 중인 메인 결정」이다(97 A `msg_3ce270803253`, 92 B·93 A `msg_e8defeeffd1f`, 범위 승인 `msg_3dfd5496b065`, 99 C 정리 `msg_6547cf711563`).
+- **열린 결정:** #I24-V02·#I24-V03의 처분은 11-04에 끝났다(위 「11-04 기준선 결과」). PR295 병합 승인도 받았고 병합됐다(위 「11-04 병합 결과」). 열린 사용자 결정은 없다. 적용 중인 결정은 아래 「적용 중인 사용자 결정」과 「적용 중인 메인 결정」이다(97 A `msg_3ce270803253`, 92 B·93 A `msg_e8defeeffd1f`, 범위 승인 `msg_3dfd5496b065`, 99 C 정리 `msg_6547cf711563`).
 - impl-01 기록: 계약 `impl-01/contract-v1.md`, 보충 `impl-01/lead-reply-sdk-v1.txt`(리드 답 `msg_b5e3dcc067a6`), 정리 지시 `impl-01/lead-stop-v1.txt`(`msg_27fc8d686ef9`), 1단계 요약 `impl-01/stage1-summary.md`, 원시 출력 `impl-01/raw/`.
   - 부분 보고: worker_done `msg_193a4c831f08`(18:44:49Z, outcome `failed`는 사용자 정리에 따른 부분 완료), `impl-01/report.md`(sha256 `deb3fe2ce6dadabd313e127def0e6fc36e58c5133a225833440b9e2226efa3be`). 리드의 원천 대조는 다음 세션 첫 일에 함께 한다.
   - 다음 세션 확인거리: `git diff --check`가 GenPackets.cs에서 trailing whitespace 64건을 낸다. 리드 grep 기준 HEAD 393줄 → 작업본 457줄로, 생성 템플릿의 기존 성질이 새 칸 16개만큼 는 것이다. 수기 파일의 diff --check는 0이다. 처리 방침은 독립 검증 전에 정한다.
@@ -117,8 +138,8 @@
   - 창 8 첫 단계로 작업자가 `sync-wsl.sh build` 1회를 돈다. 끝나면 이 branch로 돌아온다. 바꾸는 동안 core-active Unity Editor는 없어야 한다.
   - 근거: 02_Server·98_Shared는 f5adcf31·58c8d4cb·8b60f725 사이 차이 0줄이다. profile은 core-active `logs/windows-sql-8256bcde…/`에 있다.
 - Art 리드(`run:run_6ae742140ce9`)와 격자 PR 순서를 조율한다. 격자 goal은 Art PR5가 들어가고 R-8 교체가 끝난 뒤 새 Art 리드가 연다. Core PR이 먼저 준비되면 준비 상태로 기다린다(메인 `msg_3dfd5496b065` 2항).
-- 앞 goal(`2026-10-31-db-persistence-demo-build`)은 리허설 대기로 멈춰 있다. 그 branch의 최신 로컬 커밋은 `ad5d34424c606e898cf01069175723b924e8f6cd`이고 원격에 올리지 않았다. 이 goal이 끝나면 그 branch로 돌아가 이 PR이 들어간 기준 branch를 합친다.
-- Run `run_ee7c33fd5873`, 리드 `[Core 리드 Opus]`, Claude 대화 ID `396a3a4c-061f-46a4-94cb-a8cbce46f7a0`. branch `feat/inventory-24-slots-20261101`(base `58c8d4cb9b8a34d66389d5573797e07564c6fa7a`, 11-04 원격 백업 push로 upstream `origin/feat/inventory-24-slots-20261101`이 있다). 근거 폴더는 `.backups/verification/2026-11-01-inventory-24-slots/`다.
+- 앞 goal(`2026-10-31-db-persistence-demo-build`)은 리허설 대기로 멈춰 있다. 그 branch의 최신 로컬 커밋은 `ad5d34424c606e898cf01069175723b924e8f6cd`이고 원격에 올리지 않았다. 이 goal의 종료 기록 PR을 연 뒤 그 branch로 돌아가 PR295가 들어간 main `fbf00de9`를 합친다(메인 `msg_c9f0b0c0f562`).
+- Run `run_ee7c33fd5873`, 리드 `[Core 리드 Opus]`, Claude 대화 ID `396a3a4c-061f-46a4-94cb-a8cbce46f7a0`. branch `feat/inventory-24-slots-20261101`(base `58c8d4cb9b8a34d66389d5573797e07564c6fa7a`, 11-04 원격 백업 push로 upstream `origin/feat/inventory-24-slots-20261101`이 생겼고, PR295 병합 때 원격 branch는 지워졌다(12:21:21Z `git ls-remote` 빈 출력, `closeout-01/ls-remote-pr-branch-01.txt`). 병합 뒤 종료 기록 branch는 `docs/inventory-24-slots-closeout-20261104`(base `fbf00de9`)다. 근거 폴더는 `.backups/verification/2026-11-01-inventory-24-slots/`다.
 
 ## 적용 중인 사용자 결정
 
@@ -340,14 +361,55 @@
 - 검증 등급 **강**. 프로토콜·공유 DLL·서버 경제에 닿는다. 줄 수 어림은 수기 제품 약 60줄, 생성물 약 100줄, 시험 약 10~15파일이다(어림, 미측정).
 - 구현자 신규 `[Core Sol]`, 독립 검증자 신규 `[Core 검증자]` Astra xhigh. R-7 비해당.
 
+## 결과와 남은 위험
+
+PR295 병합본(main `fbf00de9`) 기준이다. 근거 경로는 모두 `.backups/verification/2026-11-01-inventory-24-slots/` 아래다.
+
+| 완료조건 | 결과 | 근거 |
+|---|---|---|
+| 1. 36번 204바이트·칸 0~23, 서버 시험 전부 통과, 고친 기존 시험 분류 | 충족. 서버 2569/0/28이고 새 시험 17건이 이름별로 Passed다. 봇 snapshot은 204바이트·24쌍이다 | `verify-02/verdict.md`, `verify-02/raw/v1-server-analysis.json`. 고친 기존 시험 표는 `verify-01/verdict.md` 95~101행과 `impl-01/report.md` 「기존 시험 변경과 실패 분류」 |
+| 2. 클라 204바이트 반영, EditMode·관련 PlayMode 통과 | EditMode 1822/1822는 충족이다. PlayMode는 274건 중 실패 12건이 남았고, 고치지 않고 결정으로 처분했다. T6 1건은 116 A로 Art PR2가 고친다. 길드 창 11건은 main 기준선에서도 같게 실패한 기존 실패다 | `verify-02/raw/v2-playmode/results.xml`, `baseline-playmode-01/raw/baseline-comparison.json`, `baseline-playmode-01/lead-sample-compare-01.txt` |
+| 3. v22 클라 handshake 거부 | 충족. 서버 시험 `ProtocolVersion_IsTwentyThree_AndTheHandshakeRejectsTwentyTwo`가 통과했다 | `verify-01/verdict.md` 47행 |
+| 4. 실제 경로 | 충족(실행한 범위 한정). 봇 `InventorySmoke` PASS 1회다. Unity 클라 실서버 lane 1/1에서 version 23 handshake와 640×480의 24칸 배치를 봤다. 이 lane은 204바이트 길이를 직접 로그로 남기지 않았고 스크린샷도 없다. 4×6 상호작용 전체는 T6 실패 때문에 통과로 합치지 않는다(위 2의 처분) | `verify-02/verdict.md` 34·136행, `verify-02/raw/v3-playmode/` |
+| 5. GenPackets LF·DLL bytes 재현 | 충족. 커밋한 소스로 다시 빌드한 DLL과 Plugins DLL의 bytes가 같았다 | `verify-01/verdict.md`, `verify-02/verdict.md` |
+| 6. 신규 검증자의 강 등급 독립 검증 통과 | 부분 충족. verify-01은 계약 범위 통과였다. Art 격자 병합본의 verify-02는 NOT PASS였다. 두 결함은 수정 대신 116 A와 메인 기준선 결정으로 처분했고, 처분 뒤 새 PASS 판정은 없다 | `verify-01/verdict.md`, `verify-02/verdict.md`, 「적용 중인 메인 결정」 |
+
+남은 위험:
+
+- main에서 T6 1건이 Art PR2 병합 전까지 실패로 남는다(116 A).
+- 길드 창 시험 11건은 PR295 전부터 실패했다. BACKLOG `guild-ink-undetermined-failures` 행과 같은 시험 class다. 이번 goal은 고치지 않았다.
+- 프로토콜이 v23이라 v22 클라 빌드는 새 서버에 붙지 못한다. 녹화 빌드는 Art PR2까지 들어간 main으로 다시 만든다(병합 순서 결정).
+- 앞 goal branch `ad5d3442`는 로컬에만 있다.
+
+## 다음 계획 후보
+
+새 goal은 자동으로 시작하지 않는다. 아래는 이관이며 채택·구현이 아니다.
+
+- Gardener 후보 1, 위임 계약에 고른 규칙 절의 전문이 빠진 일(impl-01~04 계약 4건, verify-01 #I24-V02): 기존 BACKLOG `contract-context-check`의 추가 관측이다. 검사화 후보는 발행 전 절 전문 추출·포함 대조 helper다. 겹치는 `delegation-contract-preflight`와의 범위 대조는 Rules·메인 몫이다.
+- Gardener 후보 2, 검증·실행 harness의 native 인자·프로세스 신원·빈 출력 처리 복구(서로 다른 원인 묶음 4건: impl-02 종료 조회, verify-02 logger·PID 세대와 빈 status·초기 빈 stdout): 기존 BACKLOG `verification-harness-powershell-helper`의 추가 관측이다.
+- 리드 메모 선행 이탈(로컬 결과 기록 commit `fef83844`, 자기 신고): 기존 BACKLOG `lead-direct-write-context-memo`의 여섯 번째 관측이다. 정본 반영은 Rules다.
+- 드래그 시험 T6(#I24-V02): 사용자 결정 116 A로 Art PR2가 고친다(위 「2026-11-04 결정 116 A」). Art 리드 몫이며 이 goal의 후속이 아니다. 병합 순서의 앞 PR인 Art PR1의 goal은 [인벤토리 아이콘 격자](../2026-11-01-inventory-icon-grid/goal.md)다.
+- 길드 창 시험 11건(#I24-V03): 기존 BACKLOG `guild-ink-undetermined-failures`와 같은 시험 class다. 그 행은 13행을 다루고, 이번 11건은 캡처 lane의 DefaultScreen 2·NegativeControl 7·RenderTextureAuxiliary 2다. permit lane 행은 이번 실행에서 판정하지 않았으므로 두 집합을 같다고 보지 않는다(Gardener 「첫 발생·미실행 구분」).
+- 반복 Unity 실행의 SENTIS define 자동 변경: 이 goal의 Unity 실행 6회에서 같은 patch(575 B, sha256 `31e7aaf1…883e2`)였다. 기존 BACKLOG `unity-sentis-define-drift`의 반복이며 이번에 행을 고치지 않는다.
+
+## 종료 점검 준비
+
+- 승인 범위의 결과: PR295 병합(merge commit `fbf00de9`). 완료조건별 결과와 판정의 한계는 위 「결과와 남은 위험」 표다. verify-01 계약 범위 PASS, verify-02 NOT PASS와 그 두 결함의 처분(116 A, 메인 기준선 결정)을 하나로 합치지 않는다.
+- 종료 Gardener: 미처분 제품 차단 0, 후보 2개, 리드 반환 G-01 1건이다(위 「11-04 종료 Gardener」). 보고서는 [gardener.md](gardener.md)다.
+- 남은 한계: 직접 사람 플레이, 대화형 Editor, DB, permit lane, V3 스크린샷, 204바이트 직접 길이 로그는 실행하거나 관측하지 않았다.
+- 보존 자원: 이 goal은 DB 행을 만들지 않았다. 종료 기록에서는 Unity·WSL·DB·서버 실행이나 자원 삭제를 하지 않는다.
+- 종료 기록 문서 실사: 1차는 NOT PASS(CLOSE-01·02, `closeout-01/reviewer/verdict-v1.md`)였고 리드가 고쳤다. 신규 `[Core 검증자]` Astra high가 수정본을 재실사한다. PASS여야 PR296의 병합 준비 보고로 간다.
+- 다음 계획 초안: 메인·사용자가 결과·남은 위험·BACKLOG를 확인한 뒤 정한다. 앞 goal(DB 영속 시연) 복귀는 메인 지시 `msg_c9f0b0c0f562`에 따른 기존 goal의 재개이며 새 goal 착수가 아니다.
+
 ## 진척 단계
 
-- [x] 범위 초안(v1)
-- [x] 범위 승인(메인 `msg_3dfd5496b065`)
-- [x] 구현 1단계(소스, 실행 없음)
-- [x] 구현 2단계(생성기·DLL·WSL 빌드·서버 시험·봇, 메인 배정 창) — impl-02·impl-03
-- [x] Unity 시험과 실제 접속 — EditMode 1822/1822, 실서버 lane 1/1, PlayMode 실패 12건은 처분됨(T6는 116 A로 Art PR2, 길드 11건은 기준선 같음)
-- [x] 1차 독립 검증(verify-01) — 계약 범위 통과
-- [x] 2차 좁은 재검증(격자 PR 병합 뒤) — NOT PASS(#I24-V02·#I24-V03), 11-04 처분 끝(116 A, main 기준선 PlayMode)
-- [ ] PR·병합 준비 보고
-- [ ] 결과 기록과 앞 goal 복귀
+- [x] 범위 초안·승인 — 메인 `msg_3dfd5496b065`
+- [x] 구현 두 단계 — impl-01~03(소스, 생성기·DLL·WSL 빌드·서버 시험·봇)
+- [x] Unity 시험과 실접속 — EditMode 1822/1822, 실서버 lane 1/1, PlayMode 실패 12건은 처분됨(T6는 116 A로 Art PR2, 길드 11건은 기준선 같음)
+- [x] 독립 검증 두 단계 — verify-01 계약 범위 통과, verify-02 NOT PASS(#I24-V02·#I24-V03), 11-04 처분 끝(116 A, main 기준선 PlayMode)
+- [x] PR295 병합 — CI 4건 SUCCESS, PR 준비 보고 `msg_3461ddaf5f97`, merge commit `fbf00de9`(12:13:47Z, `msg_c9f0b0c0f562`)
+- [x] 로컬 결과 기록 — 「11-04 병합 결과」·「결과와 남은 위험」
+- [x] 종료 Gardener — 신규 Codex Sol max(101 A), 「11-04 종료 Gardener」
+- [>] PR296 병합 — 종료 기록과 `gardener.md`, 문서 실사 1차 NOT PASS(CLOSE-01·02) 수정, 재실사 남음
+- [ ] 종료 점검 — 메인 판단, 리드 교체는 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)
+- [ ] 앞 goal 복귀 — main `fbf00de9` 받기
