@@ -1,10 +1,10 @@
 # 시연 자동 진행기 DB 캐릭터 메뉴·캐릭터 선택창 3칸·길드 입구 겹침
 
-11-06 시연 영상을 DB 영속 서버 한 판으로 찍을 수 있게 한다. 캐릭터 선택창을 3칸 넓은 화면으로 바꾸고(85 A), PR268 자동 진행기가 그 화면을 지나 끝까지 가게 고친다(82 B·83 A). 길드 입구가 Gold 칸을 덮는 겹침도 고친다(74 A). 녹화용 빌드 계약은 Core 리드와 맺는다.
+시연 영상(제출 기한 2026-11-09 14:00, 사용자 전달 11-04)을 DB 영속 서버 한 판으로 찍을 수 있게 한다. 캐릭터 선택창을 3칸 넓은 화면으로 바꾸고(85 A), PR268 자동 진행기가 그 화면을 지나 끝까지 가게 고친다(82 B·83 A). 길드 입구가 Gold 칸을 덮는 겹침도 고친다(74 A). 녹화용 빌드 계약은 Core 리드와 맺는다.
 
 ## 재개 지점
 
-**다음 첫 일:** Core 인벤토리 24칸 PR과 Art PR2(HUD 골드 제거·스킬칸 좌하단 4칸)가 main에 들어가기를 기다린다. 남은 순서는 메인 결정(`msg_3031315cf7d1`)대로 Core 24칸 → Art PR2 → 고정 head → 녹화 빌드 → 리허설 → 녹화다. 녹화 빌드 기준 다섯 PR 중 셋은 main에 있다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35a5ae7222b44d87b2702d6bd975ed2540`, 11-01 11:39:33Z, 메인 `msg_c34e981a6ccb`). 계약 초안 v8은 근거 폴더 `lead/recording-build-contract-draft-v8.md`(sha256 `af144b23918b6cda7656b868d213172f67ea07b07b956e872663b18aba25e2af`)다. 이름은 사용자 결정 109 A, 창 크기는 110 A다. Core와는 R4·R7 명령, R2 경계, R4 화면 확인 분담을 맞췄다(Core `msg_45e700da3330`·`msg_1e8f4d2e6446`). 남은 빈칸은 Core 24칸·Art PR2의 번호·merge commit과 고정 head다. 둘이 들어가면 ① 다섯이 다 든 main의 40자를 고정 head로 정해 Core에 먼저 보내고 ② 계약 고정본의 경로·sha256을 메인에 보내고 ③ 메인에 Unity 빌드 창을 청한 뒤 신규 `[Content Sol]` 빌드와 신규 `[Content 검증자]` 검증을 연다. Core는 그 SHA를 서버 branch에 받아 R1(v23)을 돌린다. PR-C(길드 입구)는 사용자 결정 113 A로 취소했다. Art PR4 사후 확인은 사용자 결정 90 A대로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다. Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다.
+**다음 첫 일:** Core 인벤토리 24칸 PR과 Art PR2(HUD 골드 제거·스킬칸 좌하단 4칸)가 main에 들어가기를 기다린다. 남은 순서는 메인 결정(`msg_3031315cf7d1`)대로 Core 24칸 → Art PR2 → 고정 head → 녹화 빌드 → 리허설 → 녹화다. 녹화 빌드 기준 다섯 PR 중 셋은 main에 있다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35a5ae7222b44d87b2702d6bd975ed2540`, 11-01 11:39:33Z, 메인 `msg_c34e981a6ccb`). 계약 초안 v9는 근거 폴더 `lead/recording-build-contract-draft-v9.md`(sha256 `c1227fa6417563b7cea4d44ff58949d97d98b94bfd52ac3a758f17622becce18`, 11-04)다. 이름은 사용자 결정 109 A, 창 크기는 110 A, 제출 기한(2026-11-09 14:00 KST)·116 A·작업자 배정은 「11-04 재진입」 절이다. Core와는 R4·R7 명령, R2 경계, R4 화면 확인 분담을 맞췄다(Core `msg_45e700da3330`·`msg_1e8f4d2e6446`). 남은 빈칸은 Core 24칸·Art PR2의 번호·merge commit과 고정 head다. 둘이 들어가면 ① 다섯이 다 든 main의 40자를 고정 head로 정해 Core에 먼저 보내고 ② 계약 고정본의 경로·sha256을 메인에 보내고 ③ 메인에 Unity 빌드 창(약 15분, Unity만)을 청한 뒤 신규 `[Content 구현 Astra]` 빌드와 신규 `[Content 검증자]` 검증을 연다(둘 다 `gpt-6-astra` high). Core는 그 SHA를 서버 branch에 받아 R1(v23)을 돌린다. PR-C(길드 입구)는 사용자 결정 113 A로 취소했다. Art PR4 사후 확인은 리셋이 지났어도 녹화 경로가 아니라서 지금도 착수하지 않는다(메인 결정, 「11-04 재진입」 절). 11-04 20:05 KST 확인: origin/main은 그대로 `a888cd35`이고, 열린 PR은 #207 하나라 Core 24칸·Art PR2 PR은 아직 없다(원시 `lead/open-prs-20261104-01.json`). Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다.
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
 - 열린 결정: 없음.
@@ -140,6 +140,22 @@
 - 메인 지시: PR-C를 만들지 않는다. 완료조건 C1~C3은 「사용자 결정 113 A로 취소」로 적고 종료 기록 PR에서 정리한다.
 - 결정 90 A의 「리셋 뒤 PR-C·Art PR4 사후 확인」 중 PR-C는 빠진다. Art PR4 사후 확인은 그대로 리셋(11-03 20:00 KST) 뒤 메인이 다시 열 때까지 착수하지 않는다.
 - 녹화 빌드 계약은 이 결정과 무관하다(다섯 PR 기준 그대로).
+
+### 11-04 재진입·제출 기한·작업자 배정·사용자 결정 116 A — msg_8d6a75a7daed
+
+메인 `msg_8d6a75a7daed`(11-04 19:49 KST 새 메인 세션, 메인 handle `term_751a1f26-7aac-4a33-8a57-a3d4cec8a3d4`)가 전달한 사용자 원문이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+- 재기동 지시(11-04 메인 pane 제출): 「이어서 진행」.
+- 제출 기한(11-04 19:59 KST 이전 메인 pane 제출): 「제출기한이 좀 늘어났어, 11월 9일 14시까지야」.
+  - 사용자가 붙인 학교 공지 요약(메인 전달): 2026-11-09(월) 14:00까지 브로슈어·PPT(시연 영상 삽입 필수)·시연 영상 파일을 USB로 제출한다. 발표는 2026-11-11(수) 16:00(발표 10분·질의응답 5분)이다.
+  - 이 goal의 「11-06 시연·제출」 문구는 새 기한으로 읽는다. 시연 영상은 PPT 삽입용과 별도 파일 둘 다 필요하다.
+- 작업자 배정(11-02 Codex 메인 세션의 사용자 직접 입력, 원천 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-11-02/worker-routing.md`):
+  - 「그리고 지금 Codex 토큰 사용량이 다시 2배 증가서 넉넉해져서 작업자도 Astra High로 바꿔도 될 거 같아」
+  - 「검증자도 xhigh로 두니까 너무 검증이 오래 걸리는데 앞으로 그냥 high로 둬야겠다」
+  - 적용(메인 지시): 새 구현자와 새 독립 검증자는 `codex --model gpt-6-astra -c model_reasoning_effort=high --disable fast_mode`로 연다. 태그는 구현자 `[Content 구현 Astra]`, 검증자 `[Content 검증자]`다. 선행 시험 작성자는 지금 배정(`gpt-6-astra` xhigh, `[Content 시험 Astra]`) 그대로다. 리드는 Claude Opus 그대로다. 이 goal의 앞선 Sol max 구현자·Astra xhigh 검증자 배정보다 이 결정이 앞선다.
+- 사용자 결정 116 A(메인 전달): Core 24칸 PR은 Art 드래그 시험 1건 실패를 안고 먼저 들어가고 Art PR2가 고친다. 녹화 빌드는 Art PR2 뒤라서 고친 상태로 만든다.
+- 메인 결정(사용자 결정 아님): 리셋(11-03 20:00 KST) 뒤로 미뤘던 Art 75·Art PR4 사후 확인·Effect 후속은 녹화 경로가 아니라서 지금도 착수하지 않는다. Art가 `GuildGrowthEffectConsumerLifecycleTests` 705행(`HudReferences`의 `Gold_bar`) 후보를 알려 오면 Art와 직접 맞춘다.
+- 재진입 처리: 이 pane의 handle이 `term_3ca049fa-6b41-4f33-9caa-a1a22080940a`로 바뀌어 Run을 `run-use`로 다시 묶었다(원시 `lead/run-use-20261104-01.json`). 최신 main `a888cd35`를 이 branch에 합쳤다(충돌 0, 규칙 파일 차이 0, 원시 `lead/take-main-20261104-01.txt`).
 
 ### 운영 방식(진입 메시지의 메인 결정)
 
@@ -303,3 +319,4 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 병합 관문 문서 재실사(메인 `msg_a848a7e98689`): 검증 v3 뒤 goal 기록 commit 두 개(`3e46ea65`·`6f4f721a`)를 신규 GPT-6-Astra 검증자가 따로 판정했다. 판정 원문은 `pr268-docs-recheck-01/`·`pr268-docs-recheck-02/`에 있다.
   - 리드는 병합된 branch를 떠나 최신 main에서 `docs/content-demo-autopilot-closeout-20261101`을 만들었다. 이 branch가 종료 기록 PR이 된다.
 - 2026-11-01 녹화용 빌드 계약 초안(진행 중): Core 입력 셋 `msg_57b6b6267f1c`. 초안 v1~v8은 근거 폴더 `lead/recording-build-contract-draft-v*.md`다. 사용자 결정 109 A(이름)·110 A(창 크기)·113 A(PR-C 취소)와 HUD 골드 제거·스킬칸 지시(`msg_d0250483d004`)를 반영했다. 자동 진행기는 HUD Gold·스킬칸을 참조하지 않는다(`lead/autopilot-hud-reference-check-01.txt`). PR294 뒤 `03_Client` 빌드 설정·입력 설정·Demo 코드·프로토콜 버전 diff 0이다(`lead/pr294-client-settings-diff-01.txt`). 12:11Z 메인 `msg_8c78b1ac3fb0`로 전달된 사용자 마무리 지시(「슬슬 토큰이 다 끝나서, 마지막 작업 끝나면 재개지점 기록하고 마무리해줘, 나중에 이어서 하자」)에 따라 재개 지점을 적고 멈춘다.
+- 2026-11-04 재진입: 메인 `msg_8d6a75a7daed`에 따라 Run을 새 pane에 다시 묶고 최신 main `a888cd35`를 이 branch에 합쳤다. 새 제출 기한·사용자 결정 116 A·작업자 배정을 「11-04 재진입」 절에 적고, 계약 초안 v9(`lead/recording-build-contract-draft-v9.md`, sha256 `c1227fa6417563b7cea4d44ff58949d97d98b94bfd52ac3a758f17622becce18`)에 일정·116 A·배정을 넣었다. Core 24칸·Art PR2 병합을 기다린다.
