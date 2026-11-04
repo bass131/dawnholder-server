@@ -26,7 +26,6 @@ namespace Dawnholder.Client.Tests
         {
             ("HUD/character_status/ClassText", 1),
             ("HUD/character_status/HpText", 1),
-            ("HUD/Gold_bar/GoldText", 1),
             ("HUD/Party_Info/Info_Title", 1),
             ("HUD/Party_Info/MemberStatus/MemberInfo", 2),
             ("HUD/Quest_Hud/Title", 1),

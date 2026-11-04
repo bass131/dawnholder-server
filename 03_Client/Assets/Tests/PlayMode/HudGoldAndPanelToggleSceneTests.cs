@@ -28,42 +28,44 @@ namespace Dawnholder.Client.Tests.PlayMode
         // The UI scene's HUD shows no number until the first snapshot, then the server currency, the same as the
         // panel. Every character it draws is in the label's font (the HUD font atlas is static).
         [UnityTest]
-        public IEnumerator RealUiHud_ShowsNoGoldUntilTheFirstSnapshot_ThenTheSameCurrencyAsThePanel()
+        public IEnumerator RealUiHud_HasNoGoldAcrossSnapshots_WhilePanelKeepsServerCurrency()
         {
             yield return _fixture.EnterScriptedTown();
             yield return MapEntryPlayFixture.Wait(() => HudController.Instance != null && HudController.Instance.isActiveAndEnabled,
                 "additive HUD", 10);
-            TMP_Text gold = MapEntryPlayFixture.Field<TMP_Text>(HudController.Instance, "_goldText");
-            Assert.IsNotNull(gold, "fixture: the UI scene's HUD has its gold label");
+            Transform hud = HudController.Instance.transform;
+            string[] GoldLabels() => hud.GetComponentsInChildren<TMP_Text>(true).Where(text => ScreenUiProbe.IsShown(text) &&
+                ((text.text ?? string.Empty).TrimStart().StartsWith("Gold", StringComparison.Ordinal) || (text.text ?? string.Empty).Contains("골드")))
+                .Select(text => text.text).ToArray();
             yield return _fixture.Frames(2);
-            string beforeReady = Digits(gold.text);
-            string[] missingBeforeSnapshot = MissingGlyphs(gold);
+            string[] beforeReady = GoldLabels();
+            bool noGoldBarBefore = hud.Find("Gold_bar") == null;
             _fixture.Hp();
             yield return _fixture.WaitMap(0);
             yield return WaitQueries(1);
-            string whileQueryWaits = Digits(gold.text);
-
+            string[] whileQueryWaits = GoldLabels();
+            string panelBefore = InventoryPanelProbe.Currency;
             _fixture.Peer.Send(Snapshot(1, 1234));
             yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Status == "서버 확인 완료", "first snapshot", 3);
-            string hudFirst = Digits(gold.text);
+            string[] hudFirst = GoldLabels();
             string panelFirst = Digits(InventoryPanelProbe.Currency);
             _fixture.Peer.Send(Snapshot(2, 1_000_000_000));
             yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Currency == "재화 1,000,000,000", "second snapshot", 3);
-            string hudSecond = Digits(gold.text);
+            string[] hudSecond = GoldLabels();
             string panelSecond = Digits(InventoryPanelProbe.Currency);
-            string[] missingWithSnapshot = MissingGlyphs(gold);
-            bool labelDrawn = gold.isActiveAndEnabled && gold.gameObject.activeInHierarchy;
-            Debug.Log($"[PR1 verifier] HUD gold '{gold.text}' panel '{InventoryPanelProbe.Currency}' font '{gold.font.name}'");
-
-            Assert.AreEqual(string.Empty, beforeReady, "R2 the real HUD shows no number before the first snapshot");
-            Assert.AreEqual(string.Empty, whileQueryWaits, "R2 still no number while the Ready query waits");
-            Assert.IsEmpty(missingBeforeSnapshot, "R2 the empty gold text uses only glyphs the HUD font has");
-            Assert.AreEqual("1234", hudFirst, "R1 the real HUD shows the server currency");
-            Assert.AreEqual(panelFirst, hudFirst, "R1 the HUD and the panel show the same currency");
-            Assert.AreEqual("1000000000", hudSecond, "R1 the real HUD follows the next snapshot");
-            Assert.AreEqual(panelSecond, hudSecond, "R1 the HUD and the panel still agree");
-            Assert.IsEmpty(missingWithSnapshot, "R1 the gold text with a number uses only glyphs the HUD font has");
-            Assert.IsTrue(labelDrawn, "R1 the gold label is drawn");
+            Debug.Log($"[PR2 gold removal] HUD labels [{string.Join(", ", hudSecond)}] panel '{InventoryPanelProbe.Currency}'");
+            {
+                Assert.IsTrue(noGoldBarBefore, "H1 no serialized gold plate before snapshots");
+                Assert.IsEmpty(beforeReady, "H1 no HUD gold before Ready");
+                Assert.IsEmpty(whileQueryWaits, "H1 no HUD gold while the query waits");
+                Assert.AreEqual("재화 —", panelBefore, "panel remains unconfirmed before its first snapshot");
+                Assert.IsEmpty(hudFirst, "H1 no HUD gold after the first snapshot");
+                Assert.AreEqual("1234", panelFirst, "positive control: panel shows first server currency");
+                Assert.IsEmpty(hudSecond, "H1 no HUD gold after the next snapshot");
+                Assert.AreEqual("1000000000", panelSecond, "positive control: panel keeps every digit of the next currency");
+                Assert.IsNull(hud.Find("Gold_bar/GoldText"), "H1 no HUD gold label object");
+                Assert.IsNull(hud.Find("Gold_bar"), "H1 no HUD gold plate after snapshots");
+            }
         }
 
         // While closed, nothing takes a raycast where the Use button lies, so a mouse click there presses no button,

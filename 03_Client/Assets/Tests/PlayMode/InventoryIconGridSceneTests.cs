@@ -204,11 +204,17 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual(Screen.width, moved.xMax, 1f, "fixture: actual drag reached the right screen edge");
             var pouch = (RectTransform)panel.Find("Slot2");
             Vector2 lowerRight = RectTransformUtility.WorldToScreenPoint(null, pouch.TransformPoint(new Vector2(pouch.rect.xMax - 2, pouch.rect.yMin + 2)));
-            foreach (Vector2 point in new[] { InventoryPanelProbe.SlotPoint(0), InventoryPanelProbe.SlotPoint(1), lowerRight })
+            var points = new[] { (Name: "Slot1 가운데", Index: 0, Point: InventoryPanelProbe.SlotPoint(0)),
+                (Name: "Slot2 가운데", Index: 1, Point: InventoryPanelProbe.SlotPoint(1)),
+                (Name: "Slot2 오른쪽 아래 안쪽", Index: 1, Point: lowerRight) };
+            foreach (var sample in points)
             {
+                Vector2 point = sample.Point;
                 yield return InventoryPanelProbe.PointAt(_fixture.Mouse, point);
-                Assert.IsTrue(InventoryPanelProbe.DetailShown, "T6 occupied point after dragging");
-                AssertInsideScreen(ScreenUiProbe.ScreenRect(InventoryPanelProbe.Detail), "T6 whole detail after dragging");
+                string diagnostic = PointDiagnostics(sample.Name, sample.Index, point, moved);
+                Debug.Log("[T6 point] " + diagnostic);
+                Assert.IsTrue(InventoryPanelProbe.DetailShown, "T6 occupied point after dragging: " + diagnostic);
+                AssertInsideScreen(ScreenUiProbe.ScreenRect(InventoryPanelProbe.Detail), "T6 whole detail after dragging: " + diagnostic);
                 InventoryPanelProbe.AssertEveryLabelIsDrawn();
             }
         }
@@ -253,6 +259,62 @@ namespace Dawnholder.Client.Tests.PlayMode
             // This positive is deliberately last: all earlier zero observations need this same-test control.
             yield return PositiveUse(1);
         }
+
+        [UnityTest]
+        public IEnumerator T6_PointDiagnostics_ReportCoverAndRemoveIt_WhenDetailsRecover()
+        {
+            yield return ReadySyncedTown();
+            GameObject cover = CoverScreen();
+            yield return _fixture.Frames(2);
+            Vector2 point = InventoryPanelProbe.SlotPoint(1);
+            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, point);
+            Assert.IsFalse(InventoryPanelProbe.DetailShown, "H9 fixture: the opaque cover hides detail");
+            var panel = (RectTransform)InventoryPanelProbe.Root.Find("Inventory");
+            string covered = PointDiagnostics("Slot2 가운데", 1, point, ScreenUiProbe.ScreenRect(panel));
+            StringAssert.Contains("Opaque cover", covered, "H9 positive diagnostic: visible cover named");
+            StringAssert.Contains("Slot2", covered, "H9 diagnostic identifies the occupied slot");
+            UnityEngine.Object.Destroy(cover);
+            yield return _fixture.Frames(2);
+            yield return InventoryPanelProbe.PointAt(_fixture.Mouse, point);
+            Assert.IsTrue(InventoryPanelProbe.DetailShown, "H9 positive control: same point recovers detail without the cover");
+            string clear = PointDiagnostics("Slot2 가운데", 1, point, ScreenUiProbe.ScreenRect(panel));
+            StringAssert.DoesNotContain("Opaque cover", clear, "H9 removed cover is absent from diagnostic candidates");
+        }
+
+        // Observation only: candidates explain branches but never replace the product's detail/use decision.
+        string PointDiagnostics(string name, int index, Vector2 point, Rect moved)
+        {
+            Transform root = InventoryPanelProbe.Root;
+            var slot = (RectTransform)root.Find("Inventory/Slot" + (index + 1));
+            Rect slotRect = ScreenUiProbe.ScreenRect(slot);
+            Canvas canvas = root.GetComponentInParent<Canvas>().rootCanvas;
+            CanvasGroup group = InventoryPanelProbe.Group;
+            var candidates = new List<string>();
+            foreach (CanvasRenderer renderer in UnityEngine.Object.FindObjectsByType<CanvasRenderer>())
+            {
+                if (!renderer.gameObject.activeInHierarchy || renderer.transform.IsChildOf(root) || renderer.cull ||
+                    renderer.GetAlpha() * renderer.GetInheritedAlpha() <= 0f) continue;
+                Canvas higher = renderer.GetComponentInParent<Canvas>();
+                if (higher == null) continue;
+                higher = higher.rootCanvas;
+                if (!higher.isActiveAndEnabled || higher.renderMode != RenderMode.ScreenSpaceOverlay || higher.sortingOrder <= canvas.sortingOrder) continue;
+                var rect = renderer.transform as RectTransform;
+                if (rect == null) continue;
+                Rect box = ScreenUiProbe.ScreenRect(rect);
+                if (!box.Contains(point)) continue;
+                string candidate = $"{higher.name}#{higher.sortingOrder}/{ScreenUiProbe.PathOf(rect, higher.transform)} {box}";
+                var text = renderer.GetComponent<TMPro.TMP_Text>();
+                if (text != null) candidate += " ink=" + ScreenUiProbe.Bounds(rect, text.textBounds);
+                candidates.Add(candidate);
+            }
+            candidates.Sort(StringComparer.Ordinal);
+            return $"{name}; Slot{index + 1}; point={point}; screen={Screen.width}x{Screen.height}; moved={moved}; " +
+                $"mouse={_fixture.Mouse.position.ReadValue()}; group alpha={group.alpha} blocksRaycasts={group.blocksRaycasts}; " +
+                $"slotRect={slotRect} contains={slotRect.Contains(point)} display='{InventoryPanelProbe.Slot(index)}'; " +
+                $"canvas={ScreenUiProbe.ScreenRect((RectTransform)canvas.transform)} scale={canvas.scaleFactor} order={canvas.sortingOrder}; " +
+                $"detailSizeDelta={InventoryPanelProbe.Detail.sizeDelta}; covers=[{string.Join("; ", candidates)}]";
+        }
+
 
         void AssertDetail(string name, string count, bool usable)
         {

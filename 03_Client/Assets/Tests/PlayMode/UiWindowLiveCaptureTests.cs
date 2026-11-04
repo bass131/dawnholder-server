@@ -164,7 +164,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Transform hud = HudController.Instance.transform;
             Assert.AreEqual("HP 61 / 88", hud.Find("character_status/HpText").GetComponent<TMP_Text>().text);
             Assert.IsTrue(hud.Find("skill_panel/skill_slot_2").gameObject.activeInHierarchy);
-            Assert.AreEqual("Gold: 1000000000", hud.Find("Gold_bar/GoldText").GetComponent<TMP_Text>().text);
+            Assert.IsNull(hud.Find("Gold_bar"), "HUD gold display is removed");
         }
 
         IEnumerator ShowHudParty(byte localClass, byte otherClass)
@@ -357,8 +357,8 @@ namespace Dawnholder.Client.Tests.PlayMode
                 "the player stands inside the NPC trigger", 3);
             bool shownBeforeE = NpcDialogPanel.IsShown;
             RectTransform actionBar = HudController.Instance.transform.Find("skill_panel").GetComponent<RectTransform>();
-            RectTransform goldBar = HudController.Instance.transform.Find("Gold_bar").GetComponent<RectTransform>();
-            Vector2 actionBefore = actionBar.anchoredPosition, goldBefore = goldBar.anchoredPosition;
+            Vector2 actionBefore = actionBar.anchoredPosition;
+            Rect actionRectBefore = ScreenUiProbe.ScreenRect(actionBar);
             yield return Press(Key.E);
             yield return MapEntryPlayFixture.Wait(() => NpcDialogPanel.IsShown, "E shows the NPC dialogue", 3);
             yield return _fixture.Frames(3);
@@ -382,7 +382,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return Press(Key.E);
             yield return MapEntryPlayFixture.Wait(() => !NpcDialogPanel.IsShown, "E closes the real NPC dialogue", 3);
             yield return _fixture.Frames(3);
-            NoteHudRestored(actionBar, goldBar, actionBefore, goldBefore);
+            NoteHudRestored(actionBar, actionBefore, actionRectBefore);
         }
 
         // Also the party invite layout requirement (goal 06 「추가 사용자 결정 — 파티 초대 배치 수정」): both answer buttons'
@@ -463,8 +463,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return MoveFixtureMouseOffScreen();
             bool shownBeforeResult = RewardWindowShown();
             RectTransform actionBar = HudController.Instance.transform.Find("skill_panel").GetComponent<RectTransform>();
-            RectTransform goldBar = HudController.Instance.transform.Find("Gold_bar").GetComponent<RectTransform>();
-            Vector2 actionBefore = actionBar.anchoredPosition, goldBefore = goldBar.anchoredPosition;
+            Vector2 actionBefore = actionBar.anchoredPosition;
+            Rect actionRectBefore = ScreenUiProbe.ScreenRect(actionBar);
             ArraySegment<byte> wire = ServerRewardResult();
             Note("input path", "scripted peer S_DungeonClearResult -> DungeonClearResultHandler -> DungeonClearRewardState.Apply -> DungeonClearRewardWindow.LateUpdate publishes it");
             Note("result data", $"DungeonClearRewards table: Success, currency {DungeonClearRewards.Currency}, items "
@@ -495,15 +495,18 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, PartyInviteLayout.ScreenRectOf(confirm).center);
             yield return MapEntryPlayFixture.Wait(() => !RewardWindowShown(), "the real Confirm pointer closes rewards", 3);
             yield return _fixture.Frames(3);
-            NoteHudRestored(actionBar, goldBar, actionBefore, goldBefore);
+            NoteHudRestored(actionBar, actionBefore, actionRectBefore);
         }
 
-        void NoteHudRestored(RectTransform actionBar, RectTransform goldBar, Vector2 actionBefore, Vector2 goldBefore)
+        void NoteHudRestored(RectTransform actionBar, Vector2 actionBefore, Rect actionRectBefore)
         {
-            Note("HUD after popup closed", $"action {actionBefore} -> {actionBar.anchoredPosition}, gold {goldBefore} -> {goldBar.anchoredPosition}");
+            Note("HUD after popup closed", $"action {actionBefore} -> {actionBar.anchoredPosition}, rect {actionRectBefore} -> {ScreenUiProbe.ScreenRect(actionBar)}");
             WriteRecord("hud-restored");
             Assert.AreEqual(actionBefore, actionBar.anchoredPosition, "closing the popup restores the prior action bar position");
-            Assert.AreEqual(goldBefore, goldBar.anchoredPosition, "closing the popup restores the prior gold position");
+            Rect actual = ScreenUiProbe.ScreenRect(actionBar);
+            Assert.IsTrue(Mathf.Abs(actual.x - actionRectBefore.x) <= .01f && Mathf.Abs(actual.y - actionRectBefore.y) <= .01f &&
+                Mathf.Abs(actual.width - actionRectBefore.width) <= .01f && Mathf.Abs(actual.height - actionRectBefore.height) <= .01f,
+                $"closing the popup restores the prior skill_panel screen rectangle: {actionRectBefore} -> {actual}");
         }
 
         // Use the existing fixture mouse through the live input module; do not invoke listeners directly. The peer
@@ -933,7 +936,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                     + $"font {text.font?.name} size {text.fontSize}, em pixels {Vector2.Distance(origin, em):F3}, lines {text.textInfo.lineCount}, "
                     + $"visible glyphs {text.textInfo.characterInfo.Take(text.textInfo.characterCount).Count(character => character.isVisible)}, raycastTarget {text.raycastTarget}");
             }
-            foreach (string name in new[] { "character_status", "Party_Info", "skill_panel", "Gold_bar", "MinimapPlaceholder", "Quest_Hud" })
+            foreach (string name in new[] { "character_status", "Party_Info", "skill_panel", "MinimapPlaceholder", "Quest_Hud" })
             {
                 Transform area = hud.transform.Find(name);
                 Rect rect = PartyInviteLayout.ScreenRectOf(area.GetComponent<RectTransform>());
