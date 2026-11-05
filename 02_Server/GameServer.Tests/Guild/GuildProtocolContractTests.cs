@@ -7,7 +7,7 @@ namespace Dawnholder.Server.GameServer.Tests.Guild;
 // five guild packets stay at 43..47, followed by the admission result at 48 and the character menu packets
 // at 49..54, and writers/readers use the fixed LittleEndian layout. The new types are looked up by name
 // through reflection, so this file compiles before the generator runs and a missing type is a failing
-// assertion rather than a build break. Expected bytes are literals. Version 22 and the handshake rejection
+// assertion rather than a build break. Expected bytes are literals. Version 23 and the handshake rejection
 // of older clients are owned by InventoryProtocolContractTests and BossBehaviorTests; the server's own
 // 44/47 output is checked byte by byte through GuildWire in the behaviour tests of this folder.
 public sealed class GuildProtocolContractTests

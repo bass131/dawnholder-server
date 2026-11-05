@@ -26,7 +26,6 @@ namespace Dawnholder.Client.Tests
         {
             ("HUD/character_status/ClassText", 1),
             ("HUD/character_status/HpText", 1),
-            ("HUD/Gold_bar/GoldText", 1),
             ("HUD/Party_Info/Info_Title", 1),
             ("HUD/Party_Info/MemberStatus/MemberInfo", 2),
             ("HUD/Quest_Hud/Title", 1),
@@ -53,7 +52,7 @@ namespace Dawnholder.Client.Tests
                     Assert.AreEqual(target.Count, matches.Length, "required scene labels: " + target.Path);
                     return matches;
                 }).ToArray();
-                Assert.AreEqual(11, targets.Length, "all required scene labels are observed");
+                Assert.AreEqual(10, targets.Length, "all required scene labels are observed");
                 foreach (TMP_Text text in targets)
                 {
                     RequireInk(text.color, s_ink, PathOf(text.transform));

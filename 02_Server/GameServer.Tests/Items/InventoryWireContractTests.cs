@@ -553,9 +553,9 @@ public sealed class InventoryWireContractTests : IDisposable
         internal const ushort InventorySnapshotId = 36;
         internal const ushort ItemUseId = 37;
         internal const ushort ItemUseResultId = 38;
-        internal const int InventorySnapshotLength = 76;
+        internal const int InventorySnapshotLength = 204;
         internal const int ItemUseResultLength = 13;
-        internal const int SlotCount = 8;
+        internal const int SlotCount = 24;
 
         internal static byte[] InventoryRequest(byte reserved = 0) => Frame(InventoryRequestId, new[] { reserved });
 
@@ -589,7 +589,7 @@ public sealed class InventoryWireContractTests : IDisposable
 
         internal static ushort IdOf(byte[] packet) => BinaryPrimitives.ReadUInt16LittleEndian(packet.AsSpan(2, 2));
 
-        // Fields after the header: uint revision, int currency, then 8 × (int itemId, int count).
+        // Fields after the header: uint revision, int currency, then 24 × (int itemId, int count).
         internal static (uint Revision, int Currency, (int ItemId, int Count)[] Slots) ReadSnapshot(byte[] packet)
         {
             uint revision = BinaryPrimitives.ReadUInt32LittleEndian(packet.AsSpan(4, 4));

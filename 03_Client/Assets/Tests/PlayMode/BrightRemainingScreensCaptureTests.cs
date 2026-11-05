@@ -38,7 +38,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         const int MinimumWidth = 1280, MinimumHeight = 720;
         // Once armed, EndingController pulses its hint between 0.55 and 1.0 (EndingController.Update).
         const float EndingHintLowestAlpha = 0.55f;
-        static readonly string[] HudAreas = { "character_status", "Party_Info", "skill_panel", "Gold_bar", "MinimapPlaceholder", "Quest_Hud" };
+        static readonly string[] HudAreas = { "character_status", "Party_Info", "skill_panel", "MinimapPlaceholder", "Quest_Hud" };
 
         MapEntryPlayFixture _fixture;
         readonly List<string> _record = new();

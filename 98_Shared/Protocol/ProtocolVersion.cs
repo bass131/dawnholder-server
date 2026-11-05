@@ -72,6 +72,7 @@ namespace Shared.Protocol;
 ///   - v20: 길드 조회/거점 구매/개인 강화와 snapshot/result (ID 43..47) append.
 ///   - v21: 고정 World 길드 정의43..47 뒤 S_CharacterLoadResult48 append. 서버 직업 확인 뒤 진입.
 ///   - v22: 캐릭터 목록·생성·ID 선택 요청/결과49..54 append. 기존1..48은 불변.
+///   - v23: 36번 끝에 slot8..23 append, 76→204바이트. 기존 필드 오프셋 불변, 옛 클라 빠른 cutoff.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -85,6 +86,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. v22 = 캐릭터 목록·생성·ID 선택 요청/결과49..54.</summary>
-    public const ushort Current = 22;
+    /// <summary>현재 프로토콜 버전. v23 = 36번 인벤토리 snapshot 24칸·204바이트.</summary>
+    public const ushort Current = 23;
 }

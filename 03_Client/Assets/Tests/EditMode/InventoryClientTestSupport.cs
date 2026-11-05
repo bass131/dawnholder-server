@@ -147,18 +147,18 @@ namespace Dawnholder.Client.Tests
     // so a generator or product change cannot redefine the expected bytes.
     internal static class InventoryWire
     {
-        internal const int SlotCount = 8;
+        internal const int SlotCount = 24;
         internal const ushort InventoryRequestId = 35;
         internal const ushort SnapshotId = 36;
         internal const ushort ItemUseResultId = 38;
-        internal const int SnapshotLength = 76;
+        internal const int SnapshotLength = 204;
         internal const int ItemUseResultLength = 13;
 
         internal static byte[] InventoryRequest => new byte[] { 0x05, 0x00, 0x23, 0x00, 0x00 };
 
         internal static byte[] Snapshot(uint revision, int currency, params (int ItemId, int Count)[] slots)
         {
-            Assert.LessOrEqual(slots.Length, SlotCount, "fixture snapshot has at most eight slots");
+            Assert.LessOrEqual(slots.Length, SlotCount, "fixture snapshot has at most 24 slots");
             byte[] wire = Header(SnapshotLength, SnapshotId);
             BinaryPrimitives.WriteUInt32LittleEndian(wire.AsSpan(4), revision);
             BinaryPrimitives.WriteInt32LittleEndian(wire.AsSpan(8), currency);

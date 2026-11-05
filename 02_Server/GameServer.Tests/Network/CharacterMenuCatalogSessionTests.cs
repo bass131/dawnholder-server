@@ -392,7 +392,7 @@ internal sealed class CatalogMenuTestWorld : IDisposable
     internal CharacterMenuRequestSession LoggedIn()
     {
         CharacterMenuRequestSession session = new(_login.World);
-        session.OnRecvPacket(new C_Handshake { clientVersion = 22 }.Write());
+        session.OnRecvPacket(new C_Handshake { clientVersion = 23 }.Write());
         session.OnRecvPacket(new C_Login { accountName = "stored_menu" }.Write());
         Tick();
         Assert.True(session.IsLoggedIn);

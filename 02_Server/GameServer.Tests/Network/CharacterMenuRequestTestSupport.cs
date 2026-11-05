@@ -32,7 +32,7 @@ internal sealed class CharacterMenuRequestWorld : IDisposable
 
     internal CharacterMenuRequestSession Handshaken()
     {
-        Assert.Equal((ushort)22, ProtocolVersion.Current);
+        Assert.Equal((ushort)23, ProtocolVersion.Current);
         CharacterMenuRequestSession session = Connected();
         session.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
         Assert.Single(session.Packets.Where(packet => CharacterMenuRequestWire.Id(packet) == 8));

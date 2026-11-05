@@ -455,9 +455,9 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
         internal const ushort InventorySnapshotId = 36;
         internal const ushort ItemUseId = 37;
         internal const ushort ItemUseResultId = 38;
-        internal const int InventorySnapshotLength = 76;
+        internal const int InventorySnapshotLength = 204;
         internal const int ItemUseResultLength = 13;
-        internal const int SlotCount = 8;
+        internal const int SlotCount = 24;
         internal const byte Success = 0;
 
         internal static byte[] InventoryRequest() => Frame(InventoryRequestId, new byte[] { 0 });

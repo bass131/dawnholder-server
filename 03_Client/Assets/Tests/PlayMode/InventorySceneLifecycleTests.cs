@@ -166,8 +166,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             return handler == null ? 0 : handler.GetInvocationList().Length;
         }
 
-        // The objects an event calls back. The HUD also follows the mirror (dungeon goal R1), so the panel's own
-        // subscription is told apart from the HUD's by target.
+        // The objects an event calls back. Several consumers follow the mirror (panel, guild window, kill reward text),
+        // so the panel's own subscription is told apart by target.
         internal static object[] Targets(object owner, string eventField)
         {
             var handler = (Delegate)owner.GetType()
@@ -270,7 +270,10 @@ namespace Dawnholder.Client.Tests.PlayMode
                 controlRestored = Same(panel, ScreenUiProbe.ScreenRect(Panel));
             }
 
-            string[] drawnOverlaps = Overlapping(panel, hud).Select(graphic => graphic.ToString()).ToArray();
+            // User decision 114 permits skill_panel overlap; raycast blockers below still include every HUD graphic.
+            string[] drawnOverlaps = Overlapping(panel, hud)
+                .Where(graphic => graphic.Path != "skill_panel" && !graphic.Path.StartsWith("skill_panel/", StringComparison.Ordinal))
+                .Select(graphic => graphic.ToString()).ToArray();
             Rect[] buttons = PanelButtons().Select(ScreenUiProbe.ScreenRect).ToArray();
             string[] blockedButtons = hud.Where(graphic => graphic.RaycastTarget &&
                 buttons.Any(button => Area(Intersect(graphic.Box, button)) > 0f)).Select(graphic => graphic.Path).ToArray();
@@ -294,7 +297,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.Greater(statusOnScreen.Length, 0, $"{moment}: character_status is visibly drawn on screen");
             Assert.Contains(statusOnScreen[0].Path, controlHits, $"{moment}: control - a panel placed on character_status is detected");
             Assert.IsTrue(controlRestored, $"{moment}: fixture - the control restored the panel rectangle");
-            Assert.IsEmpty(drawnOverlaps, $"{moment}: #4/R8 no HUD graphic shares screen area with the inventory panel");
+            Assert.IsEmpty(drawnOverlaps, $"{moment}: #4/R8 no HUD graphic outside skill_panel shares screen area with the inventory panel");
             Assert.IsEmpty(blockedButtons, $"{moment}: R8 no HUD raycast target lies over a panel button");
             Assert.IsTrue(Contains(ScreenArea, panel), $"{moment}: the whole panel {panel} is on the {Screen.width}x{Screen.height} screen");
             Assert.AreEqual(InventoryLimits.MaxSlots, slotRows, $"{moment}: all shared slot rows are on screen");
@@ -528,11 +531,11 @@ namespace Dawnholder.Client.Tests.PlayMode
             object[] mirrorTargets = InventoryPanelProbe.Targets(mirror, "OnInventoryChanged");
             Assert.AreEqual(1, mirrorTargets.Count(target => target is InventoryPanel), "R8 the old panel left the mirror");
             Assert.Contains(InventoryPanel.Instance, mirrorTargets, "R8 the new panel follows the mirror");
-            Assert.AreEqual(1, mirrorTargets.Count(target => target is HudController), "dungeon R1 the map's HUD follows the mirror once");
+            Assert.AreEqual(0, mirrorTargets.Count(target => target is HudController), "inventory grid goal 8: the map's HUD no longer follows the mirror (HUD gold removed)");
             string[] targetTypes = mirrorTargets
                 .Select(target => target?.GetType().FullName ?? "<null>").ToArray();
             CollectionAssert.AreEquivalent(
-                new[] { typeof(InventoryPanel).FullName, typeof(GuildUiController).FullName, typeof(HudController).FullName, typeof(Dawnholder.Client.Combat.KillRewardFloatText).FullName },
+                new[] { typeof(InventoryPanel).FullName, typeof(GuildUiController).FullName, typeof(Dawnholder.Client.Combat.KillRewardFloatText).FullName },
                 targetTypes, "inventory consumers: " + string.Join(", ", targetTypes));
             Assert.AreEqual(1, InventoryPanelProbe.Subscribers(requests, "Changed"), "R8 the old panel left the requests");
 

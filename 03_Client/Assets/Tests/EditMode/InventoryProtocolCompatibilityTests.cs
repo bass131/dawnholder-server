@@ -13,7 +13,7 @@ namespace Dawnholder.Client.Tests
     // 2026-10-05-items-inventory-currency/goal.md and its PR1 acceptance): LittleEndian, 4-byte header
     // (ushort size including the header, ushort id), IDs 35..38 after 34, then the dungeon goal's 39·40
     // (01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md P1). Login 41·42 is v19;
-    // World 43..47 and authoritative character-load result 48 stay fixed; menu 49..54 advances the contract to v22.
+    // World 43..47, character-load result 48 and menu 49..54 stay fixed; v23 expands snapshot 36 to 24 slots.
     // They are written as literals here, never computed from the generator or the server.
     // The client handler side of S_InventorySnapshot is covered in depth by InventoryClientContractTests.
     public sealed class InventoryProtocolCompatibilityTests
@@ -28,9 +28,9 @@ namespace Dawnholder.Client.Tests
         }
 
         [Test]
-        public void ProtocolVersion_IsTwentyTwo()
+        public void ProtocolVersion_IsTwentyThree()
         {
-            Assert.AreEqual(22, ProtocolVersion.Current);
+            Assert.AreEqual(23, ProtocolVersion.Current);
         }
 
         // Looked up by name: the committed Shared.dll has no such PacketID members before the generator runs,
@@ -105,12 +105,12 @@ namespace Dawnholder.Client.Tests
         }
 
         [Test]
-        public void InventorySnapshot_ReadsAndWritesSeventySixFixedBytes()
+        public void InventorySnapshot_ReadsAndWritesTwoHundredFourFixedBytes()
         {
-            byte[] wire = new byte[76];
+            byte[] wire = new byte[204];
             byte[] head =
             {
-                0x4C, 0x00, 0x24, 0x00,
+                0xCC, 0x00, 0x24, 0x00,
                 0x44, 0x33, 0x22, 0x11,
                 0x00, 0xCA, 0x9A, 0x3B,
                 0x01, 0x00, 0x00, 0x00, 0x63, 0x00, 0x00, 0x00,
@@ -119,6 +119,7 @@ namespace Dawnholder.Client.Tests
             byte[] lastSlot = { 0x04, 0x03, 0x02, 0x01, 0x0D, 0x0C, 0x0B, 0x0A };
             Buffer.BlockCopy(head, 0, wire, 0, head.Length);
             Buffer.BlockCopy(lastSlot, 0, wire, 68, lastSlot.Length);
+            Buffer.BlockCopy(lastSlot, 0, wire, 196, lastSlot.Length);
 
             var decoded = new S_InventorySnapshot();
             decoded.Read(new ArraySegment<byte>(wire));
@@ -132,6 +133,8 @@ namespace Dawnholder.Client.Tests
                 slot1Count = 1,
                 slot7ItemId = 0x01020304,
                 slot7Count = 0x0A0B0C0D,
+                slot23ItemId = 0x01020304,
+                slot23Count = 0x0A0B0C0D,
             }.Write());
 
             Assert.AreEqual(0x11223344u, decoded.revision);
@@ -144,6 +147,10 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(0, decoded.slot6Count);
             Assert.AreEqual(0x01020304, decoded.slot7ItemId);
             Assert.AreEqual(0x0A0B0C0D, decoded.slot7Count);
+            Assert.AreEqual(0, decoded.slot22ItemId);
+            Assert.AreEqual(0, decoded.slot22Count);
+            Assert.AreEqual(0x01020304, decoded.slot23ItemId);
+            Assert.AreEqual(0x0A0B0C0D, decoded.slot23Count);
             CollectionAssert.AreEqual(wire, encoded);
         }
 
@@ -153,7 +160,7 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(0, (int)ItemId.None);
             Assert.AreEqual(1, (int)ItemId.Material);
             Assert.AreEqual(2, (int)ItemId.CoinPouch);
-            Assert.AreEqual(8, InventoryLimits.MaxSlots);
+            Assert.AreEqual(24, InventoryLimits.MaxSlots);
             Assert.AreEqual(99, InventoryLimits.MaxStack);
             Assert.AreEqual(1_000_000_000, InventoryLimits.MaxCurrency);
 

@@ -2585,6 +2585,38 @@ public class S_InventorySnapshot : IPacket // S_InventorySnapshot 패킷
 	public int slot6Count;
 	public int slot7ItemId;
 	public int slot7Count;
+	public int slot8ItemId;
+	public int slot8Count;
+	public int slot9ItemId;
+	public int slot9Count;
+	public int slot10ItemId;
+	public int slot10Count;
+	public int slot11ItemId;
+	public int slot11Count;
+	public int slot12ItemId;
+	public int slot12Count;
+	public int slot13ItemId;
+	public int slot13Count;
+	public int slot14ItemId;
+	public int slot14Count;
+	public int slot15ItemId;
+	public int slot15Count;
+	public int slot16ItemId;
+	public int slot16Count;
+	public int slot17ItemId;
+	public int slot17Count;
+	public int slot18ItemId;
+	public int slot18Count;
+	public int slot19ItemId;
+	public int slot19Count;
+	public int slot20ItemId;
+	public int slot20Count;
+	public int slot21ItemId;
+	public int slot21Count;
+	public int slot22ItemId;
+	public int slot22Count;
+	public int slot23ItemId;
+	public int slot23Count;
     public ushort Protocol { get { return (ushort)PacketID.S_InventorySnapshot; } }
 
     public void Read(ArraySegment<byte> segment)
@@ -2668,6 +2700,134 @@ public class S_InventorySnapshot : IPacket // S_InventorySnapshot 패킷
 		
 		// slot7Count 읽기 (LittleEndian 명시 — wire format 약속)
 		this.slot7Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot8ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot8ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot8Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot8Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot9ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot9ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot9Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot9Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot10ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot10ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot10Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot10Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot11ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot11ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot11Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot11Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot12ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot12ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot12Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot12Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot13ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot13ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot13Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot13Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot14ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot14ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot14Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot14Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot15ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot15ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot15Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot15Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot16ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot16ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot16Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot16Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot17ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot17ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot17Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot17Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot18ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot18ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot18Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot18Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot19ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot19ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot19Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot19Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot20ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot20ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot20Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot20Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot21ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot21ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot21Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot21Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot22ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot22ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot22Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot22Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot23ItemId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot23ItemId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// slot23Count 읽기 (LittleEndian 명시 — wire format 약속)
+		this.slot23Count = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
 		count += sizeof(int);
 		
     }
@@ -2759,6 +2919,134 @@ public class S_InventorySnapshot : IPacket // S_InventorySnapshot 패킷
 		
 		// slot7Count 쓰기 (LittleEndian 명시 — wire format 약속)
 		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot7Count);
+		count += sizeof(int);
+		
+		// slot8ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot8ItemId);
+		count += sizeof(int);
+		
+		// slot8Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot8Count);
+		count += sizeof(int);
+		
+		// slot9ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot9ItemId);
+		count += sizeof(int);
+		
+		// slot9Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot9Count);
+		count += sizeof(int);
+		
+		// slot10ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot10ItemId);
+		count += sizeof(int);
+		
+		// slot10Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot10Count);
+		count += sizeof(int);
+		
+		// slot11ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot11ItemId);
+		count += sizeof(int);
+		
+		// slot11Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot11Count);
+		count += sizeof(int);
+		
+		// slot12ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot12ItemId);
+		count += sizeof(int);
+		
+		// slot12Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot12Count);
+		count += sizeof(int);
+		
+		// slot13ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot13ItemId);
+		count += sizeof(int);
+		
+		// slot13Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot13Count);
+		count += sizeof(int);
+		
+		// slot14ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot14ItemId);
+		count += sizeof(int);
+		
+		// slot14Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot14Count);
+		count += sizeof(int);
+		
+		// slot15ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot15ItemId);
+		count += sizeof(int);
+		
+		// slot15Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot15Count);
+		count += sizeof(int);
+		
+		// slot16ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot16ItemId);
+		count += sizeof(int);
+		
+		// slot16Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot16Count);
+		count += sizeof(int);
+		
+		// slot17ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot17ItemId);
+		count += sizeof(int);
+		
+		// slot17Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot17Count);
+		count += sizeof(int);
+		
+		// slot18ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot18ItemId);
+		count += sizeof(int);
+		
+		// slot18Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot18Count);
+		count += sizeof(int);
+		
+		// slot19ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot19ItemId);
+		count += sizeof(int);
+		
+		// slot19Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot19Count);
+		count += sizeof(int);
+		
+		// slot20ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot20ItemId);
+		count += sizeof(int);
+		
+		// slot20Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot20Count);
+		count += sizeof(int);
+		
+		// slot21ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot21ItemId);
+		count += sizeof(int);
+		
+		// slot21Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot21Count);
+		count += sizeof(int);
+		
+		// slot22ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot22ItemId);
+		count += sizeof(int);
+		
+		// slot22Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot22Count);
+		count += sizeof(int);
+		
+		// slot23ItemId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot23ItemId);
+		count += sizeof(int);
+		
+		// slot23Count 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.slot23Count);
 		count += sizeof(int);
 		
 

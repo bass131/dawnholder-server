@@ -32,6 +32,7 @@ internal static class CharacterMenuPacketFixtures
 
     // Preservation snapshot of PDL.xml at 2bf22066, SHA256 6265AECE…E90F633.
     // This table stays frozen: runtime discovery must not derive its own expected schema from PDL.
+    // Only ID 36 appends slot8..23 in v23 (2026-11-01 inventory-24-slots, user decision 97 A); all other rows keep the 2bf22066 snapshot.
     internal static readonly Schema[] ExistingPackets =
     {
         new("C_Ping", 1, "long clientTimestampMs"),
@@ -69,7 +70,7 @@ internal static class CharacterMenuPacketFixtures
         new("S_PortalLocked", 33, "int requiredCount, int currentCount"),
         new("C_CheatCommand", 34, "byte cheatType"),
         new("C_InventoryRequest", 35, "byte reserved"),
-        new("S_InventorySnapshot", 36, "uint revision, int currency, int slot0ItemId, int slot0Count, int slot1ItemId, int slot1Count, int slot2ItemId, int slot2Count, int slot3ItemId, int slot3Count, int slot4ItemId, int slot4Count, int slot5ItemId, int slot5Count, int slot6ItemId, int slot6Count, int slot7ItemId, int slot7Count"),
+        new("S_InventorySnapshot", 36, "uint revision, int currency, int slot0ItemId, int slot0Count, int slot1ItemId, int slot1Count, int slot2ItemId, int slot2Count, int slot3ItemId, int slot3Count, int slot4ItemId, int slot4Count, int slot5ItemId, int slot5Count, int slot6ItemId, int slot6Count, int slot7ItemId, int slot7Count, int slot8ItemId, int slot8Count, int slot9ItemId, int slot9Count, int slot10ItemId, int slot10Count, int slot11ItemId, int slot11Count, int slot12ItemId, int slot12Count, int slot13ItemId, int slot13Count, int slot14ItemId, int slot14Count, int slot15ItemId, int slot15Count, int slot16ItemId, int slot16Count, int slot17ItemId, int slot17Count, int slot18ItemId, int slot18Count, int slot19ItemId, int slot19Count, int slot20ItemId, int slot20Count, int slot21ItemId, int slot21Count, int slot22ItemId, int slot22Count, int slot23ItemId, int slot23Count"),
         new("C_ItemUse", 37, "int itemId, uint expectedRevision"),
         new("S_ItemUseResult", 38, "byte result, int itemId, uint revision"),
         new("S_DungeonClearResult", 39, "byte result, int currency, int reward0ItemId, int reward0Count, int reward1ItemId, int reward1Count, int reward2ItemId, int reward2Count"),

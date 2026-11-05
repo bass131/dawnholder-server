@@ -305,7 +305,7 @@ internal static class IndependentWire
 {
     const int SnapshotFixedBytes = 66;
     const int ResultBytes = 26;
-    const int InventoryBytes = 76;
+    const int InventoryBytes = 204;
     const int MaterialItemId = 1;
     const int CoinPouchItemId = 2;
 
@@ -375,14 +375,14 @@ internal static class IndependentWire
             Sequence: BinaryPrimitives.ReadInt64LittleEndian(s[18..]));
     }
 
-    // v17 36: uint revision, int currency, then 8 × (int itemId, int count).
+    // v23 36: uint revision, int currency, then 24 × (int itemId, int count).
     internal static IndependentInventory ReadInventory(byte[] packet)
     {
         Assert.Equal(InventoryBytes, packet.Length);
         Assert.Equal(WireId.InventorySnapshot, IdOf(packet));
         int materials = 0;
         int pouches = 0;
-        for (int slot = 0; slot < 8; slot++)
+        for (int slot = 0; slot < 24; slot++)
         {
             int itemId = BinaryPrimitives.ReadInt32LittleEndian(packet.AsSpan(12 + (8 * slot)));
             int count = BinaryPrimitives.ReadInt32LittleEndian(packet.AsSpan(16 + (8 * slot)));

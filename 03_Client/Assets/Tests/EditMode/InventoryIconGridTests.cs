@@ -282,6 +282,35 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(3, uses.Count, "T4 lower canvas does not block");
         }
 
+        [Test]
+        public void H6_ThirtyPercentOverlayBlocksUseAndDetail_TransparentCoverRestoresUse()
+        {
+            var uses = new List<int>();
+            Build(uses.Add); Render();
+            _pointer.RightClick(_root.transform, 1);
+            CollectionAssert.AreEqual(new[] { 1 }, uses, "T4 positive control before any occlusion");
+            GameObject overlay = Own(new GameObject("Occlusion fixture", typeof(RectTransform), typeof(Canvas)));
+            Canvas canvas = overlay.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 15;
+            GameObject imageObject = Own(new GameObject("Thirty-percent non-raycast cover", typeof(RectTransform), typeof(Image)));
+            imageObject.transform.SetParent(overlay.transform, false);
+            Image cover = imageObject.GetComponent<Image>();
+            cover.raycastTarget = false;
+            cover.color = new Color(1, 1, 1, .3f);
+            cover.rectTransform.anchorMin = Vector2.zero;
+            cover.rectTransform.anchorMax = Vector2.one;
+            cover.rectTransform.offsetMin = cover.rectTransform.offsetMax = Vector2.zero;
+            Canvas.ForceUpdateCanvases();
+            _pointer.RightClick(_root.transform, 1);
+            Assert.AreEqual(1, uses.Count, "H6 alpha 0.3 overlay blocks right use");
+            Assert.IsFalse(Detail(_root.transform).gameObject.activeSelf, "T4 occlusion hides detail");
+            cover.color = new Color(1, 1, 1, 0);
+            _pointer.RightClick(_root.transform, 1);
+            Assert.AreEqual(2, uses.Count, "H6 positive control: transparent cover restores right use");
+            Assert.IsTrue(Detail(_root.transform).gameObject.activeSelf, "H6 positive control: transparent cover restores detail");
+        }
+
         [TestCase(1920, 1080)]
         [TestCase(1280, 720)]
         public void T5_PanelAndHoveredDetailsStayInsideTheCameraCanvas(int width, int height)
