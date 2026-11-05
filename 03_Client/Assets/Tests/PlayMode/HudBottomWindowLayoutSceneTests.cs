@@ -20,17 +20,13 @@ using UnityEngine.TestTools;
 
 namespace Dawnholder.Client.Tests.PlayMode
 {
-    // The bottom HUD while a real bottom window stays open and the HUD is disabled and enabled, rebuilt with the additive
-    // UI scene, or left to another window. Windows open by their normal entries: E inside a Town NPC trigger, and the
-    // scripted peer's S_DungeonClearResult closed by the real Confirm pointer (loopback test authority, not GameServer).
-    // Expected values are observations, never the layout's own arithmetic: where the bars were before a window opened,
-    // where the same HUD put them with only that window open, overlap of shown screen rectangles, the fixture's literal
-    // HP/class/gold, and which live objects the sources still call.
+    // The real NPC/reward windows may cover the fixed lower-left skill panel. Its pre-window position and rectangle
+    // remain unchanged across HUD enable/disable, additive UI rebuild and window close; windows retain their draw order.
+    // Normal E and reward Confirm input, HP/class values and live source ownership are preserved.
     public sealed class HudBottomWindowLayoutSceneTests
     {
         const string Tag = "[HUD bottom window]";
         const string ConfirmedHp = "HP 37 / 100";
-        const string ConfirmedGold = "Gold: 1250";
         const float Tolerance = 0.01f;
         const string CaptureVariable = "DAWNHOLDER_UI_CAPTURE_DIR";
         const int DockedWidth = 1280, DockedHeight = 720;
@@ -69,7 +65,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator OpenNpcDialogue_HudDisabledAndEnabled_ReturnsToTheOpenPlace_AndAClosedWhileDisabledDialogueLeavesTheDefault()
+        public IEnumerator OpenNpcDialogue_HudDisabledAndEnabled_KeepsThePreWindowPlace_AndAClosedWhileDisabledDialogueLeavesTheDefault()
         {
             yield return ReadySyncedTown();
             yield return WalkToTheNearestNpc();
@@ -144,7 +140,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator OpenReward_HudDisabledAndEnabled_ReturnsToTheOpenPlace_AndAConfirmWhileDisabledLeavesTheDefault()
+        public IEnumerator OpenReward_HudDisabledAndEnabled_KeepsThePreWindowPlace_AndAConfirmWhileDisabledLeavesTheDefault()
         {
             yield return ReadySyncedTown();
             Placement idle = Observe("reward idle", null);
@@ -243,11 +239,10 @@ namespace Dawnholder.Client.Tests.PlayMode
             AssertSamePlace(idle, Observe("reward confirmed after npc", null), "with no window left open");
         }
 
-        // The batch screen (640x480) leaves the reward clear of the bars, so the cases above reach only the undocked branch.
-        // These two run in the GUI capture runner's approved 1280x720 Game view and first prove on this run that the shown
-        // reward docked the bars; a frame that does not dock fails instead of testing the default place.
+        // GUI-only approved 1280x720 observations. The reward need not overlap the fixed lower-left panel;
+        // its sorting order and the same pre-window placement remain required through every lifetime transition.
         [UnityTest, Timeout(240000)]
-        public IEnumerator OpenReward_ActuallyDocked_HudDisabledAndEnabled_AndConfirmWhileDisabledRestoresDefault()
+        public IEnumerator OpenReward_FixedLowerLeft_HudDisabledAndEnabled_AndConfirmWhileDisabledRestoresDefault()
         {
             yield return UseTheApprovedGameView("reward-docked-disable");
             yield return ReadySyncedTown();
@@ -305,7 +300,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         }
 
         [UnityTest, Timeout(240000)]
-        public IEnumerator OpenReward_ActuallyDocked_UiRebuilt_WithOnlyLiveSources_AndConfirmRestoresDefault()
+        public IEnumerator OpenReward_FixedLowerLeft_UiRebuilt_WithOnlyLiveSources_AndConfirmRestoresDefault()
         {
             yield return UseTheApprovedGameView("reward-docked-rebuilt");
             yield return ReadySyncedTown();
@@ -546,7 +541,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         static Placement Observe(string stage, RectTransform window)
         {
             Transform hud = HudController.Instance.transform;
-            var placement = new Placement(stage, (RectTransform)hud.Find("skill_panel"), (RectTransform)hud.Find("Gold_bar"), window);
+            var placement = new Placement(stage, (RectTransform)hud.Find("skill_panel"), window);
             Debug.Log($"{Tag} {placement}");
             return placement;
         }
@@ -556,14 +551,15 @@ namespace Dawnholder.Client.Tests.PlayMode
             HudController hud = HudController.Instance;
             TMP_Text hp = MapEntryPlayFixture.Field<TMP_Text>(hud, "_hpText");
             TMP_Text confirmedClass = MapEntryPlayFixture.Field<TMP_Text>(hud, "_classText");
-            TMP_Text gold = MapEntryPlayFixture.Field<TMP_Text>(hud, "_goldText");
             Assert.IsTrue(placement.ActionShown, placement.Stage + ": the Q action bar is shown");
-            Assert.IsTrue(placement.GoldShown, placement.Stage + ": the gold plate is shown");
+            Assert.IsNull(hud.transform.Find("Gold_bar"), placement.Stage + ": HUD gold plate is removed");
             Assert.IsTrue(ScreenUiProbe.IsShown(hp), placement.Stage + ": HP text is shown");
             Assert.AreEqual(ConfirmedHp, hp.text, placement.Stage + ": the fixture sent exactly 37/100");
             Assert.AreEqual("Knight", confirmedClass.text, placement.Stage + ": the scripted peer confirmed Knight");
-            Assert.IsTrue(ScreenUiProbe.IsShown(gold), placement.Stage + ": gold text is shown");
-            Assert.AreEqual(ConfirmedGold, gold.text, placement.Stage + ": the snapshot sent exactly 1250");
+            Assert.IsEmpty(hud.GetComponentsInChildren<TMP_Text>(true).Where(text => ScreenUiProbe.IsShown(text) &&
+                ((text.text ?? string.Empty).TrimStart().StartsWith("Gold", StringComparison.Ordinal) || (text.text ?? string.Empty).Contains("골드"))),
+                placement.Stage + ": no HUD gold label is drawn");
+            Assert.AreEqual("재화 1,250", InventoryPanelProbe.Currency, placement.Stage + ": positive control: panel keeps snapshot 1250");
         }
 
         // The Q icon's real Sprite before any window opens; later stages compare with it, not with the catalog.
@@ -583,54 +579,58 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.IsTrue(MapEntryPlayFixture.Field<GameObject>(skills, "_qSlotRoot").activeInHierarchy, stage + ": Knight's Q slot is active");
             Assert.IsTrue(ScreenUiProbe.IsShown(qIcon), stage + ": Knight's Q icon is shown");
             Assert.AreSame(q, PartyInviteLayout.SpriteOf(qIcon), stage + ": the Q icon keeps the Sprite seen before any window");
-            Assert.IsFalse(MapEntryPlayFixture.Field<GameObject>(skills, "_eSlotRoot").activeSelf, stage + ": Knight has no E slot");
+            GameObject empty = MapEntryPlayFixture.Field<GameObject>(skills, "_eSlotRoot");
+            Assert.IsTrue(empty.activeInHierarchy, stage + ": Knight keeps an active empty E slot");
+            Assert.IsFalse(ScreenUiProbe.IsShown(MapEntryPlayFixture.Field<Component>(skills, "_eIconImage")), stage + ": Knight has no E icon");
+            Assert.IsEmpty(empty.GetComponentsInChildren<TMP_Text>(true).Where(text => ScreenUiProbe.IsShown(text) && !string.IsNullOrEmpty(text.text)),
+                stage + ": empty E slot shows no key or cooldown text");
         }
 
-        // A window over the bars' default place must move them, and the move must not leave more of them covered.
+        // A window over the bars' default place leaves them where they were, and the window is drawn above them.
         static void AssertReactsToCover(Placement idle, Placement open, bool coverRequired)
         {
             Assert.IsTrue(open.Window.HasValue, open.Stage + ": the window is shown");
             float atDefault = idle.Covered(open.Window.Value);
-            Debug.Log($"{Tag} {open.Stage}: bars covered {atDefault:F1} px² at the default place, {open.Covered(open.Window.Value):F1} px² with the window open");
+            Debug.Log($"{Tag} {open.Stage}: skill panel covered {atDefault:F1} px² before, {open.Covered(open.Window.Value):F1} px² open");
             if (coverRequired)
-                Assert.Greater(atDefault, 0f, $"fixture: the {open.Stage} window covers the default bottom bars at Screen {Screen.width}x{Screen.height}");
-            if (atDefault <= 0f) return;
-            Assert.IsFalse(SamePlace(idle, open), open.Stage + ": a window over the default place moves the bottom bars");
-            Assert.LessOrEqual(open.Covered(open.Window.Value), atDefault + 0.5f, open.Stage + ": moving leaves no more of the bars covered");
+                Assert.Greater(atDefault, 0f, $"fixture: the {open.Stage} window covers the pre-window skill panel at Screen {Screen.width}x{Screen.height}");
+            Assert.IsTrue(SamePlace(idle, open), open.Stage + ": window leaves anchored position and screen rectangle unchanged");
+            AssertSamePlace(idle, open, "while the window is open");
+            Assert.Greater(open.WindowOrder, open.HudOrder, open.Stage + ": window is drawn above HUD");
         }
 
-        // The docking precondition, observed on this run: at the approved size the shown reward covers the bars' default
-        // place, and with it open the HUD moved them so less of them is covered.
+        // The approved GUI size still matters; the reward has no required overlap with the fixed panel.
         static void AssertActuallyDocked(Placement idle, Placement open)
         {
             Assert.AreEqual(DockedWidth, Screen.width, open.Stage + ": Screen width");
             Assert.AreEqual(DockedHeight, Screen.height, open.Stage + ": Screen height");
             Assert.IsTrue(open.Window.HasValue, open.Stage + ": the reward is shown");
-            float atDefault = idle.Covered(open.Window.Value);
-            float docked = open.Covered(open.Window.Value);
-            Debug.Log($"{Tag} {open.Stage}: bars covered {atDefault:F1} px² at the default place, {docked:F1} px² docked");
-            Assert.Greater(atDefault, 0f, open.Stage + ": precondition: the shown reward covers the default bottom bars");
-            Assert.IsFalse(SamePlace(idle, open), open.Stage + ": the bars left their default place");
-            Assert.Less(docked, atDefault, open.Stage + ": docking leaves less of the bars covered");
+            Assert.IsTrue(open.Window.Value.width > 0f && open.Window.Value.height > 0f, open.Stage + ": reward has a real screen rectangle");
+            Assert.IsTrue(SamePlace(idle, open), open.Stage + ": reward leaves the panel at its pre-window place");
+            AssertSamePlace(idle, open, "while the reward is open");
+            Assert.Greater(open.WindowOrder, open.HudOrder, open.Stage + ": reward is drawn above HUD");
         }
 
         static void AssertNotMoreCovered(Placement reference, Placement actual)
         {
             Assert.IsTrue(actual.Window.HasValue, actual.Stage + ": the window is shown");
-            Assert.LessOrEqual(actual.Covered(actual.Window.Value), reference.Covered(reference.Window.Value) + 0.5f,
-                $"{actual.Stage}: no more of the bars covered than at {reference.Stage}");
+            Assert.AreEqual(reference.Covered(reference.Window.Value), actual.Covered(actual.Window.Value), Tolerance,
+                $"{actual.Stage}: the stationary skill panel keeps the same covered area as at {reference.Stage}");
         }
 
         static void AssertSamePlace(Placement expected, Placement actual, string because)
         {
             Assert.AreEqual(expected.Action.x, actual.Action.x, Tolerance, $"{actual.Stage}: action bar x {because} (as at {expected.Stage})");
             Assert.AreEqual(expected.Action.y, actual.Action.y, Tolerance, $"{actual.Stage}: action bar y {because} (as at {expected.Stage})");
-            Assert.AreEqual(expected.Gold.x, actual.Gold.x, Tolerance, $"{actual.Stage}: gold x {because} (as at {expected.Stage})");
-            Assert.AreEqual(expected.Gold.y, actual.Gold.y, Tolerance, $"{actual.Stage}: gold y {because} (as at {expected.Stage})");
+            Assert.AreEqual(expected.ActionRect.x, actual.ActionRect.x, Tolerance, $"{actual.Stage}: screen x {because}");
+            Assert.AreEqual(expected.ActionRect.y, actual.ActionRect.y, Tolerance, $"{actual.Stage}: screen y {because}");
+            Assert.AreEqual(expected.ActionRect.width, actual.ActionRect.width, Tolerance, $"{actual.Stage}: screen width {because}");
+            Assert.AreEqual(expected.ActionRect.height, actual.ActionRect.height, Tolerance, $"{actual.Stage}: screen height {because}");
         }
 
         static bool SamePlace(Placement a, Placement b) =>
-            Vector2.Distance(a.Action, b.Action) <= Tolerance && Vector2.Distance(a.Gold, b.Gold) <= Tolerance;
+            Vector2.Distance(a.Action, b.Action) <= Tolerance && Vector2.Distance(a.ActionRect.position, b.ActionRect.position) <= Tolerance &&
+            Vector2.Distance(a.ActionRect.size, b.ActionRect.size) <= Tolerance;
 
         static void AssertOneLayoutWithTheSameFrames(int frames)
         {
@@ -647,15 +647,16 @@ namespace Dawnholder.Client.Tests.PlayMode
             AssertOneLayoutWithTheSameFrames(frames);
         }
 
-        // A destroyed Unity object keeps its managed subscriptions, so each source must call only the live HUD parts.
+        // HP/party/skill sources keep live HUD targets; inventory must reach a live panel and no HUD.
         void AssertSourcesCallOnlyTheLiveHud(string stage)
         {
             HudController hud = HudController.Instance;
             Assert.IsTrue(ReferenceEquals(hud, MapEntryPlayFixture.Field<HudController>(_fixture.Session, "_hud")),
                 stage + ": the session's HP target is the live HUD");
             object[] inventory = Subscribers(typeof(InventoryState), InventoryState.Instance, nameof(InventoryState.OnInventoryChanged), typeof(HudController));
-            Assert.AreEqual(1, inventory.Length, stage + ": one HUD listens to the inventory mirror");
-            Assert.IsTrue(ReferenceEquals(hud, inventory[0]), stage + ": the inventory mirror calls the live HUD");
+            object[] panels = Subscribers(typeof(InventoryState), InventoryState.Instance, nameof(InventoryState.OnInventoryChanged), typeof(InventoryPanel));
+            Assert.IsTrue(panels.Any(panel => (UnityEngine.Object)panel != null), stage + ": positive control: same mirror calls a live InventoryPanel");
+            Assert.AreEqual(0, inventory.Length, stage + ": no HUD listens to the inventory mirror");
             object[] party = Subscribers(typeof(PartyState), PartyState.Instance, nameof(PartyState.OnPartyUpdated), typeof(PartyMemberHud));
             Assert.AreEqual(1, party.Length, stage + ": one party HUD listens to the party mirror");
             Assert.IsTrue((UnityEngine.Object)party[0] != null, stage + ": the party mirror calls a live party HUD");
@@ -703,32 +704,34 @@ namespace Dawnholder.Client.Tests.PlayMode
         // One observation of the two bottom bars and, when a window is given, that window's shown screen rectangle.
         sealed class Placement
         {
-            internal Placement(string stage, RectTransform action, RectTransform gold, RectTransform window)
+            internal Placement(string stage, RectTransform action, RectTransform window)
             {
                 Stage = stage;
                 Action = action.anchoredPosition;
-                Gold = gold.anchoredPosition;
                 ActionRect = PartyInviteLayout.ScreenRectOf(action);
-                GoldRect = PartyInviteLayout.ScreenRectOf(gold);
                 ActionShown = ScreenUiProbe.IsShown(action);
-                GoldShown = ScreenUiProbe.IsShown(gold);
-                if (window != null && ScreenUiProbe.IsShown(window)) Window = PartyInviteLayout.ScreenRectOf(window);
+                // The HUD is also observed while disabled, and GetComponentInParent skips inactive parents.
+                Canvas[] hudCanvases = action.GetComponentsInParent<Canvas>(true);
+                HudOrder = hudCanvases[hudCanvases.Length - 1].sortingOrder;
+                if (window != null && ScreenUiProbe.IsShown(window))
+                {
+                    Window = PartyInviteLayout.ScreenRectOf(window);
+                    WindowOrder = window.GetComponentInParent<Canvas>().rootCanvas.sortingOrder;
+                }
             }
 
             internal string Stage { get; }
             internal Vector2 Action { get; }
-            internal Vector2 Gold { get; }
             internal Rect ActionRect { get; }
-            internal Rect GoldRect { get; }
             internal bool ActionShown { get; }
-            internal bool GoldShown { get; }
             internal Rect? Window { get; }
-
-            internal float Covered(Rect window) => OverlapArea(ActionRect, window) + OverlapArea(GoldRect, window);
+            internal int HudOrder { get; }
+            internal int WindowOrder { get; }
+            internal float Covered(Rect window) => OverlapArea(ActionRect, window);
 
             public override string ToString() =>
                 $"{Stage}: Screen {Screen.width}x{Screen.height}, action {Action} {ActionRect} shown {ActionShown}, "
-                + $"gold {Gold} {GoldRect} shown {GoldShown}, window {(Window.HasValue ? Window.Value.ToString() : "none")}";
+                + $"HUD order {HudOrder}, window order {WindowOrder}, window {(Window.HasValue ? Window.Value.ToString() : "none")}";
         }
     }
 }

@@ -1,7 +1,6 @@
 using TMPro;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Network;
-using Dawnholder.Client.State;
 using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -10,7 +9,8 @@ using UnityEngine.UI;
 namespace Dawnholder.Client.UI
 {
     /// <summary>
-    /// 현재 연결의 확정 HP·직업과 인벤토리 재화를 표시한다. 배치는 HudLayout이 소유한다.
+    /// 현재 연결의 확정 HP와 직업을 표시한다. 재화는 인벤토리 창이 보이고
+    /// HUD는 InventoryState를 구독하지 않는다. 배치는 HudLayout이 소유한다.
     ///
     /// **헌법 #1 (Server Authority)**: HUD는 *서버가 알려준* 값만 표시합니다.
     /// Entry owner가 <see cref="ApplyServerHP"/>로 마지막 서버 HP를 표시합니다.
@@ -22,7 +22,6 @@ namespace Dawnholder.Client.UI
         bool _hasServerHp;
         UnityClientSession _boundSession;
         long _boundEpoch;
-        InventoryState _inventorySource;
 
         [Header("HP")]
         [FormerlySerializedAs("hpSlider")]
@@ -38,10 +37,6 @@ namespace Dawnholder.Client.UI
         [Header("MP")]
         [SerializeField] Slider _mpSlider;
 
-        [Header("Resources")]
-        [FormerlySerializedAs("goldText")]
-        [SerializeField] TMP_Text _goldText;
-
         void Awake()
         {
             if (Instance != null && Instance != this)
@@ -55,14 +50,12 @@ namespace Dawnholder.Client.UI
 
         void OnDestroy()
         {
-            UnbindInventory();
             UnbindHp();
             if (Instance == this) Instance = null;
         }
 
         void OnDisable()
         {
-            UnbindInventory();
             UnbindHp();
         }
 
@@ -71,8 +64,6 @@ namespace Dawnholder.Client.UI
             ShowUnconfirmedHp();
             RenderClass();
             TryBindLatestEntry();
-            BindInventory();
-            RenderGold();
         }
 
         void Start()
@@ -80,8 +71,6 @@ namespace Dawnholder.Client.UI
             // An HP callback may arrive before Start; never replace it with a class default.
             if (!_hasServerHp) ShowUnconfirmedHp();
             RenderClass();
-            BindInventory();
-            RenderGold();
             if (UnityClientSession.Instance != null) TryBindLatestEntry();
         }
 
@@ -89,37 +78,6 @@ namespace Dawnholder.Client.UI
         {
             TryBindLatestEntry();
             RenderClass();
-            BindInventory();
-            if (UnityClientSession.Instance != null && UnityClientSession.Instance.IsClosed) RenderGold();
-        }
-
-        void BindInventory()
-        {
-            var source = InventoryState.Instance;
-            if (ReferenceEquals(_inventorySource, source)) return;
-            UnbindInventory();
-            _inventorySource = source;
-            if (source != null) source.OnInventoryChanged += RenderGold;
-            RenderGold();
-        }
-
-        void UnbindInventory()
-        {
-            // A destroyed Unity object can still own the managed event we subscribed to.
-            if (!ReferenceEquals(_inventorySource, null)) _inventorySource.OnInventoryChanged -= RenderGold;
-            _inventorySource = null;
-        }
-
-        void RenderGold()
-        {
-            if (_inventorySource != null && _inventorySource.HasSnapshot &&
-                (UnityClientSession.Instance == null || !UnityClientSession.Instance.IsClosed))
-                UpdateGold(_inventorySource.Currency);
-            else if (_goldText != null)
-            {
-                // Use an ASCII hyphen supported by the HUD's static font atlas.
-                _goldText.text = "Gold: -";
-            }
         }
 
         void TryBindLatestEntry()
@@ -195,12 +153,5 @@ namespace Dawnholder.Client.UI
             }
         }
 
-        public void UpdateGold(int amount)
-        {
-            if (_goldText != null)
-            {
-                _goldText.text = $"Gold: {amount}";
-            }
-        }
     }
 }
