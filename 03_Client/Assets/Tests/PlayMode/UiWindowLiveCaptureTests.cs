@@ -228,7 +228,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             for (int i = 0; i < InventoryLimits.MaxSlots; i++) Note($"panel slot {i + 1} text", InventoryPanelProbe.Slot(i));
             NoteCanvas("panel", InventoryPanel.Instance);
             _hudPopup = InventoryPanel.Instance.transform.Find("Inventory").GetComponent<RectTransform>();
-            _skillPanelOverlapSource = "user 114 msg_4f325d2f2bfd: skill slots may overlap the inventory window";
+            _skillPanelOverlapSource = "user 114 msg_4f325d2f2bfd and user 125 B msg_2d2c22e46c7c: the inventory window may overlap the skill slots and is drawn over them";
             yield return CaptureBothSizes(() => InventoryPanelProbe.Group.alpha > 0f,
                 prepareAtMinimum: WaitForInventoryOpening("minimum"));
         }
@@ -245,7 +245,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _fixture.Frames(3);
             yield return HoverInventoryDetail(1);
             _hudPopup = InventoryPanel.Instance.transform.Find("Inventory").GetComponent<RectTransform>();
-            _skillPanelOverlapSource = "user 114 msg_4f325d2f2bfd: skill slots may overlap the inventory window";
+            _skillPanelOverlapSource = "user 114 msg_4f325d2f2bfd and user 125 B msg_2d2c22e46c7c: the inventory window may overlap the skill slots and is drawn over them";
 
             bool primaryObserved = false;
             bool primaryDetailShown = false, minimumDetailShown = false;
@@ -297,7 +297,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _fixture.Frames(3);
             yield return HoverInventoryDetail(0);
             _hudPopup = InventoryPanel.Instance.transform.Find("Inventory").GetComponent<RectTransform>();
-            _skillPanelOverlapSource = "user 114 msg_4f325d2f2bfd: skill slots may overlap the inventory window";
+            _skillPanelOverlapSource = "user 114 msg_4f325d2f2bfd and user 125 B msg_2d2c22e46c7c: the inventory window may overlap the skill slots and is drawn over them";
 
             bool primaryObserved = false;
             bool primaryDetailShown = false, minimumDetailShown = false;
@@ -380,6 +380,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             RectTransform actionBar = HudController.Instance.transform.Find("skill_panel").GetComponent<RectTransform>();
             Vector2 actionBefore = actionBar.anchoredPosition;
             Rect actionRectBefore = ScreenUiProbe.ScreenRect(actionBar);
+            Vector2Int screenBefore = new Vector2Int(Screen.width, Screen.height);
             yield return Press(Key.E);
             yield return MapEntryPlayFixture.Wait(() => NpcDialogPanel.IsShown, "E shows the NPC dialogue", 3);
             yield return _fixture.Frames(3);
@@ -404,7 +405,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return Press(Key.E);
             yield return MapEntryPlayFixture.Wait(() => !NpcDialogPanel.IsShown, "E closes the real NPC dialogue", 3);
             yield return _fixture.Frames(3);
-            NoteHudRestored(actionBar, actionBefore, actionRectBefore);
+            yield return RestorePrimarySizeAfterClose();
+            NoteHudRestored(actionBar, actionBefore, actionRectBefore, screenBefore);
         }
 
         // Also the party invite layout requirement (goal 06 「추가 사용자 결정 — 파티 초대 배치 수정」): both answer buttons'
@@ -487,6 +489,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             RectTransform actionBar = HudController.Instance.transform.Find("skill_panel").GetComponent<RectTransform>();
             Vector2 actionBefore = actionBar.anchoredPosition;
             Rect actionRectBefore = ScreenUiProbe.ScreenRect(actionBar);
+            Vector2Int screenBefore = new Vector2Int(Screen.width, Screen.height);
             ArraySegment<byte> wire = ServerRewardResult();
             Note("input path", "scripted peer S_DungeonClearResult -> DungeonClearResultHandler -> DungeonClearRewardState.Apply -> DungeonClearRewardWindow.LateUpdate publishes it");
             Note("result data", $"DungeonClearRewards table: Success, currency {DungeonClearRewards.Currency}, items "
@@ -518,13 +521,29 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, PartyInviteLayout.ScreenRectOf(confirm).center);
             yield return MapEntryPlayFixture.Wait(() => !RewardWindowShown(), "the real Confirm pointer closes rewards", 3);
             yield return _fixture.Frames(3);
-            NoteHudRestored(actionBar, actionBefore, actionRectBefore);
+            yield return RestorePrimarySizeAfterClose();
+            NoteHudRestored(actionBar, actionBefore, actionRectBefore, screenBefore);
         }
 
-        void NoteHudRestored(RectTransform actionBar, Vector2 actionBefore, Rect actionRectBefore)
+        IEnumerator RestorePrimarySizeAfterClose()
         {
-            Note("HUD after popup closed", $"action {actionBefore} -> {actionBar.anchoredPosition}, rect {actionRectBefore} -> {ScreenUiProbe.ScreenRect(actionBar)}");
+#if UNITY_EDITOR
+            if (_gameView == null) Note("game view after close", "not found");
+            else Note("game view select primary after close", _gameView.TrySelect(PrimaryWidth, PrimaryHeight));
+#else
+            Note("game view after close", "not an Editor run");
+#endif
+            yield return ScreenUiProbe.WaitUntil(() => Screen.width == PrimaryWidth && Screen.height == PrimaryHeight, 3f,
+                reached => Note("Screen reached primary size after close", reached));
+            Note("Screen after primary restoration", $"{Screen.width}x{Screen.height}");
+        }
+
+        void NoteHudRestored(RectTransform actionBar, Vector2 actionBefore, Rect actionRectBefore, Vector2Int screenBefore)
+        {
+            Vector2Int screenAfter = new Vector2Int(Screen.width, Screen.height);
+            Note("HUD after popup closed", $"action {actionBefore} -> {actionBar.anchoredPosition}, rect {actionRectBefore} -> {ScreenUiProbe.ScreenRect(actionBar)}, screen {screenBefore} -> {screenAfter}");
             WriteRecord("hud-restored");
+            Assert.AreEqual(screenBefore, screenAfter, $"fixture: HUD rectangles use the same screen size: {screenBefore} -> {screenAfter}");
             Assert.AreEqual(actionBefore, actionBar.anchoredPosition, "closing the popup restores the prior action bar position");
             Rect actual = ScreenUiProbe.ScreenRect(actionBar);
             Assert.IsTrue(Mathf.Abs(actual.x - actionRectBefore.x) <= .01f && Mathf.Abs(actual.y - actionRectBefore.y) <= .01f &&

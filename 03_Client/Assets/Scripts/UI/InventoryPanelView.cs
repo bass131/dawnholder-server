@@ -57,7 +57,9 @@ namespace Dawnholder.Client.UI
             _useSlot = useSlot;
             var canvas = _canvas = root.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 5; // Existing HUD(10), menu(20), dialogue, stage clear and fades stay above it.
+            // Above the HUD(10) and guild entrance, windows and effect(11-13), so skill slots never cover an inventory slot.
+            // Dungeon rewards(15), menu(20), dialogue, stage clear and fades stay above it.
+            canvas.sortingOrder = 14;
             var scaler = root.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);

@@ -218,7 +218,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Canvas inventoryCanvas = panel.GetComponentInParent<Canvas>().rootCanvas;
             Assert.AreEqual(RenderMode.ScreenSpaceOverlay, skillCanvas.renderMode, "H6 skills use an Overlay root canvas");
             Assert.AreEqual(RenderMode.ScreenSpaceOverlay, inventoryCanvas.renderMode, "H6 inventory uses an Overlay root canvas");
-            Assert.Greater(skillCanvas.sortingOrder, inventoryCanvas.sortingOrder, "H6 skills are drawn above inventory");
+            Assert.Greater(inventoryCanvas.sortingOrder, skillCanvas.sortingOrder, "H6 user 125 B: inventory is drawn above the skill slots");
             Assert.IsTrue(Drawn(filled.GetComponent<Image>()), "H6 filled skill artwork is actually drawn");
             RectTransform empty = Slot(skills, 3);
             Assert.IsNotNull(empty, "H6 empty skill slot exists");

@@ -45,7 +45,7 @@ EditMode 시험은 view를 직접 만들어 칸 줄·생성 화면·잠금과 �
 
 HUD는 골드를 표시하지 않는다. 재화는 인벤토리 창의 「재화」 줄에만 보이고, [HudController](../../03_Client/Assets/Scripts/UI/HudController.cs)는 InventoryState를 구독하지 않는다. 재화는 클라이언트에서 계산하지 않는다.
 
-[HudLayout](../../03_Client/Assets/Scripts/UI/HudLayout.cs)은 UI 씬 소유의 장식 프레임·초상·스킬칸 그림과 원본 Sprite mesh에 맞춘 아이콘 크기를 맡는다. HP·직업·스킬 상태는 기존 컨트롤러가 소유한다. 스킬칸은 화면 왼쪽 아래에 고정된 4칸이며, 1칸은 Q, 2칸은 E이고 내용은 `ClientSkillCatalog.SkillKeyMap`에서 온다. SkillHudController는 빈 칸을 alpha 0.3으로 그리고 키 글자·아이콘·쿨다운을 숨긴다. NPC 대화창·보상 창은 스킬칸 위에 그려지고 스킬칸은 옮기지 않는다. 스킬칸은 인벤토리 창과 겹칠 수 있고, 창은 끌어서 옮긴다.
+[HudLayout](../../03_Client/Assets/Scripts/UI/HudLayout.cs)은 UI 씬 소유의 장식 프레임·초상·스킬칸 그림과 원본 Sprite mesh에 맞춘 아이콘 크기를 맡는다. HP·직업·스킬 상태는 기존 컨트롤러가 소유한다. 스킬칸은 화면 왼쪽 아래에 고정된 4칸이며, 1칸은 Q, 2칸은 E이고 내용은 `ClientSkillCatalog.SkillKeyMap`에서 온다. SkillHudController는 빈 칸을 alpha 0.3으로 그리고 키 글자·아이콘·쿨다운을 숨긴다. NPC 대화창·보상 창은 스킬칸 위에 그려지고 스킬칸은 옮기지 않는다. 스킬칸은 인벤토리 창과 겹칠 수 있고, 창은 끌어서 옮긴다. 인벤토리 창은 스킬칸 위에 그려진다.
 
 [InventoryPanel](../../03_Client/Assets/Scripts/UI/InventoryPanel.cs)은 게임플레이 씬의 패널 하나를 만들고 실제 구독한 미러와 요청 controller를 보관해 disable/destroy 또는 source 교체 때 같은 참조에서 해제한다. 늦게 생긴 UI도 현재 snapshot을 다시 표시한다. 「I」 키의 새 눌림마다 열림·닫힘을 바꾸며, 열림 상태의 단일 소유자는 [UnityClientSession](../../03_Client/Assets/Scripts/Network/UnityClientSession.cs)의 `IsInventoryPanelOpen`이다. 새 연결은 닫힘으로 시작하고 같은 연결의 맵 이동 뒤 새 패널도 마지막 상태를 따른다. 연결 cleanup은 끝난 세션의 Instance를 해제하므로 다음 세션은 다시 닫힘으로 시작한다. 닫힌 동안에도 패널의 구독과 연결의 Ready 재조회는 유지하고, 열 때 최신 snapshot을 다시 표시한다.
 

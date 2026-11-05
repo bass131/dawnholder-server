@@ -10,16 +10,17 @@ using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace Dawnholder.Client.Tests.PlayMode
 {
     // T6/T7: real scene/input/connection path with the existing scripted TCP authority and no
     // assumed mouse-to-attack binding. Every negative-use scenario has a positive use in the same test.
-    // Only the drag T6 sets the quest HUD reveal flag to its fresh-session value; TearDown restores it.
+    // The drag T6 and H11 set the quest HUD reveal flag for their scenario; TearDown restores it.
     public sealed class InventoryIconGridSceneTests
     {
-        // Session-wide reveal flag of the quest HUD (QuestProgressHud.cs:28). Only T6 resets it; TearDown restores it.
+        // Session-wide reveal flag of the quest HUD (QuestProgressHud.cs:28). T6 and H11 set it; TearDown restores it.
         static readonly FieldInfo QuestHudRevealed = typeof(QuestProgressHud).GetField("_revealed", BindingFlags.Static | BindingFlags.NonPublic);
         bool? _questHudRevealedBefore;
 
@@ -302,6 +303,138 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.IsTrue(InventoryPanelProbe.DetailShown, "H9 positive control: same point recovers detail without the cover");
             string clear = PointDiagnostics("Slot2 가운데", 1, point, ScreenUiProbe.ScreenRect(panel));
             StringAssert.DoesNotContain("Opaque cover", clear, "H9 removed cover is absent from diagnostic candidates");
+        }
+
+        [UnityTest]
+        public IEnumerator H10_GuildEntranceAndWindows_StayUnderTheOpenInventory()
+        {
+            yield return _fixture.EnterScriptedTown();
+            _fixture.Hp();
+            yield return _fixture.WaitMap(0);
+            yield return MapEntryPlayFixture.Wait(() => HudController.Instance != null && SceneManager.GetSceneByName("UI").isLoaded,
+                "fixture: the additive HUD scene", 10);
+            yield return GuildUiConnectionTestTools.Synchronize(_fixture);
+            GuildWindow guild = GuildUiConnectionTestTools.Window<GuildWindow>();
+            BlacksmithWindow smith = GuildUiConnectionTestTools.Window<BlacksmithWindow>();
+            Assert.IsFalse(guild.IsOpen, "fixture: the guild window starts closed");
+            yield return GuildGameplayWindowTestTools.KeyFrame(_fixture, Key.G);
+            yield return MapEntryPlayFixture.Wait(() => guild.IsOpen, "fixture: the guild window opened with G", 5);
+            yield return InventoryPanelProbe.OpenWithI(_fixture);
+            yield return HudOverlapProbe.WaitForHudAndSettledPanel();
+            Assert.IsTrue(GuildGameplayWindowTestTools.InventoryShown(), "H10 I shows the inventory");
+            Assert.IsFalse(guild.IsOpen, "H10 I closes the guild window");
+            Assert.IsFalse(smith.IsOpen, "H10 the blacksmith window stays closed while inventory is open");
+
+            var panel = (RectTransform)InventoryPanelProbe.Root.Find("Inventory");
+            var grab = (RectTransform)panel.Find("Header/GrabArea");
+            Assert.IsNotNull(grab, "fixture: title bar grab area");
+            Vector2 from = InventoryPanelProbe.ScreenPoint(grab);
+            Vector2 destination = new Vector2(Screen.width - 1, 1);
+            yield return Drag(from, destination - from);
+            yield return HudOverlapProbe.WaitForHudAndSettledPanel();
+            Rect moved = ScreenUiProbe.ScreenRect(panel);
+            AssertInsideScreen(moved, "H10 moved panel");
+            Assert.AreEqual(Screen.width, moved.xMax, 1f, "fixture: actual drag reached the right screen edge");
+            Canvas inventoryCanvas = panel.GetComponentInParent<Canvas>().rootCanvas;
+            Debug.Log($"[H10 guild] inventory shown={ScreenUiProbe.IsShown(panel)} rect={moved} " +
+                $"root={inventoryCanvas.name} order={inventoryCanvas.sortingOrder} screen={Screen.width}x{Screen.height}");
+            foreach (string name in new[] { "GuildEntrance", "BlacksmithEntrance" })
+            {
+                Component entrance = GuildGameplayWindowTestTools.Entrance(name);
+                Rect rect = ScreenUiProbe.ScreenRect((RectTransform)entrance.transform);
+                bool shown = ScreenUiProbe.IsShown(entrance);
+                Canvas entranceCanvas = entrance.GetComponentInParent<Canvas>(true).rootCanvas;
+                float overlap = OverlapArea(moved, rect);
+                bool interactable = InventoryPanelProbe.Interactable(entrance);
+                Debug.Log($"[H10 guild] {name} shown={shown} rect={rect} root={entranceCanvas.name} " +
+                    $"order={entranceCanvas.sortingOrder} overlap={overlap} interactable={interactable}" +
+                    (shown ? "" : " 보이지 않음"));
+                if (name == "GuildEntrance")
+                {
+                    Assert.IsTrue(shown, "fixture: the guild entrance is shown");
+                    Assert.Greater(overlap, 0f, $"fixture: inventory {moved} overlaps guild entrance {rect}");
+                }
+                if (!shown) continue;
+                Assert.Greater(inventoryCanvas.sortingOrder, entranceCanvas.sortingOrder,
+                    "H10 user 125 B msg_f40673291f66: inventory is drawn above " + name);
+                Assert.IsFalse(interactable, "H10 open inventory locks " + name);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator H11_RightEdgeWithTheQuestHudShown_FilledTopRowShowsDetailAndUsesOnce()
+        {
+            Assert.IsNotNull(QuestHudRevealed, "fixture: QuestProgressHud._revealed session flag");
+            _questHudRevealedBefore = (bool)QuestHudRevealed.GetValue(null);
+            QuestHudRevealed.SetValue(null, true);
+            Debug.Log("[H11 quest-hud] before=" + _questHudRevealedBefore.Value + " set=True");
+            yield return ReadySyncedTown();
+            QuestProgressHud questHud = QuestProgressHud.Instance;
+            Assert.IsNotNull(questHud, "fixture: quest HUD of this town scene");
+            CanvasGroup questGroup = questHud.GetComponent<CanvasGroup>();
+            Assert.IsNotNull(questGroup, "fixture: quest HUD visibility group");
+            yield return MapEntryPlayFixture.Wait(() => Mathf.Abs(questGroup.alpha - 1f) <= .001f,
+                "fixture: the revealed quest HUD reaches full alpha", 3);
+            Debug.Log("[H11 quest-hud] alpha=" + questGroup.alpha + " blocksRaycasts=" + questGroup.blocksRaycasts);
+            Assert.AreEqual(1f, questGroup.alpha, .001f, "fixture: the revealed quest HUD is fully shown");
+
+            var panel = (RectTransform)InventoryPanelProbe.Root.Find("Inventory");
+            var grab = (RectTransform)panel.Find("Header/GrabArea");
+            Assert.IsNotNull(grab, "fixture: title bar grab area");
+            Vector2 from = InventoryPanelProbe.ScreenPoint(grab);
+            Vector2 destination = new Vector2(Screen.width - 1, 1);
+            yield return Drag(from, destination - from);
+            yield return HudOverlapProbe.WaitForHudAndSettledPanel();
+            Rect moved = ScreenUiProbe.ScreenRect(panel);
+            AssertInsideScreen(moved, "H11 moved panel");
+            Assert.AreEqual(Screen.width, moved.xMax, 1f, "fixture: actual drag reached the right screen edge");
+            Transform hud = HudController.Instance.transform;
+            Canvas hudCanvas = hud.GetComponentInParent<Canvas>(true).rootCanvas;
+            Canvas inventoryCanvas = panel.GetComponentInParent<Canvas>().rootCanvas;
+            Debug.Log($"[H11 cover] inventory root={inventoryCanvas.name} order={inventoryCanvas.sortingOrder} rect={moved}; " +
+                $"HUD root={hudCanvas.name} order={hudCanvas.sortingOrder} screen={Screen.width}x{Screen.height}");
+            float coveredArea = 0f;
+            foreach (string name in new[] { "Quest_Hud", "MinimapPlaceholder" })
+            {
+                Transform area = hud.Find(name);
+                Assert.IsNotNull(area, "fixture: HUD " + name);
+                foreach (CanvasRenderer renderer in area.GetComponentsInChildren<CanvasRenderer>())
+                {
+                    if (!ScreenUiProbe.IsShown(renderer) || renderer.cull ||
+                        renderer.GetAlpha() * renderer.GetInheritedAlpha() <= 0f) continue;
+                    var graphic = renderer.transform as RectTransform;
+                    if (graphic == null) continue;
+                    Rect graphicRect = ScreenUiProbe.ScreenRect(graphic);
+                    for (int index = 0; index < 2; index++)
+                    {
+                        var slot = (RectTransform)panel.Find("Slot" + (index + 1));
+                        Rect slotRect = ScreenUiProbe.ScreenRect(slot);
+                        float overlap = OverlapArea(slotRect, graphicRect);
+                        if (overlap <= 0f) continue;
+                        coveredArea += overlap;
+                        Debug.Log($"[H11 cover] Slot{index + 1} rect={slotRect} graphic=" +
+                            $"{ScreenUiProbe.PathOf(graphic, hud)} rect={graphicRect} overlap={overlap}");
+                    }
+                }
+            }
+            Assert.Greater(coveredArea, 0f, "fixture: a filled top-row slot overlaps a shown quest HUD or minimap graphic");
+            Assert.Greater(inventoryCanvas.sortingOrder, hudCanvas.sortingOrder,
+                "H11 user 125 B msg_f40673291f66: inventory is drawn above the HUD");
+            for (int index = 0; index < 2; index++)
+            {
+                Vector2 point = InventoryPanelProbe.SlotPoint(index);
+                yield return InventoryPanelProbe.PointAt(_fixture.Mouse, point);
+                string diagnostic = PointDiagnostics("Slot" + (index + 1) + " 가운데", index, point, moved);
+                Assert.IsTrue(InventoryPanelProbe.DetailShown, "H11 occupied point with the quest HUD shown: " + diagnostic);
+            }
+            yield return PositiveUse(1);
+        }
+
+        static float OverlapArea(Rect a, Rect b)
+        {
+            float width = Mathf.Min(a.xMax, b.xMax) - Mathf.Max(a.xMin, b.xMin);
+            float height = Mathf.Min(a.yMax, b.yMax) - Mathf.Max(a.yMin, b.yMin);
+            return width > 0f && height > 0f ? width * height : 0f;
         }
 
         // Observation only: candidates explain branches but never replace the product's detail/use decision.
