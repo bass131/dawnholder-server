@@ -4,7 +4,7 @@
 
 ### 현재 재개 카드 — 2026-11-05, PR2(PR297) 병합 뒤 종료 기록
 
-**다음 첫 순서(메인 `msg_106a66f65134`):** PR2는 PR297로 병합됐다(merge commit `cfe8bb45`, 아래 「PR2 병합 — 2026-11-05」). 종료 기록 branch는 `docs/inventory-icon-grid-closeout-20261106`이고 최신 main `cfe8bb45`에서 만들었다(근거 폴더 `closeout-branch-create-1106-01.txt`). 순서는 ① 이 병합 결과와 완료조건별 결과 기록 → ② 종료 Gardener(`codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`, 11-05 사용자 결정 `msg_987d3dc8ca33`. 저장소 CLAUDE.md 4A 표의 Sol max와 ORCA 정본의 Opus 대신이다) → ③ 종료 기록 PR 하나와 종료 점검 → R-8이다. ①·②는 끝났다. Gardener 결과와 반환 셋의 처리는 아래 「종료 Gardener — 2026-11-05」다. 지금은 ③의 종료 기록 PR과 그 문서 실사다. 종료 PR 번호와 head가 나오면 메인에 보낸다. Art는 이제 Unity를 쓰지 않는다. 다음 Unity 사용자는 Content 녹화 빌드이고, Art 종료 작업에 Unity가 필요하면 먼저 묻는다(같은 메시지).
+**다음 첫 순서(메인 `msg_106a66f65134`):** PR2는 PR297로 병합됐다(merge commit `cfe8bb45`, 아래 「PR2 병합 — 2026-11-05」). 종료 기록 branch는 `docs/inventory-icon-grid-closeout-20261106`이고 최신 main `cfe8bb45`에서 만들었다(근거 폴더 `closeout-branch-create-1106-01.txt`). 순서는 ① 이 병합 결과와 완료조건별 결과 기록 → ② 종료 Gardener(`codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`, 11-05 사용자 결정 `msg_987d3dc8ca33`. 저장소 CLAUDE.md 4A 표의 Sol max와 ORCA 정본의 Opus 대신이다) → ③ 종료 기록 PR 하나와 종료 점검 → R-8이다. ①·②는 끝났다. Gardener 결과와 반환 셋의 처리는 아래 「종료 Gardener — 2026-11-05」다. ③의 종료 기록 PR은 PR298이다. 첫 문서 실사는 NOT PASS(결함 3, 제품 0)였고 메인이 1) A 2) A로 처분했다(아래 「PR298 문서 실사 — 2026-11-05」). 지금은 문구 두 줄을 고친 head의 좁은 재실사다. 재실사 PASS와 새 head CI 통과 뒤 PR 번호·head 40자·판정 원문 경로를 메인에 보낸다(메인 `msg_1c7b9a54a292`). Art는 이제 Unity를 쓰지 않는다. 다음 Unity 사용자는 Content 녹화 빌드이고, Art 종료 작업에 Unity가 필요하면 먼저 묻는다(같은 메시지).
 
 **앞 순서:** ⑧ 독립 검증 계약 v2와 ⑨ 검증자·W9가 끝났다. 판정은 NOT PASS이고 제품 결함은 0이다. 기록·절차 결함 둘은 메인이 A로 닫았다(아래 「PR2 독립 검증 v2 — 2026-11-05」). 그 뒤 PR297을 만들었고 사용자 승인으로 메인이 병합했다.
 
@@ -50,11 +50,11 @@
   - 11-05 다섯 번째는 막힘이 아니라 「재기동 가능」(`msg_61d5931035ef`) 뒤의 계획 재기동이다. 메인이 사용자 결정 119 A·120 A대로 `--autocompact 500000`과 중복 줄 정리 hook을 얹었다(메인 `msg_8306683a3df4`, 아래 「11-05 사용자 결정 119 A·120 A」). Run 다시 묶음은 `lead-rebind-1105-02.txt`(clock_utc 2026-11-05T02:26:04.491264900Z, session-env 3줄·333 bytes)이고 재진입 보고는 `msg_aaedd754cabb`다. 기록은 리드 맥락 메모 9 `art-lead-context-1105-09.md`다.
   - 지금 대화 ID와 pane handle은 아래 표의 「리드」 줄에 있다.
 - 설계 5(NPC 대화창·보상 창이 뜰 때 스킬칸)는 메인 결정 A다(아래 「11-01 메인 결정 설계5 A」). 기록은 리드 맥락 메모 3의 「선행 시험 계약 조립」 절에 있다.
-- Unity 창은 메인이 배정한다. Unity 없이 되는 일은 바로 하고, 창이 필요하면 예상 길이(아래 「Unity 창 추정」)와 함께 청한다(메인 `msg_8f73d5ae4af3`). Core 24칸은 PR295로 main에 들었고 branch가 받았다. 6줄 캡처는 구현 뒤다. 빈 스킬칸 alpha 0.3 해석은 그 캡처 때 사용자에게 화면으로 확인받는다(같은 메시지). 종료 Gardener와 종료 점검은 PR2 병합 뒤다. 병합 순서는 Art PR1 → Core 24칸 → Art PR2 → Content 녹화 빌드다(메인 `msg_1357f45b9d35`). 작업자가 일하는 동안 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모에 쌓는다. 메모 1·2는 PR1 기록이고, 메모 3(`art-lead-context-1101-03.md`)부터 메모 10(`art-lead-context-1105-10.md`)까지가 PR2와 종료 기록이다. 리드 시험 계약에는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」를 넣는다(메인 `msg_484ea2fa03bb`, 규칙 정본 반영 전까지). 리드는 시계·SHA256을 인라인 명령으로 만들지 않는다(아래 「두 번째 좁은 재실사 — 2026-11-01」 교정 층).
+- Unity 창은 메인이 배정한다. Unity 없이 되는 일은 바로 하고, 창이 필요하면 예상 길이(아래 「Unity 창 추정」)와 함께 청한다(메인 `msg_8f73d5ae4af3`). Core 24칸은 PR295로 main에 들었고 branch가 받았다. 6줄 캡처와 빈 스킬칸 alpha 0.3의 사용자 화면 확인(같은 메시지의 당시 지시)은 끝났다. 캡처 v3를 사용자가 127 A로 승인했다(아래 「PR2 사용자 확인 캡처 v2 보류와 v3 — 2026-11-05」). 종료 Gardener는 PR2 병합 뒤에 했고, 종료 점검은 종료 기록 PR 병합 뒤다. 병합 순서는 Art PR1 → Core 24칸 → Art PR2 → Content 녹화 빌드다(메인 `msg_1357f45b9d35`). 작업자가 일하는 동안 리드는 이 파일을 고치지 않는다(아래 「선행 시험 RED — 2026-11-01」 첫 발생 1). 기록은 근거 폴더의 리드 맥락 메모에 쌓는다. 메모 1·2는 PR1 기록이고, 메모 3(`art-lead-context-1101-03.md`)부터 메모 10(`art-lead-context-1105-10.md`)까지가 PR2와 종료 기록이다. 리드 시험 계약에는 「몸짓을 바꾸는 시험 계약은 같은 몸짓의 기존 선례(설정·기다림)를 파일:줄로 가리킨다.」를 넣는다(메인 `msg_484ea2fa03bb`, 규칙 정본 반영 전까지). 리드는 시계·SHA256을 인라인 명령으로 만들지 않는다(아래 「두 번째 좁은 재실사 — 2026-11-01」 교정 층).
 
 | 항목 | 현재 |
 |---|---|
-| 상태 | PR1(격자·상세 창·우클릭)은 PR294로 main에 들어갔다(merge commit `a888cd35`, 아래 「격자 PR1 병합 — 2026-11-01」). 그 전에 강 등급 독립 검증은 head `47cbdcac`에서 PASS였다(아래 「독립 검증 — 2026-11-01」). 좁은 재실사 두 번은 리드 기록 결함만 냈고 제품 결함은 0이었다. 첫 번째 #GRIDR-01은 고쳤다(아래 「좁은 재실사 — 2026-11-01」). 두 번째 #GRIDR2-01은 메인이 「GRIDR2-01 A」로 닫았다(아래 「두 번째 좁은 재실사 — 2026-11-01」). PR2(HUD 골드 제거·왼쪽 아래 스킬칸 4칸·6줄 캡처)는 선행 시험 RED가 끝났다. RED commit은 `9d00f543`이다. 그 뒤 Core 24칸이 든 main(PR295, `fbf00de9`)을 받았다(`8316f524`). 둘 다 push했다(아래 「PR2 선행 시험 계약과 RED — 2026-11-04」). 그 뒤 시험 고침 v1을 commit `23f757ac`로 push했다(아래 「PR2 시험 고침 v1 — 2026-11-04」). 이어 T6 고침 v1을 commit `c9b90300`으로 push했다(아래 「PR2 T6 고침 v1 — 2026-11-05」). 그 뒤 구현 v1을 commit `fb7ff496`으로 push했다(아래 「PR2 구현 v1 — 2026-11-05」). 이어 구현 뒤 시험 고침 v1을 commit `a2b601f2`로 push했다(아래 「PR2 구현 뒤 시험 고침 v1 — 2026-11-05」). 6줄·새 HUD 사용자 확인 캡처 v1을 W5에서 찍었다. V1·V2·V4는 통과, V3는 시험 쪽 1실패다. 캡처 시험 파일은 이 기록과 같은 commit에 들었다(아래 「PR2 사용자 확인 캡처 v1 — 2026-11-05」). 사용자는 125 B로 인벤토리 6줄째 가림을 고치라고 했다. 원인은 정렬 순서였고 메인이 정렬 14를 받았다. 고침 v1(인벤토리 루트 정렬 5→14)을 W5F에서 돌렸고 EditMode·PlayMode 실패는 0이다. 고친 파일은 정산 commit `365d14e4`에 들었다(아래 「PR2 125 B 고침 v1 — 2026-11-05」). 캡처 계약 v2 실행자는 W5R 창이 열리지 않아 Unity 0으로 보류했다. 캡처 계약 v3로 W5R에서 V1~V4를 다시 찍었고 넷 모두 통과다(아래 「PR2 사용자 확인 캡처 v2 보류와 v3 — 2026-11-05」). 사용자는 고친 화면을 127 A로 승인했다. PR2 강 등급 독립 검증 v2는 head `875385be`에서 NOT PASS였다. 결함은 리드 기록 #PR2V-01과 검증자 절차 #PR2V-02 둘이고 제품 결함은 0이다. 메인이 둘 다 A로 처분했다(아래 「PR2 독립 검증 v2 — 2026-11-05」). 검증자가 쓴 정렬 경계 시험은 commit `a43bb41e`로 채택해 push했다. PR2는 PR297로 병합됐다(merge commit `cfe8bb45`, 아래 「PR2 병합 — 2026-11-05」). 종료 Gardener는 차단 0·리드 반환 3·새 후보 0이었고, 반환 셋은 종료 기록 branch에서 처리했다(아래 「종료 Gardener — 2026-11-05」). 다음은 종료 기록 PR과 그 문서 실사다(위 재개 카드). |
+| 상태 | PR1(격자·상세 창·우클릭)은 PR294로 main에 들어갔다(merge commit `a888cd35`, 아래 「격자 PR1 병합 — 2026-11-01」). 그 전에 강 등급 독립 검증은 head `47cbdcac`에서 PASS였다(아래 「독립 검증 — 2026-11-01」). 좁은 재실사 두 번은 리드 기록 결함만 냈고 제품 결함은 0이었다. 첫 번째 #GRIDR-01은 고쳤다(아래 「좁은 재실사 — 2026-11-01」). 두 번째 #GRIDR2-01은 메인이 「GRIDR2-01 A」로 닫았다(아래 「두 번째 좁은 재실사 — 2026-11-01」). PR2(HUD 골드 제거·왼쪽 아래 스킬칸 4칸·6줄 캡처)는 선행 시험 RED가 끝났다. RED commit은 `9d00f543`이다. 그 뒤 Core 24칸이 든 main(PR295, `fbf00de9`)을 받았다(`8316f524`). 둘 다 push했다(아래 「PR2 선행 시험 계약과 RED — 2026-11-04」). 그 뒤 시험 고침 v1을 commit `23f757ac`로 push했다(아래 「PR2 시험 고침 v1 — 2026-11-04」). 이어 T6 고침 v1을 commit `c9b90300`으로 push했다(아래 「PR2 T6 고침 v1 — 2026-11-05」). 그 뒤 구현 v1을 commit `fb7ff496`으로 push했다(아래 「PR2 구현 v1 — 2026-11-05」). 이어 구현 뒤 시험 고침 v1을 commit `a2b601f2`로 push했다(아래 「PR2 구현 뒤 시험 고침 v1 — 2026-11-05」). 6줄·새 HUD 사용자 확인 캡처 v1을 W5에서 찍었다. V1·V2·V4는 통과, V3는 시험 쪽 1실패다. 캡처 시험 파일은 이 기록과 같은 commit에 들었다(아래 「PR2 사용자 확인 캡처 v1 — 2026-11-05」). 사용자는 125 B로 인벤토리 6줄째 가림을 고치라고 했다. 원인은 정렬 순서였고 메인이 정렬 14를 받았다. 고침 v1(인벤토리 루트 정렬 5→14)을 W5F에서 돌렸고 EditMode·PlayMode 실패는 0이다. 고친 파일은 정산 commit `365d14e4`에 들었다(아래 「PR2 125 B 고침 v1 — 2026-11-05」). 캡처 계약 v2 실행자는 W5R 창이 열리지 않아 Unity 0으로 보류했다. 캡처 계약 v3로 W5R에서 V1~V4를 다시 찍었고 넷 모두 통과다(아래 「PR2 사용자 확인 캡처 v2 보류와 v3 — 2026-11-05」). 사용자는 고친 화면을 127 A로 승인했다. PR2 강 등급 독립 검증 v2는 head `875385be`에서 NOT PASS였다. 결함은 리드 기록 #PR2V-01과 검증자 절차 #PR2V-02 둘이고 제품 결함은 0이다. 메인이 둘 다 A로 처분했다(아래 「PR2 독립 검증 v2 — 2026-11-05」). 검증자가 쓴 정렬 경계 시험은 commit `a43bb41e`로 채택해 push했다. PR2는 PR297로 병합됐다(merge commit `cfe8bb45`, 아래 「PR2 병합 — 2026-11-05」). 종료 Gardener는 차단 0·리드 반환 3·새 후보 0이었고, 반환 셋은 종료 기록 branch에서 처리했다(아래 「종료 Gardener — 2026-11-05」). 종료 기록 PR298의 첫 문서 실사는 NOT PASS(결함 3, 제품 0)였고, 메인 처분 1) A 2) A대로 두 줄을 고쳤다(아래 「PR298 문서 실사 — 2026-11-05」). 다음은 좁은 재실사다(위 재개 카드). |
 | 리드 | `[Art 리드 Opus]`(claude-opus-5-5 xhigh, 11-05부터 `--autocompact 500000`), 대화 ID `c2ea722f-86d1-4b53-beb2-1082f019f3f7`(11-05 다섯 번째 `--fork-session`, 앞 ID `60446429-5e2b-425d-83b1-b035238b2845`, 그 앞 `939bb94e-e97b-4442-8442-ec2c47418a27`, 그 앞 `992cb113-1beb-462a-813f-36a5cd029d63`, 그 앞 `8241d059-b8fa-4fb6-9b12-2c18295360c1`, 그 앞 `c92c0adb-250c-48fd-b4cc-8d6c85df4386`). 회신 주소는 `run:run_6687e0512b2c`다. pane handle은 `term_f4f50918-cdbb-40b4-aada-d385d5e770e3`이고, 메인 handle은 `term_751a1f26-7aac-4a33-8a57-a3d4cec8a3d4`다(리드 맥락 메모 9, `lead-rebind-1105-02.txt`). 다음 fork 재기동 뒤 바뀐다. |
 | branch | 지금 branch는 종료 기록 branch `docs/inventory-icon-grid-closeout-20261106`이다. PR297 병합 뒤 main `cfe8bb45`에서 만들었다(근거 폴더 `closeout-branch-create-1106-01.txt`). PR2 branch는 `feat/art-hud-skill-slots-20261101`였고, 병합 뒤 그 원격은 조회되지 않았다(`pr297-merged-check-1106-01.txt`의 `remote_branch` 빈 값). PR1 병합 뒤 origin/main `a888cd35a5ae7222b44d87b2702d6bd975ed2540`에서 만들었다(근거 폴더 `pr2-branch-create-1101-01.txt`). RED commit 뒤 origin/main `fbf00de9`(PR295, 24칸)을 받았다(`8316f524`, 충돌 0, `intake-24slot-base-1104-01.txt`). PR1 branch `feat/art-inventory-icon-grid-20261101`은 origin/main `ffe7f983`(PR292 병합)에서 만들었고, RED commit 뒤 `3bb76772`(PR268 병합)을 받았다(`9e883317`, 충돌 0, `main-merge-1101-01.txt`). 그 원격 branch는 병합 뒤 지워졌다. |
 | 관계 | Core 인벤토리 24칸 goal(`01_Phases/goals/2026-11-01-inventory-24-slots/goal.md`)이 패킷·서버·공유 칸 수를 바꿨다. 격자 PR1이 먼저 들어갔고, Core 24칸은 PR295로 병합됐다(merge commit `fbf00de9`, 메인 `msg_12183256dbc0`, 아래 「Core 24칸 계약 — 확정」). |
@@ -684,7 +684,8 @@ PR2 — HUD(위 1~10은 PR1 완료조건이고, PR2는 1~7을 24칸 main에서 �
 - [x] PR2 강 등급 독립 검증(캡처 뒤 계약 v2, v1은 띄우지 않음. NOT PASS, 제품 결함 0, 기록·절차 결함 #PR2V-01·#PR2V-02는 메인 처분 A)
 - [x] PR2 병합(PR297, merge commit `cfe8bb45`. 병합 결과·완료조건별 결과는 종료 기록 branch에 기록)
 - [x] 종료 Gardener(Astra xhigh, 차단 0·리드 반환 3·새 후보 0. 반환 셋은 종료 기록 branch에서 처리)
-- [ ] 종료 기록 PR 문서 실사와 병합
+- [x] 종료 기록 PR(PR298) 첫 문서 실사(NOT PASS, 결함 #GRIDCL-01~03, 제품 0, 메인 처분 1) A 2) A)
+- [ ] 종료 기록 PR 좁은 재실사와 병합
 - [ ] 종료 점검(메인·사용자)과 R-8
 
 ## 다음 계획 후보
@@ -1409,7 +1410,7 @@ PR2 — HUD(위 1~10은 PR1 완료조건이고, PR2는 1~7을 24칸 main에서 �
 - CI 4개는 모두 통과했다(`watch-pr297-checks-1106-01.txt`).
 - 병합 미리보기(`pr2-body-facts-1106-01.txt`, `pr2-main-ahead-1106-01.txt`): merge-base `fbf00de9` 뒤 main에 든 4 commit은 Core 24칸 종료 문서뿐이고, merge-tree 충돌은 0이었다. 열린 PR207과는 CURRENT.md가 충돌한다. 병합 순서 판단은 메인 몫이다(`msg_60b81b46a725`).
 - 병합된 트리에서 Unity를 다시 돌리지는 않았다. merge-base 뒤 main 변경은 문서뿐이다.
-- Content 리드에 PR 번호와 merge commit을 알렸다(`msg_b2f37cfbf127`, 위 「PR 경계」의 약속). 그 전에 Run 목록으로 Content Run이 살아 있는지 봤다(`send-content-pr297-merged-1106-01.sh`, `run-list-1106-01.json`).
+- Content 리드에 PR 번호와 merge commit을 알렸다(`msg_b2f37cfbf127`, 위 「PR 경계」의 약속). 그 전에 Run 목록에 Content Run이 있는지 봤다(`send-content-pr297-merged-1106-01.sh`, `run-list-1106-01.json`). 목록에 있는지만 본 것이고, 받는 세션이 살아 있는지는 확인하지 않았다.
 - PR2 branch의 원격은 병합 뒤 지워졌다. 리드는 최신 main `cfe8bb45`에서 종료 기록 branch `docs/inventory-icon-grid-closeout-20261106`을 만들었다. 규칙 파일과 이 goal은 PR2 head와 같다(`closeout-branch-create-1106-01.txt`).
 
 #### PR2 완료조건별 결과
@@ -1457,7 +1458,7 @@ PR2 — HUD(위 1~10은 PR1 완료조건이고, PR2는 1~7을 24칸 main에서 �
     - Gardener는 실패 횟수를 독립 대조하지 않았다(리드 답 `msg_b26f860ef0e2` ①). 대화 기록에서 사후 추출하지 않았다.
 - 보고서 「종료 기록 PR에 넣을 것」 다섯은 이 branch에서 처리했다.
   - 재개 카드의 옛 「다음」 문장과 정렬 줄 위치(`InventoryPanelView.cs:60`→`:62`)를 고쳤다.
-  - 「지금 상태」의 메모 위치와 branch 줄을 지금 상태로 고쳤다.
+  - 재개 카드의 「Unity 창은 메인이 배정한다」로 시작하는 줄의 메모 위치와 「지금 상태」 표의 branch 줄을 지금 상태로 고쳤다. 같은 「Unity 창」 줄의 끝난 캡처·사용자 확인 미래형은 처음 고칠 때 남았고, 문서 실사 #GRIDCL-02로 고쳤다(아래 「PR298 문서 실사 — 2026-11-05」).
   - 위 「PR2 독립 검증 v2」의 service_tier 관측 위치와 「남는 것」 줄을 고쳤다.
   - CURRENT Art 줄을 종료 기록 상태로 고쳤다.
   - Gardener 결과를 이 절로 이었다.
@@ -1467,4 +1468,31 @@ PR2 — HUD(위 1~10은 PR1 완료조건이고, PR2는 1~7을 24칸 main에서 �
   - 첫 heartbeat(17:10:38Z)는 포인터 해시·계약·CLI 안내를 확인한 뒤였다고 Gardener가 신고했다. 계약은 「기동 직후 한 번」이다.
   - 셋 다 판정 차단이 아닌 관찰로 적는다(리드 답 `msg_b26f860ef0e2` ③). 관련 기존 후보는 BACKLOG `worker-heartbeat-target-gap-table`이다. 이 PR에서는 BACKLOG를 고치지 않는다.
 - 설계 관찰(보고서 「설계 관찰과 대안」)은 후속 후보와의 연결이라 이 PR에서 고치지 않는다. 시각을 「엔진 시작·종료」「wrapper 시작·종료」「잔류 없음 관찰」「반납 메시지」로 나눠 적으라는 제안은 GR-02 수정에 썼다.
-- 남는 것: 종료 기록 PR의 문서 실사와 사용자 병합 승인, 종료 점검(메인·사용자), R-8이다.
+- 남는 것(이 절을 쓸 때): 종료 기록 PR의 문서 실사와 사용자 병합 승인, 종료 점검(메인·사용자), R-8이다. 문서 실사는 아래 절이다.
+
+### PR298 문서 실사 — 2026-11-05
+
+- 종료 기록 PR은 PR298이다. 처음 head는 `57c2af9730be3f77a24fabf639464495f1dd4933`이다(근거 폴더 `closeout-01/create-closeout-pr-recorded-1106-01.txt`, 본문 `closeout-01/closeout-pr-body-01.md`). 그 head의 CI 4개는 모두 통과했다(`closeout-01/watch-pr298-checks-1106-01.txt`). 메인 생성 보고는 `msg_71edfb3b1a0f`다.
+- 실사: 신규 `[Art 검증자]` gpt-6-astra xhigh(Fast 끔)다. handle `term_0dd4c3b1-f419-4b96-9e8c-a2bc24f58bd3`, Task `task_31b0a436a6c0`, Dispatch `ctx_5ce130c8068e`이다(`closeout-01/doc-verify-launch-worker-start-01.*`). 첫 화면은 Codex v0.166.0, GPT-6-Astra xhigh였고 업데이트 창·선택창은 없었다(`closeout-01/doc-verify-launch-screen-01.tail.txt`). rollout `01a1ace4-a18a-7392-ba42-babf48f44d56`의 turn_context는 gpt-6-astra·xhigh다(`closeout-01/doc-verify-launch-rollout-check-01.txt`).
+  - 계약은 `closeout-01/doc-verify-contract-v1.md`(SHA256 `d318a449…41da`, `closeout-01/doc-verify-contract-v1-sha-01.txt`)다. 고정 입력은 `closeout-01/doc-verify-inputs-v1.txt`, 규칙 원문은 `closeout-01/doc-verify-rules-v1.md`다(`closeout-01/make-doc-verify-inputs-1106-01.mjs`). 등급은 goal-loop 「검증 강도 4주 시범」의 문서 실사다.
+  - 질문 둘: 입력 목록 줄 수 정의 `msg_186e7659c709` → 리드 답 `msg_7ac0c036d449`(목록의 lines는 LF 개수). 봉인 뒤 heartbeat 초과 자기 신고 `msg_decea455ab02` → 리드 답 `msg_5fbd23528547`(판정서는 그대로, worker_done에 따로 적음).
+- 판정(worker_done `msg_87114f58058f`): **NOT PASS, 결함 3건**이다. 셋 다 리드 문서·절차이고 제품 결함은 0이다. 원문은 `closeout-01/doc-verify-01/verdict.md`(SHA256 `b18b6e66…e4bd`, 30,586바이트)다. 리드가 다시 잰 값이 같다(`closeout-01/settle-doc-verify-done-1106-01.txt` §1).
+
+| 번호 | 무엇 | 귀속 | 처리 |
+|---|---|---|---|
+| #GRIDCL-01 | PR298 본문을 쓰기 전의 맥락 메모가 없다. 리드 메모 10 진행 11의 영향 파일은 goal·gardener.md·CURRENT였고, PR 본문은 진행 12에서 쓴 뒤에 적었다 | 리드 | 원 위반 그대로 기록하고 닫음(메인 1) A). 이번 고침은 진행 13 메모에 PR 본문 2판을 영향 파일로 먼저 넣었다 |
+| #GRIDCL-02 | 위 재개 카드의 「Unity 창은 메인이 배정한다」로 시작하는 줄(판정 당시 goal:53)에 끝난 6줄 캡처·사용자 확인이 미래형으로 남았다. 처음 고칠 때 같은 줄의 메모 위치만 고쳤다 | 리드 기록 | 그 문장을 끝난 결과와 캡처 v3 절 이름으로 바꿨다. 위 「종료 Gardener」 처리 줄에도 이 잔여를 적었다 |
+| #GRIDCL-03 | 위 「PR2 병합」 절이 Run 목록 조회를 「Content Run이 살아 있는지 봤다」로 적었다. 원시는 목록에 있는지만 본다 | 리드 기록 | 「Run 목록에 Content Run이 있는지 봤다」로 좁히고, 받는 세션의 생존은 확인하지 않았다고 적었다 |
+
+- 메인 처분 `msg_1c7b9a54a292`(2026-11-05, 메인 결정이며 사용자 결정 아님)
+  - 1) A: 「#GRIDCL-01(PR 본문 사전 메모 누락)은 지난 쓰기 순서라 소급할 수 없다. 원 위반 그대로 goal에 적고 닫는다(#PR5D-05 1 A와 같은 꼴).」
+  - 2) A: 「#GRIDCL-02·03 두 줄을 고친 뒤 새 `[Art 검증자]` `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`로 고친 줄과 #GRIDCL-01 기록만 좁게 재실사한다. 종료 PR이 녹화 빌드 경로를 막지 않아 정본 기본을 지킨다.」
+  - 「재실사 PASS·새 head CI 통과 뒤 PR 번호·head 40자·판정 원문 경로를 보내라. 메인이 R-2 뒤 병합 승인을 사용자에게 올린다.」
+- 그 밖의 대조는 모두 일치했다(판정 「계약 항목별 대조와 실제 준수」). Gardener 사본 바이트, GR-01~GR-03 처리, 생존 신호 수치, 후보 검사 진단 1건(토큰 후보), 인용 msg ID 32개다.
+- 비차단 관찰(판정 「설계 관찰(비차단)」)
+  - 계약의 「두 파일의 SHA256」은 제목 파일 hash와 생성 기록의 제목 문자열 hash(마지막 개행 없음)를 구분하지 않았다. 다음 포인터에서 구분한다.
+  - `gardener.md` 안내의 줄 범위는 split 배열 길이이고, 입력 목록의 lines는 LF 개수다. 정의가 다르다.
+- 검증자 정산: 닫기 전 화면은 끝난 빈 입력줄이었다(`closeout-01/doc-verify-screen-close-check-01.tail.txt`). 닫기 JSON은 ptyKilled true다(`closeout-01/doc-verifier-close-01.json`).
+- 생존 신호(`ctx_5ce130c8068e`): 정본 helper 300초 기준 신호 11개, 최대 간격 371초, 초과 1구간, 질문 대기 2구간이다(`closeout-01/settle-doc-verify-liveness-300-1106-01.json`, 입력 `closeout-01/settle-doc-verify-dispatch-messages-1106-01.json`). 270초 기준도 같은 한 구간이다.
+  - 18:27:43Z→18:33:54Z(`msg_2f15549d1a47`→`msg_d231de48b314`, 371초)는 검증자가 봉인 직후 공식 ask로 먼저 신고했다. 이유는 긴 판정서를 쓰는 한 턴 동안 추가 송신을 못 한 것이다. 자기 신고 원시는 `closeout-01/doc-verify-01/post-seal-self-audit-01.json`이다. 판정 차단이 아닌 관찰이다.
+- 남는 것: 고친 head의 좁은 재실사와 CI, 메인 보고, 사용자 병합 승인, 종료 점검(메인·사용자), R-8이다.
