@@ -2,10 +2,46 @@
 
 11-06 시연을 Windows 빌드 클라이언트와 DB 영속 서버로 할 수 있게 한다. 시연자가 정해진 순서로 DB 서버를 켜고 끄며, 빌드에서 로그인 → 캐릭터 선택·생성 → 마을 입장이 되는 상태가 목표다.
 
-**현재 상태(2026-11-04 23:07 KST):** 인벤토리 24칸 goal이 PR295·PR296 병합으로 끝났다. core-active를 이 branch로 되돌려 main `5dd67b09`를 받았다(로컬 commit `867d967a`). 녹화용 리허설 착수 조건 다섯 중 셋(PR268·Art 격자 PR1·Core 24칸)이 채워졌고, Art PR2 병합과 Content 빌드가 남았다. 지금 보기(완료조건 1)와 DEVELOPMENT 새 절(1차 독립 실사 통과, 결함 0)과 창 8(PR268 검증의 DB 서버 두 판)은 끝난 그대로다. 녹화 실행 순서는 v1이다. 작업자·검증자 pane은 없고, 이 branch는 로컬 commit만 있으며 push하지 않았다. 아래 「11-04 복귀」부터 읽는다.
+**현재 상태(2026-11-06 07:0x KST):** 녹화용 리허설을 2026-11-05 20:47Z~21:22Z에 마쳤고, 세 판이 모두 통과했다(Content 리드 판정, 독립 검증 아님). 사용자 결정 133 A·134 A·135 A에 따라 진짜 녹화는 두 회차 사이에 서버를 한 번 다시 켠다. 진짜 녹화용 사용자 카드 v6(메인 대조 통과)과 아래 녹화 실행 순서 v2를 썼다. 남은 것은 사용자가 옮길 리허설 서버 창 8줄(R5·R6·R8 값), 서버 계약 갱신, 신규 `[Core 검증자]` 문서 실사, Core 문서 PR이다. 이 branch는 고정 head `cfe8bb45`를 받은 로컬 commit만 있고 push하지 않았다. 작업자·검증자 pane은 없다. 아래 「11-05~06 리허설과 진짜 녹화 준비」부터 읽는다.
 
 ## 재개 지점
 
+- **11-05~06 리허설과 진짜 녹화 준비:**
+  - 고정 head 받기: Content가 알린 고정 head `cfe8bb45`(Art PR2인 PR297의 병합, 2026-11-05T16:57:26Z)를 받아 branch HEAD가 `2cb8910d7f0facf8d7096e35fcb3f7f224aa93ec`가 됐다. 서버 빌드 입력(`sync-wsl.sh` 47~72행 범위)은 build-03 소스 `3b03387b`와 diff 0이라 R1을 다시 돌지 않았다(`lead/take-fixed-head-01/take-verify-01.txt`). Content에는 넷을 전했고(`msg_9203c45e18e9`), 메인 보고 `msg_5d845c8fc131`에서 배정 창 밖 WSL 읽기 1회를 밝혔다.
+  - Content 녹화 빌드(`msg_c8dd2ae6e315`): exe sha256 `91a36fa14dd3ccf390b99720805eda0553da1ca1108381b49c98c938f69dc256`, manifest 234파일·778,468,195바이트·sha256 `d10d57c9bdecc7016dbf775eb10f00f3e3f5da60cf7d3ef83f4c25937a15f9e5`, Unity 6000.6.4f1, 빌드 exit 0(220.7초). 경로는 content-active `.backups/verification/2026-10-31-demo-autopilot-character-select/recording-build-01/`이다. 메인이 재빌드 없이 수용했다(아래 메인 결정 `msg_a5a6721188ce`).
+  - 사전 확인(2026-11-05T20:15:56.616Z~20:16:05.695Z, 창 안): 복제본 소유 표식이 core-active다. `GameServer.dll`은 353,280바이트이고 build-03 시각 그대로다. 복제본 `Current = 23`의 sha256이 Windows와 같다. WSL GameServer 0, WSL·Windows 7777 LISTEN 0이었다. 원시는 `lead/rehearsal-01/precheck-01.txt`이고, 메인에 「서버 빌드 맞음」을 보냈다(`msg_51df9731f6e9`).
+  - 리허설 단계 시각(메인 쪽, `lead/rehearsal-01/results-v1.md`): R3 「서버 떴음」 20:47:07Z, R5 「지금」 21:00:46Z → 「멈췄음」 21:09:47Z, R6 「지금」 21:09:47Z → 「다시 떴음」 21:20:18Z, R7 두 역할 마을 21:21:54Z다. R5·R6 시각은 사용자 응답 시간을 포함한다. 사용자는 카드와 다른 줄을 알리지 않았다(`msg_86e85d6e92fd`). 카드는 v5였다(아래 메인 결정 `msg_67f019755590`).
+  - Content 리드 판정(독립 검증 아님): content-active `.backups/verification/2026-10-31-demo-autopilot-character-select/lead/rehearsal-v2-lead-judgement.md`, sha256 `71b93898480241c87347a6a6b98288f95f2b89725d857d4dc2befd079b33db6a`. 세 판 완료·배치와 화면·R4-2 재로그인·R7 선택·소리가 통과다. 결과 메시지는 `msg_c277074f6a51`이다.
+    - R4-2 재로그인은 AlreadyOnline 없이 두 역할 slot 1, created=False였다. R7은 재시작 뒤 두 역할이 R4와 같은 slot 1을 골라 마을에 들어갔다.
+    - 위험: 녹화 도구가 Player 기동 약 6.8초 뒤에 시작해 첫 프레임이 로그인 근처다(`players.ps1` 171~184행). 진짜 녹화는 두 회차 모두 생성에서 시작하므로 생성 장면(빈 칸 약 1초)을 놓칠 수 있다. → 결정 134 A.
+    - R4-2의 기사는 거점 `already max`였다. 길드 거점·금고는 서버 실행 단위 메모리다. → 결정 133 A.
+  - Core 세 값: 같은 칸 확인(R7)은 통과다. 재시작 시간과 정지 요약은 사용자가 옮길 서버 창 8줄(`msg_4cdd8331fcb4`)로 채운다. 메인은 서버 창 원문을 읽지 않는다(아래 메인 결정 `msg_5100b8982d34`).
+    - R5 `Server stopped` → R6 Listening: 【8줄 대기】
+    - R6 birth → Listening: 【8줄 대기】
+    - R5·R8 정지 요약 두 줄: 【8줄 대기】. 통과 기준은 stdout·stderr 모두 `overlong=0, queueDropped=0, decodeErrors=0, readerErrors=0, drained=True`이고 `excluded`는 0보다 커도 된다.
+  - 같은 출발 상태: Core가 결정 글 `lead/rehearsal-01/msg-decision-same-start-v2.txt`를 메인 `msg_7b111d608c48`·Content `msg_25dbd7e547fa`로 보냈다. 사용자가 133 A·134 A·135 A를 골랐다(아래 사용자 결정).
+  - 진짜 녹화용 사용자 카드 v6: `lead/recording-user-server-card-v6.md`, sha256 `4269a171a3427af75e71e815c98e9ca987f878f35cc35f09d23c99a2060f54c2`. v5 대비 diff는 `lead/recording-docs-v2/card-v5-to-v6-r2.diff`이고, 코드 블록 여섯 개는 v5와 같다. 이름을 채우기 전 판(`0d3353cb…0c7d`)을 메인이 대조해 통과시켰다(`msg_544f74c0c0f2`). 이름 세 줄만 바꾼 지금 판은 메인 `msg_8a6b9593cc87`·Content `msg_3a756dd537ba`로 보냈다.
+  - 녹화 실행 순서 v2: 아래 「녹화 실행 순서」 절이다. 초안 `lead/recording-order-v2-draft.md`를 메인 `msg_9780d55994de`·Content `msg_c946082e5b5b`로 보냈다.
+  - 다음 일
+    1. 메인이 8줄을 전하면 【8줄 대기】 칸(이 항목과 녹화 순서 R5·R6·R8)을 채우고 메인·Content에 보낸다.
+    2. 서버 계약 v1.1에 리허설 실측(회차 사이 재시작, 재시작 없는 2회차의 서버 상태, 재로그인)을 더한 새 판을 만든다(범위 「만들 것」 6). 같은 사실은 Content에 메시지로 이미 갔다(`msg_b752a2465246`·`msg_b28231a86423`).
+    3. 신규 `[Core 검증자]`(Astra xhigh)가 이 goal의 바뀐 줄·카드 v6·서버 계약 새 판·리허설 원시를 문서 실사한다. DEVELOPMENT 절은 리허설 뒤 바뀌지 않았다.
+    4. Core 문서 PR을 연다. 병합은 메인 관문이다.
+    5. 진짜 녹화 창은 메인이 배정한다. Core 몫은 창 시작의 사전 확인(R1 복제본 읽기·7777)이다.
+- **창 R1 서버 v23 빌드(2026-11-04, 메인 `msg_6701b9629720`):**
+  - 계약은 생성 스크립트 `build-03/scripts/build-contract-v1.cjs`로 만들었다. `build-03/contract-v1.md` sha256 `8b329ced2a9fa6f79c62a16c3bc438c7d514152c3911bb7f49491b39963e36c3`, 규칙 원문 대조 ALL VERBATIM, 경로 확인 OK다.
+  - 신규 `[Core Sol]`을 14:16:49Z에 리드 pane split으로 띄웠다. 첫 화면은 `GPT-6.1-Sol max`, 업데이트 창 없음, backend 실제 모델 unknown이다. Task `task_c43fe3632248`, Dispatch `ctx_8fa14238a163`. 이 작업자는 계획 보고(`return-01/msg-recording-core-plan-to-main-v1.txt` 12행)대로 Sol max로 띄웠고, 메인이 그 계획 순서에 동의했다(`msg_6701b9629720`).
+  - S1 관문(14:21:12Z~14:21:24Z) 통과: 물리 여유 16,419,905,536바이트, commit 여유 26,803,781,632바이트. HEAD `3b03387bafae1866f6a917f76c75d30f45ecad75`, 작업 트리 깨끗함.
+  - `sync-wsl.sh build` 1회, 14:21:41.400Z~14:22:23.432Z(42.032초), exit 0, `80 Warning(s)`·`0 Error(s)`.
+  - S3 11항 통과. 복제본 소유 표식이 core-active이고, `GameServer.dll` 353,280바이트·mtime 14:22:11.68Z가 빌드 시작 뒤다. 복제본 `Current = 23`, sha256 `a62b3b58…24e2`가 Windows와 같다. 리드가 정산 뒤 다시 읽어 같음을 확인했다(`build-03/lead-sample-check-clone-02.txt`; `-01`은 Git Bash 경로 변환으로 실패한 시도).
+  - S4: SQL 서비스 Running, 15433은 sqlservr, 공개 CA hash 일치, 만료 2026-11-17T09:48:58Z. 연결 시도는 없었다.
+  - 정산: worker_done `msg_3ec36ee963a4` succeeded(9분 45초), 작업자 쓰기의 경계 밖 0건, pane 닫음(`ptyKilled: true`).
+  - 창 끝 확인(14:28:28Z~14:28:38Z): WSL GameServer 0, WSL 7777 0, Windows 7777 LISTEN 0, dotnet·Unity·GameServer·VBCSCompiler 0. 남은 codex.exe 셋은 작업자 기동 전에 시작한 남의 프로세스로 손대지 않았다.
+  - 14:28:38Z 메인에 「창 끝」을 보냈다(`msg_233deae58ac2`). 기록 전체는 `build-03/lead-launch-record-v1.md`다.
+- **카드 v4(리허설·녹화 공용, 뒤에 v5·v6으로 바뀜):** `lead/rehearsal-user-server-card-v4.md`, sha256 `7deeb64c646a8a8afe0d3fcbf5eea2a9c2a71d7c882ee1f8204ede70a2e2c63e`(153줄). 107 A대로 1단계 자격 줄을 `$env:DAWNHOLDER_DB_CREDENTIAL_PATH` 우선으로 바꿨다. 나머지 블록 16줄은 v3와 같다(`lead/card-v4-block-compare-01.txt`). PowerShell 구문 분석은 프로필 없이 오류 0이다(`lead/card-v4-start-block-parse-01.txt`). 원천 launcher·Program.cs blob(`1e3476e0`·`f83d026a`)은 v3 때와 같다(`lead/return-01/card-v4-source-lines-01.txt`). 메인 대조 일치(`msg_0014a4730021`).
+  - v5(`lead/rehearsal-user-server-card-v5.md`, sha256 `688198016d660400b8d0b8b2426cd59c46f8315dd339c73f017df4466fe41b71`, 생성 `rehearsal-01/make-card-v5.cjs`)는 131 C에 맞춰 개요 「한 판」과 모니터 문장만 바꿨다. 메인 확정은 `msg_67f019755590`이다. 리허설은 v5로 했다.
+  - v6은 위 11-05~06 항목이다.
+- **Content 녹화 순서 참고(`msg_e58c6d6b1f73`, 답 불요):** 퀘스트 HUD가 켜진 뒤 인벤토리 창을 화면 오른쪽 끝에 두면 윗줄 칸이 HUD 아래에 깔린다는 알림이었다. PR297의 정렬 고침으로 닫혀서(Content 리드 `msg_59ba4e32d30a`) 녹화 순서에 주의 줄을 넣지 않았다.
 - **11-04 복귀(메인 `msg_32944fc24916`·`msg_4b7239950d8f`):** 인벤토리 24칸 goal이 끝났다. 제품 PR295는 `fbf00de9`, 종료 기록 PR296은 `5dd67b09`로 들어갔고, 리드가 [종료 점검](../2026-11-01-inventory-24-slots/goal.md#종료-점검-준비)을 `msg_0f1aa79e5418`로 보냈다. 메인은 지금 리드를 교체하지 않고 이 pane이 이 goal을 잇게 했다(아래 「적용 중인 메인 결정」 11-04).
   - 2026-11-04T14:06:48Z에 core-active를 24칸 종료 branch(`6a5c53ad`, 변경 0)에서 이 branch(`ad5d3442`)로 바꿨다. 바꾸기 전 core-active 터미널은 리드 하나였고, Unity·dotnet·WSL 세션 프로세스는 0이었다. 사용자 서버 탭은 터미널 목록에 없었다. 근거는 `.backups/verification/2026-10-31-db-persistence-demo-build/lead/return-01/`의 `branch-switch-01.txt`·`terminal-list-before-switch-01.json`·`tasklist-before-switch-01.csv`다.
   - main `5dd67b09`를 받았다(`867d967a`, 충돌 0, tree가 미리보기 `lead/return-preview-5dd67b09-01.txt`와 같음). 서버 쪽 트리(`02_Server`·`04_ClientNet`·`98_Shared`·`99_Tools`)는 `5dd67b09`와 diff 0이다. `ProtocolVersion.Current = 23`이고, 작업 트리 Shared.dll은 v23(sha256 `8d471e72…c025`)이다(같은 폴더 `take-base-verify-01.txt`).
@@ -32,12 +68,12 @@
   - 다음 서버 실행 카드(리허설)는 결정 107 A대로 1단계 자격 줄을 `$env:DAWNHOLDER_DB_CREDENTIAL_PATH` 우선으로 바꾼다(「적용 중인 사용자 결정」 107 A). 창 8 카드 v3는 바꾸지 않는다.
 - **PR268 병합(메인 사본 `msg_11107f0e032c`):** 사용자 승인 줄(head `6f4f721aaf104dc002e16eccadf95dc10e12e3f6`) 뒤 메인이 2026-11-01T04:22:01Z에 병합했다. merge commit은 `3bb767726e7e10417c8347e65e003a1fcfb6099c`다. PR268이 먼저 들어가 v22 재빌드 조건은 없어졌다.
 - **11-01 기록 전환(08:27Z경):** 이 기록을 쓰려고 core-active를 잠깐 이 branch로 바꿨다. 바꾸기 전 24칸 branch는 `11fd1824`, 변경 0이었다. 사용자 서버 탭은 정지 뒤 입력 화면, Windows dotnet 0, Unity 0이었다(`.backups/verification/2026-11-01-inventory-24-slots/lead-g1-record-switch-01.txt`). 커밋 뒤 24칸 branch로 돌아간다.
-- 다음 첫 일: 메인의 리허설 실행 창 배정을 기다린다. 착수 조건은 다섯이다.
+- 11-04까지의 다음 첫 일(다섯 조건이 11-05에 다 채워졌고, 리허설은 맨 위 11-05~06 항목이다): 메인의 리허설 실행 창 배정을 기다린다. 착수 조건은 다섯이다.
   - PR268 병합(채움, 위 항목)
   - Art 인벤토리 격자 PR1 병합(결정 92 B, `msg_e8defeeffd1f`). 채움: PR294 `a888cd35`(2026-11-01T11:39:32Z)
   - Core 인벤토리 24칸 PR 병합(결정 97 A, `msg_3ce270803253`). 채움: PR295 `fbf00de9`(2026-11-04T12:13:47Z)
-  - Art PR2 병합(HUD 골드 제거·스킬칸, 「적용 중인 사용자 결정」 11-01 HUD 지시)
-  - Content 빌드 경로·exe sha256
+  - Art PR2 병합(HUD 골드 제거·스킬칸, 「적용 중인 사용자 결정」 11-01 HUD 지시). 채움: PR297 `cfe8bb45`(2026-11-05T16:57:26Z)
+  - Content 빌드 경로·exe sha256. 채움: `msg_c8dd2ae6e315`(맨 위 항목)
   - 병합 순서(메인 결정 `msg_495eff183bf0`): Art 격자 PR1 → Core 24칸 → Art PR2(HUD 골드 제거·스킬칸 좌하단 4칸·6줄 캡처) → Content 녹화 빌드. Art PR2의 6줄 캡처는 24칸이 main에 있어야 찍힌다. 녹화 빌드 기준(다섯 PR이 모두 들어간 main)은 그대로다.
   - 24칸 PR은 프로토콜 버전을 올린다. 그래서 리허설 전에 Content가 알리는 고정 head(다섯 PR이 모두 들어간 main) 40자를 이 branch에 그대로 받고 서버를 다시 빌드한다(Core가 Content에 보낸 답 `msg_45e700da3330`). Core가 돌려줄 것은 이 branch HEAD 40자, 서버 쪽 트리(`02_Server`·`04_ClientNet`·`98_Shared`·`99_Tools`) diff 0 원시, `ProtocolVersion.Current` 줄, R1 exit다. 새 Core 작업자는 Codex Sol max로 띄운다.
 - 24칸 작업: 메인이 범위 초안을 요청했다(`msg_3ce270803253`). 초안은 `.backups/verification/2026-11-01-inventory-24-slots/scope-draft-v1.md`(sha256 `8dba8548…1a95`)다. 메인이 `msg_3dfd5496b065`(18:04:08Z)로 1 가·2 동의·3 가를 승인했다.
@@ -191,6 +227,7 @@
 
 - 기사 클라는 주 모니터, 마법사 클라는 보조 모니터(주 모니터 왼쪽)에 각각 1920×1080 창이다(`-screen-width 1920 -screen-height 1080 -screen-fullscreen 0`).
 - 녹화는 사용자가 쓰는 도구로 두 화면을 따로 잡아 편집에서 합친다. 메인·리드는 녹화 도구를 띄우지 않는다.
+  - 11-05에 바뀜: 녹화 도구는 Content 실행 작업자가 띄우고 끈다(사용자 지시 `msg_7ac87f683832`). 화면은 하나이고 직업별로 한 번씩 녹화한다(결정 131 C). 그래서 110 A의 두 모니터 배치는 쓰지 않는다. 둘 다 아래 11-05 절에 있다.
 - Core 할 일은 녹화 실행 순서 R2·R4의 창 크기를 이 값으로 맞추는 것뿐이다(메인 지시). R2·R4는 아래 「녹화 실행 순서」에 반영했다. 창 위치·잘림 확인은 Content 계약 고정본 몫이다(Core 답 `.backups/verification/2026-11-01-inventory-24-slots/msg-recording-contract-v4-answers-to-content.txt`).
 
 ### 2026-11-01 사용자 직접 지시 — HUD 골드 제거·스킬칸 좌하단 4칸, 녹화는 그 뒤
@@ -209,6 +246,72 @@
 - Core 할 일 (2), 녹화 기준: 녹화 빌드 기준을 「PR-A·PR268·Art 격자 PR1·Core 24칸·Art PR2가 모두 들어간 main」으로 고쳤다(아래 「녹화 실행 순서」 머리 줄). Content 계약 초안 v6(sha256 `7f56cd4b3279ace6c84694ef85ba094835424fe7d780ec051e703e34a65f107a`, `msg_01d67753c36f`)도 같은 다섯 PR을 적었다. Core 확인 메시지 `msg_e0f89b875125`와 엇갈렸고 내용은 같다.
 - 정정: Core가 처음 메시지에 「Art PR1 → Core 24칸 → Art PR2」로 적은 것은 정해진 순서가 아니었다. Art `msg_494eb3ba541b`·메인 `msg_a3fe4d659794`로 바로잡았다. Core 24칸 PR이 바꾸는 파일은 HUD 쪽 파일과 겹치지 않는다(client.md는 Core 38행, HUD 44·46행). 목록 원시는 `.backups/verification/2026-11-01-inventory-24-slots/lead-core24-changed-files-01.txt`다.
 
+### 2026-11-04 제출 기한과 Codex 세션 배정 — 24칸 goal의 원문을 따름
+
+메인 `msg_76097190e071`이 같은 결정이 이 goal에도 적용된다고 알렸다. 원문은 24칸 goal에 있어서 여기에는 링크만 둔다.
+
+- 제출 기한: [24칸 goal 「2026-11-04 재기동과 제출 기한」](../2026-11-01-inventory-24-slots/goal.md#2026-11-04-재기동과-제출-기한). 2026-11-09(월) 14:00에 USB로 제출하고, 발표는 2026-11-11(수) 16:00이다. 이 goal 첫 줄의 「11-06 시연」은 새 기한으로 읽는다.
+- 작업자·검증자 배정: [24칸 goal 「2026-11-02 작업자·검증자 Astra high」](../2026-11-01-inventory-24-slots/goal.md#2026-11-02-작업자검증자-astra-high). 2026-11-04 22:4xZ 이후에는 아래 Astra xhigh 결정으로 바뀌었다.
+
+### 2026-11-04 새 Codex 세션은 모두 Astra xhigh
+
+메인 `msg_2b32a1ec2392`(리드 수신 2026-11-04T22:49:22Z, `.backups/verification/2026-11-01-inventory-24-slots/orca/check-wake-01.json`)가 전달한 사용자 원문이다. 메인 pane에 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다.
+
+> 이제 앞으로 모든 Codex 작업자는 Astra xhigh, 검증자도 xhigh로 진행해줘
+
+> 이유는 11월 10일에 구독이 끝나는데 그때 갱신 더 안할 예정이라
+
+- 위 11-02 「작업자 Astra High·검증자 high」를 대신한다.
+- 앞으로 여는 새 Codex 세션은 역할과 무관하게 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다. 구현자·선행 시험 작성자·독립 검증자·빌드나 캡처 같은 실행 작업자·Gardener·이미지 생성이 모두 들어간다. 태그는 역할 태그 그대로다.
+- 이미 떠 있는 세션은 바꾸지 않는다. 띄우지 않은 계약은 실행 명령 줄을 고친 뒤 SHA256을 다시 재서 대조를 청한다. 정본 반영은 11-09 제출 뒤 Rules 몫으로 메인이 들고 있다.
+- 이 goal에서: `build-03/contract-v1.md`는 이미 쓴 계약이라 고치지 않았다. 다음 신규 `[Core 검증자]`는 Astra xhigh로 연다.
+
+### 2026-11-04 「완전 대기」와 11-05 대기 5분 규칙
+
+메인 `msg_cc23e064624b`(리드 수신 2026-11-04T19:26:11Z, 24칸 근거 폴더 `orca/wait-179.json`)와 `msg_a7b20ec8baa0`(24칸 근거 폴더 `orca/check-wake-03.json`, 2026-11-05T17:04:57Z)가 전달한 사용자 원문이다. 메인 pane에 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다.
+
+> 불필요한 대기를 하는 리드급은 완전 대기상태로 전환해줘
+
+> 앞으로는 너무 오랜시간 대기는 하지 말아줘 5분 넘어서 마지막 작업 이후 응답이 나한테 없으면 대기하지 말아줘 토큰낭비야
+
+- 리드는 작업자나 검증자가 돌고 있을 때만 우편함 대기를 연다. 메인을 기다릴 때는 대기·주기 확인·heartbeat 없이 턴을 끝낸다.
+- 다시 일할 때는 메인이나 깨움 도구가 「Orca 메시지를 확인하라」를 넣고, 리드는 `--wait` 없는 check 한 번으로 읽는다.
+
+### 2026-11-05 결정 129 A·130 A와 녹화 자동화 지시
+
+메인 `msg_8870ac1e2126`(24칸 근거 폴더 `orca/check-wake-09.json`, 19:09:03Z)과 `msg_7ac87f683832`(`orca/check-wake-10.json`, 19:16:54Z)가 전달한 사용자 원문이다. 메인 pane에 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다.
+
+> 1) 129 - 시연 리허설 시점: 준비되는 대로 바로 vs 시각 지정 → A 준비되는 대로 · 2) 130 - 리허설에서 녹화 도구도 시험할지 → A 시험한다
+
+> 녹화는 내가 하는게 아니라 직접 시나리오 봇 돌려서 전부 클로드로 진행해줘
+
+- 녹화 도구는 Content 실행 작업자가 띄우고 멈춘다. 서버 시작·자격 입력·서버 창 Enter는 그대로 사용자 손이다.
+- 130 A의 「녹화 도구는 R2 통과 뒤 사용자가 띄운다」는 뒤 지시로 바뀌었다.
+- Core 회신(메인 `msg_f748b762af9f`, Content `msg_3d0ad23c6476`): 카드 v4에는 녹화 도구 단계가 없어 고치지 않았다. 녹화 순서는 v2에서 R2 칸만 바꾼다.
+- 같은 무렵 Content 리드 `msg_59ba4e32d30a`가 인용한 사용자 결정 123 A(마법사 배경 음악 끔)로 마법사 명령에 `-demo-no-bgm`이 붙는다. 기존 옵션이라 코드 변경은 없다. 원문은 Content goal 몫이다.
+
+### 2026-11-05 결정 131 C — 화면 하나, 직업별로 한 번씩
+
+메인 `msg_67f019755590`(24칸 근거 폴더 `orca/check-wake-12.json`, 19:43:30Z)이 전달한 사용자 원문이다. 메인 pane에 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다. Content에는 메인 `msg_cf71f4c479f7`로 전달됐다.
+
+> 1) 131 - 리허설·녹화 화면: 보조 모니터 연결 vs 화면 하나 → C 코멘트 「같은 시나리오니까 각각 한번씩 녹화하고 이후에 편집할때 조정」
+
+- R4가 R4-1(기사 녹화)과 R4-2(마법사 녹화) 두 회차가 된다. 녹화하지 않는 쪽은 숨긴 진행용 창이다. R2 관문은 R4-2 앞에서 한 번 더 잰다.
+- 화면 잘림 확인은 실행자 측정과 Content 리드 판정으로 바뀌어 사용자 손에서 빠진다.
+
+### 2026-11-05~06 결정 133 A·134 A·135 A — 진짜 녹화의 출발 상태·녹화 늦음·새 이름
+
+메인 `msg_424a61a49d20`(24칸 근거 폴더 `orca/check-wake-18.json`, 21:44:38Z)과 `msg_5b1efce641fb`(`orca/check-wake-20.json`, 21:50:46Z)가 전달한 사용자 원문이다. 메인 pane에 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다. Core가 올린 결정 글은 `lead/rehearsal-01/msg-decision-same-start-v2.txt`(메인 `msg_7b111d608c48`)다.
+
+> 대시보드 결정 응답: 1) 133 - 진짜 녹화 두 회차 출발: 회차 사이 서버 재시작 vs 재시작 두 번 → A 회차 사이 재시작 · 2) 134 - 녹화 시작이 늦어 캐릭터 생성 장면을 놓칠 위험: 녹화 스크립트만 고침 vs 클라 빌드 고침 → A 녹화 스크립트만
+
+> 대시보드 결정 응답: 1) 135 - 진짜 녹화 1회차 상대 법사의 새 이름: 초안 그대로 vs 다른 이름 → A 초안 그대로
+
+- 133 A: 두 회차 사이에 서버를 한 번 다시 켠다. 1회차는 기사를 녹화하고, 상대 마법사는 새 계정으로 만든다. 2회차는 마법사를 녹화하고, 상대 기사는 1회차 기사를 다시 고른다. 리허설의 R7 판은 이 선택으로 합쳐진다. 사용자 손은 카드 1·3·4·6단계 넷이다.
+- 134 A: 녹화가 늦게 걸리는 문제는 Content 녹화 스크립트에서 막는다. 클라 빌드는 그대로다.
+- 135 A: 1회차 상대 마법사는 `rec_ally_mage`·「새벽동료」다.
+- 메인 지시(같은 `msg_424a61a49d20`): Core는 진짜 녹화용 사용자 카드 v6과 녹화 순서 v2를 쓴다. 카드 v6에는 「사용자가 서버 창의 정해진 줄만 옮긴다」를 넣는다. 결과는 「재개 지점」 맨 위 항목과 아래 「녹화 실행 순서」 v2다.
+
 ## 적용 중인 메인 결정
 
 메인 `msg_0d7e73a9805d`(2026-10-31T09:12:08Z). 사용자 결정이 아니다.
@@ -224,7 +327,7 @@
 - 범위 초안 v2(sha256 `855d9a16a3d247f3444b6024f6b825db2e565991a4d0d8bfd012ce9b8e339731`)는 79 C와 차이가 없어 단계 B v2를 받는다. 녹화 구성이 정해질 때까지 단계 B 중 DEVELOPMENT 새 절만 먼저 해도 된다.
 - PR268 대조: 메인도 `CharacterSelectController.cs:62~66`과 PR268의 `OnKnightClicked`/`OnMageClicked` 호출을 직접 봤고 판단이 같다. 로그인 단계가 찾는 `AccountNameInput`·`ServerHostInput`은 PR281 뒤 main의 `00.Menu/MainMenu.unity`에도 남아 있어 그 단계는 막히지 않는다. PR268 head `1237cb58`, 주인은 메인(사용자 결정 21A), 독립 검증 없음.
 - 녹화 구성은 사용자 결정 82, PR268 검증·병합은 사용자 결정 83으로 올라갔다. 추천은 둘 다 A(나눠 녹화, 검증 뒤 병합)다.
-- 녹화는 메인이 한다. 10-28 PR268 실측에 쓴 저장소 밖 ffmpeg 데스크톱 녹화 방식이다.
+- 녹화는 메인이 한다. 10-28 PR268 실측에 쓴 저장소 밖 ffmpeg 데스크톱 녹화 방식이다. (11-05 사용자 지시 `msg_7ac87f683832`로 Content 실행 작업자가 녹화 도구를 띄우는 것으로 바뀌었다.)
 - DB 장면의 서버 시작·자격 경로 입력·정지 Enter는 사용자 손이다. 82 A면 DB 장면의 클라 조작도 사용자 손이다.
 - 녹화 클라는 빌드다(72 B). 빌드는 Content 계약 그대로다.
 - 사용자용 PowerShell 7 탭 「DB 서버 (사용자)」(`term_3a5ec295`, core-active 루트)를 메인이 열어 뒀다. Core는 그 탭에 입력하지 않는다.
@@ -254,6 +357,48 @@
 - 24칸 goal 상단 상태 줄과 CURRENT Core 줄의 병합 전 표현은 이 goal 복귀 기록 commit에서 함께 고친다.
 - 녹화 Core 몫 계획 보고에 Unity·WSL 창이 필요한 시각과 길이를 넣는다. Art PR2가 Unity 창을 약 40분 쓸 예정이다.
 
+메인 `msg_6701b9629720`(2026-11-04T14:12:33Z 배정). 사용자 결정이 아니다.
+
+- 창 R1(WSL 단독 약 20분)을 14:12:33Z부터 배정했다. Unity·Windows dotnet·DB·7777 0 조건이다.
+- 계획 (가)~(마) 순서에 동의했다(계획 보고 `msg_547d31cdf5a3`).
+- 리허설 창(약 60분)은 Art PR2 병합과 Content 녹화 빌드 고정이 끝나면 사용자 시각을 받아 배정한다. 사용자 서버 탭(core-active 루트 PowerShell 7), R0의 7777 확인, 107 A 프로필 변수는 그때 메인이 사용자에게 함께 묻는다.
+- 리허설 이름 겹침은 생성 화면 실패로 드러나면 메인에 올린다.
+
+메인 `msg_0014a4730021`. 사용자 결정이 아니다.
+
+- 카드 v4 시작 블록 대조가 일치했다. v4 sha256 `7deeb64c…2c63e`, v3 `d4a869d0…dbabd` 둘 다 보고값과 같다. 1단계 블록의 차이는 자격 경로 한 줄 → 두 줄(환경 변수 먼저, 비면 Read-Host)뿐이다.
+- 지킬 것 세 줄(채팅에 경로 붙이지 않음, AI가 파일·프로필 값을 보지 않음, AI가 시작·입력·종료 Enter를 대신하지 않음)이 남아 있다.
+- 이 카드로 리허설과 녹화를 한다. 사용자에게는 리허설 창 배정 때 메인이 전한다. (뒤에 131 C로 v5, 133 A로 v6이 됐다.)
+
+메인 `msg_5631af607d10`. 사용자 결정이 아니다.
+
+- 창 R1 반납(`msg_233deae58ac2`)을 받았고 이어서 Art W6F(Unity 약 45분)를 열었다.
+- (다)는 Content 고정 head가 오면 한다. 그때까지 창을 쓰지 않는다.
+
+메인 `msg_a5a6721188ce`(리드 수신 2026-11-05T18:39:40Z, 24칸 근거 폴더 `orca/check-wake-05.json`). 사용자 결정이 아니다.
+
+- Content 녹화 빌드를 수용했다. 독립 판정 불합격 사유 D1·D3는 절차·원시 문제이고, 메인 처분은 수용 A(`msg_b50c04ca0c08`)라 재빌드는 없다.
+- R2·R4·R7·클라 종료는 신규 Content 실행 작업자(Astra xhigh) 한 명이 맡는다.
+- 분담: Core 안 `msg_ebb4e51fb548`에 Content가 `msg_c8dd2ae6e315`로 동의했다. 메인은 Content 알림(R4 끝·두 클라 닫힘, R7 끝·두 클라 닫힘, R2 미달)으로 R5·R8의 「지금」을 정한다. Core는 창 시작에 복제본 읽기 확인과 7777 확인을 한 뒤 「서버 빌드 맞음」을 메인에 보낸다.
+- Content 리허설 실행 계약 v1(`content-active/.backups/verification/2026-10-31-demo-autopilot-character-select/lead/rehearsal-run-contract-v1.md`, sha256 `0d636c3c3dc85b83dcaf069a9b2f09442a4c47b1565c1914b053230f096753e7`, `msg_ac200a0295be`)과 v2(같은 폴더 `rehearsal-run-contract-v2.md`, sha256 `3b3b354740c853d2df9052f4ec6780abd6da05416cf2cc7c29744bd9fe244c1b`, `msg_2a8876645f98`)를 Core 녹화 순서와 대조했다. v2의 차이에 대한 Core 회신은 메인 `msg_81f4008de5a5`·Content `msg_b752a2465246`이다(원문 `lead/rehearsal-01/msg-contract-v2-diff-v1.txt`).
+  - R2 `measure-gate.ps1 … -MinimumPhysicalBytes 6GB -MinimumCommitBytes 4GB -AllowDotnet`: Core R2 칸은 메모리 두 값만 정하므로 dotnet 수 면제는 Core 기준과 어긋나지 않는다.
+
+메인 `msg_67f019755590`(리드 수신 2026-11-05T19:43:30Z). 131 C 원문을 뺀 나머지는 메인 판단이다.
+
+- 리허설 카드 v5를 확정했다(`688198016d…1b71`, diff 넷).
+- 진짜 녹화는 두 회차가 같은 출발 상태여야 한다(Content에는 `msg_25e147f44c7f`로 「둘 다 캐릭터 생성부터」). 방법과 사용자 손 시간을 Content와 맞춰 리허설 결과와 함께 올린다. → Core 결정 글과 133 A.
+- 같은 출발 상태 조율: Core 첫 안 `msg_3a1b8966627b`(같은 계정 선택)는 거뒀다. Content 질문 `msg_2683f720f602`에 Core가 `msg_b28231a86423`으로 답했다(재시작 필요, `GuildRegistry`에 되돌리기 경로 없음). Content 동의는 `msg_5e1339c81084`다.
+
+메인 `msg_5100b8982d34`(리드 수신 2026-11-05T20:47:08Z, 24칸 근거 폴더 `orca/wait-181.json`). 사용자 결정이 아니다.
+
+- 서버 창 원문은 메인이 읽지 않는다. 자격 경로가 보일 수 있어서다.
+- 세 값에 서버 창 원문이 필요하면, Core가 받을 줄을 메인에 정확히 적어 보낸다. 메인이 사용자에게 그 줄만 옮겨 달라고 한다. Core가 적어 보낸 8줄은 `msg_4cdd8331fcb4`(원문 `lead/rehearsal-01/msg-to-main-server-lines-v1.txt`)다.
+
+메인 `msg_544f74c0c0f2`(리드 수신 2026-11-05T21:50:46Z). 사용자 결정이 아니다.
+
+- 카드 v6 초안(`0d3353cb…0c7d`)의 대조가 통과했다. v5 → v6 diff 129줄에 코드 블록 줄이 없어 시작 블록·재시작 한 줄·서버 창 문구·실패 문구는 v5와 같다. 사용자 손 넷(1·3·4·6)과 133 A 순서가 맞다.
+- 135 이름과 리허설 8줄이 오면 메인이 원문으로 보낸다. 그 사이 goal 기록·검증자 준비는 진행해도 된다.
+
 ## 요구사항 원천
 
 - 범위 초안 전문: `.backups/verification/2026-10-31-db-persistence-demo-build/lead/scope-draft-v1.md`(sha256 위와 같음). 초안의 「확인한 사실」 표가 근거 줄을 담는다.
@@ -268,7 +413,7 @@
 
 1. **지금 보기:** 메인 배정 창에서 Legacy를 내리고 core-active에서 영속 서버를 띄워, 사용자가 지금 쓰는 Editor로 새 캐릭터 선택창을 본다.
 2. **영속 서버 실행 절:** `00_Document/operations/DEVELOPMENT.md`에 「DB 영속 서버 실행」 절을 더한다. 빌드 → launcher 시작 → Enter 정지 순서, 7777 충돌, 실패 문구별 대처를 담는다.
-3. **녹화 실행 순서(v3, 결정 82 B):** 자동 진행기 두 클라(기사·마법사) + 영속 서버 한 판 기준의 서버 쪽 순서를 이 goal에 둔다. Legacy Ctrl+C → 영속 서버 Listening → 두 클라 시작·자동 진행 → (DB 장면은 자동 진행이 끝나고 연결이 닫힌 뒤) Enter·재시작·같은 캐릭터 목록 → 녹화 끝 → Enter. Core 몫은 서버 순서·대기 시간·정지/재시작 위치다. 녹화 도구는 메인, 자동 진행기는 Content 몫이다.
+3. **녹화 실행 순서(v3, 결정 82 B):** 자동 진행기 두 클라(기사·마법사) + 영속 서버 한 판 기준의 서버 쪽 순서를 이 goal에 둔다. Legacy Ctrl+C → 영속 서버 Listening → 두 클라 시작·자동 진행 → (DB 장면은 자동 진행이 끝나고 연결이 닫힌 뒤) Enter·재시작·같은 캐릭터 목록 → 녹화 끝 → Enter. Core 몫은 서버 순서·대기 시간·정지/재시작 위치다. 녹화 도구는 메인, 자동 진행기는 Content 몫이다. (11-05 바뀜: 녹화 도구도 Content 실행 작업자가 띄운다, 사용자 지시 `msg_7ac87f683832`. 순서는 결정 131 C·133 A로 두 회차가 됐다.)
 4. **녹화용 리허설 1회(v3, 결정 83 A):** PR268 병합 뒤 main의 Content 빌드로 위 순서를 끝까지 한다. 장면별 소요 시간·서버 재시작 시간·화면 오류를 기록해 녹화 컷 계획에 넘긴다.
 5. 리허설을 막는 결함은 번호를 매겨 소유 파트에 보낸다. Core 소유(저장·host·launcher)는 이 goal에서 최소 수정하고, World·Content 소유는 각 파트 계약으로 넘긴다.
 6. **자동 진행기용 서버 계약:** F8·F9의 영속 모드 처리, DB에 남는 값과 안 남는 값, 캐릭터 이름·칸·삭제 없음 제약, 서버 쪽 녹화 순서를 Content 새 리드에게 넘긴다. v1은 `lead/server-contract-for-autopilot-v1.md`(sha256 `4187c314…5e51`, 메인 `msg_cb2a6da95190`)이고 리허설 실측으로 갱신한다.
@@ -314,35 +459,47 @@
 - Content: 클라 Windows 빌드를 만든다. 고정 head·빌드 경로·exe sha256을 Core에 넘기고, 빌드에서만 나는 화면 결함은 Content가 고친다. 계약은 R-8로 열릴 새 Content 리드와 맺는다(메인 결정).
 - World: 캐릭터 메뉴 처리 결함이 나올 때만 계약한다.
 
-## 녹화 실행 순서(서버 쪽, v1 — 리허설 전)
+## 녹화 실행 순서(서버 쪽, v2 — 리허설 뒤)
 
-결정 82 B의 한 판 녹화에서 Core가 맡는 서버 쪽 순서다. 클라 순서와 자동 진행 단계는 Content, 녹화 시작·끝은 메인이 정한다. 확인 수준을 칸마다 적었다. 리허설 뒤 실측으로 v2를 만든다.
+결정 82 B·131 C·133 A의 진짜 녹화에서 Core가 맡는 서버 쪽 순서다. 클라 순서·자동 진행·녹화 도구는 Content 실행 계약(v3), 사용자 손의 문구는 Core 사용자 카드 v6(`lead/recording-user-server-card-v6.md`)이 정한다. 칸마다 확인 수준을 적었다.
 
-- **빌드 기준(11-01 고침):** 서버와 녹화 클라는 PR-A·PR268·Art 격자 PR1·Core 24칸·Art PR2(이름은 Content 녹화 빌드 계약을 따름)가 모두 들어간 같은 main(Content가 알리는 고정 head 40자)이다. 프로토콜은 v23이다. 고친 근거는 「적용 중인 사용자 결정」의 11-01 HUD 지시다.
-- R2·R4는 결정 110 A(모니터마다 1920×1080)로 11-01에 고쳤다. 창 8의 960×540 값은 쓰지 않는다.
+v1에서 바뀐 것:
+
+- 결정 133 A: 두 회차 사이에 서버를 한 번 다시 켠다. R4가 R4-1(기사 녹화)과 R4-2(마법사 녹화)로 나뉘고, R5·R6이 그 사이로 온다. 따로 돌던 R7 판은 없어지고, R4-2의 상대 기사 선택으로 같은 캐릭터 기록을 남긴다.
+- 결정 131 C: 화면 하나에서 직업별로 한 번씩 녹화한다. 결정 110 A(모니터마다 1920×1080)는 쓰지 않는다. 녹화하지 않는 쪽은 숨긴 진행용 창이다.
+- 녹화 도구는 Content 실행 작업자가 띄우고 끈다(메인 `msg_7ac87f683832`의 사용자 지시). v1의 「녹화 시작·끝은 메인이 정한다」와 「사용자 녹화 도구」를 바꾼다.
+- 결정 134 A: 녹화가 늦게 걸리는 문제는 녹화 스크립트에서 막는다. 클라 빌드는 그대로다.
+- 메인은 서버 창 원문을 읽지 않는다(`msg_5100b8982d34`). 사용자가 카드 v6 「옮길 줄」의 8줄만 옮긴다.
+- 빌드 기준: 서버와 녹화 클라는 고정 head `cfe8bb45c0e63820deccbb5c364e461768f09c1e`다. 프로토콜은 v23이다.
 
 | 순서 | 할 일 | 누구 | 확인 수준·근거 |
 |---|---|---|---|
-| R0 | 7777을 쓰는 서버가 없는지 본다. Legacy가 떠 있으면 그 창 소유자가 Ctrl+C로 끈다 | 소유자 | 10-31 단계 A 실행. Legacy 정지 키는 `run-server.bat:7` |
-| R1 | 서버 checkout 루트에서 `wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh build`를 1회 돈다. 녹화 직전 서버 소스가 단계 A 빌드와 같으면 생략할 수 있다 | 배정된 Core 작업자 | 10-31 실측 46초, exit 0(`build-01/`) |
-| R2 | 서버 Listening 뒤, 1920×1080 Player 두 개와 사용자 녹화 도구를 띄우기 직전에 물리 여유 6GiB·commit 여유 4GiB를 원시로 남긴다. Content Player는 R2 통과 뒤에만 띄운다 | 배정 창의 실행자 | 메인 결정 `msg_0d7e73a9805d`, 결정 110 A. Unity 빌드 창의 관문은 Content 계약 몫 |
-| R3 | 사용자가 서버 창에 DEVELOPMENT 「DB 영속 서버 실행」 시작 블록을 붙여 넣고 자격 경로를 입력한다. 세 줄(PID 줄 → launched 줄 → `[Persistence stdout …] Listening on 0.0.0.0:7777. Press Enter to stop.`)을 기다린다 | 사용자 | 10-31 실측: 프로세스 생성 09:52:15.75Z → Listening 09:52:16.64Z, 약 0.9초(1회) |
-| R4 | Listening과 R2 뒤에 두 클라를 시작하고 자동 진행을 녹화한다. 기사는 주 모니터, 마법사는 보조 모니터에 각각 `-screen-width 1920 -screen-height 1080 -screen-fullscreen 0`과 `-monitor`로 띄운다. 플레이 중 서버 로그는 서버 창에 나오지 않는다(launcher는 네 문구만 옮김) | 메인·Content 순서 | launcher 129~136행. 결정 110 A. 명령·창 위치·잘림 확인은 Content 계약 고정본. 창 8(PR268 검증)에서 두 클라가 영속 모드로 1판 생성·2판 선택 뒤 마을까지 갔다. 파티·보스 흐름은 Core가 대조하지 않았다 |
-| R5 | DB 장면을 넣으면, 자동 진행이 끝나고 두 클라 연결이 닫힌 뒤에 둔다. 서버 창 Enter → `Server stopped.`와 출력 요약 두 줄 → 입력 화면 | 사용자 | 10-31 정지 실측(`docs-02/stage-a-observed-lines-v1.txt`). 정지에 걸린 시간은 Enter 시각이 없어 미측정 |
-| R6 | 같은 서버 창에서 `& .\99_Tools\Start-PersistenceServer.ps1 @serverArgs` 한 줄로 다시 띄운다. 첫 블록의 변수와 입력한 자격 경로를 그대로 쓴다. 다시 세 줄을 기다린다 | 사용자 | 10-29 합동 창 S5에서 같은 한 줄로 재시작했고 S1~S8이 통과했다(PR272). 재시작 시간은 미측정 |
-| R7 | R4와 같은 명령(같은 `-monitor` 값)으로 같은 로그인에 접속해 같은 캐릭터가 목록에 남은 것을 보여 주고 입장한다. 진행 상태(퀘스트·길드·금고·강화)는 처음으로 돌아간다 | 메인·Content 순서 | 서버 계약 v1 §2. 10-29 합동 창에서 서버 1(S3 봇 생성) → 재시작 → 서버 2(S6 봇)의 목록에 같은 ID·직업이 남았다 |
-| R8 | 녹화 끝 → 클라 종료 → 서버 창 Enter → `Server stopped.` → 입력 화면. 필요하면 소유자가 Legacy를 다시 띄운다 | 사용자·소유자 | R5와 같음 |
+| R0 | 7777을 쓰는 서버가 없는지 본다. Legacy가 떠 있으면 그 창 소유자가 Ctrl+C로 끈다 | 소유자 | 리허설 사전 확인에서 WSL·Windows 7777 LISTEN 0(`lead/rehearsal-01/precheck-01.txt`). Legacy 정지 키는 `run-server.bat:7` |
+| R1 | 고정 head가 build-03 소스와 서버 빌드 입력 diff 0이면 build-03으로 갈음한다. 녹화 창 시작에 복제본 읽기 확인(소유 표식·`GameServer.dll` 크기와 수정 시각·`Current = 23`)만 한다. diff가 있으면 배정된 Core 작업자가 `wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh build`를 1회 돈다 | Core 리드(읽기)·Core 작업자(빌드) | `lead/take-fixed-head-01/take-verify-01.txt`(diff 0). 리허설 사전 확인 통과(20:15:56Z~20:16:05Z) |
+| R2 | 서버 Listening 뒤, Player 두 개와 녹화 도구를 띄우기 직전에 물리 여유 6GiB·commit 여유 4GiB를 원시로 남긴다. R4-1 전과 R4-2 전에 한 번씩 잰다 | 배정 창의 실행자(Content) | 메인 결정 `msg_0d7e73a9805d`. 리허설에서 두 번 통과했고, R4-2는 15초 쉼과 관문 뒤 0.9초에 기동했다(Content 리드 판정 17행) |
+| R3 | 사용자가 카드 v6 1단계 블록으로 서버를 시작한다. 세 줄(PID 줄 → launched 줄 → `[Persistence stdout …] Listening on 0.0.0.0:7777. Press Enter to stop.`)을 기다린다 | 사용자 | 리허설 「서버 떴음」 메인 수신 2026-11-05T20:47:07Z. 10-31 실측 프로세스 생성 → Listening 약 0.9초(1회) |
+| R4-1 | 1회차(기사 녹화). 막 켠 서버에서 기사 `rec_knight`·「새벽기사」와 상대 마법사 `rec_ally_mage`·「새벽동료」(결정 135 A)를 새로 만든다. 녹화 대상은 기사 창 하나다. 서버 창에는 키를 누르지 않는다 | 메인·Content 순서 | 리허설 R4-1: 두 역할 생성 → done, 자동 진행 73.2초·76.6초, 기사 거점 level=2(Content `recording-build-01/rehearsal/run-02/r4-1-steps.txt`). 명령과 녹화 인자는 Content 계약 v3 고정본 |
+| R5 | 1회차 두 클라가 닫힌 뒤 서버 창 Enter → `Server stopped.`와 출력 요약 두 줄 → 입력 화면 | 사용자 | 리허설: 메인 「지금」 21:00:46Z → 「멈췄음」 수신 21:09:47Z(사용자 응답 포함). 정지 요약 판정은 【8줄 대기】 |
+| R6 | 같은 서버 창에서 `& .\99_Tools\Start-PersistenceServer.ps1 @serverArgs` 한 줄로 다시 띄운다. 세 줄을 기다린다. 길드 거점·금고·퀘스트·entity 번호가 처음으로 돌아간다 | 사용자 | 리허설: 메인 「지금」 21:09:47Z → 「다시 떴음」 수신 21:20:18Z, 10분 31초(사용자 응답 포함). 서버 창 기준 정지 → Listening 【8줄 대기】, birth → Listening 【8줄 대기】. 되돌림 근거는 서버 계약 v1.1 §2 |
+| R4-2 | 2회차(마법사 녹화). R2를 다시 잰 뒤 마법사 `rec_mage`·「새벽법사」를 새로 만들고, 상대 기사 `rec_knight`는 「새벽기사」를 다시 고른다. 그 선택 칸을 R4-1 생성 칸과 대조해 같은 캐릭터 기록으로 남긴다 | 메인·Content 순서 | 리허설 R7: 재시작 뒤 두 역할 slot 1 선택 → town 21:21:54Z, R4 칸과 같다. 리허설 R4-2: 재로그인 AlreadyOnline 0. 캐릭터 목록 → 마을은 생성 2.2~2.5초·선택 2.1~2.3초. 한 판에 생성과 선택이 섞인 조합은 재지 않았다 |
+| R8 | 2회차 두 클라가 닫힌 뒤 서버 창 Enter → 세 줄 → 입력 화면. 사용자가 카드 v6 「옮길 줄」의 8줄을 메인에 옮긴다. 필요하면 소유자가 Legacy를 다시 띄운다 | 사용자·소유자 | R5와 같다. 정지 요약 판정은 【8줄 대기】 |
 
-- 녹화마다 새로 만드는 캐릭터의 이름과 칸은 DB에 영구히 남는다. 이름은 서버 전체에서 하나이고 칸은 계정당 3개다. 리허설과 녹화의 로그인·이름은 미리 다르게 정한다(완료조건 5).
-- R4 전에 서버를 다시 켜면 자동 진행기의 메모리 상태가 처음으로 돌아간다. 그래서 R5~R7은 자동 진행이 끝난 뒤에만 둔다.
-- 서버 checkout은 공개 profile이 있는 core-active다. launcher는 자기 checkout 안의 profile만 받는다. 녹화 클라는 Content 계약의 main 빌드다.
+- 이름(완료조건 5)
+  - 리허설: `rh1101_knight`·「리허설기사」, `rh1101_mage`·「리허설법사」(결정 109 A). 리허설에서 만들어졌으니 다시 쓰지 않는다.
+  - 녹화: `rec_knight`·「새벽기사」, `rec_mage`·「새벽법사」(결정 109 A), 1회차 상대 마법사 `rec_ally_mage`·「새벽동료」(결정 135 A, 메인 `msg_5b1efce641fb`).
+  - 이름은 DB 전체에서 하나이고 칸은 계정당 3개다. 행은 지우지 않는다.
+- 재시작은 R4-1과 R4-2 사이에만 둔다. 회차 도중에 다시 켜면 자동 진행기의 메모리 상태가 처음으로 돌아간다.
+- 재시작이 필요한 이유(소스 확인 수준): 길드 거점·금고는 서버 실행 단위 메모리이고 되돌리는 경로가 없다(`GuildRegistry.cs` 80·83·87·93·100·149행, `GuildRules.cs:15`). 리허설에서 재시작 없이 돈 R4-2의 기사는 거점 `already max`였다(Content 리드 판정 46행).
+- 서버 checkout은 공개 profile이 있는 core-active다. launcher는 자기 checkout 안의 profile만 받는다.
+- 편집에 미리 알 것(Content 판정): 파티 칸은 「직업 (entity 번호)」만 보이고 다른 캐릭터 이름은 없다. 회차 사이 재시작으로 두 영상 모두 낮은 번호부터다. 첫 로그인 칸의 이전 계정 이름은 편집에서 자른다.
+- v1(리허설 전)은 commit `2cb8910d`의 같은 절이다. v2의 초안과 옮긴 commit은 `lead/recording-order-v2-draft.md`에 있다.
 
 ## PR 경계와 검증
 
 - **Core PR 1:** goal·DEVELOPMENT 새 절·리허설 기록. 제품 수정이 없으면 문서 PR이고 등급은 문서 실사 + 리허설 원시 대조다.
 - Core 소유 결함 수정이 생기면 같은 PR에 넣고 강 등급 독립 검증을 받는다. World·Content 결함은 각 파트 PR이다.
 - 병합은 PR마다 메인의 정확 head 사용자 승인 관문을 따른다.
-- 실행 창: 지금 보기는 서버 빌드 46초(09:27:42Z~09:28:28Z), 서버 켜짐 09:52:15Z~정지 10:11:31Z로 약 19분이었다. 녹화용 리허설 어림은 약 40~60분이다(클라 빌드 생성 시간 별도, 미측정). 실제 녹화 창은 메인이 정한다. Unity·WSL 병행 직전 물리 여유 6GiB·commit 여유 4GiB를 원시로 확인한다.
+- 실행 창: 지금 보기는 서버 빌드 46초(09:27:42Z~09:28:28Z), 서버 켜짐 09:52:15Z~정지 10:11:31Z로 약 19분이었다. 녹화용 리허설 어림은 약 40~60분이다(클라 빌드 생성 시간 별도, 미측정). 실제 리허설은 사전 확인 20:15:56Z → R3 20:47:07Z → R7 마을 21:21:54Z였다(2026-11-05, 메인 쪽 시각). R8 정지 시각은 8줄을 받은 뒤 적는다. 실제 녹화 창은 메인이 정한다. Unity·WSL 병행 직전 물리 여유 6GiB·commit 여유 4GiB를 원시로 확인한다.
 
 ## 진척 단계
 
@@ -351,8 +508,8 @@
 - [x] 지금 보기 서버 빌드
 - [x] 지금 보기 화면 확인
 - [x] 실행 절·녹화 순서(v1, 리허설 뒤 v2)
-- [ ] 녹화용 리허설
-- [ ] 녹화 담당 인계
+- [>] 녹화용 리허설(2026-11-05 세 판 통과, 서버 창 8줄로 채울 R5·R6·R8 값 남음)
+- [>] 녹화 담당 인계(카드 v6·녹화 순서 v2를 메인·Content에 보냄, 서버 계약 새 판 남음)
 - [>] 독립 실사(DEVELOPMENT 1차 통과 `verify-01/`, 리허설 뒤 녹화 순서·리허설 원시·바뀐 줄 남음)
 - [ ] 문서 PR 병합
 - [ ] 종료 점검
