@@ -2,7 +2,7 @@
 
 11-06 시연을 Windows 빌드 클라이언트와 DB 영속 서버로 할 수 있게 한다. 시연자가 정해진 순서로 DB 서버를 켜고 끄며, 빌드에서 로그인 → 캐릭터 선택·생성 → 마을 입장이 되는 상태가 목표다.
 
-**현재 상태(2026-11-06 07:1x KST):** 녹화용 리허설을 2026-11-05 20:47Z~21:22Z에 마쳤고, 세 판이 모두 통과했다(Content 리드 판정, 독립 검증 아님). 서버 창 8줄로 본 Core 세 값도 통과다. 재시작은 프로세스 시작 → Listening 0.896초였고, 정지 요약 두 번 모두 결함 0이었다. 사용자 결정 133 A·134 A·135 A에 따라 진짜 녹화는 두 회차 사이에 서버를 한 번 다시 켠다. 진짜 녹화용 사용자 카드 v6(메인 대조 통과), 아래 녹화 실행 순서 v2, 서버 계약 v1.2를 썼다. 남은 것은 리허설 세 값의 메인·Content 송신, 신규 `[Core 검증자]` 문서 실사, Core 문서 PR이다. 이 branch는 고정 head `cfe8bb45`를 받은 로컬 commit만 있고 push하지 않았다. 작업자·검증자 pane은 없다. 아래 「11-05~06 리허설과 진짜 녹화 준비」부터 읽는다.
+**현재 상태(2026-11-06 08:1x KST):** 녹화용 리허설을 2026-11-05 20:47Z~21:22Z에 마쳤고, 세 판이 모두 통과했다(Content 리드 판정, 독립 검증 아님). 서버 창 8줄로 본 Core 세 값도 통과다. 재시작은 프로세스 시작 → Listening 0.896초였고, 정지 요약 두 번 모두 결함 0이었다. 사용자 결정 133 A·134 A·135 A에 따라 진짜 녹화는 두 회차 사이에 서버를 한 번 다시 켠다. 진짜 녹화용 사용자 카드 v6(메인 대조 통과), 아래 녹화 실행 순서 v2, 서버 계약 v1.2를 썼고, 리허설 세 값을 메인·Content에 보냈다. 신규 `[Core 검증자]` 문서 실사(verify-02)는 문서 결함 4건으로 차단이었고, 리드가 고쳤다. 남은 것은 새 검증자의 고친 곳 재실사와 Core 문서 PR이다. 이 branch는 고정 head `cfe8bb45`를 받은 로컬 commit만 있고 push하지 않았다. verify-02 검증자 pane은 닫았다. 아래 「11-05~06 리허설과 진짜 녹화 준비」부터 읽는다.
 
 ## 재개 지점
 
@@ -24,9 +24,14 @@
   - 진짜 녹화용 사용자 카드 v6: `lead/recording-user-server-card-v6.md`, sha256 `4269a171a3427af75e71e815c98e9ca987f878f35cc35f09d23c99a2060f54c2`. v5 대비 diff는 `lead/recording-docs-v2/card-v5-to-v6-r2.diff`이고, 코드 블록 여섯 개는 v5와 같다. 이름을 채우기 전 판(`0d3353cb…0c7d`)을 메인이 대조해 통과시켰다(`msg_544f74c0c0f2`). 이름 세 줄만 바꾼 지금 판은 메인 `msg_8a6b9593cc87`·Content `msg_3a756dd537ba`로 보냈다.
   - 녹화 실행 순서 v2: 아래 「녹화 실행 순서」 절이다. 초안 `lead/recording-order-v2-draft.md`를 메인 `msg_9780d55994de`·Content `msg_c946082e5b5b`로 보냈다.
   - 다음 일
-    1. 끝: 8줄로 채울 칸(이 항목과 녹화 순서 R5·R6·R8)을 채웠다. 값은 메인·Content에 보낸다.
-    2. 끝: 서버 계약 v1.2(`lead/server-contract-for-autopilot-v1.2.md`)를 썼다(범위 「만들 것」 6). v1.1 대비 diff는 `lead/goal-edit-1106/contract-v1.1-to-v1.2.diff`, 8줄 채우기 diff는 `lead/goal-edit-1106/contract-v1.2-8line-fill.diff`다. 처음 판(`a72a4daa…6226`)은 메인 `msg_74ff697a3000`·Content `msg_e23465a75a03`로 알렸다. 같은 사실은 Content에 메시지로 이미 갔다(`msg_b752a2465246`·`msg_b28231a86423`).
-    3. 신규 `[Core 검증자]`(Astra xhigh)가 이 goal의 바뀐 줄·카드 v6·서버 계약 새 판·리허설 원시를 문서 실사한다. DEVELOPMENT 절은 리허설 뒤 바뀌지 않았다.
+    1. 끝: 8줄로 채울 칸(이 항목과 녹화 순서 R5·R6·R8)을 채웠다. 값은 메인 `msg_7166a0512a1e`·Content `msg_c35cc48cf1b9`로 보냈다.
+    2. 끝: 서버 계약 v1.2(`lead/server-contract-for-autopilot-v1.2.md`)를 썼다(범위 「만들 것」 6). v1.1 대비 diff는 `lead/goal-edit-1106/contract-v1.1-to-v1.2.diff`, 8줄 채우기 diff는 `lead/goal-edit-1106/contract-v1.2-8line-fill.diff`, 결함 #RH2-01 수정 diff는 `lead/fix-rh2/contract-v1.2-rh2.diff`다. 지금 판 sha256은 `99f641b4…d56a`다. 처음 판(`a72a4daa…6226`)은 메인 `msg_74ff697a3000`·Content `msg_e23465a75a03`로 알렸다. 같은 사실은 Content에 메시지로 이미 갔다(`msg_b752a2465246`·`msg_b28231a86423`).
+    3. 차단 뒤 수정: 신규 `[Core 검증자]` Astra xhigh(Task `task_1613a56c6827`, Dispatch `ctx_665002dac869`, 계약 `verify-02/contract-v1.md` sha256 `e6a97d4b…6204`)가 이 goal의 바뀐 줄·카드 v6·서버 계약 v1.2·리허설 원시를 확인할 것 12개로 실사했다. 결론은 **차단, 문서 결함 4건**이다(worker_done `msg_14f224708bf0`, `verify-02/verdict.md` sha256 `4cb3c065…b88e`). 수치 조작·제품 결함은 없었고, 카드 블록·8줄·두 시간 값·범위는 일치했다. DEVELOPMENT는 더 고칠 필요가 없다고 판단했다.
+       - #RH2-01: 서버 계약 v1.2 §7이 한 번 잰 0.896초를 「다시 뜨는 데 1초 안」으로 일반화했다. → 1회 관측으로 한정했다.
+       - #RH2-02: 이 goal의 133 A·134 A·135 A 인용에 원천 낫표 밖의 접두가 들어갔다. → 인용 밖으로 뺐다.
+       - #RH2-03: `lead/rehearsal-01/results-v1.md`가 R5·R6·R8 표식을 메인 스크립트가 붙였다고 적었다. 스크립트는 숫자 행 번호를 붙인다. → 메인이 보낸 8줄의 표식이라고 고쳤다.
+       - #RH2-04: 녹화 순서 R2 칸이 「두 번 통과」의 근거로 Content 판정 17행(R4-2 재로그인)만 걸었다. → 두 관문 원시를 연결했다.
+       - 리드 수정 기록은 `lead/fix-rh2/`다. 리드 표본 대조와 검증자 질문 둘의 답은 `verify-02/lead-reply-01/`·`lead-reply-02/`에 있다. 고친 곳은 새 `[Core 검증자]`가 다시 본다.
     4. Core 문서 PR을 연다. 병합은 메인 관문이다.
     5. 진짜 녹화 창은 메인이 배정한다. Core 몫은 창 시작의 사전 확인(R1 복제본 읽기·7777)이다.
 - **창 R1 서버 v23 빌드(2026-11-04, 메인 `msg_6701b9629720`):**
@@ -304,9 +309,13 @@
 
 메인 `msg_424a61a49d20`(24칸 근거 폴더 `orca/check-wake-18.json`, 21:44:38Z)과 `msg_5b1efce641fb`(`orca/check-wake-20.json`, 21:50:46Z)가 전달한 사용자 원문이다. 메인 pane에 제출됐다. 이 Core pane 직접 입력으로 격상하지 않는다. Core가 올린 결정 글은 `lead/rehearsal-01/msg-decision-same-start-v2.txt`(메인 `msg_7b111d608c48`)다.
 
-> 대시보드 결정 응답: 1) 133 - 진짜 녹화 두 회차 출발: 회차 사이 서버 재시작 vs 재시작 두 번 → A 회차 사이 재시작 · 2) 134 - 녹화 시작이 늦어 캐릭터 생성 장면을 놓칠 위험: 녹화 스크립트만 고침 vs 클라 빌드 고침 → A 녹화 스크립트만
+대시보드 결정 응답(메인 pane 제출, `msg_424a61a49d20`):
 
-> 대시보드 결정 응답: 1) 135 - 진짜 녹화 1회차 상대 법사의 새 이름: 초안 그대로 vs 다른 이름 → A 초안 그대로
+> 1) 133 - 진짜 녹화 두 회차 출발: 회차 사이 서버 재시작 vs 재시작 두 번 → A 회차 사이 재시작 · 2) 134 - 녹화 시작이 늦어 캐릭터 생성 장면을 놓칠 위험: 녹화 스크립트만 고침 vs 클라 빌드 고침 → A 녹화 스크립트만
+
+대시보드 결정 응답(메인 pane 제출, `msg_5b1efce641fb`):
+
+> 1) 135 - 진짜 녹화 1회차 상대 법사의 새 이름: 초안 그대로 vs 다른 이름 → A 초안 그대로
 
 - 133 A: 두 회차 사이에 서버를 한 번 다시 켠다. 1회차는 기사를 녹화하고, 상대 마법사는 새 계정으로 만든다. 2회차는 마법사를 녹화하고, 상대 기사는 1회차 기사를 다시 고른다. 리허설의 R7 판은 이 선택으로 합쳐진다. 사용자 손은 카드 1·3·4·6단계 넷이다.
 - 134 A: 녹화가 늦게 걸리는 문제는 Content 녹화 스크립트에서 막는다. 클라 빌드는 그대로다.
@@ -483,7 +492,7 @@ v1에서 바뀐 것:
 |---|---|---|---|
 | R0 | 7777을 쓰는 서버가 없는지 본다. Legacy가 떠 있으면 그 창 소유자가 Ctrl+C로 끈다 | 소유자 | 리허설 사전 확인에서 WSL·Windows 7777 LISTEN 0(`lead/rehearsal-01/precheck-01.txt`). Legacy 정지 키는 `run-server.bat:7` |
 | R1 | 고정 head가 build-03 소스와 서버 빌드 입력 diff 0이면 build-03으로 갈음한다. 녹화 창 시작에 복제본 읽기 확인(소유 표식·`GameServer.dll` 크기와 수정 시각·`Current = 23`)만 한다. diff가 있으면 배정된 Core 작업자가 `wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh build`를 1회 돈다 | Core 리드(읽기)·Core 작업자(빌드) | `lead/take-fixed-head-01/take-verify-01.txt`(diff 0). 리허설 사전 확인 통과(20:15:56Z~20:16:05Z) |
-| R2 | 서버 Listening 뒤, Player 두 개와 녹화 도구를 띄우기 직전에 물리 여유 6GiB·commit 여유 4GiB를 원시로 남긴다. R4-1 전과 R4-2 전에 한 번씩 잰다 | 배정 창의 실행자(Content) | 메인 결정 `msg_0d7e73a9805d`. 리허설에서 두 번 통과했고, R4-2는 15초 쉼과 관문 뒤 0.9초에 기동했다(Content 리드 판정 17행) |
+| R2 | 서버 Listening 뒤, Player 두 개와 녹화 도구를 띄우기 직전에 물리 여유 6GiB·commit 여유 4GiB를 원시로 남긴다. R4-1 전과 R4-2 전에 한 번씩 잰다 | 배정 창의 실행자(Content) | 메인 결정 `msg_0d7e73a9805d`. 리허설 관문 원시 두 개가 모두 `passed=true`다(Content 실행 원시, 독립 검증 아님, Content `recording-build-01/rehearsal/run-02/`). R4-1 전 `r2-gate.json`은 20:49:15Z에 물리 여유 15.48GiB·commit 여유 25.26GiB, R4-2 전 `r2-gate-r4-2.json`은 20:58:43Z에 16.75GiB·26.29GiB였다. R4-2는 15초 쉼과 관문 뒤 0.9초에 기동했다(Content 리드 판정 17행) |
 | R3 | 사용자가 카드 v6 1단계 블록으로 서버를 시작한다. 세 줄(PID 줄 → launched 줄 → `[Persistence stdout …] Listening on 0.0.0.0:7777. Press Enter to stop.`)을 기다린다 | 사용자 | 리허설 「서버 떴음」 메인 수신 2026-11-05T20:47:07Z. 10-31 실측 프로세스 생성 → Listening 약 0.9초(1회) |
 | R4-1 | 1회차(기사 녹화). 막 켠 서버에서 기사 `rec_knight`·「새벽기사」와 상대 마법사 `rec_ally_mage`·「새벽동료」(결정 135 A)를 새로 만든다. 녹화 대상은 기사 창 하나다. 서버 창에는 키를 누르지 않는다 | 메인·Content 순서 | 리허설 R4-1: 두 역할 생성 → done, 자동 진행 73.2초·76.6초, 기사 거점 level=2(Content `recording-build-01/rehearsal/run-02/r4-1-steps.txt`). 명령과 녹화 인자는 Content 계약 v3 고정본 |
 | R5 | 1회차 두 클라가 닫힌 뒤 서버 창 Enter → `Server stopped.`와 출력 요약 두 줄 → 입력 화면 | 사용자 | 리허설: 메인 「지금」 21:00:46Z → 「멈췄음」 수신 21:09:47Z(사용자 응답 포함). 서버 창 `Server stopped` 21:09:25.530Z, 정지 요약 두 줄 통과(stdout `excluded=2022`, 나머지 0·`drained=True`) |
@@ -516,7 +525,7 @@ v1에서 바뀐 것:
 - [x] 지금 보기 화면 확인
 - [x] 실행 절·녹화 순서(v1, 리허설 뒤 v2)
 - [x] 녹화용 리허설(2026-11-05 세 판 통과, 서버 창 8줄의 Core 세 값 통과)
-- [>] 녹화 담당 인계(카드 v6·녹화 순서 v2·서버 계약 v1.2를 메인·Content에 보냄, 리허설 세 값 송신 남음)
-- [>] 독립 실사(DEVELOPMENT 1차 통과 `verify-01/`, 리허설 뒤 녹화 순서·리허설 원시·바뀐 줄 남음)
+- [x] 녹화 담당 인계(카드 v6·녹화 순서 v2·서버 계약 v1.2·리허설 세 값을 메인·Content에 보냄)
+- [>] 독립 실사(DEVELOPMENT 1차 통과 `verify-01/`, 리허설 뒤 2차 `verify-02/` 문서 결함 4건 차단 → 리드 수정, 재실사 남음)
 - [ ] 문서 PR 병합
 - [ ] 종료 점검
