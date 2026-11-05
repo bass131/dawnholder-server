@@ -550,7 +550,7 @@ namespace Dawnholder.Client.Tests
             window.View.SetVisibility(true, true);
 
             Assert.AreEqual(RenderMode.ScreenSpaceOverlay, canvas.renderMode, "C overlay canvas (InventoryPanelView.cs:31)");
-            Assert.AreEqual(5, canvas.sortingOrder, "C sorting order 5, under HUD 10 and menu 20 (InventoryPanelView.cs:32)");
+            Assert.AreEqual(14, canvas.sortingOrder, "C sorting order 14, above HUD 10 and guild 11-13, under rewards 15 and menu 20 (InventoryPanelView.cs:60, user 125 B)");
             Assert.AreEqual(CanvasScaler.ScaleMode.ScaleWithScreenSize, scaler.uiScaleMode, "C scaler mode (InventoryPanelView.cs:34)");
             AssertVector(new Vector2(1920f, 1080f), scaler.referenceResolution, "C reference resolution (InventoryPanelView.cs:35)");
             Assert.AreEqual(CanvasScaler.ScreenMatchMode.MatchWidthOrHeight, scaler.screenMatchMode, "C match mode (InventoryPanelView.cs:36)");

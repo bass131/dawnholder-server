@@ -48,6 +48,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         readonly List<string> _record = new();
         readonly List<string> _hudOverlaps = new();
         RectTransform _hudPopup;
+        string _skillPanelOverlapSource;
         string _output;
         string _window;
         Vector2? _mouseOriginal;
@@ -64,6 +65,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             _record.Clear();
             _hudOverlaps.Clear();
             _hudPopup = null;
+            _skillPanelOverlapSource = null;
             _output = null;
             _window = null;
             _mouseOriginal = null;
@@ -133,7 +135,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             TMP_Text hp = HudController.Instance.transform.Find("character_status/HpText").GetComponent<TMP_Text>();
             Assert.IsTrue(ScreenUiProbe.IsShown(hp));
             Assert.AreEqual("HP 37 / 100", hp.text);
-            Assert.IsFalse(HudController.Instance.transform.Find("skill_panel/skill_slot_2").gameObject.activeInHierarchy);
+            Assert.IsTrue(HudController.Instance.transform.Find("skill_panel/skill_slot_2").gameObject.activeInHierarchy,
+                "goal 12: the knight's empty second slot is still shown");
         }
 
         [UnityTest, Timeout(240000)]
@@ -164,7 +167,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Transform hud = HudController.Instance.transform;
             Assert.AreEqual("HP 61 / 88", hud.Find("character_status/HpText").GetComponent<TMP_Text>().text);
             Assert.IsTrue(hud.Find("skill_panel/skill_slot_2").gameObject.activeInHierarchy);
-            Assert.AreEqual("Gold: 1000000000", hud.Find("Gold_bar/GoldText").GetComponent<TMP_Text>().text);
+            Assert.IsNull(hud.Find("Gold_bar"), "HUD gold display is removed");
         }
 
         IEnumerator ShowHudParty(byte localClass, byte otherClass)
@@ -214,6 +217,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return Press(Key.I);
             yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Group.alpha > 0f, "I opens the inventory panel", 3);
             yield return _fixture.Frames(3);
+            yield return WaitForInventoryOpening("primary");
 
             CanvasGroup group = InventoryPanelProbe.Group;
             Note("input path", "fixture keyboard I press/release -> InventoryPanel.Update iKey.wasPressedThisFrame");
@@ -224,7 +228,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             for (int i = 0; i < InventoryLimits.MaxSlots; i++) Note($"panel slot {i + 1} text", InventoryPanelProbe.Slot(i));
             NoteCanvas("panel", InventoryPanel.Instance);
             _hudPopup = InventoryPanel.Instance.transform.Find("Inventory").GetComponent<RectTransform>();
-            yield return CaptureBothSizes(() => InventoryPanelProbe.Group.alpha > 0f);
+            _skillPanelOverlapSource = "user 114 msg_4f325d2f2bfd and user 125 B msg_2d2c22e46c7c: the inventory window may overlap the skill slots and is drawn over them";
+            yield return CaptureBothSizes(() => InventoryPanelProbe.Group.alpha > 0f,
+                prepareAtMinimum: WaitForInventoryOpening("minimum"));
         }
 
         [UnityTest, Timeout(240000)]
@@ -239,6 +245,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _fixture.Frames(3);
             yield return HoverInventoryDetail(1);
             _hudPopup = InventoryPanel.Instance.transform.Find("Inventory").GetComponent<RectTransform>();
+            _skillPanelOverlapSource = "user 114 msg_4f325d2f2bfd and user 125 B msg_2d2c22e46c7c: the inventory window may overlap the skill slots and is drawn over them";
 
             bool primaryObserved = false;
             bool primaryDetailShown = false, minimumDetailShown = false;
@@ -290,6 +297,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _fixture.Frames(3);
             yield return HoverInventoryDetail(0);
             _hudPopup = InventoryPanel.Instance.transform.Find("Inventory").GetComponent<RectTransform>();
+            _skillPanelOverlapSource = "user 114 msg_4f325d2f2bfd and user 125 B msg_2d2c22e46c7c: the inventory window may overlap the skill slots and is drawn over them";
 
             bool primaryObserved = false;
             bool primaryDetailShown = false, minimumDetailShown = false;
@@ -329,6 +337,19 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual("재료", minimumDetailName, "minimum captured detail name");
         }
 
+        // The open effect fades its own group on the Inventory child for 0.12 s while the root group is already open,
+        // so a frame taken right after I shows a pale window (PR1 user check, 1920x1080).
+        IEnumerator WaitForInventoryOpening(string stage)
+        {
+            Transform window = InventoryPanelProbe.Root.Find("Inventory");
+            var fade = window.GetComponent<CanvasGroup>();
+            var effect = window.GetComponents<MonoBehaviour>().Single(c => c.GetType().Name == "UiWindowOpenEffect");
+            Note(stage + " inventory opening before wait", $"root alpha {InventoryPanelProbe.Group.alpha}, drawing alpha {fade.alpha}, "
+                + $"effect enabled {effect.enabled}, same window as the popup {window == InventoryPanel.Instance.transform.Find("Inventory")}");
+            yield return MapEntryPlayFixture.Wait(() => fade.alpha == 1f && !effect.enabled, stage + " inventory opening finished", 3);
+            Note(stage + " inventory opening after wait", $"root alpha {InventoryPanelProbe.Group.alpha}, drawing alpha {fade.alpha}, effect enabled {effect.enabled}");
+        }
+
         // Reuse the gesture at both sizes: the panel shrinks and its slot moves at 1280x720.
         IEnumerator HoverInventoryDetail(int slotIndex)
         {
@@ -357,8 +378,9 @@ namespace Dawnholder.Client.Tests.PlayMode
                 "the player stands inside the NPC trigger", 3);
             bool shownBeforeE = NpcDialogPanel.IsShown;
             RectTransform actionBar = HudController.Instance.transform.Find("skill_panel").GetComponent<RectTransform>();
-            RectTransform goldBar = HudController.Instance.transform.Find("Gold_bar").GetComponent<RectTransform>();
-            Vector2 actionBefore = actionBar.anchoredPosition, goldBefore = goldBar.anchoredPosition;
+            Vector2 actionBefore = actionBar.anchoredPosition;
+            Rect actionRectBefore = ScreenUiProbe.ScreenRect(actionBar);
+            Vector2Int screenBefore = new Vector2Int(Screen.width, Screen.height);
             yield return Press(Key.E);
             yield return MapEntryPlayFixture.Wait(() => NpcDialogPanel.IsShown, "E shows the NPC dialogue", 3);
             yield return _fixture.Frames(3);
@@ -378,11 +400,13 @@ namespace Dawnholder.Client.Tests.PlayMode
             Note("portrait active / shown sprite / scene NPC portrait", $"{portrait.gameObject.activeInHierarchy} / {(shownPortrait == null ? "none" : shownPortrait.name)} / {(scenePortrait == null ? "none" : scenePortrait.name)}");
             NoteCanvas("dialogue", panel);
             _hudPopup = MapEntryPlayFixture.Field<GameObject>(panel, "_root").GetComponent<RectTransform>();
+            _skillPanelOverlapSource = "main design5 A msg_64c1048f4d00: the NPC dialogue is drawn over the fixed skill slots";
             yield return CaptureBothSizes(() => NpcDialogPanel.IsShown);
             yield return Press(Key.E);
             yield return MapEntryPlayFixture.Wait(() => !NpcDialogPanel.IsShown, "E closes the real NPC dialogue", 3);
             yield return _fixture.Frames(3);
-            NoteHudRestored(actionBar, goldBar, actionBefore, goldBefore);
+            yield return RestorePrimarySizeAfterClose();
+            NoteHudRestored(actionBar, actionBefore, actionRectBefore, screenBefore);
         }
 
         // Also the party invite layout requirement (goal 06 「추가 사용자 결정 — 파티 초대 배치 수정」): both answer buttons'
@@ -463,8 +487,9 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return MoveFixtureMouseOffScreen();
             bool shownBeforeResult = RewardWindowShown();
             RectTransform actionBar = HudController.Instance.transform.Find("skill_panel").GetComponent<RectTransform>();
-            RectTransform goldBar = HudController.Instance.transform.Find("Gold_bar").GetComponent<RectTransform>();
-            Vector2 actionBefore = actionBar.anchoredPosition, goldBefore = goldBar.anchoredPosition;
+            Vector2 actionBefore = actionBar.anchoredPosition;
+            Rect actionRectBefore = ScreenUiProbe.ScreenRect(actionBar);
+            Vector2Int screenBefore = new Vector2Int(Screen.width, Screen.height);
             ArraySegment<byte> wire = ServerRewardResult();
             Note("input path", "scripted peer S_DungeonClearResult -> DungeonClearResultHandler -> DungeonClearRewardState.Apply -> DungeonClearRewardWindow.LateUpdate publishes it");
             Note("result data", $"DungeonClearRewards table: Success, currency {DungeonClearRewards.Currency}, items "
@@ -480,6 +505,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             NoteRewardWindow("primary");
             NoteCamerasAndPlayer("primary");
             _hudPopup = MapEntryPlayFixture.Field<RectTransform>(DungeonClearRewardWindow.Instance, "_panel");
+            _skillPanelOverlapSource = "main design5 A msg_64c1048f4d00: the reward window is drawn over the fixed skill slots";
             var minimum = new CaptureResult();
             yield return CaptureBothSizes(RewardWindowShown, () =>
             {
@@ -495,15 +521,34 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return InventoryPanelProbe.ClickAt(_fixture.Mouse, PartyInviteLayout.ScreenRectOf(confirm).center);
             yield return MapEntryPlayFixture.Wait(() => !RewardWindowShown(), "the real Confirm pointer closes rewards", 3);
             yield return _fixture.Frames(3);
-            NoteHudRestored(actionBar, goldBar, actionBefore, goldBefore);
+            yield return RestorePrimarySizeAfterClose();
+            NoteHudRestored(actionBar, actionBefore, actionRectBefore, screenBefore);
         }
 
-        void NoteHudRestored(RectTransform actionBar, RectTransform goldBar, Vector2 actionBefore, Vector2 goldBefore)
+        IEnumerator RestorePrimarySizeAfterClose()
         {
-            Note("HUD after popup closed", $"action {actionBefore} -> {actionBar.anchoredPosition}, gold {goldBefore} -> {goldBar.anchoredPosition}");
+#if UNITY_EDITOR
+            if (_gameView == null) Note("game view after close", "not found");
+            else Note("game view select primary after close", _gameView.TrySelect(PrimaryWidth, PrimaryHeight));
+#else
+            Note("game view after close", "not an Editor run");
+#endif
+            yield return ScreenUiProbe.WaitUntil(() => Screen.width == PrimaryWidth && Screen.height == PrimaryHeight, 3f,
+                reached => Note("Screen reached primary size after close", reached));
+            Note("Screen after primary restoration", $"{Screen.width}x{Screen.height}");
+        }
+
+        void NoteHudRestored(RectTransform actionBar, Vector2 actionBefore, Rect actionRectBefore, Vector2Int screenBefore)
+        {
+            Vector2Int screenAfter = new Vector2Int(Screen.width, Screen.height);
+            Note("HUD after popup closed", $"action {actionBefore} -> {actionBar.anchoredPosition}, rect {actionRectBefore} -> {ScreenUiProbe.ScreenRect(actionBar)}, screen {screenBefore} -> {screenAfter}");
             WriteRecord("hud-restored");
+            Assert.AreEqual(screenBefore, screenAfter, $"fixture: HUD rectangles use the same screen size: {screenBefore} -> {screenAfter}");
             Assert.AreEqual(actionBefore, actionBar.anchoredPosition, "closing the popup restores the prior action bar position");
-            Assert.AreEqual(goldBefore, goldBar.anchoredPosition, "closing the popup restores the prior gold position");
+            Rect actual = ScreenUiProbe.ScreenRect(actionBar);
+            Assert.IsTrue(Mathf.Abs(actual.x - actionRectBefore.x) <= .01f && Mathf.Abs(actual.y - actionRectBefore.y) <= .01f &&
+                Mathf.Abs(actual.width - actionRectBefore.width) <= .01f && Mathf.Abs(actual.height - actionRectBefore.height) <= .01f,
+                $"closing the popup restores the prior skill_panel screen rectangle: {actionRectBefore} -> {actual}");
         }
 
         // Use the existing fixture mouse through the live input module; do not invoke listeners directly. The peer
@@ -933,7 +978,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                     + $"font {text.font?.name} size {text.fontSize}, em pixels {Vector2.Distance(origin, em):F3}, lines {text.textInfo.lineCount}, "
                     + $"visible glyphs {text.textInfo.characterInfo.Take(text.textInfo.characterCount).Count(character => character.isVisible)}, raycastTarget {text.raycastTarget}");
             }
-            foreach (string name in new[] { "character_status", "Party_Info", "skill_panel", "Gold_bar", "MinimapPlaceholder", "Quest_Hud" })
+            foreach (string name in new[] { "character_status", "Party_Info", "skill_panel", "MinimapPlaceholder", "Quest_Hud" })
             {
                 Transform area = hud.transform.Find(name);
                 Rect rect = PartyInviteLayout.ScreenRectOf(area.GetComponent<RectTransform>());
@@ -944,9 +989,33 @@ namespace Dawnholder.Client.Tests.PlayMode
                     Rect popup = PartyInviteLayout.ScreenRectOf(_hudPopup);
                     bool overlaps = rect.Overlaps(popup);
                     Note($"{stage} HUD/popup {name}", $"HUD {rect}, popup {popup}, overlaps {overlaps}");
-                    if (overlaps) _hudOverlaps.Add($"{stage} {name}: HUD {rect}, popup {popup}");
+                    // Only skill_panel may overlap, and only in a case that names its decision (user 114, main design5 A).
+                    if (overlaps && name == "skill_panel" && _skillPanelOverlapSource != null)
+                        Note($"{stage} HUD/popup {name} overlap allowed", _skillPanelOverlapSource);
+                    else if (overlaps) _hudOverlaps.Add($"{stage} {name}: HUD {rect}, popup {popup}");
                 }
             }
+            // Skill slots for the user's look check (goal 12): empty slots draw at alpha 0.3 with no key, icon or cooldown.
+            Transform skillPanel = hud.transform.Find("skill_panel");
+            for (int number = 1; number <= 5; number++)
+            {
+                Transform slot = skillPanel.Find("skill_slot_" + number);
+                if (slot == null) { Note($"{stage} HUD skill slot {number}", "absent"); continue; }
+                Component artwork = slot.GetComponent(PartyInviteLayout.UiType("Image"));
+                string alpha = artwork == null ? "no Image" : (((Color)PartyInviteLayout.Get(artwork, "color")).a
+                    * ((CanvasRenderer)PartyInviteLayout.Get(artwork, "canvasRenderer")).GetInheritedAlpha()).ToString("F3");
+                Transform iconObject = slot.Find("icon"), cooldownObject = slot.Find("cooldown_overlay");
+                Component icon = iconObject == null ? null : iconObject.GetComponent(PartyInviteLayout.UiType("Image"));
+                Component cooldown = cooldownObject == null ? null : cooldownObject.GetComponent(PartyInviteLayout.UiType("Image"));
+                string labels = string.Join(", ", slot.GetComponentsInChildren<TMP_Text>(true)
+                    .Select(text => $"{text.name} '{text.text}' active {text.gameObject.activeInHierarchy}"));
+                Note($"{stage} HUD skill slot {number}", $"active {slot.gameObject.activeSelf}/{slot.gameObject.activeInHierarchy}, "
+                    + $"screen rect {PartyInviteLayout.ScreenRectOf(slot)}, effective alpha {alpha}, "
+                    + $"icon {(icon == null ? "none" : $"{PartyInviteLayout.Describe(PartyInviteLayout.SpriteOf(icon))} shown {ScreenUiProbe.IsShown(icon)}")}, "
+                    + $"cooldown {(cooldown == null ? "none" : $"active {cooldown.gameObject.activeInHierarchy} fill {PartyInviteLayout.Get(cooldown, "fillAmount")}")}, "
+                    + $"labels [{labels}]");
+            }
+            Note(stage + " HUD gold box", hud.transform.Find("Gold_bar") == null ? "absent" : "present");
             Component map = hud.transform.Find("MinimapPlaceholder/MinimapView").GetComponent(PartyInviteLayout.UiType("RawImage"));
             Texture mapTexture = (Texture)PartyInviteLayout.Get(map, "texture");
             Note(stage + " minimap", $"screen rect {PartyInviteLayout.ScreenRectOf(map)}, RT {mapTexture.width}x{mapTexture.height}, uv {PartyInviteLayout.Get(map, "uvRect")}");

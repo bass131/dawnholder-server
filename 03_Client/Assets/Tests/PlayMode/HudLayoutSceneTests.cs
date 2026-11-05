@@ -40,10 +40,11 @@ namespace Dawnholder.Client.Tests.PlayMode
             Transform hud = HudController.Instance.transform;
             Assert.AreEqual(1, hud.GetComponents<HudLayout>().Length);
             Assert.AreEqual(10, hud.GetComponent<Canvas>().sortingOrder);
-            Assert.IsTrue(hud.Find("skill_panel/skill_slot_1").gameObject.activeInHierarchy);
-            Assert.IsFalse(hud.Find("skill_panel/skill_slot_2").gameObject.activeInHierarchy, "Knight has no E slot");
-            foreach (string hidden in new[] { "character_status/MpSlider", "character_status/ExpSlider",
-                "skill_panel/skill_slot_3", "skill_panel/skill_slot_4", "skill_panel/skill_slot_5" })
+            foreach (int number in new[] { 1, 2, 3, 4 })
+                Assert.IsTrue(hud.Find("skill_panel/skill_slot_" + number).gameObject.activeInHierarchy, "four persistent skill slots");
+            Transform fifth = hud.Find("skill_panel/skill_slot_5");
+            Assert.IsTrue(fifth == null || !fifth.gameObject.activeSelf, "no fifth active skill slot");
+            foreach (string hidden in new[] { "character_status/MpSlider", "character_status/ExpSlider" })
                 Assert.IsFalse(hud.Find(hidden).gameObject.activeInHierarchy, hidden + " must not invent a resource or skill");
 
             TMP_Text hp = hud.Find("character_status/HpText").GetComponent<TMP_Text>();
@@ -57,7 +58,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual(5f / 4f, mapRect.width / mapRect.height, 0.0001f);
             Assert.AreEqual(new Rect(0, 0, 1, 1), (Rect)PartyInviteLayout.Get(map, "uvRect"), "the original map is not cropped");
 
-            foreach (string area in new[] { "character_status", "skill_panel", "Gold_bar", "MinimapPlaceholder", "Quest_Hud", "Party_Info" })
+            foreach (string area in new[] { "character_status", "skill_panel", "MinimapPlaceholder", "Quest_Hud", "Party_Info" })
             {
                 foreach (Component graphic in hud.Find(area).GetComponentsInChildren(PartyInviteLayout.UiType("Graphic")))
                     if (ScreenUiProbe.IsShown(graphic))

@@ -24,7 +24,7 @@ namespace Dawnholder.Client.Tests.PlayMode
     // HUD 재구성 선행 요구시험(PlayMode). 요구 원천은 .backups/verification/2026-10-13-demo-video-art/
     // hud-reconstruction-pr/pretest-01/contract.md 「요구와 독립 기대값」이다. 실제 UI 씬과 scripted TCP peer(서버 권위
     // 대역, 실서버·DB 아님)를 쓴다. 판정은 플레이어가 UI 씬에서 실제로 읽을 수 있는 것, 즉 켜져서 그려지는 TMP 글자와
-    // Image sprite만 본다. 새 비공개 필드명은 강제하지 않고, gold·HP 바만 기존 serialized 필드(_goldText, _hpSlider)로 읽는다.
+    // Image sprite만 본다. HUD 골드는 트리의 켜진 TMP 글에서 찾고 HP 바만 기존 serialized 필드(_hpSlider)로 읽는다.
     // 기대값은 peer로 보낸 서버 리터럴과 고정 표(직업 이름, 직업→Q/E, mapId→지명)뿐이다. 한 시험의 요구 미충족은
     // 모두 모아 끝에 보고하고, fixture 전제 실패는 "fixture:"로 따로 멈춘다.
     public sealed class HudPresentationLifecycleTests
@@ -88,16 +88,16 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _fixture.Frames(2);
             HudView ready = Observe("HuntingGround Ready after S_PlayerHp 52/120");
 
-            Expect(town.ShownGold == "1234", "[gold] 확정 gold 1234가 그려진다", town);
+            Expect(town.ShownGold == "", "[PR2 gold removal] town: HUD 골드 글이 없다", town);
             ExpectUnconfirmedHp(moved, "[같은 연결 map 이동] 새 entry HP 수신 전");
             Expect(!moved.ShowsHp(41, 100), "[같은 연결 map 이동] 옛 entry HP 41/100이 복구되지 않는다", moved);
             ExpectClass(moved, CharacterClass.Knight, "[같은 연결 map 이동] 새 HP 전에도 연결의 확정 직업 유지");
-            Expect(moved.ShownGold == "1234", "[gold] 같은 연결 map 이동 뒤 확정 gold 1234 유지", moved);
+            Expect(moved.ShownGold == "", "[PR2 gold removal] moved: HUD 골드 글이 없다", moved);
             Expect(ready.ShowsHp(52, 120), "[같은 연결 map 이동] 새 entry HP 52/120만 표시를 바꾼다", ready);
             ExpectClass(ready, CharacterClass.Knight, "[같은 연결 map 이동] 새 entry Ready 뒤 확정 직업");
             ExpectKnightSkills(ready, "[실제 Q/E] 같은 연결 map 이동 뒤 Knight");
             Expect(ready.Texts.Contains("Hunting Ground"), "[장소/보존] mapId 1의 지명 Hunting Ground가 그려진다", ready);
-            Expect(ready.ShownGold == "1234", "[gold] 새 entry Ready 뒤에도 gold 1234 유지", ready);
+            Expect(ready.ShownGold == "", "[PR2 gold removal] ready: HUD 골드 글이 없다", ready);
             AssertRequirements();
         }
 
@@ -144,7 +144,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.IsTrue(cleanupPending, "fixture: the transport closed while the main cleanup was still queued");
             ExpectEndedConnection(window, "[연결 종료/교체] close 뒤 main cleanup 전", 37, 100);
             ExpectEndedConnection(cleaned, "[연결 종료/교체] main cleanup 뒤", 37, 100);
-            Expect(cleaned.ShownGold == "", "[gold] 연결 reset 뒤 옛 gold 1234가 남지 않는다", cleaned);
+            Expect(cleaned.ShownGold == "", "[PR2 gold removal] cleaned: HUD 골드 글이 없다", cleaned);
             AssertRequirements();
         }
 
@@ -240,7 +240,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             HudView invalid = Observe("UI scene recreated after the connection ended");
 
             Expect(reenabled.ShowsHp(52, 100), "[UI 생명주기] 다시 켠 HUD가 꺼진 동안 바뀐 현재 HP 52/100을 보인다", reenabled);
-            Expect(reenabled.ShownGold == "777", "[UI 생명주기] 다시 켠 HUD가 꺼진 동안 바뀐 현재 gold 777을 보인다", reenabled);
+            Expect(reenabled.ShownGold == "", "[PR2 gold removal] reenabled: HUD 골드 글이 없다", reenabled);
             ExpectClass(reenabled, CharacterClass.Knight, "[UI 생명주기] 다시 켠 HUD");
             ExpectKnightSkills(reenabled, "[UI 생명주기] 다시 켠 HUD");
             Expect(inventoryWhileDisabled == 0 && authorityWhileDisabled == 0,
@@ -253,12 +253,12 @@ namespace Dawnholder.Client.Tests.PlayMode
                 $"[UI 생명주기] 파괴된 HUD의 구독이 원천에 남지 않는다 (inventory {inventoryAfterDestroy}, authority {authorityAfterDestroy})",
                 recreated);
             Expect(recreated.ShowsHp(52, 100), "[UI 생명주기] 유효 연결에서 재생성한 HUD가 현재 HP 52/100을 다시 보인다", recreated);
-            Expect(recreated.ShownGold == "777", "[UI 생명주기] 유효 연결에서 재생성한 HUD가 현재 gold 777을 다시 보인다", recreated);
+            Expect(recreated.ShownGold == "", "[PR2 gold removal] recreated: HUD 골드 글이 없다", recreated);
             ExpectClass(recreated, CharacterClass.Knight, "[UI 생명주기] 유효 연결에서 재생성한 HUD");
             ExpectKnightSkills(recreated, "[UI 생명주기] 유효 연결에서 재생성한 HUD");
             Expect(recreated.Texts.Contains("Town"), "[장소/보존] UI 재생성 뒤 지명 Town이 복원된다", recreated);
             ExpectEndedConnection(invalid, "[UI 생명주기] 연결이 끝난 뒤 재생성한 HUD", 52, 100);
-            Expect(invalid.ShownGold == "", "[UI 생명주기] 연결이 끝난 뒤 재생성한 HUD가 옛 gold 777을 복원하지 않는다", invalid);
+            Expect(invalid.ShownGold == "", "[PR2 gold removal] invalid: HUD 골드 글이 없다", invalid);
             AssertRequirements();
         }
 
@@ -295,12 +295,12 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _fixture.Frames(2);
             HudView reconnected = Observe("new Knight connection Ready, no inventory snapshot yet");
 
-            Expect(noSnapshot.GoldDrawn && noSnapshot.ShownGold == "",
-                "[gold] 스냅샷 전 gold 라벨은 그려지되 숫자가 없다 (유효 0과 구분)", noSnapshot);
-            Expect(zero.ShownGold == "0", "[gold] 유효한 0은 0으로 보인다", zero);
-            Expect(cap.ShownGold == "1000000000", "[gold] 상한 1,000,000,000의 모든 자릿수가 축약 없이 보인다", cap);
-            Expect(moved.ShownGold == "1000000000", "[gold] 같은 연결 map 이동 뒤 확정 gold 유지", moved);
-            Expect(reconnected.ShownGold == "", "[gold] 새 연결의 스냅샷 전 옛 gold가 남지 않는다", reconnected);
+            Expect(!noSnapshot.GoldDrawn && noSnapshot.ShownGold == "",
+                "[PR2 gold removal] 첫 snapshot 전에도 HUD 골드 글이 그려지지 않는다", noSnapshot);
+            Expect(zero.ShownGold == "", "[PR2 gold removal] zero: HUD 골드 글이 없다", zero);
+            Expect(cap.ShownGold == "", "[PR2 gold removal] cap: HUD 골드 글이 없다", cap);
+            Expect(moved.ShownGold == "", "[PR2 gold removal] moved: HUD 골드 글이 없다", moved);
+            Expect(reconnected.ShownGold == "", "[PR2 gold removal] reconnected: HUD 골드 글이 없다", reconnected);
             AssertRequirements();
         }
 
@@ -413,7 +413,8 @@ namespace Dawnholder.Client.Tests.PlayMode
                         view.Sprites.Add(image.sprite);
                 }
             }
-            TMP_Text gold = HudField<TMP_Text>(hud, "_goldText", required: true);
+            TMP_Text gold = hud.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(text => Drawn(text) &&
+                ((text.text ?? string.Empty).TrimStart().StartsWith("Gold", StringComparison.Ordinal) || (text.text ?? string.Empty).Contains("골드")));
             view.GoldDrawn = gold != null && Drawn(gold);
             view.GoldText = gold != null ? gold.text : null;
             Slider bar = HudField<Slider>(hud, "_hpSlider", required: false);
@@ -556,7 +557,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             internal bool ShowsNumberPair => HpTexts.Any(text => NumberPair.IsMatch(text));
             internal bool ShowsFullHpBar => HpBar.HasValue && HpBar.Value >= 0.999f;
             // 플레이어가 읽는 gold: 그려진 라벨의 숫자, 그려지지 않으면 없음.
-            internal string ShownGold => GoldDrawn ? new string((GoldText ?? string.Empty).Where(char.IsDigit).ToArray()) : string.Empty;
+            internal string ShownGold => GoldDrawn ? GoldText ?? string.Empty : string.Empty;
 
             // 받은 current와 max가 그 순서로, 다른 숫자에 붙지 않고 읽힌다. 서식은 구현에 맡긴다.
             internal bool ShowsHp(int current, int max) =>
@@ -576,7 +577,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 var line = new StringBuilder(Stage);
                 line.Append(" | texts [").Append(string.Join(" ¦ ", Texts.Select(text => text.Replace("\n", "\\n"))));
                 line.Append("] sprites [").Append(string.Join(", ", Sprites.Select(SpriteName)));
-                line.Append("] gold ").Append(GoldDrawn ? "'" + GoldText + "'" : "not drawn");
+                line.Append("] HUD gold labels ").Append(GoldDrawn ? "'" + GoldText + "'" : "not drawn");
                 line.Append(" hpBar ").Append(HpBar.HasValue ? HpBar.Value.ToString("F3") : "absent/hidden");
                 return line.ToString();
             }
