@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 리허설 실행 계약을 쓴다. 메인이 정한 실행자는 신규 Content 실행 작업자 `[Content 구현 Astra]`이고, 명령은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다(「11-05 사용자 결정」 절의 메인 결정). 계약은 Core 카드 v4와 goal 「녹화 실행 순서」 v1에 맞추고, Core와 맞춘 분담(`msg_ebb4e51fb548`)의 R2·R4·R7·클라 종료·알림 셋을 넣는다. 다 쓰면 메인 대조를 청하고 Core에 사본 경로를 알린다. 리허설 시점과 녹화 도구 시험 여부는 메인이 사용자에게 받는다. 그 뒤 순서는 리허설 → 녹화다.
+**다음 첫 일:** 리허설 실행 계약을 쓴다. 메인이 정한 실행자는 신규 Content 실행 작업자 `[Content 구현 Astra]`이고, 명령은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다(「11-05 사용자 결정」 절의 메인 결정). 계약은 Core 카드 v4와 Core goal(`2026-10-31-db-persistence-demo-build`)의 「녹화 실행 순서」 v1에 맞추고, Core와 맞춘 분담(`msg_ebb4e51fb548`)의 R2·R4·R7·클라 종료·알림 셋을 넣는다. 다 쓰면 메인 대조를 청하고 Core에 사본 경로를 알린다. 리허설 시점과 녹화 도구 시험 여부는 메인이 사용자에게 받는다. 그 뒤 순서는 리허설 → 녹화다.
 
 - 녹화 빌드는 끝났고 Core에 확정값을 넘겼다(`msg_c8dd2ae6e315`, 진행 기록 「2026-11-05 녹화 빌드」). 독립 판정은 불합격(차단 D1·D3, 절차·원시)이었고, 메인이 수용 A로 처분했다(`msg_b50c04ca0c08`). 재빌드는 없다.
 - 녹화 빌드 기준 다섯 PR이 모두 main에 들어갔다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35`), Core 24칸(#295, `fbf00de9a57fb26baaef89c12daa7d84ace92631`, 11-04 12:13:47Z), Art PR2(#297, `cfe8bb45c0e63820deccbb5c364e461768f09c1e`, 11-05 16:57:26Z).
