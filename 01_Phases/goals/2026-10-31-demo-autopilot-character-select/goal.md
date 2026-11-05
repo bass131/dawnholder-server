@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 리허설 실행 계약을 쓴다. 메인이 정한 실행자는 신규 Content 실행 작업자 `[Content 구현 Astra]`이고, 명령은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다(「11-05 사용자 결정」 절의 메인 결정). 계약은 Core 카드 v4와 Core goal(`2026-10-31-db-persistence-demo-build`)의 「녹화 실행 순서」 v1에 맞추고, Core와 맞춘 분담(`msg_ebb4e51fb548`)의 R2·R4·R7·클라 종료·알림 셋을 넣는다. 다 쓰면 메인 대조를 청하고 Core에 사본 경로를 알린다. 리허설 시점과 녹화 도구 시험 여부는 메인이 사용자에게 받는다. 그 뒤 순서는 리허설 → 녹화다.
+**다음 첫 일:** 메인이 사용자에게 받은 리허설 시각(결정 129)과 녹화 도구 시험 여부(결정 130)를 기다린다. 시각이 오면 그 약 15분 전에 신규 Content 실행 작업자 `[Content 구현 Astra]`를 리드 pane split으로 띄운다. 명령은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`이고, 계약은 메인 대조 A를 받은 `lead/rehearsal-run-contract-v1.md`다(진행 기록 「2026-11-06 리허설 실행 계약」). 리허설 중에는 메인이 넘기는 R3·R6 Listening과 녹화 도구 준비를 단계 신호(「R2 시작」「Player 시작」「R7 시작」)로 실행자에게 넘긴다. 그 뒤 순서는 리허설 → 원시 독립 대조 → 녹화다.
 
 - 녹화 빌드는 끝났고 Core에 확정값을 넘겼다(`msg_c8dd2ae6e315`, 진행 기록 「2026-11-05 녹화 빌드」). 독립 판정은 불합격(차단 D1·D3, 절차·원시)이었고, 메인이 수용 A로 처분했다(`msg_b50c04ca0c08`). 재빌드는 없다.
 - 녹화 빌드 기준 다섯 PR이 모두 main에 들어갔다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35`), Core 24칸(#295, `fbf00de9a57fb26baaef89c12daa7d84ace92631`, 11-04 12:13:47Z), Art PR2(#297, `cfe8bb45c0e63820deccbb5c364e461768f09c1e`, 11-05 16:57:26Z).
@@ -14,7 +14,7 @@
 - Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다. 종료 기록의 다음 후보에 Content 시험 `GuildGrowthEffectConsumerLifecycleTests` 705행 `HudReferences`의 `Gold_bar`(PR #297로 HUD에서 빠짐, 찾지 못하면 로그만 남김) 정리를 더한다.
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
-- 열린 결정: 리허설 시점과 리허설에서 녹화 도구를 시험할지다. 메인이 사용자에게 묻고 있다(`msg_b50c04ca0c08`).
+- 열린 결정: 리허설 시각(결정 129)과 리허설에서 녹화 도구를 시험할지(결정 130)다. 메인이 사용자에게 묻고 있다(`msg_b50c04ca0c08`, `msg_a6a78aba788a`).
 - 빌드 계약 입력: PR-A·PR268·Art 인벤토리 격자 PR1·Core 인벤토리 24칸 PR·Art PR2 병합(다섯 완료, `msg_d0012352013c`·`msg_d783ac17eb63`·`msg_d0250483d004`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
 
@@ -181,6 +181,7 @@
 - 메인 결정(사용자 결정 아님, `msg_48dee7c855ad`): 녹화 빌드 독립 검증 계약 v1을 A로 받았다. 리드 판단 둘도 받았다. 하나는 R4 스크립트 내장 C# 형 정의 컴파일을 필수 실행 확인으로 두는 것이고, 다른 하나는 등급 약·「기존 시험 실행 대상 없음」이다. 작업자 자기 신고 이탈은 검증자가 실행된 원본(executed-source) 기준으로 독립 판정한다.
 - 메인 결정(사용자 결정 아님, `msg_b50c04ca0c08`): 녹화 빌드 판정 불합격(차단 D1·D3)을 수용 A로 처분했다. 두 결함이 산출물 무결성과 무관하고 재빌드로도 메워지지 않는다는 이유다. 두 결함과 검증자의 계획 밖 두 가지는 goal 이탈로 적고 빌드를 리허설에 쓴다. 판정 결함 D1은 녹화 빌드 작업자 계약(task_5ec7361c7874)의 확정 실패 1회째로 센다.
 - 메인 결정(사용자 결정 아님, `msg_b50c04ca0c08`): R2 관문·R4(두 Player와 창 확인 스크립트)·R7·클라 종료를 실행자 하나로 묶는 Core 제안을 받았다. 실행자는 신규 Content 실행 작업자 `[Content 구현 Astra]`(Astra xhigh)이고, 메인은 실행을 맡지 않는다. 실행 계약은 Core 카드 v4에 맞춰 리드가 쓰고 메인 대조를 받는다. 리허설 시점과 녹화 도구 시험 여부는 메인이 사용자에게 묻는다.
+- 메인 결정(사용자 결정 아님, `msg_a6a78aba788a`): 리허설 실행 계약 v1을 대조 A로 받았다. 설계 여섯을 그대로 받는다. 단계 신호 출처는 리드 한 곳이고, 메인은 R3·R6 Listening과 녹화 도구 준비를 메인 msg ID와 함께 리드에 넘긴다. 알림은 실행자가 메인 handle과 리드 Run에 직접 보낸다. 메인은 「R4 창 확인 끝」 때 사용자에게 화면 잘림 한 줄을 받아 리드에 전한다. 실행자는 사용자 리허설 시각 약 15분 전에 띄운다.
 
 ### 운영 방식(진입 메시지의 메인 결정)
 
@@ -370,3 +371,8 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
     - 시간: 사용자가 이어서 있어야 하는 구간은 R3~R8 약 20~25분이고, 창 전체는 약 45~60분이다.
     - Content 실행 계약 몫: R2(R3 Listening 뒤 Player 직전, 물리 여유 6GiB·commit 4GiB, 미달이면 멈춤), R4(두 Player와 `r4-window-check.ps1`, 끝나면 두 클라 닫기), R7(`-logFile`만 r7 이름), 알림 셋(「R4 자동 진행 끝·두 클라 닫힘」·「R7 확인 끝·두 클라 닫힘」·R2 미달).
     - 실행 작업자는 서버 창에 입력하지 않고, WSL·DB·7777 서버도 건드리지 않는다.
+- 2026-11-06 리허설 실행 계약: 리드가 `lead/rehearsal-run-contract-v1.md`를 썼다(sha256 `0d636c3c3dc85b83dcaf069a9b2f09442a4c47b1565c1914b053230f096753e7`, 617줄). 머리는 `lead/rehearsal-run-contract-v1-head.md`이고, 입력 33개(`lead/rehearsal-run-contract-v1-inputs.txt`)의 MISSING은 0이다. 부록 B는 goal commit `88490d9c208b3303f6932dcfe489f0bf31dea551`, 부록 C는 CODE_CONVENTION commit `cfe8bb45`에서 뽑았다.
+  - 실행자 몫: 시작 확인(빌드 234파일 재측정·exe sha256·Player 설정 레지스트리 읽기), R2 관문(`measure-gate.ps1`, 물리 6GB·commit 4GB, `-AllowDotnet`), R4(보이는 두 창 1920×1080·`-monitor 1`/`2`, `r4-window-check.ps1`, done 뒤 60초 유지), R7(`-logFile`만 r7, town 뒤 10초 유지), 각 판 뒤 자기 두 PID 닫기다.
+  - 알림 일곱: Core와 맞춘 셋(「R4 자동 진행 끝·두 클라 닫힘」「R7 확인 끝·두 클라 닫힘」「R2 미달」)에 「R4 창 확인 끝」「R2 통과」(시험 있음일 때만)「R4 이상」「R7 이상」을 더했다.
+  - 녹화 빌드 판정 교훈을 경계로 넣었다. 자식 TEMP·TMP 지정과 실측 기록(D1), 실패한 자식 stderr 보존과 UTF-8 출력(D3), 계획 밖 실행과 계약 밖 rollout 읽기 금지(검증자의 계획 밖 두 가지)다.
+  - 메인 대조 요청 `msg_97754e0e3c82`, 메인 대조 A `msg_a6a78aba788a`(메인이 sha를 같게 쟀고 걸리는 줄 없음). Core 사본 `msg_ac200a0295be`(다른 점만 답).
