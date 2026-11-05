@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 리허설 v2는 끝났다. 실행자는 succeeded(`msg_627d29cd726d`)이고 pane을 닫았다. 리드 판정 `lead/rehearsal-v2-lead-judgement.md`를 메인(`msg_c1d635973f9b`)과 Core(`msg_c277074f6a51`)에 보냈다(진행 기록 「2026-11-06 리허설 v2 실행과 리드 판정」). 다음은 리허설 원시의 독립 대조다. 신규 검증자 `[Content 검증자]`는 Astra xhigh로 연다. 진짜 녹화 계약 v3는 사용자 결정 133 A·134 A(메인 `msg_dfc546b80260`)로 쓰기 시작한다. 새 이름 칸은 135 답을 기다린다. v3에는 고친 알림 전달, 녹화 시작 경합 대책, 계약에 원문으로 고정한 신호 body를 넣는다. R8 서버 창 8줄은 메인이 받으면 검증 근거에 붙인다.
+**다음 첫 일:** 리허설 v2는 끝났다. 실행자는 succeeded(`msg_627d29cd726d`)이고 pane을 닫았다. 리드 판정 `lead/rehearsal-v2-lead-judgement.md`를 메인(`msg_c1d635973f9b`)과 Core(`msg_c277074f6a51`)에 보냈다(진행 기록 「2026-11-06 리허설 v2 실행과 리드 판정」). 리허설 원시의 독립 검증자 `[Content 검증자]`(Astra xhigh)가 돌고 있다(진행 기록 「2026-11-06 리허설 v2 독립 검증 기동」). 판정을 받으면 정산하고 실측값을 v3에 반영한다. 진짜 녹화 계약 v3는 사용자 결정 133 A·134 A·135 A(메인 `msg_dfc546b80260`·`msg_17a5453d6222`)로 쓰는 중이다. 입력은 Core 카드 v6과 녹화 순서 v2 초안이다. v3에는 고친 알림 전달, 녹화 시작 경합 대책, 계약에 원문으로 고정한 신호 body를 넣는다. R8 서버 창 8줄은 메인이 받으면 검증 근거에 붙인다.
 
 - 녹화 빌드는 끝났고 Core에 확정값을 넘겼다(`msg_c8dd2ae6e315`, 진행 기록 「2026-11-05 녹화 빌드」). 독립 판정은 불합격(차단 D1·D3, 절차·원시)이었고, 메인이 수용 A로 처분했다(`msg_b50c04ca0c08`). 재빌드는 없다.
 - 녹화 빌드 기준 다섯 PR이 모두 main에 들어갔다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35`), Core 24칸(#295, `fbf00de9a57fb26baaef89c12daa7d84ace92631`, 11-04 12:13:47Z), Art PR2(#297, `cfe8bb45c0e63820deccbb5c364e461768f09c1e`, 11-05 16:57:26Z).
@@ -14,7 +14,7 @@
 - Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다. 종료 기록의 다음 후보에 Content 시험 `GuildGrowthEffectConsumerLifecycleTests` 705행 `HudReferences`의 `Gold_bar`(PR #297로 HUD에서 빠짐, 찾지 못하면 로그만 남김) 정리를 더한다.
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
-- 열린 결정: 지금 사용자 결정 대기는 135(1회차 상대 마법사의 새 이름, 메인이 물음) 하나다. 129 A·130 A·131 C와 녹화 자동화 지시는 「11-06 사용자 결정」 절이다. 리드가 정한 v2 설계는 메인이 리허설 한정으로 받았다(`msg_25e147f44c7f`). 진짜 녹화 순서(회차 사이 서버 재시작)와 1회차 상대 마법사의 새 이름은 Core가 리허설 결과와 함께 한 글로 메인에 올린다(Core `msg_b28231a86423`, 리드 동의 `msg_5e1339c81084`). 리허설 결과와 v3 입력은 리드가 Core에 넘겼다(`msg_c277074f6a51`). Core가 종합 결정 요청 두 건을 올렸다(`msg_25dbd7e547fa`, Content 사본). 1은 진짜 녹화 순서로, 추천 A는 회차 사이 재시작이며 새 이름 초안은 `rec_ally_mage`·「새벽동료」다. 2는 녹화 시작 늦음으로, 추천 A는 녹화 스크립트만 고치는 것이다. 두 추천 모두 리드 추천과 같다. 사용자가 133 A·134 A로 답했다(「11-06 사용자 결정 133 A·134 A」 절). 새 이름은 135로 메인이 묻는 중이고, v3는 이름 칸을 비운 채 쓴다.
+- 열린 결정: 지금 사용자 결정 대기는 없다. 135는 A(초안 그대로)로 답을 받았다(「11-06 사용자 결정 135 A」 절). 129 A·130 A·131 C와 녹화 자동화 지시는 「11-06 사용자 결정」 절이다. 리드가 정한 v2 설계는 메인이 리허설 한정으로 받았다(`msg_25e147f44c7f`). 진짜 녹화 순서(회차 사이 서버 재시작)와 1회차 상대 마법사의 새 이름은 Core가 리허설 결과와 함께 한 글로 메인에 올린다(Core `msg_b28231a86423`, 리드 동의 `msg_5e1339c81084`). 리허설 결과와 v3 입력은 리드가 Core에 넘겼다(`msg_c277074f6a51`). Core가 종합 결정 요청 두 건을 올렸다(`msg_25dbd7e547fa`, Content 사본). 1은 진짜 녹화 순서로, 추천 A는 회차 사이 재시작이며 새 이름 초안은 `rec_ally_mage`·「새벽동료」다. 2는 녹화 시작 늦음으로, 추천 A는 녹화 스크립트만 고치는 것이다. 두 추천 모두 리드 추천과 같다. 사용자가 133 A·134 A로 답했다(「11-06 사용자 결정 133 A·134 A」 절). 새 이름은 135 A로 초안 그대로다. Core가 카드 v6(Core `msg_c946082e5b5b`)의 이름 칸을 채웠다(Core `msg_3a756dd537ba`).
 - 빌드 계약 입력: PR-A·PR268·Art 인벤토리 격자 PR1·Core 인벤토리 24칸 PR·Art PR2 병합(다섯 완료, `msg_d0012352013c`·`msg_d783ac17eb63`·`msg_d0250483d004`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
 
@@ -206,7 +206,15 @@
   - 진짜 녹화는 1회차 → 서버 재시작 → 2회차다. 따로 도는 R7은 없다.
   - 녹화 스크립트의 시작 대기만 고친다. 통과 조건에 「첫 프레임이 캐릭터 목록보다 먼저」를 넣는다. 3초 쉼의 원래 이유는 클라 없는 자체 시험으로 확인한다. 빌드는 그대로다.
   - 리허설 원시 독립 검증(신규 Astra xhigh)과 진짜 녹화 실행 계약 v3를 진행한다.
-- 새 이름(1회차 상대 마법사): 사용자 답에 이름이 없었다. 초안 `rec_ally_mage`·「새벽동료」를 그대로 쓸지 메인이 135로 따로 묻는다. 이름 칸만 비워 둔 채 v3를 쓰기 시작해도 된다(메인 지시).
+- 새 이름(1회차 상대 마법사): 사용자 답에 이름이 없었다. 초안 `rec_ally_mage`·「새벽동료」를 그대로 쓸지 메인이 135로 따로 묻는다. 이름 칸만 비워 둔 채 v3를 쓰기 시작해도 된다(메인 지시). 답은 아래 135 A 절이다.
+
+### 11-06 사용자 결정 135 A — msg_17a5453d6222
+
+메인이 전달한 사용자 원문이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다. 원문 사본은 `lead/main-msg_17a5453d6222-decision-135A-name.txt`다.
+
+- 원문(대시보드 결정 응답, 메인 pane 제출): 「1) 135 - 진짜 녹화 1회차 상대 법사의 새 이름: 초안 그대로 vs 다른 이름 → A 초안 그대로」.
+- 적용(메인 지시): 1회차 상대 마법사는 계정 `rec_ally_mage`, 캐릭터 「새벽동료」다. 실행 계약 v3의 1회차 상대 마법사 칸에 이 이름을 넣는다.
+- Core가 카드 v6과 녹화 순서 v2 초안의 이름 칸을 같은 이름으로 채웠다(Core `msg_3a756dd537ba`, 원문 사본 `lead/core-msg_3a756dd537ba-card-v6-name-filled.txt`).
 
 ### 운영 방식(진입 메시지의 메인 결정)
 
@@ -441,3 +449,9 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - v3 위험(녹화 시작 경합): ffmpeg가 Player 기동 뒤 약 6.8초에 시작해 자동 진행기 login(t=4.2)과 겹친다. 원인은 `run-02/players.ps1` 171~184행의 창 handle 뒤 3초 쉼과 recorder 자식 기동이다. R4-1은 빈 슬롯 장면을 겨우 담았다. 두 회차 모두 생성인 v3에서는 이 장면을 놓칠 수 있다. 리드 추천은 녹화 스크립트만 고치고 「첫 프레임 UTC < character list UTC」를 통과 조건에 넣는 것이다.
   - 아직 안 잰 것: 한 판에 생성과 선택이 섞인 조합(v3 2회차)은 이번에도 재지 않았다. R4-1은 둘 다 생성, R4-2·R7은 둘 다 선택이었다.
   - 잔여(실행자 공개): R7 알림에 R4 소리 줄이 같이 실렸다(표시만, `players.ps1` 453행). 신호를 기다리며 턴을 끝낸 동안 heartbeat 공백이 2188초와 1177초였다.
+- 2026-11-06 리허설 v2 독립 검증 기동
+  - 계약: `lead/rehearsal-v2-verify-contract-v1.md`(sha256 `3bf151726dbb90347f5ebda52ff901a201ef1d6c77eae0f3dafd006436088fb3`, 602줄). 머리는 `lead/rehearsal-v2-verify-contract-v1-head.md`이고 입력 53줄(`lead/rehearsal-v2-verify-inputs-v1.txt`)의 MISSING은 0이다. 부록 B·C는 commit `a1d46a158995796582aea6bbb9c62b4f56703681`에서 뽑았다. 포인터는 `lead/rehearsal-v2-verify-contract-v1-pointer.md`(sha256 `314e09433b97914fe6edf3471f55105f093445ca00782ed2e8a4af0f032243e0`)다.
+  - 대상 스냅샷: 리드가 실행자 정산 뒤 `lead/make-rehearsal-v2-target-manifest-01.cjs`로 쟀다. `lead/rehearsal-v2-target-manifest-01.json`은 536파일, 130,243,332 bytes, 2026-11-05T21:47:48.907Z이다. 검증자가 다시 재어 대조한다.
+  - 검증자: `[Content 검증자]`, task_7c1912c64338 / ctx_c52c5cb1100f, pane `term_6494ebdb-9194-4d51-97c4-13dc80cd9f33`. 기동 명령은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`이고 TEMP는 `.backups/tmp/rehearsal-v2-verify-01/`이다. 첫 화면은 v0.166.0, 「GPT-6-Astra xhigh」였고 선택창은 없었다(`lead/rehearsal-v2-verify-first-screen-01.json`). 백엔드 실제 모델은 unknown이다.
+  - 등급은 약이다. 필수 실행 확인은 넷이다: 대상 스냅샷 재계산, 녹화 4파일 ffprobe·volumedetect 재측정, 로그 판정 재계산, 배치 판정 재계산. 리드 판정은 검증자가 자기 측정을 끝낸 뒤에만 열어 대조한다.
+  - 메인에 기동과 135 A 수신을 알렸다(`msg_5e9a7eb635db`).
