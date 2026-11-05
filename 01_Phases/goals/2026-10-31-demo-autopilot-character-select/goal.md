@@ -4,16 +4,17 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 녹화 빌드 작업자 계약 v1(근거 폴더 `lead/recording-build-worker-contract-v1.md`)의 메인 대조를 받는다. 대조가 끝나면 리드가 content-active를 고정 head로 detached 전환하고, 신규 `[Content 구현 Astra]`를 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`로 연다. 작업자가 「준비됨」을 보내면 리드가 Unity.exe 0·Windows dotnet 0을 재고 그 시각부터 30분 빌드 창을 연다(메인 선승인, 「11-05 사용자 결정」 절). 그 뒤 순서는 신규 `[Content 검증자]`(같은 명령) → Core에 산출물 전달 → Core 리허설 → 녹화다.
+**다음 첫 일:** 리허설 실행 계약을 쓴다. 메인이 정한 실행자는 신규 Content 실행 작업자 `[Content 구현 Astra]`이고, 명령은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다(「11-05 사용자 결정」 절의 메인 결정). 계약은 Core 카드 v4와 goal 「녹화 실행 순서」 v1에 맞추고, Core와 맞춘 분담(`msg_ebb4e51fb548`)의 R2·R4·R7·클라 종료·알림 셋을 넣는다. 다 쓰면 메인 대조를 청하고 Core에 사본 경로를 알린다. 리허설 시점과 녹화 도구 시험 여부는 메인이 사용자에게 받는다. 그 뒤 순서는 리허설 → 녹화다.
 
+- 녹화 빌드는 끝났고 Core에 확정값을 넘겼다(`msg_c8dd2ae6e315`, 진행 기록 「2026-11-05 녹화 빌드」). 독립 판정은 불합격(차단 D1·D3, 절차·원시)이었고, 메인이 수용 A로 처분했다(`msg_b50c04ca0c08`). 재빌드는 없다.
 - 녹화 빌드 기준 다섯 PR이 모두 main에 들어갔다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35`), Core 24칸(#295, `fbf00de9a57fb26baaef89c12daa7d84ace92631`, 11-04 12:13:47Z), Art PR2(#297, `cfe8bb45c0e63820deccbb5c364e461768f09c1e`, 11-05 16:57:26Z).
-- 고정 head는 `cfe8bb45c0e63820deccbb5c364e461768f09c1e`이다(리드 확인 `lead/fixed-head-check-01.txt`). Core에 먼저 보냈고(`msg_59ba4e32d30a`), Core 회신(서버 branch HEAD·서버 쪽 diff 0·`ProtocolVersion` 줄·R1 exit)은 아직 없다. Core R1(WSL 창)과 빌드 창이 겹치면 빌드가 먼저다(메인).
+- 고정 head는 `cfe8bb45c0e63820deccbb5c364e461768f09c1e`이다(리드 확인 `lead/fixed-head-check-01.txt`). Core 회신 `msg_9203c45e18e9`에 따르면 서버 쪽 diff 0·`Current = 23`이다. 그래서 R1은 build-03 실행으로 갈음했고 exit 0이다.
 - 녹화 빌드 계약은 v12(`lead/recording-build-contract-v12.md`, sha256 `e0c846ced1c70ac00a6d73762ddd6c6f5578cbe833e7a4831ad1994d29717083`)이고, 메인이 대조해 A로 받았다(`msg_e8dd9cb571fd`). 이름은 사용자 결정 109 A, 창 크기는 110 A, 제출 기한(2026-11-09 14:00 KST)은 「11-04 재진입」 절, 배경 음악 123 A와 작업자 배정은 「11-05 사용자 결정」 절이다.
 - PR-C(길드 입구)는 사용자 결정 113 A로 취소했다. Art 75·Art PR4 사후 확인·Effect 후속은 착수하지 않는다(메인 결정, 「11-04 재진입」 절).
 - Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다. 종료 기록의 다음 후보에 Content 시험 `GuildGrowthEffectConsumerLifecycleTests` 705행 `HudReferences`의 `Gold_bar`(PR #297로 HUD에서 빠짐, 찾지 못하면 로그만 남김) 정리를 더한다.
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
-- 열린 결정: 없음.
+- 열린 결정: 리허설 시점과 리허설에서 녹화 도구를 시험할지다. 메인이 사용자에게 묻고 있다(`msg_b50c04ca0c08`).
 - 빌드 계약 입력: PR-A·PR268·Art 인벤토리 격자 PR1·Core 인벤토리 24칸 PR·Art PR2 병합(다섯 완료, `msg_d0012352013c`·`msg_d783ac17eb63`·`msg_d0250483d004`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
 
@@ -177,6 +178,9 @@
 - 대기 규칙(메인 `msg_8d893da47a69`): 「앞으로는 너무 오랜시간 대기는 하지 말아줘 5분 넘어서 마지막 작업 이후 응답이 나한테 없으면 대기하지 말아줘 토큰낭비야」. 적용(메인 지시): 작업자가 돌 때만 우편함 대기를 열고, 메인 답을 기다릴 때는 턴을 끝낸다.
 - 사용자 결정 120 A(메인 적용, `msg_8d893da47a69`): Bash 전에 환경 파일의 중복 줄을 지우는 hook을 메인이 content-active의 Git 제외 `.claude/settings.local.json`에 넣었다. 리드는 그 파일을 고치지 않는다.
 - 메인 결정(사용자 결정 아님, `msg_e8dd9cb571fd`): 녹화 빌드 창(약 15분, `-batchmode -quit`, 사용자 PC 비움 불필요)은 메인 선승인이다. 작업자가 「준비됨」을 보내면 리드가 Unity.exe 0·Windows dotnet 0을 재고 그 시각부터 30분 창을 직접 연다. 창 시각과 프로세스 0 기록은 근거 폴더와 결과 반납에 적는다. Art는 Unity를 더 쓰지 않는다. Core의 WSL 창(R1)과 겹치면 빌드가 먼저다.
+- 메인 결정(사용자 결정 아님, `msg_48dee7c855ad`): 녹화 빌드 독립 검증 계약 v1을 A로 받았다. 리드 판단 둘도 받았다. 하나는 R4 스크립트 내장 C# 형 정의 컴파일을 필수 실행 확인으로 두는 것이고, 다른 하나는 등급 약·「기존 시험 실행 대상 없음」이다. 작업자 자기 신고 이탈은 검증자가 실행된 원본(executed-source) 기준으로 독립 판정한다.
+- 메인 결정(사용자 결정 아님, `msg_b50c04ca0c08`): 녹화 빌드 판정 불합격(차단 D1·D3)을 수용 A로 처분했다. 두 결함이 산출물 무결성과 무관하고 재빌드로도 메워지지 않는다는 이유다. 두 결함과 검증자의 계획 밖 두 가지는 goal 이탈로 적고 빌드를 리허설에 쓴다. 판정 결함 D1은 녹화 빌드 작업자 계약(task_5ec7361c7874)의 확정 실패 1회째로 센다.
+- 메인 결정(사용자 결정 아님, `msg_b50c04ca0c08`): R2 관문·R4(두 Player와 창 확인 스크립트)·R7·클라 종료를 실행자 하나로 묶는 Core 제안을 받았다. 실행자는 신규 Content 실행 작업자 `[Content 구현 Astra]`(Astra xhigh)이고, 메인은 실행을 맡지 않는다. 실행 계약은 Core 카드 v4에 맞춰 리드가 쓰고 메인 대조를 받는다. 리허설 시점과 녹화 도구 시험 여부는 메인이 사용자에게 묻는다.
 
 ### 운영 방식(진입 메시지의 메인 결정)
 
@@ -265,7 +269,8 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 - [-] 길드 입구 겹침(사용자 결정 113 A로 취소)
 - [x] 선택창 PR 병합
 - [x] PR268 병합
-- [>] 녹화용 빌드 전달
+- [x] 녹화용 빌드 전달
+- [>] 리허설·녹화 실행(Content 실행 작업자, 메인 결정 `msg_b50c04ca0c08`)
 - [ ] 종료 기록
 
 ## 진행 기록
@@ -348,3 +353,20 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 고정 head `cfe8bb45`의 리드 확인(`lead/fixed-head-check-01.txt`, sha256 `3469632832f8971d0d703bf9a7b88195367fe04278e4e3821d595306024dfd18`): 다섯 기준 PR이 모두 조상이다. `fbf00de9..cfe8bb45`에서 `02_Server`·`04_ClientNet`·`98_Shared`·`99_Tools` diff 0이다. `5dd67b09..cfe8bb45`와 `cb32652f..cfe8bb45`에서 클라 빌드 설정 diff 0이고, `5dd67b09..cfe8bb45`에서 입력 설정·Demo 코드 diff 0이다. `ProtocolVersion.cs` 90행이 `Current = 23`이고, Demo 코드의 HUD·인벤토리 참조는 0이다. Core에 head를 먼저 보냈다(`msg_59ba4e32d30a`).
   - 계약 v12를 메인에 보냈고(`msg_cb1443f6d5aa`) 메인이 A로 받았다(`msg_e8dd9cb571fd`). 인벤토리 가림은 PR2의 인벤토리 루트 정렬 5→14(사용자 결정 125 B, Art `msg_34d219b1420f`)로 닫혀 v12 §4에서 주의를 뺐다.
   - Content 시험 `GuildGrowthEffectConsumerLifecycleTests` 705행의 `Gold_bar`는 PR2 뒤 HUD에 없다. 934~938행이 찾지 못한 이름을 로그만 남기고 넘어가서 실패가 아니라 그대로 둔다(`5dd67b09..cfe8bb45`에서 그 파일 diff 0).
+- 2026-11-05 녹화 빌드: 빌드 작업자 `[Content 구현 Astra]`(신규 GPT-6-Astra xhigh) task_5ec7361c7874 / ctx_eace4775d652, 리드 pane split `term_9d6f4150`. 계약 `lead/recording-build-worker-contract-v1.md`(sha256 `63f2a62790bccae3fa0867d78602efd8a3705c5b426c79b4931f27b27f857157`, 메인 A `msg_3957cbc83fad`), 보고 `recording-build-01/report.md`(sha256 `7c649185a5467184b118b61f0d223e26289f6f8c5af0a14c5f7053e98b24bd4f`), worker_done `msg_6a64b526a8eb` succeeded, pane 닫음.
+  - 빌드 창: 리드가 17:35:32Z에 `measure-gate.ps1`로 쟀다. Unity 0·Windows dotnet 0·여유 물리 19186429952·commit 29711663104 bytes, passed true였다(`lead/build-window-open-01.json`, sha256 `99a28c396fcd77bf3a40e373b1a823dcb6523e6e999a1f33fc7246fad4ef5a5e`). 창은 18:05:32Z까지였고 「빌드 창 열림」은 `msg_f2cca88f51d4`다. content-active는 고정 head `cfe8bb45` detached였다.
+  - 결과: Unity PID 16684, 17:36:27Z~17:40:08Z, exit 0(220.7초), 「Build Finished, Result: Success.」. exe sha256 `91a36fa14dd3ccf390b99720805eda0553da1ca1108381b49c98c938f69dc256`, manifest `build-run/player-file-sha256.json` 234파일·778468195 bytes, manifest sha256 `d10d57c9bdecc7016dbf775eb10f00f3e3f5da60cf7d3ef83f4c25937a15f9e5`. 끝난 뒤 Unity·Windows dotnet·Player 0이다. 실행 명령 문서는 `recording-build-01/player-commands.md`(sha256 `33e37f88195cd3aa55c07e73529e10283371a494399cf4d5bab535c6ea526cd3`)다.
+  - drift: Unity가 바꾼 추적 파일은 v12 §5 허용 다섯 중 셋이다(`UniversalRP.asset`·`UniversalRenderPipelineGlobalSettings.asset`·`GraphicsSettings.asset`). 리드가 17:54:55Z에 HEAD로 되돌렸다(`lead/drift-restore-01.txt`, sha256 `13bcb0879a31fa3f969ab0848efd3324289806d66a881cb004a650d37d1c51f5`).
+- 2026-11-05 녹화 빌드 독립 검증(불합격, 메인 처분 A): 검증자 `[Content 검증자]`(신규 GPT-6-Astra xhigh, 첫 화면 「GPT-6-Astra xhigh」·v0.166.0) task_199a905d4863 / ctx_c729c6bea4ae, 리드 pane split `term_cd97b602`. 계약 `lead/recording-build-verify-contract-v1.md`(sha256 `b47a2f4641e67ac7706af095abeadcdeeb8069cc2da968eb613d629652de6b00`, 메인 A `msg_48dee7c855ad`), 판정 `recording-build-verify-01/verdict.md`(sha256 `fba29f381f491a2c8725aa84597d1a41dee8861d3ddc254a657e590b1ba70f23`), worker_done `msg_d45e95ae30e2`, pane 닫음(18:3xZ, ptyKilled true).
+  - 확인된 것: 고정 head·Unity revision·argv·빌드 창 안 실행·exit 0을 확인했다. manifest 234파일을 전부 다시 쟀고 누락·추가·크기·hash·순서 차이는 0이다. exe·manifest sha256이 같다. drift 셋의 경로·내용과 리드 복원을 확인했다. 실행 원본 기준 build-player 단계 1~12도 확인했다. R4 스크립트는 정적 대조했고 내장 C#은 형 정의만 컴파일했다(형 11개, 오류 0·경고 0, 메서드 호출 0). 명령 여덟 줄과 `-monitor` 계획, 리허설·녹화 이름 분리도 맞다. Unity·Player·R4 실행·서버·DB는 0이다.
+  - 판정 결함 D1(차단, 작업자): 빌드 뒤 `check-descendant-filter.ps1`로 고친 자식 분류 함수를 합성 fixture 3개에 돌렸다. 고정 실행 단계에 없는 실행인데 공식 ask가 없었고, 그 자식의 TEMP/TMP 지정·실측 값도 없다. 리드 우편함 기록에도 그 ask는 없다. Unity·dotnet·Player 호출은 0이다. 같은 계약의 확정 실패 1회째로 센다(메인).
+  - 판정 결함 D3(차단, 검증자 자신): 검증자 harness의 첫 manifest 비교 실패 때 child stderr를 온전히 남기지 못했다. 일부 한글 출력도 깨졌다. 성공한 재시도의 JSON·소스·exit는 남아 있다. 구현자 집계에는 넣지 않는다.
+  - 비차단: D2는 오래된 두 프로세스(TCubeObserver64 PID 14596, node PID 6328, 둘 다 11-04 생성)를 부모 PID 재사용으로 자식에 넣은 분류다. 보정 원시가 타당하다. 작업자 생존 신호 5분 초과 3구간(385초·415초·430초 이상)은 운영 정산 대상이고 면제가 아니다.
+  - 리드 R-2 표본(`lead/verdict-sample-check-01.txt`, sha256 `219f1a3f307b8fa268327192df14b6307738555c8c28b73cdf9069c9632946b1`): 판정과 다른 점은 없다.
+  - 검증자의 계획 밖 두 가지(리드 관찰, 메인이 이탈로 기록): ① 작업자 Codex rollout 로그(`~/.codex/sessions/2026/11/06/rollout-…ca87f8.jsonl`)를 계약 입력 밖에서 ask 없이 읽었다. 17:43~17:48Z 호출 3쌍을 `worker-execution-recovered.json`으로 뽑았고, 추출본의 `ORCA_`·`TOKEN`·`Password`·`Credential` 낱말 수는 0이다. ② 멈춘 자기 harness PowerShell 자식 둘(PID 25512·28248)을 끄고 `termination.json`을 남겼다. 명령줄은 둘 다 검증 폴더 스크립트였고 다른 프로세스 종료는 0이다.
+  - 처분과 전달: 메인이 수용 A로 처분했다(`msg_b50c04ca0c08`). Core에 확정값을 넘겼다(`msg_c8dd2ae6e315`). 리드가 content-active를 작업 branch로 되돌렸다(18:39:42Z, `lead/branch-return-01.txt`, sha256 `1ffbe4f74ed65f78ee854ef9bc0229419ee1183b6a604bea10c855b65c035f3f`).
+  - 리허설 분담(Core `msg_98b6fd98f397`·`msg_ebb4e51fb548`, 리드 동의 `msg_c8dd2ae6e315`): 카드 v4(core-active `lead/rehearsal-user-server-card-v4.md`, sha256 `7deeb64c646a8a8afe0d3fcbf5eea2a9c2a71d7c882ee1f8204ede70a2e2c63e`)는 고치지 않는다.
+    - 사용자 손: R0(Legacy가 떠 있을 때만 Ctrl+C), R3 시작, R4 화면 잘림 한 줄, R5 Enter, R6 재시작 한 줄, R8 Enter.
+    - 시간: 사용자가 이어서 있어야 하는 구간은 R3~R8 약 20~25분이고, 창 전체는 약 45~60분이다.
+    - Content 실행 계약 몫: R2(R3 Listening 뒤 Player 직전, 물리 여유 6GiB·commit 4GiB, 미달이면 멈춤), R4(두 Player와 `r4-window-check.ps1`, 끝나면 두 클라 닫기), R7(`-logFile`만 r7 이름), 알림 셋(「R4 자동 진행 끝·두 클라 닫힘」·「R7 확인 끝·두 클라 닫힘」·R2 미달).
+    - 실행 작업자는 서버 창에 입력하지 않고, WSL·DB·7777 서버도 건드리지 않는다.
