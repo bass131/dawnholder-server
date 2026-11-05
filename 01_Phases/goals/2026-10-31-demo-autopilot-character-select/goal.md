@@ -4,11 +4,17 @@
 
 ## 재개 지점
 
-**다음 첫 일:** Core 인벤토리 24칸 PR과 Art PR2(HUD 골드 제거·스킬칸 좌하단 4칸)가 main에 들어가기를 기다린다. 남은 순서는 메인 결정(`msg_3031315cf7d1`)대로 Core 24칸 → Art PR2 → 고정 head → 녹화 빌드 → 리허설 → 녹화다. 녹화 빌드 기준 다섯 PR 중 셋은 main에 있다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35a5ae7222b44d87b2702d6bd975ed2540`, 11-01 11:39:33Z, 메인 `msg_c34e981a6ccb`). 계약 초안 v9는 근거 폴더 `lead/recording-build-contract-draft-v9.md`(sha256 `c1227fa6417563b7cea4d44ff58949d97d98b94bfd52ac3a758f17622becce18`, 11-04)다. 이름은 사용자 결정 109 A, 창 크기는 110 A, 제출 기한(2026-11-09 14:00 KST)·116 A·작업자 배정은 「11-04 재진입」 절이다. Core와는 R4·R7 명령, R2 경계, R4 화면 확인 분담을 맞췄다(Core `msg_45e700da3330`·`msg_1e8f4d2e6446`). 남은 빈칸은 Core 24칸·Art PR2의 번호·merge commit과 고정 head다. 둘이 들어가면 ① 다섯이 다 든 main의 40자를 고정 head로 정해 Core에 먼저 보내고 ② 계약 고정본의 경로·sha256을 메인에 보내고 ③ 메인에 Unity 빌드 창(약 15분, Unity만)을 청한 뒤 신규 `[Content 구현 Astra]` 빌드와 신규 `[Content 검증자]` 검증을 연다(둘 다 `gpt-6-astra` high). Core는 그 SHA를 서버 branch에 받아 R1(v23)을 돌린다. PR-C(길드 입구)는 사용자 결정 113 A로 취소했다. Art PR4 사후 확인은 리셋이 지났어도 녹화 경로가 아니라서 지금도 착수하지 않는다(메인 결정, 「11-04 재진입」 절). 11-04 20:05 KST 확인: origin/main은 그대로 `a888cd35`이고, 열린 PR은 #207 하나라 Core 24칸·Art PR2 PR은 아직 없다(원시 `lead/open-prs-20261104-01.json`). Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다.
+**다음 첫 일:** 녹화 빌드 작업자 계약 v1(근거 폴더 `lead/recording-build-worker-contract-v1.md`)의 메인 대조를 받는다. 대조가 끝나면 리드가 content-active를 고정 head로 detached 전환하고, 신규 `[Content 구현 Astra]`를 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`로 연다. 작업자가 「준비됨」을 보내면 리드가 Unity.exe 0·Windows dotnet 0을 재고 그 시각부터 30분 빌드 창을 연다(메인 선승인, 「11-05 사용자 결정」 절). 그 뒤 순서는 신규 `[Content 검증자]`(같은 명령) → Core에 산출물 전달 → Core 리허설 → 녹화다.
+
+- 녹화 빌드 기준 다섯 PR이 모두 main에 들어갔다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35`), Core 24칸(#295, `fbf00de9a57fb26baaef89c12daa7d84ace92631`, 11-04 12:13:47Z), Art PR2(#297, `cfe8bb45c0e63820deccbb5c364e461768f09c1e`, 11-05 16:57:26Z).
+- 고정 head는 `cfe8bb45c0e63820deccbb5c364e461768f09c1e`이다(리드 확인 `lead/fixed-head-check-01.txt`). Core에 먼저 보냈고(`msg_59ba4e32d30a`), Core 회신(서버 branch HEAD·서버 쪽 diff 0·`ProtocolVersion` 줄·R1 exit)은 아직 없다. Core R1(WSL 창)과 빌드 창이 겹치면 빌드가 먼저다(메인).
+- 녹화 빌드 계약은 v12(`lead/recording-build-contract-v12.md`, sha256 `e0c846ced1c70ac00a6d73762ddd6c6f5578cbe833e7a4831ad1994d29717083`)이고, 메인이 대조해 A로 받았다(`msg_e8dd9cb571fd`). 이름은 사용자 결정 109 A, 창 크기는 110 A, 제출 기한(2026-11-09 14:00 KST)은 「11-04 재진입」 절, 배경 음악 123 A와 작업자 배정은 「11-05 사용자 결정」 절이다.
+- PR-C(길드 입구)는 사용자 결정 113 A로 취소했다. Art 75·Art PR4 사후 확인·Effect 후속은 착수하지 않는다(메인 결정, 「11-04 재진입」 절).
+- Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다. 종료 기록의 다음 후보에 Content 시험 `GuildGrowthEffectConsumerLifecycleTests` 705행 `HudReferences`의 `Gold_bar`(PR #297로 HUD에서 빠짐, 찾지 못하면 로그만 남김) 정리를 더한다.
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
 - 열린 결정: 없음.
-- 빌드 계약 입력: PR-A·PR268·Art 인벤토리 격자 PR1(셋 완료)·Core 인벤토리 24칸 PR·Art PR2 병합(`msg_d0012352013c`·`msg_d783ac17eb63`·`msg_d0250483d004`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
+- 빌드 계약 입력: PR-A·PR268·Art 인벤토리 격자 PR1·Core 인벤토리 24칸 PR·Art PR2 병합(다섯 완료, `msg_d0012352013c`·`msg_d783ac17eb63`·`msg_d0250483d004`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
 
 | 항목 | 현재 |
@@ -156,6 +162,21 @@
 - 사용자 결정 116 A(메인 전달): Core 24칸 PR은 Art 드래그 시험 1건 실패를 안고 먼저 들어가고 Art PR2가 고친다. 녹화 빌드는 Art PR2 뒤라서 고친 상태로 만든다.
 - 메인 결정(사용자 결정 아님): 리셋(11-03 20:00 KST) 뒤로 미뤘던 Art 75·Art PR4 사후 확인·Effect 후속은 녹화 경로가 아니라서 지금도 착수하지 않는다. Art가 `GuildGrowthEffectConsumerLifecycleTests` 705행(`HudReferences`의 `Gold_bar`) 후보를 알려 오면 Art와 직접 맞춘다.
 - 재진입 처리: 이 pane의 handle이 `term_3ca049fa-6b41-4f33-9caa-a1a22080940a`로 바뀌어 Run을 `run-use`로 다시 묶었다(원시 `lead/run-use-20261104-01.json`). 최신 main `a888cd35`를 이 branch에 합쳤다(충돌 0, 규칙 파일 차이 0, 원시 `lead/take-main-20261104-01.txt`).
+
+### 11-05 사용자 결정 — 작업자·검증자 Astra xhigh, 122 A·123 A, 완전 대기와 대기 규칙
+
+메인이 전달한 사용자 원문이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+- 작업자 배정(메인 `msg_1c83cff0bb95`): 「이제 앞으로 모든 Codex 작업자는 Astra xhigh, 검증자도 xhigh로 진행해줘」, 「이유는 11월 10일에 구독이 끝나는데 그때 갱신 더 안할 예정이라」.
+  - 적용(메인 지시): 앞으로 여는 새 Codex 세션은 역할과 무관하게 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`로 연다. 구현자·선행 시험 작성자·독립 검증자·캡처 같은 실행 작업자·Gardener·이미지 생성이 모두 포함된다. 태그는 지금 역할 태그 그대로다.
+  - 이 결정이 「11-04 재진입」 절의 Astra high 배정(11-02 결정)과 「11-01 사용자 결정 100 A·101 A·102 A」의 Gardener Sol max를 대신한다. 이미 떠 있는 세션의 모델은 바꾸지 않는다. 정본(CLAUDE.md 4A 표·AGENTS 라우팅) 반영은 11-09 제출 뒤 Rules 몫으로 메인이 들고 있다.
+- 영상 길이·배경 음악(메인 `msg_38df475c9ddd`, 대시보드 결정 응답 메인 pane 제출): 「1) 122 - 새 시연 영상 길이: 실제 진행 약 2분 vs 3~4분 → A 약 2분 · 2) 123 - 녹화에 게임 배경 음악을 담을지(녹화 전에 정해야 함) → A 끈다」.
+  - 새 시연 영상은 「실제 전체 화면 시연 중심, 광고형 연출 제거」다(사용자 지시, 메인 보조 세션이 편집). 길이가 실제 진행 약 2분이라 자동 진행 시나리오는 바꾸지 않는다.
+  - 123 A 반영: 녹화 계약 §4 마법사 명령에 기존 옵션 `-demo-no-bgm`을 더했다(코드 변경 0). 같은 메시지의 메인 제안대로 R7 로그 이름을 R4와 나눴다(계약 v12).
+- 완전 대기(메인 `msg_aeae0a586a80`): 「불필요한 대기를 하는 리드급은 완전 대기상태로 전환해줘」. 11-04 19:26Z부터 Art PR2 병합 알림(`msg_8d893da47a69`)까지 새 우편함 대기를 열지 않고 멈췄다.
+- 대기 규칙(메인 `msg_8d893da47a69`): 「앞으로는 너무 오랜시간 대기는 하지 말아줘 5분 넘어서 마지막 작업 이후 응답이 나한테 없으면 대기하지 말아줘 토큰낭비야」. 적용(메인 지시): 작업자가 돌 때만 우편함 대기를 열고, 메인 답을 기다릴 때는 턴을 끝낸다.
+- 사용자 결정 120 A(메인 적용, `msg_8d893da47a69`): Bash 전에 환경 파일의 중복 줄을 지우는 hook을 메인이 content-active의 Git 제외 `.claude/settings.local.json`에 넣었다. 리드는 그 파일을 고치지 않는다.
+- 메인 결정(사용자 결정 아님, `msg_e8dd9cb571fd`): 녹화 빌드 창(약 15분, `-batchmode -quit`, 사용자 PC 비움 불필요)은 메인 선승인이다. 작업자가 「준비됨」을 보내면 리드가 Unity.exe 0·Windows dotnet 0을 재고 그 시각부터 30분 창을 직접 연다. 창 시각과 프로세스 0 기록은 근거 폴더와 결과 반납에 적는다. Art는 Unity를 더 쓰지 않는다. Core의 WSL 창(R1)과 겹치면 빌드가 먼저다.
 
 ### 운영 방식(진입 메시지의 메인 결정)
 
@@ -320,3 +341,10 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 리드는 병합된 branch를 떠나 최신 main에서 `docs/content-demo-autopilot-closeout-20261101`을 만들었다. 이 branch가 종료 기록 PR이 된다.
 - 2026-11-01 녹화용 빌드 계약 초안(진행 중): Core 입력 셋 `msg_57b6b6267f1c`. 초안 v1~v8은 근거 폴더 `lead/recording-build-contract-draft-v*.md`다. 사용자 결정 109 A(이름)·110 A(창 크기)·113 A(PR-C 취소)와 HUD 골드 제거·스킬칸 지시(`msg_d0250483d004`)를 반영했다. 자동 진행기는 HUD Gold·스킬칸을 참조하지 않는다(`lead/autopilot-hud-reference-check-01.txt`). PR294 뒤 `03_Client` 빌드 설정·입력 설정·Demo 코드·프로토콜 버전 diff 0이다(`lead/pr294-client-settings-diff-01.txt`). 12:11Z 메인 `msg_8c78b1ac3fb0`로 전달된 사용자 마무리 지시(「슬슬 토큰이 다 끝나서, 마지막 작업 끝나면 재개지점 기록하고 마무리해줘, 나중에 이어서 하자」)에 따라 재개 지점을 적고 멈춘다.
 - 2026-11-04 재진입: 메인 `msg_8d6a75a7daed`에 따라 Run을 새 pane에 다시 묶고 최신 main `a888cd35`를 이 branch에 합쳤다. 새 제출 기한·사용자 결정 116 A·작업자 배정을 「11-04 재진입」 절에 적고, 계약 초안 v9(`lead/recording-build-contract-draft-v9.md`, sha256 `c1227fa6417563b7cea4d44ff58949d97d98b94bfd52ac3a758f17622becce18`)에 일정·116 A·배정을 넣었다. Core 24칸·Art PR2 병합을 기다린다.
+  - Core 24칸 PR #295 병합(merge commit `fbf00de9`, 12:13:47Z, 메인 `msg_c852ec634d2c`) 뒤 계약 초안 v10(sha256 `1485c24812287e757e0dca12caf30a7b850323e899c6e977ac6ba44b7ee6c981`)을 메인에 보냈다(`msg_39d952050c9f`). `a888cd35..fbf00de9`에서 클라 빌드 설정·입력 설정·Demo 코드 diff 0이고 `ProtocolVersion.cs` 90행이 `Current = 23`이다(`lead/pr295-client-settings-diff-01.txt`).
+  - Art 알림 `msg_c71aace3331d`(인벤토리 창을 오른쪽 끝에 두면 윗줄이 퀘스트 HUD에 가림)를 v11 §4에 넣어(sha256 `7e153657c5c7ed0001b2219036a3fe32e0ba6f3be4bda7c71723b72a0991f12f`) Core에 전했다(`msg_e58c6d6b1f73`). 자동 진행기는 인벤토리 참조가 0이다(`lead/autopilot-inventory-reference-check-01.txt`).
+- 2026-11-05 Art PR2 병합과 고정 head: 11-04 19:26Z부터 완전 대기였다(「11-05 사용자 결정」 절). Art PR2(PR #297, head `b2f91ded6d1174a6fa2c7f14fbfe2f80045e7fe7`, merge commit `cfe8bb45`, 16:57:26Z) 병합 알림 `msg_8d893da47a69`로 다시 일했다.
+  - 최신 main `cfe8bb45`를 이 branch에 합쳤다(merge commit `e6d45309`, 충돌 0, `lead/take-main-20261106-01.txt`).
+  - 고정 head `cfe8bb45`의 리드 확인(`lead/fixed-head-check-01.txt`, sha256 `3469632832f8971d0d703bf9a7b88195367fe04278e4e3821d595306024dfd18`): 다섯 기준 PR이 모두 조상이다. `fbf00de9..cfe8bb45`에서 `02_Server`·`04_ClientNet`·`98_Shared`·`99_Tools` diff 0이다. `5dd67b09..cfe8bb45`와 `cb32652f..cfe8bb45`에서 클라 빌드 설정 diff 0이고, `5dd67b09..cfe8bb45`에서 입력 설정·Demo 코드 diff 0이다. `ProtocolVersion.cs` 90행이 `Current = 23`이고, Demo 코드의 HUD·인벤토리 참조는 0이다. Core에 head를 먼저 보냈다(`msg_59ba4e32d30a`).
+  - 계약 v12를 메인에 보냈고(`msg_cb1443f6d5aa`) 메인이 A로 받았다(`msg_e8dd9cb571fd`). 인벤토리 가림은 PR2의 인벤토리 루트 정렬 5→14(사용자 결정 125 B, Art `msg_34d219b1420f`)로 닫혀 v12 §4에서 주의를 뺐다.
+  - Content 시험 `GuildGrowthEffectConsumerLifecycleTests` 705행의 `Gold_bar`는 PR2 뒤 HUD에 없다. 934~938행이 찾지 못한 이름을 로그만 남기고 넘어가서 실패가 아니라 그대로 둔다(`5dd67b09..cfe8bb45`에서 그 파일 diff 0).
