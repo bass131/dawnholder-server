@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 리허설 실행 계약 v2(`lead/rehearsal-run-contract-v2.md`, 진행 기록 「2026-11-06 리허설 v1 정산과 계약 v2」)의 메인 대조를 기다린다. A가 오면 신규 Content 실행 작업자 `[Content 구현 Astra]`를 리드 pane split으로 곧바로 띄운다(결정 129 A, 준비되는 대로). 명령은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`이고 TEMP·TMP는 `.backups/tmp/rehearsal-02/`이다. 실행자가 「준비됨」을 보내면 메인에 「리허설 준비됨」을 알린다. 리허설 중에는 메인이 넘기는 R3·R6 Listening을 단계 신호(「R2 시작」「R7 시작」)로 실행자에게 넘긴다. 그 뒤 순서는 리드의 정지 화면·배치 판정 → 원시 독립 대조 → 녹화 계약이다.
+**다음 첫 일:** 리허설 v2 실행자(task_502bf7a60fc4 / ctx_e5cf2061302e, 리드 pane split `term_1fd3cfbb`)가 「준비됨」을 보냈고, 메인에 「리허설 준비됨」을 알렸다(`msg_a08cabf7af5a`, 진행 기록 「2026-11-06 리허설 v2 기동과 준비 확인」). 실행자를 다시 띄우지 않는다. 메인이 R3 Listening을 넘기면 `dispatch:ctx_e5cf2061302e`로 「R2 시작」을, R6 Listening을 넘기면 「R7 시작」을 보낸다(메인 msg ID 포함). 보낸 뒤 실행자 화면을 한 번 확인한다. 그 뒤 순서는 리드의 정지 화면·배치 판정 → 원시 독립 대조 → 녹화 계약 v3이다. 판정에는 R4-2 재로그인 성공 여부, 화면 차이(다른 캐릭터 이름이 보이는지 포함), R4-1·R4-2의 「character list」→「town」 시간 차를 넣는다(메인 `msg_25e147f44c7f`, Core 권고안 동의 `msg_5e1339c81084`).
 
 - 녹화 빌드는 끝났고 Core에 확정값을 넘겼다(`msg_c8dd2ae6e315`, 진행 기록 「2026-11-05 녹화 빌드」). 독립 판정은 불합격(차단 D1·D3, 절차·원시)이었고, 메인이 수용 A로 처분했다(`msg_b50c04ca0c08`). 재빌드는 없다.
 - 녹화 빌드 기준 다섯 PR이 모두 main에 들어갔다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35`), Core 24칸(#295, `fbf00de9a57fb26baaef89c12daa7d84ace92631`, 11-04 12:13:47Z), Art PR2(#297, `cfe8bb45c0e63820deccbb5c364e461768f09c1e`, 11-05 16:57:26Z).
@@ -14,7 +14,7 @@
 - Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다. 종료 기록의 다음 후보에 Content 시험 `GuildGrowthEffectConsumerLifecycleTests` 705행 `HudReferences`의 `Gold_bar`(PR #297로 HUD에서 빠짐, 찾지 못하면 로그만 남김) 정리를 더한다.
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
-- 열린 결정: 사용자 결정 대기는 없다. 129 A·130 A·131 C와 녹화 자동화 지시는 「11-06 사용자 결정」 절이다. 리드가 정한 v2 설계(창 모드 두 후보, 진행용 창 960×540 숨김, 회차 사이 서버 재시작 없음)는 메인 대조를 기다린다.
+- 열린 결정: 지금 사용자 결정 대기는 없다. 129 A·130 A·131 C와 녹화 자동화 지시는 「11-06 사용자 결정」 절이다. 리드가 정한 v2 설계는 메인이 리허설 한정으로 받았다(`msg_25e147f44c7f`). 진짜 녹화 순서(회차 사이 서버 재시작)와 1회차 상대 마법사의 새 이름은 Core가 리허설 결과와 함께 한 글로 메인에 올린다(Core `msg_b28231a86423`, 리드 동의 `msg_5e1339c81084`).
 - 빌드 계약 입력: PR-A·PR268·Art 인벤토리 격자 PR1·Core 인벤토리 24칸 PR·Art PR2 병합(다섯 완료, `msg_d0012352013c`·`msg_d783ac17eb63`·`msg_d0250483d004`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
 
@@ -400,3 +400,13 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
     - 회차 사이에는 서버를 다시 띄우지 않는다. 같은 계정으로 다시 들어가며, 관문을 다시 잰다. 사용자 손은 늘지 않는다.
     - 녹화는 회차마다 대상 창 영상 하나와 loopback 소리 하나다. 단계 줄마다 정지 화면과 편집 맞춤 표식을 남긴다. 창 배치는 5초마다 잰다.
     - 신호는 「R2 시작」「R7 시작」「종료」 셋이다. 유지 시간은 60초에서 10초로 줄었다. 모든 `.ps1`은 UTF-8 BOM으로 저장한다.
+- 2026-11-06 리허설 v2 기동과 준비 확인
+  - 계약 v2는 `lead/rehearsal-run-contract-v2.md`(sha256 `3b3b354740c853d2df9052f4ec6780abd6da05416cf2cc7c29744bd9fe244c1b`, 766줄)다. 대조 요청은 `msg_8bb569458a9e`였다. 메인이 sha를 같게 쟀고 리드 설계 다섯을 리허설 한정으로 받았다(A `msg_25e147f44c7f`). Core 사본은 `msg_2a8876645f98`이다.
+  - 메인 판단(`msg_25e147f44c7f`): 진짜 녹화는 두 회차가 같은 출발 상태(둘 다 캐릭터 생성부터)여야 편집이 맞는다. 방법은 Core와 정하고, DB 작업이나 사용자 손이 늘면 먼저 올린다. 리허설은 R4-2 재로그인 성공 여부와 화면 차이를 같이 잰다.
+  - 실행자 `[Content 구현 Astra]`(신규 GPT-6-Astra xhigh, 첫 화면 v0.166.0·선택창 없음)를 19:41:46Z에 리드 pane split `term_1fd3cfbb`로 띄웠다. 19:42:11Z worker-start task_502bf7a60fc4 / ctx_e5cf2061302e이다. 포인터는 `lead/rehearsal-run-contract-v2-pointer.md`(sha256 `338b2f1c395ee1000c1b4f1653d551d15452e8522f99e7fec47ab39e8c030b76`), TEMP·TMP는 `.backups/tmp/rehearsal-02/`다. 기동 알림은 `msg_50d1a5c79926`이다.
+  - 리드 계약 오기(첫 발생): 계약 255행의 캐릭터 선택 정규식이 실제 로그 줄 꼴(`DemoAutopilot.cs` 502행, `slot=`이 `t=`·`utc=` 뒤에 옴)과 달랐다. 실행자가 로그 판정 self-test 실패로 물었다(`msg_11516e5c599b`). 리드는 같은 줄 뒤쪽 `slot=`으로 읽고 step 번호로 순서를 판정하게 답했다(`msg_0a68bd6229f7`). 날짜 없는 로그 `utc=`는 Player 기동 UTC 날짜를 붙이고 자정 넘김을 따라 복원한다. 재시험은 계약 293행 예외(Player 없는 self-test 재시험, 새 실행 이름)다. 실패 기록은 보존했다.
+  - 「준비됨」(`msg_78de84cbcd76`, 20:12Z): 시작 확인 7개, ParseFile(`parse-02.json`), 로그 판정 4/4(`selftest-02.json`), dry-run(`dryrun-r4-02.json`·`dryrun-r7-02.json`), 녹화 self-test(h264_nvenc, `recorder-selftest-02.json`)가 통과했다. 배치 self-test는 첫 후보(`-popupwindow -screen-fullscreen 0 -screen-width 1920 -screen-height 1080 -monitor 1`)를 골랐다. 대상 클라이언트 영역은 (0,0)-(1920,1080)이고 제목 표시줄·최소화가 없었다. 진행용 창은 숨김이었고 한 번도 전경이 아니었으며, 시험 뒤 Player는 0이다.
+  - 리드 관찰: 배치 영상 4초 프레임(`lead/layout-selftest-1-frame-4s.png`)에는 로그인 화면만 깨끗하게 찍혔다. 대상 위에 겹친 창(explorer·NVIDIA Overlay·Orca, 최대 4)은 창 캡처에 나오지 않는다. 시험 동안 전경 창은 Orca였다. 로그인 칸에 이 PC의 마지막 계정이 미리 채워져 보여 편집에서 앞을 자른다. 녹화 스크립트 수정과 재시험(`revisions/`, `invocations/recorder-selftest-02`~`-04`)은 독립 대조에서 293행 예외와 맞춰 본다.
+  - 진짜 녹화 출발 상태(Core `msg_3a1b8966627b` 뒤 거둠, 권고 `msg_b28231a86423`, 리드 동의 `msg_5e1339c81084`): 길드 거점·금고는 서버 실행 단위 메모리라 되돌리는 길은 재시작뿐이다. 캐릭터 이름은 DB 전체에서 하나다(`99_Tools/database/migrations/005_character_catalog.sql` 25행 `UQ_Character_NameKey`).
+    - Core 권고안: 서버 재시작은 회차 사이 한 번이다. R4-1은 `rec_knight`가 「새벽기사」를 만들고 새 상대 마법사 계정도 만든다. R4-2는 `rec_mage`가 「새벽법사」를 만들고 `rec_knight`가 「새벽기사」를 고른다. 이 선택이 R7을 겸한다. 사용자 손은 그대로이고, 새 이름 하나는 사용자 결정이다.
+    - 리드 근거(소스 확인, 실행 안 함): 캐릭터 메뉴 단계는 클라마다 생성 또는 선택으로 간다(`DemoAutopilot.cs` 134~175행). 두 클라가 서로 기다리는 곳은 파티 90초(186~205행)와 포털 25초(216행)뿐이다. 한 판에 생성과 선택이 섞인 조합은 아직 잰 적이 없다.
