@@ -2,10 +2,19 @@
 
 11-06 시연을 Windows 빌드 클라이언트와 DB 영속 서버로 할 수 있게 한다. 시연자가 정해진 순서로 DB 서버를 켜고 끄며, 빌드에서 로그인 → 캐릭터 선택·생성 → 마을 입장이 되는 상태가 목표다.
 
-**현재 상태(2026-11-06 10:3x KST):** PR299(이 goal의 Core 문서)가 2026-11-06T01:03:28Z에 병합됐다(merge commit `2d49a93e`). 진짜 녹화는 01:07Z~01:16Z에 끝났다. 서버 시작·정지·재시작은 사용자 결정 137 A로 메인이 대신 했다. 진짜 녹화의 Core 세 값은 모두 통과다. 재시작은 프로세스 시작 → Listening 0.777초였고, 정지 요약 두 번 모두 결함 0이었다. 2회차 상대 기사는 1회차 캐릭터를 다시 골랐다(Content 실행 기록, 독립 검증 아님). 남은 것은 종료 Gardener, 종료 기록 PR, 종료 점검이다. 아래 「11-06 PR299 병합과 진짜 녹화」부터 읽는다.
+**현재 상태(2026-11-06 10:3x KST):** PR299(이 goal의 Core 문서)가 2026-11-06T01:03:28Z에 병합됐다(merge commit `2d49a93e`). 진짜 녹화는 01:07Z~01:16Z에 끝났다. 서버 시작·정지·재시작은 사용자 결정 137 A로 메인이 대신 했다. 진짜 녹화의 Core 세 값은 모두 통과다. 재시작은 프로세스 시작 → Listening 0.777초였고, 정지 요약 두 번 모두 결함 0이었다. 2회차 상대 기사는 1회차 캐릭터를 다시 골랐다(Content 실행 기록, 독립 검증 아님). 종료 Gardener는 정리 후보 2개(BACKLOG로 이관)와 종료 기록 정정 1건(G-01)으로 끝났다. 남은 것은 종료 기록 PR 병합과 종료 점검이다. 아래 「11-06 종료 Gardener」와 「11-06 PR299 병합과 진짜 녹화」부터 읽는다.
 
 ## 재개 지점
 
+- **11-06 종료 Gardener(2026-11-06T01:33Z~01:49Z):** 신규 `[Core Sol]` GPT-6-Astra xhigh(goal 「2026-11-04 새 Codex 세션은 모두 Astra xhigh」, 첫 화면 Codex v0.166.0, backend unknown)가 읽기 전용으로 점검했다. 계약은 `closeout-01/gardener-contract-v1.md`(sha256 `a731af78efdf4db1b93d0853abb0b79e0293aa30a361df88164e9c60f3c9317c`)이고, 입력 41파일을 hash로 고정했다(`closeout-01/gardener-inputs.json`). 계약은 화면 기록 JSON(terminal-list 등)을 열지 않게 했다.
+  - pane `term_6b6588ed-5a70-459c-9a0e-97a101046b8b`, Task `task_334720d37cbd`, Dispatch `ctx_f8091e1855e4`다. worker_done은 `msg_072c5247caad`, 쓰기 종료는 01:48:51Z다. 기동 기록은 `closeout-01/gardener-launch-record-v1.md`다.
+  - 보고서는 이 폴더의 [gardener.md](gardener.md)다. 원본 `closeout-01/gardener/context-gardener-report.md`와 bytes가 같다(34,919 B, sha256 `1eec659f0b218c433ca4a2469860d9037a6e304a79ae584c9ba83538ba968888`, `closeout-01/gardener-md-copy-01.txt`).
+  - 결론: 독립 실사의 번호 결함 6건(#RH2 넷, #RH4-01, #RH5-01)이 모두 해소됐고, PR299 CI 네 항목도 통과였다. 정리 후보 2개는 아래 「다음 계획 후보」로 옮겼다. 이 점검을 제품·실제 플레이·DB의 독립 통과로 넓히지 않는다.
+  - 리드 반환 G-01(결함 수량): 아래 「verify-03 뒤 실사」 줄이 「세 결함 모두」라고 적었다. 번호 기준으로는 #RH4-01과 #RH5-01 두 건이다(#RH5-01은 인용 위치 두 곳). Gardener 공식 질문 `msg_a0bb9b354ba8`에 리드가 `msg_240bfc347cc9`로 받았고, 그 줄을 고쳤다.
+  - 처분 B 추가: Gardener 입력을 고르다 리드가 앞서 저장한 터미널 목록 셋에서 사용자 서버 창 preview를 더 찾았다. 메인 처분으로 가렸다(아래 「적용 중인 메인 결정」 `msg_41665d27bd70`).
+  - 리드 운영 실수(첫 발생): 01:28Z에 메인 pane에 안내를 넣을 때, 같은 읽기의 `draft` 필드가 「계속 진행해줘」였는데도 확인과 전송을 한 명령으로 묶어 Enter까지 넣었다. 화면 입력줄은 비어 있어 추천 문구였을 가능성이 크다. 리드는 메인에 `msg_8fe5884de120`으로 알리고 메인 기록 확인을 청했다(`closeout-01/main-screen-0128.json`·`main-screen-0129-after-nudge.json`). 첫 발생이라 새 규칙은 만들지 않는다(CODE_CONVENTION 「교정 층과 반복 규칙」). 리드는 draft를 먼저 따로 읽고, 비어 있지 않으면 안내를 넣지 않는다.
+  - 정리: worker-release `retained`(external_terminal), 빈 프롬프트 확인 뒤 pane을 닫았다(`closeout-01/gardener-close-v1.json`).
+  - 다음 일: 종료 기록 PR을 연다. 신규 `[Core 검증자]`(Astra xhigh)가 문서 실사를 한다. 통과하면 병합 승인 요청만 메인에 올린다. 종료 점검과 R-8은 메인이 판단한다.
 - **11-06 PR299 병합과 진짜 녹화:**
   - 병합: 메인이 사용자 승인 줄 「병합 승인: PR299 head 5135b2615bfa0d250a131d9f02c42d23a90f7503」(메인 pane 제출, 메인 알림 `msg_6566a4984a95`의 사본)을 받아 2026-11-06T01:03:28Z에 병합했다. merge commit은 `2d49a93e63b0f0680f9055973fedb6e652751ced`이고 부모는 `28c4dff8`·`5135b261`이다. state는 MERGED, head는 `5135b261`이다(`closeout-01/pr299-view-01.json`, `closeout-01/origin-main-commit-01.txt`). CI 4/4 SUCCESS와 CLEAN은 메인 알림의 값이다.
   - 메인은 종료 점검과 R-8을 진짜 녹화와 8줄 대조 뒤로 미뤘다(같은 `msg_6566a4984a95`). 그 사이 사용자가 137 A·138 A와 사용자 확인 범위를 정했다(아래 「적용 중인 사용자 결정」).
@@ -19,7 +28,7 @@
     - 같은 캐릭터: 2회차 끝 기록의 `characterVerdict`가 `sameKnightCharacter=true`, `knightCreated=false`, `knightSlots=1`, `priorKnightSlots=[1]`이다. 원천은 `[Content 구현 Astra]` `msg_e1c1970b0adb`와 Content 원시 `recording-build-01/recording/run-01/r4-2-end.json`(sha256 `9aee44e8…cd28`)이다. 리드가 원시 파일의 그 필드를 직접 읽었다. Content 실행 기록이며 독립 검증은 아니다.
     - 시각은 모두 Windows 시계다(launcher 71행·555~556행).
   - 녹화 영상과 회차별 화면 판정은 Content goal 몫이다. Core는 영상을 판정하지 않았다.
-  - 다음 일: 종료 Gardener(신규 `[Core Sol]`, Astra xhigh) → `gardener.md`를 넣은 종료 기록 PR → 신규 `[Core 검증자]` 문서 실사 → 메인에 병합 승인 요청 → 종료 점검. R-8은 메인이 판단한다.
+  - 당시 다음 일(종료 Gardener는 위 「11-06 종료 Gardener」로 끝남): 종료 Gardener(신규 `[Core Sol]`, Astra xhigh) → `gardener.md`를 넣은 종료 기록 PR → 신규 `[Core 검증자]` 문서 실사 → 메인에 병합 승인 요청 → 종료 점검. R-8은 메인이 판단한다.
 - **11-05~06 리허설과 진짜 녹화 준비:**
   - 고정 head 받기: Content가 알린 고정 head `cfe8bb45`(Art PR2인 PR297의 병합, 2026-11-05T16:57:26Z)를 받아 branch HEAD가 `2cb8910d7f0facf8d7096e35fcb3f7f224aa93ec`가 됐다. 서버 빌드 입력(`sync-wsl.sh` 47~72행 범위)은 build-03 소스 `3b03387b`와 diff 0이라 R1을 다시 돌지 않았다(`lead/take-fixed-head-01/take-verify-01.txt`). Content에는 넷을 전했고(`msg_9203c45e18e9`), 메인 보고 `msg_5d845c8fc131`에서 배정 창 밖 WSL 읽기 1회를 밝혔다.
   - Content 녹화 빌드(`msg_c8dd2ae6e315`): exe sha256 `91a36fa14dd3ccf390b99720805eda0553da1ca1108381b49c98c938f69dc256`, manifest 234파일·778,468,195바이트·sha256 `d10d57c9bdecc7016dbf775eb10f00f3e3f5da60cf7d3ef83f4c25937a15f9e5`, Unity 6000.6.4f1, 빌드 exit 0(220.7초). 경로는 content-active `.backups/verification/2026-10-31-demo-autopilot-character-select/recording-build-01/`이다. 메인이 재빌드 없이 수용했다(아래 메인 결정 `msg_a5a6721188ce`).
@@ -48,7 +57,7 @@
        - 리드 수정 기록은 `lead/fix-rh2/`다. 리드 표본 대조와 검증자 질문 둘의 답은 `verify-02/lead-reply-01/`·`lead-reply-02/`에 있다.
        - 재실사: 신규 `[Core 검증자]` Astra xhigh(Task `task_2118f2065762`, Dispatch `ctx_0b60eb010000`, 계약 `verify-03/contract-v1.md` sha256 `238e3149…a00f`)가 네 수정 위치와 `c2c717e5..42a5aeda` diff를 봤다. 결론은 **통과, #RH2-01~04 해소, 신규 결함 없음**이다(worker_done `msg_b995c5a5e518`, `verify-03/verdict.md` sha256 `11623ab0…e2ab`). 실사 중 경계 사건 하나가 있었다(아래 「적용 중인 메인 결정」 `msg_d20436e197d3`).
        - verify-03 뒤 바뀐 것: 이 goal의 이 줄들·상태 줄·진척과 메인 결정 두 블록(`msg_d7e95c0cb4c3`·`msg_d20436e197d3`), CURRENT Core 줄, 그리고 `lead/rehearsal-01/results-v1.md` 35행(표식 부착 주체를 메인 사실로 바꿈, diff `lead/after-verify03/results-v1-marker-fact.diff`). verify-03은 이것들을 보지 않았다.
-       - verify-03 뒤 실사(PR299 head `5135b261`, 저장소 내용 불변): verify-04(Task `task_f2625e387c9a`, worker_done `msg_98979274478d`, `verify-04/verdict.md` sha256 `0a19f885…edcb`)가 리드 메모의 영향 파일 목록에 CURRENT가 빠진 것(#RH4-01)으로 차단했다. 리드가 보충 메모 `lead/after-verify03/lead-context-addendum-rh4-v1.md`를 썼다. verify-05(Task `task_20bc06c7200e`, worker_done `msg_c2b997c8eaf4`, sha256 `4026f0b3…1313`)는 #RH4-01을 해소로 보고, 보충 메모의 인용 표기 두 곳(#RH5-01)으로 차단했다. 리드가 두 인용을 원천 bytes 그대로 고쳤다. verify-06(Task `task_e5a8994bf4e7`, worker_done `msg_a3661df782ad`, sha256 `4c3d1e20…eb25`)이 통과, 신규 결함 없음으로 끝냈다. 세 결함 모두 근거 폴더 기록의 결함이고, 저장소 내용은 바뀌지 않았다.
+       - verify-03 뒤 실사(PR299 head `5135b261`, 저장소 내용 불변): verify-04(Task `task_f2625e387c9a`, worker_done `msg_98979274478d`, `verify-04/verdict.md` sha256 `0a19f885…edcb`)가 리드 메모의 영향 파일 목록에 CURRENT가 빠진 것(#RH4-01)으로 차단했다. 리드가 보충 메모 `lead/after-verify03/lead-context-addendum-rh4-v1.md`를 썼다. verify-05(Task `task_20bc06c7200e`, worker_done `msg_c2b997c8eaf4`, sha256 `4026f0b3…1313`)는 #RH4-01을 해소로 보고, 보충 메모의 인용 표기 두 곳(#RH5-01)으로 차단했다. 리드가 두 인용을 원천 bytes 그대로 고쳤다. verify-06(Task `task_e5a8994bf4e7`, worker_done `msg_a3661df782ad`, sha256 `4c3d1e20…eb25`)이 통과, 신규 결함 없음으로 끝냈다. 두 결함(#RH4-01·#RH5-01) 모두 근거 폴더 기록의 결함이고, 저장소 내용은 바뀌지 않았다.
     4. (끝남) Core 문서 PR을 연다. 검증 뒤 바뀐 줄은 PR head에서 새 검증자가 좁게 다시 본다. 병합은 메인 관문이다. → PR299로 병합됐다(위 「11-06 PR299 병합과 진짜 녹화」).
     5. (끝남) 진짜 녹화 창은 메인이 배정한다. Core 몫은 창 시작의 사전 확인(R1 복제본 읽기·7777)이다. → 위 「11-06 PR299 병합과 진짜 녹화」의 R1이다.
 - **창 R1 서버 v23 빌드(2026-11-04, 메인 `msg_6701b9629720`):**
@@ -461,6 +470,13 @@
 - 처분 B: 두 파일의 서버 창 줄 `preview` 값만 「<가림>」으로 바꿨다. 값은 출력하지 않았다. sha256은 앞 파일 `92858b38…3ebd` → `cd50f2ff…2793`, 뒤 파일 `e327db23…f7a3` → `09b63101…51c1`이다. 기록은 `lead/redact-1106/`이다. verify-03은 리드 판단대로 실사를 이어 끝냈다.
 - 재발 방지: 리드는 터미널 목록을 handle·제목·경로만 뽑아 저장한다. 첫 발생이라 새 반복 규칙은 만들지 않는다(CODE_CONVENTION 「교정 층과 반복 규칙」). 메인도 서버 창 읽기는 허용 목록 추출만 쓴다.
 
+메인 `msg_41665d27bd70`(리드 수신 2026-11-06T01:30:05Z, 24칸 근거 폴더 `orca/check-wake-40.json`). 사용자 결정이 아니다. 위 경계 사건의 추가 기록이다.
+
+- 발견: 종료 Gardener 입력을 고르면서 리드가 두 근거 폴더(이 goal·24칸 goal)에 저장된 터미널 목록 23개를 셌다. 내용은 출력하지 않고 개수·길이·표식 문구 유무만 봤다(`closeout-01/scan-terminal-list-previews-v1.cjs`·`-v2.cjs`, 출력 `-01.out`·`-02.out`). 사용자 서버 창 preview가 남은 파일이 셋 더 있었다. 이 goal의 `build-01/lead-terminal-list-after-close.json`·`docs-01/lead-terminal-list-after-close.json`(`term_3a5ec295`, 10-31)과 24칸 근거 폴더 `orca/terminal-list-before-g1-switch.json`(`term_f672813a`, 11-01)이다. 셋 다 위 재발 방지보다 앞선 저장분이다. 리드 요청은 `msg_144a34872f60`이다.
+- 메인 확인: 내용을 출력하지 않는 패턴 검사로 셋 다 자격·credential 낱말, 자격 파일 확장자, 자격 입력 요청 문구가 0이었다.
+- 처분 B(138 A로 메인이 정함): 세 파일의 해당 preview 값만 「<가림>」으로 바꿨다. sha256 전후는 `closeout-01/redact-02/redact-result-v1.txt`에 있다. 다시 센 결과 가리지 않은 서버 창 preview는 0개다(`closeout-01/scan-terminal-list-previews-03.out`·`-04.out`).
+- 새 반복 규칙은 만들지 않았다. 재발 방지 뒤의 새 발생이 아니라 그 전에 저장된 파일이어서다. 저장 구조 후보는 Gardener 후보 2로 BACKLOG `terminal-evidence-field-allowlist`에 옮겼다.
+
 ## 요구사항 원천
 
 - 범위 초안 전문: `.backups/verification/2026-10-31-db-persistence-demo-build/lead/scope-draft-v1.md`(sha256 위와 같음). 초안의 「확인한 사실」 표가 근거 줄을 담는다.
@@ -585,6 +601,20 @@ PR299 병합본(main `2d49a93e`)과 2026-11-06 진짜 녹화 기준이다. 근�
 - 리허설·녹화에서 만든 캐릭터 이름은 DB에 남아 다시 쓸 수 없다. 이름 유일 키가 전역이고 행은 지우지 않는다.
 - SQL이 실제로 쓰는 인증서 thumbprint는 미확인이다. 공개 CA 만료는 2026-11-17T09:48:58Z다(재개 지점 「지금 보기 빌드」).
 
+## 다음 계획 후보
+
+새 goal은 자동으로 시작하지 않는다. 아래는 이관이며 채택·구현이 아니다.
+
+- Gardener 후보 1, 문서 원문 인용·집계 비교(독립 결함 #RH2-02·#RH5-01, 인용 네 위치): 기존 BACKLOG `powershell-all-evidence`의 추가 관측이다. 검사화 후보는 출처 path·sha256·인용 문자열로 정확한 부분 문자열인지 보는 비교 helper와, 결함 번호·위치·판정 차례를 다른 필드로 세는 집계다. G-01은 집계 문장 하나라 인용 결함 횟수에 더하지 않았다.
+- Gardener 후보 2, 터미널 근거 저장의 목적별 필드 허용 목록(이 goal 근거 네 파일과 24칸 goal 한 파일의 preview 처분): 새 BACKLOG `terminal-evidence-field-allowlist`로 등록했다. 담당 후보는 Management·Rules다.
+
+## 종료 점검 준비
+
+- 종료 Gardener: 미해소 독립 결함 0, 후보 2개, 리드 반환 G-01 1건이다(위 「11-06 종료 Gardener」). 보고서는 [gardener.md](gardener.md)다.
+- 종료 기록 PR: 이 goal·`gardener.md`·BACKLOG·CURRENT를 담는다. 신규 `[Core 검증자]` 문서 실사가 통과하면 병합 승인 요청만 메인에 올린다.
+- 종료 점검과 R-8은 메인이 판단한다. 다음 goal은 자동으로 시작하지 않는다.
+- 제출 기한은 2026-11-09 14:00 USB 제출, 발표는 2026-11-11 16:00이다(위 「2026-11-04 제출 기한과 Codex 세션 배정」).
+
 ## 진척 단계
 
 - [x] 범위 초안·승인
@@ -595,6 +625,6 @@ PR299 병합본(main `2d49a93e`)과 2026-11-06 진짜 녹화 기준이다. 근�
 - [x] 독립 실사(DEVELOPMENT 1차 통과 `verify-01/`, 리허설 뒤 `verify-02/` 차단 → 수정 → `verify-03/` 통과, 근거 기록 결함 둘을 고친 뒤 `verify-06/` 통과)
 - [x] PR299 병합
 - [x] 진짜 녹화 Core 몫(R1 사전 확인, 세 값 통과, 서버 손은 137 A로 메인 대행)
-- [>] 종료 Gardener
-- [ ] 종료 기록 PR 병합
+- [x] 종료 Gardener(후보 2개, 기록 정정 1건)
+- [>] 종료 기록 PR 병합
 - [ ] 종료 점검
