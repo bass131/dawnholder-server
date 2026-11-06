@@ -211,9 +211,11 @@ namespace Dawnholder.Client.Tests.PlayMode
             {
                 for (int frame = 0; frame < RenderFrames; frame++)
                 {
-                    // No yield between the four renders: animation, lighting and camera position share one frame.
-                    Color32[][] plates = capture.FourPlates(frame);
+                    // All six renders share one frame; coverage is observed, not inferred from silhouette geometry.
+                    Color32[][] plates = capture.PlatesWithCoverage(frame);
                     int overlap = 0;
+                    int fullyCovered = 0;
+                    int partiallyCovered = 0;
                     int incorrect = 0;
                     int firstIncorrect = -1;
                     for (int pixel = 0; pixel < plates[0].Length; pixel++)
@@ -223,14 +225,25 @@ namespace Dawnholder.Client.Tests.PlayMode
                         bool distinguishable = !Close(plates[1][pixel], plates[2][pixel]);
                         if (!localPresent || !remotePresent || !distinguishable) continue;
                         overlap++;
+                        if (!Close(plates[4][pixel], plates[5][pixel]))
+                        {
+                            partiallyCovered++;
+                            continue;
+                        }
+                        fullyCovered++;
                         if (Close(plates[3][pixel], plates[1][pixel])) continue;
                         incorrect++;
                         if (firstIncorrect < 0) firstIncorrect = pixel;
                     }
                     minimumOverlap = Mathf.Min(minimumOverlap, overlap);
                     maximumOverlap = Mathf.Max(maximumOverlap, overlap);
-                    TestContext.Out.WriteLine($"E2 frame={frame:D3} overlap={overlap} incorrect={incorrect}");
+                    TestContext.Out.WriteLine($"E2 frame={frame:D3} overlap={overlap} fullyCovered={fullyCovered} " +
+                        $"partiallyCovered={partiallyCovered} incorrect={incorrect}");
                     if (overlap == 0) failures.Add($"E2 frame={frame:D3} existence: no distinguishable overlap pixels; {identities}");
+                    if (fullyCovered == 0) failures.Add($"E2 frame={frame:D3} existence: no fully covered overlap pixels; {identities}");
+                    // At least half is a protective requirement against vacuous sampling, not a measured coverage value.
+                    if (fullyCovered * 2 < overlap) failures.Add($"E2 frame={frame:D3} coverage: " +
+                        $"fullyCovered={fullyCovered} is less than half of overlap={overlap}; {identities}");
                     if (incorrect > 0) failures.Add($"E2 frame={frame:D3} local result: incorrect={incorrect}, " +
                         $"firstIndex={firstIncorrect}, local={plates[1][firstIncorrect]}, both={plates[3][firstIncorrect]}; {identities}");
                     if (frame + 1 < RenderFrames) yield return _fixture.Frames(1);
@@ -245,9 +258,10 @@ namespace Dawnholder.Client.Tests.PlayMode
             Math.Abs(left.r - right.r) <= PixelTolerance && Math.Abs(left.g - right.g) <= PixelTolerance &&
             Math.Abs(left.b - right.b) <= PixelTolerance && Math.Abs(left.a - right.a) <= PixelTolerance;
 
-        // Owns only temporary camera/readback state. Renderer toggles are restored before the fourth plate.
+        // Owns temporary camera/readback state; each plate set restores renderer and coverage-isolation state.
         sealed class OverlapCapture : IDisposable
         {
+            const int CoverageLayer = 31; // Unnamed in TagManager; checked for renderer collisions before isolation.
             readonly Camera _camera;
             readonly SpriteRenderer[] _local;
             readonly SpriteRenderer[] _remote;
@@ -265,7 +279,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 _oldHdr = camera.allowHDR;
                 _oldMsaa = camera.allowMSAA;
                 _oldEnabled = camera.enabled;
-                // S3 has no output-size requirement. 640x360 keeps four-plate readbacks small while testing actual pixels.
+                // S3 has no output-size requirement. 640x360 keeps readbacks small while testing actual pixels.
                 _target = new RenderTexture(640, 360, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
                 _target.Create();
                 _readback = new Texture2D(_target.width, _target.height, TextureFormat.RGBA32, false, false);
@@ -274,11 +288,11 @@ namespace Dawnholder.Client.Tests.PlayMode
                 camera.targetTexture = _target;
             }
 
-            internal Color32[][] FourPlates(int frame)
+            internal Color32[][] PlatesWithCoverage(int frame)
             {
                 bool[] localEnabled = _local.Select(renderer => renderer.enabled).ToArray();
                 bool[] remoteEnabled = _remote.Select(renderer => renderer.enabled).ToArray();
-                var plates = new Color32[4][];
+                var plates = new Color32[6][];
                 try
                 {
                     foreach (SpriteRenderer renderer in _local) renderer.enabled = false;
@@ -292,12 +306,52 @@ namespace Dawnholder.Client.Tests.PlayMode
                     Restore(_local, localEnabled);
                     Restore(_remote, remoteEnabled);
                     plates[3] = Render("both", frame);
+                    RenderCoverage(plates, frame);
                     return plates;
                 }
                 finally
                 {
                     Restore(_local, localEnabled);
                     Restore(_remote, remoteEnabled);
+                }
+            }
+
+            void RenderCoverage(Color32[][] plates, int frame)
+            {
+                Assert.IsEmpty(LayerMask.LayerToName(CoverageLayer), "S3 fixture: coverage layer is unnamed");
+                Assert.IsFalse(UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None)
+                    .Any(renderer => renderer.gameObject.layer == CoverageLayer),
+                    "S3 fixture: coverage layer has no other renderers");
+                GameObject[] bodies = _local.Select(renderer => renderer.gameObject).Distinct().ToArray();
+                int[] layers = bodies.Select(body => body.layer).ToArray();
+                int oldCullingMask = _camera.cullingMask;
+                CameraClearFlags oldClearFlags = _camera.clearFlags;
+                Color oldBackground = _camera.backgroundColor;
+                // The test assembly has no URP reference. Keep an existing camera component, without adding one.
+                Component pipelineCamera = _camera.GetComponent("UniversalAdditionalCameraData");
+                var postProcessing = pipelineCamera != null
+                    ? pipelineCamera.GetType().GetProperty("renderPostProcessing") : null;
+                object oldPostProcessing = postProcessing?.GetValue(pipelineCamera);
+                try
+                {
+                    foreach (GameObject body in bodies) body.layer = CoverageLayer;
+                    _camera.cullingMask = 1 << CoverageLayer;
+                    _camera.clearFlags = CameraClearFlags.SolidColor;
+                    postProcessing?.SetValue(pipelineCamera, false);
+                    // Opposite backgrounds expose partial coverage even where the scene background resembles the body.
+                    _camera.backgroundColor = Color.black;
+                    plates[4] = Render("coverage-black", frame);
+                    _camera.backgroundColor = Color.white;
+                    plates[5] = Render("coverage-white", frame);
+                }
+                finally
+                {
+                    for (int i = 0; i < bodies.Length; i++)
+                        if (bodies[i] != null) bodies[i].layer = layers[i];
+                    _camera.cullingMask = oldCullingMask;
+                    _camera.clearFlags = oldClearFlags;
+                    _camera.backgroundColor = oldBackground;
+                    postProcessing?.SetValue(pipelineCamera, oldPostProcessing);
                 }
             }
 

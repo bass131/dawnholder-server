@@ -428,6 +428,8 @@ namespace Dawnholder.Client.Tests.PlayMode
         {
             if (graphic == null || !graphic.isActiveAndEnabled || graphic.color.a <= 0f) return false;
             if (graphic.canvas == null || !graphic.canvas.isActiveAndEnabled) return false;
+            // A stencil mask can clip its children while its own Graphic is not drawn.
+            if (graphic.TryGetComponent(out Mask mask) && mask.isActiveAndEnabled && !mask.showMaskGraphic) return false;
             for (Transform node = graphic.transform; node != null; node = node.parent)
             {
                 if (node.TryGetComponent(out CanvasGroup group) && group.enabled && group.alpha <= 0f) return false;
