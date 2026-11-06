@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 진짜 녹화는 끝났고 원본은 유효로 확정됐다. 메인이 결정 2 A·결정 3 A로 처분했다(`msg_45234d43130c`, 진행 기록 「2026-11-06 진짜 녹화 v3 처분」). 영상 편집은 메인이 연 보조 세션이 맡는다. Content의 다음 일은 Gardener와 종료 기록 PR이다(「PR 경계와 순서」 4). 편집 보조가 재녹화가 필요하다고 하면 종료 기록을 멈추고 메인과 다시 정한다.
+**다음 첫 일:** 진짜 녹화 3회차(서버 재시작 → 같은 캐릭터 재접속, 메인 `msg_6806673fc699`)를 찍었고 지금 좁은 독립 검증 중이다(진행 기록 「2026-11-06 진짜 녹화 3회차」). 판정이 나오면 편집 파일 표를 메인에 보낸다. 그다음이 Gardener와 종료 기록 PR이다(「PR 경계와 순서」 4). v3 두 회차 원본은 유효로 확정됐다(`msg_45234d43130c`, 진행 기록 「2026-11-06 진짜 녹화 v3 처분」). 영상 편집은 메인이 연 보조 세션이 맡는다.
 
 - 녹화 빌드는 끝났고 Core에 확정값을 넘겼다(`msg_c8dd2ae6e315`, 진행 기록 「2026-11-05 녹화 빌드」). 독립 판정은 불합격(차단 D1·D3, 절차·원시)이었고, 메인이 수용 A로 처분했다(`msg_b50c04ca0c08`). 재빌드는 없다.
 - 녹화 빌드 기준 다섯 PR이 모두 main에 들어갔다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35`), Core 24칸(#295, `fbf00de9a57fb26baaef89c12daa7d84ace92631`, 11-04 12:13:47Z), Art PR2(#297, `cfe8bb45c0e63820deccbb5c364e461768f09c1e`, 11-05 16:57:26Z).
@@ -252,6 +252,17 @@
   - 자동 감시(lead-wake 확장)는 메인 도구 보조가 만든다. 켜지면 보고 없이 멈춘 작업자에게 확인 안내가 가고, 두 번 뒤에도 그대로면 리드에 상태 메시지가 간다.
   - 정본 반영은 시연 뒤 Rules가 맡는다.
 - 이 goal에 미치는 것: 종료 Gardener 계약의 마지막 단계에 위 문장을 넣는다.
+
+### 11-06 진짜 녹화 3회차 지시 — msg_6806673fc699
+
+138 A에 따른 메인 결정이며 사용자 결정이 아니다. 원문 사본은 `lead/main-msg_6806673fc699-round3-request.txt`(sha256 `325a187dcc7715086a5b59c74a100b983897a25abcc91cfe38cce61e87e1f1d2`)다.
+
+- 메인 원문: 「이유: 사용자 결정 확정판 장면표 v1의 9·10번(서버 재시작 → 같은 캐릭터 재접속)이 두 회차 녹화로는 화면에 없다. 되돌릴 수 있고(66초본 예비 유지) 승인된 장면표 안의 일이라 138 A로 메인이 정했다.」
+- 메인이 인용한 사용자 원문(11-06 13:0x KST): 「나 살짝 자고올게 영상까지 마무리해줘」.
+- 필요한 장면(메인 원문): 「서버를 새로 켠 뒤 rec_knight로 로그인 → 캐릭터 목록 슬롯 1에 새벽기사가 남아 있는 화면 → 그 캐릭터를 골라 마을 입장.」
+- 순서: 리드 판정 → 신규 Astra xhigh 좁은 독립 검증 → 편집 파일 표(영상·소리·표식·SHA256, 목록에 새벽기사가 보이는 프레임 범위, 소리 자름 범위)를 메인에 보낸다(`msg_6806673fc699`·`msg_3f5de27030db`).
+- 서버 시작·정지는 137 A대로 메인이 한다. R8 뒤 정지 상태에서 시작하므로 3회차 시작 자체가 재시작이다. 이 사실을 판정에 적는다(메인 지시).
+- 시한은 11-09 14:00 제출이다. 막히면 66초본으로 낸다(메인 원문).
 
 ### 운영 방식(진입 메시지의 메인 결정)
 
@@ -573,3 +584,17 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
     | `terminal-list-after-verify3-close.json` | `b94ced51c901a81f718bcab23deae4bee3f663b07ecee19c6455b8fd54098a00` | `ee88cfa11b5cb1e332594b902634a7a51fef4c586218311e4368ecb1ce39165d` |
 
   - 남은 곳 점검: 근거 폴더의 `.json` 2413개를 읽기 전용으로 훑었다(`lead/scan-server-preview-01.cjs`·`.json`). 두 handle을 담은 파일은 22개다. 가리지 않은 preview는 0건이다. 파싱하지 못한 한 파일(`lead/wait-lead-20261106-rec-11.json`)은 우편함 대기 출력이고 preview 칸이 없다. handle은 메시지 본문에만 나온다.
+- 2026-11-06 진짜 녹화 3회차
+  - 지시: 메인 `msg_6806673fc699`(「11-06 진짜 녹화 3회차 지시」 절). 리드는 종료 기록을 멈추고 접수했다(`msg_bd59d55414dc`, 정정 `msg_1a558737cc91`).
+  - 계약: `lead/recording-run-contract-r3-v1.md`(sha256 `3a58472538c552abbcfbad3586028a549595c934b2508dcfb7f8f3760f81ab47`). 클라는 둘(기사 녹화 창·숨긴 새벽동료)이고, 끝은 두 클라 done이다. 마지막 단계에 140 A 문장을 넣었다.
+  - 실행자: 신규 Astra xhigh `[Content 구현 Astra]`, Task `task_4300f06c0eb8`, Dispatch `ctx_fda4da83abb1`, pane `term_267c38d8`, 첫 화면 GPT-6-Astra xhigh(`lead/recording-r3-executor-first-screen-02.model-lines.json`). 기동 알림은 `msg_7ec398ac3774`다.
+  - 서버: 리드 시작 요청 `msg_161695c31cf2` → 메인 「서버 떴음」 `msg_c83b0d4ff3ae`(원문 sha256 `7b6b842f1b8dd5ef74089a543f070db3081c4cf472ba79edfd06ac720259f8f0`) → 3회차 신호 `msg_72314920d5e6`(2026-11-06T04:56:58.075Z) → 실행자 끝 알림 `msg_9714bb2b5446` → 리드 정지 요청 `msg_6ee4b6d3c92c` → 메인 정지 확인 `msg_3f5de27030db`(원문 sha256 `ae2005f82e0f44551937a91f28730c8cf3b57299f9ef3dc6f3bd9fc57fdb80f8`).
+  - 정산: worker_done `msg_871c7671385b`(succeeded). pane을 닫았다(`lead/close-recording-r3-executor-01.json`, ptyKilled true). 보고는 `recording-build-01/recording-round3/run-01/report.md`(sha256 `5782031eb9d41ba9042d4e4454dc917b5ea13ad7965cd99f135d1218aef7eb9b`)다.
+  - 리드 판정(독립 판정 아님): `lead/recording-r3-lead-judgement.md`(sha256 `2c0756c6c8d3d88172828eb02cbd4e2e2611e0e35c6b2ee3e49d78131125890d`). 값은 `lead/recording-r3-judgement-values-01.json`(sha256 `acd9d5d5d31b90a47be45dc74301f1e9f31abdb7971ab5f44ce46e9de559e370`)이다.
+    - 재시작: R8 정지 뒤 첫 켬이 3회차다. 서버 birth 04:56:09.2528983Z, Listening 04:56:10.1382324Z다. 두 클라 닫기는 04:59:35.7555020Z, 서버 정지는 05:00:40.0418457Z다. 정지 요약의 오류 칸은 0이고 drained True다.
+    - 첫 프레임: 첫 프레임 상한 뒤 4.6161506초에 캐릭터 목록이 온다(`firstFrameBeforeCharacterList` true).
+    - 같은 캐릭터: 서버 목록 응답의 기사 ID가 v3 1회차 생성 ID와 같다. 이번 회차 생성은 0이다. DB는 조회하지 않았다(80 A).
+    - 남은 한계 셋: D2 증명 불가, 예외 launcher 명령의 사후 기록, 수동 heartbeat 송신 UTC 부재다. 셋 다 녹화 결과의 진위에는 영향이 없다.
+  - 대상 스냅샷: `lead/recording-r3-target-manifest-01.json`(466파일, 80098874 bytes, sha256 `7c91bfcb085b74d864c3c4e870c3258365797a2e0cde4f27351f6522fdde7582`).
+  - 좁은 독립 검증: 신규 Astra xhigh `[Content 검증자]`, Task `task_3601ebe0ec2e`, Dispatch `ctx_e3d3bf774549`, pane `term_9880593c`이다. 계약은 `lead/recording-r3-verify-contract-v1.md`(sha256 `4129d506b33781b644977e1f96372657d8b14f1576def1ce3fb53ecd34dd299c`)다. 범위는 재시작 사실·첫 프레임·목록 장면·같은 캐릭터·원본 무결성과 편집 파일 표다. 메인 알림은 `msg_23b6a2ab6b60`이다.
+    - 검증자 질문 `msg_172f56d2069c`(자기 첫 화면 모델 표시 근거): 리드가 모델 줄 사본 `lead/recording-r3-verify-first-screen-01.model-lines.json`(sha256 `94eef36500f113e518bdbac5206cc4023482077205ef71cb0bc953ff43ba23fb`)을 추가 입력으로 줬다(`msg_c37abd59d1ed`).
