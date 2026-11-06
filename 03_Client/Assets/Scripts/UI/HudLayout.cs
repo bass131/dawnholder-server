@@ -15,8 +15,6 @@ namespace Dawnholder.Client.UI
         const int PortraitMaskTextureSize = 128;
         // The 120px frame's inner diameter is 88.125px in the source alpha; keep the stencil just inside it.
         const float PortraitMaskDiameter = 86f;
-        // 1280×720·1920×1080 캡처로 맞춤: HUD portrait captures under
-        // .backups/verification/2026-11-06-hud-portrait-login-rerecord/impl-01/u2/captures/portrait-*.png.
         // These offsets centre the face rather than the helmet/hood's full sprite rectangle.
         const float PortraitArtSize = 112f;
         static readonly Vector2 s_knightFaceOffset = new(-14f, 18f);
