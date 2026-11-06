@@ -23,6 +23,20 @@ namespace Dawnholder.Client.Tests
         readonly List<string> _requests = new();
         Transform Panel => _root.transform.Find("CharacterMenu/Panel");
 
+        float _testTime;
+
+        // Call adaptation for the screen-dwell contract: cross each delay, preserving every original outcome/packet assertion.
+        DemoCharacterMenuOutcome AdvancePastDwell(DemoCharacterMenuStep step, CharacterMenuViewState? state, Transform? panel)
+        {
+            DemoCharacterMenuOutcome outcome = DemoCharacterMenuOutcome.Waiting;
+            for (int frame = 0; frame < 3; frame++)
+            {
+                outcome = step.Advance(state, panel, _testTime);
+                _testTime += 3f;
+                if (outcome != DemoCharacterMenuOutcome.Waiting) break;
+            }
+            return outcome;
+        }
         [SetUp]
         public void SetUp()
         {
@@ -48,7 +62,7 @@ namespace Dawnholder.Client.Tests
         public void PendingPhase_DoesNotNeedPanelOrProduceRequest(int phase)
         {
             var step = new DemoCharacterMenuStep(DemoRole.Knight, "VerifyKnight");
-            var result = step.Advance(new CharacterMenuViewState((Phase)phase), null);
+            var result = AdvancePastDwell(step, new CharacterMenuViewState((Phase)phase), null);
             Assert.AreEqual(DemoCharacterMenuOutcome.Waiting, result);
             Assert.IsEmpty(step.StopReason);
             Assert.IsEmpty(_requests);
@@ -60,9 +74,9 @@ namespace Dawnholder.Client.Tests
         {
             var step = new DemoCharacterMenuStep(DemoRole.Mage, "VerifyMage");
             Assert.AreEqual(DemoCharacterMenuOutcome.Stopped,
-                step.Advance(new CharacterMenuViewState((Phase)phase, message: "visible failure"), Panel));
+                AdvancePastDwell(step, new CharacterMenuViewState((Phase)phase, message: "visible failure"), Panel));
             StringAssert.Contains("visible failure", step.StopReason);
-            Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, step.Advance(null, null));
+            Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, AdvancePastDwell(step, null, null));
             Assert.IsEmpty(_requests);
         }
 
@@ -71,7 +85,7 @@ namespace Dawnholder.Client.Tests
         {
             var step = new DemoCharacterMenuStep(DemoRole.Knight, "VerifyKnight");
             Assert.AreEqual(DemoCharacterMenuOutcome.Stopped,
-                step.Advance(new CharacterMenuViewState(Phase.Ready), null));
+                AdvancePastDwell(step, new CharacterMenuViewState(Phase.Ready), null));
             StringAssert.Contains("CharacterMenu/Panel", step.StopReason);
             Assert.IsEmpty(_requests);
         }
@@ -90,10 +104,10 @@ namespace Dawnholder.Client.Tests
                 Panel.Find("Slot1").GetComponent<Button>().onClick.AddListener(() => Damage(path, fault));
             else Damage(path, fault);
             var step = new DemoCharacterMenuStep(DemoRole.Knight, null);
-            Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, step.Advance(state, Panel));
+            Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, AdvancePastDwell(step, state, Panel));
             StringAssert.Contains(path, step.StopReason);
             Assert.IsEmpty(_requests);
-            Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, step.Advance(state, Panel));
+            Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, AdvancePastDwell(step, state, Panel));
         }
 
         [TestCase("CreateForm/Name", "missing")]
@@ -113,10 +127,10 @@ namespace Dawnholder.Client.Tests
             string trigger = path == "CreateForm/Create" ? "CreateForm/Knight" : "Slot1";
             Panel.Find(trigger).GetComponent<Button>().onClick.AddListener(() => Damage(path, fault));
             var step = new DemoCharacterMenuStep(DemoRole.Knight, "VerifyKnight");
-            Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, step.Advance(state, Panel));
+            Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, AdvancePastDwell(step, state, Panel));
             StringAssert.Contains(path, step.StopReason);
             Assert.IsEmpty(_requests);
-            Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, step.Advance(null, null));
+            Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, AdvancePastDwell(step, null, null));
         }
 
         [Test]

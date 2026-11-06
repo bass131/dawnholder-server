@@ -85,7 +85,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             object step = System.Activator.CreateInstance(stepType, BindingFlags.Instance | BindingFlags.NonPublic,
                 null, new object[] { DemoRole.Knight, "VerifySlow" }, null);
             object outcome = stepType.GetMethod("Advance", BindingFlags.Instance | BindingFlags.NonPublic)
-                .Invoke(step, new object[] { projection, controller.transform.Find("CharacterMenu/Panel") });
+                .Invoke(step, new object[] { projection, controller.transform.Find("CharacterMenu/Panel"), 0f });
             TestContext.Out.WriteLine($"panel={controller.transform.Find("CharacterMenu/Panel") != null}; " +
                 $"connected={_network.IsConnected}; handshake={UnityClientSession.Instance.HandshakeOk}; " +
                 $"projectionNull={projection == null}; outcome={outcome}; receivedBytes={_accepted.Available}");

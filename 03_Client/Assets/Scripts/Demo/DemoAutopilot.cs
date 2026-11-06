@@ -122,6 +122,9 @@ namespace Dawnholder.Client.Demo
                 if (field.name == "ServerHostInput") field.text = "127.0.0.1";
                 if (field.name == "PasswordInput") field.text = DemoPassword;
             }
+            Log("login-screen-visible", string.Empty);
+            yield return new WaitForSecondsRealtime(DemoCharacterMenuStep.ScreenDwellSeconds);
+            Log("login-submit", string.Empty);
             FindFirstObjectByType<MainMenuController>()?.OnStartClicked();
             Log("login", _options.Account);
 
@@ -134,7 +137,7 @@ namespace Dawnholder.Client.Demo
                 yield break;
             }
 
-            var menu = new DemoCharacterMenuStep(_options.Role, _options.Character);
+            var menu = new DemoCharacterMenuStep(_options.Role, _options.Character) { LogStep = Log };
             bool listLogged = false;
             bool createLogged = false;
             DemoCharacterMenuOutcome outcome = DemoCharacterMenuOutcome.Waiting;
@@ -151,7 +154,7 @@ namespace Dawnholder.Client.Demo
                     Log("character list", string.Empty);
                     listLogged = true;
                 }
-                outcome = menu.Advance(state, select.transform.Find("CharacterMenu/Panel"));
+                outcome = menu.Advance(state, select.transform.Find("CharacterMenu/Panel"), Time.realtimeSinceStartup);
                 if (outcome == DemoCharacterMenuOutcome.Creating && !createLogged)
                 {
                     Log("character create", _options.Character ?? string.Empty);
@@ -200,8 +203,12 @@ namespace Dawnholder.Client.Demo
             }
             else
             {
-                yield return WaitFor(() => PartyState.Instance != null && PartyState.Instance.HasPendingInvite, 90f, "party invite");
-                yield return new WaitForSeconds(1.2f);
+                yield return WaitFor(() => PartyState.Instance != null && PartyState.Instance.HasPendingInvite &&
+                    FindButton(PartyInvitePopup.Instance, "AcceptButton") is Button accept &&
+                    accept.isActiveAndEnabled && accept.interactable, 90f, "party invite");
+                Log("invite-screen-visible", string.Empty);
+                yield return new WaitForSecondsRealtime(DemoCharacterMenuStep.ScreenDwellSeconds);
+                Log("invite-accept", string.Empty);
                 ClickButton(PartyInvitePopup.Instance, "AcceptButton");
                 yield return WaitFor(() => InParty, 8f, "party joined");
             }
@@ -239,6 +246,8 @@ namespace Dawnholder.Client.Demo
             }
             yield return _keys.Tap(Key.F8); // DEBUG cheat: complete the 20-kill quest that opens the boss portal.
             Log("quest", "F8");
+            yield return new WaitForSecondsRealtime(DemoCharacterMenuStep.ScreenDwellSeconds);
+            Log("quest-dwell-ended", "portal movement");
         }
 
         IEnumerator FightBossAndReturn()
