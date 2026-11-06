@@ -40,9 +40,8 @@ namespace Dawnholder.Client.Tests
             if (first != null) throw first;
         }
 
-        // HudLayout.cs:37~:48: every listed HUD panel takes the skin's panel piece, every listed portrait gets a frame from
-        // the skin's portrait prefab, and both skill slots (Q and E, the same ApplySlotArtwork path, :178~:189) take the
-        // skin's inset piece. After the swap these are the bright Panel_Default, PortraitFrame_128 and Inset_Default.
+        // Every listed HUD panel takes the skin's panel piece. The portrait cell and the skill slots both use the
+        // bright Inset_Default; the portrait cell is behind the clipped backdrop and art.
         [Test]
         public void HudLayoutAwake_DrawsTheBrightPanelPortraitFrameAndSkillSlotPiecesOnTheRealUiScene()
         {
@@ -61,9 +60,9 @@ namespace Dawnholder.Client.Tests
                     .Select(child => child.GetComponent<Image>()).Where(image => image != null).ToArray());
             string[] wrongPanels = panels.Where(panel => !IsPiece(panel.sprite, "Panel_Default")).Select(Describe).ToArray();
             string[] unframed = portraits.Where(portrait => frames[portrait].Length != 1 ||
-                frames[portrait][0].transform.GetSiblingIndex() != portrait.childCount - 1).Select(portrait => portrait.name).ToArray();
+                frames[portrait][0].transform.GetSiblingIndex() != 0).Select(portrait => portrait.name).ToArray();
             string[] wrongFrames = frames.Values.SelectMany(added => added)
-                .Where(frame => !IsPiece(frame.sprite, "PortraitFrame_128")).Select(Describe).ToArray();
+                .Where(frame => !IsPiece(frame.sprite, "Inset_Default")).Select(Describe).ToArray();
             string[] wrongSlots = slots.Where(slot => !IsPiece(slot.sprite, "Inset_Default")).Select(Describe).ToArray();
             TestContext.Out.WriteLine($"hud panels={panels.Length} [{string.Join(", ", panels.Select(Describe))}]");
             TestContext.Out.WriteLine($"hud frames={frames.Values.Sum(added => added.Length)} " +
@@ -74,9 +73,9 @@ namespace Dawnholder.Client.Tests
             Assert.Greater(panels.Length, 0, "precondition: HudLayout lists HUD panels in the scene");
             Assert.Greater(portraits.Length, 0, "precondition: HudLayout lists portraits in the scene");
             Assert.AreEqual(2, slots.Length, "precondition: the Q and E skill slots carry an Image");
-            Assert.IsEmpty(unframed, "A2: every HUD portrait has one direct PortraitFrame as its last sibling");
+            Assert.IsEmpty(unframed, "A2: every HUD portrait has one direct PortraitFrame as its first sibling (behind the clipped art)");
             Assert.IsEmpty(wrongPanels, "every HUD panel shows the bright Panel_Default");
-            Assert.IsEmpty(wrongFrames, "every HUD portrait frame shows the bright PortraitFrame_128");
+            Assert.IsEmpty(wrongFrames, "every HUD portrait frame shows the bright Inset_Default, the skill-slot piece");
             Assert.IsEmpty(wrongSlots, "the Q and E skill slots show the bright Inset_Default");
             Assert.AreEqual(sceneBefore, Sha256(UiScenePath), "the UI scene file is not written");
         }

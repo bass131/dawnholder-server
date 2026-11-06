@@ -13,12 +13,11 @@ using UnityEngine.UI;
 
 namespace Dawnholder.Client.Tests
 {
-    // A1-A3: real HUD layout, independent PNG alpha measurements, and rendered art-on/art-off pixels.
+    // A1-A3: real HUD layout, literal square-cell boundaries, and rendered art-on/art-off pixels.
     // EditMode isolates presentation from HudController/network state; no scene is saved.
     public sealed class HudPortraitClipTests
     {
         const string ScenePath = "Assets/Scenes/99.UI/UI.unity";
-        const string FramePath = "Assets/Art/UI/BrightComponents/PortraitFrame_128.png";
         readonly List<UnityEngine.Object> _owned = new();
         Scene _scene;
         Scene _previous;
@@ -65,32 +64,35 @@ namespace Dawnholder.Client.Tests
 
         [TestCase(0)]
         [TestCase(1)]
-        public void T1_PortraitPlace_Remains120SquareAtStatusInset(int index)
+        public void T1_PortraitPlace_Is112SquareCentredInStatusPanel(int index)
         {
             HudLayout hud = Open();
             RectTransform portrait = Portraits(hud)[index];
             SessionTestTools.Call(hud, "Awake");
             Assert.AreEqual("character_status", portrait.parent.name);
             // Contract design (a), A3: reference-canvas coordinates, independent of product layout constants.
-            Assert.AreEqual(new Vector2(120f, 120f), portrait.rect.size);
-            Assert.AreEqual(new Vector2(16f, -16f), portrait.anchoredPosition);
+            Assert.AreEqual(new Vector2(112f, 112f), portrait.rect.size);
+            Assert.AreEqual(new Vector2(22f, -22f), portrait.anchoredPosition);
         }
 
         [TestCase(0)]
         [TestCase(1)]
-        public void T1_ArtIsClippedInsideTheRing_AndFrameIsOutsideEveryMask(int index)
+        public void T1_ArtIsClippedInsideTheSquareCell_AndFrameIsOutsideEveryClip(int index)
         {
             HudLayout hud = Open();
             RectTransform portrait = Portraits(hud)[index];
             Sprite head = portrait.GetComponent<Image>().sprite;
             Assert.IsNotNull(head, "fixture: scene portrait sprite");
             SessionTestTools.Call(hud, "Awake");
-            Transform maskTransform = portrait.Find("PortraitMask");
-            Assert.IsNotNull(maskTransform, "A2: direct PortraitMask child is missing");
-            var mask = maskTransform.GetComponent<Mask>();
-            Assert.IsNotNull(mask, "A2: PortraitMask requires UI.Mask");
-            Assert.IsNotNull(maskTransform.GetComponent<Graphic>(), "A2: mask has no Graphic");
-            Assert.IsFalse(mask.showMaskGraphic, "A2: mask graphic must not draw over art");
+            Transform maskTransform = portrait.Find("PortraitClip");
+            Assert.IsNotNull(maskTransform, "A2: direct PortraitClip child is missing");
+            var mask = maskTransform.GetComponent<RectMask2D>();
+            Assert.IsNotNull(mask, "A2: PortraitClip requires RectMask2D");
+            Assert.IsTrue(mask.isActiveAndEnabled, "A2: PortraitClip must be enabled");
+            Assert.IsNull(maskTransform.GetComponent<Mask>(), "A2: square clip has no stencil Mask");
+            RectTransform maskRect = (RectTransform)maskTransform;
+            Assert.AreEqual(98f, maskRect.rect.width, 0.5f, "A2: clip width");
+            Assert.AreEqual(98f, maskRect.rect.height, 0.5f, "A2: clip height");
             Transform artTransform = maskTransform.Find("PortraitArt");
             Assert.IsNotNull(artTransform, "A2: PortraitArt must be a direct mask child");
             Image art = artTransform.GetComponent<Image>();
@@ -99,53 +101,36 @@ namespace Dawnholder.Client.Tests
             Image[] enabledHeads = portrait.GetComponentsInChildren<Image>(true)
                 .Where(image => image.enabled && image.sprite == head).ToArray();
             CollectionAssert.AreEqual(new[] { art }, enabledHeads, "A2: only PortraitArt renders the head sprite");
+            Transform backdrop = maskTransform.Find("PortraitBackdrop");
+            Assert.IsNotNull(backdrop, "A2: PortraitBackdrop must be a direct clip child");
+            Assert.AreEqual(0, backdrop.GetSiblingIndex(), "A2: backdrop is first inside the clip");
+            Assert.Less(backdrop.GetSiblingIndex(), artTransform.GetSiblingIndex(), "A2: backdrop is behind art");
+            Image backdropImage = backdrop.GetComponent<Image>();
+            Assert.IsNotNull(backdropImage, "A2: backdrop requires Image");
+            Assert.IsNull(backdropImage.sprite, "A2: backdrop is a plain colour");
+            Assert.AreEqual(new Color32(61, 44, 32, 255), (Color32)backdropImage.color, "A2: dark cell backdrop");
             Transform frame = portrait.Find("PortraitFrame");
             Assert.IsNotNull(frame, "A2: direct PortraitFrame missing");
-            Assert.AreEqual(portrait.childCount - 1, frame.GetSiblingIndex(), "A2: frame is last sibling");
+            Assert.AreEqual(0, frame.GetSiblingIndex(), "A2: frame is first sibling behind the clipped art");
             for (Transform node = frame; node != null; node = node.parent)
+            {
                 Assert.IsNull(node.GetComponent<Mask>(), $"A2: frame is clipped by {node.name}");
-            RectTransform maskRect = (RectTransform)maskTransform;
+                Assert.IsNull(node.GetComponent<RectMask2D>(), $"A2: frame is rect-clipped by {node.name}");
+            }
             Vector2 centre = portrait.InverseTransformPoint(maskRect.TransformPoint(maskRect.rect.center));
             Assert.LessOrEqual(Vector2.Distance(centre, portrait.rect.center), 1f, "A2: mask and portrait centres");
-            (float inner, _) = FrameRadii();
             Vector3 size = portrait.InverseTransformVector(maskRect.TransformVector(maskRect.rect.size));
-            Assert.LessOrEqual(Mathf.Min(Mathf.Abs(size.x), Mathf.Abs(size.y)), inner * 2f * 120f,
-                "A2: mask diameter must fit inside PNG alpha's inner ring");
-        }
-
-        // Read the source PNG, not imported unreadable texture data or a product radius helper.
-        (float Inner, float Outer) FrameRadii()
-        {
-            var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            _owned.Add(texture);
-            Assert.IsTrue(texture.LoadImage(File.ReadAllBytes(FramePath)), "fixture: source frame PNG loads");
-            Assert.AreEqual(texture.width, texture.height, "fixture: square source frame");
-            Color32[] pixels = texture.GetPixels32();
-            float centre = (texture.width - 1) * 0.5f;
-            var inner = new List<float>();
-            var outer = new List<float>();
-            foreach (Vector2 direction in new[] { Vector2.left, Vector2.right, Vector2.up, Vector2.down })
-            {
-                var opaque = new List<float>();
-                for (int r = 0; r < texture.width / 2; r++)
-                {
-                    int x = Mathf.RoundToInt(centre + direction.x * r);
-                    int y = Mathf.RoundToInt(centre + direction.y * r);
-                    if (pixels[y * texture.width + x].a >= 128) opaque.Add(r);
-                }
-                Assert.IsNotEmpty(opaque, "fixture: each cardinal ray crosses the ring");
-                inner.Add(opaque.Min());
-                outer.Add(opaque.Max() + 1f); // Include the outermost opaque pixel's extent.
-            }
-            TestContext.Out.WriteLine($"Frame PNG alpha>=128 inner radii={string.Join(",", inner)} outer={string.Join(",", outer)}");
-            return (inner.Min() / texture.width, outer.Max() / texture.width);
+            Assert.AreEqual(7f, centre.x - Mathf.Abs(size.x) * 0.5f - portrait.rect.xMin, 0.5f, "A2: left inset");
+            Assert.AreEqual(7f, portrait.rect.xMax - centre.x - Mathf.Abs(size.x) * 0.5f, 0.5f, "A2: right inset");
+            Assert.AreEqual(7f, centre.y - Mathf.Abs(size.y) * 0.5f - portrait.rect.yMin, 0.5f, "A2: bottom inset");
+            Assert.AreEqual(7f, portrait.rect.yMax - centre.y - Mathf.Abs(size.y) * 0.5f, 0.5f, "A2: top inset");
         }
 
         [TestCase(0, 1280, 720)]
         [TestCase(1, 1280, 720)]
         [TestCase(0, 1920, 1080)]
         [TestCase(1, 1920, 1080)]
-        public void T2_HeadChangesZeroPixelsOutsideTheGoldRing(int index, int width, int height)
+        public void T2_HeadChangesZeroPixelsOutsideTheSquareCell(int index, int width, int height)
         {
             HudLayout hud = Open();
             RectTransform[] portraits = Portraits(hud);
@@ -157,7 +142,6 @@ namespace Dawnholder.Client.Tests
             Image[] art = portrait.GetComponentsInChildren<Image>(true)
                 .Where(image => image.enabled && image.sprite == head).ToArray();
             Assert.IsNotEmpty(art, "fixture: enabled head Image before on/off rendering");
-            (_, float outer) = FrameRadii();
 
             var cameraObject = new GameObject("Portrait capture camera (fixture)");
             _owned.Add(cameraObject);
@@ -199,22 +183,24 @@ namespace Dawnholder.Client.Tests
             Vector2 lo = camera.WorldToScreenPoint(corners[0]);
             Vector2 hi = camera.WorldToScreenPoint(corners[2]);
             Vector2 centre = (lo + hi) * 0.5f;
-            float radius = outer * Mathf.Min(hi.x - lo.x, hi.y - lo.y) + 1f;
+            Vector2 halfCell = (hi - lo) * (98f / 112f) * 0.5f + Vector2.one;
+            Rect cellWithTolerance = Rect.MinMaxRect(centre.x - halfCell.x, centre.y - halfCell.y,
+                centre.x + halfCell.x, centre.y + halfCell.y);
             int changed = 0;
             int outside = 0;
-            for (int y = Mathf.Max(0, Mathf.FloorToInt(lo.y)); y < Mathf.Min(height, Mathf.CeilToInt(hi.y)); y++)
-            for (int x = Mathf.Max(0, Mathf.FloorToInt(lo.x)); x < Mathf.Min(width, Mathf.CeilToInt(hi.x)); x++)
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
             {
                 int offset = y * width + x;
                 bool differs = !on[offset].Equals(off[offset]);
                 if (!differs) continue;
                 changed++;
-                if (Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), centre) > radius) outside++;
+                if (!cellWithTolerance.Contains(new Vector2(x + 0.5f, y + 0.5f))) outside++;
             }
             TestContext.Out.WriteLine($"portrait={portrait.name} resolution={width}x{height} rect={lo}..{hi} " +
-                $"outerRadiusWith1px={radius} changed={changed} outside={outside}");
+                $"squareCellWith1px={cellWithTolerance} changed={changed} outside={outside}");
             Assert.Greater(changed, 0, "fixture: toggling head art must change rendered pixels (no vacuous pass)");
-            Assert.AreEqual(0, outside, "A1: head pixels outside gold ring");
+            Assert.AreEqual(0, outside, "A1: head pixels outside the square cell");
             camera.targetTexture = null;
             target.Release();
         }

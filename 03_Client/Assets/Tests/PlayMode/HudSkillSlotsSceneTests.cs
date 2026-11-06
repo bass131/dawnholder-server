@@ -27,7 +27,7 @@ namespace Dawnholder.Client.Tests.PlayMode
     {
         const float Tolerance = .01f;
         const string IconSetPath = "Assets/Prefabs/Characters/ClassVisuals/SkillIconSet.asset";
-        static readonly Vector2[] Centers = { new Vector2(76, 70), new Vector2(200, 70), new Vector2(324, 70), new Vector2(448, 70) };
+        static readonly Vector2[] Centers = { new Vector2(60, 60), new Vector2(168, 60), new Vector2(276, 60), new Vector2(384, 60) };
         MapEntryPlayFixture _fixture;
 
         [SetUp] public void Setup() => _fixture = new MapEntryPlayFixture();
@@ -81,14 +81,14 @@ namespace Dawnholder.Client.Tests.PlayMode
                     AssertVector(Vector2.zero, panel.anchorMax, "H3 anchorMax");
                     AssertVector(Vector2.zero, panel.pivot, "H3 pivot");
                     AssertVector(new Vector2(24, 24), panel.anchoredPosition, "H3 lower-left margin");
-                    AssertVector(new Vector2(524, 140), panel.sizeDelta, "H3 four-slot panel size");
+                    AssertVector(new Vector2(444, 120), panel.sizeDelta, "H3 four-slot panel size");
                     for (int index = 0; index < Centers.Length; index++)
                     {
                         RectTransform slot = Slot(panel, index + 1);
                         Assert.IsNotNull(slot, "H3 slot " + (index + 1) + " exists");
                         if (slot == null) continue;
                         Assert.IsTrue(slot.gameObject.activeInHierarchy, "H3 slot " + (index + 1) + " stays active");
-                        AssertVector(new Vector2(112, 112), slot.rect.size, "H3 slot size " + (index + 1));
+                        AssertVector(new Vector2(96, 96), slot.rect.size, "H3 slot size " + (index + 1));
                         Vector2 center = panel.InverseTransformPoint(slot.TransformPoint(slot.rect.center));
                         AssertVector(Centers[index], center - panel.rect.min, "H3 literal center " + (index + 1));
                         Rect pixels = surface.PixelRect(slot);
