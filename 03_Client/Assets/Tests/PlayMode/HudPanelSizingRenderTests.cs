@@ -173,7 +173,23 @@ namespace Dawnholder.Client.Tests.PlayMode
                 surface.Attach(panel.GetComponentInParent<Canvas>().rootCanvas);
                 yield return GuildSizeSurface.Settle();
                 Assert.IsEmpty(surface.FixtureProblems(), "fixture: actual 1920x1080 portrait render");
-                Color32[] pixels = Capture(surface, "hud-cell-" + characterClass.ToString().ToLowerInvariant() + ".png");
+                string stem = "hud-cell-" + characterClass.ToString().ToLowerInvariant();
+                Color32[] pixels = Capture(surface, stem + ".png");
+                Sprite head = portrait.GetComponent<UnityEngine.UI.Image>().sprite;
+                Assert.IsNotNull(head, "fixture: scene portrait sprite");
+                var art = portrait.GetComponentsInChildren<UnityEngine.UI.Image>(true)
+                    .Where(image => image.enabled && image.sprite == head).ToArray();
+                Assert.IsNotEmpty(art, "fixture: enabled head Image before on/off rendering");
+                Color32[] artOffPixels;
+                try
+                {
+                    foreach (var image in art) image.enabled = false;
+                    artOffPixels = Capture(surface, stem + "-art-off.png");
+                }
+                finally
+                {
+                    foreach (var image in art) image.enabled = true;
+                }
                 Rect panelPixels = surface.PixelRect(panel);
                 Rect portraitPixels = surface.PixelRect(portrait);
                 // Empty strip between the portrait and the status text, in this same rendered panel.
@@ -182,22 +198,39 @@ namespace Dawnholder.Client.Tests.PlayMode
                 Color32 parchment = pixels[sampleY * Width + sampleX];
                 Vector2 centre = portraitPixels.center;
                 Rect interior = new Rect(centre.x - 49 + 2, centre.y - 49 + 2, 94, 94);
+                // Rect includes its minimum and excludes its maximum; select by pixel centres.
+                int minX = Mathf.CeilToInt(interior.xMin - 0.5f);
+                int maxXExclusive = Mathf.CeilToInt(interior.xMax - 0.5f);
+                int minY = Mathf.CeilToInt(interior.yMin - 0.5f);
+                int maxYExclusive = Mathf.CeilToInt(interior.yMax - 0.5f);
                 int compared = 0;
-                int matches = 0;
-                for (int y = Mathf.CeilToInt(interior.yMin); y < Mathf.FloorToInt(interior.yMax); y++)
-                for (int x = Mathf.CeilToInt(interior.xMin); x < Mathf.FloorToInt(interior.xMax); x++)
+                int artOnMatches = 0;
+                int artOffMatches = 0;
+                int changed = 0;
+                for (int y = minY; y < maxYExclusive; y++)
+                for (int x = minX; x < maxXExclusive; x++)
                 {
-                    Color32 pixel = pixels[y * Width + x];
+                    int offset = y * Width + x;
+                    Color32 pixel = pixels[offset];
+                    Color32 artOffPixel = artOffPixels[offset];
                     compared++;
                     if (Math.Abs(pixel.r - parchment.r) <= 8 && Math.Abs(pixel.g - parchment.g) <= 8 &&
-                        Math.Abs(pixel.b - parchment.b) <= 8) matches++;
+                        Math.Abs(pixel.b - parchment.b) <= 8) artOnMatches++;
+                    if (Math.Abs(artOffPixel.r - parchment.r) <= 8 && Math.Abs(artOffPixel.g - parchment.g) <= 8 &&
+                        Math.Abs(artOffPixel.b - parchment.b) <= 8) artOffMatches++;
+                    if (!pixel.Equals(artOffPixel)) changed++;
                 }
                 TestContext.Out.WriteLine($"PARCHMENT class={characterClass} portrait={portraitPixels.ToString("F3")} " +
-                    $"interior={interior.ToString("F3")} sample=({sampleX},{sampleY}) " +
+                    $"interior={interior.ToString("F3")} " +
+                    $"floatBounds=[{interior.xMin:R},{interior.xMax:R})x[{interior.yMin:R},{interior.yMax:R}) " +
+                    $"pixelRange=[{minX},{maxXExclusive})x[{minY},{maxYExclusive}) sample=({sampleX},{sampleY}) " +
                     $"sampleRGBA=({parchment.r},{parchment.g},{parchment.b},{parchment.a}) " +
-                    $"compared={compared} matchingPanelPixels={matches} channelTolerance=8");
-                Assert.Greater(compared, 0, "fixture: nonempty inner portrait area is sampled");
-                Assert.AreEqual(0, matches, "Portrait: the inset portrait interior contains zero panel-parchment pixels");
+                    $"compared={compared} artOnMatchingPanelPixels={artOnMatches} " +
+                    $"artOffMatchingPanelPixels={artOffMatches} changedPixels={changed} channelTolerance=8");
+                Assert.AreEqual(94 * 94, compared, "fixture: the entire 94x94 inner portrait area is sampled");
+                Assert.Greater(changed, 0, "fixture: toggling head art changes pixels in the inset portrait interior");
+                Assert.AreEqual(0, artOffMatches,
+                    "Portrait: with the head art off, the inset portrait interior shows zero panel-parchment pixels");
             }
         }
 
