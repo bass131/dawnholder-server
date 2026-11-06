@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 독립 검증 계약(머리 `lead/verify-contract-01-head.md`, 입력 `lead/verify-contract-01-inputs.txt`)을 이 문서 commit에서 조립해 새 검증자 `[Content 검증자]`를 연다. 검증자가 준비되면 메인에 Unity 창 7(전체 EditMode·PlayMode)을 청한다. 구현과 시험 전제 보완 red-04는 commit됐다(진행 기록 「2026-11-06 구현 U2」·「… red-04 U1」).
+**다음 첫 일:** verify-01 불합격(낮음 차단 V-01·V-02)의 V-01을 고치는 좁은 구현 계약 `fix-01`(머리 `lead/fix-contract-01-head.md`)을 이 문서 commit에서 조립해 새 구현자 `[Content 구현 Astra]`를 연다. 그 뒤 재검증 `verify-02`(약 등급, Unity 창 8)로 간다. V-02는 리드가 고쳤다(진행 기록 「2026-11-06 독립 검증 verify-01」).
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
@@ -295,6 +295,20 @@
 - PlayMode 필터 9건(`CharacterOverlapSortSceneTests` 3 + `HudPresentationLifecycleTests` 6): 통과 9·실패 0·건너뜀 0. E2는 60프레임 모두 완전 피복 표본 불일치 0이다. 프레임별 겹친 표본 1509~1618, 완전 피복 1360~1478, 부분 피복 129~159다.
 - 리드 계약 결함 하나(작성자가 바로잡음): 부록 C의 「Python 도구 작성」 제외 이유가 이 작업(정적 분석 Python)에 맞지 않았다. 작성자가 CODE_CONVENTION Python 절을 읽고 따랐다. 조립 스크립트의 고정 제외 문구 탓이며, 다음 계약부터 Python을 쓰는 작업은 그 절을 넣는다.
 - 창 끝: 작성자 관찰 16:42:16Z Unity 0·dotnet 0. 리드 확인 `date -u` 「Fri, Nov  6, 2026  4:48:18 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경 되돌리기는 worktree `index.lock`(크기 0, 16:42:53Z 생성)에 막혀 메인에 처리를 청했다(`msg_3a245816de48`). 메인이 10-21 사용자 A 조건(크기 0·611초·git.exe 0)으로 지웠고(`msg_dcb5bd3b5e89`), 리드가 16:53:52Z에 되돌렸다(`lead/red04-drift-restore-02.txt`).
+
+### 2026-11-06 독립 검증 verify-01
+
+- 계약 `lead/verify-contract-01.md`(sha256 `aec0739e4cbc895e5406d05d1372e9c995c4898d8fd3ee1bcb2a37ae4d987b7f`, 등급 강, 메인 조건 2 포함). Unity 창 7 메인 허가 `msg_cf0d6f697880`. 검증자 worker_done `msg_b41398752818`(Task `task_d24dcf93c5d7`, verifies `task_aedc25145341`). 판정 `verify-01/verdict.md`(sha256 `e436d1d5dd1444f658587648a467c68db4de62f2a980c67f1578eb056ed1f295`). pane은 리드가 17:32:33Z에 닫았다(`lead/close-verify-worker-01.txt`).
+- U3(HEAD `d85b69a2`): EditMode 1851건 통과 1851, PlayMode 298건 통과 250·실패 0·건너뜀 48(이름 U0과 같음). F-02 재발 없음. 창 끝 17:18:13Z Unity 0·dotnet 0. 리드 확인 `date -u` 「Fri, Nov  6, 2026  5:32:23 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경은 리드가 되돌렸다(`lead/verify-drift-restore-01.txt`).
+- 판정: **불합격, 낮음 차단 2건.** 제품 동작 결함은 0이다.
+  - V-01: `HudLayout.cs:18~19` 주석이 저장소 밖 근거 경로를 가리킨다. 리드 구현 계약 48행이 「근거 캡처 경로를 적는다」고 지시했다(리드 계약 결함, 첫 발생). 교정: 이 기록만 남긴다. 리드는 이후 계약에서 제품 주석에 근거 폴더 경로를 넣으라고 하지 않는다. 근거는 goal·보고에 둔다.
+  - V-02: `CURRENT.md` Content 줄이 「다음은 선행 시험」이라 goal과 어긋났다. 리드가 단계 글을 빼고 goal 링크만 남겼다.
+- 초상 오프셋 상수의 근거(V-01로 주석에서 옮김): 구현 U2 캡처 `impl-01/u2/captures/portrait-knight-1280x720.png`(sha256 `4e83f6285c29ead8929e017bb939dbcfdae312c0ab977d11a2a30a5a7ea8d9af`)·`portrait-knight-1920x1080.png`(`664f23fb922f1fb0e1153ead47e493ec522045697a28529c4d5640ace778b4d6`)·`portrait-mage-1280x720.png`(`0c0ba741b9e36f62f9f89eda4ca4cf342f41133175d1a03d4c1d6e4b16a1dbdd`)·`portrait-mage-1920x1080.png`(`960919edac9a53fa99e648dc9946a854f32ba400334dfc4ab52baead94fc09df`).
+- 메인 조건 2 판정(판정 82~84행): red-04의 S3 피복판과 `Drawn` 두 줄은 요구를 약하게 만들지 않았다. 과거 PNG 재현은 첫 프레임 내부 대용이라는 한계가 있다.
+- 완료조건: A1~A3·B1~B5·E1~E4·F2 통과. A4·B7은 독립 외관 통과이고 사용자 확인이 남았다. B6은 시험 부분 통과이고 녹화 실주행이 남았다. D1은 V-02였다. F1·C1~C7은 녹화 단계다.
+- 비차단 관찰 D-01: 로컬 붙임 뒤 registry가 로컬 순서를 한 번 더 매긴다. 성능 손해는 측정하지 않았고 지금 구조를 유지한다(리드 결정).
+- 리드 결정: 검증자가 쓴 판정용 시험 두 파일(`DemoUiFinishVerifyRenderOrderTests`는 여러 몸 렌더러 정렬, `DemoUiFinishVerifyLoginPathTests`는 실제 자동 진행 login → character list)을 남겨 PR1에 넣는다. U3에서 통과했고 재검증이 다시 본다.
+- 다음: V-01은 제품 파일이라 새 구현자(`fix-01`)가 주석만 고친다. 그 뒤 새 검증자(`verify-02`, 약 등급)가 고친 commit을 실사하고 최종 HEAD에서 전체 EditMode·PlayMode를 다시 돈다.
 
 ## 다음 계획 후보
 
