@@ -4,13 +4,13 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 구현 `impl-02`(계약 `lead/impl-contract-02.md`)를 연다. 그 뒤 독립 검증 `verify-03`(강, 머리 초안 `lead/verify-contract-03-head.draft.md`, 초상 시험 17항목·H3·양피지 판정 변경의 약화 여부 판정 포함) → PR2 순서다. 녹화 빌드·재녹화는 PR2 병합 뒤다(진행 기록 「2026-11-07 선행 시험 고침 red-06 U1」).
+**다음 첫 일:** 시험 고침 `red-07`(머리 초안 `lead/red-contract-07-head.draft.md`, R05-T02·T03)을 연다. 그 뒤 독립 검증 `verify-03`(강, 머리 초안 `lead/verify-contract-03-head.draft.md`) → PR2 순서다. verify-03은 초상 시험 17항목·H3·양피지 판정 변경·R05-T02·G1 넘침 표시 단정 변경의 약화 여부를 판정한다. 녹화 빌드·재녹화는 PR2 병합 뒤다(진행 기록 「2026-11-07 구현 impl-02 U2b」).
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
 - 범위 초안 v3(자동 진행기 화면 머무름 2.5초)는 메인이 A와 함께 허가했다(`msg_1f83e3674ddf`). 원문은 같은 폴더 `lead/scope-draft-v3.md`(sha256 `1e4ba0f162b8aa1d0fef369b3a9280030daa6b3398f4761f5591574fa916c460`)다.
 - 기준선 U0은 끝났다(진행 기록 「2026-11-06 기준선 U0」).
-- 열린 결정: 없음. 로그인은 안 1, 초상은 B(사각 칸)로 정해졌다(162, 「적용 중인 사용자 결정」). 기존 시험 단정 변경은 PR1 21행(`msg_724556cd0dc5`)과 PR2 초상 17항목(`msg_d314f4fa567e`)을 메인이 승인했다.
+- 열린 결정: 없음. 로그인은 안 1, 초상은 B(사각 칸)로 정해졌다(162, 「적용 중인 사용자 결정」). 기존 시험 단정 변경은 PR1 21행(`msg_724556cd0dc5`), PR2 초상 17항목(`msg_d314f4fa567e`), red-05 G1 넘침 표시 단정과 R05-T02(`msg_e64ef321d66d`)를 메인이 승인했다.
 - 근거 폴더: `.backups/verification/2026-11-06-hud-portrait-login-rerecord/`.
 
 | 항목 | 현재 |
@@ -39,6 +39,7 @@
 - 162(PR2 보충 목업 확인, 메인 전달 `msg_f06c21b045a1`): 「대시보드 결정 응답: 1) 계획 검토 - Content 162 - 초상을 금색 원 고리 다듬기(A)로 갈지 사각 칸(B)으로 바꿀지 (로그인은 가운데 정렬 안 1) → B 사각 칸 (초안 msg_43048f6612f3)」. 로그인은 안 1, 초상은 B다. 값은 「(바)」의 로그인·초상 줄이다.
 - 초상 B 기존 시험 단정 17항목(메인 결정 `msg_d314f4fa567e`, 요구가 사용자 162 B로 바뀐 것): 원문 `lead/pr2-portraitB-test-changes-v1.md`(sha256 `7596dbf4dba165e052134922db799f6938c87d4c127f8f9f9342b57b51971348`). 원 stencil 단정은 사각 `RectMask2D` 단정으로 바꾸고, 「틀은 잘리지 않음」·「그림이 칸 밖으로 나가지 않음」(A1)은 사각 기준으로 남긴다. 조건: 독립 검증이 「17항목 변경이 요구를 약화시켜 통과시킨 것이 아닌지」 판정한다(PR302 조건 2와 같은 방식). 특히 A1의 안쪽 사각 98/112 축소 계산이 제품 계산을 복제하지 않는지 본다.
 - 양피지 판정 방식 변경(메인 결정 `msg_96af2caf6add`): 그림을 끈 렌더에서 안쪽 사각 양피지 색 0, 켠·끈 렌더가 실제로 다름. R05-T01 화소 중심 포함·8836 단정에도 동의. 메인 원문: 「법사 sprite 자체에 양피지에 가까운 색이 있다는 원시 근거가 있어 요구를 약화한 것이 아니라 측정 대상을 바로잡은 것으로 본다. 독립 검증 약화 판정 목록에 이 줄도 넣어라.」
+- G1 넘침 표시 단정 변경과 R05-T02 고침(메인 결정 `msg_e64ef321d66d`, 리드 요청 `msg_0e37dc25f62d`): red-05 G1의 `isTextOverflowing` 단정을 「`isTextTruncated` 거짓 + 그린 글자 수 = 공백 아닌 글자 수」로 바꾼다. 잉크가 줄 칸 안·위아래 4px 이상이라는 실측 단정은 그대로다. 사용자 승인 값(줄 52·32pt)도 그대로다. 메인 원문: 「잉크가 줄 칸 안·위아래 4px 이상이라는 실측 단정이 그대로 남고, 잘림·빠짐 없음 단정이 더해지므로 요구를 약화하지 않는다. isTextOverflowing은 대체 글꼴의 줄 높이 때문에 실제 잘림 없이도 켜지는 표시라(PR302 전에도 켜짐) 요구의 측정으로 맞지 않다.」, 「R05-T02(초상 켠 뒤 isActiveAndEnabled 단정)도 동의. 두 건 모두 verify-03 약화 판정 목록에 넣어라.」 사본 `lead/main-msg_e64ef321d66d-g1-r05t02-approval.json`.
 - H3 단정 변경(메인 결정 `msg_a7f11d4df9f6`, 요구가 사용자 피드백으로 바뀐 것): `HudSkillSlotsSceneTests` H3의 판 (524,140)→(444,120), 칸 (112,112)→(96,96), `Centers` → (60,60)·(168,60)·(276,60)·(384,60). HUD 선행 시험 red-05는 로그인 확정을 기다리지 않고 연다. 로그인 수치는 확정 뒤 시험에 넣는다.
 - 캐릭터 겹침(사용자 직접 요청, 메인 pane 제출 2026-11-06T13:52:43.513Z 무렵, 메인 전달 `msg_8b8be28cab0e`): 「그리고 각각 캐릭터가 겹쳐있을때 Z-파이팅이 일어나는데 각각 시작위치를 다르게 하던가 그 부분을 해결해줘」. 재녹화 전에 고친다(메인 지시). 방법은 범위 초안 v2와 아래 「범위 초안 v2 처분」 절이다.
 - 파티 구간 분할화면(사용자 직접 요청, 메인 pane 제출 2026-11-06T14:22:53.288Z 무렵, 메인 전달 `msg_89fbb9ec5651`): 「그리고 파티플레이 설명에는 잠시 좌우 분할화면으로 같이 플레이 한다는 느낌을 살짝 보여주면 좋을 거 같아」. 적용은 아래 「파티 구간 두 화면 동시 녹화」 절이다.
@@ -236,7 +237,7 @@
 - [x] 화면 세 가지 구현
 - [x] 독립 검증
 - [x] PR1 병합
-- [>] PR2 칸 크기 조절(선행 시험 red-05)
+- [>] PR2 칸 크기 조절(구현 impl-02 끝, 시험 고침 red-07)
 - [ ] 녹화 빌드
 - [ ] 세 회차 녹화
 - [ ] 편집 자료 전달
@@ -382,6 +383,19 @@
 - 시험 작성자 `[Content 시험 Astra]`(`task_1b186061a323`), 계약 `lead/red-contract-06.md`(sha256 `e2513aa615eb5165bea68b2ba5656bc859f30c50e2bd5927a191cf8bb6a8bcaf`), 보고 `red-06/report.md`(sha256 `9dfd2536d901052f6a1c3c0e0a96c2c6119283af59037d094ef522ade762e881`), worker_done `msg_57047285066f`. 시험 commit `aa720f31`. 새 pane 첫 화면 업데이트 선택창은 메인이 「2. Skip」으로 넘겼다(R-6, `msg_96af2caf6add`).
 - Unity 창 10(메인 허가 `msg_b344aeeff8ec`, HEAD `061efc96`): `HudPanelSizingRenderTests` 5건 실패 4·통과 1(`red-06/u1/`). 리드가 결과 XML을 직접 읽었다. 고친 초상 두 건은 검사 수 8836과 켠·끈 렌더 차이(기사 4969·법사 5932화소) 단정을 통과하고, 끈 렌더 양피지 0 요구에서 실패했다(끈 렌더 양피지 같은 색 6540화소, 켠 렌더 기사 1610·법사 655). G1 두 건은 red-05와 같은 이유로 실패하고 G4는 통과했다. 새 시험 결함은 없다.
 - Unity 자동 변경(`ProjectSettings.asset` 한 줄, `MinimapRT.renderTexture` 줄 끝)은 리드가 되돌렸다(`lead/red06-drift-restore-01.txt`).
+
+### 2026-11-07 구현 impl-02 U2b
+
+- 구현자 `[Content 구현 Astra]`(`task_dd871a82b958`, Dispatch `ctx_41f3e98fd18c`), 계약 `lead/impl-contract-02.md`(sha256 `f9294749487a0b7db25f2b2aec731bfa9d084200741bf08ef55414c36e13d588`), HEAD `17428189`. 새 pane 첫 화면 업데이트 선택창(0.166.0 → 0.167.0)은 메인이 「2. Skip」으로 넘겼다(R-6, `msg_a3871bbd7384`). worker_done `msg_6926ebf141fe`(outcome failed, 「제품 구현 완료, 남은 실패 6건은 시험 결함 R05-T02·T03(red-07 몫)」). 보고 `impl-02/report.md`(sha256 `541269cc554e455358b7377bc24a39d22a144f888ca46770b5bdd7d15e53baef`). 구현 commit `b69a6341`. pane은 리드가 21:31:29Z에 닫았다(`lead/impl02-pane-close-01.json`).
+- 바꾼 곳: `UI.unity` 값 줄 36쌍(표 `impl-02/ui-unity-changed-lines.md`), `HudLayout.cs`(초상 B: Inset 액자와 98×98 `RectMask2D` 안의 바탕·그림, 원 링 텍스처와 `OnDestroy` 정리 제거), `MainMenuLoginView.cs`(로그인 안 1 값), `client.md`. NPC 대화의 원 링은 그대로다.
+- Unity 창 11(메인 허가 `msg_184e191b72b2`, 시한 21:41:00Z): 첫 시도 U2는 Unity를 띄우기 전 시한 검사에서 멈췄다. 호출 쪽이 ISO 시한을 `ConvertFrom-Json`으로 다시 읽어 Z를 잃었다(red-03과 같은 함정, Unity 0). 리드가 같은 창·시한으로 u2b를 허가했다(`msg_37436c64994d`).
+- U2b: EditMode 1857건 통과 1853·실패 4, PlayMode 305건 통과 255·실패 2·건너뜀 48(건너뜀 이름 U4와 같음). red-05·red-06 RED 21건 중 15건이 통과로 바뀌었다. 리드가 두 결과 XML을 직접 읽었다. commit 직전 구현 4파일의 해시는 u2b 입력 기록 `impl-02/u2b/playmode-inputs.json`과 같다. 창 끝 구현자 관측 21:21:05Z Unity 0·Windows dotnet 0. 자동 변경은 리드가 21:26:29Z에 되돌렸다(`lead/impl02-drift-restore-01.txt`).
+- 남은 실패 6건은 모두 red-05 시험 결함이고 제품은 바꾸지 않는다(리드 처분 `msg_e55b3287e991`).
+  - R05-T02(EditMode 4건): `HudPortraitClipTests` T1(91행)과 `HudPanelSizingSceneTests` PortraitCell(163행)이 숨긴 초상에 `isActiveAndEnabled`를 단정한다. `status_icon1·2`는 직업 확정 전 숨김이라 `m_IsActive: 0`인데 두 시험은 초상을 켜지 않는다. 같은 파일 T2는 140~141행에서 켠 뒤 잰다. RED 때는 앞의 「PortraitClip 없음」 실패에 가려졌다.
+  - R05-T03(PlayMode G1 2건): 잉크 실측은 통과다(줄 480×52, 잉크 높이 33, 위 10·아래 9px). 실패는 `isTextOverflowing`뿐이다. 한글은 TMP 전역 대체 글꼴 `Pretendard SDF Proper`(기준 40pt, 줄 위 60.9·아래 15.4)로 그려져 32pt 줄 높이가 약 61px이고 52px 줄 칸보다 크다. 장면 넘침 모드는 Overflow(0)라 잘리는 글자는 없다. PR302(28pt·46 칸)에서도 이 표시는 켜져 있었다. 이 단정은 goal G1·범위 초안·red-05 계약에 없고 작성자가 더했다.
+  - 처분: 메인 결정 `msg_e64ef321d66d`(「적용 중인 사용자 결정」). 고침은 새 시험 작성자 작업 red-07이 한다.
+- **R05-T02·T03(시험 작성 결함, 리드 검토 누락, 첫 발생):** 교정 층은 첫 발생이라 이 기록만 남긴다. 리드는 이후 시험 계약에 「숨김이 기본인 객체는 켠 상태를 먼저 만든 뒤 표시 상태를 단정한다」와 「TMP 넘침 표시는 대체 글꼴 줄 높이로 잘림 없이 켜질 수 있어 잘림 판정에 쓰지 않는다」를 적는다.
+- 1920×1080 실제 렌더 캡처: 메인 요청 목록 9장의 경로·SHA256을 메인에 보냈다(`msg_5030796ae6e9`). 전체 46장 목록은 `impl-02/u2b/analysis/capture-hashes.json`이다.
 
 ## 다음 계획 후보
 
