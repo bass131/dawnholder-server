@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 진짜 녹화 실행자 `[Content 구현 Astra]`가 준비 self-test를 모두 통과하고 R2 신호를 기다린다(진행 기록 「2026-11-06 진짜 녹화 실행자 준비됨」). 리드는 메인에 준비됨을 알렸다(`msg_15d8acba562c`). 메인이 「서버 떴음」을 보내면 계약 「단계 신호와 알림」의 R2 신호를 원문 그대로 보낸다. 근거 줄에는 메인 메시지 ID만 넣는다. R4-1 끝 알림의 `firstFrameBeforeCharacterList`가 false면 R4-2 전에 멈추고 메인에 올린다. 리허설 v2 독립 검증의 D1·D2·D5는 메인이 A(기록으로 수용)로 처분했다(`msg_d79eebc3d94c`). D3는 정정 파일로 받았다.
+**다음 첫 일:** 진짜 녹화 두 회차는 끝났다(진행 기록 「2026-11-06 진짜 녹화 두 회차」). 독립 검증은 불합격이다(차단 D1~D7, 모두 절차·보고). 녹화 원본은 바뀌지 않았다(진행 기록 「2026-11-06 진짜 녹화 v3 독립 검증」). 메인의 결정 2·결정 3 답을 기다린다(`msg_21710ff7c329`·`msg_65cffa63216b`). 결정 2는 서버 창 preview 가림이고, 결정 3은 불합격 7건 처분과 편집 착수다. 답을 받으면 여기와 진행 기록에 적고 commit·push한다. 그다음은 Gardener와 종료 기록 PR이다(「PR 경계와 순서」 4).
 
 - 녹화 빌드는 끝났고 Core에 확정값을 넘겼다(`msg_c8dd2ae6e315`, 진행 기록 「2026-11-05 녹화 빌드」). 독립 판정은 불합격(차단 D1·D3, 절차·원시)이었고, 메인이 수용 A로 처분했다(`msg_b50c04ca0c08`). 재빌드는 없다.
 - 녹화 빌드 기준 다섯 PR이 모두 main에 들어갔다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35`), Core 24칸(#295, `fbf00de9a57fb26baaef89c12daa7d84ace92631`, 11-04 12:13:47Z), Art PR2(#297, `cfe8bb45c0e63820deccbb5c364e461768f09c1e`, 11-05 16:57:26Z).
@@ -14,7 +14,7 @@
 - Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다. 종료 기록의 다음 후보에 Content 시험 `GuildGrowthEffectConsumerLifecycleTests` 705행 `HudReferences`의 `Gold_bar`(PR #297로 HUD에서 빠짐, 찾지 못하면 로그만 남김) 정리를 더한다.
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
-- 열린 결정: 지금 사용자 결정 대기는 없다. 리허설 v2 독립 검증의 D1·D2·D5는 메인이 A로 처분했다(`msg_d79eebc3d94c`, 진행 기록 「2026-11-06 리허설 v2 독립 검증 판정」). 135는 A(초안 그대로)로 답을 받았다(「11-06 사용자 결정 135 A」 절). 129 A·130 A·131 C와 녹화 자동화 지시는 「11-06 사용자 결정」 절이다. 리드가 정한 v2 설계는 메인이 리허설 한정으로 받았다(`msg_25e147f44c7f`). 진짜 녹화 순서(회차 사이 서버 재시작)와 1회차 상대 마법사의 새 이름은 Core가 리허설 결과와 함께 한 글로 메인에 올린다(Core `msg_b28231a86423`, 리드 동의 `msg_5e1339c81084`). 리허설 결과와 v3 입력은 리드가 Core에 넘겼다(`msg_c277074f6a51`). Core가 종합 결정 요청 두 건을 올렸다(`msg_25dbd7e547fa`, Content 사본). 1은 진짜 녹화 순서로, 추천 A는 회차 사이 재시작이며 새 이름 초안은 `rec_ally_mage`·「새벽동료」다. 2는 녹화 시작 늦음으로, 추천 A는 녹화 스크립트만 고치는 것이다. 두 추천 모두 리드 추천과 같다. 사용자가 133 A·134 A로 답했다(「11-06 사용자 결정 133 A·134 A」 절). 새 이름은 135 A로 초안 그대로다. Core가 카드 v6(Core `msg_c946082e5b5b`)의 이름 칸을 채웠다(Core `msg_3a756dd537ba`).
+- 열린 결정: 지금 사용자 결정 대기는 없다. 메인 결정 대기는 위 결정 2·3이다(사용자 확인 범위 밖이라 메인이 정한다, 「11-06 사용자 확인 범위」 절). 리허설 v2 독립 검증의 D1·D2·D5는 메인이 A로 처분했다(`msg_d79eebc3d94c`, 진행 기록 「2026-11-06 리허설 v2 독립 검증 판정」). 135는 A(초안 그대로)로 답을 받았다(「11-06 사용자 결정 135 A」 절). 129 A·130 A·131 C와 녹화 자동화 지시는 「11-06 사용자 결정」 절이다. 리드가 정한 v2 설계는 메인이 리허설 한정으로 받았다(`msg_25e147f44c7f`). 진짜 녹화 순서(회차 사이 서버 재시작)와 1회차 상대 마법사의 새 이름은 Core가 리허설 결과와 함께 한 글로 메인에 올린다(Core `msg_b28231a86423`, 리드 동의 `msg_5e1339c81084`). 리허설 결과와 v3 입력은 리드가 Core에 넘겼다(`msg_c277074f6a51`). Core가 종합 결정 요청 두 건을 올렸다(`msg_25dbd7e547fa`, Content 사본). 1은 진짜 녹화 순서로, 추천 A는 회차 사이 재시작이며 새 이름 초안은 `rec_ally_mage`·「새벽동료」다. 2는 녹화 시작 늦음으로, 추천 A는 녹화 스크립트만 고치는 것이다. 두 추천 모두 리드 추천과 같다. 사용자가 133 A·134 A로 답했다(「11-06 사용자 결정 133 A·134 A」 절). 새 이름은 135 A로 초안 그대로다. Core가 카드 v6(Core `msg_c946082e5b5b`)의 이름 칸을 채웠다(Core `msg_3a756dd537ba`).
 - 빌드 계약 입력: PR-A·PR268·Art 인벤토리 격자 PR1·Core 인벤토리 24칸 PR·Art PR2 병합(다섯 완료, `msg_d0012352013c`·`msg_d783ac17eb63`·`msg_d0250483d004`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
 
@@ -506,3 +506,31 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 배치 self-test 3차: 통과다. 리드가 `run-01/layout-selftest.json`에서 읽은 값은 `passed` true, `startupGate` 「C13 firstObserved→firstFrame」, 측정 1.3760605초, 기준 1.9초다. 기준 입력은 R4-1 기사 3.0초·R4-2 마법사 2.9초다. 창 배치 다섯 칸 true, hwnd·크기 변화 0/0, 재시작 0, 오류 null이다. 옛 기준 관찰은 OS 시작 → 창 첫 관측 1.4825624초, OS 시작 → 첫 프레임 상한 2.8586229초다. 창 앞 구간 흔들림(1.43·9.11·1.48초)은 원인 미상이라 녹화 뒤 검증 계약에 관찰로 넣는다.
   - 「준비됨」: `msg_5d077e83a46f`(여덟 줄, 원문 `lead/executor-msg_5d077e83a46f-ready.txt`). dry-run 두 회차가 통과했고 실제 회차 실행은 0이다. 실행자는 `signals/wait-r2-01/`에서 R2 신호를 기다린다. 리드가 메인에 알렸다(`msg_15d8acba562c`).
   - 계약 밖 알림: Core 리드가 서버 계약 v1.2 §7 한 문장을 고쳐 sha256이 `99f641b4469943384027c4446dddf92b3270e7d94e3f3c3b9a5a315f2de5d56a`로 바뀌었다(Core `msg_dc6de0f78a62`). v3는 그 문장을 쓰지 않아 영향이 없고, 실행자에게는 기록만 하라고 알렸다.
+- 2026-11-06 진짜 녹화 두 회차
+  - 서버 손: 137 A에 따라 메인이 R3·R5·R6·R8을 대행했다. 리드는 메인 「서버 떴음」(`msg_f4585a655ece`)을 받고 R2 신호를 보냈다(`msg_d5aa979fee09`, 01:09:53Z). 메인 재기동 알림(`msg_a4ef37820229`)을 받고 2회차 신호를 보냈다(`msg_00b5962d5f99`, 01:13:50Z).
+  - 서버 창 8줄: 메인 `msg_0496a60fc54e`(원문 `lead/main-msg_0496a60fc54e-r8-stop.txt`). 두 정지 요약 모두 queueDropped·decodeErrors·readerErrors 0이고 drained True다.
+  - R4-1(기사 녹화, 마법사 숨김): 끝 알림 `msg_de32dbd79892`. `firstFrameBeforeCharacterList` true다. `rec_knight`·`rec_ally_mage` 둘 다 새로 만들었고, 두 로그 모두 step 14에서 끝났다. 배치 다섯 칸 true, 재시작 0이다.
+  - R4-2(마법사 녹화, 기사 숨김): 끝 알림 `msg_34ce5fff8a95`. `firstFrameBeforeCharacterList` true다. `rec_mage`는 새로 만들었고, 기사는 R4-1 캐릭터를 다시 골랐다. 숨긴 기사 로그는 step 13에서 끝났다.
+  - 실행자 질문 `msg_7030fe44e9cd`: parse-03 뒤 만든 launcher 16개가 ParseFile 기록에 빠졌다. 리드가 늦은 검사 1회를 허락했다(`msg_28c28af1d7db`). parse-04는 55파일 오류 0이다.
+  - 완료: worker_done `msg_b3c26e551197`(outcome succeeded, 보고 `recording-build-01/recording/run-01/report.md`). 실행자 pane `term_e29e3fa7-387c-4938-b39f-11bc406e4400`을 닫았다(`lead/close-recording-executor-v3-01.json`, ptyKilled true).
+- 2026-11-06 진짜 녹화 v3 리드 판정
+  - 판정: `lead/recording-v3-lead-judgement.md`(sha256 `e0653945d617c8a46edb84f64a09f083ad420835fd5a126156a74c55f15a4628`). 두 회차 모두 첫 프레임·생성·매체·배치를 통과로 봤다.
+  - step 13 원인(메인 확인 요청): R4-2 기사는 R4-1 캐릭터를 다시 골라 생성 단계가 없다. 그래서 단계 번호가 하나 당겨졌다. 거점 단계는 12단계 `stronghold level=2`로 실행됐다. 「already max」는 네 로그 모두 0이라 「거점 이미 최대」는 원인이 아니다. 검증자도 같은 결론이다.
+  - 관찰(영상 영향 없음): 같은 기사인데 회차 사이 서버 재시작 뒤 거점이 다시 1→2로 올랐다. 길드 거점 레벨이 재시작 뒤 남지 않는 것으로 보이지만 코드로 판정하지 않았다. 종료 기록의 다음 후보로 둔다.
+  - 대상 스냅샷: `lead/recording-v3-target-manifest-01.json`, 1022파일, 156,015,213 bytes, 2026-11-06T01:43:03.743Z다.
+  - 정오표: 독립 검증이 리드 판정의 D4·D5·D6을 찾았다. `lead/recording-v3-lead-judgement-errata-01.md`(sha256 `255e6d661c9956f78c4dfce7eba1c83affe0e964a97a084462c1c1732cfe230b`)로 바로잡았고 원문 판정은 고치지 않았다. 값은 `lead/extract-recording-v3-errata-values-01.cjs`가 원시에서 다시 뽑았다. 시각은 100ns 정수 차로 계산했고, 대상은 `target: true`로 골랐다. 첫 프레임 여유는 4.8912756초·4.4714473초다.
+- 2026-11-06 진짜 녹화 v3 독립 검증
+  - 서버 창 preview 발견: `orca terminal list --json`의 preview 칸에 서버 창 출력이 들어 있었다. 검증 계약 v1은 그 파일을 입력으로 넣고 있어서 보내지 않았다. 가린 사본 둘(`lead/terminal-list-after-recording-executor-close-01.redacted.json`, `lead/recording-executor-first-screen-01.model-lines.json`)로 바꾸고, 터미널 목록·화면 원본을 열지 말라는 금지를 넣었다.
+  - 계약: `lead/recording-v3-verify-contract-v2.md`(sha256 `8d5adf9483952fc0d6d0d4f96f740710edd9756de322eb5fcb7e071ad9be9cd4`, 701줄, MISSING 0). 포인터는 `lead/recording-v3-verify-contract-v2-pointer.md`(sha256 `415417f55086174f1cda799f93eebef40a272a978dad7424142f34a16e626adb`)다.
+  - 검증자: `[Content 검증자]`, task_3536110298a4 / ctx_e1d38dabbd61, pane `term_e8afc8d5-8705-4e49-a454-0496e4d5dc87`(split 2026-11-06T01:55:00Z). 기동 명령은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh --disable fast_mode`다. 첫 화면 모델 줄은 「GPT-6-Astra xhigh」다(`lead/recording-v3-verify-first-screen-01.model-lines.json`). 백엔드 실제 모델은 unknown이다. 검증자 질문 `msg_4ab619294633`(자기 첫 화면 모델 근거)에는 이 모델 줄 사본으로 답했다(`msg_cce2710e9cd0`).
+  - 판정: 불합격(worker_done `msg_38803d9aa6cb`). 원문은 `recording-v3-verify-01/verdict.md`(sha256 `227f27174a732e1f7a7d906be3c0f3a652592133ce5764979d38d00645a7500b`, 378줄)다. 대상 1022파일의 SHA256은 모두 같다. 첫 프레임·생성·매체·배치·금지 호출 0은 검증자가 다시 재어 통과했다. 검증자는 「녹화 원본 폐기나 재실행을 요구한다는 뜻은 아니다」라고 적었다.
+  - D1(차단, 실행자 절차): launcher 16개가 실행 전 ParseFile 목록에 없었다. 뒤의 parse-04는 소급 면제가 아니다.
+  - D2(차단, 실행자 절차): consume-02 launcher를 PowerShell 파일 API로 복사했다. 계약의 파일 쓰기 도구 지정과 다르다.
+  - D3(차단, 실행자 보고): 보고 156·340행의 gap 시각 `+09:00` 서술이 원시와 다르다. 원시는 `+00:00`이다.
+  - D4·D5·D6(차단, 리드 판정과 검증 계약): R4-2 대상 시작 시각 오기, ms 절삭 여유·소리 자름 범위, `+09:00` 서술을 원시 대조 없이 옮긴 것이다. 위 정오표로 바로잡았다.
+  - D7(차단, 검증자 자신): heartbeat 한 구간이 322.222초로 300초를 넘었다. 첫 heartbeat 송신 시각도 저장하지 못했다.
+  - R-2 표본: 리드가 D1·D3·D4·D7을 원시로 확인했다(메인 결과 보고 2절).
+  - 정산: 검증자 pane을 닫았다(`lead/close-recording-v3-verify-01.json`, ptyKilled true). 남은 Content 작업자 pane은 0이다(`lead/terminal-list-after-recording-v3-verify-close-01.redacted.json`).
+  - 메인 보고: 기동 알림 `msg_21710ff7c329`에 결정 1(편집 선착수)과 결정 2(리드 터미널 목록 파일 일곱 개의 서버 창 preview 가림)를 실었다. 결과 보고 `msg_65cffa63216b`에 결정 3(불합격 7건 처분과 편집 착수)을 실었고 결정 1은 거기에 합쳤다. 리드 추천은 둘 다 A다. 결정 3 A는 원본 유효 확정, D1·D2·D3·D7 기록 수용, D4~D6 정오표와 메인 R-2 대조로 닫기, 검증자 표로 편집 보조 착수다.
+  - 편집 보조 인계 표: 검증 판정 「영상 편집 보조에게 넘길 파일」 절(verdict.md 342~378행)이다. 영상 둘·소리 둘의 bytes·SHA256, 정지 화면(`recording-v3-verify-01/stills-sha256.json`), 소리 자름 범위, 생성 창 프레임을 담았다.
+  - 반복 발생(규칙 후보, 11-09 뒤 Rules에 요청): 리드 판정 수치 오류는 리허설 v2 D3에 이어 두 번째다. 후보는 원문 정밀도의 정수 차 계산, 원시 대상 표식으로 행 고르기, 남의 보고에서 옮긴 사실의 원시 대조다. 검증자 heartbeat 300초 초과도 리허설 v2 D5에 이어 두 번째다. 계약에 대책을 넣었는데도 일어났다. 검증자 진단은 같은 도구 호출 첫머리의 heartbeat가 긴 입력 작성 뒤에야 실행됐다는 것이다. 후보는 긴 작성 전 별도 호출 heartbeat와 자동 heartbeat다.
