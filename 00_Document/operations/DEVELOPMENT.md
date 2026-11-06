@@ -40,6 +40,94 @@ wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh bot DashSmoke
 
 WSL 빌드는 Windows 원본 Unity DLL을 갱신하지 않는다. DLL 반영은 Windows 빌드 또는 별도로 정한 검증·배포 범위에서 수행한다.
 
+## DB 영속 서버 실행
+
+캐릭터 목록·생성·선택 화면은 DB 영속 서버에서만 뜬다. `run-server.bat`의 Legacy 서버는 DB 없이 돌아서 캐릭터 메뉴 요청에 `CharacterMenuResult.LegacyFlowOnly`로 답하고, 클라이언트는 장면의 직업 버튼 흐름으로 간다. 캐릭터 화면을 보거나 시험할 때는 아래 순서로 영속 서버를 띄운다.
+
+### 전제
+
+- 일반 권한의 PowerShell 7 창. launcher `99_Tools/Start-PersistenceServer.ps1`은 7.0 미만에서 실행되지 않는다.
+- WSL Ubuntu와 [환경](#환경)의 WSL 도구.
+- 실행 중인 SQL Express 서비스. 이 절의 명령은 서비스를 시작하거나 바꾸지 않는다.
+- 서버를 띄울 그 checkout 안 `logs/windows-sql-<id>/`의 공개 profile `profile.json`과 공개 CA `public-ca.pem`. launcher는 자기 checkout 밖의 profile을 받지 않는다. 만드는 법은 [Windows SQL 실행 카드 §5](../../99_Tools/database/windows-sql/README.md#5-runtimeprofile계획을-만들고-고정한다)와 [§7](../../99_Tools/database/windows-sql/README.md#7-실제-저장재접속정상-종료는-별도-관측)을 따른다.
+- 사용자 본인의 Windows DPAPI 자격 파일.
+
+자격 파일 경로는 사용자만 서버 창에 입력한다. AI 세션은 그 파일의 내용·존재·크기·hash를 확인하지 않고, 서버 시작과 정지 Enter를 대신하지 않는다.
+
+### 시작과 정지
+
+영속 서버도 `0.0.0.0:7777`을 쓴다. Legacy 서버와 동시에 뜨지 못하므로 먼저 7777을 쓰는 서버를 끈다. 다른 소유자의 서버는 그 소유자가 끄며 남의 프로세스를 대신 종료하지 않는다.
+
+Legacy 서버는 그 창(`Stop with Ctrl+C.`가 찍힌 창)에서 Ctrl+C를 한 번 눌러 끈다. Y/N 확인(`Terminate batch job (Y/N)?` 또는 `일괄 작업을 끝내시겠습니까 (Y/N)?`)이 나오면 `Y`와 Enter를 누른다. Enter는 영속 서버의 정지 키이며 Legacy를 멈추지 않는다.
+
+이어서 서버를 띄울 checkout 루트에서 빌드한다. launcher는 그 checkout이 소유한 WSL 복제본의 Debug `GameServer.dll`만 띄우며 스스로 빌드하지 않는다.
+
+```powershell
+wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh build
+```
+
+같은 checkout 루트에서 연 PowerShell 7 창에 아래 블록을 붙여 넣는다. 이 창이 서버 창이며 정지할 때까지 닫지 않는다. 입력 요청이 나오면 자격 파일의 전체 경로를 따옴표 없이 입력한다. 블록의 profile 폴더 이름과 `ExpectedPublicCaHash`는 현재 개발 DB 공개 profile의 값이다. 다른 profile을 쓰면 §5·§7에서 만든 값으로 바꾼다.
+
+```powershell
+$ErrorActionPreference = 'Stop'
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    throw 'PowerShell 7 창에서 실행하세요.'
+}
+$serverRoot = (Get-Location).Path
+$publicRoot = Join-Path $serverRoot 'logs\windows-sql-8256bcde8c80478494bcefb9cdfaf4f6'
+$credentialPath = Read-Host '본인이 보관한 DB 자격 파일 전체 경로'
+$serverArgs = @{
+    ProfilePath = Join-Path $publicRoot 'profile.json'
+    CredentialPath = $credentialPath
+    PublicCaPath = Join-Path $publicRoot 'public-ca.pem'
+    ExpectedPublicCaHash = '0BD1909D4884B91830E775065B14DFEFA292B19F2B67D678A93944094A60CAF3'
+    EmptyCaDirectory = Join-Path $publicRoot 'empty-ca'
+}
+New-Item -ItemType Directory -Path $serverArgs.EmptyCaDirectory -Force | Out-Null
+Set-Location -LiteralPath $serverRoot
+& .\99_Tools\Start-PersistenceServer.ps1 @serverArgs
+```
+
+정상 시작이면 아래 세 줄이 차례로 나온다. PID와 시각은 실행마다 다르다. 시각은 `2026-10-31T09:52:16.6444165Z`처럼 UTC로 찍힌다(2026-10-31 실측).
+
+```text
+Owned WSL process PID <PID>, birth UTC <UTC 시각>.
+Persistence server process launched; press Enter to request normal shutdown
+[Persistence stdout <UTC 시각>] Listening on 0.0.0.0:7777. Press Enter to stop.
+```
+
+launcher는 서버 출력 중 네 줄만 이 창에 옮기고, 옮길 때 앞에 `[Persistence <stdout|stderr> <UTC 시각>]`을 붙인다. 표준 출력에서는 `Listening on 0.0.0.0:7777. Press Enter to stop.`과 `Server stopped.`이고, 표준 오류에서는 [실패할 때](#실패할-때)의 서버 문구 두 줄이다. 그 밖의 서버 출력은 플레이 중 로그를 포함해 이 창에 나오지 않는다.
+
+정지는 서버 창에서 Enter를 한 번 누른다. 그러면 아래 세 줄이 차례로 나온다.
+
+```text
+[Persistence stdout <UTC 시각>] Server stopped.
+Persistence output stdout: excluded=<수>, overlong=0, queueDropped=0, decodeErrors=0, readerErrors=0, drained=True.
+Persistence output stderr: excluded=<수>, overlong=0, queueDropped=0, decodeErrors=0, readerErrors=0, drained=True.
+```
+
+뒤 두 줄은 launcher가 표준 출력과 표준 오류마다 남기는 요약이다. `excluded`는 위 네 줄에 해당하지 않아 이 창에 옮기지 않은 서버 출력 줄 수다. 이 값은 정상 종료 판단에 들어가지 않으므로 0보다 커도 정상이다. 블록의 0과 `drained=True`는 2026-10-31 정상 정지에서 나온 값이다. `overlong`·`queueDropped`·`decodeErrors`·`readerErrors` 중 하나라도 0이 아니거나 `drained=False`면 launcher는 정상 종료로 보지 않고 [실패할 때](#실패할-때)의 launcher 문구로 끝난다.
+
+`Server stopped.`와 요약 두 줄이 나오고 PowerShell 입력 화면으로 돌아오면 끝난 것이다. 창 닫기나 프로세스 강제 종료로 대신하지 않는다. Legacy로 돌아가려면 그 뒤에 Legacy를 띄우던 창에서 `run-server.bat`을 다시 실행한다.
+
+### 실패할 때
+
+서버 문구 두 줄은 [시작과 정지](#시작과-정지)에 적은 접두가 붙어 보인다. launcher 문구는 launcher가 어느 단계에서 실패해도 같다. 그런 단계에는 profile 위치·빌드된 복제본·공개 CA 검사, 자격 읽기와 전달, 서버 프로세스 시작과 종료 코드 확인, 출력 수집이 있다.
+
+| 화면 문구 | 뜻 |
+|---|---|
+| `[Persistence stderr <UTC 시각>] Persistence startup failed. Check the approved public profile and runtime access.` | 서버가 시작하지 못했다 |
+| `[Persistence stderr <UTC 시각>] Server shutdown is incomplete; persistence release is not confirmed.` | Enter 뒤 정상 종료와 DB 쪽 반환(release)을 확인하지 못했다 |
+| `Persistence launcher did not complete; confirm child-process state before another approved attempt.` | launcher 쪽 검사나 실행이 어디서든 실패했다. 원인 문구는 보이지 않는다 |
+
+어느 문구든 다시 시도하지 않고 화면 그대로 보고한다. launcher도 불확실한 자격 전달이나 종료 뒤에는 재시도하거나 서버 프로세스를 끄지 않는다. Enter 뒤 입력 화면으로 돌아오지 않을 때도 그대로 보고하고 기다린다.
+
+### DB에 남는 것
+
+게임 값 중 DB에 남는 것은 캐릭터(계정·칸·이름·직업)와 안전 지점(직업·마을 위치·최대 HP)이다. 두 값을 쓰는 저장 프로시저는 `99_Tools/database/modules/procedures/`의 `character_catalog.sql`과 `write_safe_checkpoint.sql`이다. 퀘스트 완료·보스 해금, 길드·금고, 금화, 무기 강화는 서버 메모리에만 있어 서버를 다시 켜면 처음 상태로 돌아간다. 스키마의 `dh.Guild`·`dh.CharacterWallet`·`dh.CharacterWeapon` 표는 쓰는 프로시저가 없고, `BossUnlocked` 열은 `write_safe_checkpoint.sql`이 항상 0으로 쓴다.
+
+캐릭터 삭제 경로는 서버·클라이언트 모두 없다. 그래서 시험으로 만든 캐릭터의 이름과 칸은 계속 차 있다. 이름은 계정을 가리지 않고 서버 전체에서 하나이며(대소문자 무시), 칸은 계정당 3개다.
+
 ## C# 서식 검사
 
 Windows 원본 Git에서 입력 manifest를 만들고 전용 WSL 복제본을 검사한다.
@@ -122,4 +210,4 @@ node 99_Tools/Orca/check-message.mjs .backups/수신입력.json
 
 ## 결과 해석
 
-검사 명령·환경·관찰 결과·생략 항목·원본 로그 위치를 목표에 기록한다. 서버·봇 통과와 Unity 에디터·게임 외관·SQL 연결을 구분한다. 이전 실행 수치는 [완료된 셋업 목표](../../01_Phases/goals/2026-09-29-codex-setup/goal.md)의 당시 근거이며 새 변경의 성공을 대신하지 않는다. 현재 main의 SQL 영속화는 구현 완료로 취급하지 않는다.
+검사 명령·환경·관찰 결과·생략 항목·원본 로그 위치를 목표에 기록한다. 서버·봇 통과와 Unity 에디터·게임 외관·SQL 연결을 구분한다. 이전 실행 수치는 [완료된 셋업 목표](../../01_Phases/goals/2026-09-29-codex-setup/goal.md)의 당시 근거이며 새 변경의 성공을 대신하지 않는다. SQL 영속화가 DB에 남기는 게임 값은 캐릭터와 안전 지점뿐이며, 나머지 진행은 서버를 다시 켜면 처음 상태가 된다([DB에 남는 것](#db에-남는-것)).

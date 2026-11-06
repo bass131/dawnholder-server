@@ -2,7 +2,7 @@
 
 인벤토리 칸 수를 8에서 24로 늘린다. 서버가 보내는 인벤토리 snapshot(36번)과 공유 칸 수 상수를 24로 바꾸고, 클라가 받는 쪽까지 같은 PR에서 맞춘다. 화면 격자(4열 × 6줄)는 Art가 만든다.
 
-**현재 상태(2026-11-04 22:13 KST):** PR295가 병합됐다(merge commit `fbf00de9`, 2026-11-04T12:13:47Z). 종료 Gardener는 미처분 제품 차단 0, 정리 후보 2개(둘 다 기존 BACKLOG 행의 추가 관측)로 끝났다. 종료 기록 PR은 PR296이다. 그 문서 실사 1차는 NOT PASS(낮은 문서 결함 CLOSE-01·02)였고 리드가 고쳤다. 남은 것은 수정본 재실사, PR296 병합, 종료 점검이다. 아래 「11-04 종료 기록 실사 1차」, 「11-04 종료 Gardener」, 「결과와 남은 위험」, 「종료 점검 준비」부터 읽는다.
+**현재 상태(2026-11-04 23:07 KST):** 이 goal은 끝났다. PR295가 병합됐다(merge commit `fbf00de9`, 2026-11-04T12:13:47Z). 종료 Gardener는 미처분 제품 차단 0, 정리 후보 2개(둘 다 기존 BACKLOG 행의 추가 관측)로 끝났다. 종료 기록 PR296은 문서 실사 1차 NOT PASS(낮은 문서 결함 CLOSE-01·02) 뒤 수정본 재실사 PASS를 받아 병합됐다(merge commit `5dd67b09`, 2026-11-04T14:00:45Z). 종료 점검은 리드가 `msg_0f1aa79e5418`로 보냈고 메인이 받았다(`msg_4b7239950d8f`). 리드 교체는 메인이 앞 goal이 끝날 때 다시 판단한다. 아래 「결과와 남은 위험」, 「종료 점검 준비」부터 읽는다. 이 줄과 진척 단계 8~10·「종료 점검 준비」의 실사 줄은 앞 goal 복귀 기록 commit에서 병합 뒤 사실로 고쳤다(메인 `msg_4b7239950d8f` 허용).
 
 ## 재개 지점
 
@@ -398,7 +398,7 @@ PR295 병합본(main `fbf00de9`) 기준이다. 근거 경로는 모두 `.backups
 - 종료 Gardener: 미처분 제품 차단 0, 후보 2개, 리드 반환 G-01 1건이다(위 「11-04 종료 Gardener」). 보고서는 [gardener.md](gardener.md)다.
 - 남은 한계: 직접 사람 플레이, 대화형 Editor, DB, permit lane, V3 스크린샷, 204바이트 직접 길이 로그는 실행하거나 관측하지 않았다.
 - 보존 자원: 이 goal은 DB 행을 만들지 않았다. 종료 기록에서는 Unity·WSL·DB·서버 실행이나 자원 삭제를 하지 않는다.
-- 종료 기록 문서 실사: 1차는 NOT PASS(CLOSE-01·02, `closeout-01/reviewer/verdict-v1.md`)였고 리드가 고쳤다. 신규 `[Core 검증자]` Astra high가 수정본을 재실사한다. PASS여야 PR296의 병합 준비 보고로 간다.
+- 종료 기록 문서 실사: 1차는 NOT PASS(CLOSE-01·02, `closeout-01/reviewer/verdict-v1.md`)였고 리드가 고쳤다(`6a5c53ad`). 신규 `[Core 검증자]` Astra high의 재실사는 PASS다(`closeout-01/fix-01/reviewer/verdict-v1.md`, 새 차단 결함 0). 그 뒤 PR296이 병합됐다.
 - 다음 계획 초안: 메인·사용자가 결과·남은 위험·BACKLOG를 확인한 뒤 정한다. 앞 goal(DB 영속 시연) 복귀는 메인 지시 `msg_c9f0b0c0f562`에 따른 기존 goal의 재개이며 새 goal 착수가 아니다.
 
 ## 진척 단계
@@ -410,6 +410,6 @@ PR295 병합본(main `fbf00de9`) 기준이다. 근거 경로는 모두 `.backups
 - [x] PR295 병합 — CI 4건 SUCCESS, PR 준비 보고 `msg_3461ddaf5f97`, merge commit `fbf00de9`(12:13:47Z, `msg_c9f0b0c0f562`)
 - [x] 로컬 결과 기록 — 「11-04 병합 결과」·「결과와 남은 위험」
 - [x] 종료 Gardener — 신규 Codex Sol max(101 A), 「11-04 종료 Gardener」
-- [>] PR296 병합 — 종료 기록과 `gardener.md`, 문서 실사 1차 NOT PASS(CLOSE-01·02) 수정, 재실사 남음
-- [ ] 종료 점검 — 메인 판단, 리드 교체는 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)
-- [ ] 앞 goal 복귀 — main `fbf00de9` 받기
+- [x] PR296 병합 — 종료 기록과 `gardener.md`, 문서 실사 1차 NOT PASS(CLOSE-01·02) 수정, 재실사 PASS, merge commit `5dd67b09`(14:00:45Z, `msg_32944fc24916`)
+- [x] 종료 점검 — `msg_0f1aa79e5418`, 메인 수신 `msg_4b7239950d8f`. 리드 교체([R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle))는 앞 goal이 끝날 때 메인이 다시 판단
+- [x] 앞 goal 복귀 — main `5dd67b09` 받기(앞 goal branch `867d967a`, [11-04 복귀](../2026-10-31-db-persistence-demo-build/goal.md#재개-지점))
