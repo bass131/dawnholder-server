@@ -33,6 +33,8 @@ namespace Dawnholder.Client.Demo
         const float MageReach = 4.5f;
         const float AttackInterval = 0.6f;
         const float MageSkillInterval = 3.5f;
+        // 화면 칸만(155 A), 영상에 가림 글자가 보이게. Never log or send this decorative field value.
+        const string DemoPassword = "demo2026";
 
         DemoLaunchOptions _options = null!;
         DemoKeyboard _keys = null!;
@@ -114,10 +116,11 @@ namespace Dawnholder.Client.Demo
         {
             yield return WaitFor(() => SceneIs("MainMenu") && FindFirstObjectByType<MainMenuController>() != null, 30f, "main menu");
             yield return new WaitForSeconds(1f);
-            foreach (TMP_InputField field in FindObjectsByType<TMP_InputField>(FindObjectsSortMode.None))
+            foreach (TMP_InputField field in FindObjectsByType<TMP_InputField>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             {
                 if (field.name == "AccountNameInput") field.text = _options.Account;
                 if (field.name == "ServerHostInput") field.text = "127.0.0.1";
+                if (field.name == "PasswordInput") field.text = DemoPassword;
             }
             FindFirstObjectByType<MainMenuController>()?.OnStartClicked();
             Log("login", _options.Account);
