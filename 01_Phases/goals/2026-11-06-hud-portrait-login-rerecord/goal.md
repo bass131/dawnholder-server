@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 시험 전제 보완 계약 `red-04`(머리 `lead/red-contract-04-head.md`)를 이 문서 commit에서 조립해 시험 작성자 `[Content 시험 Astra]`를 연다. 작성자가 draft를 다 쓰면 메인에 Unity 창 6을 청한다. 그 뒤 독립 검증 계약(머리 `lead/verify-contract-01-head.md`)으로 간다. 구현은 commit됐고 U2 결과와 처분은 진행 기록 「2026-11-06 구현 U2」에 있다.
+**다음 첫 일:** 독립 검증 계약(머리 `lead/verify-contract-01-head.md`, 입력 `lead/verify-contract-01-inputs.txt`)을 이 문서 commit에서 조립해 새 검증자 `[Content 검증자]`를 연다. 검증자가 준비되면 메인에 Unity 창 7(전체 EditMode·PlayMode)을 청한다. 구현과 시험 전제 보완 red-04는 commit됐다(진행 기록 「2026-11-06 구현 U2」·「… red-04 U1」).
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
@@ -209,8 +209,8 @@
 
 - [x] 범위 승인
 - [x] 선행 시험
-- [>] 화면 세 가지 구현
-- [ ] 독립 검증
+- [x] 화면 세 가지 구현
+- [>] 독립 검증
 - [ ] PR 병합
 - [ ] 녹화 빌드
 - [ ] 세 회차 녹화
@@ -282,7 +282,19 @@
   - U2-F02 `CharacterOverlapSortSceneTests.S3_EveryOverlappingPixelShowsLocalFor60Frames`(E2): 순서 값은 로컬 3·원격 2이고 S1·S2는 통과했다. 첫 프레임 겹친 표본 1618 중 128이 「로컬만」 판과 달랐고, 128 모두 로컬 실루엣 1화소 경계였다(내부 차이 0). 시험이 알파를 관측하지 않고 겹친 모든 화소가 같기를 단정한다.
 - 처분(리드, `msg_b04a27595db5`): 판정 시험을 구현자가 고치면 구현과 판정의 분리가 깨진다. 그래서 두 시험 전제 보완을 새 시험 작성자 작업 `red-04`로 떼어 낸다. 구현 commit은 이 상태로 남기고 제품은 바꾸지 않는다. S3는 로컬 몸의 불투명 피복을 같은 프레임에서 따로 관측해 완전 피복 표본만 같음을 요구한다(goal E2 「표본 픽셀」 안의 시험 설계 고침). 경계 깎기·허용 오차 올리기는 쓰지 않는다.
 - **R04-F01(리드 계약 결함, 첫 발생):** red-02 계약의 E2 판정이 렌더 화소의 알파 합성을 고려하지 않았다. R02-F01(런타임 주입 경로)과는 다른 종류다. 교정 층: 첫 발생이라 이 기록만 남긴다. 리드는 이후 화소 비교 계약에 표본의 피복(알파) 조건을 함께 적는다.
+- 메인 동의(`msg_f0cfb4e2eab5`, 조건 둘): 1) 고친 S3는 구현 전 판(red-02·red-03 PNG)에서 여전히 실패해야 하고 그 결과를 원시로 남긴다. 허용 오차 올리기·경계 깎기·건너뜀은 쓰지 않는다. 2) 독립 검증 계약에 「구현 뒤 고친 시험 두 개가 요구를 약하게 만들지 않았는지」(고치기 전·후 단정 비교, 제품 계산 복제 여부)를 판정 항목으로 넣는다. 메인은 승인 전 이 판정 원문을 R-2로 본다.
 - (마) 새 단계 로그 이름 11개(녹화 단계 판정 F1이 읽는다): `login-screen-visible`→`login-submit`, `menu empty shown`→`menu empty advance`, `menu create shown`→`menu create advance`, `menu occupied shown`→`menu occupied advance`, `invite-screen-visible`→`invite-accept`, `quest-dwell-ended`(기존 `quest` F8 줄과 짝). 기존 이름과 순서는 그대로다.
+
+### 2026-11-06 시험 전제 보완 red-04 U1
+
+- 계약 `lead/red-contract-04.md`(sha256 `6bb77aa8dba96e2dc77d3df2a7d13520e1e28a7a28f1b0c45c51bd9cbd19fb4a`, 메인 조건 1을 넣어 다시 조립했고 먼저 조립한 판 `red-contract-04.unissued-01.md`는 발행하지 않았다). Unity 창 6 메인 허가 `msg_a81cf3f0ad38`. 작성자 worker_done `msg_edbb432336a6`(outcome succeeded, Task `task_ccceed7bb5d0`). 보고 `red-04/report.md`(sha256 `0ae14fc0a71582272d36ac7c78879f651d48b5bf0284e490a030733a80592f0f`). pane은 리드가 16:48:28Z에 닫았다(`lead/close-red04-worker-01.txt`).
+- 고친 곳(분류 (a), 표 `red-04/change-table.md`)
+  - S3: 같은 프레임에서 로컬 몸만 빈 GameObject 레이어 31로 옮겨 검은·흰 배경에 두 번 더 그린다. 두 판이 같은 화소를 완전 피복으로 보고, 기존 겹친 표본과 완전 피복의 교집합에서만 「둘 다」 판이 「로컬만」 판과 같기를 요구한다. 허용 오차 2/255와 60프레임은 그대로다. 프레임마다 완전 피복 표본이 1개 이상이고 겹친 표본의 절반 이상이어야 한다(보호 기준). 레이어·카메라 설정은 판 렌더 뒤 되돌린다.
+  - `HudPresentationLifecycleTests.Drawn`: 같은 GameObject에 켜진 `Mask`가 있고 `showMaskGraphic`이 거짓이면 그리지 않은 것으로 본다(두 줄).
+- 조건 1 정적 원시(`red-04/prior-plates-analysis.json`, 내부 대용은 이웃 8화소가 모두 로컬인 화소): red-02·red-03 판은 내부 1414화소 중 불일치 1407로 실패, U2 판은 0이다.
+- PlayMode 필터 9건(`CharacterOverlapSortSceneTests` 3 + `HudPresentationLifecycleTests` 6): 통과 9·실패 0·건너뜀 0. E2는 60프레임 모두 완전 피복 표본 불일치 0이다. 프레임별 겹친 표본 1509~1618, 완전 피복 1360~1478, 부분 피복 129~159다.
+- 리드 계약 결함 하나(작성자가 바로잡음): 부록 C의 「Python 도구 작성」 제외 이유가 이 작업(정적 분석 Python)에 맞지 않았다. 작성자가 CODE_CONVENTION Python 절을 읽고 따랐다. 조립 스크립트의 고정 제외 문구 탓이며, 다음 계약부터 Python을 쓰는 작업은 그 절을 넣는다.
+- 창 끝: 작성자 관찰 16:42:16Z Unity 0·dotnet 0. 리드 확인 `date -u` 「Fri, Nov  6, 2026  4:48:18 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경 되돌리기는 worktree `index.lock`(크기 0, 16:42:53Z 생성)에 막혀 메인에 처리를 청했다(`msg_3a245816de48`). 메인이 10-21 사용자 A 조건(크기 0·611초·git.exe 0)으로 지웠고(`msg_dcb5bd3b5e89`), 리드가 16:53:52Z에 되돌렸다(`lead/red04-drift-restore-02.txt`).
 
 ## 다음 계획 후보
 
