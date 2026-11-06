@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 독립 검증 `verify-03`(강, 머리 초안 `lead/verify-contract-03-head.draft.md`)을 연다. 그 뒤 PR2 순서다. verify-03은 초상 시험 17항목·H3·양피지 판정 변경·R05-T02·G1 넘침 표시 단정 변경의 약화 여부를 판정한다. PR2 외관은 사용자가 163 A로 확인했다. 녹화 빌드·재녹화는 PR2 병합 뒤다(진행 기록 「2026-11-07 시험 고침 red-07 U1」).
+**다음 첫 일:** PR2를 만들고 CI가 끝나면 메인에 병합 준비를 보고한다. 병합은 사용자의 `병합 승인:` 한 줄 뒤 메인이 한다. 독립 검증 verify-03은 통과했고(차단 0), PR2 외관은 사용자가 163 A로 확인했다. 녹화 빌드·재녹화는 PR2 병합 뒤다(진행 기록 「2026-11-07 독립 검증 verify-03」).
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
@@ -238,7 +238,7 @@
 - [x] 화면 세 가지 구현
 - [x] 독립 검증
 - [x] PR1 병합
-- [>] PR2 칸 크기 조절(시험 고침 red-07 끝, 독립 검증 verify-03)
+- [>] PR2 칸 크기 조절(독립 검증 verify-03 통과, PR 생성과 병합 승인)
 - [ ] 녹화 빌드
 - [ ] 세 회차 녹화
 - [ ] 편집 자료 전달
@@ -404,6 +404,16 @@
 - 고친 곳: R05-T02는 `HudPortraitClipTests` T1과 `HudPanelSizingSceneTests` PortraitCell에 「고른 초상만 켜기 + 조상 켜기 + `activeInHierarchy` fixture 단정」 세 줄을 더했다. 기존 `isActiveAndEnabled` 단정은 그대로다. R05-T03은 G1의 `isTextOverflowing` 단정을 `isTextTruncated` 거짓 + 그린 글자 수 = 공백 아닌 글자 수로 바꾸고, 넘침 표시는 `TestContext.Out`에만 남긴다. 같은 결함 전수 찾기는 추가 0건이다.
 - Unity 창 12(메인 허가 `msg_3f374f1e81b2`, 메인 확인 21:46:19Z Unity·Windows dotnet 0, 시한 22:11:19Z): EditMode 필터 14건 통과 14, PlayMode `HudPanelSizingRenderTests` 5건 통과 5, 실패·건너뜀 0이다. 리드가 두 결과 XML의 시험 수·이름·결과를 직접 읽었다. G1 로그는 두 줄 모두 `overflow=True truncated=False`이고 그린 글자 수가 기대와 같다(5/5, 6/6). 배치된 세 파일의 해시는 `red-07/placed.txt`와 같다. 창 끝 작성자 관측 21:51:13Z Unity 0·Windows dotnet 0. 리드 확인 「Fri, Nov  6, 2026  9:51:58 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경은 리드가 21:52:07Z에 되돌렸다(`lead/red07-drift-restore-01.txt`). 메인 지시: 창 요청은 메인 운영 결정이라 앞으로 「결정 필요」 표기를 붙이지 않는다.
 - **R07-L01(리드 계약 결함, 첫 발생):** 조립 스크립트가 부록 A에서 공백 든 경로 둘(`TMP Settings.asset`·`Pretendard SDF Proper.asset`)을 첫 공백에서 잘라 찍었다. 해시는 전체 경로로 잰 값이라 맞았다(`lead/red07-input-spaced-paths-01.txt`). 작성자 ask `msg_3dfe63cb6c84`, 리드 회신 `msg_e5268891c46a`. 교정: 스크립트 출력 줄을 고쳤다(`scripts/assemble-contract.sh` 03, 이전 판 `lead/assemble-contract.sh.before-03.bak`).
+
+### 2026-11-07 독립 검증 verify-03
+
+- 계약 `lead/verify-contract-03.md`(sha256 `11685a03df483e07e147e4c8d7b0c8fcd11006afd2ad288dbc3bab3dd1cc656c`, 등급 강, HEAD `8184e330`). 검증자 `[Content 검증자]`(`task_868473ea1e6d`, Dispatch `ctx_04695ed3722d`, verifies `task_dd871a82b958`). 새 pane 첫 화면 업데이트 선택창은 메인이 「2. Skip」으로 넘겼다(R-6, `msg_e156beaf4484`). worker_done `msg_ef7781010651`. 판정 `verify-03/verdict.md`(sha256 `747db1d9a243e5a2f5bcf99b0241b7d7d07025341c9ebbe964b6da7ad139b4bf`). pane은 리드가 22:33:12Z에 닫았다(`lead/verify03-pane-close-01.json`).
+- 판정: **통과, 차단 결함 0.** G1~G7 통과. 약화 판정 표(초상 17항목·H3·양피지 판정·R05-T01·R05-T02·G1 넘침 표시 단정)는 모두 「약화 아님」이고, 초상 12번과 R05-T01은 강화로 판정됐다.
+- U5(Unity 창 13, 메인 허가 `msg_833c28f4e5ed`, 메인 확인 22:07:40Z Unity·Windows dotnet 0, 시한 22:32:40Z): EditMode 1861건 통과 1861(새 판정용 시험 4건 포함), PlayMode 305건 통과 257·실패 0·건너뜀 48. 리드가 두 결과 XML의 합계를 직접 읽었고, 건너뜀 48건 이름이 U4와 같음을 따로 대조했다(U4에만·U5에만 있는 이름 0). 창 끝 검증자 관측 22:19:43Z Unity 0·Windows dotnet 0. 리드 확인 「Fri, Nov  6, 2026 10:20:13 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경은 리드가 22:20:22Z에 되돌렸다(`lead/verify03-drift-restore-01.txt`).
+- 리드 결정: 검증자의 판정용 새 시험 `DemoUiPr2VerifyPortraitSourceTests`(4건, 원본 sprite·색조·비율 보존과 장식 raycast 끔·stencil 없음)를 PR2에 남긴다(commit `2a82ea72`). 파일 해시는 U5 입력 기록과 같다. PR1 verify-01 판정용 시험과 같은 처분이다.
+- **V03-O01(원시 보존 위반, 첫 발생):** impl-02 구현자가 처음 두 해시 확인의 출력이 든 `impl-02/contract-sha.txt`를 세 번째 성공 출력으로 덮어썼다. 구현자가 `impl-02/entry-limitations.md`에 스스로 공개했다. 검증자 escalation `msg_97fb4bc07801`, 리드 회신 `msg_0d358feaac42`, 메인 처분 요청 `msg_c80c739ab351`. 메인 처분 `msg_c5c2b3003150`: 기록만·비차단. 메인 원문 이유: 「덮어쓴 것은 실패한 해시 확인 두 번의 출력이고 구현자가 스스로 공개했다. 남은 값 f9294749…d588은 계약 현재 sha256과 같아 입력 불일치가 없다. 제품·시험 결과 원시(u2·u2b)는 따로 보존돼 판정 근거가 손상되지 않았다. 규칙 위반 사실은 남지만 판정을 바꿀 근거가 사라진 것이 아니다.」 교정: 첫 발생이라 이 기록만 남긴다. 리드는 다음 계약부터 「시작 확인 기록도 시도마다 새 파일」을 넣는다. 두 번째 발생이면 규칙 후보로 올린다(메인 조건).
+- 덮어쓴 파일 없이 provider 기록에만 남은 초기 실패(red-07 초기 CLI, impl-02 heartbeat --help·check --from, verify-03 초기 Get-Content 1회)는 기존 메인 처분 `msg_724556cd0dc5`(red-01, 「덮어쓴 파일이 없다는 확인과 함께 기록만」)의 범위로 보고 기록만 한다(리드 판단).
+- 비차단 관찰: O-V03-02(EditMode 초상 PNG의 파티 영역은 장면 기본 상태라 파티 가시성은 PlayMode 캡처로 본다), O-V03-03(로그인 ID 글자가 칸 아래쪽에 붙어 보이는 인상은 163 A에서 사용자가 본 상태). 미실행: 서버 연결 실주행·DB·Player 빌드·녹화는 녹화 단계 몫이다.
 
 ## 다음 계획 후보
 
