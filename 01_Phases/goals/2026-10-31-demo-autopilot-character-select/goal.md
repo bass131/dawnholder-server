@@ -4,16 +4,16 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 진짜 녹화 3회차(서버 재시작 → 같은 캐릭터 재접속, 메인 `msg_6806673fc699`)를 찍었고 좁은 독립 검증까지 마쳤다. 판정은 불합격이고, 차단 3건은 모두 검증자 자신의 절차 결함이다(진행 기록 「2026-11-06 진짜 녹화 3회차 독립 검증 판정」). 편집 파일 표와 D1~D3 처분 요청은 메인에 보냈다(`msg_e346906e8f65`, 리드 추천 A). 메인 답을 goal에 적은 뒤 Gardener와 종료 기록 PR로 간다(「PR 경계와 순서」 4). v3 두 회차 원본은 유효로 확정됐다(`msg_45234d43130c`, 진행 기록 「2026-11-06 진짜 녹화 v3 처분」). 영상 편집은 메인이 연 보조 세션이 맡는다.
+**다음 첫 일:** 종료 Gardener다. goal 「종료 기록」·「남은 한계」·「다음 계획 후보」와 BACKLOG·CURRENT는 썼다(진행 기록 「종료 기록」). 남은 순서는 Gardener → 결과를 넣은 종료 기록 PR 하나 → 병합 준비 보고다(「PR 경계와 순서」 4). 진짜 녹화 3회차(서버 재시작 → 같은 캐릭터 재접속)는 메인이 A로 처분했다(`msg_296cdc426451`, 진행 기록 「2026-11-06 진짜 녹화 3회차 처분」). v3 두 회차 원본은 유효로 확정됐다(`msg_45234d43130c`, 진행 기록 「2026-11-06 진짜 녹화 v3 처분」). 재녹화는 없고, 영상 편집은 메인이 연 영상 보조가 맡는다.
 
 - 녹화 빌드는 끝났고 Core에 확정값을 넘겼다(`msg_c8dd2ae6e315`, 진행 기록 「2026-11-05 녹화 빌드」). 독립 판정은 불합격(차단 D1·D3, 절차·원시)이었고, 메인이 수용 A로 처분했다(`msg_b50c04ca0c08`). 재빌드는 없다.
 - 녹화 빌드 기준 다섯 PR이 모두 main에 들어갔다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35`), Core 24칸(#295, `fbf00de9a57fb26baaef89c12daa7d84ace92631`, 11-04 12:13:47Z), Art PR2(#297, `cfe8bb45c0e63820deccbb5c364e461768f09c1e`, 11-05 16:57:26Z).
 - 고정 head는 `cfe8bb45c0e63820deccbb5c364e461768f09c1e`이다(리드 확인 `lead/fixed-head-check-01.txt`). Core 회신 `msg_9203c45e18e9`에 따르면 서버 쪽 diff 0·`Current = 23`이다. 그래서 R1은 build-03 실행으로 갈음했고 exit 0이다.
 - 녹화 빌드 계약은 v12(`lead/recording-build-contract-v12.md`, sha256 `e0c846ced1c70ac00a6d73762ddd6c6f5578cbe833e7a4831ad1994d29717083`)이고, 메인이 대조해 A로 받았다(`msg_e8dd9cb571fd`). 이름은 사용자 결정 109 A, 창 크기는 110 A, 제출 기한(2026-11-09 14:00 KST)은 「11-04 재진입」 절, 배경 음악 123 A와 작업자 배정은 「11-05 사용자 결정」 절이다.
 - PR-C(길드 입구)는 사용자 결정 113 A로 취소했다. Art 75·Art PR4 사후 확인·Effect 후속은 착수하지 않는다(메인 결정, 「11-04 재진입」 절).
-- Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다. 종료 기록의 다음 후보에 Content 시험 `GuildGrowthEffectConsumerLifecycleTests` 705행 `HudReferences`의 `Gold_bar`(PR #297로 HUD에서 빠짐, 찾지 못하면 로그만 남김) 정리를 더한다.
+- Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다. Content 시험 `GuildGrowthEffectConsumerLifecycleTests` 705행 `HudReferences`의 `Gold_bar`(PR #297로 HUD에서 빠짐, 찾지 못하면 로그만 남김) 정리는 BACKLOG `guild-consumer-test-gold-bar-reference`로 올렸다.
 
-- 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
+- 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 BACKLOG `demo-autopilot-recheck-tests-adoption`으로 올렸다(메인 `msg_e0b59e962663`).
 - 열린 결정: 지금 사용자 결정 대기는 없다. 녹화 v3 검증 뒤 결정 2·3은 메인이 A로 정했다(`msg_45234d43130c`, 「11-06 사용자 확인 범위」 절에 따라 메인 몫). 리허설 v2 독립 검증의 D1·D2·D5는 메인이 A로 처분했다(`msg_d79eebc3d94c`, 진행 기록 「2026-11-06 리허설 v2 독립 검증 판정」). 135는 A(초안 그대로)로 답을 받았다(「11-06 사용자 결정 135 A」 절). 129 A·130 A·131 C와 녹화 자동화 지시는 「11-06 사용자 결정」 절이다. 리드가 정한 v2 설계는 메인이 리허설 한정으로 받았다(`msg_25e147f44c7f`). 진짜 녹화 순서(회차 사이 서버 재시작)와 1회차 상대 마법사의 새 이름은 Core가 리허설 결과와 함께 한 글로 메인에 올린다(Core `msg_b28231a86423`, 리드 동의 `msg_5e1339c81084`). 리허설 결과와 v3 입력은 리드가 Core에 넘겼다(`msg_c277074f6a51`). Core가 종합 결정 요청 두 건을 올렸다(`msg_25dbd7e547fa`, Content 사본). 1은 진짜 녹화 순서로, 추천 A는 회차 사이 재시작이며 새 이름 초안은 `rec_ally_mage`·「새벽동료」다. 2는 녹화 시작 늦음으로, 추천 A는 녹화 스크립트만 고치는 것이다. 두 추천 모두 리드 추천과 같다. 사용자가 133 A·134 A로 답했다(「11-06 사용자 결정 133 A·134 A」 절). 새 이름은 135 A로 초안 그대로다. Core가 카드 v6(Core `msg_c946082e5b5b`)의 이름 칸을 채웠다(Core `msg_3a756dd537ba`).
 - 빌드 계약 입력: PR-A·PR268·Art 인벤토리 격자 PR1·Core 인벤토리 24칸 PR·Art PR2 병합(다섯 완료, `msg_d0012352013c`·`msg_d783ac17eb63`·`msg_d0250483d004`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
@@ -21,7 +21,7 @@
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1을 메인이 원문과 대조해 승인했다(`msg_967d20c30e6d`, 메인 결정). 초안 원문은 `.backups/verification/2026-10-31-demo-autopilot-character-select/lead/scope-draft-v1.md`(sha256 `28fa67062d6395521aad8f8022e87387ca7a43dec18c101c3aed4f157756ed15`)다. |
-| branch | PR-A `feat/content-demo-character-select-20261031`(PR #291), base main `5bfda911a8ba97a8f9f82b75693dec3ebc59fb54`, main 반영 commit `58c8d4cb9b8a34d66389d5573797e07564c6fa7a`. PR268 `feat/demo-autoplay-20261028`, base main 그대로(메인 `msg_db6333b6b1c6`), content-active 로컬 이름 `content/demo-autoplay-20261028`. PR-A와 최신 main을 합쳐 그 위에 쌓는다. PR-C `fix/content-guild-entry-gold-overlap-20261031`(아직 없음), base main |
+| branch | PR-A `feat/content-demo-character-select-20261031`(PR #291), base main `5bfda911a8ba97a8f9f82b75693dec3ebc59fb54`, main 반영 commit `58c8d4cb9b8a34d66389d5573797e07564c6fa7a`. PR268 `feat/demo-autoplay-20261028`, base main 그대로(메인 `msg_db6333b6b1c6`), content-active 로컬 이름 `content/demo-autoplay-20261028`. PR-A와 최신 main을 합쳐 그 위에 쌓는다. PR-C `fix/content-guild-entry-gold-overlap-20261031`은 113 A로 만들지 않았다. 종료 기록 `docs/content-demo-autopilot-closeout-20261101`, 최신 main `f1bcae3b`를 합쳤다 |
 | 리드 | `[Content 리드 Opus]`(claude-opus-5-5 xhigh), Run `run_0a58bc3cfea0`, 회신 주소 `run:run_0a58bc3cfea0` |
 | 근거 폴더 | `.backups/verification/2026-10-31-demo-autopilot-character-select/` |
 
@@ -348,11 +348,10 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 - [x] 자동 진행기 시험
 - [x] 자동 진행기 구현
 - [x] DB 서버 실주행 검증
-- [-] 길드 입구 겹침(사용자 결정 113 A로 취소)
-- [x] 선택창 PR 병합
+- [x] PR291 병합
 - [x] PR268 병합
 - [x] 녹화용 빌드 전달
-- [x] 리허설·녹화 실행(Content 실행 작업자, 메인 결정 `msg_b50c04ca0c08`, 처분 `msg_45234d43130c`)
+- [x] 리허설·녹화 실행
 - [>] 종료 기록
 
 ## 진행 기록
@@ -617,3 +616,58 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 정산: 검증자 pane을 닫았다(`lead/close-recording-r3-verify-01.json`, ptyKilled true). 남은 Content 작업자 pane은 0이다(`lead/terminal-list-after-recording-r3-verify-close-01.redacted.json`).
   - 메인 보고: `msg_e346906e8f65`. 편집 파일 표와 메인 결정 요청 1건(D1~D3 처분)을 실었다. 리드 추천 A는 기록 수용, 표대로 편집, 새 검증 세션 없음이다. B는 같은 범위의 신규 검증이다.
   - 반복 발생(규칙 후보, 11-09 뒤 Rules에 요청): 검증자 heartbeat 300초 초과는 리허설 v2 D5, v3 D7에 이어 세 번째다. 이번 원인은 문맥 압축이라 별도 호출 대책으로는 막지 못했다. 후보는 자동 heartbeat다. 리드 판정 수치 오류도 세 번째다(이번은 비차단). 후보는 위 「진짜 녹화 v3 독립 검증」 기록과 같다.
+- 2026-11-06 진짜 녹화 3회차 처분
+  - 메인 결정: A(`msg_296cdc426451`, 원문 `lead/main-msg_296cdc426451-round3-decision-A.txt`, sha256 `2985fb70554fcd1a8d80677bc5505c875f13209ab3579225708fb21181edebc6`). 138 A에 따른 메인 결정이며 사용자 결정이 아니다.
+  - 내용: 검증자 자기 결함 D1~D3은 기록으로 받는다. 새 검증 세션은 열지 않는다. 처분은 v3 결정 3 A와 같다. 메인 원문은 「녹화 원시 다섯 항목에 실행자 귀속 차단 0이고, 처분은 v3 결정 3 A와 같다. 되돌리기는 같은 범위 신규 검증이다.」다.
+  - 메인 R-2 표본(원시 직접): verdict.md와 `r4-3-markers.json`의 sha256이 일치했다. 기사 ID `c1b405cc-7a5b-41d0-bcfd-6a976147a7b1`이 1회차 로그 81행(생성 성공, 슬롯 1 새벽기사)과 3회차 로그 76행에서 같았다. 서버 줄은 메인이 직접 추출한 값과 같았다.
+  - 편집: 메인이 연 영상 보조가 위 편집 파일 표로 마무리한다. 재녹화 요청은 없다.
+  - 다음: 메인 원문 「Content는 goal 처분 기록 → Gardener → 종료 기록 PR로 가라. 병합 승인은 아침에 사용자에게 올린다.」
+  - 반복 발생 셋은 시연 뒤 Rules 요청 목록으로 메인이 묶는다(메인 지시). 이 goal의 기록 위치는 아래와 같다.
+
+    | 반복 발생 | 횟수 | 이 goal의 기록 |
+    |---|---|---|
+    | 검증자 heartbeat 300초 초과 | 3 | 리허설 v2 D5, 진짜 녹화 v3 D7, 3회차 D1 |
+    | 리드 판정 수치 오류 | 3 | 리허설 v2 D3, 진짜 녹화 v3 D4~D6, 3회차 D4·D5 |
+    | 터미널 목록 preview에 서버 창 출력이 들어감 | 메인 집계 | 「진짜 녹화 v3 독립 검증」의 발견, 「진짜 녹화 v3 처분」의 결정 2 A 가림(`term_7cc954de`)과 `msg_391a8e696163` 가림(`term_f672813a`) |
+
+### 종료 기록
+
+- 리드 맥락 메모: `lead/lead-context-memo-closeout-01.md`(2026-11-06T04:19:53Z, 종료 기록 대상 파일 첫 쓰기 전)다. 근거는 `closeout-01/`이다. 진짜 녹화 3회차가 끼어 종료 기록을 멈췄다가 3회차 처분 뒤 이었다.
+- 최신 main 통합: PR300 병합 뒤 main `f1bcae3b`를 merge commit `c1ca41e6`로 합쳤다. 충돌은 0이고, main 쪽에서 바뀐 8파일과 이 branch의 바뀐 파일은 겹치지 않는다.
+- 진척 단계: 13개를 12개로 줄였다. 표시는 `[x]`·`[>]`·`[ ]`만 쓰는 규칙이라 취소 줄 「길드 입구 겹침」을 뺐다. 취소 기록은 「범위」, 완료조건 C1~C3, 「PR 경계와 순서」 3에 그대로 있다. 「선택창 PR 병합」은 `PR291 병합`으로 고쳤고, 「리허설·녹화 실행」 뒤의 괄호는 이름 폭 상한 때문에 뺐다.
+- BACKLOG: 「시연 자동 진행기·캐릭터 선택창 종료에서 연결한 후보」 절에 6행을 올렸다. 원본은 `closeout-01/backlog-section-01.md`이고, 쓰기는 `closeout-01/backlog-write-01.cjs`·`.json`이다(BACKLOG sha256 `dd63edc7…fde206` → `75ad4e99…120cdc`). `guild-entry-gold-overlap` 상태 칸은 사용자 결정 113 A로 폐기가 됐다. 이 goal이 받은 `demo-autoplay-character-menu`·`demo-recording-build-contract`·`character-select-three-wide-slots`는 이미 goal 승격 행이다. `character-menu-selecting-detail-text`는 PR-A가 흡수해 이미 폐기 행이다.
+- 후보 도착 검사(`closeout-01/check-candidates-run-01.cjs`, 미커밋 작업 트리): `allowed`, exit 0이다. 후보 8줄 모두 BACKLOG ID를 인용한다. BACKLOG ID는 244개이고, 모르는 ID·중복 ID는 0이다(`closeout-01/check-candidates-01.json`).
+- 생존 신호 정산 04판(`closeout-01/liveness-04.cjs`, 정본 helper): 판정 `over`, exit 1이다. 20 Dispatch에서 300초 초과가 25구간이고 질문 대기는 9구간이다. 구간·이유 한 줄 표는 `closeout-01/liveness-settlement-04.md`(sha256 `9b533dc3…1e026e`)다. 25구간의 갈래는 아래와 같다. 대화·도구 호출 원시 감사는 하지 않았다.
+
+  | 갈래 | 구간 | 최대(초) |
+  |---|---|---|
+  | 검증자 자기 판정 결함(리허설 v2 D5, v3 D7, 3회차 D1) | 3 | 490 |
+  | worker_done 없이 턴을 끝내고 리드 신호를 기다림(리허설 v2 실행) | 3 | 2179 |
+  | PR268 검증 v3의 창 8 대기 중 heartbeat 미송신 | 2 | 1888 |
+  | 한 턴 안의 작업·Unity 실행 중 신호 공백 | 17 | 431 |
+
+  - 리허설 v2 실행의 489초 구간은 리드 신호 오기(「종료」 신호를 기다리라고 씀)에서 시작했다. 리드 몫이다.
+  - 3회차 검증자 질문 `msg_172f56d2069c`의 리드 답은 reply receipt에 메시지 본체가 없어 입력에 없다. 그 질문에서 다음 heartbeat까지 108초라 판정에 영향이 없다.
+- Orca 자동 escalation 「worker_done 없이 턴 종료」는 네 번이다(빌드 17:33:50Z, 리허설 v2 실행 20:12:54Z·21:02:48Z·21:22:55Z, 모두 11-05). 사용자 결정 140 A(완료 보고 계약 한 줄과 자동 감시)가 다루는 갈래라 새 후보를 만들지 않았다.
+- 반복 발생 셋의 BACKLOG 연결: 리드 판정 수치 오류는 `lead-judgement-raw-value-crosscheck`, 검증자 heartbeat 300초 초과는 `verifier-heartbeat-during-compaction`이다. 터미널 목록 preview는 Core 종료가 올린 기존 행 `terminal-evidence-field-allowlist`와 같은 갈래라 새 행을 만들지 않았다. 그 행도 고치지 않았다. 이 goal의 관측은 위 반복 발생 표에 있다.
+- 거점 레벨 재시작 관찰(「진짜 녹화 v3 리드 판정」의 관찰)은 다음 후보로 두지 않는다. FEATURE_MAP 「상태의 수명」 41행이 「공동 금고·거점은 GuildRegistry의 프로세스 수명」이고 「DB에 저장하지 않는다」고 적는다. 서버 재시작 뒤 거점이 1부터 다시 오른 것은 적힌 설계와 같다. 길드 상태를 DB에 둘지는 제품 범위 판단이라 메인 보고에 한 줄로 올린다. 그 관찰 줄의 「종료 기록의 다음 후보로 둔다」는 이 판단으로 바뀌었다.
+- CURRENT: Content 줄을 이 branch와 종료 기록 진행으로 고쳤다.
+
+### 남은 한계
+
+- 진짜 녹화 3회차 리드 판정의 한계 셋은 그대로다. 실행자가 launcher를 파일 쓰기 도구로만 만들었는지는 원시로 증명하지 못한다. 예외 launcher 넷의 실행 명령 기록은 사후에 생겼다. 수동 heartbeat 세 건의 송신 UTC가 없다. 셋 다 녹화 매체(영상·소리·표식)의 진위에는 영향이 없다.
+- DB는 직접 조회하지 않았다(80 A). 같은 캐릭터 근거는 서버 응답을 받은 클라이언트 로그다.
+- 시연 영상 편집은 메인이 연 영상 보조가 맡는다. 편집 결과는 이 goal의 검증 범위 밖이다.
+
+## 다음 계획 후보
+
+모두 이 goal 밖이다. 후보 등록은 착수 승인이 아니다. 11-09 14:00 KST 제출 뒤 순서와 착수는 메인이 정한다.
+
+- BACKLOG `character-create-screen-art-polish`: 생성 화면 안내 줄, 고른 직업 버튼 강조, 칸 그림 1.3배다(Art 의견 `msg_7f9778ed1c3d`, PR-A 검증 관찰 O2~O4).
+- BACKLOG `guild-consumer-test-gold-bar-reference`: 길드 소비자 시험 705행의 없어진 HUD 이름 `Gold_bar`다(Art 사전 알림 `msg_c4212141fc7a`).
+- BACKLOG `demo-autopilot-recheck-tests-adoption`: PR268 검증 v3의 판정용 새 시험 두 파일 채택이다(메인 `msg_e0b59e962663`).
+- BACKLOG `demo-autopilot-step-timeout-result`: 자동 진행기 `WaitFor` 시간 초과의 단계 결과 명시와 주석 속 결정 이력이다(PR268 검증 관찰 O1·O2).
+- BACKLOG `lead-judgement-raw-value-crosscheck`: 리드 판정 수치 오류 세 번의 규칙 후보다. 메인이 시연 뒤 Rules 요청 목록으로 묶는다(`msg_296cdc426451`).
+- BACKLOG `verifier-heartbeat-during-compaction`: 검증자 heartbeat 300초 초과 세 번과 자동 heartbeat 후보다. 같은 Rules 요청 목록이다.
+- BACKLOG `terminal-evidence-field-allowlist`: 기존 행이다. 이 goal에서도 터미널 목록 preview에 서버 창 출력이 들어가 두 handle을 가렸다.
+- BACKLOG `character-slot-count-four`: 캐릭터 칸 4개는 DB·서버·클라를 함께 바꾸는 일이라 85 A로 11-06 뒤 후보다(`msg_45b7227b04ff`).
