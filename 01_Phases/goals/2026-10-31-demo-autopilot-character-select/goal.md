@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 진짜 녹화 두 회차는 끝났다(진행 기록 「2026-11-06 진짜 녹화 두 회차」). 독립 검증은 불합격이다(차단 D1~D7, 모두 절차·보고). 녹화 원본은 바뀌지 않았다(진행 기록 「2026-11-06 진짜 녹화 v3 독립 검증」). 메인의 결정 2·결정 3 답을 기다린다(`msg_21710ff7c329`·`msg_65cffa63216b`). 결정 2는 서버 창 preview 가림이고, 결정 3은 불합격 7건 처분과 편집 착수다. 답을 받으면 여기와 진행 기록에 적고 commit·push한다. 그다음은 Gardener와 종료 기록 PR이다(「PR 경계와 순서」 4).
+**다음 첫 일:** 진짜 녹화는 끝났고 원본은 유효로 확정됐다. 메인이 결정 2 A·결정 3 A로 처분했다(`msg_45234d43130c`, 진행 기록 「2026-11-06 진짜 녹화 v3 처분」). 영상 편집은 메인이 연 보조 세션이 맡는다. Content의 다음 일은 Gardener와 종료 기록 PR이다(「PR 경계와 순서」 4). 편집 보조가 재녹화가 필요하다고 하면 종료 기록을 멈추고 메인과 다시 정한다.
 
 - 녹화 빌드는 끝났고 Core에 확정값을 넘겼다(`msg_c8dd2ae6e315`, 진행 기록 「2026-11-05 녹화 빌드」). 독립 판정은 불합격(차단 D1·D3, 절차·원시)이었고, 메인이 수용 A로 처분했다(`msg_b50c04ca0c08`). 재빌드는 없다.
 - 녹화 빌드 기준 다섯 PR이 모두 main에 들어갔다: PR-A(#291, `58c8d4cb`), PR268(`3bb76772`), Art 격자 PR1(#294, `a888cd35`), Core 24칸(#295, `fbf00de9a57fb26baaef89c12daa7d84ace92631`, 11-04 12:13:47Z), Art PR2(#297, `cfe8bb45c0e63820deccbb5c364e461768f09c1e`, 11-05 16:57:26Z).
@@ -14,7 +14,7 @@
 - Gardener와 종료 기록 PR은 녹화용 빌드 전달 뒤다(「PR 경계와 순서」 4). 종료 기록 PR의 branch `docs/content-demo-autopilot-closeout-20261101`은 원격에 올렸고 PR은 아직 열지 않았다. 종료 기록의 다음 후보에 Content 시험 `GuildGrowthEffectConsumerLifecycleTests` 705행 `HudReferences`의 `Gold_bar`(PR #297로 HUD에서 빠짐, 찾지 못하면 로그만 남김) 정리를 더한다.
 
 - 판정용 새 시험: 검증자 v3가 쓴 `DemoAutopilotRecheckLifecycleTests`·`DemoAutopilotRecheckLegacyTests` 두 파일과 `.meta`는 PR268에 넣지 않았다. 검증한 head를 바꾸지 않으려는 리드 결정이다. 사본과 sha256은 `pr268-verify-03/untracked-tests-saved/`에 있다. 검증자는 유지를 권고했다. 채택은 종료 기록 PR에서 BACKLOG 다음 후보로 둔다(메인 `msg_e0b59e962663`).
-- 열린 결정: 지금 사용자 결정 대기는 없다. 메인 결정 대기는 위 결정 2·3이다(사용자 확인 범위 밖이라 메인이 정한다, 「11-06 사용자 확인 범위」 절). 리허설 v2 독립 검증의 D1·D2·D5는 메인이 A로 처분했다(`msg_d79eebc3d94c`, 진행 기록 「2026-11-06 리허설 v2 독립 검증 판정」). 135는 A(초안 그대로)로 답을 받았다(「11-06 사용자 결정 135 A」 절). 129 A·130 A·131 C와 녹화 자동화 지시는 「11-06 사용자 결정」 절이다. 리드가 정한 v2 설계는 메인이 리허설 한정으로 받았다(`msg_25e147f44c7f`). 진짜 녹화 순서(회차 사이 서버 재시작)와 1회차 상대 마법사의 새 이름은 Core가 리허설 결과와 함께 한 글로 메인에 올린다(Core `msg_b28231a86423`, 리드 동의 `msg_5e1339c81084`). 리허설 결과와 v3 입력은 리드가 Core에 넘겼다(`msg_c277074f6a51`). Core가 종합 결정 요청 두 건을 올렸다(`msg_25dbd7e547fa`, Content 사본). 1은 진짜 녹화 순서로, 추천 A는 회차 사이 재시작이며 새 이름 초안은 `rec_ally_mage`·「새벽동료」다. 2는 녹화 시작 늦음으로, 추천 A는 녹화 스크립트만 고치는 것이다. 두 추천 모두 리드 추천과 같다. 사용자가 133 A·134 A로 답했다(「11-06 사용자 결정 133 A·134 A」 절). 새 이름은 135 A로 초안 그대로다. Core가 카드 v6(Core `msg_c946082e5b5b`)의 이름 칸을 채웠다(Core `msg_3a756dd537ba`).
+- 열린 결정: 지금 사용자 결정 대기는 없다. 녹화 v3 검증 뒤 결정 2·3은 메인이 A로 정했다(`msg_45234d43130c`, 「11-06 사용자 확인 범위」 절에 따라 메인 몫). 리허설 v2 독립 검증의 D1·D2·D5는 메인이 A로 처분했다(`msg_d79eebc3d94c`, 진행 기록 「2026-11-06 리허설 v2 독립 검증 판정」). 135는 A(초안 그대로)로 답을 받았다(「11-06 사용자 결정 135 A」 절). 129 A·130 A·131 C와 녹화 자동화 지시는 「11-06 사용자 결정」 절이다. 리드가 정한 v2 설계는 메인이 리허설 한정으로 받았다(`msg_25e147f44c7f`). 진짜 녹화 순서(회차 사이 서버 재시작)와 1회차 상대 마법사의 새 이름은 Core가 리허설 결과와 함께 한 글로 메인에 올린다(Core `msg_b28231a86423`, 리드 동의 `msg_5e1339c81084`). 리허설 결과와 v3 입력은 리드가 Core에 넘겼다(`msg_c277074f6a51`). Core가 종합 결정 요청 두 건을 올렸다(`msg_25dbd7e547fa`, Content 사본). 1은 진짜 녹화 순서로, 추천 A는 회차 사이 재시작이며 새 이름 초안은 `rec_ally_mage`·「새벽동료」다. 2는 녹화 시작 늦음으로, 추천 A는 녹화 스크립트만 고치는 것이다. 두 추천 모두 리드 추천과 같다. 사용자가 133 A·134 A로 답했다(「11-06 사용자 결정 133 A·134 A」 절). 새 이름은 135 A로 초안 그대로다. Core가 카드 v6(Core `msg_c946082e5b5b`)의 이름 칸을 채웠다(Core `msg_3a756dd537ba`).
 - 빌드 계약 입력: PR-A·PR268·Art 인벤토리 격자 PR1·Core 인벤토리 24칸 PR·Art PR2 병합(다섯 완료, `msg_d0012352013c`·`msg_d783ac17eb63`·`msg_d0250483d004`). Core 24칸 PR은 프로토콜을 v23으로 올리므로 녹화 빌드는 그 PR이 들어간 main에서 서버·클라를 함께 만든다.
 - 근거 폴더: `.backups/verification/2026-10-31-demo-autopilot-character-select/`. 리드 Git 밖 재개 메모는 `lead/resume-state.md`다.
 
@@ -329,8 +329,8 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
 - [x] 선택창 PR 병합
 - [x] PR268 병합
 - [x] 녹화용 빌드 전달
-- [>] 리허설·녹화 실행(Content 실행 작업자, 메인 결정 `msg_b50c04ca0c08`)
-- [ ] 종료 기록
+- [x] 리허설·녹화 실행(Content 실행 작업자, 메인 결정 `msg_b50c04ca0c08`, 처분 `msg_45234d43130c`)
+- [>] 종료 기록
 
 ## 진행 기록
 
@@ -534,3 +534,22 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
   - 메인 보고: 기동 알림 `msg_21710ff7c329`에 결정 1(편집 선착수)과 결정 2(리드 터미널 목록 파일 일곱 개의 서버 창 preview 가림)를 실었다. 결과 보고 `msg_65cffa63216b`에 결정 3(불합격 7건 처분과 편집 착수)을 실었고 결정 1은 거기에 합쳤다. 리드 추천은 둘 다 A다. 결정 3 A는 원본 유효 확정, D1·D2·D3·D7 기록 수용, D4~D6 정오표와 메인 R-2 대조로 닫기, 검증자 표로 편집 보조 착수다.
   - 편집 보조 인계 표: 검증 판정 「영상 편집 보조에게 넘길 파일」 절(verdict.md 342~378행)이다. 영상 둘·소리 둘의 bytes·SHA256, 정지 화면(`recording-v3-verify-01/stills-sha256.json`), 소리 자름 범위, 생성 창 프레임을 담았다.
   - 반복 발생(규칙 후보, 11-09 뒤 Rules에 요청): 리드 판정 수치 오류는 리허설 v2 D3에 이어 두 번째다. 후보는 원문 정밀도의 정수 차 계산, 원시 대상 표식으로 행 고르기, 남의 보고에서 옮긴 사실의 원시 대조다. 검증자 heartbeat 300초 초과도 리허설 v2 D5에 이어 두 번째다. 계약에 대책을 넣었는데도 일어났다. 검증자 진단은 같은 도구 호출 첫머리의 heartbeat가 긴 입력 작성 뒤에야 실행됐다는 것이다. 후보는 긴 작성 전 별도 호출 heartbeat와 자동 heartbeat다.
+- 2026-11-06 진짜 녹화 v3 처분
+  - 메인 결정: 결정 2 A·결정 3 A(`msg_45234d43130c`, 원문 `lead/main-msg_45234d43130c-decision-2A-3A.txt`). 138 A에 따른 메인 결정이다.
+  - 결정 3 A: 녹화 원본을 유효로 확정했다. D1·D2·D3·D7은 위 기록으로 받아들인다. D4·D5·D6은 정오표로 닫는다. 새 검증 세션은 열지 않는다.
+  - 메인 R-2 표본(원시 직접): `run-01/r4-2-start.json`의 마법사 target true 01:14:41.4726942Z와 기사 target false 01:14:41.4468555Z를 확인했다. 정오표 값 파일의 1회차 여유 4.8912756초와 소리 자름 2.8338517~3.9457243초도 확인했다. verdict·정오표 sha256이 같고, verdict 16행 「녹화 원본 폐기나 재실행을 요구한다는 뜻은 아니다」를 확인했다.
+  - 편집: 메인이 새 보조 세션을 연다. 기준은 verdict.md 342~378행 표와 `recording-v3-verify-01/stills-sha256.json`이다.
+  - 반복 발생 두 건(리드 판정 수치 오류, 검증자 heartbeat 300초 초과)은 위 「진짜 녹화 v3 독립 검증」 기록에 두 번째 발생으로 적었다. 규칙화는 시연 뒤 Rules가 맡는다(메인 지시).
+  - 결정 2 A 실행: 리드 터미널 목록 7개에서 서버 창 `term_7cc954de`의 preview 값만 「<가림>」으로 바꿨다. Core 처분 B와 같은 방식이다. 스크립트는 `lead/mask-server-preview-01.cjs`(sha256 `7a5a0b9b9862bc6c86fac95491f81572bb7d5e4d9f7dbfba879c5ec93981b999`)이고, 기록은 `lead/mask-server-preview-01.json`(sha256 `2cf5077d92e74fdb1a750af137316f62bfe51d08a216c80d8afd1d5f1f5eeddd`)이다. 값은 출력하지 않았고 길이(파일마다 300자)만 셌다. 바꾼 뒤 다시 파싱해 그 칸 말고는 원문과 같음을 대조했다.
+
+    | 파일(`lead/`) | 전 sha256 | 후 sha256 |
+    |---|---|---|
+    | `terminal-list-20261106-r4-recovery.json` | `3747e0734334a2b10f2a1f475dfaf9bf46a8041cd441a859dc90a776d294fcc9` | `59b50a035699cb5360c24182fa4f143ce7a44584f59f09185ce8b86140d2485e` |
+    | `terminal-list-20261106-rec-01.json` | `5fbc18d8d7b05e929acdb29864c905fabdf966a6debd036b5f40fd33efd7ac18` | `452ef30a73952e4eee09c36b84c001c1bd9a7d57c03669f07360f8a556defc81` |
+    | `terminal-list-after-recording-executor-close-01.json` | `269c9feaccf5124df885efe0df2e9ec6983218f473f862794e29a12c313fbcbe` | `42173ae853c5a7e3009483164663adbc5785137f94e4ff69cd0b6d202db04d49` |
+    | `terminal-list-after-rehearsal-v2-verify-close-01.json` | `ad3d9999f3e3d71bd713dd4fb62e28ce3d2f00579c690c84cb7689d52d0f1bac` | `a37b1159e2488db5c43d3cfc0a45acf8dc883f995922f94253321de89226b50d` |
+    | `terminal-list-after-v2-close-01.json` | `5caaad7cafa234d84465a66de27b06fcfb731962d5450de4f45da6ff453d8922` | `09f271d81eb38bd5d7e11983417f46ea7e8411f85906aa7137cae97022eac8e5` |
+    | `terminal-list-before-recording-executor-01.json` | `0dd149fb95c07694e2f91767496f806fada1335074f710f8b3429dd3f8429f59` | `64c8f5b9d9d21d237be3b1ad704bb18aa48ab2bbe29d7bb267667528a453fa52` |
+    | `terminal-list-before-recording-v3-verify-01.json` | `3760fd51df0aab3beed8504cf719a50d6294dca901d996fcee734cd374f8026d` | `9097aa4bbe2fcf7ad023d9b4c05b1134c4ab861ae75e4500d7e910710e5960bf` |
+
+  - 관찰(결정 2 범위 밖, 손대지 않음): 나머지 터미널 목록 13개에는 `term_7cc954de`가 없다. 그중 `lead/terminal-list-after-verify3-close.json`의 `term_f672813a`는 제목(PowerShell 7 실행 파일 경로)과 worktree(core-active)가 서버 창과 같다. 예전 서버 창일 수 있지만 preview는 열지 않았다. 같은 처리 여부는 메인에 올렸다.
