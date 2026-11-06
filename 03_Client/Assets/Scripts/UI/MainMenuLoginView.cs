@@ -58,11 +58,11 @@ namespace Dawnholder.Client.UI
                 .rectTransform;
             Place(window, new Vector2(0.5f, 0f), new Vector2(420f, 230f), new Vector2(0f, 16f));
 
-            TMP_Text accountLabel = Label("AccountLabel", window, new Vector2(44f, 34f), new Vector2(24f, -16f), font);
+            TMP_Text accountLabel = Label("AccountLabel", window, new Vector2(44f, 30f), new Vector2(54f, -18f), font);
             accountLabel.text = "ID";
             accountLabel.fontSize = 16f;
             accountLabel.color = s_ink;
-            MoveField(account, window, new Vector2(320f, 34f), new Vector2(76f, -16f), 16f, skin);
+            MoveField(account, window, new Vector2(260f, 30f), new Vector2(106f, -18f), 18f, skin);
 
             // Clone before adding the ID submit listener, and give the decorative PW field its own events.
             // No password value is passed to the controller, preferences, logs or the connection.
@@ -76,8 +76,8 @@ namespace Dawnholder.Client.UI
             _password.characterLimit = 32;
             _password.SetTextWithoutNotify(string.Empty);
             if (_password.placeholder is TMP_Text placeholder) placeholder.text = string.Empty;
-            MoveField(_password, window, new Vector2(320f, 34f), new Vector2(76f, -58f), 16f, skin);
-            TMP_Text passwordLabel = Label("PasswordLabel", window, new Vector2(44f, 34f), new Vector2(24f, -58f), font);
+            MoveField(_password, window, new Vector2(260f, 30f), new Vector2(106f, -60f), 18f, skin);
+            TMP_Text passwordLabel = Label("PasswordLabel", window, new Vector2(44f, 30f), new Vector2(54f, -60f), font);
             passwordLabel.text = "PW";
             passwordLabel.fontSize = 16f;
             passwordLabel.color = s_ink;
@@ -87,7 +87,7 @@ namespace Dawnholder.Client.UI
 
             // The error text keeps the scene's font and overflow: MainMenuNotice sentences are written for that font's
             // static atlas and every character must stay drawn. 14 pt keeps the longest sentence on one line.
-            Move(error.rectTransform, window, new Vector2(380f, 30f), new Vector2(20f, -188f));
+            Move(error.rectTransform, window, new Vector2(380f, 30f), new Vector2(20f, -96f));
             error.fontSize = 14f;
             error.color = s_resultText;
             // The dark box the error text sat in is left in the scene, switched off.
@@ -95,8 +95,8 @@ namespace Dawnholder.Client.UI
 
             var quit = SceneChild(screen, "QuitButton").GetComponent<Button>();
             if (quit == null) throw new InvalidOperationException("MainMenu QuitButton has no Button.");
-            MoveButton(quit, window, new Vector2(200f, 36f), new Vector2(110f, -144f), "QUIT", font, skin, accept: false);
-            MoveButton(start, window, new Vector2(200f, 36f), new Vector2(110f, -100f), "START", font, skin,
+            MoveButton(quit, window, new Vector2(200f, 36f), new Vector2(110f, -176f), "QUIT", font, skin, accept: false);
+            MoveButton(start, window, new Vector2(200f, 36f), new Vector2(110f, -132f), "START", font, skin,
                 accept: true);
 
             // Only the fields submit to the view. A selected start button still takes Enter as its own single click.

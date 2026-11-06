@@ -15,13 +15,15 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 [ClientConnectionLifetime](../../03_Client/Assets/Scripts/Network/ClientConnectionLifetime.cs)은 연결에 이름과 직업을 고정하고, handshake 성공 뒤 로그인 요청을 한 번, `Accepted` 뒤 직업 선택을 한 번 보낸다. `LoginResultHandler`가 받은 유효 거부(`InvalidName`·`AlreadyOnline`)는 원격 종료가 뒤따라도 세션 정리 전까지 메인 큐에서 적용하며, 소유자는 세대·동일 세션·로그인 요청 여부를 검사한다. `Accepted`·정의 밖 결과와 다른 패킷은 닫힌 전송에서 적용하지 않으며, 정의 밖 결과는 열린 현재 연결의 메인 스레드 gate를 통과했을 때 연결을 끊는다. 거부는 `LoginRejected` → [MainMenuNotice](../../03_Client/Assets/Scripts/UI/MainMenuNotice.cs) → 메인 메뉴의 오류 글자 순서로 전달한다. 메뉴 시작 때 안내를 소비한다. 이전 연결의 늦은 결과는 generation/구독 해제로 무효화한다.
 
-[MainMenuLoginView](../../03_Client/Assets/Scripts/UI/MainMenuLoginView.cs)는 `MainMenuController.Start`에서 만들어져 MainMenu 장면을 로그인 화면으로 배치한다. 장면 Canvas의 CanvasScaler를 실행 중 800×450 높이 맞춤으로 바꾸고, 장면의 `TITLE`을 위쪽에 둔다. 머리 띠 없는 밝은 스킨의 `LoginWindow`에는 ID 칸·PW 칸·START·QUIT를 위에서 아래로 배치하고, 오류 글자는 아래에 남긴다. 장면 파일과 컨트롤러의 직렬화 참조·버튼 onClick은 그대로다. view는 배치와 키 입력만 맡는다. ID·PW의 Enter는 같은 프레임의 두 번째 제출을 무시하고 START와 같은 `MainMenuController.OnStartClicked`를 부르며, ID의 Tab은 PW를 선택한다(컨트롤러 `Update` → `HandleKeys`). QUIT는 기존 `OnQuitClicked`를 부르고 시작 판단은 `OnStartClicked`에 남는다.
+[MainMenuLoginView](../../03_Client/Assets/Scripts/UI/MainMenuLoginView.cs)는 `MainMenuController.Start`에서 만들어져 MainMenu 장면을 로그인 화면으로 배치한다. 장면 Canvas의 CanvasScaler를 실행 중 800×450 높이 맞춤으로 바꾸고, 장면의 `TITLE`을 위쪽에 둔다. 머리 띠 없는 밝은 스킨의 `LoginWindow`에는 ID 칸·PW 칸·START·QUIT를 위에서 아래로 가운데 정렬하고, 오류 글자는 PW와 START 사이에 둔다. 장면 파일과 컨트롤러의 직렬화 참조·버튼 onClick은 그대로다. view는 배치와 키 입력만 맡는다. ID·PW의 Enter는 같은 프레임의 두 번째 제출을 무시하고 START와 같은 `MainMenuController.OnStartClicked`를 부르며, ID의 Tab은 PW를 선택한다(컨트롤러 `Update` → `HandleKeys`). QUIT는 기존 `OnQuitClicked`를 부르고 시작 판단은 `OnStartClicked`에 남는다.
+
+로그인 창의 기준 크기는 420×230이다. 왼쪽 위 기준으로 이름표는 44×30·(54,-18)/(54,-60)·16pt, 입력칸은 260×30·(106,-18)/(106,-60)·18pt이며 입력 글자는 `TextAlignmentOptions.Left`를 유지한다. 오류 글자는 380×30·(20,-96)·14pt, START·QUIT는 200×36·(110,-132)/(110,-176)이다. 내용의 위·아래 여백은 각각 18이고, 이름표 왼쪽과 입력칸 오른쪽 여백은 각각 54다.
 
 PW는 ID 칸을 복제한 `PasswordInput`이며, 빈 값으로 시작하고 안내 글 없이 최대 32자를 `*`로 가린다. 사용자 결정 155 A에 따라 **화면 칸만**이며, 값은 패킷·PlayerPrefs·로그·`AccountLoadout`에 전달하지 않고 빈 PW도 시작을 막지 않는다. 서버 주소 칸은 객체와 연결을 유지한 채 숨긴다. 주소는 기존대로 PlayerPrefs `ServerHost` 저장값을 쓰고, 저장값이 없거나 공백이면 `_defaultHost`(127.0.0.1)를 쓴다. 계정 이름 검사·오류 문구·probe 중 중복 시작 차단·성공 뒤 주소 저장과 CharacterSelect 진입은 컨트롤러가 소유한다.
 
 ## HUD 초상과 캐릭터 그리기 순서
 
-[HudLayout](../../03_Client/Assets/Scripts/UI/HudLayout.cs)은 기존 초상 객체 아래 `PortraitMask`(원형 Graphic과 stencil `Mask`) → `PortraitArt`(기존 머리 sprite)를 만든다. 초상 자신의 Image는 sprite 참조를 유지하되 끄고, 마스크 밖의 형제 `PortraitFrame`을 마지막에 그린다. 초상의 자리·크기와 `HudController`의 직업별 GameObject 켜기/끄기는 유지한다. layout이 만든 원형 Texture2D와 Sprite를 두 초상이 공유하며 장면 종료 때 layout이 정리한다. 장면·그림 파일은 바꾸지 않는다.
+[HudLayout](../../03_Client/Assets/Scripts/UI/HudLayout.cs)은 기존 초상 객체 아래 첫 형제 `PortraitFrame`에 스킬칸과 같은 `Inset_Default`를 깔고, 다음 형제 `PortraitClip`의 `RectMask2D`로 그림을 사각으로 자른다. `UI.unity`의 초상 자리는 112×112·(22,-22), 가운데 clip은 98×98이다(HUD 1920×1080 기준). clip의 첫 자식 `PortraitBackdrop`은 sprite 없는 Image(#3D2C20)로 전체를 덮고, 다음 자식 `PortraitArt`는 장면의 머리 sprite·색·비율 유지 설정을 쓴다. 기사 그림은 132×132·(-15,20), 마법사 그림은 116×116·(0,13)으로 clip 가운데에 맞춘다. 초상 자신의 Image는 sprite 참조를 유지하되 끄고 `HudController`의 직업별 GameObject 켜기/끄기는 유지한다. frame은 clip 밖에 있어 잘리지 않는다. layout이 만드는 런타임 Texture2D·Sprite·Material은 없으며, NPC 대화창은 기존 `UiWindowAppearance.AddPortraitFrame`의 원 고리를 계속 쓴다.
 
 [CharacterRenderOrder](../../03_Client/Assets/Scripts/Rendering/CharacterRenderOrder.cs)는 활성 객체의 enabled·sprite가 있는 몸 SpriteRenderer에 연속된 `sortingOrder`를 부여한다. 로컬이 가장 앞이고 원격은 작은 entity id가 앞이며, 한 캐릭터 안에서도 서로 다른 순서를 쓴다. 최댓값은 3이고 다음 캐릭터는 앞 캐릭터의 최솟값보다 낮아 서로 끼어들지 않는다. 정렬 레이어·z·프리팹·이펙트 순서는 유지한다. `LocalPlayerSpawner`는 비주얼 Attach 뒤 helper와 registry 갱신을 부르고, `RemoteEntityRegistry.RefreshCharacterSorting`은 원격 생성·직업 교체·퇴장 때 로컬과 원격 순서를 다시 계산한다. Attach가 비활성화한 옛 Visual은 제외한다.
 
@@ -62,6 +64,8 @@ EditMode 시험은 view를 직접 만들어 칸 줄·생성 화면·잠금과 �
 HUD는 골드를 표시하지 않는다. 재화는 인벤토리 창의 「재화」 줄에만 보이고, [HudController](../../03_Client/Assets/Scripts/UI/HudController.cs)는 InventoryState를 구독하지 않는다. 재화는 클라이언트에서 계산하지 않는다.
 
 [HudLayout](../../03_Client/Assets/Scripts/UI/HudLayout.cs)은 UI 씬 소유의 장식 프레임·초상·스킬칸 그림과 원본 Sprite mesh에 맞춘 아이콘 크기를 맡는다. HP·직업·스킬 상태는 기존 컨트롤러가 소유한다. 스킬칸은 화면 왼쪽 아래에 고정된 4칸이며, 1칸은 Q, 2칸은 E이고 내용은 `ClientSkillCatalog.SkillKeyMap`에서 온다. SkillHudController는 빈 칸을 alpha 0.3으로 그리고 키 글자·아이콘·쿨다운을 숨긴다. NPC 대화창·보상 창은 스킬칸 위에 그려지고 스킬칸은 옮기지 않는다. 스킬칸은 인벤토리 창과 겹칠 수 있고, 창은 끌어서 옮긴다. 인벤토리 창은 스킬칸 위에 그려진다.
+
+HUD 칸 배치는 `UI.unity`의 직렬화 값이 정본이다. 1920×1080 기준 `Party_Info`는 520×184·(24,-196), 제목은 480×40, 멤버 줄 둘은 480×52·(20,-58)/(20,-118)이며 멤버 글자는 32pt·Midline이다. `skill_panel`은 444×120·(24,24), 네 칸은 96×96이고 판 왼쪽 아래 기준 가운데는 (60,60)·(168,60)·(276,60)·(384,60)이다. icon의 장면 값은 66×66·(0,8), Q·E는 62×30·(0,-32)·26pt이며 런타임 아이콘 보정은 이 장면 크기를 기준으로 한다.
 
 [InventoryPanel](../../03_Client/Assets/Scripts/UI/InventoryPanel.cs)은 게임플레이 씬의 패널 하나를 만들고 실제 구독한 미러와 요청 controller를 보관해 disable/destroy 또는 source 교체 때 같은 참조에서 해제한다. 늦게 생긴 UI도 현재 snapshot을 다시 표시한다. 「I」 키의 새 눌림마다 열림·닫힘을 바꾸며, 열림 상태의 단일 소유자는 [UnityClientSession](../../03_Client/Assets/Scripts/Network/UnityClientSession.cs)의 `IsInventoryPanelOpen`이다. 새 연결은 닫힘으로 시작하고 같은 연결의 맵 이동 뒤 새 패널도 마지막 상태를 따른다. 연결 cleanup은 끝난 세션의 Instance를 해제하므로 다음 세션은 다시 닫힘으로 시작한다. 닫힌 동안에도 패널의 구독과 연결의 Ready 재조회는 유지하고, 열 때 최신 snapshot을 다시 표시한다.
 
