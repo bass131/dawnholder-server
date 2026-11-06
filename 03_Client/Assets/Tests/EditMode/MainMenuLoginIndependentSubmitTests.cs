@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Dawnholder.Client.Tests
 {
-    // The scene's two submit sources must represent one start request in a frame, without adding a second
+    // The visible ID/PW submit sources must represent one start request in a frame, without adding a second
     // path to the scene button. A recording callback observes the view boundary before the controller's
     // probe lock could hide duplicate requests. The real scene is opened and closed without saving.
     public sealed class MainMenuLoginIndependentSubmitTests
@@ -21,10 +21,11 @@ namespace Dawnholder.Client.Tests
             int requests = 0;
             BuildView(menu.Controller, () => requests++);
             TMP_InputField account = Reference<TMP_InputField>(menu.Controller, "_accountNameInputField");
-            TMP_InputField host = Reference<TMP_InputField>(menu.Controller, "_serverHostInputField");
+            TMP_InputField password = account.transform.parent.Find("PasswordInput")?.GetComponent<TMP_InputField>();
+            Assert.IsNotNull(password, "B4: the view builds the visible PasswordInput submit source");
 
-            TMP_InputField first = accountFirst ? account : host;
-            TMP_InputField second = accountFirst ? host : account;
+            TMP_InputField first = accountFirst ? account : password;
+            TMP_InputField second = accountFirst ? password : account;
             first.onSubmit.Invoke(first.text);
             second.onSubmit.Invoke(second.text);
             first.onSubmit.Invoke(first.text);

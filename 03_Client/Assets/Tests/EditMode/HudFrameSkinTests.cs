@@ -54,15 +54,14 @@ namespace Dawnholder.Client.Tests
             Image[] slots = new[] { "_qSlot", "_eSlot" }
                 .Select(field => (serialized.FindProperty(field).objectReferenceValue as RectTransform)?.GetComponent<Image>())
                 .Where(slot => slot != null).ToArray();
-            Dictionary<RectTransform, Image[]> before = portraits.ToDictionary(portrait => portrait,
-                portrait => portrait.GetComponentsInChildren<Image>(true));
-
             SessionTestTools.Call(hud, "Awake");
-            // The frame images are the ones Awake added under each portrait; the portrait's own content stays as it was.
+            // A2: new mask/art Images are content, not frame artwork. Judge the direct named frame independently.
             Dictionary<RectTransform, Image[]> frames = portraits.ToDictionary(portrait => portrait,
-                portrait => portrait.GetComponentsInChildren<Image>(true).Except(before[portrait]).ToArray());
+                portrait => portrait.Cast<Transform>().Where(child => child.name == "PortraitFrame")
+                    .Select(child => child.GetComponent<Image>()).Where(image => image != null).ToArray());
             string[] wrongPanels = panels.Where(panel => !IsPiece(panel.sprite, "Panel_Default")).Select(Describe).ToArray();
-            string[] unframed = portraits.Where(portrait => frames[portrait].Length == 0).Select(portrait => portrait.name).ToArray();
+            string[] unframed = portraits.Where(portrait => frames[portrait].Length != 1 ||
+                frames[portrait][0].transform.GetSiblingIndex() != portrait.childCount - 1).Select(portrait => portrait.name).ToArray();
             string[] wrongFrames = frames.Values.SelectMany(added => added)
                 .Where(frame => !IsPiece(frame.sprite, "PortraitFrame_128")).Select(Describe).ToArray();
             string[] wrongSlots = slots.Where(slot => !IsPiece(slot.sprite, "Inset_Default")).Select(Describe).ToArray();
@@ -75,7 +74,7 @@ namespace Dawnholder.Client.Tests
             Assert.Greater(panels.Length, 0, "precondition: HudLayout lists HUD panels in the scene");
             Assert.Greater(portraits.Length, 0, "precondition: HudLayout lists portraits in the scene");
             Assert.AreEqual(2, slots.Length, "precondition: the Q and E skill slots carry an Image");
-            Assert.IsEmpty(unframed, "every HUD portrait gets a frame from Awake");
+            Assert.IsEmpty(unframed, "A2: every HUD portrait has one direct PortraitFrame as its last sibling");
             Assert.IsEmpty(wrongPanels, "every HUD panel shows the bright Panel_Default");
             Assert.IsEmpty(wrongFrames, "every HUD portrait frame shows the bright PortraitFrame_128");
             Assert.IsEmpty(wrongSlots, "the Q and E skill slots show the bright Inset_Default");
