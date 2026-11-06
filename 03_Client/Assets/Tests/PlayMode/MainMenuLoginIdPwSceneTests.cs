@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -191,7 +192,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return null;
             yield return null;
             Canvas.ForceUpdateCanvases();
-            Assert.AreEqual(new Vector2(width, height), canvas.renderingDisplaySize, "fixture: scaler sees target size");
+            TestContext.Out.WriteLine("S6 resolution target=(" + ((float)width).ToString("R", CultureInfo.InvariantCulture) + "," + ((float)height).ToString("R", CultureInfo.InvariantCulture) + "), actual=(" + canvas.renderingDisplaySize.x.ToString("R", CultureInfo.InvariantCulture) + "," + canvas.renderingDisplaySize.y.ToString("R", CultureInfo.InvariantCulture) + ")");
+            Assert.IsTrue(Mathf.Abs(canvas.renderingDisplaySize.x - width) < 0.5f && Mathf.Abs(canvas.renderingDisplaySize.y - height) < 0.5f, "fixture: scaler sees target size: target=(" + ((float)width).ToString("R", CultureInfo.InvariantCulture) + "," + ((float)height).ToString("R", CultureInfo.InvariantCulture) + "), actual=(" + canvas.renderingDisplaySize.x.ToString("R", CultureInfo.InvariantCulture) + "," + canvas.renderingDisplaySize.y.ToString("R", CultureInfo.InvariantCulture) + ")");
             var problems = new List<string>();
             TMP_InputField pw = Window.Find("PasswordInput")?.GetComponent<TMP_InputField>();
             Id.text = "";

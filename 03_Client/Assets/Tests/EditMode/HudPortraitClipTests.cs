@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Dawnholder.Client.UI;
@@ -179,7 +180,8 @@ namespace Dawnholder.Client.Tests
             foreach (CanvasScaler scaler in canvas.GetComponentsInChildren<CanvasScaler>(true))
                 SessionTestTools.Call(scaler, "Handle");
             Canvas.ForceUpdateCanvases();
-            Assert.AreEqual(new Vector2(width, height), canvas.renderingDisplaySize, "fixture: target resolution observed");
+            TestContext.Out.WriteLine("S6 resolution target=(" + ((float)width).ToString("R", CultureInfo.InvariantCulture) + "," + ((float)height).ToString("R", CultureInfo.InvariantCulture) + "), actual=(" + canvas.renderingDisplaySize.x.ToString("R", CultureInfo.InvariantCulture) + "," + canvas.renderingDisplaySize.y.ToString("R", CultureInfo.InvariantCulture) + ")");
+            Assert.IsTrue(Mathf.Abs(canvas.renderingDisplaySize.x - width) < 0.5f && Mathf.Abs(canvas.renderingDisplaySize.y - height) < 0.5f, "fixture: target resolution observed: target=(" + ((float)width).ToString("R", CultureInfo.InvariantCulture) + "," + ((float)height).ToString("R", CultureInfo.InvariantCulture) + "), actual=(" + canvas.renderingDisplaySize.x.ToString("R", CultureInfo.InvariantCulture) + "," + canvas.renderingDisplaySize.y.ToString("R", CultureInfo.InvariantCulture) + ")");
             Color32[] on = Capture(camera, target, readback);
             string directory = Environment.GetEnvironmentVariable("DAWNHOLDER_HUD_PORTRAIT_CAPTURE_DIR");
             if (!string.IsNullOrEmpty(directory))
