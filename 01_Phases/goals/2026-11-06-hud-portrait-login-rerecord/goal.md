@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 선행 시험 셋째 작업 `red-03`(겹침 시험의 원격 자리표시 전제 R02-F01 고침)을 열고 메인에 Unity 창 4를 청한다. 그 뒤 구현 계약(머리 `lead/impl-contract-01-head.md`)을 조립해 구현자를 연다. `red-01`·`red-02`는 끝났다(진행 기록 「2026-11-06 선행 시험 red-01 U1」·「2026-11-06 선행 시험 red-02 U1」).
+**다음 첫 일:** 구현 계약(머리 `lead/impl-contract-01-head.md`, 입력 `lead/impl-contract-01-inputs.txt`)을 이 문서 commit에서 조립해 구현자 `[Content 구현 Astra]`를 연다. 구현자가 초안을 다 쓰면 메인에 Unity 창 5를 청한다. 선행 시험 `red-01`·`red-02`·`red-03`은 끝났다(진행 기록 「2026-11-06 선행 시험 red-01 U1」·「… red-02 U1」·「… red-03 U1」).
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다.
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
@@ -207,8 +207,8 @@
 ## 진척 단계
 
 - [x] 범위 승인
-- [>] 선행 시험
-- [ ] 화면 세 가지 구현
+- [x] 선행 시험
+- [>] 화면 세 가지 구현
 - [ ] 독립 검증
 - [ ] PR 병합
 - [ ] 녹화 빌드
@@ -262,6 +262,14 @@
 - S6(F-01 고침): 1920×1080 실제 값은 `(1920.00012, 1080)`이었다. 세 시험이 해상도 확인을 지나 요구 단정에서 실패한다(HUD 고리 바깥 기사 585·마법사 1339, 로그인 B1~B3). red-01 대비 바뀐 것은 이 세 시험의 첫 실패 문구뿐이다.
 - E2(`CharacterOverlapSortSceneTests.S3_EveryOverlappingPixelShowsLocalFor60Frames`): 60프레임 모두 겹침이 있고(프레임당 1508~1618픽셀) 모두 로컬과 다른 값이 그려졌다. 구현 뒤 완료 증거로 다시 렌더한다. 실행 방법은 `red-02/report.md` 「E2 재실행 계약」이다.
 - **R02-F01(리드 계약 결함, 첫 발생):** S1·S2가 원격 뿌리 자리표시 SpriteRenderer가 없어 존재 전제에서 멈췄다. E1 관계·E3 유지·S4 일부는 미도달이다. 원인은 리드가 red-02 계약 「지금 상태」에 런타임이 쓰지 않는 `Prefabs/Characters/RemotePlayer.prefab`을 근거로 적은 것이다. 실제 주입 경로는 `Combat/CombatBootstrap.cs` 188·200행의 `Resources/RemotePlayer.prefab`(source `PlayerBase.prefab`)이다. 처분: 자리표시 조항을 설계에서 지우고, 새 시험 작성자(`red-03`)가 시험 169~185행의 자리표시 블록만 지운 뒤 같은 클래스를 다시 돌려 E1·E3 RED를 관측한다. 교정 층: 첫 발생이라 이 기록만 남긴다. 리드는 이후 계약의 「지금 상태」에 런타임 주입 경로(누가 어떤 에셋을 로드하는지)를 함께 적는다.
+
+### 2026-11-06 선행 시험 red-03 U1
+
+- 계약 `lead/red-contract-03.md`(sha256 `c3e9febbe5ba308b558fad2c7ad843c52d84d644d869b83c9435d266067b3c3d`). Unity 창 4 메인 허가 `msg_b8c7a240b32f`. 작성자 worker_done `msg_fd89d662d769`(outcome succeeded, Task `task_3ef2ea4f1cfb`). 보고 `red-03/report.md`(sha256 `5cc0c883c78d10747c6b9175a3d128dfff378f96be14eb793afe70b7ac765d89`). pane은 리드가 닫았다(`lead/close-red03-worker-01.txt`). 시험 commit `3b69bd01`.
+- 고친 곳: `CharacterOverlapSortSceneTests`의 원격 자리표시 단정 블록만 지우고 `Visual` 존재 단정은 남겼다.
+- 실패한 시도 하나: 첫 실행은 Unity 전 harness 시한 검사에서 멈췄다. 호출 셸의 `ConvertFrom-Json`이 시한을 DateTime으로 바꿔 Z가 빠지고 KST로 읽혔다. 리드가 ISO 문자열로 넘기는 재시도를 승인했다(`msg_598b1eaa8088`).
+- PlayMode 필터 3건: 통과 0·실패 3. S1은 E1 관계 실패 3, S2는 6단계 모두 도달하고 관계 실패 13(E1·E3 RED). 원격이 없는 `HuntingGround new local` 단계는 비교 쌍이 없어 보존 검사 4개만 통과한다. S3은 red-02와 같은 종류의 60프레임 불일치(E2 RED)다. 레이어·이펙트 하한·z·`SortingGroup` 보존 검사 72개는 통과했다(E4 시험 쪽).
+- 창 끝: 작성자 반환 관찰 15:28:20Z Unity 0·dotnet 0. 리드 확인 `date -u` 「Fri, Nov  6, 2026  3:34:26 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경은 리드가 되돌렸다(`lead/red03-drift-restore-01.txt`).
 
 ## 다음 계획 후보
 
