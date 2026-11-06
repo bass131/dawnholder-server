@@ -1,12 +1,12 @@
 # 시연 UI 마감과 재녹화 — HUD 초상화·로그인 화면 ID/PW/START/QUIT·세 회차 재녹화
 
-시연 영상(제출 기한 2026-11-09 14:00 KST)을 다시 찍기 전에 두 화면을 고친다. 하나는 왼쪽 위 HUD 초상화가 금색 테두리 밖으로 튀어나오는 마감이다(152 A). 다른 하나는 로그인 화면을 ID·PW·START·QUIT 배치로 바꾸는 것이다(152 코멘트). 두 화면이 main에 들어가면 녹화 빌드를 다시 만들고 게임 BGM을 켠 채 세 회차를 다시 녹화한다(153 A).
+시연 영상(제출 기한 2026-11-09 14:00 KST)을 다시 찍기 전에 두 화면을 고친다. 하나는 왼쪽 위 HUD 초상화가 금색 테두리 밖으로 튀어나오는 마감이다(152 A). 다른 하나는 로그인 화면을 ID·PW·START·QUIT 배치로 바꾸는 것이다(152 코멘트). 두 화면이 main에 들어가면 녹화 빌드를 다시 만들고 세 회차를 다시 녹화한다. 녹화에는 게임 BGM을 끄고 효과음만 담으며, BGM은 편집에서 따로 깐다(153 A, 메인 `msg_ee77a4e1bcd1`).
 
 ## 재개 지점
 
-**다음 첫 일:** 구현 계약(머리 `lead/impl-contract-01-head.md`, 입력 `lead/impl-contract-01-inputs.txt`)을 이 문서 commit에서 조립해 구현자 `[Content 구현 Astra]`를 연다. 구현자가 초안을 다 쓰면 메인에 Unity 창 5를 청한다. 선행 시험 `red-01`·`red-02`·`red-03`은 끝났다(진행 기록 「2026-11-06 선행 시험 red-01 U1」·「… red-02 U1」·「… red-03 U1」).
+**다음 첫 일:** 시험 전제 보완 계약 `red-04`(머리 `lead/red-contract-04-head.md`)를 이 문서 commit에서 조립해 시험 작성자 `[Content 시험 Astra]`를 연다. 작성자가 draft를 다 쓰면 메인에 Unity 창 6을 청한다. 그 뒤 독립 검증 계약(머리 `lead/verify-contract-01-head.md`)으로 간다. 구현은 commit됐고 U2 결과와 처분은 진행 기록 「2026-11-06 구현 U2」에 있다.
 
-- 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다.
+- 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
 - 범위 초안 v3(자동 진행기 화면 머무름 2.5초)는 메인이 A와 함께 허가했다(`msg_1f83e3674ddf`). 원문은 같은 폴더 `lead/scope-draft-v3.md`(sha256 `1e4ba0f162b8aa1d0fef369b3a9280030daa6b3398f4761f5591574fa916c460`)다.
 - 기준선 U0은 끝났다(진행 기록 「2026-11-06 기준선 U0」).
@@ -30,6 +30,7 @@
 - 153 A·155 A(대시보드 결정 응답 메인 pane 제출, 메인 전달 `msg_b6e61dd1536c` created_at 2026-11-06T13:19:32Z): 「1) 계획 검토 - Main 153 - 인게임 BGM 4곡을 발표 영상에 써도 되는지 → A 써도 됨 · 2) 계획 검토 - Content 155 - 로그인 화면의 PW 칸을 진짜 비밀번호 확인으로 만들지 → A 화면 칸만」.
   - 155 A 적용(메인 지시): 로그인 화면은 배치만 바꾼다. PW는 서버가 확인하지 않는다(`C_Login`·서버·DB·PDL 변경 없음). 진짜 비밀번호 인증은 시연 뒤 후보로 BACKLOG에 적는다(`login-password-authentication`).
   - 153 A 적용(메인 지시): 재녹화는 게임 BGM을 켜고 찍는다. 앞 녹화의 `-demo-no-bgm`(123 A)은 이번 녹화 계약에서 뺀다. 곡 출처는 사용자가 따로 적지 않았다. 기록은 「출처 미기재, 사용자 153 A로 사용 허용」이다. 녹화하지 않는 쪽 클라의 BGM·효과음은 꺼서 섞이지 않게 한다.
+  - BGM 끔으로 바꿈(사용자 원문, 메인 pane 제출 2026-11-06T16:08:36.950Z 무렵, 메인 전달 `msg_ee77a4e1bcd1`): 「시연중 BGM은 인게임으로 넣는거보다는 영상 편집으로 따로 넣는게 더 자연스럽겠다」. 메인 결정(사용자 원문 근거, 사용자 결정 아님): 위 153 A 적용의 「게임 BGM을 켜고 찍는다」를 「게임 BGM 끔, 효과음은 켬」으로 바꾼다. 녹화 대상 클라는 앞 녹화처럼 기존 인자 `-demo-no-bgm`(123 A)을 쓴다. BGM 곡 사용 허락(153 A)은 편집에서 그대로 쓴다. 녹화하지 않는 쪽 클라는 그대로 `-demo-mute`다.
 - 캐릭터 겹침(사용자 직접 요청, 메인 pane 제출 2026-11-06T13:52:43.513Z 무렵, 메인 전달 `msg_8b8be28cab0e`): 「그리고 각각 캐릭터가 겹쳐있을때 Z-파이팅이 일어나는데 각각 시작위치를 다르게 하던가 그 부분을 해결해줘」. 재녹화 전에 고친다(메인 지시). 방법은 범위 초안 v2와 아래 「범위 초안 v2 처분」 절이다.
 - 파티 구간 분할화면(사용자 직접 요청, 메인 pane 제출 2026-11-06T14:22:53.288Z 무렵, 메인 전달 `msg_89fbb9ec5651`): 「그리고 파티플레이 설명에는 잠시 좌우 분할화면으로 같이 플레이 한다는 느낌을 살짝 보여주면 좋을 거 같아」. 적용은 아래 「파티 구간 두 화면 동시 녹화」 절이다.
 - 화면 머무름(사용자 피드백, 메인 pane 제출 2026-11-06T14:55:44.692Z 무렵, 메인 전달 `msg_2ec1e9fd94ff`): 「보니까 가끔 너무 짧게 빠르게 지나가서 제대로 보기 어려운 부분이 있는거 같네」. 적용은 아래 「범위 초안 v3 처분」 절이다.
@@ -131,7 +132,7 @@
 | 3 | 기사 `rec2_knight`·「여명기사」 | 마법사 `rec2_ally_mage`·「여명동료」 | 서버 재시작 뒤 같은 계정 로그인 → 목록에 1회차 기사가 남은 화면 → 선택 → 마을 입장. 둘 다 새로 만들지 않는다 |
 
   - 실행 계약 v3·r3-v1의 스크립트를 복사하고 허용 고침(이름·소리 인자·경로·고정 head, 그리고 메인 결정 `msg_700b25b2b482`의 「1회차 마법사 창 보이게(1920×1080 popup, 기사 창 뒤)」·「두 번째 창 회차 전체 녹화」)만 한다. 녹화 사슬(`gfxcapture`·`h264_nvenc`·WASAPI loopback)은 바꾸지 않는다.
-  - 소리(153 A): 회차마다 녹화 대상 클라는 소리 인자 없이 BGM과 효과음을 내고, 진행용 클라는 `-demo-mute`다. 코드 변경은 0이다(기존 옵션).
+  - 소리(153 A, `msg_ee77a4e1bcd1`): 회차마다 녹화 대상 클라는 `-demo-no-bgm`으로 효과음만 내고, 진행용 클라는 `-demo-mute`다. BGM은 편집에서 깐다. 코드 변경은 0이다(기존 옵션).
   - 회차 사이 재시작과 3회차 앞 재시작은 메인이 한다(137 A).
   - 3회차는 재시작 뒤 로그인 창·재접속 목록·마을 도착 뒤까지 끊지 않고 담는다. 녹화 끝은 「마을 도착 + 5초 이상」이다. 사용자가 확정한 해설 대본이 이 구간에 세 줄(약 14초)을 쓴다(메인 `msg_54b808acd693`).
   - 결과는 편집 파일 표(영상·소리·장면 표식·SHA256·장면 프레임 범위·소리 자름 범위, 대장간 구간의 실제 회차·클라 원본)로 메인에 보낸다. 편집과 PPT 삽입은 메인 보조 몫이다.
@@ -181,7 +182,7 @@
 | (다) | C1 | 고정 head 40자, exe sha256, exe+`_Data` manifest, 서버 쪽 트리 diff 원시를 남긴다. |
 | (다) | C2 | 세 회차 영상·소리·표식이 있다. 1·2회차는 녹화 첫 프레임이 대상 역할의 `login` 줄보다 먼저라서 새 로그인 화면이 영상에 들어간다. 3회차는 목록에 1회차 기사가 남은 프레임이 있다. |
 | (다) | C3 | 1·2회차 자동 진행이 `done`까지 가고, 3회차는 선택 → 마을 입장까지 가고 영상이 마을 도착 뒤 5초 이상 이어진다(`msg_54b808acd693`). Player 로그와 단계 로그가 남는다. |
-| (다) | C4 | 녹화 대상 클라는 소리 인자 없음, 진행용 클라는 `-demo-mute`다(153 A). |
+| (다) | C4 | 녹화 대상 클라는 `-demo-no-bgm`(효과음만), 진행용 클라는 `-demo-mute`다(153 A, `msg_ee77a4e1bcd1`). |
 | (다) | C5 | 편집 파일 표(경로·SHA256·장면 프레임 범위·소리 자름 범위, 대장간 구간의 실제 회차·클라 원본)를 메인에 보낸다. |
 | (다) | C6 | 1·2회차 영상에서 두 캐릭터가 겹친 구간의 앞뒤가 바뀌지 않는다. 리드가 정지 화면 표본으로 판정하고 독립 검증이 대조한다. |
 | (다) | C7 | 1회차에 기사·마법사 두 창 영상이 같은 시간대로 있어 파티 구간을 좌우로 나눌 수 있다. 녹화 빌드 self-test의 두 창 10초 확인(프레임 변화·검은 화면 0·멈춤 0·누락 수)이 먼저 통과해야 한다. 통과하지 못하면 대안(두 회차 맞붙이기)으로 가고 편집 파일 표에 두 화면의 파티 구간 단계 로그 시각을 적는다(`msg_700b25b2b482`). |
@@ -270,6 +271,18 @@
 - 실패한 시도 하나: 첫 실행은 Unity 전 harness 시한 검사에서 멈췄다. 호출 셸의 `ConvertFrom-Json`이 시한을 DateTime으로 바꿔 Z가 빠지고 KST로 읽혔다. 리드가 ISO 문자열로 넘기는 재시도를 승인했다(`msg_598b1eaa8088`).
 - PlayMode 필터 3건: 통과 0·실패 3. S1은 E1 관계 실패 3, S2는 6단계 모두 도달하고 관계 실패 13(E1·E3 RED). 원격이 없는 `HuntingGround new local` 단계는 비교 쌍이 없어 보존 검사 4개만 통과한다. S3은 red-02와 같은 종류의 60프레임 불일치(E2 RED)다. 레이어·이펙트 하한·z·`SortingGroup` 보존 검사 72개는 통과했다(E4 시험 쪽).
 - 창 끝: 작성자 반환 관찰 15:28:20Z Unity 0·dotnet 0. 리드 확인 `date -u` 「Fri, Nov  6, 2026  3:34:26 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경은 리드가 되돌렸다(`lead/red03-drift-restore-01.txt`).
+
+### 2026-11-06 구현 U2
+
+- 계약 `lead/impl-contract-01.md`(sha256 `e492b3d0e4a3aaae9b279ac409f1d958746353046065f71a185db0f842f569fc`). Unity 창 5 메인 허가 `msg_1028adb24f68`. 구현자 worker_done `msg_1f89af81d642`(outcome failed, Task `task_aedc25145341`). 보고 `impl-01/report.md`(sha256 `3239e1e61d1443102c14527fbf350eb2518ec90405336f66f6fb46d37c5e6499`), 진단 `impl-01/u2-diagnosis.md`(sha256 `c348361ed7505de1e60e4fde0794c2f1dd0f44beba0026c5c833fcfd27c17ee4`). pane은 리드가 16:23:35Z에 닫았다(`lead/close-impl-worker-01.txt`).
+- 계약 보충(리드 승인): 새 `Advance(state, panel, now)` 모양 때문에 허용 목록 밖 시험 두 파일의 호출만 적응했다. `DemoAutopilotVerifyBoundaryTests.cs`(도우미 `AdvancePastDwell`과 호출 6곳)와 `DemoAutopilotVerifyConnectionTests.cs`(reflection 인자 `0f` 하나)이고, 기존 단정·기대값·순서는 그대로다. 구현자 ask `msg_fb96a4e422f5`, 리드 회신 `msg_6f197a41d3bc`.
+- 결과: EditMode 1849건 통과 1849·실패 0·건너뜀 0. PlayMode 297건 통과 247·실패 2·건너뜀 48이고, 건너뜀 이름은 U0과 같다. F-02(`KillRewardFloatTextSceneTests.KillInTheOldMap_IsForgottenAfterTheMapTransition`)는 이번엔 통과했다. 창 끝 관찰 16:11:02Z Unity 0·dotnet 0. 리드 확인 `date -u` 「Fri, Nov  6, 2026  4:23:25 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경은 리드가 되돌렸다(`lead/impl-drift-restore-01.txt`).
+- 남은 실패 둘(구현자 진단, 분류 제안 (a) 유력·(d) 원인 미확정)
+  - U2-F01 `HudPresentationLifecycleTests.ReenabledOrRecreatedHud_ShowsCurrentValues_AndAfterTheConnectionEnds_RestoresNone`: 시험의 `Drawn`이 `showMaskGraphic=false`인 원 마스크까지 「그려진 Graphic」으로 보고 그 Sprite 참조를 모은다. UI 장면을 내린 뒤 그 참조의 `texture`를 읽어 `MissingReferenceException`이 난다. 제품은 구현 계약대로 장면이 내려갈 때 런타임 원 sprite를 파괴한다.
+  - U2-F02 `CharacterOverlapSortSceneTests.S3_EveryOverlappingPixelShowsLocalFor60Frames`(E2): 순서 값은 로컬 3·원격 2이고 S1·S2는 통과했다. 첫 프레임 겹친 표본 1618 중 128이 「로컬만」 판과 달랐고, 128 모두 로컬 실루엣 1화소 경계였다(내부 차이 0). 시험이 알파를 관측하지 않고 겹친 모든 화소가 같기를 단정한다.
+- 처분(리드, `msg_b04a27595db5`): 판정 시험을 구현자가 고치면 구현과 판정의 분리가 깨진다. 그래서 두 시험 전제 보완을 새 시험 작성자 작업 `red-04`로 떼어 낸다. 구현 commit은 이 상태로 남기고 제품은 바꾸지 않는다. S3는 로컬 몸의 불투명 피복을 같은 프레임에서 따로 관측해 완전 피복 표본만 같음을 요구한다(goal E2 「표본 픽셀」 안의 시험 설계 고침). 경계 깎기·허용 오차 올리기는 쓰지 않는다.
+- **R04-F01(리드 계약 결함, 첫 발생):** red-02 계약의 E2 판정이 렌더 화소의 알파 합성을 고려하지 않았다. R02-F01(런타임 주입 경로)과는 다른 종류다. 교정 층: 첫 발생이라 이 기록만 남긴다. 리드는 이후 화소 비교 계약에 표본의 피복(알파) 조건을 함께 적는다.
+- (마) 새 단계 로그 이름 11개(녹화 단계 판정 F1이 읽는다): `login-screen-visible`→`login-submit`, `menu empty shown`→`menu empty advance`, `menu create shown`→`menu create advance`, `menu occupied shown`→`menu occupied advance`, `invite-screen-visible`→`invite-accept`, `quest-dwell-ended`(기존 `quest` F8 줄과 짝). 기존 이름과 순서는 그대로다.
 
 ## 다음 계획 후보
 
