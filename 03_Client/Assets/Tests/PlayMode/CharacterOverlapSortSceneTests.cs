@@ -167,22 +167,11 @@ namespace Dawnholder.Client.Tests.PlayMode
                         Describe(character.Id, renderers[second]));
 
                 if (character.Id == LocalId) continue;
-                SpriteRenderer placeholder = character.Root.GetComponent<SpriteRenderer>();
-                Assert.IsNotNull(placeholder, $"[{stage}] existence: {description}; root placeholder");
-                string placeholderDescription = Describe(character.Id, placeholder);
-                Check(placeholder.enabled, $"S4/E4 placeholder enabled: {placeholderDescription}");
-                Check(placeholder.sprite != null && placeholder.sprite.name == "RemotePlayer_Placeholder",
-                    $"S4/E4 placeholder sprite RemotePlayer_Placeholder: {placeholderDescription}; sprite={placeholder.sprite?.name}");
-                // S4: preserve the serialized root placeholder tint, including alpha.
-                Check(placeholder.color == new Color(0.5f, 0.5f, 0.5f, 1f),
-                    $"S4/E4 placeholder color (0.5,0.5,0.5,1): {placeholderDescription}; color={placeholder.color}");
+                // 런타임 원격 프리팹(Resources/RemotePlayer.prefab)에는 뿌리 SpriteRenderer가 없다.
                 Transform visual = character.Root.Find("Visual");
                 Assert.IsNotNull(visual, $"[{stage}] existence: {description}; Visual");
                 SpriteRenderer[] visualBodies = renderers.Where(renderer => renderer.transform.IsChildOf(visual)).ToArray();
                 Assert.IsNotEmpty(visualBodies, $"[{stage}] existence: {description}; Visual bodies");
-                foreach (SpriteRenderer renderer in visualBodies)
-                    Check(placeholder.sortingOrder < renderer.sortingOrder,
-                        $"S1/E1 placeholder behind Visual: {placeholderDescription} vs {Describe(character.Id, renderer)}");
             }
             for (int front = 0; front < characters.Count; front++)
             for (int back = front + 1; back < characters.Count; back++)
