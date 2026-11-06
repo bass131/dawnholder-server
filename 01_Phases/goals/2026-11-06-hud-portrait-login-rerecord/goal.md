@@ -4,19 +4,19 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 재검증 계약 `verify-02`(머리 `lead/verify-contract-02-head.md`, 등급 강)를 이 문서 commit에서 조립해 새 검증자 `[Content 검증자]`를 연다. 검증자가 준비되면 메인에 Unity 창 8(전체 EditMode·PlayMode)을 청한다. V-01은 fix-01이, V-02는 리드가 고쳤다(진행 기록 「2026-11-06 독립 검증 verify-01」·「… V-01 고침 fix-01」).
+**다음 첫 일:** 메인이 사용자 159 C 「칸 크기들 조절이 좀 필요해」의 대상 칸을 사용자에게 묻는 중이다. 답이 오면 같은 goal 안 PR2 범위 초안을 써서 메인 허가를 받는다. 그때까지 녹화 빌드·재녹화는 시작하지 않는다(메인 `msg_57d3b8dc4883`). PR1은 PR302로 병합됐다(진행 기록 「2026-11-06 재검증 verify-02와 PR1 병합」).
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
 - 범위 초안 v3(자동 진행기 화면 머무름 2.5초)는 메인이 A와 함께 허가했다(`msg_1f83e3674ddf`). 원문은 같은 폴더 `lead/scope-draft-v3.md`(sha256 `1e4ba0f162b8aa1d0fef369b3a9280030daa6b3398f4761f5591574fa916c460`)다.
 - 기준선 U0은 끝났다(진행 기록 「2026-11-06 기준선 U0」).
-- 열린 결정: 없음. 기존 시험 단정 변경 21행은 메인이 승인했다(`msg_724556cd0dc5`).
+- 열린 결정: 사용자 159 C의 「칸」이 어느 칸인지(메인이 사용자에게 묻는 중). 기존 시험 단정 변경 21행은 메인이 승인했다(`msg_724556cd0dc5`).
 - 근거 폴더: `.backups/verification/2026-11-06-hud-portrait-login-rerecord/`.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1 메인 허가(`msg_6feebf9d6738`, 메인 결정 다섯 포함), v2 메인 허가(`msg_950238658511`), 두 화면 동시 녹화 메인 결정(`msg_700b25b2b482`), v3 메인 허가 + A(`msg_1f83e3674ddf`) |
-| branch | PR1 `feat/content-hud-portrait-login-20261106`, base main `518f920faaca89419d9f9fde89e4b3f76a75156d` |
+| branch | PR1 `feat/content-hud-portrait-login-20261106`(PR302 병합, merge commit `423260f3921077a8c82955ce39da50d6a77f09a7`). PR2 `feat/content-hud-portrait-login-pr2-20261107`, base main `423260f3` |
 | 리드 | `[Content 리드 Opus]`(claude-opus-5-5 xhigh), Run `run_d49db3aff0b0`, 회신 주소 `run:run_d49db3aff0b0` |
 | 메인 | `[메인 Claude]`, handle `term_751a1f26-7aac-4a33-8a57-a3d4cec8a3d4` |
 
@@ -31,6 +31,8 @@
   - 155 A 적용(메인 지시): 로그인 화면은 배치만 바꾼다. PW는 서버가 확인하지 않는다(`C_Login`·서버·DB·PDL 변경 없음). 진짜 비밀번호 인증은 시연 뒤 후보로 BACKLOG에 적는다(`login-password-authentication`).
   - 153 A 적용(메인 지시): 재녹화는 게임 BGM을 켜고 찍는다. 앞 녹화의 `-demo-no-bgm`(123 A)은 이번 녹화 계약에서 뺀다. 곡 출처는 사용자가 따로 적지 않았다. 기록은 「출처 미기재, 사용자 153 A로 사용 허용」이다. 녹화하지 않는 쪽 클라의 BGM·효과음은 꺼서 섞이지 않게 한다.
   - BGM 끔으로 바꿈(사용자 원문, 메인 pane 제출 2026-11-06T16:08:36.950Z 무렵, 메인 전달 `msg_ee77a4e1bcd1`): 「시연중 BGM은 인게임으로 넣는거보다는 영상 편집으로 따로 넣는게 더 자연스럽겠다」. 메인 결정(사용자 원문 근거, 사용자 결정 아님): 위 153 A 적용의 「게임 BGM을 켜고 찍는다」를 「게임 BGM 끔, 효과음은 켬」으로 바꾼다. 녹화 대상 클라는 앞 녹화처럼 기존 인자 `-demo-no-bgm`(123 A)을 쓴다. BGM 곡 사용 허락(153 A)은 편집에서 그대로 쓴다. 녹화하지 않는 쪽 클라는 그대로 `-demo-mute`다.
+- 159 C(A4 초상·B7 로그인 외관 확인, 메인 전달 `msg_57d3b8dc4883`): 「C 코멘트 … 「칸 크기들 조절이 좀 필요해」」(메인이 줄인 인용). 메인 지시: 어느 칸인지 메인이 사용자에게 묻고, 답을 같은 goal 안 PR2 범위로 전달한다. 크기가 바뀌면 다시 찍어야 하므로 그때까지 녹화 빌드·재녹화를 시작하지 않는다. A4·B7은 이 답이 반영될 때까지 열려 있다.
+- 파티 정보 칸 글자색(메인 결정 `msg_57d3b8dc4883`, 사용자 결정 아님): U4 초상 캡처에서 어둡게 보인 파티 정보 칸은 실제 게임에서 밝은 바탕이라 고치지 않는다. 근거는 진행 기록 「2026-11-06 재검증 verify-02와 PR1 병합」이다.
 - 캐릭터 겹침(사용자 직접 요청, 메인 pane 제출 2026-11-06T13:52:43.513Z 무렵, 메인 전달 `msg_8b8be28cab0e`): 「그리고 각각 캐릭터가 겹쳐있을때 Z-파이팅이 일어나는데 각각 시작위치를 다르게 하던가 그 부분을 해결해줘」. 재녹화 전에 고친다(메인 지시). 방법은 범위 초안 v2와 아래 「범위 초안 v2 처분」 절이다.
 - 파티 구간 분할화면(사용자 직접 요청, 메인 pane 제출 2026-11-06T14:22:53.288Z 무렵, 메인 전달 `msg_89fbb9ec5651`): 「그리고 파티플레이 설명에는 잠시 좌우 분할화면으로 같이 플레이 한다는 느낌을 살짝 보여주면 좋을 거 같아」. 적용은 아래 「파티 구간 두 화면 동시 녹화」 절이다.
 - 화면 머무름(사용자 피드백, 메인 pane 제출 2026-11-06T14:55:44.692Z 무렵, 메인 전달 `msg_2ec1e9fd94ff`): 「보니까 가끔 너무 짧게 빠르게 지나가서 제대로 보기 어려운 부분이 있는거 같네」. 적용은 아래 「범위 초안 v3 처분」 절이다.
@@ -200,18 +202,20 @@
 ## PR 경계와 순서
 
 1. PR1(새 PR) `feat/content-hud-portrait-login-20261106`, base main `518f920f`: 이 goal 문서·CURRENT·BACKLOG + (가) + (나) + (라) + (마) + 자동 진행기 PW 채움 + `domains/client.md`. 결함 번호·commit은 부분별로 나눈다. 선행 시험은 `red-01`(가·나)과 `red-02`(라) 두 작업이고, (마)의 시험은 구현 계약 안에서 구현자가 쓴다(v3). 구현 계약은 하나다.
-2. 녹화 빌드와 세 회차 녹화: PR 없음. PR1 병합 commit이 고정 head다.
-3. 종료 기록 PR(새 PR): 종료 Gardener 뒤.
+2. PR2(새 PR, 범위 대기) `feat/content-hud-portrait-login-pr2-20261107`, base main `423260f3`: 사용자 159 C 「칸 크기 조절」. 대상 칸과 범위는 메인 허가를 받은 범위 초안으로 정한다(메인 `msg_57d3b8dc4883`). 이 문서의 PR1 뒤 기록도 이 branch에 둔다.
+3. 녹화 빌드와 세 회차 녹화: PR 없음. 마지막 화면 PR의 병합 commit(PR2가 생기면 PR2)이 고정 head다.
+4. 종료 기록 PR(새 PR): 종료 Gardener 뒤.
 
-순서: 선행 시험 → 구현 → 독립 검증 → PR1 병합(사용자 승인) → 녹화 빌드·검증 → 세 회차 녹화·리드 판정·좁은 독립 검증 → 편집 파일 표 전달 → 종료 Gardener → 종료 기록 PR → 종료 점검. 막히면 바닥은 영상 v4(111.3초)이고 그 판단은 메인 몫이다.
+순서: 선행 시험 → 구현 → 독립 검증 → PR1 병합(사용자 승인) → PR2 칸 크기 조절(범위 허가 뒤 같은 순서, 사용자 승인 병합) → 녹화 빌드·검증 → 세 회차 녹화·리드 판정·좁은 독립 검증 → 편집 파일 표 전달 → 종료 Gardener → 종료 기록 PR → 종료 점검. 막히면 바닥은 영상 v4(111.3초)이고 그 판단은 메인 몫이다.
 
 ## 진척 단계
 
 - [x] 범위 승인
 - [x] 선행 시험
 - [x] 화면 세 가지 구현
-- [>] 독립 검증
-- [ ] PR 병합
+- [x] 독립 검증
+- [x] PR1 병합
+- [>] PR2 칸 크기 조절(대상 칸 확인 대기)
 - [ ] 녹화 빌드
 - [ ] 세 회차 녹화
 - [ ] 편집 자료 전달
@@ -316,9 +320,23 @@
 - 고친 곳: `HudLayout.cs`의 저장소 밖 캡처 경로 주석 두 줄을 지웠다. 얼굴 중심 이유 주석은 남았다. 코드 변경 0(commit `4e2a97c7`).
 - 재검증 등급: 처리 계획 4의 「약」을 「강」으로 고친다. 이번 재검증 대상에 남긴 판정용 시험 242줄이 들어가 제품+시험 50줄 이상이기 때문이다(등급 정본 「검증 강도 4주 시범」).
 
+### 2026-11-06 재검증 verify-02와 PR1 병합
+
+- 계약 `lead/verify-contract-02.md`(sha256 `e68d078d0809a736c3c5f30f264d6c2d34bdc87a85d9e2107f11a6758a0a2f68`, 등급 강, 메인 동의 `msg_374f8d465226`). Unity 창 8 메인 허가 `msg_e9e8e1d96090`. 검증자 worker_done `msg_667c12f0ceee`(Task `task_55c4488998d4`, verifies `task_997652a8d729`). 판정 `verify-02/verdict.md`(sha256 `b0378e3fa72f7123cea03576904a304b87d264daaa24c193a1d7e3ac3e540b48`). pane은 리드가 닫았다(`lead/verify02-worker-close-01.json`).
+- 판정: **통과, 차단 결함 0건.** V-01·V-02가 해소됐고 새 결함은 없다. 메인이 원문을 R-2로 읽고 보고와 같다고 했다(`msg_25570efe6ff2`).
+- U4(HEAD `c8c19321`): EditMode 1851건 통과 1851, PlayMode 298건 통과 250·실패 0·건너뜀 48(이름 U0·U3과 같음). E2는 60프레임 모두 완전 피복 표본 불일치 0이다(겹친 표본 1508~1619, 완전 피복 1364~1478). F-02 재발 없음, 원인 미확정은 그대로다. 리드 확인 `date -u` 「Fri, Nov  6, 2026  6:10:47 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경은 리드가 되돌렸다(`lead/verify02-drift-restore-01.txt`).
+- 완료조건: A1~A3·B1~B5·E1~E4·F2·D1 통과. A4·B7은 독립 외관 통과이고 사용자 확인에서 159 C가 왔다(「적용 중인 사용자 결정」). B6은 시험 부분 통과이고 녹화 실주행이 남았다. F1·C1~C7은 녹화 단계다.
+- 사용자 확인용 캡처(U4, 같은 HEAD): `verify-02/u4/captures/portrait-knight-1280x720.png`(sha256 `4e83f6285c29ead8929e017bb939dbcfdae312c0ab977d11a2a30a5a7ea8d9af`)·`portrait-mage-1280x720.png`(`0c0ba741b9e36f62f9f89eda4ca4cf342f41133175d1a03d4c1d6e4b16a1dbdd`)·`login-idpw-empty-1280x720.png`(`2e23607cdf3482aeb5c7946d89408ee37aad6177e900b5c7da52f82875a79fb2`)·`login-idpw-filled-1280x720.png`(`47eb3a79bd4c784e568168623fe8c6f99dcdee0f73d02478ed196fe5c12e3c85`).
+- 파티 정보 칸 글자색(메인 질문 `msg_25570efe6ff2`): 초상 캡처의 파티 정보 칸은 어두운 바탕에 어두운 글자로 보인다. 칸 안 글이 장면 기본 글(`전사 (Player)`·`마법사 (Other)`)이라 `PartyMemberHud`가 갱신하지 않은 시험 장면 상태다. 앞 goal 리허설 확대 `.backups/verification/2026-10-31-demo-autopilot-character-select/lead/party-panel-crop-r4-1-vs-r4-2.png`(sha256 `9aa7fdabc0297f8ec12325acc964cede399d84f4133bf9d654cb1c0e135997c6`)에서는 밝은 바탕에 어두운 글자로 읽힌다. 그 뒤 `PartyMemberHud.cs`는 바뀌지 않았고, `99.UI/UI.unity`의 마지막 변경 `fb7ff496`은 골드 표시 객체만 지웠다. 시험 장면이 왜 어둡게 그리는지는 확인하지 않았다. 메인이 확대본을 보고 고치지 않기로 정했다(`msg_57d3b8dc4883`).
+- 검증자의 범위 밖 기록: 기존 서버 시험 `GuildWire.cs:7`에 저장소 밖 근거 주석 1건이 있다. 메인 지시로 BACKLOG 후보로만 적는다(`guild-wire-test-local-evidence-comment`).
+- PR302 생성(head `c8c193210f2c1cb58a2bd0aab83d059ef176fc4a`, 본문 `lead/pr1-body.md` sha256 `4b71b26cdb98183872a32c8c97b900e64f8ac365eb7ab5a63126abc23929e586`). CI 4개 모두 통과했다. 완료 시각은 code-rules 18:16:22Z, module-boundaries 18:16:24Z, architecture-tests 18:22:17Z, dotnet-tests 18:40:09Z이고 mergeStateStatus는 CLEAN이었다(`lead/pr1-view-03.json`). 병합 준비 보고 `msg_e70d66efb1c5`.
+- 병합: 사용자가 메인 pane에 「병합 승인: PR302 head c8c193210f2c1cb58a2bd0aab83d059ef176fc4a」를 제출했고, 메인이 head·CI를 다시 대조해 병합했다. mergedAt 2026-11-06T19:05:01Z, merge commit `423260f3921077a8c82955ce39da50d6a77f09a7`(메인 `msg_57d3b8dc4883`). 리드가 받은 origin/main과 PR head의 tree 차이는 0이다(`lead/post-merge-fetch-01.txt`).
+- 다음: 녹화는 멈춘다. 159 C의 대상 칸이 정해지면 PR2 범위 초안을 쓴다. PR2 branch는 `423260f3`에서 만들었다(`lead/pr2-branch-01.txt`).
+
 ## 다음 계획 후보
 
 - `guild-stronghold-vault-persistence`(144 A): 길드 거점·공동 금고 DB 저장, 시연 뒤.
 - `login-server-host-launch-argument`(메인 결정 5): 서버 주소 실행 인자.
 - `login-password-authentication`(155 A): 진짜 비밀번호 인증.
 - `player-spawn-position-spread`(메인 결정 `msg_950238658511`): 같은 맵 플레이어의 서버 시작 위치 분산.
+- `guild-wire-test-local-evidence-comment`(메인 `msg_25570efe6ff2`): 서버 시험 `GuildWire.cs:7`의 저장소 밖 근거 주석.
