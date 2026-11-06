@@ -80,10 +80,14 @@ namespace Dawnholder.Client.Tests
         public void T1_ArtIsClippedInsideTheSquareCell_AndFrameIsOutsideEveryClip(int index)
         {
             HudLayout hud = Open();
-            RectTransform portrait = Portraits(hud)[index];
+            RectTransform[] portraits = Portraits(hud);
+            RectTransform portrait = portraits[index];
             Sprite head = portrait.GetComponent<Image>().sprite;
             Assert.IsNotNull(head, "fixture: scene portrait sprite");
             SessionTestTools.Call(hud, "Awake");
+            foreach (RectTransform other in portraits) other.gameObject.SetActive(other == portrait);
+            for (Transform node = portrait; node != null; node = node.parent) node.gameObject.SetActive(true);
+            Assert.IsTrue(portrait.gameObject.activeInHierarchy, "fixture: the selected class portrait is active");
             Transform maskTransform = portrait.Find("PortraitClip");
             Assert.IsNotNull(maskTransform, "A2: direct PortraitClip child is missing");
             var mask = maskTransform.GetComponent<RectMask2D>();

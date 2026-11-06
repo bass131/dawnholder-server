@@ -135,6 +135,10 @@ namespace Dawnholder.Client.Tests
             Sprite original = portrait.GetComponent<Image>().sprite;
             Assert.IsNotNull(original, "fixture: the authored portrait head sprite");
             SessionTestTools.Call(_hud.GetComponent<HudLayout>(), "Awake");
+            RectTransform[] portraits = { Rect("character_status/status_icon1"), Rect("character_status/status_icon2") };
+            foreach (RectTransform other in portraits) other.gameObject.SetActive(other == portrait);
+            for (Transform node = portrait; node != null; node = node.parent) node.gameObject.SetActive(true);
+            Assert.IsTrue(portrait.gameObject.activeInHierarchy, "fixture: the selected class portrait is active");
             var errors = new List<string>();
             Vector(errors, new Vector2(112, 112), portrait.rect.size, "portrait size");
             Vector(errors, new Vector2(22, -22), portrait.anchoredPosition, "portrait position");

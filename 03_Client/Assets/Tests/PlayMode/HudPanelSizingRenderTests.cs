@@ -75,7 +75,17 @@ namespace Dawnholder.Client.Tests.PlayMode
                     TMP_Text label = labels[index];
                     Rect row = surface.PixelRect((RectTransform)label.transform.parent);
                     Size(errors, new Vector2(480, 52), row.size, "row " + index + " rendered size");
-                    if (label.isTextOverflowing) errors.Add("row " + index + " reports text overflow");
+                    int expectedCharacters = label.text.Count(character => !char.IsWhiteSpace(character));
+                    int visibleCharacters = label.textInfo.characterInfo.Take(label.textInfo.characterCount)
+                        .Count(character => character.isVisible);
+                    TestContext.Out.WriteLine($"TEXT row={index} overflow={label.isTextOverflowing} " +
+                        $"truncated={label.isTextTruncated} visible={visibleCharacters} expected={expectedCharacters}");
+                    if (label.isTextTruncated)
+                        errors.Add($"row {index} text is truncated: " +
+                            $"visible={visibleCharacters} expected={expectedCharacters}");
+                    if (visibleCharacters != expectedCharacters)
+                        errors.Add($"row {index} visible characters={visibleCharacters} " +
+                            $"expected non-whitespace={expectedCharacters}");
                     float originalAlpha = label.alpha;
                     Color32[] hidden;
                     try
