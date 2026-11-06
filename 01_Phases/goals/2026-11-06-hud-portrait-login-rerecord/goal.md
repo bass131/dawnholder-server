@@ -4,17 +4,18 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 선행 시험 둘째 작업 `red-02`(캐릭터 겹침, 그리고 red-01 시험 결함 F-01 고침)를 연다. 계약 머리는 근거 `lead/red-contract-02-head.md`이고 이 문서 commit에서 부록을 조립한다. 작성자가 시험을 다 쓰면 메인에 Unity 창 3을 청한다. 첫 작업 `red-01`은 끝났다(진행 기록 「2026-11-06 선행 시험 red-01 U1」).
+**다음 첫 일:** 선행 시험 셋째 작업 `red-03`(겹침 시험의 원격 자리표시 전제 R02-F01 고침)을 열고 메인에 Unity 창 4를 청한다. 그 뒤 구현 계약(머리 `lead/impl-contract-01-head.md`)을 조립해 구현자를 연다. `red-01`·`red-02`는 끝났다(진행 기록 「2026-11-06 선행 시험 red-01 U1」·「2026-11-06 선행 시험 red-02 U1」).
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다.
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
+- 범위 초안 v3(자동 진행기 화면 머무름 2.5초)는 메인이 A와 함께 허가했다(`msg_1f83e3674ddf`). 원문은 같은 폴더 `lead/scope-draft-v3.md`(sha256 `1e4ba0f162b8aa1d0fef369b3a9280030daa6b3398f4761f5591574fa916c460`)다.
 - 기준선 U0은 끝났다(진행 기록 「2026-11-06 기준선 U0」).
 - 열린 결정: 없음. 기존 시험 단정 변경 21행은 메인이 승인했다(`msg_724556cd0dc5`).
 - 근거 폴더: `.backups/verification/2026-11-06-hud-portrait-login-rerecord/`.
 
 | 항목 | 현재 |
 |---|---|
-| 승인 | 범위 초안 v1 메인 허가(`msg_6feebf9d6738`, 메인 결정 다섯 포함), v2 메인 허가(`msg_950238658511`), 두 화면 동시 녹화 메인 결정(`msg_700b25b2b482`) |
+| 승인 | 범위 초안 v1 메인 허가(`msg_6feebf9d6738`, 메인 결정 다섯 포함), v2 메인 허가(`msg_950238658511`), 두 화면 동시 녹화 메인 결정(`msg_700b25b2b482`), v3 메인 허가 + A(`msg_1f83e3674ddf`) |
 | branch | PR1 `feat/content-hud-portrait-login-20261106`, base main `518f920faaca89419d9f9fde89e4b3f76a75156d` |
 | 리드 | `[Content 리드 Opus]`(claude-opus-5-5 xhigh), Run `run_d49db3aff0b0`, 회신 주소 `run:run_d49db3aff0b0` |
 | 메인 | `[메인 Claude]`, handle `term_751a1f26-7aac-4a33-8a57-a3d4cec8a3d4` |
@@ -31,6 +32,7 @@
   - 153 A 적용(메인 지시): 재녹화는 게임 BGM을 켜고 찍는다. 앞 녹화의 `-demo-no-bgm`(123 A)은 이번 녹화 계약에서 뺀다. 곡 출처는 사용자가 따로 적지 않았다. 기록은 「출처 미기재, 사용자 153 A로 사용 허용」이다. 녹화하지 않는 쪽 클라의 BGM·효과음은 꺼서 섞이지 않게 한다.
 - 캐릭터 겹침(사용자 직접 요청, 메인 pane 제출 2026-11-06T13:52:43.513Z 무렵, 메인 전달 `msg_8b8be28cab0e`): 「그리고 각각 캐릭터가 겹쳐있을때 Z-파이팅이 일어나는데 각각 시작위치를 다르게 하던가 그 부분을 해결해줘」. 재녹화 전에 고친다(메인 지시). 방법은 범위 초안 v2와 아래 「범위 초안 v2 처분」 절이다.
 - 파티 구간 분할화면(사용자 직접 요청, 메인 pane 제출 2026-11-06T14:22:53.288Z 무렵, 메인 전달 `msg_89fbb9ec5651`): 「그리고 파티플레이 설명에는 잠시 좌우 분할화면으로 같이 플레이 한다는 느낌을 살짝 보여주면 좋을 거 같아」. 적용은 아래 「파티 구간 두 화면 동시 녹화」 절이다.
+- 화면 머무름(사용자 피드백, 메인 pane 제출 2026-11-06T14:55:44.692Z 무렵, 메인 전달 `msg_2ec1e9fd94ff`): 「보니까 가끔 너무 짧게 빠르게 지나가서 제대로 보기 어려운 부분이 있는거 같네」. 적용은 아래 「범위 초안 v3 처분」 절이다.
 - 144 A(메인 `msg_a0317d5084da`가 전달, 이 goal 진입 `msg_5a959e007b3e`가 다시 전달): 「3) 계획 검토 - Content 144 - 길드 거점·공동 금고를 DB에 저장할지 → A 시연 뒤 후보 (초안 msg_df3f063feba5)」. BACKLOG 등록은 이 goal 첫 PR에 넣는다(`guild-stronghold-vault-persistence`).
 - 137 A·138 A(메인 `msg_c69495189d38`, 앞 goal 「11-06 사용자 결정 137 A·138 A」 절): 「1) 137 - 서버 시작·정지·재시작을 메인이 대신 할지: 메인이 대신 vs 지금처럼 사용자 손 → A 메인이 대신 · 2) 138 - 운영 결정(이름 초안·재시작 순서·처분 같은 것)을 메인이 추천안으로 정할지 → A 메인이 정함」. 이 goal의 서버 시작·정지·재시작은 메인이 한다. 리드·작업자는 서버 창을 읽지도 누르지도 않는다.
 - 사용자 확인 범위(메인 `msg_4783c3e62d2c`, 앞 goal 같은 이름 절): 「앞으로는 내가 체크해야 하는 부분은 계획 승인, 결과 받고 피드백, 관리자 권한 승인, 에이전트 단독으로 정하기 어려운 트레이드오프 문제(되돌리기 어려운 경우)」. 리드는 결정 요청을 이 기준으로 거르고, 메인이 정할 수 있는 것은 추천안과 함께 「메인 결정 요청」으로 보낸다. PR 병합의 `병합 승인:` 한 줄은 그대로다.
@@ -69,6 +71,15 @@
 - 메인 결정(`msg_700b25b2b482`): (다) 허용 고침 목록에 「1회차 마법사 창 보이게(1920×1080 popup, 기사 창 뒤)」·「두 번째 창 회차 전체 녹화」 두 줄을 더한다. 녹화 도구 변경·새 설치는 없다. 녹화 빌드 self-test에 두 창 10초 확인(프레임 변화·검은 화면·멈춤·누락 수)을 더하고, 메모리 관문은 「1920×1080 두 창 + ffmpeg 둘」 기준으로 잰다. 실패하면 따로 찍은 두 회차의 비슷한 순간을 맞붙이고, 편집 파일 표에 두 화면의 파티 구간 단계 로그 시각을 적은 뒤 메인에 결과만 알린다.
 - 소리는 기사 쪽 하나다. 1회차 마법사는 보이는 창이어도 `-demo-mute`다.
 
+### 범위 초안 v3 처분 — msg_2ec1e9fd94ff·msg_d49beda3a7c0·msg_1f83e3674ddf
+
+138 A에 따른 메인 결정이며 사용자 결정이 아니다. 근거는 사용자 피드백이고 되돌리기 쉽다.
+
+- 영상 보조가 v8b에서 잰 창·글 화면 길이(`msg_172fe4ac0ea7`): 로그인 창 1.5초, 빈 캐릭터 목록 1.0초, 생성 창 2.2초, 선택 승인 글 0.6초, 파티 초대 창 1.1초, QUEST CLEAR 1.4초, 재시작 뒤 로그인 창 1.1초, 재접속 선택 승인 글 0.6초.
+- 자동 진행기가 통제하는 화면(로그인 창·재시작 뒤 로그인·빈 목록·생성 창·파티 초대 창 수락 전·재접속 목록)은 다음 동작 전에 2.5초 이상 머문다. 단계 순서와 동작은 그대로다.
+- **A(`msg_1f83e3674ddf`):** 자동 진행기로 늘릴 수 없는 선택 승인 글(맵 입장 흐름이 Town을 열 때까지만 보임)과 QUEST CLEAR(제품 연출 `QuestAlert` 약 1.57초)는 제품을 바꾸지 않고 편집에서 멈춤 화면으로 늘린다. 자동 진행기는 F8 뒤 2.5초 기다려 QUEST CLEAR 연출이 잘리지 않게 한다. 영상 보조에는 메인이 알린다.
+- 바꿀 곳은 `DemoAutopilot.cs`와 `DemoCharacterMenuStep.cs`다. 시험은 구현 계약 안에서 구현자가 기존 자동 진행기 시험을 갱신하고 F2 시험을 더하며, 새 독립 검증자가 판정한다. 진행 중이던 red-02에는 넣지 않았다.
+
 ### 기준선 기록 지시 — msg_6f013457bd44
 
 메인 결정이며 사용자 결정이 아니다.
@@ -92,7 +103,7 @@
 
 ## 범위
 
-세부 설계·대안은 승인된 초안 원문 v1 §2~§12와 v2 §1~§8이 정본이다. 아래는 승인 뒤 고정한 요약이다.
+세부 설계·대안은 승인된 초안 원문 v1 §2~§12, v2 §1~§8, v3 §1~§7이 정본이다. 아래는 승인 뒤 고정한 요약이다.
 
 ### 만들 것
 
@@ -109,7 +120,8 @@
   - 원인(리드 코드 읽기): 기사·마법사 비주얼 SpriteRenderer가 같은 정렬 레이어 `Player`에 `sortingOrder` 0이고 로컬·원격 모두 z=0이다. `Renderer2D.asset` 투명 정렬은 Default 모드라 레이어·순서·z가 같으면 앞뒤를 정할 값이 없다. 서버는 맵마다 시작 위치 하나라 같은 맵 캐릭터가 처음부터 겹친다. 깜빡임은 사용자가 영상에서 봤고 리드는 재현하지 않았다(미관측). 근거 줄은 범위 초안 v2 §1이다.
   - 값은 런타임에 정한다. 프리팹·장면 직렬화 값과 정렬 레이어·`Renderer2D` 설정은 바꾸지 않는다. 캐릭터 순서 값은 `Player` 레이어 이펙트(관측한 가장 낮은 값 4, 그 밖 5·100)보다 낮게 둬서 이펙트를 지금처럼 캐릭터 앞에 그린다. 직업 비주얼 교체(`ClassVisualMount.Attach`)와 맵 이동 뒤에도 규칙이 유지된다.
   - 설계 추천: 로컬은 `LocalPlayerSpawner`, 원격은 `RemoteEntityRegistry`가 비주얼을 붙인 직후 같은 helper 하나로 순서를 정한다. 내부 방식(`sortingOrder` 값, `SortingGroup` 등)은 구현자가 정한다. z를 조금씩 다르게 두는 방식은 추천하지 않는다.
-  - red-02 계약의 리드 설계 고정(시험이 겨냥할 바깥 계약): 순서는 SpriteRenderer `sortingOrder`로만 정하고 `SortingGroup`을 더하지 않으며 z는 0 그대로다. 앞 캐릭터의 순서 최솟값이 뒤 캐릭터의 최댓값보다 크다. 원격끼리는 entity id가 작은 쪽이 앞이다. 원격 뿌리의 자리표시 SpriteRenderer(`RemotePlayer.prefab`, 1×1 불투명 회색, 비주얼과 같은 `Player`/0)는 같은 캐릭터 비주얼보다 뒤이고 켜짐·sprite·색은 그대로다. 관계는 로컬 1 + 원격 2까지 본다. 위 추천의 「내부 방식은 구현자」 가운데 `SortingGroup`과 방향은 이 고정으로 좁혔다.
+  - red-02 계약의 리드 설계 고정(시험이 겨냥할 바깥 계약): 순서는 SpriteRenderer `sortingOrder`로만 정하고 `SortingGroup`을 더하지 않으며 z는 0 그대로다. 앞 캐릭터의 순서 최솟값이 뒤 캐릭터의 최댓값보다 크다. 원격끼리는 entity id가 작은 쪽이 앞이다. 관계는 로컬 1 + 원격 2까지 본다. 원격 뿌리 자리표시 조항은 지웠다(R02-F01, 진행 기록 「2026-11-06 선행 시험 red-02 U1」): 실제로 쓰이는 원격 프리팹은 `Resources/RemotePlayer.prefab`(`PlayerBase` 변형)이고 뿌리 SpriteRenderer가 없다. 리드가 계약에 적은 `Prefabs/Characters/RemotePlayer.prefab`은 런타임이 쓰지 않는 다른 에셋이다. 위 추천의 「내부 방식은 구현자」 가운데 `SortingGroup`과 방향은 이 고정으로 좁혔다.
+- **(마) 자동 진행기 화면 머무름(v3):** 로그인 창·재시작 뒤 로그인·빈 캐릭터 목록·생성 창(이름·직업을 채운 뒤 생성 전)·파티 초대 창(수락 전)·재접속 목록마다 화면이 보인 뒤 다음 동작까지 2.5초 이상 기다린다. QUEST CLEAR는 F8 뒤 2.5초 기다린 다음 포털로 간다. 단계 순서와 동작은 그대로다. 단계 로그에 화면이 보인 시각과 다음 동작 시각이 남게 한다(없는 곳만 `[Demo] step` 줄을 더함). 녹화 길이는 회차당 약 20초 늘어난다(메인 어림). 선택 승인 글·QUEST CLEAR의 남은 짧음은 편집에서 늘린다(A).
 - **(다) 녹화 빌드와 세 회차 재녹화:** PR1이 main에 들어간 commit을 고정 head로 녹화 빌드를 다시 만든다. 녹화 빌드 계약 v12와 스크립트를 이 goal 근거 폴더 `recording-build-01/`로 복사하고 고정 head·경로만 바꾼다. 서버 쪽 트리(`02_Server`·`04_ClientNet`·`98_Shared`·`99_Tools`)가 `518f920f` 대비 diff 0이면 서버는 지금 빌드 그대로 쓰고 R1을 다시 돌지 않는다. diff가 있으면 메인을 거쳐 Core에 R1을 청한다.
 
 | 회차 | 녹화 대상(보이는 창) | 진행용(숨긴 창) | 보여 줄 장면 |
@@ -121,6 +133,7 @@
   - 실행 계약 v3·r3-v1의 스크립트를 복사하고 허용 고침(이름·소리 인자·경로·고정 head, 그리고 메인 결정 `msg_700b25b2b482`의 「1회차 마법사 창 보이게(1920×1080 popup, 기사 창 뒤)」·「두 번째 창 회차 전체 녹화」)만 한다. 녹화 사슬(`gfxcapture`·`h264_nvenc`·WASAPI loopback)은 바꾸지 않는다.
   - 소리(153 A): 회차마다 녹화 대상 클라는 소리 인자 없이 BGM과 효과음을 내고, 진행용 클라는 `-demo-mute`다. 코드 변경은 0이다(기존 옵션).
   - 회차 사이 재시작과 3회차 앞 재시작은 메인이 한다(137 A).
+  - 3회차는 재시작 뒤 로그인 창·재접속 목록·마을 도착 뒤까지 끊지 않고 담는다. 녹화 끝은 「마을 도착 + 5초 이상」이다. 사용자가 확정한 해설 대본이 이 구간에 세 줄(약 14초)을 쓴다(메인 `msg_54b808acd693`).
   - 결과는 편집 파일 표(영상·소리·장면 표식·SHA256·장면 프레임 범위·소리 자름 범위, 대장간 구간의 실제 회차·클라 원본)로 메인에 보낸다. 편집과 PPT 삽입은 메인 보조 몫이다.
 - **문서:** 이 goal, CURRENT의 Content 줄, BACKLOG 새 절(144 A·서버 주소 실행 인자·진짜 비밀번호 인증·서버 시작 위치 분산 네 행), `domains/client.md`의 로그인 화면·HUD 초상·캐릭터 그리기 순서 문단.
 
@@ -129,6 +142,7 @@
 - (가): `03_Client/Assets/Scripts/UI/HudLayout.cs`, `UiWindowAppearance.cs`(`AddPortraitFrame`을 부르는 곳은 `HudLayout`뿐, grep 확인), HUD 시험(`HudFrameSkinTests` 등), 새 초상 시험. `UiWindowCompositionRenderTests`는 렌더 판정의 재사용 후보다.
 - (나): `MainMenuLoginView.cs`, 필요하면 `MainMenuController.cs`(Tab·숨긴 주소 칸), `Demo/DemoAutopilot.cs`(PW 채움 한 곳), 로그인 시험(`MainMenuLoginWindowSceneTests`·`MainMenuLoginSceneWiringTests`·`MainMenuLoginIndependentSubmitTests`), `GuildWindowButtonLabelTests`의 로그인 칸 참조, 새 배치 시험.
 - (라): `03_Client/Assets/Scripts/Rendering/`(새 helper 또는 `ClassVisualMount.cs`), `Bootstrap/LocalPlayerSpawner.cs`, `State/RemoteEntityRegistry.cs`, 새 시험(이름 `CharacterOverlapSort`로 시작).
+- (마): `03_Client/Assets/Scripts/Demo/DemoAutopilot.cs`, `Demo/DemoCharacterMenuStep.cs`, 기존 자동 진행기 시험(`DemoAutopilotVerifyBoundaryTests`·`DemoLaunchOptionsTests` 등), 필요하면 새 시험(이름 `DemoAutopilotDwell`로 시작).
 - (다): 근거 폴더 실행 파일만. 저장소 쓰기 0.
 - 문서: 이 goal, `00_Document/operations/CURRENT.md`(Content 줄), `00_Document/operations/BACKLOG.md`(새 절), `00_Document/domains/client.md`.
 
@@ -136,7 +150,8 @@
 
 - 서버·패킷·PDL·DB 변경, 진짜 비밀번호 확인(155 A).
 - `UI.unity`·`MainMenu.unity` 직렬화 값 변경, 새 그림·새 스킨 부품(설계 추천을 따를 때).
-- HP 줄·이름·파티 칸·스킬칸·미니맵 배치, 캐릭터 선택창, 자동 진행 시나리오 단계와 길이.
+- HP 줄·이름·파티 칸·스킬칸·미니맵 배치, 캐릭터 선택창, 자동 진행 시나리오 단계 순서(아래 화면 머무름 2.5초 이상만 바꿈, v3).
+- 퀘스트 배너(`QuestAlert`) 연출 시간과 캐릭터 선택 뒤 맵 입장 흐름의 표시 시간(v3 A).
 - 서버 주소 실행 인자 새로 만들기(후보 행만).
 - 서버 플레이어 시작 위치 변경(후보 `player-spawn-position-spread`), 정렬 레이어·`Renderer2D` 투명 정렬 설정 변경, 적·NPC·이펙트 순서 변경.
 - 대장간 강화를 기사 쪽으로 옮기는 것 같은 자동 진행 시나리오 변경(`msg_6ffb5902f148` 철회).
@@ -161,9 +176,11 @@
 | (라) | E2 | 겹친 두 캐릭터를 60프레임 동안 렌더해 겹친 곳의 표본 픽셀이 매 프레임 같고 그 값이 로컬 캐릭터 쪽이다. 렌더 결과로 보는 완료 증거이며 독립 검증이 같은 시험으로 다시 렌더한다. |
 | (라) | E3 | 직업 비주얼 교체 뒤, 맵 이동으로 다시 붙은 뒤에도 E1이 유지된다. |
 | (라) | E4 | 보존: 캐릭터 순서 값이 `Player` 레이어 이펙트 순서(4·5·100)보다 낮다. 프리팹·장면·`Renderer2D.asset` diff 0. |
+| (마) | F1 | 1·2회차와 3회차 단계 로그에서 로그인 창·빈 목록·생성 창·파티 초대 창(수락 전)·재시작 뒤 로그인·재접속 목록마다 화면이 보인 시각 → 다음 동작 시각이 2.5초 이상이다. QUEST CLEAR는 F8 → 포털 이동 시작이 2.5초 이상이다. 녹화 뒤 리드 판정과 좁은 독립 검증이 본다 |
+| (마) | F2 | 캐릭터 메뉴 단계의 머무름을 시험으로도 본다(시각을 넣어 `Advance`를 부르면 2.5초 전에는 누르지 않고, 뒤에는 지금과 같은 순서로 누른다). 단계 순서·버튼·로그 문구의 기존 시험은 그대로 통과한다 |
 | (다) | C1 | 고정 head 40자, exe sha256, exe+`_Data` manifest, 서버 쪽 트리 diff 원시를 남긴다. |
 | (다) | C2 | 세 회차 영상·소리·표식이 있다. 1·2회차는 녹화 첫 프레임이 대상 역할의 `login` 줄보다 먼저라서 새 로그인 화면이 영상에 들어간다. 3회차는 목록에 1회차 기사가 남은 프레임이 있다. |
-| (다) | C3 | 1·2회차 자동 진행이 `done`까지 가고, 3회차는 선택 → 마을 입장까지 간다. Player 로그와 단계 로그가 남는다. |
+| (다) | C3 | 1·2회차 자동 진행이 `done`까지 가고, 3회차는 선택 → 마을 입장까지 가고 영상이 마을 도착 뒤 5초 이상 이어진다(`msg_54b808acd693`). Player 로그와 단계 로그가 남는다. |
 | (다) | C4 | 녹화 대상 클라는 소리 인자 없음, 진행용 클라는 `-demo-mute`다(153 A). |
 | (다) | C5 | 편집 파일 표(경로·SHA256·장면 프레임 범위·소리 자름 범위, 대장간 구간의 실제 회차·클라 원본)를 메인에 보낸다. |
 | (다) | C6 | 1·2회차 영상에서 두 캐릭터가 겹친 구간의 앞뒤가 바뀌지 않는다. 리드가 정지 화면 표본으로 판정하고 독립 검증이 대조한다. |
@@ -181,7 +198,7 @@
 
 ## PR 경계와 순서
 
-1. PR1(새 PR) `feat/content-hud-portrait-login-20261106`, base main `518f920f`: 이 goal 문서·CURRENT·BACKLOG + (가) + (나) + (라) + 자동 진행기 PW 채움 + `domains/client.md`. 결함 번호·commit은 부분별로 나눈다. 선행 시험은 `red-01`(가·나)과 `red-02`(라) 두 작업이고, 구현 계약은 하나다.
+1. PR1(새 PR) `feat/content-hud-portrait-login-20261106`, base main `518f920f`: 이 goal 문서·CURRENT·BACKLOG + (가) + (나) + (라) + (마) + 자동 진행기 PW 채움 + `domains/client.md`. 결함 번호·commit은 부분별로 나눈다. 선행 시험은 `red-01`(가·나)과 `red-02`(라) 두 작업이고, (마)의 시험은 구현 계약 안에서 구현자가 쓴다(v3). 구현 계약은 하나다.
 2. 녹화 빌드와 세 회차 녹화: PR 없음. PR1 병합 commit이 고정 head다.
 3. 종료 기록 PR(새 PR): 종료 Gardener 뒤.
 
@@ -237,6 +254,14 @@
 - 미관측: T5 송신 바이트·prefs·로그와 T6 PW 길이 8은 PW 칸이 없어 앞 단정에서 멈췄다.
 - 옛 이름 → 새 이름: `T4_EnterInTheServerAddressField_WithABadName_ShowsTheNameRule` → `T4_EnterInThePasswordField_WithABadName_ShowsTheNameRule`, `T5_TabInTheAccountField_SelectsTheServerAddressField` → `T5_TabInTheAccountField_SelectsThePasswordField`. U0 비교는 이 대응으로 했고 빠진 기존 시험은 0이다(`red-01/comparison-01.json`).
 - 창 끝: PlayMode exit 14:21:11Z, 작성자 반환 관찰 14:21:12.115Z Unity 0·dotnet 0. 리드 확인 `date -u` 「Fri, Nov  6, 2026  2:22:16 PM」 Unity.exe 0·dotnet.exe 0.
+
+### 2026-11-06 선행 시험 red-02 U1
+
+- Unity 창 3 메인 허가 `msg_9b6e8d4c0bd6`. 작성자 worker_done `msg_c967cf76bac2`(outcome succeeded, Task `task_a9688b38f23a`). 보고 `red-02/report.md`(sha256 `91e7d113ffaf2d7608b622461de7790348d16c189105b099d6ff6403f4d1a89a`). 제품 파일 변경 0. 작업자 pane은 리드가 닫았다(`lead/close-red02-worker-01.txt`). 리드 승인 보충: S6 두 곳에 실제 값 출력 줄(`msg_47bcdc1c013a`).
+- 필터 실행: EditMode `HudPortraitClipTests` 8건 통과 2·실패 6, PlayMode `CharacterOverlapSortSceneTests` 3건 + `MainMenuLoginIdPwSceneTests` 11건 = 14건 통과 2·실패 12. 실행 15:00:08Z~15:03:46Z, 반환 관찰 Unity 0·dotnet 0. 리드 확인 `date -u` 「Fri, Nov  6, 2026  3:11:16 PM」 Unity.exe 0·dotnet.exe 0, 자동 변경은 리드가 되돌렸다(`lead/red02-drift-restore-01.txt`).
+- S6(F-01 고침): 1920×1080 실제 값은 `(1920.00012, 1080)`이었다. 세 시험이 해상도 확인을 지나 요구 단정에서 실패한다(HUD 고리 바깥 기사 585·마법사 1339, 로그인 B1~B3). red-01 대비 바뀐 것은 이 세 시험의 첫 실패 문구뿐이다.
+- E2(`CharacterOverlapSortSceneTests.S3_EveryOverlappingPixelShowsLocalFor60Frames`): 60프레임 모두 겹침이 있고(프레임당 1508~1618픽셀) 모두 로컬과 다른 값이 그려졌다. 구현 뒤 완료 증거로 다시 렌더한다. 실행 방법은 `red-02/report.md` 「E2 재실행 계약」이다.
+- **R02-F01(리드 계약 결함, 첫 발생):** S1·S2가 원격 뿌리 자리표시 SpriteRenderer가 없어 존재 전제에서 멈췄다. E1 관계·E3 유지·S4 일부는 미도달이다. 원인은 리드가 red-02 계약 「지금 상태」에 런타임이 쓰지 않는 `Prefabs/Characters/RemotePlayer.prefab`을 근거로 적은 것이다. 실제 주입 경로는 `Combat/CombatBootstrap.cs` 188·200행의 `Resources/RemotePlayer.prefab`(source `PlayerBase.prefab`)이다. 처분: 자리표시 조항을 설계에서 지우고, 새 시험 작성자(`red-03`)가 시험 169~185행의 자리표시 블록만 지운 뒤 같은 클래스를 다시 돌려 E1·E3 RED를 관측한다. 교정 층: 첫 발생이라 이 기록만 남긴다. 리드는 이후 계약의 「지금 상태」에 런타임 주입 경로(누가 어떤 에셋을 로드하는지)를 함께 적는다.
 
 ## 다음 계획 후보
 
