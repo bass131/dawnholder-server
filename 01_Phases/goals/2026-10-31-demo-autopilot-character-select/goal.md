@@ -241,6 +241,18 @@
 - 메인은 메인 checkout CLAUDE.md 「사용자 확인 범위(11-06 사용자 결정)」 절에 적었다(commit 없음, 메인 전용). 정본 반영은 11-09 뒤 Rules 후보다.
 - 이 goal에 미치는 것: R4-1의 `firstFrameBeforeCharacterList`가 false일 때 R4-2 전 판단(기사 장면 재녹화와 새 이름)도 리드가 추천안과 함께 「메인 결정 요청」으로 올린다. 메인이 이 기준으로 사용자에게 물을지 정한다.
 
+### 11-06 사용자 결정 140 A — msg_391a8e696163
+
+메인이 전달한 사용자 원문이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다. 원문 사본은 `lead/main-msg_391a8e696163-f672813a-140A.txt`(sha256 `e26e393856c00143d4cabb53089cc7960998ff0bd51d139fafec975780e13b9b`)다.
+
+- 원문(대시보드 결정 응답, 메인 pane 제출): 「140 - 작업자·검증자가 끝나고 리드에 보고하지 않는 문제를 어떻게 막을지 → A 자동 감시 + 계약 한 줄」.
+- 사용자 원문(요청): 「그리고 검증자랑 작업자가 작업을 완료하고 리드급한테 보고 하지 않아서 종종 완료된 이후에 다음 단계로 넘어가지 않는 문제가 있는데, 필히 완료후 리드급한테 보고하는걸 시스템화 해줘」.
+- 적용(메인 지시)
+  - 지금부터 새로 여는 모든 작업자·검증자·Gardener 계약의 마지막 단계에 이 문장을 넣는다: 「마지막 행동은 worker_done 전송이다(결과 경로·SHA256·판정 한 줄). worker_done을 보내기 전에는 턴을 끝내지 않는다. 막히면 worker_done 대신 ask나 status로 리드에 알린다.」
+  - 자동 감시(lead-wake 확장)는 메인 도구 보조가 만든다. 켜지면 보고 없이 멈춘 작업자에게 확인 안내가 가고, 두 번 뒤에도 그대로면 리드에 상태 메시지가 간다.
+  - 정본 반영은 시연 뒤 Rules가 맡는다.
+- 이 goal에 미치는 것: 종료 Gardener 계약의 마지막 단계에 위 문장을 넣는다.
+
 ### 운영 방식(진입 메시지의 메인 결정)
 
 - 병합은 PR마다 사용자 명시 승인으로 메인만 한다. 병합 준비 보고에는 head 40자, 판정 원문 경로·sha256, CI를 넣는다.
@@ -552,4 +564,12 @@ PR별 세부(만들 것의 세부 동작, 대안, Unity 창 표)는 승인된 �
     | `terminal-list-before-recording-executor-01.json` | `0dd149fb95c07694e2f91767496f806fada1335074f710f8b3429dd3f8429f59` | `64c8f5b9d9d21d237be3b1ad704bb18aa48ab2bbe29d7bb267667528a453fa52` |
     | `terminal-list-before-recording-v3-verify-01.json` | `3760fd51df0aab3beed8504cf719a50d6294dca901d996fcee734cd374f8026d` | `9097aa4bbe2fcf7ad023d9b4c05b1134c4ab861ae75e4500d7e910710e5960bf` |
 
-  - 관찰(결정 2 범위 밖, 손대지 않음): 나머지 터미널 목록 13개에는 `term_7cc954de`가 없다. 그중 `lead/terminal-list-after-verify3-close.json`의 `term_f672813a`는 제목(PowerShell 7 실행 파일 경로)과 worktree(core-active)가 서버 창과 같다. 예전 서버 창일 수 있지만 preview는 열지 않았다. 같은 처리 여부는 메인에 올렸다.
+  - 관찰(결정 2 범위 밖, 손대지 않음): 나머지 터미널 목록 13개에는 `term_7cc954de`가 없다. 그중 `lead/terminal-list-after-verify3-close.json`의 `term_f672813a`는 제목(PowerShell 7 실행 파일 경로)과 worktree(core-active)가 서버 창과 같다. 예전 서버 창일 수 있지만 preview는 열지 않았다. 같은 처리 여부는 메인에 올렸다(`msg_6ef0a4518f05`).
+  - 메인 답(`msg_391a8e696163`, 138 A에 따른 메인 결정): `term_f672813a`는 Core 옛 근거 세 파일에서도 같은 handle로 나와 처분 B로 가린 예전 서버 창이다. 그 preview 값만 「<가림>」으로 바꾸고 sha256 전후를 적는다.
+  - 실행: 스크립트 `lead/mask-server-preview-02.cjs`(sha256 `812acd15574b7551e9bceb156decfd0a08f4d57c7528c7812ac42d87e510fc91`)는 01판과 같은 방법이다. 기록은 `lead/mask-server-preview-02.json`(sha256 `57752948c69a45ae3211a32454b7f1be22943901156d02e0ee50f06fcef0e460`)이다. 값은 출력하지 않았고 길이 300자만 셌다. 다시 파싱해 그 칸 말고는 원문과 같음을 대조했다.
+
+    | 파일(`lead/`) | 전 sha256 | 후 sha256 |
+    |---|---|---|
+    | `terminal-list-after-verify3-close.json` | `b94ced51c901a81f718bcab23deae4bee3f663b07ecee19c6455b8fd54098a00` | `ee88cfa11b5cb1e332594b902634a7a51fef4c586218311e4368ecb1ce39165d` |
+
+  - 남은 곳 점검: 근거 폴더의 `.json` 2413개를 읽기 전용으로 훑었다(`lead/scan-server-preview-01.cjs`·`.json`). 두 handle을 담은 파일은 22개다. 가리지 않은 preview는 0건이다. 파싱하지 못한 한 파일(`lead/wait-lead-20261106-rec-11.json`)은 우편함 대기 출력이고 preview 칸이 없다. handle은 메시지 본문에만 나온다.
