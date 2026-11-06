@@ -32,12 +32,11 @@ namespace Dawnholder.Client.Tests.PlayMode
     {
         const string MenuScene = "MainMenu";
         const string WindowName = "LoginWindow";
-        // Contract v2 「설계 고정」, third bullet.
-        const string TitleText = "로그인";
-        const string AccountLabelText = "계정 이름";
-        const string HostLabelText = "서버 주소";
-        const string StartText = "게임 시작";
-        const string QuitText = "종료";
+        // Current fixed login design, goal B1: ID/PW then vertically stacked START/QUIT, no window title.
+        const string AccountLabelText = "ID";
+        const string PasswordLabelText = "PW";
+        const string StartText = "START";
+        const string QuitText = "QUIT";
         // Contract v2 「설계 고정」, fifth bullet; MainMenu.unity at 7bc75898 line 528 (TITLE's sprite).
         const string LogoGuid = "0af51ea856cc44f49847c67cf6b32bb7";
         // AccountNameRule examples: LoginRejectionMenuTests.cs line 28 (accepted) and line 48 (a hyphen breaks the rule).
@@ -200,20 +199,26 @@ namespace Dawnholder.Client.Tests.PlayMode
             foreach ((string name, Component owner) in parts.WindowContents)
                 if (!owner.transform.IsChildOf(parts.Window)) problems.Add($"{name} {PathOf(owner)} is outside the LoginWindow");
 
-            // The scene's own fields, not copies: the controller's two are the only input fields in the window.
-            TMP_InputField[] fields = parts.Window.GetComponentsInChildren<TMP_InputField>(true);
-            if (fields.Length != 2 || !fields.Contains(parts.Account) || !fields.Contains(parts.Host))
-                problems.Add($"the LoginWindow holds input fields [{string.Join(", ", fields.Select(PathOf))}], the controller's two only");
-
-            ExpectLabel(parts.Window, TitleText, "title", problems);
+            // B1/B2: only ID and PW are visible; the original host reference survives hidden.
+            TMP_InputField[] fields = parts.Window.GetComponentsInChildren<TMP_InputField>(true)
+                .Where(field => field.gameObject.activeInHierarchy).ToArray();
+            if (fields.Length != 2 || !fields.Contains(parts.Account) || !fields.Contains(parts.Password))
+                problems.Add($"the LoginWindow visible input fields [{string.Join(", ", fields.Select(PathOf))}] must be ID and PW");
+            if (parts.Host.gameObject.activeInHierarchy) problems.Add("ServerHostInput must be hidden");
+            if (parts.Window.GetComponentsInChildren<Transform>(true).Any(node => node.name == "Header"))
+                problems.Add("LoginWindow must have no Header");
+            if (parts.Window.GetComponentsInChildren<Transform>(true).Any(node => node.name == "Title"))
+                problems.Add("LoginWindow must have no Title");
             ExpectLabel(parts.Window, AccountLabelText, "account field name", problems);
-            ExpectLabel(parts.Window, HostLabelText, "server address field name", problems);
+            ExpectLabel(parts.Window, PasswordLabelText, "password field name", problems);
+            Transform hostLabel = parts.Window.Find("HostLabel");
+            if (hostLabel != null && hostLabel.gameObject.activeInHierarchy) problems.Add("HostLabel must be hidden or absent");
             ExpectButtonText(parts.Start, StartText, "start button", problems);
             ExpectButtonText(parts.Quit, QuitText, "quit button", problems);
             problems.AddRange(ButtonViolations(parts.Start, "Accept").Select(problem => "start button: " + problem));
             problems.AddRange(ButtonViolations(parts.Quit, "Default").Select(problem => "quit button: " + problem));
             ExpectFieldBackground(parts.Account, "account field", problems);
-            ExpectFieldBackground(parts.Host, "server address field", problems);
+            ExpectFieldBackground(parts.Password, "password field", problems);
 
             Assert.IsEmpty(problems, "T1 the LoginWindow follows the fixed design");
             yield break;
@@ -232,9 +237,9 @@ namespace Dawnholder.Client.Tests.PlayMode
         [UnityTest]
         public IEnumerator T4_EnterInTheAccountField_WithABadName_ShowsTheNameRule() => EnterWithBadName(useAccountField: true);
 
-        // T4 (completion 2): Enter in the selected server address field does what one Start press does.
+        // B4/B5: Enter in the new password field keeps the same account-rule notice as Start.
         [UnityTest]
-        public IEnumerator T4_EnterInTheServerAddressField_WithABadName_ShowsTheNameRule() => EnterWithBadName(useAccountField: false);
+        public IEnumerator T4_EnterInThePasswordField_WithABadName_ShowsTheNameRule() => EnterWithBadName(useAccountField: false);
 
         // T4 (completion 2): two quick Enters with an accepted name start one server probe; the second meets the probe
         // lock. The probe goes to a loopback port this test holds bound without listening, so nothing answers it.
@@ -275,14 +280,14 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual(MenuScene, SceneManager.GetActiveScene().name, "the probe to a closed loopback port left the menu");
         }
 
-        // T5 (completion 2): Tab in the selected account field selects the server address field.
+        // B4: Tab in ID selects the visible password field.
         [UnityTest]
-        public IEnumerator T5_TabInTheAccountField_SelectsTheServerAddressField()
+        public IEnumerator T5_TabInTheAccountField_SelectsThePasswordField()
         {
             var account = MapEntryPlayFixture.Field<TMP_InputField>(_controller, "_accountNameInputField");
-            var host = MapEntryPlayFixture.Field<TMP_InputField>(_controller, "_serverHostInputField");
             Assert.IsNotNull(account, "fixture: the controller has its account field");
-            Assert.IsNotNull(host, "fixture: the controller has its server address field");
+            var password = account.transform.parent.Find("PasswordInput")?.GetComponent<TMP_InputField>();
+            Assert.IsNotNull(password, "B4: the view has its password field");
 
             yield return Select(account);
             GameObject before = EventSystem.current.currentSelectedGameObject;
@@ -290,8 +295,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return Press(Key.Tab);
             GameObject after = EventSystem.current.currentSelectedGameObject;
 
-            Assert.AreSame(host.gameObject, after,
-                $"Tab in the account field left {(after != null ? after.name : "nothing")} selected, the server address field expected");
+            Assert.AreSame(password.gameObject, after,
+                $"Tab in the account field left {(after != null ? after.name : "nothing")} selected, the password field expected");
         }
 
         IEnumerator EnterWithBadName(bool useAccountField)
@@ -306,7 +311,8 @@ namespace Dawnholder.Client.Tests.PlayMode
             host.text = "127.0.0.1";
             error.text = "";
             _probeLogs.Clear();
-            TMP_InputField field = useAccountField ? account : host;
+            TMP_InputField field = useAccountField ? account : account.transform.parent.Find("PasswordInput")?.GetComponent<TMP_InputField>();
+            Assert.IsNotNull(field, "B4: the selected ID/PW submit field must exist");
 
             yield return Select(field);
             Assert.AreSame(field.gameObject, EventSystem.current.currentSelectedGameObject, "fixture: the field is selected before Enter");
@@ -314,7 +320,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             string shown = error.text;
 
             Assert.AreEqual(MainMenuNotice.InvalidAccountName, shown,
-                $"Enter in the {(useAccountField ? "account" : "server address")} field with \"{InvalidAccountName}\" " +
+                $"Enter in the {(useAccountField ? "account" : "password")} field with \"{InvalidAccountName}\" " +
                 "did not show the account name rule a Start press shows");
             Assert.IsEmpty(_probeLogs, "a rule-breaking name started a server probe");
         }
@@ -412,7 +418,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             Rect logo = areas["logo"];
             if (Overlaps(logo, window)) problems.Add($"{label}: logo {logo} and LoginWindow {window} overlap");
             if (logo.yMin < window.yMax - Tolerance) problems.Add($"{label}: logo {logo} is not above the LoginWindow {window}");
-            string[] inWindow = { "account field", "server address field", "start button", "quit button", "error text" };
+            string[] inWindow = { "account field", "password field", "start button", "quit button", "error text" };
             foreach (string name in inWindow)
                 if (!Inside(areas[name], window)) problems.Add($"{label}: {name} {areas[name]} is drawn outside the LoginWindow {window}");
             for (int i = 0; i < inWindow.Length; i++)
@@ -424,9 +430,8 @@ namespace Dawnholder.Client.Tests.PlayMode
 
             var words = new List<(string Name, TMP_Text Text)>
             {
-                ("title", FindLabel(parts.Window, TitleText)),
                 ("account field name", FindLabel(parts.Window, AccountLabelText)),
-                ("server address field name", FindLabel(parts.Window, HostLabelText)),
+                ("password field name", FindLabel(parts.Window, PasswordLabelText)),
                 ("start button text", FindButtonText(parts.Start, StartText)),
                 ("quit button text", FindButtonText(parts.Quit, QuitText)),
             };
@@ -501,11 +506,13 @@ namespace Dawnholder.Client.Tests.PlayMode
                 Window = windows[0],
                 Account = MapEntryPlayFixture.Field<TMP_InputField>(_controller, "_accountNameInputField"),
                 Host = MapEntryPlayFixture.Field<TMP_InputField>(_controller, "_serverHostInputField"),
+                Password = windows[0].Find("PasswordInput")?.GetComponent<TMP_InputField>(),
                 Start = MapEntryPlayFixture.Field<Button>(_controller, "_startButton"),
                 Error = MapEntryPlayFixture.Field<TMP_Text>(_controller, "_errorMessageText"),
             };
             Assert.IsNotNull(parts.Account, "MainMenuController lost its account field");
             Assert.IsNotNull(parts.Host, "MainMenuController lost its server address field");
+            Assert.IsNotNull(parts.Password, "B1: LoginWindow has no PasswordInput");
             Assert.IsNotNull(parts.Start, "MainMenuController lost its start button");
             Assert.IsNotNull(parts.Error, "MainMenuController lost its error text");
 
@@ -668,6 +675,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             internal RectTransform Window;
             internal TMP_InputField Account;
             internal TMP_InputField Host;
+            internal TMP_InputField Password;
             internal Button Start;
             internal Button Quit;
             internal TMP_Text Error;
@@ -675,7 +683,7 @@ namespace Dawnholder.Client.Tests.PlayMode
 
             internal IEnumerable<(string Name, Component Owner)> WindowContents => new (string, Component)[]
             {
-                ("account field", Account), ("server address field", Host), ("start button", Start),
+                ("account field", Account), ("password field", Password), ("start button", Start),
                 ("quit button", Quit), ("error text", Error),
             };
 

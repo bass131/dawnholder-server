@@ -18,11 +18,10 @@ namespace Dawnholder.Client.UI
     {
         // The character select window's colours (CharacterMenuView): dark ink on parchment, white on wood and the title band.
         static readonly Color s_ink = new(0.26f, 0.17f, 0.09f);
-        static readonly Color s_secondaryText = new(0.45f, 0.33f, 0.2f);
         static readonly Color s_resultText = new(0.6f, 0.25f, 0.08f);
         static readonly Vector2 s_topLeft = new(0f, 1f);
         readonly TMP_InputField _account;
-        readonly TMP_InputField _host;
+        readonly TMP_InputField _password;
         readonly Action _startRequested;
         int _lastEnterFrame = -1;
 
@@ -34,7 +33,6 @@ namespace Dawnholder.Client.UI
             if (start == null) throw new ArgumentNullException(nameof(start));
             if (error == null) throw new ArgumentNullException(nameof(error));
             _account = account;
-            _host = host;
             _startRequested = startRequested ?? throw new ArgumentNullException(nameof(startRequested));
             var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
             if (font == null) throw new InvalidOperationException("Missing project menu font.");
@@ -60,31 +58,36 @@ namespace Dawnholder.Client.UI
                 .rectTransform;
             Place(window, new Vector2(0.5f, 0f), new Vector2(420f, 230f), new Vector2(0f, 16f));
 
-            // Heights reserve the Korean fallback font's line box (about 1.9 em): under Ellipsis TMP drops a line that
-            // does not fit instead of clipping it.
-            Place(UiWindowAppearance.CreateHeader("Header", window, skin).rectTransform, s_topLeft,
-                new Vector2(396f, 44f), new Vector2(12f, -8f));
-            TMP_Text title = Label("Title", window, new Vector2(396f, 44f), new Vector2(12f, -8f), font);
-            title.text = "로그인";
-            title.fontSize = 20f;
-            title.fontStyle = FontStyles.Bold;
-            title.alignment = TextAlignmentOptions.Midline;
-
-            TMP_Text accountLabel = Label("AccountLabel", window, new Vector2(100f, 34f), new Vector2(24f, -60f), font);
-            accountLabel.text = "계정 이름";
+            TMP_Text accountLabel = Label("AccountLabel", window, new Vector2(44f, 34f), new Vector2(24f, -16f), font);
+            accountLabel.text = "ID";
             accountLabel.fontSize = 16f;
             accountLabel.color = s_ink;
-            MoveField(account, window, new Vector2(268f, 34f), new Vector2(128f, -60f), 16f, skin);
-            // The server address is the minor row under the account name: smaller words and a lower field.
-            TMP_Text hostLabel = Label("HostLabel", window, new Vector2(100f, 30f), new Vector2(24f, -100f), font);
-            hostLabel.text = "서버 주소";
-            hostLabel.fontSize = 14f;
-            hostLabel.color = s_secondaryText;
-            MoveField(host, window, new Vector2(268f, 30f), new Vector2(128f, -100f), 14f, skin);
+            MoveField(account, window, new Vector2(320f, 34f), new Vector2(76f, -16f), 16f, skin);
+
+            // Clone before adding the ID submit listener, and give the decorative PW field its own events.
+            // No password value is passed to the controller, preferences, logs or the connection.
+            _password = UnityEngine.Object.Instantiate(account, window);
+            _password.name = "PasswordInput";
+            _password.onValueChanged = new TMP_InputField.OnChangeEvent();
+            _password.onEndEdit = new TMP_InputField.SubmitEvent();
+            _password.onSubmit = new TMP_InputField.SubmitEvent();
+            _password.contentType = TMP_InputField.ContentType.Password;
+            _password.asteriskChar = '*';
+            _password.characterLimit = 32;
+            _password.SetTextWithoutNotify(string.Empty);
+            if (_password.placeholder is TMP_Text placeholder) placeholder.text = string.Empty;
+            MoveField(_password, window, new Vector2(320f, 34f), new Vector2(76f, -58f), 16f, skin);
+            TMP_Text passwordLabel = Label("PasswordLabel", window, new Vector2(44f, 34f), new Vector2(24f, -58f), font);
+            passwordLabel.text = "PW";
+            passwordLabel.fontSize = 16f;
+            passwordLabel.color = s_ink;
+
+            // The controller retains the serialized field and its saved/default host rule. Hidden fields do not submit.
+            host.gameObject.SetActive(false);
 
             // The error text keeps the scene's font and overflow: MainMenuNotice sentences are written for that font's
             // static atlas and every character must stay drawn. 14 pt keeps the longest sentence on one line.
-            Move(error.rectTransform, window, new Vector2(380f, 32f), new Vector2(20f, -136f));
+            Move(error.rectTransform, window, new Vector2(380f, 30f), new Vector2(20f, -188f));
             error.fontSize = 14f;
             error.color = s_resultText;
             // The dark box the error text sat in is left in the scene, switched off.
@@ -92,23 +95,23 @@ namespace Dawnholder.Client.UI
 
             var quit = SceneChild(screen, "QuitButton").GetComponent<Button>();
             if (quit == null) throw new InvalidOperationException("MainMenu QuitButton has no Button.");
-            MoveButton(quit, window, new Vector2(120f, 40f), new Vector2(24f, -176f), "종료", font, skin, accept: false);
-            MoveButton(start, window, new Vector2(144f, 40f), new Vector2(252f, -176f), "게임 시작", font, skin,
+            MoveButton(quit, window, new Vector2(200f, 36f), new Vector2(110f, -144f), "QUIT", font, skin, accept: false);
+            MoveButton(start, window, new Vector2(200f, 36f), new Vector2(110f, -100f), "START", font, skin,
                 accept: true);
 
             // Only the fields submit to the view. A selected start button still takes Enter as its own single click.
             account.onSubmit.AddListener(_ => OnEnter());
-            host.onSubmit.AddListener(_ => OnEnter());
+            _password.onSubmit.AddListener(_ => OnEnter());
         }
 
-        /// <summary>Call once per frame. Tab in the account field selects the server address field.</summary>
+        /// <summary>Call once per frame. Tab in the ID field selects the PW field.</summary>
         internal void HandleKeys()
         {
             // The scene's UI input actions have no Tab move, so the keyboard is read here.
             Keyboard keyboard = Keyboard.current;
             EventSystem events = EventSystem.current;
             if (keyboard == null || events == null || !keyboard.tabKey.wasPressedThisFrame) return;
-            if (events.currentSelectedGameObject == _account.gameObject) events.SetSelectedGameObject(_host.gameObject);
+            if (events.currentSelectedGameObject == _account.gameObject) events.SetSelectedGameObject(_password.gameObject);
         }
 
         // A focused field can submit twice for one Enter in a player: its own key event and the UI module's Submit, in

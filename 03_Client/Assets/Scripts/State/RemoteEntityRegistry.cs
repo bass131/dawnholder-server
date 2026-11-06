@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Network;
+using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
 using Shared.Protocol;
 using UnityEngine;
@@ -105,6 +106,7 @@ namespace Dawnholder.Client.State
                 // 늦은 직업 정보 — root GameObject는 보존, 비주얼 자식만 교체 (v2).
                 // NeedsVisualSwap=true는 incoming non-null 보장 (null이면 false 반환).
                 ClassVisualMount.Attach(existing.transform, ResolveVisual(characterClass!.Value, entityId));
+                RefreshCharacterSorting();
                 _spawnedClasses[entityId] = characterClass;
                 Debug.Log($"[Registry] entity {entityId} 비주얼 교체 → class={characterClass}");
                 return;
@@ -123,7 +125,10 @@ namespace Dawnholder.Client.State
             _entities.Remove(entityId);
             _motions.Remove(entityId);
             _spawnedClasses.Remove(entityId);
+            // Destroy is deferred; retire the leaving visual before the remaining ranges are repacked.
+            entity.gameObject.SetActive(false);
             Destroy(entity.gameObject);
+            RefreshCharacterSorting();
             Debug.Log($"[Registry] Despawned entity {entityId}");
         }
 
@@ -268,8 +273,25 @@ namespace Dawnholder.Client.State
             // 직업 미상(null)은 Knight 비주얼 기본 — 투명 잔상 방지. PlayerJoin 도착 시 교체됨.
             ClassVisualMount.Attach(go.transform,
                 ResolveVisual(characterClass ?? CharacterClass.Knight, entityId));
+            RefreshCharacterSorting();
 
             Debug.Log($"[Registry] Spawned entity {entityId} class={characterClass?.ToString() ?? "unknown"} at ({x:F2}, {y:F2})");
+        }
+
+        // Called after local/remote Attach and remote leave. No per-frame discovery or static scene ownership.
+        internal void RefreshCharacterSorting()
+        {
+            int nextOrder = CharacterRenderOrder.HighestBodyOrder;
+            LocalPlayerMovement? local = LocalPlayerMovement.Instance;
+            if (local != null) nextOrder = CharacterRenderOrder.Apply(local.transform, nextOrder);
+
+            var entityIds = new List<int>(_entities.Keys);
+            entityIds.Sort();
+            foreach (int entityId in entityIds)
+            {
+                RemoteEntity entity = _entities[entityId];
+                if (entity != null) nextOrder = CharacterRenderOrder.Apply(entity.transform, nextOrder);
+            }
         }
 
         // 직업 → 비주얼 prefab 해석. 미연결/미발견이면 null + 경고 (Attach가 no-op 처리 — fail-soft).

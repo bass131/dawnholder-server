@@ -6,6 +6,7 @@ using Dawnholder.Client.Input;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
+using Dawnholder.Client.State;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -95,6 +96,8 @@ namespace Dawnholder.Client.Bootstrap
             // config == null이면 비주얼 미장착 경고 + Awake fallback(KnightMeleeAttack)으로 동작 유지.
             ClassConfig? config = ClassLoadout.Resolve();
             ClassVisualMount.Attach(go.transform, config != null ? config.VisualPrefab : null);
+            CharacterRenderOrder.Apply(go.transform, CharacterRenderOrder.HighestBodyOrder);
+            RemoteEntityRegistry.Instance?.RefreshCharacterSorting();
             if (config != null)
                 go.GetComponent<LocalPlayerInput>()?.SetAttackStrategy(config.CreateStrategy());
 

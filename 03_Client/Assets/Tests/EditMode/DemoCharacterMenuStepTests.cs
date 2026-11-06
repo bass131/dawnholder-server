@@ -118,7 +118,7 @@ namespace Dawnholder.Client.Tests
             OpenWithList(s_mage, null, s_knight);
             var step = new DemoCharacterMenuStep(DemoRole.Knight, null);
 
-            var outcome = step.Advance(Last, Panel);
+            var outcome = AdvancePastDwell(step, Last, Panel);
 
             Assert.AreEqual(DemoCharacterMenuOutcome.Selecting, outcome);
             Assert.AreEqual(Phase.Selecting, Last.CurrentPhase);
@@ -127,10 +127,10 @@ namespace Dawnholder.Client.Tests
             Assert.Zero(_connection.Count(PacketID.C_CharacterCreateRequest));
             Assert.AreEqual(string.Empty, step.StopReason);
 
-            var pendingOutcome = step.Advance(Last, Panel);
+            var pendingOutcome = AdvancePastDwell(step, Last, Panel);
             _connection.Reply(Selected(_connection.LastId, KnightId));
             Assert.AreEqual(Phase.Entering, Last.CurrentPhase, "fixture: selection was approved");
-            var enteringOutcome = step.Advance(Last, Panel);
+            var enteringOutcome = AdvancePastDwell(step, Last, Panel);
 
             Assert.AreEqual(DemoCharacterMenuOutcome.Selecting, pendingOutcome);
             Assert.AreEqual(DemoCharacterMenuOutcome.Selecting, enteringOutcome);
@@ -147,7 +147,7 @@ namespace Dawnholder.Client.Tests
             OpenWithList(null, s_mage, s_otherMage);
             var step = new DemoCharacterMenuStep(DemoRole.Mage, "使わない名前");
 
-            var outcome = step.Advance(Last, Panel);
+            var outcome = AdvancePastDwell(step, Last, Panel);
 
             Assert.AreEqual(DemoCharacterMenuOutcome.Selecting, outcome);
             Assert.AreEqual(Phase.Selecting, Last.CurrentPhase);
@@ -166,7 +166,7 @@ namespace Dawnholder.Client.Tests
             OpenWithList(s_mage);
             var step = new DemoCharacterMenuStep(DemoRole.Knight, RawKnightName);
 
-            var createOutcome = step.Advance(Last, Panel);
+            var createOutcome = AdvancePastDwell(step, Last, Panel);
 
             Assert.AreEqual(DemoCharacterMenuOutcome.Creating, createOutcome);
             Assert.AreEqual(Phase.Creating, Last.CurrentPhase);
@@ -177,14 +177,14 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(RawKnightName, Panel.Find("CreateForm/Name").GetComponent<TMP_InputField>().text);
             Assert.AreEqual(string.Empty, step.StopReason);
 
-            var waitingOutcome = step.Advance(Last, Panel);
+            var waitingOutcome = AdvancePastDwell(step, Last, Panel);
             Assert.AreEqual(DemoCharacterMenuOutcome.Waiting, waitingOutcome);
             AssertPacketKinds(PacketID.C_CharacterListRequest, PacketID.C_CharacterCreateRequest);
             CollectionAssert.AreEqual(new[] { "Slot2", "CreateForm/Knight", "CreateForm/Create" }, _clicks);
 
             _connection.Reply(Created(_connection.LastId, 2, s_created));
             Assert.AreEqual(Phase.Ready, Last.CurrentPhase, "fixture: creation returned the filled slot");
-            var selectOutcome = step.Advance(Last, Panel);
+            var selectOutcome = AdvancePastDwell(step, Last, Panel);
 
             Assert.AreEqual(DemoCharacterMenuOutcome.Selecting, selectOutcome);
             Assert.AreEqual(Phase.Selecting, Last.CurrentPhase);
@@ -208,12 +208,12 @@ namespace Dawnholder.Client.Tests
             OpenWithList(s_mage);
             var step = new DemoCharacterMenuStep(DemoRole.Knight, characterName);
 
-            var outcome = step.Advance(Last, Panel);
+            var outcome = AdvancePastDwell(step, Last, Panel);
 
             Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, outcome);
             Assert.IsNotEmpty(step.StopReason);
             string reason = step.StopReason;
-            var repeatedOutcome = step.Advance(null, null);
+            var repeatedOutcome = AdvancePastDwell(step, null, null);
             Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, repeatedOutcome, "Stopped precedes Legacy");
             Assert.AreEqual(reason, step.StopReason);
             Assert.AreEqual(Phase.Ready, Last.CurrentPhase);
@@ -230,7 +230,7 @@ namespace Dawnholder.Client.Tests
             OpenWithList(s_mage, s_otherMage, s_thirdMage);
             var step = new DemoCharacterMenuStep(DemoRole.Knight, RawKnightName);
 
-            var outcome = step.Advance(Last, Panel);
+            var outcome = AdvancePastDwell(step, Last, Panel);
 
             Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, outcome);
             Assert.IsNotEmpty(step.StopReason);
@@ -247,7 +247,7 @@ namespace Dawnholder.Client.Tests
         {
             OpenWithList(s_mage);
             var step = new DemoCharacterMenuStep(DemoRole.Knight, RawKnightName);
-            var createOutcome = step.Advance(Last, Panel);
+            var createOutcome = AdvancePastDwell(step, Last, Panel);
             Assert.AreEqual(DemoCharacterMenuOutcome.Creating, createOutcome);
 
             // R4(c): result 6 is NameTaken, as in CharacterMenuPresenterTests.RefusedCreateOrSelect_*.
@@ -257,10 +257,10 @@ namespace Dawnholder.Client.Tests
             Assert.IsNotEmpty(visibleMessage, "fixture: refusal was actually drawn");
             Assert.AreEqual(Last.Message, visibleMessage);
 
-            var stoppedOutcome = step.Advance(Last, Panel);
+            var stoppedOutcome = AdvancePastDwell(step, Last, Panel);
             Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, stoppedOutcome);
             Assert.That(step.StopReason, Does.Contain(visibleMessage));
-            var repeatedOutcome = step.Advance(Last, Panel);
+            var repeatedOutcome = AdvancePastDwell(step, Last, Panel);
             Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, repeatedOutcome);
             AssertPacketKinds(PacketID.C_CharacterListRequest, PacketID.C_CharacterCreateRequest);
             Assert.AreEqual(1, _connection.Count(PacketID.C_CharacterCreateRequest));
@@ -274,20 +274,20 @@ namespace Dawnholder.Client.Tests
         {
             OpenWithList(s_mage);
             var step = new DemoCharacterMenuStep(DemoRole.Knight, RawKnightName);
-            var createOutcome = step.Advance(Last, Panel);
+            var createOutcome = AdvancePastDwell(step, Last, Panel);
             Assert.AreEqual(DemoCharacterMenuOutcome.Creating, createOutcome);
 
             // R4(d): result 1 / field 1 is InvalidInput / Slot and the presenter itself refreshes once.
             _connection.Reply(CreateRefused(_connection.LastId, 1, 1));
             Assert.AreEqual(Phase.LoadingList, Last.CurrentPhase);
-            var waitingOutcome = step.Advance(Last, Panel);
+            var waitingOutcome = AdvancePastDwell(step, Last, Panel);
             Assert.AreEqual(DemoCharacterMenuOutcome.Waiting, waitingOutcome);
             AssertPacketKinds(PacketID.C_CharacterListRequest, PacketID.C_CharacterCreateRequest,
                 PacketID.C_CharacterListRequest);
 
             _connection.Reply(List(_connection.LastId, s_mage));
             Assert.AreEqual(Phase.Ready, Last.CurrentPhase);
-            var stoppedOutcome = step.Advance(Last, Panel);
+            var stoppedOutcome = AdvancePastDwell(step, Last, Panel);
             Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, stoppedOutcome);
             Assert.IsNotEmpty(step.StopReason);
             Assert.That(step.StopReason, Does.Contain(Last.Message));
@@ -309,7 +309,7 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(Phase.ListFailed, Last.CurrentPhase);
             var step = new DemoCharacterMenuStep(DemoRole.Knight, RawKnightName);
 
-            var outcome = step.Advance(Last, Panel);
+            var outcome = AdvancePastDwell(step, Last, Panel);
 
             Assert.AreEqual(DemoCharacterMenuOutcome.Stopped, outcome);
             Assert.IsNotEmpty(step.StopReason);
@@ -328,7 +328,7 @@ namespace Dawnholder.Client.Tests
             Assert.IsNull(_last);
             var step = new DemoCharacterMenuStep(DemoRole.Mage, "unused");
 
-            var outcome = step.Advance(_last, Panel);
+            var outcome = AdvancePastDwell(step, _last, Panel);
 
             Assert.AreEqual(DemoCharacterMenuOutcome.Legacy, outcome);
             Assert.AreEqual(string.Empty, step.StopReason);
@@ -345,7 +345,7 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(Phase.LoadingList, Last.CurrentPhase);
             var step = new DemoCharacterMenuStep(DemoRole.Knight, RawKnightName);
 
-            var outcome = step.Advance(Last, Panel);
+            var outcome = AdvancePastDwell(step, Last, Panel);
 
             Assert.AreEqual(DemoCharacterMenuOutcome.Waiting, outcome);
             Assert.AreEqual(string.Empty, step.StopReason);
@@ -355,6 +355,20 @@ namespace Dawnholder.Client.Tests
             AssertNoExitOrDisconnect();
         }
 
+        float _testTime;
+
+        // Call adaptation for the screen-dwell contract: cross each delay, preserving every original outcome/packet assertion.
+        DemoCharacterMenuOutcome AdvancePastDwell(DemoCharacterMenuStep step, CharacterMenuViewState? state, Transform? panel)
+        {
+            DemoCharacterMenuOutcome outcome = DemoCharacterMenuOutcome.Waiting;
+            for (int frame = 0; frame < 3; frame++)
+            {
+                outcome = step.Advance(state, panel, _testTime);
+                _testTime += 3f;
+                if (outcome != DemoCharacterMenuOutcome.Waiting) break;
+            }
+            return outcome;
+        }
         void BeginList()
         {
             Assert.IsTrue(_connection.Client.TryList(), "fixture: connection facade starts the initial list");
