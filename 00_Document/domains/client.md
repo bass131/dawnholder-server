@@ -15,7 +15,23 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 [ClientConnectionLifetime](../../03_Client/Assets/Scripts/Network/ClientConnectionLifetime.cs)은 연결에 이름과 직업을 고정하고, handshake 성공 뒤 로그인 요청을 한 번, `Accepted` 뒤 직업 선택을 한 번 보낸다. `LoginResultHandler`가 받은 유효 거부(`InvalidName`·`AlreadyOnline`)는 원격 종료가 뒤따라도 세션 정리 전까지 메인 큐에서 적용하며, 소유자는 세대·동일 세션·로그인 요청 여부를 검사한다. `Accepted`·정의 밖 결과와 다른 패킷은 닫힌 전송에서 적용하지 않으며, 정의 밖 결과는 열린 현재 연결의 메인 스레드 gate를 통과했을 때 연결을 끊는다. 거부는 `LoginRejected` → [MainMenuNotice](../../03_Client/Assets/Scripts/UI/MainMenuNotice.cs) → 메인 메뉴의 오류 글자 순서로 전달한다. 메뉴 시작 때 안내를 소비한다. 이전 연결의 늦은 결과는 generation/구독 해제로 무효화한다.
 
-[MainMenuLoginView](../../03_Client/Assets/Scripts/UI/MainMenuLoginView.cs)는 `MainMenuController.Start`에서 만들어져 MainMenu 장면을 로그인 화면으로 배치한다. 장면 Canvas의 CanvasScaler를 실행 중 800×450 높이 맞춤으로 바꾸고, 장면의 `TITLE`을 위쪽에, 계정·서버 주소 입력칸과 시작·종료 버튼, 오류 글자를 밝은 스킨의 `LoginWindow` 안으로 옮긴다. 장면 파일과 컨트롤러의 직렬화 참조·버튼 onClick은 그대로다. view는 배치와 키 입력만 맡는다. 두 입력칸의 Enter는 같은 프레임의 두 번째 제출을 무시하고 시작 버튼과 같은 `MainMenuController.OnStartClicked`를 부르며, 계정 칸의 Tab은 서버 주소 칸을 선택한다(컨트롤러 `Update` → `HandleKeys`). 시작 판단은 `OnStartClicked`에 남는다.
+[MainMenuLoginView](../../03_Client/Assets/Scripts/UI/MainMenuLoginView.cs)는 `MainMenuController.Start`에서 만들어져 MainMenu 장면을 로그인 화면으로 배치한다. 장면 Canvas의 CanvasScaler를 실행 중 800×450 높이 맞춤으로 바꾸고, 장면의 `TITLE`을 위쪽에 둔다. 머리 띠 없는 밝은 스킨의 `LoginWindow`에는 ID 칸·PW 칸·START·QUIT를 위에서 아래로 배치하고, 오류 글자는 아래에 남긴다. 장면 파일과 컨트롤러의 직렬화 참조·버튼 onClick은 그대로다. view는 배치와 키 입력만 맡는다. ID·PW의 Enter는 같은 프레임의 두 번째 제출을 무시하고 START와 같은 `MainMenuController.OnStartClicked`를 부르며, ID의 Tab은 PW를 선택한다(컨트롤러 `Update` → `HandleKeys`). QUIT는 기존 `OnQuitClicked`를 부르고 시작 판단은 `OnStartClicked`에 남는다.
+
+PW는 ID 칸을 복제한 `PasswordInput`이며, 빈 값으로 시작하고 안내 글 없이 최대 32자를 `*`로 가린다. 사용자 결정 155 A에 따라 **화면 칸만**이며, 값은 패킷·PlayerPrefs·로그·`AccountLoadout`에 전달하지 않고 빈 PW도 시작을 막지 않는다. 서버 주소 칸은 객체와 연결을 유지한 채 숨긴다. 주소는 기존대로 PlayerPrefs `ServerHost` 저장값을 쓰고, 저장값이 없거나 공백이면 `_defaultHost`(127.0.0.1)를 쓴다. 계정 이름 검사·오류 문구·probe 중 중복 시작 차단·성공 뒤 주소 저장과 CharacterSelect 진입은 컨트롤러가 소유한다.
+
+## HUD 초상과 캐릭터 그리기 순서
+
+[HudLayout](../../03_Client/Assets/Scripts/UI/HudLayout.cs)은 기존 초상 객체 아래 `PortraitMask`(원형 Graphic과 stencil `Mask`) → `PortraitArt`(기존 머리 sprite)를 만든다. 초상 자신의 Image는 sprite 참조를 유지하되 끄고, 마스크 밖의 형제 `PortraitFrame`을 마지막에 그린다. 초상의 자리·크기와 `HudController`의 직업별 GameObject 켜기/끄기는 유지한다. layout이 만든 원형 Texture2D와 Sprite를 두 초상이 공유하며 장면 종료 때 layout이 정리한다. 장면·그림 파일은 바꾸지 않는다.
+
+[CharacterRenderOrder](../../03_Client/Assets/Scripts/Rendering/CharacterRenderOrder.cs)는 활성 객체의 enabled·sprite가 있는 몸 SpriteRenderer에 연속된 `sortingOrder`를 부여한다. 로컬이 가장 앞이고 원격은 작은 entity id가 앞이며, 한 캐릭터 안에서도 서로 다른 순서를 쓴다. 최댓값은 3이고 다음 캐릭터는 앞 캐릭터의 최솟값보다 낮아 서로 끼어들지 않는다. 정렬 레이어·z·프리팹·이펙트 순서는 유지한다. `LocalPlayerSpawner`는 비주얼 Attach 뒤 helper와 registry 갱신을 부르고, `RemoteEntityRegistry.RefreshCharacterSorting`은 원격 생성·직업 교체·퇴장 때 로컬과 원격 순서를 다시 계산한다. Attach가 비활성화한 옛 Visual은 제외한다.
+
+## 자동 시연의 화면 머무름
+
+[DemoAutopilot](../../03_Client/Assets/Scripts/Demo/DemoAutopilot.cs)은 로그인 ID·주소와 화면용 8자 PW를 채운 뒤 START까지, 마법사가 파티 초대를 본 뒤 수락까지, F8 뒤 포털 이동까지 2.5초 기다린다. 재시작 뒤 로그인도 같은 경로다. 기사 쪽 초대 재시도 간격 4초와 기존 시나리오 순서는 유지한다. `DemoCharacterMenuStep.ScreenDwellSeconds` 하나를 두 클래스가 함께 사용한다.
+
+[DemoCharacterMenuStep.Advance](../../03_Client/Assets/Scripts/Demo/DemoCharacterMenuStep.cs)는 호출자가 준 시각으로 빈 목록·이름과 직업을 채운 생성 창·고를 캐릭터가 있는 목록 각각의 첫 표시 시각을 기억한다. 각 화면을 2.5초 보여 준 뒤 기존 버튼을 같은 순서로 누르며, 생성 응답 뒤 목록도 새 대기 구간이다. 선택 승인 글과 QUEST CLEAR 배너 자체의 연출 시간은 바꾸지 않는다.
+
+기존 `[Demo] step` 이름(`login`·`character list`·`character create`·`character select`·`party`·`quest` 등)은 유지한다. 표시/다음 동작 측정을 위해 `login-screen-visible`·`login-submit`, `menu empty shown`·`menu empty advance`, `menu create shown`·`menu create advance`, `menu occupied shown`·`menu occupied advance`, `invite-screen-visible`·`invite-accept`, `quest-dwell-ended`를 더한다. 마지막 항목은 기존 `quest`(F8)와 짝을 이룬다. 모든 줄은 기존 logger의 realtime·UTC 시각을 쓰며 PW 값은 적지 않는다.
 
 ## 캐릭터 선택 화면
 
