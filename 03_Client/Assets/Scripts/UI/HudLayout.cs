@@ -12,13 +12,13 @@ namespace Dawnholder.Client.UI
     [DefaultExecutionOrder(100)]
     public sealed class HudLayout : MonoBehaviour
     {
-        const int PortraitMaskTextureSize = 128;
-        // The 120px frame's inner diameter is 88.125px in the source alpha; keep the stencil just inside it.
-        const float PortraitMaskDiameter = 86f;
-        // These offsets centre the face rather than the helmet/hood's full sprite rectangle.
-        const float PortraitArtSize = 112f;
-        static readonly Vector2 s_knightFaceOffset = new(-14f, 18f);
-        static readonly Vector2 s_mageFaceOffset = new(0f, 12f);
+        // 사용자 162 B(초상 사각 칸): the clip leaves 7px inside the 112px inset; offsets centre each face.
+        const float PortraitClipSize = 98f;
+        const float KnightPortraitArtSize = 132f;
+        const float MagePortraitArtSize = 116f;
+        static readonly Vector2 s_knightFaceOffset = new(-15f, 20f);
+        static readonly Vector2 s_mageFaceOffset = new(0f, 13f);
+        static readonly Color32 s_portraitBackdrop = new(61, 44, 32, 255);
 
         [SerializeField] Image[] _panels = System.Array.Empty<Image>();
         [SerializeField] RectTransform[] _portraits = System.Array.Empty<RectTransform>();
@@ -30,8 +30,6 @@ namespace Dawnholder.Client.UI
         Sprite?[] _renderedIcons = System.Array.Empty<Sprite?>();
         Vector2[] _iconSizes = System.Array.Empty<Vector2>();
         Vector2[] _iconOrigins = System.Array.Empty<Vector2>();
-        Texture2D? _portraitMaskTexture;
-        Sprite? _portraitMaskSprite;
 
         void Awake()
         {
@@ -45,7 +43,6 @@ namespace Dawnholder.Client.UI
             {
                 if (portrait == null) continue;
                 AddClippedPortrait(portrait);
-                UiWindowAppearance.AddPortraitFrame(portrait);
             }
             ApplySlotArtwork(_qSlot);
             ApplySlotArtwork(_eSlot);
@@ -73,53 +70,45 @@ namespace Dawnholder.Client.UI
         {
             Image source = portrait.GetComponent<Image>();
             if (source == null || source.sprite == null) return;
-            if (_portraitMaskSprite == null) CreatePortraitMaskSprite();
 
-            var maskObject = new GameObject("PortraitMask", typeof(RectTransform), typeof(Image), typeof(Mask));
-            maskObject.transform.SetParent(portrait, false);
-            Image maskImage = maskObject.GetComponent<Image>();
-            Centre(maskImage.rectTransform, PortraitMaskDiameter, Vector2.zero);
-            maskImage.sprite = _portraitMaskSprite;
-            maskImage.raycastTarget = false;
-            maskObject.GetComponent<Mask>().showMaskGraphic = false;
+            // The inset has an opaque centre, so it belongs behind the clipped backdrop and art.
+            Image frame = UiWindowAppearance.CreateInset("PortraitFrame", portrait);
+            Stretch(frame.rectTransform);
+            frame.rectTransform.SetAsFirstSibling();
+            frame.raycastTarget = false;
+
+            var clipObject = new GameObject("PortraitClip", typeof(RectTransform), typeof(RectMask2D));
+            clipObject.transform.SetParent(portrait, false);
+            Centre((RectTransform)clipObject.transform, PortraitClipSize, Vector2.zero);
+
+            var backdropObject = new GameObject("PortraitBackdrop", typeof(RectTransform), typeof(Image));
+            backdropObject.transform.SetParent(clipObject.transform, false);
+            Image backdrop = backdropObject.GetComponent<Image>();
+            Stretch(backdrop.rectTransform);
+            backdrop.color = s_portraitBackdrop;
+            backdrop.raycastTarget = false;
 
             var artObject = new GameObject("PortraitArt", typeof(RectTransform), typeof(Image));
-            artObject.transform.SetParent(maskObject.transform, false);
+            artObject.transform.SetParent(clipObject.transform, false);
             Image art = artObject.GetComponent<Image>();
             art.sprite = source.sprite;
             art.color = source.color;
-            art.preserveAspect = true;
+            art.preserveAspect = source.preserveAspect;
             art.raycastTarget = false;
-            Centre(art.rectTransform, PortraitArtSize,
-                source.sprite.name == "knight_icon_0" ? s_knightFaceOffset : s_mageFaceOffset);
-            // Keep the scene's sprite reference for inspection, but draw it only inside the stencil.
+            bool isKnight = source.sprite.name == "knight_icon_0";
+            Centre(art.rectTransform, isKnight ? KnightPortraitArtSize : MagePortraitArtSize,
+                isKnight ? s_knightFaceOffset : s_mageFaceOffset);
+            // Keep the scene's sprite reference for inspection, but draw it only inside the rectangular clip.
             // HudController still switches the same portrait GameObject for the authoritative class.
             source.enabled = false;
         }
 
-        void CreatePortraitMaskSprite()
+        static void Stretch(RectTransform rect)
         {
-            // One layout owns these runtime resources; both portraits share them until this UI scene unloads.
-            _portraitMaskTexture = new Texture2D(PortraitMaskTextureSize, PortraitMaskTextureSize,
-                TextureFormat.RGBA32, false) { name = "HUD portrait circle", filterMode = FilterMode.Bilinear,
-                wrapMode = TextureWrapMode.Clamp, hideFlags = HideFlags.DontSave };
-            var pixels = new Color32[PortraitMaskTextureSize * PortraitMaskTextureSize];
-            float radius = PortraitMaskTextureSize * 0.5f;
-            for (int y = 0; y < PortraitMaskTextureSize; y++)
-            for (int x = 0; x < PortraitMaskTextureSize; x++)
-            {
-                float dx = x + 0.5f - radius;
-                float dy = y + 0.5f - radius;
-                pixels[y * PortraitMaskTextureSize + x] =
-                    new Color32(255, 255, 255, dx * dx + dy * dy <= radius * radius ? (byte)255 : (byte)0);
-            }
-            _portraitMaskTexture.SetPixels32(pixels);
-            _portraitMaskTexture.Apply(false, true);
-            _portraitMaskSprite = Sprite.Create(_portraitMaskTexture,
-                new Rect(0f, 0f, PortraitMaskTextureSize, PortraitMaskTextureSize), new Vector2(0.5f, 0.5f),
-                100f, 0, SpriteMeshType.FullRect);
-            _portraitMaskSprite.name = "HUD portrait circle";
-            _portraitMaskSprite.hideFlags = HideFlags.DontSave;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
         }
 
         static void Centre(RectTransform rect, float size, Vector2 offset)
@@ -127,21 +116,6 @@ namespace Dawnholder.Client.UI
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
             rect.sizeDelta = new Vector2(size, size);
             rect.anchoredPosition = offset;
-        }
-
-        void OnDestroy()
-        {
-            // EditMode scene tests invoke Awake too; release the same owned resources without a delayed player frame.
-            if (Application.isPlaying)
-            {
-                if (_portraitMaskSprite != null) Destroy(_portraitMaskSprite);
-                if (_portraitMaskTexture != null) Destroy(_portraitMaskTexture);
-            }
-            else
-            {
-                if (_portraitMaskSprite != null) DestroyImmediate(_portraitMaskSprite);
-                if (_portraitMaskTexture != null) DestroyImmediate(_portraitMaskTexture);
-            }
         }
 
         void FitChangedIcons()

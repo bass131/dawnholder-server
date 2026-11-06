@@ -4,19 +4,19 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 재검증 계약 `verify-02`(머리 `lead/verify-contract-02-head.md`, 등급 강)를 이 문서 commit에서 조립해 새 검증자 `[Content 검증자]`를 연다. 검증자가 준비되면 메인에 Unity 창 8(전체 EditMode·PlayMode)을 청한다. V-01은 fix-01이, V-02는 리드가 고쳤다(진행 기록 「2026-11-06 독립 검증 verify-01」·「… V-01 고침 fix-01」).
+**다음 첫 일:** PR2를 만들고 CI가 끝나면 메인에 병합 준비를 보고한다. 병합은 사용자의 `병합 승인:` 한 줄 뒤 메인이 한다. 독립 검증 verify-03은 통과했고(차단 0), PR2 외관은 사용자가 163 A로 확인했다. 녹화 빌드·재녹화는 PR2 병합 뒤다(진행 기록 「2026-11-07 독립 검증 verify-03」).
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
 - 범위 초안 v3(자동 진행기 화면 머무름 2.5초)는 메인이 A와 함께 허가했다(`msg_1f83e3674ddf`). 원문은 같은 폴더 `lead/scope-draft-v3.md`(sha256 `1e4ba0f162b8aa1d0fef369b3a9280030daa6b3398f4761f5591574fa916c460`)다.
 - 기준선 U0은 끝났다(진행 기록 「2026-11-06 기준선 U0」).
-- 열린 결정: 없음. 기존 시험 단정 변경 21행은 메인이 승인했다(`msg_724556cd0dc5`).
+- 열린 결정: 없음. 로그인은 안 1, 초상은 B(사각 칸)로 정해졌다(162, 「적용 중인 사용자 결정」). 기존 시험 단정 변경은 PR1 21행(`msg_724556cd0dc5`), PR2 초상 17항목(`msg_d314f4fa567e`), red-05 G1 넘침 표시 단정과 R05-T02(`msg_e64ef321d66d`)를 메인이 승인했다.
 - 근거 폴더: `.backups/verification/2026-11-06-hud-portrait-login-rerecord/`.
 
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1 메인 허가(`msg_6feebf9d6738`, 메인 결정 다섯 포함), v2 메인 허가(`msg_950238658511`), 두 화면 동시 녹화 메인 결정(`msg_700b25b2b482`), v3 메인 허가 + A(`msg_1f83e3674ddf`) |
-| branch | PR1 `feat/content-hud-portrait-login-20261106`, base main `518f920faaca89419d9f9fde89e4b3f76a75156d` |
+| branch | PR1 `feat/content-hud-portrait-login-20261106`(PR302 병합, merge commit `423260f3921077a8c82955ce39da50d6a77f09a7`). PR2 `feat/content-hud-portrait-login-pr2-20261107`, base main `423260f3` |
 | 리드 | `[Content 리드 Opus]`(claude-opus-5-5 xhigh), Run `run_d49db3aff0b0`, 회신 주소 `run:run_d49db3aff0b0` |
 | 메인 | `[메인 Claude]`, handle `term_751a1f26-7aac-4a33-8a57-a3d4cec8a3d4` |
 
@@ -31,6 +31,17 @@
   - 155 A 적용(메인 지시): 로그인 화면은 배치만 바꾼다. PW는 서버가 확인하지 않는다(`C_Login`·서버·DB·PDL 변경 없음). 진짜 비밀번호 인증은 시연 뒤 후보로 BACKLOG에 적는다(`login-password-authentication`).
   - 153 A 적용(메인 지시): 재녹화는 게임 BGM을 켜고 찍는다. 앞 녹화의 `-demo-no-bgm`(123 A)은 이번 녹화 계약에서 뺀다. 곡 출처는 사용자가 따로 적지 않았다. 기록은 「출처 미기재, 사용자 153 A로 사용 허용」이다. 녹화하지 않는 쪽 클라의 BGM·효과음은 꺼서 섞이지 않게 한다.
   - BGM 끔으로 바꿈(사용자 원문, 메인 pane 제출 2026-11-06T16:08:36.950Z 무렵, 메인 전달 `msg_ee77a4e1bcd1`): 「시연중 BGM은 인게임으로 넣는거보다는 영상 편집으로 따로 넣는게 더 자연스럽겠다」. 메인 결정(사용자 원문 근거, 사용자 결정 아님): 위 153 A 적용의 「게임 BGM을 켜고 찍는다」를 「게임 BGM 끔, 효과음은 켬」으로 바꾼다. 녹화 대상 클라는 앞 녹화처럼 기존 인자 `-demo-no-bgm`(123 A)을 쓴다. BGM 곡 사용 허락(153 A)은 편집에서 그대로 쓴다. 녹화하지 않는 쪽 클라는 그대로 `-demo-mute`다.
+- 159 C(A4 초상·B7 로그인 외관 확인, 메인 전달 `msg_57d3b8dc4883`): 「C 코멘트 … 「칸 크기들 조절이 좀 필요해」」(메인이 줄인 인용). 메인 지시: 어느 칸인지 메인이 사용자에게 묻고, 답을 같은 goal 안 PR2 범위로 전달한다. 크기가 바뀌면 다시 찍어야 하므로 그때까지 녹화 빌드·재녹화를 시작하지 않는다. A4·B7은 이 답이 반영될 때까지 열려 있다.
+- 파티 정보 칸 글자색(메인 결정 `msg_57d3b8dc4883`, 사용자 결정 아님): U4 초상 캡처에서 어둡게 보인 파티 정보 칸은 실제 게임에서 밝은 바탕이라 고치지 않는다. 근거는 진행 기록 「2026-11-06 재검증 verify-02와 PR1 병합」이다.
+- 159 대상 칸(사용자 응답 2026-11-06T19:13:08.760Z 메인 pane, 메인 전달 `msg_d099786a2ddf`): 「로그인 ID·PW 입력칸, 파티 정보·스킬칸 등 다른 HUD 칸, 그리고 파티정보 표시가 가시성이 좀 떨어져」. 메인 해석: (1) 로그인 ID·PW 입력칸 크기·간격, (2) 파티 정보·스킬칸·퀘스트 칸 등 HUD 칸 크기, (3) 파티 정보 가시성. 초상 칸·START·QUIT는 손대지 않는다. 파티 정보 가시성은 앞의 「고치지 않는다」를 사용자 피드백으로 바꿔 고친다. 같은 goal 안 PR2로 간다(메인 결정, 범위 확대 승인 따로 없음). 녹화 빌드·재녹화는 PR2 병합 뒤다.
+- 161(범위 초안 PR2 v1 목업 확인, 사용자 원문 2026-11-06T19:27:48.212Z 메인 pane, 메인 전달 `msg_a7f11d4df9f6`): 「로그인창은 센터정렬도 필요해보여」. HUD 목업에는 다른 말이 없었다. 메인 해석: HUD(파티 정보·스킬칸)는 목업대로 확정(A). 로그인 창은 B로, ID·PW·START·QUIT 묶음 전체를 창 가로·세로 가운데에 두는 목업을 다시 만든다(창 높이를 내용에 맞게 줄이는 대안 하나 더). 입력칸 크기 제안 260×30·18pt는 유지한다. 퀘스트 칸은 리드 추천대로 그대로다.
+- 초상 피드백(사용자 원문 2026-11-06T19:28:42.139Z 메인 pane, 메인 전달 `msg_671c926d2664`): 「캐릭터 스텟 HUD의 캐릭터 초상화쪽이랑 캐릭터 초상화 테두리가 어색해」. 앞의 「초상 칸 손대지 않음」은 이 말로 바뀐다. 메인이 본 것(확정 아님): 기사 그림이 원 안에서 왼쪽으로 치우쳐 빈 양피지가 보이고, 원 안에 그림 뒤 바탕이 없으며, 금색 고리가 패널 왼쪽·위 테두리에 바짝 붙었다. 메인 지시: 초상 영역 두 안 목업(기사·마법사, PR302 실제 렌더 위)을 지금→바꿀 값과 영향 시험(A1·A2 등)과 함께 로그인 목업과 같이 보낸다. PR2 범위다.
+- 162(PR2 보충 목업 확인, 메인 전달 `msg_f06c21b045a1`): 「대시보드 결정 응답: 1) 계획 검토 - Content 162 - 초상을 금색 원 고리 다듬기(A)로 갈지 사각 칸(B)으로 바꿀지 (로그인은 가운데 정렬 안 1) → B 사각 칸 (초안 msg_43048f6612f3)」. 로그인은 안 1, 초상은 B다. 값은 「(바)」의 로그인·초상 줄이다.
+- 초상 B 기존 시험 단정 17항목(메인 결정 `msg_d314f4fa567e`, 요구가 사용자 162 B로 바뀐 것): 원문 `lead/pr2-portraitB-test-changes-v1.md`(sha256 `7596dbf4dba165e052134922db799f6938c87d4c127f8f9f9342b57b51971348`). 원 stencil 단정은 사각 `RectMask2D` 단정으로 바꾸고, 「틀은 잘리지 않음」·「그림이 칸 밖으로 나가지 않음」(A1)은 사각 기준으로 남긴다. 조건: 독립 검증이 「17항목 변경이 요구를 약화시켜 통과시킨 것이 아닌지」 판정한다(PR302 조건 2와 같은 방식). 특히 A1의 안쪽 사각 98/112 축소 계산이 제품 계산을 복제하지 않는지 본다.
+- 양피지 판정 방식 변경(메인 결정 `msg_96af2caf6add`): 그림을 끈 렌더에서 안쪽 사각 양피지 색 0, 켠·끈 렌더가 실제로 다름. R05-T01 화소 중심 포함·8836 단정에도 동의. 메인 원문: 「법사 sprite 자체에 양피지에 가까운 색이 있다는 원시 근거가 있어 요구를 약화한 것이 아니라 측정 대상을 바로잡은 것으로 본다. 독립 검증 약화 판정 목록에 이 줄도 넣어라.」
+- G1 넘침 표시 단정 변경과 R05-T02 고침(메인 결정 `msg_e64ef321d66d`, 리드 요청 `msg_0e37dc25f62d`): red-05 G1의 `isTextOverflowing` 단정을 「`isTextTruncated` 거짓 + 그린 글자 수 = 공백 아닌 글자 수」로 바꾼다. 잉크가 줄 칸 안·위아래 4px 이상이라는 실측 단정은 그대로다. 사용자 승인 값(줄 52·32pt)도 그대로다. 메인 원문: 「잉크가 줄 칸 안·위아래 4px 이상이라는 실측 단정이 그대로 남고, 잘림·빠짐 없음 단정이 더해지므로 요구를 약화하지 않는다. isTextOverflowing은 대체 글꼴의 줄 높이 때문에 실제 잘림 없이도 켜지는 표시라(PR302 전에도 켜짐) 요구의 측정으로 맞지 않다.」, 「R05-T02(초상 켠 뒤 isActiveAndEnabled 단정)도 동의. 두 건 모두 verify-03 약화 판정 목록에 넣어라.」 사본 `lead/main-msg_e64ef321d66d-g1-r05t02-approval.json`.
+- 163 A(PR2 실제 렌더 외관 확인, 사용자 원문 2026-11-06T21:35:44.385Z 메인 pane 제출, 메인 전달 `msg_40a76163fab6`): 「대시보드 결정 응답: 1) 계획 검토 - Content 163 - PR2 실제 게임 렌더(사각 초상·파티 정보·스킬칸·로그인 가운데)를 이대로 갈지 → A 이대로 (초안 msg_5030796ae6e9)」. 메인이 보인 캡처는 `impl-02/u2b/captures/`의 hud-sizing-knight(sha256 `0e2716adff894b0916f9f0ceef38fd899a68cdc9303e461116f4ca6901980e38`)·hud-sizing-mage(`ec95d0c24a9d378b87b665e65b865c75342eb5d2ef63f586e92775c674201936`)·login-centred-filled-1920x1080(`22a3ec25878d45b8c12335490af0dc527a56b3df92111090c1910f87aee1824e`)이다. 로그인 ID 입력 글자가 칸 아래쪽에 붙어 보인다는 메인 관찰도 함께 보였고 사용자는 이대로를 골랐다. 고치지 않는다. 메인 지시: 이 세 장(또는 같은 head의 재렌더)이 PR2 외관 사용자 확인 근거이고, 병합 준비 보고에서 외관 확인은 끝난 항목으로 둔다. 그래서 G6·A4·B7의 사용자 확인은 이것으로 채운다.
+- H3 단정 변경(메인 결정 `msg_a7f11d4df9f6`, 요구가 사용자 피드백으로 바뀐 것): `HudSkillSlotsSceneTests` H3의 판 (524,140)→(444,120), 칸 (112,112)→(96,96), `Centers` → (60,60)·(168,60)·(276,60)·(384,60). HUD 선행 시험 red-05는 로그인 확정을 기다리지 않고 연다. 로그인 수치는 확정 뒤 시험에 넣는다.
 - 캐릭터 겹침(사용자 직접 요청, 메인 pane 제출 2026-11-06T13:52:43.513Z 무렵, 메인 전달 `msg_8b8be28cab0e`): 「그리고 각각 캐릭터가 겹쳐있을때 Z-파이팅이 일어나는데 각각 시작위치를 다르게 하던가 그 부분을 해결해줘」. 재녹화 전에 고친다(메인 지시). 방법은 범위 초안 v2와 아래 「범위 초안 v2 처분」 절이다.
 - 파티 구간 분할화면(사용자 직접 요청, 메인 pane 제출 2026-11-06T14:22:53.288Z 무렵, 메인 전달 `msg_89fbb9ec5651`): 「그리고 파티플레이 설명에는 잠시 좌우 분할화면으로 같이 플레이 한다는 느낌을 살짝 보여주면 좋을 거 같아」. 적용은 아래 「파티 구간 두 화면 동시 녹화」 절이다.
 - 화면 머무름(사용자 피드백, 메인 pane 제출 2026-11-06T14:55:44.692Z 무렵, 메인 전달 `msg_2ec1e9fd94ff`): 「보니까 가끔 너무 짧게 빠르게 지나가서 제대로 보기 어려운 부분이 있는거 같네」. 적용은 아래 「범위 초안 v3 처분」 절이다.
@@ -104,7 +115,7 @@
 
 ## 범위
 
-세부 설계·대안은 승인된 초안 원문 v1 §2~§12, v2 §1~§8, v3 §1~§7이 정본이다. 아래는 승인 뒤 고정한 요약이다.
+세부 설계·대안은 승인된 초안 원문 v1 §2~§12, v2 §1~§8, v3 §1~§7이 정본이다. PR2(바) 칸 크기 조절은 범위 초안 `lead/scope-draft-pr2-v1.md`(sha256 `e60091ae2f82b5fec2c8b6853b4e62e1c2e8bf533b15716d5c600b2310733d49`)가 정본이다. HUD 두 칸은 사용자 161 A로 확정됐고, 로그인 입력칸은 가운데 정렬을 더해 목업을 다시 만든다(「적용 중인 사용자 결정」). 아래는 승인 뒤 고정한 요약이다.
 
 ### 만들 것
 
@@ -136,6 +147,11 @@
   - 회차 사이 재시작과 3회차 앞 재시작은 메인이 한다(137 A).
   - 3회차는 재시작 뒤 로그인 창·재접속 목록·마을 도착 뒤까지 끊지 않고 담는다. 녹화 끝은 「마을 도착 + 5초 이상」이다. 사용자가 확정한 해설 대본이 이 구간에 세 줄(약 14초)을 쓴다(메인 `msg_54b808acd693`).
   - 결과는 편집 파일 표(영상·소리·장면 표식·SHA256·장면 프레임 범위·소리 자름 범위, 대장간 구간의 실제 회차·클라 원본)로 메인에 보낸다. 편집과 PPT 삽입은 메인 보조 몫이다.
+- **(바) 칸 크기 조절(PR2, 사용자 159 C·161):** HUD 값은 `UI.unity` 직렬화 값에서 바꾼다(장면이 배치 정본이고 코드가 덮어쓰지 않는다). 수치는 1080p px다.
+  - 파티 정보 칸(Party_Info): 400×172 → 520×184(위 초상 칸 520 폭과 한 열). 제목 360×40 → 480×40. 멤버 줄 두 칸 360×46 → 480×52, 자리 y -58·-108 → -58·-118. 멤버 글자 28pt → 32pt, 세로 정렬 Middle → Midline(한글이 줄 칸 아래 테두리에 처지지 않게). 색·멤버 글 형식은 그대로다.
+  - 스킬칸(skill_panel): 판 524×140 → 444×120(자리 그대로). 칸 넷 112 → 96, 가운데 x -186·-62·62·186 → -162·-54·54·162. icon 78 → 66(y +10 → +8), Q·E 글자 72×34·30pt·y -38 → 62×30·26pt·y -32. 네 칸 고정(PR297)은 그대로다.
+  - 로그인 창(안 1, 162): 창 420×230 그대로. 이름표 ID·PW 44×30·(54,-18)·(54,-60)·16pt, 입력칸 260×30·(106,-18)·(106,-60)·18pt(입력 글자 정렬은 PR302 그대로), 오류 문장 380×30을 창 맨 아래에서 PW와 START 사이 (20,-96)로, START·QUIT 200×36·(110,-132)·(110,-176). 위·아래 여백 각 18, 좌우 54. 값은 기준 단위(800×450, 1080p는 2.4배)다.
+  - HUD 초상(B, 162): 자리 `status_icon1`·`status_icon2` 120×120·(16,-16) → 112×112·(22,-22). 금색 원 고리 대신 스킬칸과 같은 `Inset_Default` 칸을 첫 형제 `PortraitFrame`으로 깐다. 원 stencil 마스크 대신 `PortraitClip`(`RectMask2D` 98×98, 사방 7) 안에 sprite 없는 어두운 바탕 `PortraitBackdrop`(#3D2C20)과 그림 `PortraitArt`(기사 132·(-15,20), 법사 116·(0,13))를 둔다. NPC 대화창 초상의 원 고리는 그대로다.
 - **문서:** 이 goal, CURRENT의 Content 줄, BACKLOG 새 절(144 A·서버 주소 실행 인자·진짜 비밀번호 인증·서버 시작 위치 분산 네 행), `domains/client.md`의 로그인 화면·HUD 초상·캐릭터 그리기 순서 문단.
 
 ### 건드릴 곳
@@ -145,13 +161,14 @@
 - (라): `03_Client/Assets/Scripts/Rendering/`(새 helper 또는 `ClassVisualMount.cs`), `Bootstrap/LocalPlayerSpawner.cs`, `State/RemoteEntityRegistry.cs`, 새 시험(이름 `CharacterOverlapSort`로 시작).
 - (마): `03_Client/Assets/Scripts/Demo/DemoAutopilot.cs`, `Demo/DemoCharacterMenuStep.cs`, 기존 자동 진행기 시험(`DemoAutopilotVerifyBoundaryTests`·`DemoLaunchOptionsTests` 등), 필요하면 새 시험(이름 `DemoAutopilotDwell`로 시작).
 - (다): 근거 폴더 실행 파일만. 저장소 쓰기 0.
+- (바): `03_Client/Assets/Scenes/99.UI/UI.unity`(Party_Info·skill_panel·`status_icon1`·`status_icon2`의 RectTransform 크기·위치와 TMP 글자 크기·세로 정렬 값 줄만), `03_Client/Assets/Scripts/UI/MainMenuLoginView.cs`, `03_Client/Assets/Scripts/UI/HudLayout.cs`(초상 B), `HudSkillSlotsSceneTests` H3 세 값(메인 승인 `msg_a7f11d4df9f6`), `HudPortraitClipTests`·`HudFrameSkinTests`의 승인된 17항목(`msg_d314f4fa567e`), 새 시험. `UiWindowAppearance.AddPortraitFrame`은 NPC 대화창(`NpcDialogPanel.cs:157`)이 계속 쓰므로 바꾸지 않는다.
 - 문서: 이 goal, `00_Document/operations/CURRENT.md`(Content 줄), `00_Document/operations/BACKLOG.md`(새 절), `00_Document/domains/client.md`.
 
 ### 하지 않을 것
 
 - 서버·패킷·PDL·DB 변경, 진짜 비밀번호 확인(155 A).
-- `UI.unity`·`MainMenu.unity` 직렬화 값 변경, 새 그림·새 스킨 부품(설계 추천을 따를 때).
-- HP 줄·이름·파티 칸·스킬칸·미니맵 배치, 캐릭터 선택창, 자동 진행 시나리오 단계 순서(아래 화면 머무름 2.5초 이상만 바꿈, v3).
+- `UI.unity`·`MainMenu.unity` 직렬화 값 변경, 새 그림·새 스킨 부품(설계 추천을 따를 때). PR2는 (바)의 `UI.unity` 값 줄만 바꾸고 GUID·fileID·다른 직렬화 값은 그대로 둔다.
+- HP 줄·이름·미니맵 배치, 캐릭터 선택창, 자동 진행 시나리오 단계 순서(아래 화면 머무름 2.5초 이상만 바꿈, v3). 파티 칸·스킬칸 배치는 PR1에서 손대지 않았고 PR2 (바)에서만 바꾼다. START·QUIT는 PR2에서 크기·색을 그대로 두고, 로그인 안 1(162)의 가운데 정렬로 자리만 옮긴다. 퀘스트 칸은 PR2에서도 그대로다. 초상 영역은 사용자 초상 피드백(`msg_671c926d2664`)과 162 B로 PR2에서 바꾼다. NPC 대화창 초상은 바꾸지 않는다.
 - 퀘스트 배너(`QuestAlert`) 연출 시간과 캐릭터 선택 뒤 맵 입장 흐름의 표시 시간(v3 A).
 - 서버 주소 실행 인자 새로 만들기(후보 행만).
 - 서버 플레이어 시작 위치 변경(후보 `player-spawn-position-spread`), 정렬 레이어·`Renderer2D` 투명 정렬 설정 변경, 적·NPC·이펙트 순서 변경.
@@ -187,12 +204,20 @@
 | (다) | C6 | 1·2회차 영상에서 두 캐릭터가 겹친 구간의 앞뒤가 바뀌지 않는다. 리드가 정지 화면 표본으로 판정하고 독립 검증이 대조한다. |
 | (다) | C7 | 1회차에 기사·마법사 두 창 영상이 같은 시간대로 있어 파티 구간을 좌우로 나눌 수 있다. 녹화 빌드 self-test의 두 창 10초 확인(프레임 변화·검은 화면 0·멈춤 0·누락 수)이 먼저 통과해야 한다. 통과하지 못하면 대안(두 회차 맞붙이기)으로 가고 편집 파일 표에 두 화면의 파티 구간 단계 로그 시각을 적는다(`msg_700b25b2b482`). |
 | 문서 | D1 | 이 goal·CURRENT·BACKLOG 새 절·`domains/client.md`가 PR1에 들어가고 독립 검증이 문서도 실사한다. |
+| (바) | G1 | 1920×1080에서 Party_Info 520×184, 멤버 줄 480×52, 멤버 글자 32pt Midline. 두 줄의 그린 글자가 줄 칸 안에 있고 위·아래 여백이 각 4px 이상이다. |
+| (바) | G2 | 1920×1080에서 skill_panel 444×120, 칸 96×96, 칸 가운데가 판 왼쪽 아래 기준 (60,60)·(168,60)·(276,60)·(384,60), 네 칸 모두 켜짐·화면 안. icon 66×66 (0,8), Q·E 62×30 (0,-32) 26pt(장면 값). |
+| (바) | G3 | 로그인 창(안 1): 「(바)」 로그인 줄의 크기·자리 값. 창 위 끝→ID 칸 위 끝 18, QUIT 아래 끝→창 아래 끝 18, 이름표 왼쪽 여백 54 = 입력칸 오른쪽 여백 54, 버튼 가운데 x = 창 가운데 x. 오류 문장은 PW 칸과 START 사이에서 둘과 겹치지 않는다. 입력 글자 정렬 규칙은 지금과 같고 B1은 그대로 통과한다. |
+| (바) | G7 | HUD 초상(B): 자리 112×112·(22,-22), 첫 형제 `PortraitFrame`이 `Inset_Default`이고 잘리지 않는다. `PortraitClip`은 `RectMask2D` 98×98로 자리 가운데다. 1280×720·1920×1080에서 기사·법사 머리 그림 화소가 안쪽 사각 밖에 0이다(화면 전체를 센다). 1920×1080에서 그림을 끈 렌더의 안쪽 사각 안에 패널 양피지 색 화소가 0이다(법사 그림 자체에 양피지와 같은 색이 있어서 그림을 끈 렌더로 잰다, 진행 기록 「2026-11-07 선행 시험 red-05 U1」). 이 줄이 PR2에서 A1~A3의 원 고리 기준을 대신한다. |
+| (바) | G4 | 보존: 인벤토리 창이 Party_Info 아래 여백 12를 지킨다. 기존 창 배치 시험이 모두 통과한다. |
+| (바) | G5 | 기존 EditMode·PlayMode 전체 회귀 0(건너뜀 이름은 기준선과 같다). |
+| (바) | G6 | 독립 검증의 1920×1080 실제 렌더 캡처(HUD 기사·법사, 로그인 채움)를 메인이 사용자에게 보인다. |
 
 - 시험으로 못 바꾸는 요구는 「얼굴이 보기 좋게 가운데」(A4)와 로그인 화면 인상(B7)이다. 대체 실측은 두 해상도 캡처와 사용자 확인이다.
 
 ### 검증 등급
 
 - PR1 강: 로그인 배치는 `MainMenuLoginView.cs`(204행) 대부분과 688행 시험 파일을 고쳐 제품+시험 50줄을 넘는다. HUD는 렌더 경로(stencil 마스크)를 바꾼다. 실제 변경 줄 수는 시험 작성·구현 뒤 diff 원시로 다시 남긴다.
+- PR2 강(예상): 제품 값 약 40줄에 새 시험이 더해져 50줄을 넘는다. 실제 줄 수는 diff 원시로 다시 남긴다.
 - 녹화 빌드: 앞 goal 처분(빌드 독립 검증 약, `msg_48dee7c855ad`)을 따른다. 녹화 실행: 약(저장소 diff 0, 앞 실행 계약 v3와 같음).
 - 종료 기록 PR: 문서 실사.
 - R-7: 비해당(승인된 시범 목표 아님).
@@ -200,18 +225,20 @@
 ## PR 경계와 순서
 
 1. PR1(새 PR) `feat/content-hud-portrait-login-20261106`, base main `518f920f`: 이 goal 문서·CURRENT·BACKLOG + (가) + (나) + (라) + (마) + 자동 진행기 PW 채움 + `domains/client.md`. 결함 번호·commit은 부분별로 나눈다. 선행 시험은 `red-01`(가·나)과 `red-02`(라) 두 작업이고, (마)의 시험은 구현 계약 안에서 구현자가 쓴다(v3). 구현 계약은 하나다.
-2. 녹화 빌드와 세 회차 녹화: PR 없음. PR1 병합 commit이 고정 head다.
-3. 종료 기록 PR(새 PR): 종료 Gardener 뒤.
+2. PR2(새 PR, 범위 대기) `feat/content-hud-portrait-login-pr2-20261107`, base main `423260f3`: 사용자 159 C 「칸 크기 조절」. 대상 칸과 범위는 메인 허가를 받은 범위 초안으로 정한다(메인 `msg_57d3b8dc4883`). 이 문서의 PR1 뒤 기록도 이 branch에 둔다.
+3. 녹화 빌드와 세 회차 녹화: PR 없음. 마지막 화면 PR의 병합 commit(PR2가 생기면 PR2)이 고정 head다.
+4. 종료 기록 PR(새 PR): 종료 Gardener 뒤.
 
-순서: 선행 시험 → 구현 → 독립 검증 → PR1 병합(사용자 승인) → 녹화 빌드·검증 → 세 회차 녹화·리드 판정·좁은 독립 검증 → 편집 파일 표 전달 → 종료 Gardener → 종료 기록 PR → 종료 점검. 막히면 바닥은 영상 v4(111.3초)이고 그 판단은 메인 몫이다.
+순서: 선행 시험 → 구현 → 독립 검증 → PR1 병합(사용자 승인) → PR2 칸 크기 조절(범위 허가 뒤 같은 순서, 사용자 승인 병합) → 녹화 빌드·검증 → 세 회차 녹화·리드 판정·좁은 독립 검증 → 편집 파일 표 전달 → 종료 Gardener → 종료 기록 PR → 종료 점검. 막히면 바닥은 영상 v4(111.3초)이고 그 판단은 메인 몫이다.
 
 ## 진척 단계
 
 - [x] 범위 승인
 - [x] 선행 시험
 - [x] 화면 세 가지 구현
-- [>] 독립 검증
-- [ ] PR 병합
+- [x] 독립 검증
+- [x] PR1 병합
+- [>] PR2 칸 크기 조절(독립 검증 verify-03 통과, PR 생성과 병합 승인)
 - [ ] 녹화 빌드
 - [ ] 세 회차 녹화
 - [ ] 편집 자료 전달
@@ -316,9 +343,82 @@
 - 고친 곳: `HudLayout.cs`의 저장소 밖 캡처 경로 주석 두 줄을 지웠다. 얼굴 중심 이유 주석은 남았다. 코드 변경 0(commit `4e2a97c7`).
 - 재검증 등급: 처리 계획 4의 「약」을 「강」으로 고친다. 이번 재검증 대상에 남긴 판정용 시험 242줄이 들어가 제품+시험 50줄 이상이기 때문이다(등급 정본 「검증 강도 4주 시범」).
 
+### 2026-11-06 재검증 verify-02와 PR1 병합
+
+- 계약 `lead/verify-contract-02.md`(sha256 `e68d078d0809a736c3c5f30f264d6c2d34bdc87a85d9e2107f11a6758a0a2f68`, 등급 강, 메인 동의 `msg_374f8d465226`). Unity 창 8 메인 허가 `msg_e9e8e1d96090`. 검증자 worker_done `msg_667c12f0ceee`(Task `task_55c4488998d4`, verifies `task_997652a8d729`). 판정 `verify-02/verdict.md`(sha256 `b0378e3fa72f7123cea03576904a304b87d264daaa24c193a1d7e3ac3e540b48`). pane은 리드가 닫았다(`lead/verify02-worker-close-01.json`).
+- 판정: **통과, 차단 결함 0건.** V-01·V-02가 해소됐고 새 결함은 없다. 메인이 원문을 R-2로 읽고 보고와 같다고 했다(`msg_25570efe6ff2`).
+- U4(HEAD `c8c19321`): EditMode 1851건 통과 1851, PlayMode 298건 통과 250·실패 0·건너뜀 48(이름 U0·U3과 같음). E2는 60프레임 모두 완전 피복 표본 불일치 0이다(겹친 표본 1508~1619, 완전 피복 1364~1478). F-02 재발 없음, 원인 미확정은 그대로다. 리드 확인 `date -u` 「Fri, Nov  6, 2026  6:10:47 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경은 리드가 되돌렸다(`lead/verify02-drift-restore-01.txt`).
+- 완료조건: A1~A3·B1~B5·E1~E4·F2·D1 통과. A4·B7은 독립 외관 통과이고 사용자 확인에서 159 C가 왔다(「적용 중인 사용자 결정」). B6은 시험 부분 통과이고 녹화 실주행이 남았다. F1·C1~C7은 녹화 단계다.
+- 사용자 확인용 캡처(U4, 같은 HEAD): `verify-02/u4/captures/portrait-knight-1280x720.png`(sha256 `4e83f6285c29ead8929e017bb939dbcfdae312c0ab977d11a2a30a5a7ea8d9af`)·`portrait-mage-1280x720.png`(`0c0ba741b9e36f62f9f89eda4ca4cf342f41133175d1a03d4c1d6e4b16a1dbdd`)·`login-idpw-empty-1280x720.png`(`2e23607cdf3482aeb5c7946d89408ee37aad6177e900b5c7da52f82875a79fb2`)·`login-idpw-filled-1280x720.png`(`47eb3a79bd4c784e568168623fe8c6f99dcdee0f73d02478ed196fe5c12e3c85`).
+- 파티 정보 칸 글자색(메인 질문 `msg_25570efe6ff2`): 초상 캡처의 파티 정보 칸은 어두운 바탕에 어두운 글자로 보인다. 칸 안 글이 장면 기본 글(`전사 (Player)`·`마법사 (Other)`)이라 `PartyMemberHud`가 갱신하지 않은 시험 장면 상태다. 앞 goal 리허설 확대 `.backups/verification/2026-10-31-demo-autopilot-character-select/lead/party-panel-crop-r4-1-vs-r4-2.png`(sha256 `9aa7fdabc0297f8ec12325acc964cede399d84f4133bf9d654cb1c0e135997c6`)에서는 밝은 바탕에 어두운 글자로 읽힌다. 그 뒤 `PartyMemberHud.cs`는 바뀌지 않았고, `99.UI/UI.unity`의 마지막 변경 `fb7ff496`은 골드 표시 객체만 지웠다. 시험 장면이 왜 어둡게 그리는지는 확인하지 않았다. 메인이 확대본을 보고 고치지 않기로 정했다(`msg_57d3b8dc4883`).
+- 검증자의 범위 밖 기록: 기존 서버 시험 `GuildWire.cs:7`에 저장소 밖 근거 주석 1건이 있다. 메인 지시로 BACKLOG 후보로만 적는다(`guild-wire-test-local-evidence-comment`).
+- PR302 생성(head `c8c193210f2c1cb58a2bd0aab83d059ef176fc4a`, 본문 `lead/pr1-body.md` sha256 `4b71b26cdb98183872a32c8c97b900e64f8ac365eb7ab5a63126abc23929e586`). CI 4개 모두 통과했다. 완료 시각은 code-rules 18:16:22Z, module-boundaries 18:16:24Z, architecture-tests 18:22:17Z, dotnet-tests 18:40:09Z이고 mergeStateStatus는 CLEAN이었다(`lead/pr1-view-03.json`). 병합 준비 보고 `msg_e70d66efb1c5`.
+- 병합: 사용자가 메인 pane에 「병합 승인: PR302 head c8c193210f2c1cb58a2bd0aab83d059ef176fc4a」를 제출했고, 메인이 head·CI를 다시 대조해 병합했다. mergedAt 2026-11-06T19:05:01Z, merge commit `423260f3921077a8c82955ce39da50d6a77f09a7`(메인 `msg_57d3b8dc4883`). 리드가 받은 origin/main과 PR head의 tree 차이는 0이다(`lead/post-merge-fetch-01.txt`).
+- 다음: 녹화는 멈춘다. 159 C의 대상 칸이 정해지면 PR2 범위 초안을 쓴다. PR2 branch는 `423260f3`에서 만들었다(`lead/pr2-branch-01.txt`).
+
+### 2026-11-06 PR2 범위 초안 v1과 161 응답
+
+- 리드가 실제 화면에서 본 문제: 파티 정보 멤버 글자(28pt, 세로 Middle)가 줄 칸 아래 테두리에 닿는다. 파티 정보 칸(400 폭)이 위 초상 칸(520 폭)보다 좁다. 스킬칸 112px 빈칸 셋이 화면 아래를 크게 차지한다. 로그인 입력칸이 버튼보다 1.6배 길다. 지금 값은 `lead/pr2-analysis/hud-tree-423260f3.txt`(sha256 `34daa031f6c3530accea662ba152b15b20250407a8c5adecded20d5849b323d3`)·`hud-text-align-423260f3.txt`(`9465e8d356727b44000887d81bcbf80c13848d6baf878f77439d310273c60747`)와 `MainMenuLoginView.cs`다.
+- 범위 초안 PR2 v1 `msg_5e4b9fa2ad63`(sha256 `e60091ae…3d49`). 목업은 `lead/pr2-analysis/mockups-v3/`의 실제 프레임 위 합성이고 게임 렌더가 아니다. v1(줄 칸에 옛 글자 조각)·v2(입력 글자를 Midline으로 그림)는 고치기 전 판이다. 입력칸 글자를 Midline으로 바꾸면 p·_를 칠 때 글줄이 흔들려서 로그인 입력 글자 정렬은 지금 규칙을 유지한다.
+- 메인 확인 `msg_02ce0fcf44d8`(초안·목업 sha256 일치, 사용자 화면에 열림). 161 응답 `msg_a7f11d4df9f6`: HUD A, 로그인 B(가운데 정렬), H3 승인.
+
+### 2026-11-07 PR2 보충 — 로그인 안 1·초상 B와 기존 시험 17항목
+
+- 보충 초안 `lead/scope-draft-pr2-v2-addendum.md`(sha256 `5cb8b2876bc7b3dab7e678ba5bde0e3256c5ec3f688cd41ddb3a4725fab105f9`)와 목업(로그인 지금·안 1, 초상 지금·A·B)을 메인에 보냈다. 목업은 실제 렌더 위 합성이다. 로그인 안 2 목업은 못 만들었다. 창이 줄면 드러나는 MainMenu 배경이 Animator로 움직이는 그림이라 복원할 수 없어서다.
+- 사용자 162: 로그인 안 1, 초상 B(사각 칸). 리드 추천은 초상 A였다.
+- 초상 B로 바뀌는 기존 단정 17항목을 메인이 승인했다(`msg_d314f4fa567e`, 「적용 중인 사용자 결정」). 리드가 찾은 빈 통과 하나도 같이 고친다. 지금 A1은 초상 자리 안 화소만 세서, 그림이 잘리지 않고 자리 밖으로 넘쳐도 0으로 통과한다. 그래서 세는 범위를 화면 전체로 넓힌다.
+- 범위 기록 정정: (가) 「건드릴 곳」의 「`AddPortraitFrame`을 부르는 곳은 `HudLayout`뿐」은 틀렸다. `NpcDialogPanel.cs:157`도 2026-10-15(`14573c80`)부터 부른다. PR1은 그 함수를 바꾸지 않아 영향이 없었다. PR2도 바꾸지 않고 HUD만 그 함수를 떠난다.
+- red-05 계약 보충 02(`lead/red05-supplement-02.md`, sha256 `5901a234c00907307fc13ad38f3e0f7a8b77f3707114815b38e694a6686e4cda`)를 작성자의 공식 대기 ask에 답했다(`msg_07eea71166e6`). Unity 창을 열기 전이라 HUD·로그인·초상 RED가 한 번에 돈다.
+
+### 2026-11-07 선행 시험 red-05 U1
+
+- 시험 작성자 `[Content 시험 Astra]`(`task_31771a7b3a10`), 보고 `red-05/report.md`(sha256 `be62fdb265624d3881ad5afb67e9544e4a5c33a00f923e09e0e1300b323815f8`), worker_done `msg_c099da46763f`. 시험 commit `3a38215d`.
+- Unity 창 9(메인 허가 `msg_f3419f53c676`, HEAD `801ea287`): EditMode 필터 16건 실패 11·통과 5(`red-05/u1/`), PlayMode 필터 28건 실패 10·통과 18(`red-05/u1-playmode/`). 리드가 두 결과 XML의 이름과 실패 첫 줄을 직접 읽었다. 실패는 모두 새 값·새 초상 구조가 없어서 났다. 통과는 보존 시험이다(초상 칸 밖 화소 0 T2 4건, 조각 판정 Control, 인벤토리 여백 G4, 스킬칸 H1·H4~H6, PR302 로그인 11건).
+- 창 안 멈춤 한 번: EditMode 뒤 Unity가 `ProjectSettings.asset`의 `scriptingDefineSymbols` 한 줄을 자동으로 바꿔 PlayMode 입력 관문이 멈췄다. 리드가 되돌리고 PlayMode만 같은 창·같은 시한으로 재개했다. 원시는 `lead/red05-drift-restore-01.txt`·`02.txt`다.
+- R05-T01(작성자 반환): `HudPanelSizingRenderTests`의 초상 안쪽 94×94 검사가 경계 반올림 때문에 94×93만 셌다. `compared > 0`은 이 부족을 잡지 못한다.
+- 양피지 판정 방식 결함(리드 발견, 보충 02의 요구 설계 잘못): 법사 원본 sprite `character_icon2.png`는 불투명 화소의 0.41%(6519개)가 패널 양피지 (246,226,190)와 채널 차이 8 이하다. 기사 `knight_icon.png`는 96개다. B안 목업 합성의 안쪽 사각에서도 법사 62·기사 1화소가 나왔다. 그래서 「그림을 켠 렌더에서 안쪽 사각 양피지 색 화소 0」은 구현이 맞아도 실패한다. 원래 의도는 「칸 안에 패널 양피지가 비치지 않음」이다. 이를 「그림을 끈 렌더에서 안쪽 사각 양피지 색 화소 0, 그림을 켜고 끈 두 렌더가 실제로 다름」으로 바꾼다(리드 결정). 원시는 `lead/pr2-analysis/count-parchment-in-sprites-02.txt`·`count-parchment-in-B-01.txt`다.
+- 작성자 heartbeat 한 구간이 339초로 상한(4분 30초)을 넘었다. 작성자가 스스로 보고에 위반으로 남겼다.
+
+### 2026-11-07 선행 시험 고침 red-06 U1
+
+- 시험 작성자 `[Content 시험 Astra]`(`task_1b186061a323`), 계약 `lead/red-contract-06.md`(sha256 `e2513aa615eb5165bea68b2ba5656bc859f30c50e2bd5927a191cf8bb6a8bcaf`), 보고 `red-06/report.md`(sha256 `9dfd2536d901052f6a1c3c0e0a96c2c6119283af59037d094ef522ade762e881`), worker_done `msg_57047285066f`. 시험 commit `aa720f31`. 새 pane 첫 화면 업데이트 선택창은 메인이 「2. Skip」으로 넘겼다(R-6, `msg_96af2caf6add`).
+- Unity 창 10(메인 허가 `msg_b344aeeff8ec`, HEAD `061efc96`): `HudPanelSizingRenderTests` 5건 실패 4·통과 1(`red-06/u1/`). 리드가 결과 XML을 직접 읽었다. 고친 초상 두 건은 검사 수 8836과 켠·끈 렌더 차이(기사 4969·법사 5932화소) 단정을 통과하고, 끈 렌더 양피지 0 요구에서 실패했다(끈 렌더 양피지 같은 색 6540화소, 켠 렌더 기사 1610·법사 655). G1 두 건은 red-05와 같은 이유로 실패하고 G4는 통과했다. 새 시험 결함은 없다.
+- Unity 자동 변경(`ProjectSettings.asset` 한 줄, `MinimapRT.renderTexture` 줄 끝)은 리드가 되돌렸다(`lead/red06-drift-restore-01.txt`).
+
+### 2026-11-07 구현 impl-02 U2b
+
+- 구현자 `[Content 구현 Astra]`(`task_dd871a82b958`, Dispatch `ctx_41f3e98fd18c`), 계약 `lead/impl-contract-02.md`(sha256 `f9294749487a0b7db25f2b2aec731bfa9d084200741bf08ef55414c36e13d588`), HEAD `17428189`. 새 pane 첫 화면 업데이트 선택창(0.166.0 → 0.167.0)은 메인이 「2. Skip」으로 넘겼다(R-6, `msg_a3871bbd7384`). worker_done `msg_6926ebf141fe`(outcome failed, 「제품 구현 완료, 남은 실패 6건은 시험 결함 R05-T02·T03(red-07 몫)」). 보고 `impl-02/report.md`(sha256 `541269cc554e455358b7377bc24a39d22a144f888ca46770b5bdd7d15e53baef`). 구현 commit `b69a6341`. pane은 리드가 21:31:29Z에 닫았다(`lead/impl02-pane-close-01.json`).
+- 바꾼 곳: `UI.unity` 값 줄 36쌍(표 `impl-02/ui-unity-changed-lines.md`), `HudLayout.cs`(초상 B: Inset 액자와 98×98 `RectMask2D` 안의 바탕·그림, 원 링 텍스처와 `OnDestroy` 정리 제거), `MainMenuLoginView.cs`(로그인 안 1 값), `client.md`. NPC 대화의 원 링은 그대로다.
+- Unity 창 11(메인 허가 `msg_184e191b72b2`, 시한 21:41:00Z): 첫 시도 U2는 Unity를 띄우기 전 시한 검사에서 멈췄다. 호출 쪽이 ISO 시한을 `ConvertFrom-Json`으로 다시 읽어 Z를 잃었다(red-03과 같은 함정, Unity 0). 리드가 같은 창·시한으로 u2b를 허가했다(`msg_37436c64994d`).
+- U2b: EditMode 1857건 통과 1853·실패 4, PlayMode 305건 통과 255·실패 2·건너뜀 48(건너뜀 이름 U4와 같음). red-05·red-06 RED 21건 중 15건이 통과로 바뀌었다. 리드가 두 결과 XML을 직접 읽었다. commit 직전 구현 4파일의 해시는 u2b 입력 기록 `impl-02/u2b/playmode-inputs.json`과 같다. 창 끝 구현자 관측 21:21:05Z Unity 0·Windows dotnet 0. 자동 변경은 리드가 21:26:29Z에 되돌렸다(`lead/impl02-drift-restore-01.txt`).
+- 남은 실패 6건은 모두 red-05 시험 결함이고 제품은 바꾸지 않는다(리드 처분 `msg_e55b3287e991`).
+  - R05-T02(EditMode 4건): `HudPortraitClipTests` T1(91행)과 `HudPanelSizingSceneTests` PortraitCell(163행)이 숨긴 초상에 `isActiveAndEnabled`를 단정한다. `status_icon1·2`는 직업 확정 전 숨김이라 `m_IsActive: 0`인데 두 시험은 초상을 켜지 않는다. 같은 파일 T2는 140~141행에서 켠 뒤 잰다. RED 때는 앞의 「PortraitClip 없음」 실패에 가려졌다.
+  - R05-T03(PlayMode G1 2건): 잉크 실측은 통과다(줄 480×52, 잉크 높이 33, 위 10·아래 9px). 실패는 `isTextOverflowing`뿐이다. 한글은 TMP 전역 대체 글꼴 `Pretendard SDF Proper`(기준 40pt, 줄 위 60.9·아래 15.4)로 그려져 32pt 줄 높이가 약 61px이고 52px 줄 칸보다 크다. 장면 넘침 모드는 Overflow(0)라 잘리는 글자는 없다. PR302(28pt·46 칸)에서도 이 표시는 켜져 있었다. 이 단정은 goal G1·범위 초안·red-05 계약에 없고 작성자가 더했다.
+  - 처분: 메인 결정 `msg_e64ef321d66d`(「적용 중인 사용자 결정」). 고침은 새 시험 작성자 작업 red-07이 한다.
+- **R05-T02·T03(시험 작성 결함, 리드 검토 누락, 첫 발생):** 교정 층은 첫 발생이라 이 기록만 남긴다. 리드는 이후 시험 계약에 「숨김이 기본인 객체는 켠 상태를 먼저 만든 뒤 표시 상태를 단정한다」와 「TMP 넘침 표시는 대체 글꼴 줄 높이로 잘림 없이 켜질 수 있어 잘림 판정에 쓰지 않는다」를 적는다.
+- 1920×1080 실제 렌더 캡처: 메인 요청 목록 9장의 경로·SHA256을 메인에 보냈다(`msg_5030796ae6e9`). 전체 46장 목록은 `impl-02/u2b/analysis/capture-hashes.json`이다.
+
+### 2026-11-07 시험 고침 red-07 U1
+
+- 시험 작성자 `[Content 시험 Astra]`(`task_1bb8719d428f`, Dispatch `ctx_e1b7ded3939b`), 계약 `lead/red-contract-07.md`(sha256 `58ffe8174eec42ad307c514d96528201ff99a487c5e49f22e2215e66969ca4c9`), HEAD `764bd770`. 새 pane 첫 화면 업데이트 선택창은 메인이 「2. Skip」으로 넘겼다(R-6, `msg_65b3532dc07e`, Codex v0.166.0 그대로). worker_done `msg_da4a51f01106`(「red-07 완료 — 19/19 통과」). 보고 `red-07/report.md`(sha256 `79aaf376f5bd3dd98e5c71c88414b458f5e7aaef5fe426a01a9b6b0d12657ea2`). 시험 commit `f2af0ef8`. pane은 리드가 21:56:36Z에 닫았다(`lead/red07-pane-close-01.json`).
+- 고친 곳: R05-T02는 `HudPortraitClipTests` T1과 `HudPanelSizingSceneTests` PortraitCell에 「고른 초상만 켜기 + 조상 켜기 + `activeInHierarchy` fixture 단정」 세 줄을 더했다. 기존 `isActiveAndEnabled` 단정은 그대로다. R05-T03은 G1의 `isTextOverflowing` 단정을 `isTextTruncated` 거짓 + 그린 글자 수 = 공백 아닌 글자 수로 바꾸고, 넘침 표시는 `TestContext.Out`에만 남긴다. 같은 결함 전수 찾기는 추가 0건이다.
+- Unity 창 12(메인 허가 `msg_3f374f1e81b2`, 메인 확인 21:46:19Z Unity·Windows dotnet 0, 시한 22:11:19Z): EditMode 필터 14건 통과 14, PlayMode `HudPanelSizingRenderTests` 5건 통과 5, 실패·건너뜀 0이다. 리드가 두 결과 XML의 시험 수·이름·결과를 직접 읽었다. G1 로그는 두 줄 모두 `overflow=True truncated=False`이고 그린 글자 수가 기대와 같다(5/5, 6/6). 배치된 세 파일의 해시는 `red-07/placed.txt`와 같다. 창 끝 작성자 관측 21:51:13Z Unity 0·Windows dotnet 0. 리드 확인 「Fri, Nov  6, 2026  9:51:58 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경은 리드가 21:52:07Z에 되돌렸다(`lead/red07-drift-restore-01.txt`). 메인 지시: 창 요청은 메인 운영 결정이라 앞으로 「결정 필요」 표기를 붙이지 않는다.
+- **R07-L01(리드 계약 결함, 첫 발생):** 조립 스크립트가 부록 A에서 공백 든 경로 둘(`TMP Settings.asset`·`Pretendard SDF Proper.asset`)을 첫 공백에서 잘라 찍었다. 해시는 전체 경로로 잰 값이라 맞았다(`lead/red07-input-spaced-paths-01.txt`). 작성자 ask `msg_3dfe63cb6c84`, 리드 회신 `msg_e5268891c46a`. 교정: 스크립트 출력 줄을 고쳤다(`scripts/assemble-contract.sh` 03, 이전 판 `lead/assemble-contract.sh.before-03.bak`).
+
+### 2026-11-07 독립 검증 verify-03
+
+- 계약 `lead/verify-contract-03.md`(sha256 `11685a03df483e07e147e4c8d7b0c8fcd11006afd2ad288dbc3bab3dd1cc656c`, 등급 강, HEAD `8184e330`). 검증자 `[Content 검증자]`(`task_868473ea1e6d`, Dispatch `ctx_04695ed3722d`, verifies `task_dd871a82b958`). 새 pane 첫 화면 업데이트 선택창은 메인이 「2. Skip」으로 넘겼다(R-6, `msg_e156beaf4484`). worker_done `msg_ef7781010651`. 판정 `verify-03/verdict.md`(sha256 `747db1d9a243e5a2f5bcf99b0241b7d7d07025341c9ebbe964b6da7ad139b4bf`). pane은 리드가 22:33:12Z에 닫았다(`lead/verify03-pane-close-01.json`).
+- 판정: **통과, 차단 결함 0.** G1~G7 통과. 약화 판정 표(초상 17항목·H3·양피지 판정·R05-T01·R05-T02·G1 넘침 표시 단정)는 모두 「약화 아님」이고, 초상 12번과 R05-T01은 강화로 판정됐다.
+- U5(Unity 창 13, 메인 허가 `msg_833c28f4e5ed`, 메인 확인 22:07:40Z Unity·Windows dotnet 0, 시한 22:32:40Z): EditMode 1861건 통과 1861(새 판정용 시험 4건 포함), PlayMode 305건 통과 257·실패 0·건너뜀 48. 리드가 두 결과 XML의 합계를 직접 읽었고, 건너뜀 48건 이름이 U4와 같음을 따로 대조했다(U4에만·U5에만 있는 이름 0). 창 끝 검증자 관측 22:19:43Z Unity 0·Windows dotnet 0. 리드 확인 「Fri, Nov  6, 2026 10:20:13 PM」 Unity.exe 0·dotnet.exe 0. 자동 변경은 리드가 22:20:22Z에 되돌렸다(`lead/verify03-drift-restore-01.txt`).
+- 리드 결정: 검증자의 판정용 새 시험 `DemoUiPr2VerifyPortraitSourceTests`(4건, 원본 sprite·색조·비율 보존과 장식 raycast 끔·stencil 없음)를 PR2에 남긴다(commit `2a82ea72`). 파일 해시는 U5 입력 기록과 같다. PR1 verify-01 판정용 시험과 같은 처분이다.
+- **V03-O01(원시 보존 위반, 첫 발생):** impl-02 구현자가 처음 두 해시 확인의 출력이 든 `impl-02/contract-sha.txt`를 세 번째 성공 출력으로 덮어썼다. 구현자가 `impl-02/entry-limitations.md`에 스스로 공개했다. 검증자 escalation `msg_97fb4bc07801`, 리드 회신 `msg_0d358feaac42`, 메인 처분 요청 `msg_c80c739ab351`. 메인 처분 `msg_c5c2b3003150`: 기록만·비차단. 메인 원문 이유: 「덮어쓴 것은 실패한 해시 확인 두 번의 출력이고 구현자가 스스로 공개했다. 남은 값 f9294749…d588은 계약 현재 sha256과 같아 입력 불일치가 없다. 제품·시험 결과 원시(u2·u2b)는 따로 보존돼 판정 근거가 손상되지 않았다. 규칙 위반 사실은 남지만 판정을 바꿀 근거가 사라진 것이 아니다.」 교정: 첫 발생이라 이 기록만 남긴다. 리드는 다음 계약부터 「시작 확인 기록도 시도마다 새 파일」을 넣는다. 두 번째 발생이면 규칙 후보로 올린다(메인 조건).
+- 덮어쓴 파일 없이 provider 기록에만 남은 초기 실패(red-07 초기 CLI, impl-02 heartbeat --help·check --from, verify-03 초기 Get-Content 1회)는 기존 메인 처분 `msg_724556cd0dc5`(red-01, 「덮어쓴 파일이 없다는 확인과 함께 기록만」)의 범위로 보고 기록만 한다(리드 판단).
+- 비차단 관찰: O-V03-02(EditMode 초상 PNG의 파티 영역은 장면 기본 상태라 파티 가시성은 PlayMode 캡처로 본다), O-V03-03(로그인 ID 글자가 칸 아래쪽에 붙어 보이는 인상은 163 A에서 사용자가 본 상태). 미실행: 서버 연결 실주행·DB·Player 빌드·녹화는 녹화 단계 몫이다.
+
 ## 다음 계획 후보
 
 - `guild-stronghold-vault-persistence`(144 A): 길드 거점·공동 금고 DB 저장, 시연 뒤.
 - `login-server-host-launch-argument`(메인 결정 5): 서버 주소 실행 인자.
 - `login-password-authentication`(155 A): 진짜 비밀번호 인증.
 - `player-spawn-position-spread`(메인 결정 `msg_950238658511`): 같은 맵 플레이어의 서버 시작 위치 분산.
+- `guild-wire-test-local-evidence-comment`(메인 `msg_25570efe6ff2`): 서버 시험 `GuildWire.cs:7`의 저장소 밖 근거 주석.
