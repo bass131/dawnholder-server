@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** verify-01 불합격(낮음 차단 V-01·V-02)의 V-01을 고치는 좁은 구현 계약 `fix-01`(머리 `lead/fix-contract-01-head.md`)을 이 문서 commit에서 조립해 새 구현자 `[Content 구현 Astra]`를 연다. 그 뒤 재검증 `verify-02`(약 등급, Unity 창 8)로 간다. V-02는 리드가 고쳤다(진행 기록 「2026-11-06 독립 검증 verify-01」).
+**다음 첫 일:** 재검증 계약 `verify-02`(머리 `lead/verify-contract-02-head.md`, 등급 강)를 이 문서 commit에서 조립해 새 검증자 `[Content 검증자]`를 연다. 검증자가 준비되면 메인에 Unity 창 8(전체 EditMode·PlayMode)을 청한다. V-01은 fix-01이, V-02는 리드가 고쳤다(진행 기록 「2026-11-06 독립 검증 verify-01」·「… V-01 고침 fix-01」).
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
@@ -308,7 +308,13 @@
 - 완료조건: A1~A3·B1~B5·E1~E4·F2 통과. A4·B7은 독립 외관 통과이고 사용자 확인이 남았다. B6은 시험 부분 통과이고 녹화 실주행이 남았다. D1은 V-02였다. F1·C1~C7은 녹화 단계다.
 - 비차단 관찰 D-01: 로컬 붙임 뒤 registry가 로컬 순서를 한 번 더 매긴다. 성능 손해는 측정하지 않았고 지금 구조를 유지한다(리드 결정).
 - 리드 결정: 검증자가 쓴 판정용 시험 두 파일(`DemoUiFinishVerifyRenderOrderTests`는 여러 몸 렌더러 정렬, `DemoUiFinishVerifyLoginPathTests`는 실제 자동 진행 login → character list)을 남겨 PR1에 넣는다. U3에서 통과했고 재검증이 다시 본다.
-- 다음: V-01은 제품 파일이라 새 구현자(`fix-01`)가 주석만 고친다. 그 뒤 새 검증자(`verify-02`, 약 등급)가 고친 commit을 실사하고 최종 HEAD에서 전체 EditMode·PlayMode를 다시 돈다.
+- 다음: V-01은 제품 파일이라 새 구현자(`fix-01`)가 주석만 고친다. 그 뒤 새 검증자(`verify-02`)가 고친 commit을 실사하고 최종 HEAD에서 전체 EditMode·PlayMode를 다시 돈다. 메인 동의 `msg_33c9ac962433`(처리 계획 1~5, 판정용 시험 두 개 PR1 포함, 병합 준비 보고에 외관 캡처 3~4장).
+
+### 2026-11-06 V-01 고침 fix-01
+
+- 계약 `lead/fix-contract-01.md`(sha256 `3adabd775bfc35e1718cc3d7a1333b17fa3f35da15b6e5a499dd25ccc730a50f`). 구현자 worker_done `msg_f758fd4828c2`(outcome succeeded, Task `task_997652a8d729`). 보고 `fix-01/report.md`(sha256 `d19167d2db35d8d5875c95a8753052b13ecae042070123881b0196234045dc17`). pane은 리드가 17:44:41Z에 닫았다(`lead/close-fix01-worker-01.txt`). Unity 실행 없음.
+- 고친 곳: `HudLayout.cs`의 저장소 밖 캡처 경로 주석 두 줄을 지웠다. 얼굴 중심 이유 주석은 남았다. 코드 변경 0(commit `4e2a97c7`).
+- 재검증 등급: 처리 계획 4의 「약」을 「강」으로 고친다. 이번 재검증 대상에 남긴 판정용 시험 242줄이 들어가 제품+시험 50줄 이상이기 때문이다(등급 정본 「검증 강도 4주 시범」).
 
 ## 다음 계획 후보
 
