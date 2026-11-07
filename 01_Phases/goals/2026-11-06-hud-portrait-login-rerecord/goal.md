@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 종료 Gardener 결과를 이 goal에 반영하고 종료 기록 PR을 연다. PR이 서면 head와 CI를 메인에 알린다. 병합은 사용자의 `병합 승인:` 한 줄 뒤 메인이 한다. PR303 병합 뒤 녹화 빌드·세 회차 재녹화·좁은 독립 검증을 마쳤고, 편집 파일 표(C5)는 메인이 영상 보조에 넘겼다(진행 기록 「2026-11-07 편집 파일 표 전달」). 시연 영상 편집 결과는 이 goal의 범위 밖이다.
+**다음 첫 일:** 종료 기록 PR의 CI가 끝나면 head와 CI를 메인에 알린다. 병합 뒤 종료 점검을 한다. 종료 Gardener는 끝났다(차단 0·리드 반환 2 처리, 종료 기록 「종료 Gardener」). 병합은 사용자의 `병합 승인:` 한 줄 뒤 메인이 한다. PR303 병합 뒤 녹화 빌드·세 회차 재녹화·좁은 독립 검증을 마쳤고, 편집 파일 표(C5)는 메인이 영상 보조에 넘겼다(진행 기록 「2026-11-07 편집 파일 표 전달」). 시연 영상 편집 결과는 이 goal의 범위 밖이다.
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
@@ -448,7 +448,7 @@
 - 실행 계약 `lead/recording-run-contract-rr-r3-v1.md`(sha256 `c3dcaadcc89d1033cef162cdfa261d3c61b2f3e6e8fa952250d94e95ccc6a59b`), 허용 고침 C31~C34. 실행자 `[Content 구현 Astra]`(`task_d9c69f6f4d81`, Dispatch `ctx_8cb62b758960`). 리드 계약 결함 RR3-L01: 출처 `players.ps1` 632~634행의 두 창 JSON 무조건 읽기를 보지 못했다. 실행자 Q1 `msg_54be965575a9` → 리드 승인 `msg_87b43d6ce220`(C35 1회차에서만 읽기, C36 알림에 마을 + 5초 값).
 - 서버 손: 3회차 앞 Listening 2026-11-07T01:23:39.9264139Z(`msg_9dbcf1853da8`, 장면의 재시작). 3회차 뒤 Server stopped 01:33:15.5789305Z(`msg_325577e3eea3`).
 - 결과(`msg_7d231689d45f`): firstFrameBeforeLogin true(5.14초 앞), firstFrameBeforeCharacterList true, 두 역할 생성 없음·sameKnightCharacter true, 영상 끝이 마을 도착 뒤 88.49초, 남은 Player 0. worker_done `msg_3e8fc34424df`, 보고 `recording-build-01/recording-round3/run-01/report.md`(sha256 `06b1aaf0c3d09776012eb2eec6d1efab10b1453453748fa80686d3c2679d4d4a`). 리드 01:37:39Z 확인 0·porcelain 0(`lead/recrun-r3-after-01.txt`).
-- **3회차 무음(원인 미확정 관찰):** `r4-3-audio.wav`가 전 구간 mean·max -91.0 dB, 곧 샘플 전부 0이다. 1·2회차는 -22.8·-23.1 dB로 정상이다. 3회차에도 사냥터·보스 전투가 있다. 실행 인자·녹음 장치(같은 ID·형식)·녹음기 스크립트는 1회차와 같고 소리 패킷은 들어왔다. 어느 층에서 0이 됐는지는 원시로 가릴 수 없다(독립 검증 D8). 사용자 답은 「볼륨 건드린 적 없어」다(메인 `msg_42a130c0abd5`). 그래서 사용자의 소리 끄기·볼륨 믹서 변경은 원인에서 뺀다.
+- **3회차 무음(원인 미확정 관찰):** `r4-3-audio.wav`는 전 구간 volumedetect mean·max -91.0 dB로 사실상 무음이다. 이 값은 원본 float 샘플을 16비트로 바꿔 잰 바닥값이고, 원본 샘플이 정확히 0인지는 세지 않았다(종료 Gardener GR-02). 1·2회차는 -22.8·-23.1 dB로 정상이다. 3회차에도 사냥터·보스 전투가 있다. 실행 인자·녹음 장치(같은 ID·형식)·녹음기 스크립트는 1회차와 같고 소리 패킷은 들어왔다. 어느 층에서 0이 됐는지는 원시로 가릴 수 없다(독립 검증 D8). 사용자 답은 「볼륨 건드린 적 없어」다(메인 `msg_42a130c0abd5`). 그래서 사용자의 소리 끄기·볼륨 믹서 변경은 원인에서 뺀다.
 - 메인 결정 A(`msg_325577e3eea3`, 138 A): 3회차는 영상만 쓰고 소리는 편집 BGM·자막이 덮는다. 다시 찍지 않는다. 편집에서 문제가 보이면 3회차만 다시 찍을 수 있다.
 - 녹음기는 무음을 판정하지 않는다(녹음 사슬에 소리 레벨 관문이 없다, 독립 검증 관찰 O1). 첫 발생이다. 다음 녹화에서 막을 방법은 BACKLOG `recording-audio-level-gate`로 올린다.
 
@@ -488,6 +488,16 @@
   - 질문 뒤 두 구간의 답 receipt 파일 시각은 14:00:10Z(red-01)·20:00:26Z(red-05)다. 정본대로 질문 대기를 손으로 빼지 않고 helper 판정 그대로 둔다.
   - 녹화 빌드 검증자는 최대 300초로 상한 안이다. 3회차 실행자는 최대 295초다(위 D3 정정).
 - 서버 손 시각 다섯(137 A)은 위 「재녹화 1·2회차」·「재녹화 3회차」에 있다. 이 goal에서 리드·작업자는 서버 창을 읽거나 누르지 않았다.
+- 종료 Gardener: `[Content Sol]`(`task_d76fce257701`, Dispatch `ctx_163e62eab99a`, pane `term_4d507dad`). 요청 모델은 gpt-6-astra xhigh(메인 정정 `msg_ab9ec2418ec6`)다. 메인 R-6(`msg_9a7842832bcb`, 「2. Skip」) 뒤 상태줄은 「GPT-6-Astra xhigh · Full Access · never」였고 backend 실제 모델은 unknown이다. 계약 `closeout-01/gardener-contract-v1.md`(sha256 `656d35d5cbf038f975d72eac280fd70c45721b482c97fd146015f49d9c6e3ae2`), 고정 입력 198파일 `closeout-01/gardener-inputs-v1.txt`(sha256 `43e438b3649d9ba427a6ece68fa2ff7d07935f7f41f9b16f257501a487d02404`), 기동 기록 `closeout-01/gardener-launch-record-01.md`.
+  - 보고서 `closeout-01/gardener/context-gardener-report.md`(sha256 `aecc618237e550f4b1c27bc0b988cd1d88c61c2c9e43f070b52055664c51e9ab`, 151,568 B, worker_done `msg_789d7e641914`). 이 폴더의 [gardener.md](gardener.md)는 같은 bytes 사본이다(`closeout-01/gardener-settle-01.json`).
+  - 결론: 차단 관찰 0, 리드 반환 2, 정리 후보 2(둘 다 기존 BACKLOG 행 연결). 입력 198파일 대조, 후보 도착 검사 `allowed`, 생존 신호 helper `over`(Dispatch 18·초과 7·질문 대기 10)가 위 기록과 같았다. 제품 PR 두 개의 독립 검증 통과·사용자 병합과 녹화 단계 메인 처분 1 A·A·A를 바꿀 근거는 없었다.
+  - GR-01 처리: 편집 파일 표 v1 20행 「그 뒤는 done 뒤 유지 구간이다」는 92.533~93.9829993초(약 1.45초)의 done 이전 멈춤을 done 뒤로 읽히게 했다. v1은 고치지 않았다. 정오표 `lead/edit-file-table-c5-erratum-01.md`(sha256 `703df279a9a0fc51a6b96f250e5e09ffb980d8f12be010935ceb41dfb28158ee`)를 메인에 보내 영상 보조 전달을 청했다(`msg_973f7a39cab2`).
+  - GR-02 처리: 「곧 샘플 전부 0」을 「volumedetect mean·max -91.0 dB로 사실상 무음, 원본 float 샘플이 정확히 0인지는 세지 않음」으로 고쳤다. 고친 곳은 위 「재녹화 3회차」와 BACKLOG `recording-audio-level-gate`의 이유 칸이다. 근거 `recording-rr-verify-01/media/volume-r4-3-audio.wav-whole.stderr.txt`는 pcm_f32le를 pcm_s16le로 바꾼 뒤 n_samples 9974930, histogram_91db 9974930이다. 그 행은 이 PR에서 새로 등록한 행이라 같은 PR 안에서 고쳤다.
+  - 정리 후보: 1은 `verifier-heartbeat-during-compaction`이다(앞 goal과 합친 검증자 초과 8 Dispatch·13구간, Dispatch를 맡은 실행 wrapper가 180초 안에 신호를 보내는 방식). 2는 `lead-judgement-raw-value-crosscheck`이다(편집 표 작성 흐름에서 시간 순서와 확정도를 검사하는 방식). 새 ID를 만들지 않았고 두 행의 7필드도 고치지 않았다. 연결은 「다음 계획 후보」에 적었다.
+  - Gardener 표의 첫 발생·연결: reply receipt 본체 부재는 두 goal에서 3건(이 goal red-01·red-05, 앞 goal 한 건)이다. 생존 신호 후보 설계의 입력 수집 문제로 함께 넘긴다. 작업자가 찾은 리드 계약 결함은 이 goal에서 8건이지만 원인이 서로 달라 한 규칙으로 묶지 않는다.
+  - 리드 기동 결함(첫 발생): 리드가 split 스크립트를 Bash heredoc으로 쓰면서 TEMP 문자열의 역슬래시가 하나씩 빠졌다. 그래서 pane의 TEMP·TMP가 U+0008·U+0009가 든 깨진 값이 됐다. Gardener가 시작 확인에서 찾아 helper 실행 전 물었다(`msg_cefcf7c1d985`). 깨진 경로로 생긴 폴더는 없다(`closeout-01/stray-temp-check-01.txt`). 리드가 계약 경로 폴더를 만들고 같은 세션에서 셸 호출마다 TEMP·TMP를 프로세스 한정으로 지정하게 답했다(`msg_d20a59ca8ff2`). 메인 R-6 요청의 TEMP 서술이 실제와 달랐던 점도 메인에 알렸다(`msg_99f0595b1bbd`). 근거 폴더 전체의 split 기록 19개 중 깨진 것은 이것 하나다.
+  - Gardener 생존 신호: helper 기준 신호 15개, 최대 349초, 300초 초과 1구간이다(03:11:24Z→03:17:13Z, 문맥 압축 전후, `closeout-01/gardener-liveness-01.json`). Gardener가 자기 결함으로 적었다(보고서 「생존 신호」 348.2905345초).
+  - pane은 03:29:44Z 빈 프롬프트를 확인하고 닫았다(ptyKilled true, `closeout-01/gardener-pane-close-01.json`). TEMP 폴더에 남은 항목은 0이다.
 
 ### 남은 한계
 
@@ -509,5 +519,5 @@
 - BACKLOG `guild-wire-test-local-evidence-comment`: 서버 시험 `GuildWire.cs:7`의 저장소 밖 근거 주석이다(메인 `msg_25570efe6ff2`).
 - BACKLOG `start-check-raw-evidence-per-attempt`: 작업자 시작 확인 원시를 시도마다 새 파일로 남기고 Git 상태를 JSON 배열·개수로 저장하는 규칙 후보다. 두 번째 발생이고 맡을 파트는 Rules(시연 뒤)다(메인 `msg_6ecb50859097`).
 - BACKLOG `recording-audio-level-gate`: 녹화 시작 직후 소리 레벨 관문이다. 3회차 무음이 첫 발생이고 맡을 파트는 Content다(독립 검증 관찰 O1).
-- BACKLOG `verifier-heartbeat-during-compaction`: 기존 행이다. 이 goal의 생존 신호 300초 초과는 7구간이다(「종료 기록」의 표). 메인 `msg_c37425157ce7`은 「heartbeat helper가 상한 전에 스스로 보냄」을 Rules(시연 뒤) 몫으로 적었다. 행의 7필드는 고치지 않는다.
-- BACKLOG `lead-judgement-raw-value-crosscheck`: 기존 행이다. 1~3회차 좁은 독립 검증 D7(멈춤 시작 92.533초를 done 뒤로 서술)·D8(무음 층 특정)이 같은 갈래다. 행의 7필드는 고치지 않는다.
+- BACKLOG `verifier-heartbeat-during-compaction`: 기존 행이다. 이 goal의 생존 신호 300초 초과는 7구간이다(「종료 기록」의 표). 메인 `msg_c37425157ce7`은 「heartbeat helper가 상한 전에 스스로 보냄」을 Rules(시연 뒤) 몫으로 적었다. 행의 7필드는 고치지 않는다. 종료 Gardener 정리 후보 1이 이 행에 연결된다(앞 goal과 합친 검증자 초과 8 Dispatch·13구간, Dispatch를 맡은 실행 wrapper의 자동 신호). Gardener 자신의 349초 1구간과 reply receipt 본체 부재 3건도 같은 설계의 입력이다.
+- BACKLOG `lead-judgement-raw-value-crosscheck`: 기존 행이다. 1~3회차 좁은 독립 검증 D7(멈춤 시작 92.533초를 done 뒤로 서술)·D8(무음 층 특정)이 같은 갈래다. 행의 7필드는 고치지 않는다. 종료 Gardener 정리 후보 2와 리드 반환 GR-01(C5 안내의 done 앞뒤 서술)·GR-02(무음의 확정도)가 같은 갈래다. 편집 표 작성 흐름에서 시간 순서와 확정도를 검사하는 방식이 제안됐다.
