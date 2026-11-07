@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 종료 기록 PR의 CI가 끝나면 head와 CI를 메인에 알린다. 병합 뒤 종료 점검을 한다. 종료 Gardener는 끝났다(차단 0·리드 반환 2 처리, 종료 기록 「종료 Gardener」). 병합은 사용자의 `병합 승인:` 한 줄 뒤 메인이 한다. PR303 병합 뒤 녹화 빌드·세 회차 재녹화·좁은 독립 검증을 마쳤고, 편집 파일 표(C5)는 메인이 영상 보조에 넘겼다(진행 기록 「2026-11-07 편집 파일 표 전달」). 시연 영상 편집 결과는 이 goal의 범위 밖이다.
+**다음 첫 일:** 종료 기록 PR #304 문서 실사 1차의 D1(근거 경로 접두사)을 고쳤다. 새 검증자 세션의 재검증을 받고, 통과하면 head와 CI를 메인에 알린다. 병합 뒤 종료 점검을 한다. 종료 Gardener는 끝났다(차단 0·리드 반환 2 처리, 종료 기록 「종료 Gardener」). 병합은 사용자의 `병합 승인:` 한 줄 뒤 메인이 한다. PR303 병합 뒤 녹화 빌드·세 회차 재녹화·좁은 독립 검증을 마쳤고, 편집 파일 표(C5)는 메인이 영상 보조에 넘겼다(진행 기록 「2026-11-07 편집 파일 표 전달」). 시연 영상 편집 결과는 이 goal의 범위 밖이다.
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
@@ -429,15 +429,15 @@
 ### 2026-11-07 녹화 빌드 독립 검증
 
 - 검증자 `[Content 검증자]`(`task_265d5bb9295e`, Dispatch `ctx_749ccaf5a026`), 계약 `lead/recording-build-verify-contract-rr-v1.md`(sha256 `d417f1db476debeaaff3a055eb9cd3a6ec91c518c2f523649f2c504f310ce2ed`, 등급 약). 판정 `recording-build-verify-01/verdict.md`(sha256 `72d3ae890eb91607c09e58c009e346e2c0ddaa92d180ed703150d129404970f9`, worker_done `msg_0d090a6cccdd`).
-- 판정: **불합격, 차단 D1 한 건.** 빌드 작업자 시작 확인 `recording-build-01/start-git.txt` 1행의 porcelain이 「System.Object[]」로 저장됐는데, 보고 11행·맥락 메모 5행이 그것을 빈 값 근거로 인용했다. 깨끗한 상태는 다른 원시(`preflight-start-git-01.json`·`build-run/git-before.json`)가 증명한다. C1 충족, 빌드 산출물 결함 없음.
+- 판정: **불합격, 차단 D1 한 건.** 빌드 작업자 시작 확인 `recording-build-01/start-git.txt` 1행의 porcelain이 「System.Object[]」로 저장됐는데, 보고 11행·맥락 메모 5행이 그것을 빈 값 근거로 인용했다. 깨끗한 상태는 다른 원시(`recording-build-01/preflight-start-git-01.json`·`recording-build-01/build-run/git-before.json`)가 증명한다. C1 충족, 빌드 산출물 결함 없음.
 - 메인 결정 1 A(`msg_6ecb50859097`, 138 A): D1은 기록·비차단이다. 리드 정정 기록 `lead/recbuild-d1-correction-01.md`를 두고 작업자 원문은 고치지 않는다. 2 A: 두 창 기동 순서는 기사 → 마법사 그대로이고 앞뒤 순서는 관찰값이다.
 - **규칙 후보(두 번째 발생):** 「시작 확인 원시」 갈래다. 첫째가 V03-O01(시작 확인 기록 덮어쓰기), 둘째가 이 D1이다. 후보 문장은 「시작 확인 원시는 시도마다 새 파일로 남기고, Git 상태는 JSON 배열과 개수로 저장해 다시 읽어 타입·개수를 확인한다. 형 이름 문자열을 근거로 인용하지 않는다.」다. 정본 반영은 시연 뒤 Rules 몫이다(메인 `msg_6ecb50859097`). BACKLOG `start-check-raw-evidence-per-attempt`로 올린다. 녹화 실행 계약부터 「JSON 배열 + 개수 + 다시 읽기」 줄을 넣었다.
 
 ### 2026-11-07 재녹화 1·2회차
 
 - 실행 계약 `lead/recording-run-contract-rr-v1.md`(sha256 `100ff6849670b1c327a51d3fc9f82cefcaeda3f3d1eada5c4ea9c8d37a0d703c`). 앞 goal 실행 계약 v3와 보충 C11~C13을 바탕으로 한 차이 계약이고 허용 고침은 C18~C25다. 고칠 자리는 Claude Explore 서브에이전트(읽기 전용)가 찾았고 리드가 핵심 줄을 확인했다. 실행자 `[Content 구현 Astra]`(`task_905b5e9bd3e7`, Dispatch `ctx_10ed11dec219`).
-- 녹화 중 더한 고침(리드 답): C26 `msg_67e91ee5f41d`(리드 계약 결함 RR1-L01, 포인터와 출처 `start-check.ps1`이 같은 `run-01/contract-sha.txt`를 씀), C27 `msg_2f514b6503d9`(`-Layout` 매개변수와 지역 `$layout`의 대소문자 무시 충돌), C28 `msg_ae688ac10f51`(줄 끝 백틱 뒤 빈 줄 11곳), C29 `msg_42beb5011cdb`(빈 출력 접두 막기). C30(`recorder.ps1` 품질 측정 함수의 `System.Drawing` 로드)은 실행자가 ask 없이 고친 뒤 공개했다.
-- 루트 오출력: layout-dual-01의 빈 출력 접두로 checkout 루트에 untracked 7개가 생겼다. 실행자가 즉시 보고했고(`msg_e479ca4806c3`) 리드 승인(`msg_0aac820961fa`)으로 `recording/run-01/layout-dual-attempt-01/unintended-root-output/`에 옮겼다. 전후 sha256 7/7 일치, porcelain 0. 메인 즉시 알림 `msg_acec095c53be`.
+- 녹화 중 더한 고침(리드 답): C26 `msg_67e91ee5f41d`(리드 계약 결함 RR1-L01, 포인터와 출처 `start-check.ps1`이 같은 `recording-build-01/recording/run-01/contract-sha.txt`를 씀), C27 `msg_2f514b6503d9`(`-Layout` 매개변수와 지역 `$layout`의 대소문자 무시 충돌), C28 `msg_ae688ac10f51`(줄 끝 백틱 뒤 빈 줄 11곳), C29 `msg_42beb5011cdb`(빈 출력 접두 막기). C30(`recorder.ps1` 품질 측정 함수의 `System.Drawing` 로드)은 실행자가 ask 없이 고친 뒤 공개했다.
+- 루트 오출력: layout-dual-01의 빈 출력 접두로 checkout 루트에 untracked 7개가 생겼다. 실행자가 즉시 보고했고(`msg_e479ca4806c3`) 리드 승인(`msg_0aac820961fa`)으로 `recording-build-01/recording/run-01/layout-dual-attempt-01/unintended-root-output/`에 옮겼다. 전후 sha256 7/7 일치, porcelain 0. 메인 즉시 알림 `msg_acec095c53be`.
 - 두 창 10초 확인 layout-dual-02 통과(각 1920×1080·9.6초·288프레임, 누락·검은 화면·멈춤 0).
 - 서버 손(137 A, 메인): 1회차 앞 Listening 2026-11-07T00:48:34.9517489Z(`msg_f03b75c584a4`). 1·2회차 사이 재시작 Server stopped 00:53:04.2520492Z, Listening 00:53:15.4774775Z(`msg_9f23e83e5013`). 2회차 뒤 엇갈린 재시작 Listening 00:57:39.9507627Z는 접속 없이 Server stopped 00:59:52.0522483Z로 끝났다(`msg_41842486a9cf`). 메인 결정 `msg_f70dad3720d7`으로 이것은 「취소된 재시작」으로만 적는다. 리드는 서버 요청을 한 통에 하나만 보내고 답 전에는 다시 보내지 않는다(엇갈림 2회).
 - 결과: 1회차 두 역할 생성·done, firstFrameBeforeLogin true(5.23초 앞), 두 창 녹화. 2회차 마법사 생성·기사는 1회차 칸 1을 선택, firstFrameBeforeLogin true(5.15초 앞). worker_done `msg_373d10d64467`, 보고 `recording-build-01/recording/run-01/report.md`(sha256 `5b00d6e782ca82cc01459c43367e7a88b3e53b5718ce6afd404d19207e0dafea`). 리드 01:06:14Z 확인 Dawnholder·ffmpeg·Unity 0, porcelain 빈 값(`lead/recrun-after-01.txt`).
@@ -460,7 +460,7 @@
   - D1: C30을 「준비됨」 뒤 ask 없이 고쳤다(실행자 절차). 고친 곳은 품질 측정 함수이고 녹화 사슬이 아니다. 이 goal 첫 발생이라 이 기록만 남긴다.
   - D2·D3·D4: 생존 신호 공백. D2 1·2회차 실행자 403.5초, D3 3회차 실행자 389.5초(heartbeat 파일 사이), D4 검증자 자신 381.5초·310.5초.
   - 비차단 D5~D12: D5 C27·C28 구현 실패와 루트 7개(복구됨), D6 반올림(원시 경계로 정정), D7·D8 리드 판정, D9 리드 계약 결함 RR1-L01·RR3-L01(실행 전 발견·승인 고침), D10~D12 검증자 자신의 시작 절차·출력 최소화·보조 계산 정정.
-- 메인 결정 A(`msg_c37425157ce7`, 138 A): D1~D4를 기록하고 세 회차 원본을 채택한다. 재녹화·재검증은 없다. 이유는 끝난 실행의 절차 위반이라 다시 찍어도 고쳐지지 않고, 원본 내용은 독립 재측정으로 확인됐기 때문이다. 메인 R-2 표본: verdict 재계산 일치, D1 원문(`recording/run-01/revisions.md` 19~21행, `lead/reply-recrun-q4-20261107-01.cjs` 10행), D2 heartbeat 두 끝 UTC, 3회차 기사 로그 114행.
+- 메인 결정 A(`msg_c37425157ce7`, 138 A): D1~D4를 기록하고 세 회차 원본을 채택한다. 재녹화·재검증은 없다. 이유는 끝난 실행의 절차 위반이라 다시 찍어도 고쳐지지 않고, 원본 내용은 독립 재측정으로 확인됐기 때문이다. 메인 R-2 표본: verdict 재계산 일치, D1 원문(`recording-build-01/recording/run-01/revisions.md` 19~21행, `lead/reply-recrun-q4-20261107-01.cjs` 10행), D2 heartbeat 두 끝 UTC, 3회차 기사 로그 114행.
 - D3 정정(리드, 종료 기록 정산): 정본 helper는 그 Dispatch의 모든 메시지를 신호로 센다. 3회차 실행자의 heartbeat 03→05 사이에 status 「3회차 끝」(`msg_7d231689d45f`)이 있어 이 Dispatch의 최대 간격은 295초다. 정본 기준으로 D3은 300초 초과가 아니다(`closeout-01/liveness-settlement-01.md`). 처분 A는 그대로다.
 - 리드 정정(D7·D8): 1회차 마법사 영상의 멈춤은 92.533초에 시작하고 done은 93.983초다. 「92.5초 뒤는 done 뒤 유지」라는 리드 서술은 틀렸다. 3회차 무음을 「Windows 출력 믹스가 비었다」고 한 것은 원시로 확인할 수 없는 층 특정이었다. 「저장된 WAV가 무음, 원인 미확정」으로 고친다.
 - 반복 발생: 생존 신호 300초 초과는 앞 goal 리허설 검증자(약 377·445초)부터 이어진다. 메인 기록(`msg_c37425157ce7`): 문서보다 높은 층(heartbeat helper가 상한 전에 스스로 보냄)으로, 맡을 파트는 Rules(시연 뒤)다. 같은 갈래 BACKLOG `verifier-heartbeat-during-compaction`에 이 goal의 발생을 연결한다. 리드 판정 수치 오류(D7·D8)는 `lead-judgement-raw-value-crosscheck`와 같은 갈래다.
@@ -498,6 +498,12 @@
   - 리드 기동 결함(첫 발생): 리드가 split 스크립트를 Bash heredoc으로 쓰면서 TEMP 문자열의 역슬래시가 하나씩 빠졌다. 그래서 pane의 TEMP·TMP가 U+0008·U+0009가 든 깨진 값이 됐다. Gardener가 시작 확인에서 찾아 helper 실행 전 물었다(`msg_cefcf7c1d985`). 깨진 경로로 생긴 폴더는 없다(`closeout-01/stray-temp-check-01.txt`). 리드가 계약 경로 폴더를 만들고 같은 세션에서 셸 호출마다 TEMP·TMP를 프로세스 한정으로 지정하게 답했다(`msg_d20a59ca8ff2`). 메인 R-6 요청의 TEMP 서술이 실제와 달랐던 점도 메인에 알렸다(`msg_99f0595b1bbd`). 근거 폴더 전체의 split 기록 19개 중 깨진 것은 이것 하나다.
   - Gardener 생존 신호: helper 기준 신호 15개, 최대 349초, 300초 초과 1구간이다(03:11:24Z→03:17:13Z, 문맥 압축 전후, `closeout-01/gardener-liveness-01.json`). Gardener가 자기 결함으로 적었다(보고서 「생존 신호」 348.2905345초).
   - pane은 03:29:44Z 빈 프롬프트를 확인하고 닫았다(ptyKilled true, `closeout-01/gardener-pane-close-01.json`). TEMP 폴더에 남은 항목은 0이다.
+- 종료 기록 PR #304 문서 실사 1차(메인 결정 B `msg_5b2919fd4be0`): 리드는 처음에 실사 생략(A)을 추천했다. 이는 AGENTS 「독립 세션을 생략하는 작은 작업 예외는 없다」와 goal-loop 「검증 강도 4주 시범」의 「문서 실사 | 문서만 변경」을 보지 않은 리드 판단 오류다(첫 발생).
+  - 검증자 `[Content 검증자]`(`task_7f156b7c7547`, Dispatch `ctx_87d014401c50`). 메인 R-6(`msg_9b66ed55d6a1`) 뒤 상태줄은 「GPT-6-Astra xhigh」였고 backend 실제 모델은 unknown이다. 계약 `closeout-verify-01-contract-v1.md`(sha256 `f57958b88fa592405ace0dd0e616a9d55ade3876f76d1a04ff20ac09517af91f`), 입력 사실 `closeout-01/verify-prep-01/inputs-02.json`. 01판 입력은 gardener.md의 msg ID까지 「Gardener 뒤 바뀐 줄」로 세어 리드가 02판을 만들었다.
+  - 판정 `closeout-verify-01/verdict.md`(sha256 `1adb197a18297e72f9e9700c61e80f4bddc37bc260a0af41a824bd82f3196cdf`, worker_done `msg_84594fcb4248`): **NOT PASS, 차단 D1 한 건.** 위 「재녹화 1·2회차」의 루트 오출력 이관 폴더와 「재녹화 좁은 독립 검증과 처분」의 D1 원문 경로에 `recording-build-01/` 접두사가 빠져 근거 폴더에서 그대로 열 수 없었다. 그 밖의 요구항목은 지적이 없었다. Gardener 뒤 바뀐 16행 전수, 앞 기록 표본 28/28, 후보 도착 검사 allowed, gardener.md 바이트 같음, PR 본문 같음이다. 비차단 관찰은 O1(기존 BACKLOG 행이 다른 worktree의 로컬 근거를 가리킴)과 O2(녹음기 「같다」는 동작 기준이고 두 스크립트는 주석 3행이 다름)다.
+  - D1 고침: 두 경로에 접두사를 붙였다. 같은 꼴의 짧은 경로 셋도 전체 경로로 고쳤다. 「녹화 빌드 독립 검증」의 `recording-build-01/preflight-start-git-01.json`·`recording-build-01/build-run/git-before.json`, 「재녹화 1·2회차」의 `recording-build-01/recording/run-01/contract-sha.txt`다. 검증자는 이 셋을 파일 이름 인용으로 보고 D1에 넣지 않았다. 고친 뒤 이번 PR에서 더한 줄의 백틱 경로를 다시 훑었다(`closeout-01/verify-prep-01/path-scan-after-d1-02.json`). 재검증은 새 검증자 세션으로 받는다.
+  - 검증 중 질문 둘은 리드가 안전 사본을 미리 남기지 않아 생겼다. 첫째 `msg_6468cda073d7`은 첫 화면 사본에 업데이트 창만 있던 일이다. 리드가 `closeout-01/verify-prep-01/verifier-screen-after-start-01.model-lines.json`을 줬다. 둘째 `msg_7373c31aef95`는 Gardener pane 닫기 전 빈 프롬프트의 근거가 열지 않는 원본뿐이던 일이다. 리드가 `closeout-01/gardener-screen-before-close-01.redacted.json`을 줬다.
+  - 검증자 생존 신호: helper 기준 신호 21개, 최대 128초, 300초 초과 0이다(`closeout-01/verify-prep-01/cverify-liveness-01.json`). pane은 04:32:25Z 빈 프롬프트를 확인하고 닫았다(`closeout-01/verify-prep-01/verifier-close-01.json`).
 
 ### 남은 한계
 
