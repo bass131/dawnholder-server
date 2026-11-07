@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 종료 기록 PR #304 문서 실사 1차의 D1(근거 경로 접두사)을 고쳤다. 새 검증자 세션의 재검증을 받고, 통과하면 head와 CI를 메인에 알린다. 병합 뒤 종료 점검을 한다. 종료 Gardener는 끝났다(차단 0·리드 반환 2 처리, 종료 기록 「종료 Gardener」). 병합은 사용자의 `병합 승인:` 한 줄 뒤 메인이 한다. PR303 병합 뒤 녹화 빌드·세 회차 재녹화·좁은 독립 검증을 마쳤고, 편집 파일 표(C5)는 메인이 영상 보조에 넘겼다(진행 기록 「2026-11-07 편집 파일 표 전달」). 시연 영상 편집 결과는 이 goal의 범위 밖이다.
+**다음 첫 일:** 종료 기록 PR #304의 문서 실사가 끝났다. 1차 NOT PASS(D1, 근거 경로 접두사)를 고쳤고 새 검증자 세션의 재검증은 PASS다(종료 기록 「PR #304 문서 실사 재검증」). 리드는 이 기록 commit의 head와 CI를 메인에 알린다. 병합 뒤 종료 점검을 한다. 종료 Gardener는 끝났다(차단 0·리드 반환 2 처리, 종료 기록 「종료 Gardener」). 병합은 사용자의 `병합 승인:` 한 줄 뒤 메인이 한다. PR303 병합 뒤 녹화 빌드·세 회차 재녹화·좁은 독립 검증을 마쳤고, 편집 파일 표(C5)는 메인이 영상 보조에 넘겼다(진행 기록 「2026-11-07 편집 파일 표 전달」). 시연 영상 편집 결과는 이 goal의 범위 밖이다.
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
@@ -504,6 +504,12 @@
   - D1 고침: 두 경로에 접두사를 붙였다. 같은 꼴의 짧은 경로 셋도 전체 경로로 고쳤다. 「녹화 빌드 독립 검증」의 `recording-build-01/preflight-start-git-01.json`·`recording-build-01/build-run/git-before.json`, 「재녹화 1·2회차」의 `recording-build-01/recording/run-01/contract-sha.txt`다. 검증자는 이 셋을 파일 이름 인용으로 보고 D1에 넣지 않았다. 고친 뒤 이번 PR에서 더한 줄의 백틱 경로를 다시 훑었다(`closeout-01/verify-prep-01/path-scan-after-d1-02.json`). 재검증은 새 검증자 세션으로 받는다.
   - 검증 중 질문 둘은 리드가 안전 사본을 미리 남기지 않아 생겼다. 첫째 `msg_6468cda073d7`은 첫 화면 사본에 업데이트 창만 있던 일이다. 리드가 `closeout-01/verify-prep-01/verifier-screen-after-start-01.model-lines.json`을 줬다. 둘째 `msg_7373c31aef95`는 Gardener pane 닫기 전 빈 프롬프트의 근거가 열지 않는 원본뿐이던 일이다. 리드가 `closeout-01/gardener-screen-before-close-01.redacted.json`을 줬다.
   - 검증자 생존 신호: helper 기준 신호 21개, 최대 128초, 300초 초과 0이다(`closeout-01/verify-prep-01/cverify-liveness-01.json`). pane은 04:32:25Z 빈 프롬프트를 확인하고 닫았다(`closeout-01/verify-prep-01/verifier-close-01.json`).
+- 종료 기록 PR #304 문서 실사 재검증(AGENTS 「수정과 재검증은 새 세션으로 수행한다」): 검증자 `[Content 검증자]`(`task_e32db9c713c2`, Dispatch `ctx_2e80f807284c`)는 새 세션이다. 메인 R-6(`msg_207723ad89d9`, 「2. Skip」) 뒤 상태줄은 「GPT-6-Astra xhigh」였고 backend 실제 모델은 unknown이다. 계약 `closeout-verify-02-contract-v1.md`(sha256 `3b9337a5e4fc44d92a49d8ebcb3d74471ebc19b7ecae845abaadb209f02b9ccf`), 입력 사실 `closeout-01/verify-prep-02/inputs-01.json`이다.
+  - 범위는 고침 commit `69f9c364` 하나다. D1 해소, 바뀐 줄 12개 전수, 다른 변경 없음, 후보 도착 검사 재실행, PR 본문 02판 대조, 바뀐 줄의 가독성을 봤다. `1df2a657`까지의 내용은 다시 판정하지 않았다.
+  - 판정 `closeout-verify-02/verdict.md`(sha256 `63dea7c669f63bbd61530149e4abef6f05ef80e35edd031cf116421cbbe67b73`, worker_done `msg_9fd4107ba631`): **PASS, D1 두 위치 해소, 신규 결함 0.** 요구항목 8개 모두 지적이 없었다. 후보 도착 검사는 exit 0 `allowed`였고, PR 본문은 원격과 bytes가 같았다. 새 비차단 관찰은 없다.
+  - 1차의 질문 둘을 막으려고 리드가 기동 전에 모델 줄 사본(`closeout-01/verify-prep-02/verifier-screen-after-start-01.model-lines.json`)과 메인 회신 사본(`closeout-01/verify-prep-02/main-msg_207723ad89d9.json`)을 넣었다. 이번 질문은 0이다.
+  - 검증자 생존 신호: helper 기준 신호 9개(heartbeat 8·worker_done 1), 최대 131초, 300초 초과 0이다(`closeout-01/verify-prep-02/cverify2-liveness-01.json`). 판정서는 첫 heartbeat의 서버 UTC를 미기록으로 뒀다. 리드 원시에서 그 신호(`msg_3c6955eafd2e`)의 created_at은 04:43:43Z다.
+  - pane은 04:58:55Z 빈 프롬프트를 확인하고 닫았다(ptyKilled true, `closeout-01/verify-prep-02/verifier-close-01.json`). TEMP 폴더에는 Codex 기동 때 생긴 빈 `.tmp*` 폴더 둘이 남았다. 1차 검증자의 TEMP도 같은 꼴 항목 둘이었다(`closeout-01/verify-prep-01/cverify-settle-01.json`).
 
 ### 남은 한계
 
