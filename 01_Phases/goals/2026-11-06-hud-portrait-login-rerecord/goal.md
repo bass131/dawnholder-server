@@ -4,7 +4,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR2를 만들고 CI가 끝나면 메인에 병합 준비를 보고한다. 병합은 사용자의 `병합 승인:` 한 줄 뒤 메인이 한다. 독립 검증 verify-03은 통과했고(차단 0), PR2 외관은 사용자가 163 A로 확인했다. 녹화 빌드·재녹화는 PR2 병합 뒤다(진행 기록 「2026-11-07 독립 검증 verify-03」).
+**다음 첫 일:** 종료 Gardener 결과를 이 goal에 반영하고 종료 기록 PR을 연다. PR이 서면 head와 CI를 메인에 알린다. 병합은 사용자의 `병합 승인:` 한 줄 뒤 메인이 한다. PR303 병합 뒤 녹화 빌드·세 회차 재녹화·좁은 독립 검증을 마쳤고, 편집 파일 표(C5)는 메인이 영상 보조에 넘겼다(진행 기록 「2026-11-07 편집 파일 표 전달」). 시연 영상 편집 결과는 이 goal의 범위 밖이다.
 
 - 범위 초안 v1을 메인이 원문과 대조해 허가했다(`msg_6feebf9d6738`). 초안 원문은 `.backups/verification/2026-11-06-hud-portrait-login-rerecord/lead/scope-draft-v1.md`(sha256 `a9ad70736c2f648e024501fcce638f9b95d138ec6c6f93d91be2abf8d9b1cf1d`)다. 초안 §5는 「화면 칸만」(155 A), §7은 「게임 BGM 켬」(153 A) 행으로 고정됐다. §7은 뒤에 「게임 BGM 끔, 효과음 켬」으로 바뀌었다(`msg_ee77a4e1bcd1`, 「적용 중인 사용자 결정」).
 - 범위 초안 v2(캐릭터 겹침 그리기 순서 고정)도 허가됐다(`msg_950238658511`). 원문은 같은 폴더 `lead/scope-draft-v2.md`(sha256 `a45e845092d5bbb0ef4554b8aa0a93ba61e7dea2e6b31f31c0a7397b1e2191d3`)다.
@@ -16,7 +16,7 @@
 | 항목 | 현재 |
 |---|---|
 | 승인 | 범위 초안 v1 메인 허가(`msg_6feebf9d6738`, 메인 결정 다섯 포함), v2 메인 허가(`msg_950238658511`), 두 화면 동시 녹화 메인 결정(`msg_700b25b2b482`), v3 메인 허가 + A(`msg_1f83e3674ddf`) |
-| branch | PR1 `feat/content-hud-portrait-login-20261106`(PR302 병합, merge commit `423260f3921077a8c82955ce39da50d6a77f09a7`). PR2 `feat/content-hud-portrait-login-pr2-20261107`, base main `423260f3` |
+| branch | PR1 `feat/content-hud-portrait-login-20261106`(PR302 병합, merge commit `423260f3921077a8c82955ce39da50d6a77f09a7`). PR2 `feat/content-hud-portrait-login-pr2-20261107`(PR303 병합, merge commit `73bc1a9feb75ec908dcb51094ed5b718c4839534`, 녹화 빌드 고정 head). 종료 기록 `docs/content-hud-portrait-login-closeout-20261107`, base main `73bc1a9f` |
 | 리드 | `[Content 리드 Opus]`(claude-opus-5-5 xhigh), Run `run_d49db3aff0b0`, 회신 주소 `run:run_d49db3aff0b0` |
 | 메인 | `[메인 Claude]`, handle `term_751a1f26-7aac-4a33-8a57-a3d4cec8a3d4` |
 
@@ -237,12 +237,13 @@
 - [x] 선행 시험
 - [x] 화면 세 가지 구현
 - [x] 독립 검증
-- [x] PR1 병합
-- [>] PR2 칸 크기 조절(독립 검증 verify-03 통과, PR 생성과 병합 승인)
-- [ ] 녹화 빌드
-- [ ] 세 회차 녹화
-- [ ] 편집 자료 전달
-- [ ] 종료 기록
+- [x] PR302 병합
+- [x] 칸 크기 조절
+- [x] PR303 병합
+- [x] 녹화 빌드
+- [x] 세 회차 녹화
+- [x] 편집 자료 전달
+- [>] 종료 기록
 
 ## 진행 기록
 
@@ -415,10 +416,98 @@
 - 덮어쓴 파일 없이 provider 기록에만 남은 초기 실패(red-07 초기 CLI, impl-02 heartbeat --help·check --from, verify-03 초기 Get-Content 1회)는 기존 메인 처분 `msg_724556cd0dc5`(red-01, 「덮어쓴 파일이 없다는 확인과 함께 기록만」)의 범위로 보고 기록만 한다(리드 판단).
 - 비차단 관찰: O-V03-02(EditMode 초상 PNG의 파티 영역은 장면 기본 상태라 파티 가시성은 PlayMode 캡처로 본다), O-V03-03(로그인 ID 글자가 칸 아래쪽에 붙어 보이는 인상은 163 A에서 사용자가 본 상태). 미실행: 서버 연결 실주행·DB·Player 빌드·녹화는 녹화 단계 몫이다.
 
+### 2026-11-07 PR303 병합과 녹화 빌드
+
+- 녹화 단계의 리드 원기록은 근거 폴더 `lead/pending-goal-notes-recording.md`다. 아래는 결정·결과·결함과 근거 경로만 옮긴다.
+- PR303 병합: 사용자가 메인 pane에 「병합 승인: PR303 head 17b9a7b076f7812b3ccddf6f24add51813871abc」를 제출했고 메인이 head·CI 4/4·CLEAN을 다시 대조해 병합했다. mergedAt 2026-11-06T23:21:46Z, merge commit `73bc1a9feb75ec908dcb51094ed5b718c4839534`(메인 `msg_4b960eab04f3`). 병합 뒤 origin/main과 PR303 head의 tree diff는 0이다(`lead/post-merge-pr2-fetch-01.txt`).
+- 고정 head `73bc1a9f`(`lead/recording-build-fixed-head-check-01.txt`): 앞 녹화 빌드 head `cfe8bb45`·`518f920f` 대비 서버 쪽 트리 diff 0이라 서버는 지금 빌드 그대로다. 프로토콜 Current = 23, 클라 설정 diff 0이다.
+- 빌드 작업자 `[Content 구현 Astra]`(`task_c6e180fc02ce`, Dispatch `ctx_4e166f8ba132`), 계약 `lead/recording-build-worker-contract-rr-v1.md`(sha256 `648459ced417184c689acd03251ac2a9d8fa76970ae6636717527dab8c55c8ba`), 메인 선승인 `msg_f15643440811`. 복사 고침 범위는 작업자 ask `msg_06cfca479af1`를 리드가 조건부로 승인했다(`msg_23c3e557139d`).
+- 빌드 창: 리드가 23:36:54Z에 Unity·Windows dotnet·Dawnholder 0을 잰 뒤 열었다(`msg_6eb136ca262b`). Unity exit 0, 162.99초, 「Build Finished, Result: Success.」. exe sha256 `91a36fa14dd3ccf390b99720805eda0553da1ca1108381b49c98c938f69dc256`, manifest `recording-build-01/build-run/player-file-sha256.json`(234파일, sha256 `4ac84344e750396c0a19e9305d4c489a57b0341ca9e0b376a66fd684943ec500`). worker_done `msg_3cf89b03ac81`, 보고 `recording-build-01/report.md`. 리드 23:42:32Z 재측정 0(`lead/recbuild-after-processes-01.txt`).
+- drift: 허용 다섯 중 셋(`UniversalRP.asset`·`UniversalRenderPipelineGlobalSettings.asset`·`GraphicsSettings.asset`)을 리드가 23:45:51Z에 되돌렸다(`lead/recbuild-drift-restore-01.txt`).
+- 리드 운영 이탈(첫 발생): 「운영 방식」의 「메인 답을 기다릴 때는 우편함 대기를 열지 않고 턴을 끝낸다」를 red-07 R-6부터 병합 결과까지 지키지 않고 메인 회신용 대기를 열었다. 녹화 단계부터 지켰다.
+
+### 2026-11-07 녹화 빌드 독립 검증
+
+- 검증자 `[Content 검증자]`(`task_265d5bb9295e`, Dispatch `ctx_749ccaf5a026`), 계약 `lead/recording-build-verify-contract-rr-v1.md`(sha256 `d417f1db476debeaaff3a055eb9cd3a6ec91c518c2f523649f2c504f310ce2ed`, 등급 약). 판정 `recording-build-verify-01/verdict.md`(sha256 `72d3ae890eb91607c09e58c009e346e2c0ddaa92d180ed703150d129404970f9`, worker_done `msg_0d090a6cccdd`).
+- 판정: **불합격, 차단 D1 한 건.** 빌드 작업자 시작 확인 `recording-build-01/start-git.txt` 1행의 porcelain이 「System.Object[]」로 저장됐는데, 보고 11행·맥락 메모 5행이 그것을 빈 값 근거로 인용했다. 깨끗한 상태는 다른 원시(`preflight-start-git-01.json`·`build-run/git-before.json`)가 증명한다. C1 충족, 빌드 산출물 결함 없음.
+- 메인 결정 1 A(`msg_6ecb50859097`, 138 A): D1은 기록·비차단이다. 리드 정정 기록 `lead/recbuild-d1-correction-01.md`를 두고 작업자 원문은 고치지 않는다. 2 A: 두 창 기동 순서는 기사 → 마법사 그대로이고 앞뒤 순서는 관찰값이다.
+- **규칙 후보(두 번째 발생):** 「시작 확인 원시」 갈래다. 첫째가 V03-O01(시작 확인 기록 덮어쓰기), 둘째가 이 D1이다. 후보 문장은 「시작 확인 원시는 시도마다 새 파일로 남기고, Git 상태는 JSON 배열과 개수로 저장해 다시 읽어 타입·개수를 확인한다. 형 이름 문자열을 근거로 인용하지 않는다.」다. 정본 반영은 시연 뒤 Rules 몫이다(메인 `msg_6ecb50859097`). BACKLOG `start-check-raw-evidence-per-attempt`로 올린다. 녹화 실행 계약부터 「JSON 배열 + 개수 + 다시 읽기」 줄을 넣었다.
+
+### 2026-11-07 재녹화 1·2회차
+
+- 실행 계약 `lead/recording-run-contract-rr-v1.md`(sha256 `100ff6849670b1c327a51d3fc9f82cefcaeda3f3d1eada5c4ea9c8d37a0d703c`). 앞 goal 실행 계약 v3와 보충 C11~C13을 바탕으로 한 차이 계약이고 허용 고침은 C18~C25다. 고칠 자리는 Claude Explore 서브에이전트(읽기 전용)가 찾았고 리드가 핵심 줄을 확인했다. 실행자 `[Content 구현 Astra]`(`task_905b5e9bd3e7`, Dispatch `ctx_10ed11dec219`).
+- 녹화 중 더한 고침(리드 답): C26 `msg_67e91ee5f41d`(리드 계약 결함 RR1-L01, 포인터와 출처 `start-check.ps1`이 같은 `run-01/contract-sha.txt`를 씀), C27 `msg_2f514b6503d9`(`-Layout` 매개변수와 지역 `$layout`의 대소문자 무시 충돌), C28 `msg_ae688ac10f51`(줄 끝 백틱 뒤 빈 줄 11곳), C29 `msg_42beb5011cdb`(빈 출력 접두 막기). C30(`recorder.ps1` 품질 측정 함수의 `System.Drawing` 로드)은 실행자가 ask 없이 고친 뒤 공개했다.
+- 루트 오출력: layout-dual-01의 빈 출력 접두로 checkout 루트에 untracked 7개가 생겼다. 실행자가 즉시 보고했고(`msg_e479ca4806c3`) 리드 승인(`msg_0aac820961fa`)으로 `recording/run-01/layout-dual-attempt-01/unintended-root-output/`에 옮겼다. 전후 sha256 7/7 일치, porcelain 0. 메인 즉시 알림 `msg_acec095c53be`.
+- 두 창 10초 확인 layout-dual-02 통과(각 1920×1080·9.6초·288프레임, 누락·검은 화면·멈춤 0).
+- 서버 손(137 A, 메인): 1회차 앞 Listening 2026-11-07T00:48:34.9517489Z(`msg_f03b75c584a4`). 1·2회차 사이 재시작 Server stopped 00:53:04.2520492Z, Listening 00:53:15.4774775Z(`msg_9f23e83e5013`). 2회차 뒤 엇갈린 재시작 Listening 00:57:39.9507627Z는 접속 없이 Server stopped 00:59:52.0522483Z로 끝났다(`msg_41842486a9cf`). 메인 결정 `msg_f70dad3720d7`으로 이것은 「취소된 재시작」으로만 적는다. 리드는 서버 요청을 한 통에 하나만 보내고 답 전에는 다시 보내지 않는다(엇갈림 2회).
+- 결과: 1회차 두 역할 생성·done, firstFrameBeforeLogin true(5.23초 앞), 두 창 녹화. 2회차 마법사 생성·기사는 1회차 칸 1을 선택, firstFrameBeforeLogin true(5.15초 앞). worker_done `msg_373d10d64467`, 보고 `recording-build-01/recording/run-01/report.md`(sha256 `5b00d6e782ca82cc01459c43367e7a88b3e53b5718ce6afd404d19207e0dafea`). 리드 01:06:14Z 확인 Dawnholder·ffmpeg·Unity 0, porcelain 빈 값(`lead/recrun-after-01.txt`).
+- 실행자 측정 결함 자진 보고 `msg_71f0b8a691b7`: 품질 진단 함수가 `[Math]::Max(0, double)`의 정수 오버로드로 구간 초를 반올림했다. 원시 경계로 다시 계산한 값을 보고에 함께 적었다.
+
+### 2026-11-07 재녹화 3회차
+
+- 실행 계약 `lead/recording-run-contract-rr-r3-v1.md`(sha256 `c3dcaadcc89d1033cef162cdfa261d3c61b2f3e6e8fa952250d94e95ccc6a59b`), 허용 고침 C31~C34. 실행자 `[Content 구현 Astra]`(`task_d9c69f6f4d81`, Dispatch `ctx_8cb62b758960`). 리드 계약 결함 RR3-L01: 출처 `players.ps1` 632~634행의 두 창 JSON 무조건 읽기를 보지 못했다. 실행자 Q1 `msg_54be965575a9` → 리드 승인 `msg_87b43d6ce220`(C35 1회차에서만 읽기, C36 알림에 마을 + 5초 값).
+- 서버 손: 3회차 앞 Listening 2026-11-07T01:23:39.9264139Z(`msg_9dbcf1853da8`, 장면의 재시작). 3회차 뒤 Server stopped 01:33:15.5789305Z(`msg_325577e3eea3`).
+- 결과(`msg_7d231689d45f`): firstFrameBeforeLogin true(5.14초 앞), firstFrameBeforeCharacterList true, 두 역할 생성 없음·sameKnightCharacter true, 영상 끝이 마을 도착 뒤 88.49초, 남은 Player 0. worker_done `msg_3e8fc34424df`, 보고 `recording-build-01/recording-round3/run-01/report.md`(sha256 `06b1aaf0c3d09776012eb2eec6d1efab10b1453453748fa80686d3c2679d4d4a`). 리드 01:37:39Z 확인 0·porcelain 0(`lead/recrun-r3-after-01.txt`).
+- **3회차 무음(원인 미확정 관찰):** `r4-3-audio.wav`가 전 구간 mean·max -91.0 dB, 곧 샘플 전부 0이다. 1·2회차는 -22.8·-23.1 dB로 정상이다. 3회차에도 사냥터·보스 전투가 있다. 실행 인자·녹음 장치(같은 ID·형식)·녹음기 스크립트는 1회차와 같고 소리 패킷은 들어왔다. 어느 층에서 0이 됐는지는 원시로 가릴 수 없다(독립 검증 D8). 사용자 답은 「볼륨 건드린 적 없어」다(메인 `msg_42a130c0abd5`). 그래서 사용자의 소리 끄기·볼륨 믹서 변경은 원인에서 뺀다.
+- 메인 결정 A(`msg_325577e3eea3`, 138 A): 3회차는 영상만 쓰고 소리는 편집 BGM·자막이 덮는다. 다시 찍지 않는다. 편집에서 문제가 보이면 3회차만 다시 찍을 수 있다.
+- 녹음기는 무음을 판정하지 않는다(녹음 사슬에 소리 레벨 관문이 없다, 독립 검증 관찰 O1). 첫 발생이다. 다음 녹화에서 막을 방법은 BACKLOG `recording-audio-level-gate`로 올린다.
+
+### 2026-11-07 재녹화 좁은 독립 검증과 처분
+
+- 계약 `lead/recording-rr-verify-contract-v1.md`(sha256 `fc67b2753195bdf06b0837dd8d0c32454803270d963b7cc206a869b92783e78b`, 등급 약). 검증자 `[Content 검증자]`(`task_7f4f42c46469`, Dispatch `ctx_cf8994525888`, verifies `task_905b5e9bd3e7`·`task_d9c69f6f4d81`). 메인 R-6 「2. Skip」과 계약 대조 이견 없음 `msg_86572b545c0d`. 리드 판정 `lead/recording-rr-lead-judgement.md`와 대상 스냅샷 `lead/recording-rr-target-manifest-01.json`(1592파일)을 입력으로 줬다.
+- 시작 중 사건: 검증자가 계약 금지 호출(자기 pane `orca terminal read` 1회, 결과 0줄)을 스스로 신고했다. 리드는 같은 세션에서 계속하고 자기 결함으로 적게 했다(`msg_b2911ad9e54b`, 메인 이견 없음). 검증자의 첫 ask는 PowerShell 5.1이 Orca 오류 출력을 명령 오류로 바꿔 답을 받지 못했다. 리드가 답 본문을 다시 보냈다(`msg_e573acc05be4`). 리드 계약 결함 RRV-L01(첫 발생): 계약 「생존 신호」의 「ask를 보낸 뒤 턴을 끝내지 않는다」가 Orca 안내 「ask 뒤 턴을 끝내면 답으로 깨운다」와 어긋났다.
+- 판정 `recording-rr-verify-01/verdict.md`(sha256 `573fe3f4f3e5ad977080dc52e0f53aa7dd599bb1192274fce95b082ba48defa3`, worker_done `msg_b47105faf0c7`): **불합격, 차단 D1~D4(모두 절차 결함).** 내용은 지적 없음: F1(모든 짝 2.5초 이상), B6, C2, C3, C4, C6(표본 46장, 보이는 겹침에서 자기 캐릭터가 앞), C7(두 창 동시 녹화 겹침 105.08초), 스냅샷 전수 재해시 일치.
+  - D1: C30을 「준비됨」 뒤 ask 없이 고쳤다(실행자 절차). 고친 곳은 품질 측정 함수이고 녹화 사슬이 아니다. 이 goal 첫 발생이라 이 기록만 남긴다.
+  - D2·D3·D4: 생존 신호 공백. D2 1·2회차 실행자 403.5초, D3 3회차 실행자 389.5초(heartbeat 파일 사이), D4 검증자 자신 381.5초·310.5초.
+  - 비차단 D5~D12: D5 C27·C28 구현 실패와 루트 7개(복구됨), D6 반올림(원시 경계로 정정), D7·D8 리드 판정, D9 리드 계약 결함 RR1-L01·RR3-L01(실행 전 발견·승인 고침), D10~D12 검증자 자신의 시작 절차·출력 최소화·보조 계산 정정.
+- 메인 결정 A(`msg_c37425157ce7`, 138 A): D1~D4를 기록하고 세 회차 원본을 채택한다. 재녹화·재검증은 없다. 이유는 끝난 실행의 절차 위반이라 다시 찍어도 고쳐지지 않고, 원본 내용은 독립 재측정으로 확인됐기 때문이다. 메인 R-2 표본: verdict 재계산 일치, D1 원문(`recording/run-01/revisions.md` 19~21행, `lead/reply-recrun-q4-20261107-01.cjs` 10행), D2 heartbeat 두 끝 UTC, 3회차 기사 로그 114행.
+- D3 정정(리드, 종료 기록 정산): 정본 helper는 그 Dispatch의 모든 메시지를 신호로 센다. 3회차 실행자의 heartbeat 03→05 사이에 status 「3회차 끝」(`msg_7d231689d45f`)이 있어 이 Dispatch의 최대 간격은 295초다. 정본 기준으로 D3은 300초 초과가 아니다(`closeout-01/liveness-settlement-01.md`). 처분 A는 그대로다.
+- 리드 정정(D7·D8): 1회차 마법사 영상의 멈춤은 92.533초에 시작하고 done은 93.983초다. 「92.5초 뒤는 done 뒤 유지」라는 리드 서술은 틀렸다. 3회차 무음을 「Windows 출력 믹스가 비었다」고 한 것은 원시로 확인할 수 없는 층 특정이었다. 「저장된 WAV가 무음, 원인 미확정」으로 고친다.
+- 반복 발생: 생존 신호 300초 초과는 앞 goal 리허설 검증자(약 377·445초)부터 이어진다. 메인 기록(`msg_c37425157ce7`): 문서보다 높은 층(heartbeat helper가 상한 전에 스스로 보냄)으로, 맡을 파트는 Rules(시연 뒤)다. 같은 갈래 BACKLOG `verifier-heartbeat-during-compaction`에 이 goal의 발생을 연결한다. 리드 판정 수치 오류(D7·D8)는 `lead-judgement-raw-value-crosscheck`와 같은 갈래다.
+
+### 2026-11-07 편집 파일 표 전달
+
+- 편집 파일 표(C5) v1 `lead/edit-file-table-c5-v1.md`(sha256 `7ff2ca41a2d597fd91185e244fcef43e381be00e186d09353fb992f3da8caaff`)를 메인에 보냈다(`msg_641430dd0554`). 값의 원천은 독립 검증 판정 「편집 자료 표」(verdict 294~487행)이고, 표 뒷부분은 그 절을 그대로 옮겼다. 원본 영상 넷·소리 셋의 절대 경로·sha256, 장면별 쓸 구간 초, 소리 맞춤 범위, 대장간 강화의 실제 원본(1회차·2회차 마법사 영상), 1회차 두 창 파티 구간, 3회차 재접속 14.2초가 들어 있다.
+- 메인이 표 sha256을 다시 재서 영상 보조에 넘겼다(`msg_e7435473d04c`, 영상 보조 `msg_8dac9b816d05`). C5는 이것으로 전달됐다.
+
+### 종료 기록
+
+- 리드 맥락 메모: `lead/lead-context-memo-closeout-01.md`(2026-11-07T02:39:52Z, 종료 기록 대상 파일 첫 쓰기 전)다. 근거는 `closeout-01/`이다. branch는 origin/main `73bc1a9f`에서 만들었다(`closeout-01/branch-create-02.txt`).
+- 진척 단계: PR 단계 이름을 `PR302 병합`·`PR303 병합`으로 고치고(goal-loop 규칙), 「PR2 칸 크기 조절」을 「칸 크기 조절」과 `PR303 병합` 둘로 나눴다. 단계는 11개다.
+- BACKLOG: 이 goal 절에 새 행 둘(`start-check-raw-evidence-per-attempt`·`recording-audio-level-gate`)을 더했다. 기존 행 `verifier-heartbeat-during-compaction`·`lead-judgement-raw-value-crosscheck`의 7필드는 고치지 않았다.
+- 후보 도착 검사: 첫 실행은 `policy-violation`이었다(`closeout-01/check-candidates-01.txt`). 앞 PR에서 적은 다섯 줄을 포함한 후보 8개가 ``BACKLOG `<id>` `` 꼴이 아니었기 때문이다. 「다음 계획 후보」를 그 꼴로 고친 뒤 다시 돌려 `allowed`를 받았다. 후보 9개, 인용 없는 후보 0, 모르는 ID 0, 중복 ID 0이다(`closeout-01/check-candidates-02.txt`).
+- CURRENT: Content 줄의 branch와 상태만 종료 기록 branch로 고쳤다.
+- 생존 신호 정산 01판(`closeout-01/liveness-01.cjs`, 정본 helper): 판정 `over`, exit 1이다. Dispatch 18개에서 300초 초과가 7구간(5개 Dispatch), 질문 대기는 10구간이다. 구간·이유 한 줄 표는 `closeout-01/liveness-settlement-01.md`(sha256 `7c3ad359df00e01326447b4d6dbb441b0a9b0e86372542017276cfb28b7fbee3`)다. 대화·도구 호출 원시 감사는 하지 않았다.
+
+  | 갈래 | 구간 | 최대(초) |
+  |---|---|---|
+  | 공식 질문 뒤, 리드 답이 reply receipt에 본체가 없어 helper가 질문 대기로 못 나눔(red-01·red-05) | 2 | 739 |
+  | 작업·보고 작성 중 신호 공백(red-02, red-05, 1·2회차 실행자) | 3 | 403 |
+  | 검증자 자기 결함 D4(1~3회차 좁은 독립 검증) | 2 | 381 |
+
+  - 질문 뒤 두 구간의 답 receipt 파일 시각은 14:00:10Z(red-01)·20:00:26Z(red-05)다. 정본대로 질문 대기를 손으로 빼지 않고 helper 판정 그대로 둔다.
+  - 녹화 빌드 검증자는 최대 300초로 상한 안이다. 3회차 실행자는 최대 295초다(위 D3 정정).
+- 서버 손 시각 다섯(137 A)은 위 「재녹화 1·2회차」·「재녹화 3회차」에 있다. 이 goal에서 리드·작업자는 서버 창을 읽거나 누르지 않았다.
+
+### 남은 한계
+
+- 3회차 무음의 원인은 미확정이다. 사용자 볼륨 조작은 제외됐다. 3회차는 영상만 쓴다(메인 결정 A).
+- 겹침 앞뒤(C6)는 표본 프레임으로 봤다. 겹친 구간 전체의 프레임 단위 연속 대조는 하지 않았다.
+- 표식 초는 첫 프레임 상한 기준이라 실제 사건보다 최대 약 1.1초 앞 프레임을 가리킬 수 있다. 편집에서 인접 프레임으로 컷을 정한다.
+- 3회차 실행자가 보고에 적은 준비 중 약 453초 공백은 실행자 로컬 시계 인용이고 Orca 신호 집계에는 나오지 않는다.
+- DB는 직접 조회하지 않았다(80 A). 같은 캐릭터 근거는 서버 응답을 받은 클라이언트 로그다.
+- 시연 영상 편집은 메인이 연 영상 보조가 맡는다. 편집 결과는 이 goal의 검증 범위 밖이다.
+
 ## 다음 계획 후보
 
-- `guild-stronghold-vault-persistence`(144 A): 길드 거점·공동 금고 DB 저장, 시연 뒤.
-- `login-server-host-launch-argument`(메인 결정 5): 서버 주소 실행 인자.
-- `login-password-authentication`(155 A): 진짜 비밀번호 인증.
-- `player-spawn-position-spread`(메인 결정 `msg_950238658511`): 같은 맵 플레이어의 서버 시작 위치 분산.
-- `guild-wire-test-local-evidence-comment`(메인 `msg_25570efe6ff2`): 서버 시험 `GuildWire.cs:7`의 저장소 밖 근거 주석.
+모두 이 goal 밖이다. 후보 등록은 착수 승인이 아니다. 시연 뒤 순서와 착수는 메인이 정한다.
+
+- BACKLOG `guild-stronghold-vault-persistence`: 길드 거점·공동 금고 DB 저장이다(144 A, 시연 뒤).
+- BACKLOG `login-server-host-launch-argument`: 서버 주소 실행 인자다(메인 결정 5).
+- BACKLOG `login-password-authentication`: 진짜 비밀번호 인증이다(155 A).
+- BACKLOG `player-spawn-position-spread`: 같은 맵 플레이어의 서버 시작 위치 분산이다(메인 결정 `msg_950238658511`).
+- BACKLOG `guild-wire-test-local-evidence-comment`: 서버 시험 `GuildWire.cs:7`의 저장소 밖 근거 주석이다(메인 `msg_25570efe6ff2`).
+- BACKLOG `start-check-raw-evidence-per-attempt`: 작업자 시작 확인 원시를 시도마다 새 파일로 남기고 Git 상태를 JSON 배열·개수로 저장하는 규칙 후보다. 두 번째 발생이고 맡을 파트는 Rules(시연 뒤)다(메인 `msg_6ecb50859097`).
+- BACKLOG `recording-audio-level-gate`: 녹화 시작 직후 소리 레벨 관문이다. 3회차 무음이 첫 발생이고 맡을 파트는 Content다(독립 검증 관찰 O1).
+- BACKLOG `verifier-heartbeat-during-compaction`: 기존 행이다. 이 goal의 생존 신호 300초 초과는 7구간이다(「종료 기록」의 표). 메인 `msg_c37425157ce7`은 「heartbeat helper가 상한 전에 스스로 보냄」을 Rules(시연 뒤) 몫으로 적었다. 행의 7필드는 고치지 않는다.
+- BACKLOG `lead-judgement-raw-value-crosscheck`: 기존 행이다. 1~3회차 좁은 독립 검증 D7(멈춤 시작 92.533초를 done 뒤로 서술)·D8(무음 층 특정)이 같은 갈래다. 행의 7필드는 고치지 않는다.
