@@ -8,7 +8,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 결함 PR4-01 수정 결과를 받아 새 독립 검증자를 띄운다. 앞선 검증자의 시험 두 파일은 `pr4/verify/held/`에 있다. branch는 `fix/core-audit-party-jump-20261110`, PR base는 main이다. 그다음은 최종 head의 Unity·DB 실행이다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
+**다음 첫 일:** 게임 규칙 PR의 재검증 판정(`pr4/verify-2/verdict.md`)을 받는다. PASS면 base를 main으로 PR을 만든다. 그다음은 최종 head의 Unity·DB 실행이다. branch는 `fix/core-audit-party-jump-20261110`이다.
 
 막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
