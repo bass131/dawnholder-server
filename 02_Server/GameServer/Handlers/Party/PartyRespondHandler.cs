@@ -17,6 +17,7 @@ internal sealed class PartyRespondHandler : IPacketHandler
 {
     // 파티 입력 — class 선택 전 = 신뢰 경계 위반. dispatch 일괄 게이트가 silent drop.
     public bool RequiresSelectedClass => true;
+    public InputBudgetKind BudgetKind => InputBudgetKind.Other;
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {

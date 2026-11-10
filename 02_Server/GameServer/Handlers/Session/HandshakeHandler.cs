@@ -12,6 +12,7 @@ internal sealed class HandshakeHandler : IPacketHandler
 {
     // handshake는 class 선택 전 단계 자체 — 전제조건 게이트 미적용.
     public bool RequiresSelectedClass => false;
+    public InputBudgetKind BudgetKind => InputBudgetKind.None;
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {

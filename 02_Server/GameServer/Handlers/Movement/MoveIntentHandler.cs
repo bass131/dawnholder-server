@@ -14,6 +14,7 @@ internal sealed class MoveIntentHandler : IPacketHandler
 {
     // 이동 입력 — class 선택 전 = stats 없는 상태로 월드 영향 가능. dispatch 일괄 게이트가 silent drop.
     public bool RequiresSelectedClass => true;
+    public InputBudgetKind BudgetKind => InputBudgetKind.None;
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {

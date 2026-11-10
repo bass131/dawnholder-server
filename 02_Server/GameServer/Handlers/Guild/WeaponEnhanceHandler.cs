@@ -6,6 +6,7 @@ namespace Dawnholder.Server.GameServer.Handlers.Guild;
 internal sealed class WeaponEnhanceHandler : IPacketHandler
 {
     public bool RequiresSelectedClass => true;
+    public InputBudgetKind BudgetKind => InputBudgetKind.Other;
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {

@@ -15,6 +15,7 @@ internal sealed class CharacterSelectHandler : IPacketHandler
 {
     // class를 *선택하는* 핸들러 자체 — false 필수. 반대 게이트(재선택 거부)는 Handle 내부 별개.
     public bool RequiresSelectedClass => false;
+    public InputBudgetKind BudgetKind => InputBudgetKind.Menu;
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
