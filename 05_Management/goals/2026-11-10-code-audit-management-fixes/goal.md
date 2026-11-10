@@ -12,7 +12,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 첫 branch `fix/management-audit-fixes-20261110`에서 첫 PR 재검증자(`verify-defect1/`)의 진행을 확인한다. 결함 #1의 선행 시험은 커밋 `986af0cd`, 구현은 커밋 `2cab5a40`이다. 구현자 보고(`impl-defect1/report.md`)에서 실제 BACKLOG 시험은 표준 `npm test` 안에서 5,017 ms 시간 초과였다가 321 ms 통과로 바뀌었고, 새 실패는 0이다. 재검증은 계약에 미리 적은 소요 기준 넷으로 판정한다(아래 「3번 검증 결과와 결함 #1」). 이 goal의 살아 있는 판은 이 커밋부터 첫 branch로 옮긴다. 둘째 branch의 goal 기록 커밋은 첫 branch에 cherry-pick해 두 판을 맞춘다.
+**다음 첫 일:** 첫 PR의 병합 승인 응답을 확인한다. 첫 PR(3번)은 재검증 통과(아래 「3번 검증 결과와 결함 #1」의 「재검증」)로 PR을 열고 메인에 승인 요청을 올렸다. 병합되면 둘째 branch를 main에 rebase하고 둘째 PR을 연다. 이 goal의 살아 있는 판은 첫 branch에 있다. 둘째 branch의 goal 기록 커밋은 첫 branch에 cherry-pick해 두 판을 맞췄다.
 
 둘째 PR(1·2번) 독립 검증은 통과했다(아래 「둘째 PR 검증 결과」). 둘째 PR은 첫 PR 병합 뒤 둘째 branch를 main에 rebase하고 연다. 병합 순서는 그대로 첫 PR이 먼저다. 둘째 branch에는 첫 PR의 제품 코드를 싣지 않고 goal 기록 커밋만 옮겼다.
 
@@ -25,7 +25,7 @@ PR 번호는 PR을 여는 때 채운다.
 - [x] 초안 승인
 - [x] 선행 시험 작성
 - [x] BACKLOG 읽기 구현
-- [>] BACKLOG 읽기 검증(차단 결함 #1 수정 끝, 재검증 단계)
+- [x] BACKLOG 읽기 검증(결함 #1 수정 뒤 재검증 통과)
 - [ ] BACKLOG PR 병합
 - [x] 백엔드 수명 구현
 - [x] 백엔드 수명 검증(통과, 결함 0)
@@ -219,6 +219,23 @@ PR 번호는 PR을 여는 때 채운다.
 - 그 밖: 검증자는 `mcp-v2-bytes` 기존 실패를 (b) 환경에서 (c) 범위 밖 실제 회귀로 재분류했다. 검증자의 판정용 시험 `source-section-whole-read.test.ts`는 첫 branch에 커밋했다(`313c6d84`).
 - 메인 회신(`msg_686d958652b2`): 결함 #1의 처분, 작업 순서 변경, 소요 ms 전후 비교 판정을 받아들였다. 측정 원시와 계산 방법을 근거 폴더에 남긴다. `mcp-v2-bytes` 재분류는 종료 기록의 다음 계획 후보에 재현 명령과 함께 적는다.
 
+### 재검증
+
+- 선행 시험: `tests/backlog-store-link-reuse.test.ts`(커밋 `986af0cd`). 한 읽기 안 같은 goal 대상의 `lstat` 확인 수를 한 번 나오는 문서와 견준다. 수정 전 9개 중 확인 수 단정 5개가 실패했다(`tests-defect1/report.md`).
+- 구현: 커밋 `2cab5a40`. `backlog-store.ts`의 `read()` 지역 Map으로 같은 locator의 확인을 한 읽기에 한 번 한다. 결과(`load` 포함)는 등장마다 쓴다. 설계 문서 91행에 같은 내용을 적었다.
+- 새 독립 검증자 `[Management 검증자]`(Task `task_a23a2430cee8`)의 판정은 **통과, 새 결함 0**이다. 판정 파일은 근거 폴더 `verify-defect1/verdict.md`(SHA256 `4be1ff3e702cd394c42581b435c23dff5064fad965f521d9f86a51577c88e070`)이고, 대상은 HEAD `4569ddac`다. 범위는 PR 8파일 전체다. 3번 조건 1~7과 결함 #1 조건 1~6에 지적이 없다.
+- 계약에 미리 적은 소요 기준 넷을 모두 지켰다.
+  - 단독 저장소 읽기 최댓값은 100.3 ms다. 구현 전 최솟값은 233 ms다. 링크 확인은 322회에서 60회로 줄었다.
+  - 전체 실행 두 번에서 실제 BACKLOG 시험은 928.5 ms와 477.3 ms로 통과했다. 기준은 2,500 ms 이하다.
+  - 결함 #1에 묶였던 두 시험은 시간 초과가 아니었다.
+  - 구현자 기준선 대비 새 실패는 0이다.
+- 남은 처분(리드 결정)
+  - `desktop-main` 1280×720 단정은 (a)다. 결정 R-16의 1600×900에 맞춰 고칠 기존 시험이고 이 goal 밖이다. 다음 계획 후보로 넘긴다.
+  - 범위 밖 `SOURCE_TOO_LARGE`(`persistence-integration-goal` 구간) 한 건이 `record-index-actual`·`record-index-check`·`mcp-v2-bytes`를 실패로 남긴다. 이 goal 밖 기존 오류라 결함 번호를 붙이지 않는다. 다음 계획 후보의 `mcp-v2-bytes` 줄에 공통 원인으로 묶는다.
+  - 설계 관찰 O1은 3번 구현이 낸 동작 차이다. 공유 `read`에서 `extractSourceSection` 호출이 `try` 밖으로 나왔다. 이 함수가 던지면 base는 `load`를 돌려주고 지금은 예외가 올라간다. 순수 함수이고 던지는 입력을 두 검증자 모두 찾지 못했다. 이 PR에서는 고치지 않고 PR 본문과 다음 계획 후보에 적는다.
+  - `diagram-loader-policy` 「accepts the same excluded inputs …」는 (d)다. PR base 두 기준선에서는 통과했고, 결함 #1 수정 뒤 세 실행 중 두 번 5초를 넘었다. 리드가 근거 폴더의 전체 실행 9개에서 소요를 뽑아 견줬다(`lead-checks/diagram-loader-durations.md`). 3번이 없는 둘째 branch에서는 3,574~4,647 ms였다. 3번이 있는 첫 branch는 19:4x UTC 실행에서 3,215·3,417 ms였고, 22:41 UTC 뒤 실행에서는 4,877~5,891 ms였다. 3번 유무보다 실행 시각의 부하 차이가 더 크게 보인다. 실행 시각·부하·시험 묶음이 달라 통제된 비교는 아니다. 기준선에 따라 이름이 달라지는 점도 있다. 구현자 기준선(3번 뒤)에는 이 실패가 이미 있고, PR base에는 없다. 그래서 PR base와 견주면 실행 B와 구현자 최종 실행에 base에 없던 실패 이름이 하나씩 있다. 다음 계획 후보의 5초 한도 줄에 넣는다.
+- 미실행: Electron 「이후 작업」 탭은 실행하지 않았다(첫 PR은 시연 앱에 들어가지 않는다, 「PR 경계」).
+
 ## 둘째 PR 검증 결과
 
 새 독립 검증자 `[Management 검증자]`(Task `task_dd012a9588d5`)의 판정은 **통과, 결함 0**이다. 판정 파일은 근거 폴더 `verify-item12/verdict.md`(SHA256 `74df005c8838dce778d3f30c2fd589079eab5cb78c924bcd58aeca261b909672`)다. 대상은 HEAD `e2dcd96b`(구현 커밋 `12aacca3`)다. 리드는 아래 수치를 원천 파일에서 대조했다.
@@ -244,9 +261,11 @@ PR 번호는 PR을 여는 때 채운다.
 
 ## 종료 기록에 넘길 다음 계획 후보
 
-- `mcp-v2-bytes` 기존 실패의 (c) 범위 밖 재분류(재현 명령과 함께, 「3번 검증 결과와 결함 #1」).
+- `mcp-v2-bytes` 기존 실패의 (c) 범위 밖 재분류(재현 명령과 함께, 「3번 검증 결과와 결함 #1」). 같은 범위 밖 오류(`persistence-integration-goal` 구간 256 KiB 초과)가 `record-index-actual`·`record-index-check`도 실패로 남긴다.
 - 2번 설계 관찰 둘: 붙을 때 `/proc` 읽기 한 번 실패 뒤 그 연결 동안 신호 없음, TERM 뒤 대기 중 pid가 바뀌면 30초 대기(「둘째 PR 검증 결과」).
-- 프런트 전체 실행의 기본 5초 시험 한도 흔들림(`mcp-v3-r1-server` R06 등 BACKLOG 밖 시험 포함).
+- 프런트 전체 실행의 기본 5초 시험 한도 흔들림(`mcp-v3-r1-server` R06, `diagram-loader-policy` 두 빌드 시험 등 BACKLOG 밖 시험).
+- 3번 설계 관찰 O1: 공유 `read`의 `extractSourceSection` 호출을 `try` 안으로 되돌려 예외를 `load`로 바꿀지(「재검증」).
+- `desktop-main` 시험의 1280×720 단정을 결정 R-16의 1600×900에 맞춰 고치기.
 - 2번 실제 진입 시험(`verify-item12/real-entry-test/`)을 저장소에 넣을지. 넣으면 233행 reporter 주석을 고친다.
 - push가 든 복합 명령을 공용 관문에서 막고 단독 실행을 안내할지(Rules 관문 도구, 리드의 이어 붙이기 2회가 근거).
 
