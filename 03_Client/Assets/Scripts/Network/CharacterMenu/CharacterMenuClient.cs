@@ -45,6 +45,13 @@ namespace Dawnholder.Client.Network.CharacterMenu
         public uint PendingRequestId { get; private set; }
         public CharacterMenuReply LastReply { get; private set; }
 
+        /// <summary>
+        /// The session closed for sending but has not cleaned up yet, so a reply it received before the close may
+        /// still be delivered here. Both gates come from the session; its cleanup disposes this client and ends it.
+        /// Never true with the four-delegate constructor, whose two gates are one.
+        /// </summary>
+        public bool IsClosedAwaitingSessionCleanup => !_disposed && !_canSend() && _canReceive();
+
         public bool TryList() => TrySend(id => new C_CharacterListRequest
         {
             requestId = id,
