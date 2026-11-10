@@ -10,7 +10,7 @@
 
 **다음 첫 일:** 입력 예산 잔여 경로(미등록 패킷 번호·중복 로그인)의 선행 시험 계약을 발행한다. branch `fix/core-audit-input-gaps-20261110`은 종료 경로 branch head 위에 만든다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
-막힌 지점: 없음. 입력 예산 PR306과 종료 경로 PR307은 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
+막힌 지점: 없음. 종료 경로 PR307은 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
 ## 적용 중인 사용자 결정
 
@@ -268,6 +268,8 @@ branch `fix/core-audit-input-budget-20261110`. 구현 `gpt-6-astra` high, 독립
 |---|---|---|---|---|---|
 | `GuildIndependentLifetimeTests.BurstOfGuildInput_IsAnsweredOnce_AndTheSlotIsFreeAfterwards` | 추가 입력 200개 뒤 같은 초의 조회도 응답 | 추가 입력 20개, 단정 전부 불변 | (a) 예산 이전의 무제한 입력 가정. 제품 회귀 아님 | 항목 2 요구: 그 밖 입력은 연결별 공유 초당 30. 20개는 대기 슬롯 1보다 많아 시험 목적을 유지하고, 폭주 자체는 독립 시험이 맡는다 | `pr2/verify/raw/full-before.log`, `full-after-1.log`, `worktree-before-aftertest-tracked.diff` |
 
+PR306 병합: 사용자 승인 원문 「병합 승인: PR306 head 5f5a23ab02cf98b5284ce6e9b001788a72e6557a」(11-10 12:41 KST 메인 pane에서 제출, 메인 전달 `msg_b58fc16450b6`). 병합 커밋 `f1f2b2e970ff7d74e8b38b20bfb1d5869ee3f796`, mergedAt 2026-11-10T03:41:38Z, 방식 `--merge`, CI 4개 통과. 앞 PR 병합 뒤 PR307의 base는 `main`로 관측했다.
+
 ### 종료 경로 결과
 
 branch `fix/core-audit-graceful-stop-20261110`. 구현 `gpt-6-astra` high, 독립 검증 `gpt-6-astra` xhigh. 판정 원문 `pr3/verify/verdict.md`는 PASS이고 제품 결함은 없다. 대상 head는 `a049f37cdcb55d5b88d8b580bbbb938fe888c89a`이고, 그 뒤 commit은 검증자가 쓴 시험 1파일과 이 goal 기록뿐이다.
@@ -308,7 +310,7 @@ PR 번호는 PR을 만들 때 채운다.
 - [ ] 게임 규칙 구현
 - [ ] 통합 실행 검증
 - [x] PR305 병합
-- [ ] PR306 병합
+- [x] PR306 병합
 - [ ] PR307 병합
 - [ ] 입력 잔여 PR 병합
 - [ ] 규칙 PR 병합
