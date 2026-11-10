@@ -10,7 +10,7 @@
 
 **다음 첫 일:** PR3 종료 경로의 구현 계약을 발행한다. branch `fix/core-audit-graceful-stop-20261110`은 입력 예산 branch head 위에 만들고, 재현 harness `tdd/harness/shutdown-signals.sh`를 새 attempt 번호로 재사용한다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
-막힌 지점: 없음. 입력 예산 PR은 독립 판정 PASS로 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
+막힌 지점: 없음. 입력 예산 PR306은 독립 판정 PASS로 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
 ## 적용 중인 사용자 결정
 
@@ -280,7 +280,7 @@ PR 번호는 PR을 만들 때 채운다.
 - [ ] 게임 규칙 구현
 - [ ] 통합 실행 검증
 - [x] PR305 병합
-- [ ] 입력 PR 병합
+- [ ] PR306 병합
 - [ ] 종료 PR 병합
 - [ ] 규칙 PR 병합
 - [ ] 종료 기록 정리
