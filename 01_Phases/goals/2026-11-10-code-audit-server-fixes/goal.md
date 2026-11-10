@@ -8,7 +8,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 게임 규칙 PR의 재검증 판정(`pr4/verify-2/verdict.md`)을 받는다. PASS면 base를 main으로 PR을 만든다. 그다음은 최종 head의 Unity·DB 실행이다. branch는 `fix/core-audit-party-jump-20261110`이다.
+**다음 첫 일:** 게임 규칙 PR의 재검증을 새 세션으로 다시 연다(메인 `msg_131b0fd2c82c`). 11-10 15:26 KST 전원 차단으로 앞선 재검증자가 비정상 종료했고(Task `task_8d48f185af0e`, exit 1073807364) 불합격이 아니다. 근거 폴더는 새로 잡아 `pr4/verify-2`를 덮어쓰지 않고, 그 raw는 새 세션의 실행으로 세지 않는다. 남은 시험 두 파일(`JumpBufferGateTests.cs`, `PartyArrivalStateTests.cs`, 미커밋)은 신뢰하지 않는 입력으로 넘긴다. PASS면 base를 main으로 PR을 만들고 CI 뒤 메인에 보고하며, 그다음이 최종 head의 Unity·DB 실행이다. branch `fix/core-audit-party-jump-20261110`, head `67b44598`, 원격에 아직 없다.
 
 막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
@@ -307,6 +307,12 @@ branch `fix/core-audit-party-jump-20261110`. 선행 시험은 보관본을 SHA25
 첫 독립 검증은 NOT PASS였다(`pr4/verify/verdict.md`, 결함 PR4-01). 파티 없는 사람이 초대 대기 중에 도착하면 빈 통지가 클라이언트 초대 팝업을 닫는다. 선행 시험 축소는 허용한 세 곳뿐임을 그 검증자가 확인했다.
 
 승인 설계의 예외(메인 `msg_b0d2e5503748`, B안): 도착 때 파티가 없고 대기 초대가 있으면 빈 통지를 보내지 않는다. 예외의 수명은 초대의 수명과 같다. 남는 경우는 이동 공백에 해산을 놓쳤고 도착 상태 작업보다 먼저 새 초대가 기록된 경우뿐이고, 수락하면 새 통지로, 아니면 다음 도착 때 복구된다. 메인 관측 정정: 계획에 적었던 「클라이언트가 빈 통지를 무시한다」는 효과음에만 맞았다. 팝업은 닫힌다.
+
+재검증 중단 기록. 메인 판단 원문(`msg_131b0fd2c82c`)은 「재검증자 종료는 전원 차단에 따른 비정상 종료다. 불합격이 아니다.」이고 확정 실패 집계에 넣지 않는다.
+
+- 리드 관측: 재검증 Task `task_8d48f185af0e`(Dispatch `ctx_c5ce489a283d`)의 종료 코드는 1073807364이고 판정 파일은 없다. 11-10 KST의 정산 receipt는 `state: retained`·`reason: external_terminal`·`processAction: none`이다(`pr4/verify-2/lead/worker-release.json`).
+- 잔여물 확인(11-10 06:35:58Z, `lead/raw/residual-check-1.log`): 일회용 서식 복제본 폴더는 비어 있고 잠금 파일 27개는 전부 풀려 있다. 7777 listener와 dotnet·서식 검사 프로세스는 없고 Unity Editor는 0개다. 정리할 것은 없었다. WSL 작업 복제본 내부는 보지 않았다.
+- 중단된 세션이 작업 트리에 남긴 시험 두 파일은 `pr4/verify-3/held/`로 옮겼다. `JumpBufferGateTests.cs`(`fa136444bc7ea0f00e4e446d84be77ac6f451f6a6144bd6b0433518218951b27`)는 첫 판정 세션의 보관본과 같은 바이트다. `PartyArrivalStateTests.cs`(`0e6c74243eb051a68f1492c86738e9eeed2ab7692725912b35274960eab52688`)는 보관본과 다르고 종료 시점에 편집 중이었을 수 있다. 새 검증자에게 신뢰하지 않는 입력으로 넘긴다.
 
 ### 남은 위험
 
