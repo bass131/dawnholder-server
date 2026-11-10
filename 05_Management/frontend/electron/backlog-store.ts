@@ -11,6 +11,8 @@ import { parseBacklogTables } from './backlog-table.js';
 import type { RecordSource } from './catalog-contract.js';
 import { inspectSourceFile, readWholeSourceFile } from './source-section-store.js';
 
+type InspectedGoalFile = Awaited<ReturnType<typeof inspectSourceFile>>;
+
 const backlogPath = '00_Document/operations/BACKLOG.md';
 const backlogSource: RecordSource = {
   id: 'development-backlog',
@@ -48,6 +50,9 @@ export function createBacklogStore({ repositoryRoot }: { repositoryRoot: string 
       uncheckedLinks: [],
     };
     const ids = new Set<string>();
+    // One check per repository-relative locator serves every occurrence, and only
+    // within this read: files can change between reads, so each read starts empty.
+    const inspectedByLocator = new Map<string, InspectedGoalFile>();
     for (const row of table.rows) {
       result.issues.push(...backlogRowIssues(row, ids));
       ids.add(row.id);
@@ -72,7 +77,11 @@ export function createBacklogStore({ repositoryRoot }: { repositoryRoot: string 
           continue;
         }
         const locator = within.split(sep).join('/');
-        const inspected = await inspectSourceFile({ repositoryRoot, locator });
+        let inspected = inspectedByLocator.get(locator);
+        if (inspected === undefined) {
+          inspected = await inspectSourceFile({ repositoryRoot, locator });
+          inspectedByLocator.set(locator, inspected);
+        }
         if (inspected.ok) continue;
         if (inspected.code === 'path-rejected') {
           result.issues.push(rejectedBacklogGoalIssue(row.line, inspected.reason ?? 'invalid'));

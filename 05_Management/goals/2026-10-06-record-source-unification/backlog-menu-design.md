@@ -88,7 +88,7 @@ export function backlogIssueKind(code: BacklogIssueCode): 'format' | 'mismatch';
 1. 대상: 셀의 상대 링크 중 `01_Phases/goals/` 또는 `05_Management/goals/`를 지나는 것(지금 `backlogGoalLinks` 그대로). `#` 뒤는 뺀다.
 2. 퍼센트 해독. 실패하거나, 해독한 경로에 `\`가 있으면 `BACKLOG_GOAL_LINK_REJECTED`, reason `invalid`. `\`를 경로 구분자로 해석하는 운영체제와 아닌 운영체제의 판정이 갈리지 않게 풀기 전에 거절한다(선행 시험 보고의 질문 3).
 3. `00_Document/operations` 기준으로 풀어 저장소 루트 상대 POSIX 경로로 바꾼다. 루트 밖이면 `BACKLOG_GOAL_LINK_REJECTED`, reason `parent`.
-4. `inspectSourceFile({ repositoryRoot, locator })`의 결과로 판정한다.
+4. `inspectSourceFile({ repositoryRoot, locator })`의 결과로 판정한다. 같은 locator는 한 번의 읽기 안에서 한 번만 판정하고, 그 결과(`load` 포함)를 등장마다 써서 issue와 `uncheckedLinks`를 등장마다 그 줄로 낸다. 결과는 그 읽기 안에서만 쓰고 다음 읽기는 다시 판정한다([전체 코드 감사 운영툴 묶음 수정](../2026-11-10-code-audit-management-fixes/goal.md) 「3번 검증 결과와 결함 #1」).
    - 성공: 문제 없음.
    - `path-rejected`(reason `drive`·`absolute`·`parent`·`invalid`·`link`·`case`): `BACKLOG_GOAL_LINK_REJECTED`, cause에 reason.
    - `missing`, `not-readable`(`not-file`): `BACKLOG_GOAL_LINK_MISSING`.
