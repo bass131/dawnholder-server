@@ -8,9 +8,9 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 게임 규칙 PR(7·8번)의 독립 검증 판정(`pr4/verify/verdict.md`)을 받는다. 그다음은 다섯 PR을 쌓은 최종 head의 Unity·DB 실행이다. branch는 `fix/core-audit-party-jump-20261110`이고 근거는 `pr4/`다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
+**다음 첫 일:** 결함 PR4-01 수정 결과를 받아 새 독립 검증자를 띄운다. 앞선 검증자의 시험 두 파일은 `pr4/verify/held/`에 있다. branch는 `fix/core-audit-party-jump-20261110`, PR base는 main이다. 그다음은 최종 head의 Unity·DB 실행이다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
-막힌 지점: 없음. 종료 경로 PR307과 입력 예산 잔여 경로 PR308은 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
+막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
 ## 적용 중인 사용자 결정
 
@@ -295,12 +295,18 @@ branch `fix/core-audit-input-gaps-20261110`. 선행 시험 `Network/InputBudgetU
 
 기존 시험 분류(`msg_71e41e231d55` 정본, 판정 표 `gaps/verify/verdict.md` 65~70행): 전체 실패 4건을 전수 분류했다. `RegisteredHandler_DeclaresRequiredBudget(C_Login, …)`과 `LoginHasNoBudget_…`(이름을 `LoginSharesMenuBudget_…`로 변경)은 (a) 옛 단정이고, `ExactLimit_…(menu)`와 `AllFourMenuHandlers_…`는 (b) fixture 로그인이 같은 창의 메뉴 1건을 쓰는 전제 문제다. 한도를 낮추지 않고 그 사례만 시계를 1초 진행했다. 제품 회귀는 없다.
 
+PR307 병합: 사용자 승인 원문 「병합 승인: PR307 head bd372aee20d88292b0a17e5ea77860b731fb3cbd」, 병합 커밋 `6ac5fdf61cf12c5eb34877dc659dc4f4fa268533`, mergedAt 2026-11-10T05:38:43Z. PR308 병합: 사용자 승인 원문 「병합 승인: PR308 head b18266e156a5c1eb092512cb0631c1325a3d5ec0」, 병합 커밋 `3032afb38043220ad26fc8c0b7376a03716cbd55`, mergedAt 2026-11-10T05:39:02Z. 둘 다 방식 `--merge`이고 메인 전달은 `msg_b0d2e5503748`이다.
+
 ### 게임 규칙 결과
 
 branch `fix/core-audit-party-jump-20261110`. 선행 시험은 보관본을 SHA256 대조로 복원했다(작성 `gpt-6-astra` high).
 
 - 8번 시험을 승인 범위로 줄였다(메인 `msg_7d8ae31d35b6`·`msg_1bf9011869bf`). 변경은 `InlineData("death")` 한 줄, switch 가지 하나, 윗부분 주석 한 줄뿐이다. 원래 SHA256 `96dcc8884b77369af94b98633ffc62d2ebedd1c7fb704ca417aef33c6d149d85`, 줄인 뒤 `3a817ffc67946680ecd5a332a4d78e9cef02d94f967fdd540a985917bbcd8b43`. 7번 시험은 복원 그대로다(`f8620ded7b2bf44d84d6ddc9691849c4cd09992d4b99f46193b9b897d88a178c`). 메인이 찾던 「선행 시험 수정 절차」는 정본에 없던 표현이었다.
 - 수정 전: 7번 실패 1·보존 1, 8번 실패 2·보존 1. 전체 시험 실패 3·통과 2,688·건너뜀 28·전체 2,719이고 실패는 새 사례뿐이다.
+
+첫 독립 검증은 NOT PASS였다(`pr4/verify/verdict.md`, 결함 PR4-01). 파티 없는 사람이 초대 대기 중에 도착하면 빈 통지가 클라이언트 초대 팝업을 닫는다. 선행 시험 축소는 허용한 세 곳뿐임을 그 검증자가 확인했다.
+
+승인 설계의 예외(메인 `msg_b0d2e5503748`, B안): 도착 때 파티가 없고 대기 초대가 있으면 빈 통지를 보내지 않는다. 예외의 수명은 초대의 수명과 같다. 남는 경우는 이동 공백에 해산을 놓쳤고 도착 상태 작업보다 먼저 새 초대가 기록된 경우뿐이고, 수락하면 새 통지로, 아니면 다음 도착 때 복구된다. 메인 관측 정정: 계획에 적었던 「클라이언트가 빈 통지를 무시한다」는 효과음에만 맞았다. 팝업은 닫힌다.
 
 ### 남은 위험
 
@@ -317,6 +323,7 @@ branch `fix/core-audit-party-jump-20261110`. 선행 시험은 보관본을 SHA25
 - 사망 상태의 이동 미잠금: `DeathState`가 `LocksMovement`를 재정의하지 않아 기본값 false다. `PlayerPhysicsSystem.cs:40`의 주석은 Death도 잠근다고 적었다. 선행 시험에서 사망 중 버퍼 점프 발사를 관측했다(`tdd/report.md`, 리드가 `LocksMovement` 검색으로 재정의 위치 두 곳을 확인). 승인 범위가 공격·피격이라 이번에 고치지 않는다.
 - `bot-dash-boss-baseline-failure` 봇 기준선 실패: 수정 전 main `acd5a7db`에서 `DashSmoke`·`BossFightSmoke`가 실패한다(`pr1/raw/bot-before.log`, 메인 확인 `msg_076badf9a3ef`). BACKLOG와 감사 산출물에 없던 새 관측이다. 원인 미조사. 메인이 시험 신뢰도 묶음의 범위로 사용자에게 올린다. BACKLOG 등록은 다른 후보와 함께 종료 기록 PR에서 한다.
 - `Session.Clear`가 연결이 끊길 때마다 send-pending peak 한 줄을 콘솔에 찍어 운영 로그가 접속 종료 수만큼 늘어난다(메인 관찰 `msg_001c18f08bf2`, 이 goal에서 고치지 않는다).
+- 클라이언트 `PartyInvitePopup.OnPartyUpdated`가 빈 통지에도 팝업을 닫는다. 파티에 들어갔을 때만 닫도록 바꾸면 서버의 도착 통지 예외를 지울 수 있다(메인 `msg_b0d2e5503748`, 서버 묶음 범위 밖).
 
 ## 진척 단계
 
@@ -332,7 +339,7 @@ PR 번호는 PR을 만들 때 채운다.
 - [ ] 통합 실행 검증
 - [x] PR305 병합
 - [x] PR306 병합
-- [ ] PR307 병합
-- [ ] PR308 병합
+- [x] PR307 병합
+- [x] PR308 병합
 - [ ] 규칙 PR 병합
 - [ ] 종료 기록 정리
