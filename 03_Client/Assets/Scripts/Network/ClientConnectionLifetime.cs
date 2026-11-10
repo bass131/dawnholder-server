@@ -126,7 +126,9 @@ namespace Dawnholder.Client.Network
                 _attempt = null;
                 attempt.Dispose();
                 IClientConnectionSession session = null;
-                session = _createSession(() => IsCurrent(generation, session));
+                // The session gets ownership only; it checks its own closed state. A result received before the
+                // close can then still be delivered until cleanup, while sending stays gated on an open transport.
+                session = _createSession(() => IsOwned(generation, session));
                 _session = session;
                 _closedHandler = () => _post(() => HandleClosed(generation, session));
                 _handshakeHandler = () => HandleHandshake(generation, session);
@@ -152,9 +154,11 @@ namespace Dawnholder.Client.Network
             finally { socket?.Dispose(); }
         }
 
+        bool IsOwned(long generation, IClientConnectionSession session) =>
+            !_disposed && generation == Generation && session != null && ReferenceEquals(_session, session);
+
         bool IsCurrent(long generation, IClientConnectionSession session) =>
-            !_disposed && generation == Generation && session != null &&
-            ReferenceEquals(_session, session) && !session.IsClosed;
+            IsOwned(generation, session) && !session.IsClosed;
 
         void HandleHandshake(long generation, IClientConnectionSession session)
         {

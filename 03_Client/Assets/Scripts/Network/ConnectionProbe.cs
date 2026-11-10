@@ -25,7 +25,7 @@ namespace Dawnholder.Client.Network
         /// <summary>
         /// 비동기 connect 점검. 콜백은 main thread에서 호출됨.
         /// </summary>
-        /// <param name="host">서버 호스트 (IP 또는 도메인)</param>
+        /// <param name="host">서버 IP 주소. 도메인은 <see cref="ServerAddressRule"/>에 따라 접속 시도 없이 거부한다.</param>
         /// <param name="port">서버 포트 (기본 7777)</param>
         /// <param name="callback">(success, errorMessage). 성공 시 errorMessage = "".</param>
         /// <param name="timeoutMs">연결 시도 타임아웃 (기본 3초)</param>
@@ -42,24 +42,13 @@ namespace Dawnholder.Client.Network
                         return;
                     }
 
-                    IPAddress[] addresses;
-                    try
+                    // 실제 연결과 같은 규칙이다. 도메인은 해석하지 않고 접속 시도 없이 거부한다.
+                    if (!ServerAddressRule.TryParse(host, out IPAddress ip))
                     {
-                        addresses = Dns.GetHostAddresses(host);
-                    }
-                    catch (Exception ex)
-                    {
-                        MainThreadDispatcher.Enqueue(() => callback(false, $"호스트 주소 확인 실패: {ex.Message}"));
+                        MainThreadDispatcher.Enqueue(() => callback(false, "서버 주소는 IP 주소로 입력해주세요 (예: 127.0.0.1)"));
                         return;
                     }
 
-                    if (addresses.Length == 0)
-                    {
-                        MainThreadDispatcher.Enqueue(() => callback(false, "호스트 주소를 찾을 수 없어요"));
-                        return;
-                    }
-
-                    IPAddress ip = addresses[0];
                     socket = new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
                     IAsyncResult result = socket.BeginConnect(ip, port, null, null);

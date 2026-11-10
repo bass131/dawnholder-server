@@ -9,14 +9,17 @@ namespace Dawnholder.Client.UI
     // 헌팅그라운드 진입 시 퀘스트 연출 오케스트레이션.
     // 팝업 → HUD 출현 순서를 관리. CombatBootstrap이 HuntingGround 씬에서만 생성.
     //
-    // **세션 1회 보장**: _introShown은 static — 씬 재로드 후 재진입해도 팝업을 다시 띄우지 않음.
-    //   재진입 시 HUD만 즉시 reveal (팝업 생략).
+    // **연결 1회 보장**: _introShown은 static — 같은 연결에서 씬 재로드 후 재진입해도 팝업을 다시 띄우지 않음.
+    //   재진입 시 HUD만 즉시 reveal (팝업 생략). 연결이 끝나면 NetworkService.ResetGlobalSessionMirrors가
+    //   ResetSessionPresentation으로 지워 다음 연결은 처음부터 연출한다.
     //
     // **한 개념 = 한 MonoBehaviour**: 팝업과 HUD를 별도 클래스로 두고 이 클래스가 순서만 조율.
     [DisallowMultipleComponent]
     public class QuestIntroSequencer : MonoBehaviour
     {
         static bool _introShown;
+
+        internal static void ResetSessionPresentation() => _introShown = false;
 
         // CombatBootstrap이 호출하는 진입점.
         // parent: CombatBootstrap의 transform (PopupGO를 씬에 붙임).

@@ -8,11 +8,14 @@ namespace Dawnholder.Client.UI
     // 퀘스트 완료 감지 → "퀘스트 완료!" 임팩트 연출(QuestAlert) 1회 재생.
     // CombatBootstrap이 사냥 구역에서 설치. QuestState.OnQuestUpdated 구독해 완료 전이 감지.
     //
-    // **세션 1회**: _shown static — 완료 연출은 세션당 한 번만.
+    // **연결 1회**: _shown static — 완료 연출은 한 연결에 한 번만. 맵 왕복은 유지하고,
+    //   연결이 끝나면 NetworkService.ResetGlobalSessionMirrors가 ResetSessionPresentation으로 지운다.
     [DisallowMultipleComponent]
     public class QuestCompleteWatcher : MonoBehaviour
     {
         static bool _shown;
+
+        internal static void ResetSessionPresentation() => _shown = false;
 
         Transform _alertParent = null!;
         bool _subscribed;

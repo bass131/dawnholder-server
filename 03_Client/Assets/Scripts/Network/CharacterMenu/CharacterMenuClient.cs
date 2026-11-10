@@ -3,10 +3,16 @@ using Shared.Protocol;
 
 namespace Dawnholder.Client.Network.CharacterMenu
 {
-    /// <summary>Main-thread owner of one connection's menu pending request. canSend owns session/generation validity.</summary>
+    /// <summary>
+    /// Main-thread owner of one connection's menu pending request. canSend owns session/generation validity for
+    /// sending, disconnecting and accepting a selection. canReceive (canSend in the four-delegate constructor) owns
+    /// delivery of a received reply and its notification: the session lets a reply received before the close through
+    /// until cleanup.
+    /// </summary>
     public sealed class CharacterMenuClient : IDisposable
     {
         readonly Func<bool> _canSend;
+        readonly Func<bool> _canReceive;
         readonly Action<ArraySegment<byte>> _send;
         readonly Action _disconnect;
         readonly Action<string> _selectionAccepted;
@@ -18,10 +24,16 @@ namespace Dawnholder.Client.Network.CharacterMenu
         bool _disconnectIssued;
         bool _disposed;
 
+        /// <summary>Receiving uses the same gate as sending.</summary>
         public CharacterMenuClient(Func<bool> canSend, Action<ArraySegment<byte>> send,
             Action disconnect, Action<string> selectionAccepted)
+            : this(canSend, send, disconnect, selectionAccepted, canSend) { }
+
+        public CharacterMenuClient(Func<bool> canSend, Action<ArraySegment<byte>> send,
+            Action disconnect, Action<string> selectionAccepted, Func<bool> canReceive)
         {
             _canSend = canSend ?? throw new ArgumentNullException(nameof(canSend));
+            _canReceive = canReceive ?? throw new ArgumentNullException(nameof(canReceive));
             _send = send ?? throw new ArgumentNullException(nameof(send));
             _disconnect = disconnect ?? throw new ArgumentNullException(nameof(disconnect));
             _selectionAccepted = selectionAccepted ?? throw new ArgumentNullException(nameof(selectionAccepted));
@@ -32,6 +44,13 @@ namespace Dawnholder.Client.Network.CharacterMenu
         public bool HasPending => PendingRequestId != 0;
         public uint PendingRequestId { get; private set; }
         public CharacterMenuReply LastReply { get; private set; }
+
+        /// <summary>
+        /// The session closed for sending but has not cleaned up yet, so a reply it received before the close may
+        /// still be delivered here. Both gates come from the session; its cleanup disposes this client and ends it.
+        /// Never true with the four-delegate constructor, whose two gates are one.
+        /// </summary>
+        public bool IsClosedAwaitingSessionCleanup => !_disposed && !_canSend() && _canReceive();
 
         public bool TryList() => TrySend(id => new C_CharacterListRequest
         {
@@ -68,7 +87,7 @@ namespace Dawnholder.Client.Network.CharacterMenu
 
         public bool TryReceive(CharacterMenuReply reply)
         {
-            if (_disposed || _ended || !_canSend() || reply == null || !HasPending ||
+            if (_disposed || _ended || !_canReceive() || reply == null || !HasPending ||
                 reply.RequestId != PendingRequestId || reply.PacketId != _pendingReplyId) return false;
             bool success = reply.Result == (byte)CharacterMenuResult.Success;
             bool selected = success && reply.PacketId == (ushort)PacketID.S_CharacterSelectResult;
@@ -85,6 +104,7 @@ namespace Dawnholder.Client.Network.CharacterMenu
             try { NotifyChanged(); }
             finally
             {
+                // Both follow-ups use canSend: after a close the reply is shown, but nothing is sent or accepted.
                 if (unknown) DisconnectOnce();
                 else if (selected && !_disposed && _canSend()) _selectionAccepted(reply.SelectedCharacterIdD);
             }
@@ -149,10 +169,10 @@ namespace Dawnholder.Client.Network.CharacterMenu
 
         void NotifyChanged()
         {
-            if (_disposed || !_canSend() || Changed == null) return;
+            if (_disposed || !_canReceive() || Changed == null) return;
             foreach (Action notify in Changed.GetInvocationList())
             {
-                if (_disposed || !_canSend()) return;
+                if (_disposed || !_canReceive()) return;
                 notify();
             }
         }

@@ -22,7 +22,8 @@ namespace Dawnholder.Client.UI
     /// - InputField에 서버 주소 박음. 기본값 = 127.0.0.1
     /// - Start 버튼 → ConnectionProbe.TryConnect → 성공 시 PlayerPrefs 저장 + CharacterSelect 로드
     /// - 실패 시 errorMessageText에 오류 표시 + Scene 진입 차단
-    /// - 중복 클릭 차단 (probe 진행 중엔 버튼 비활성)
+    /// - 중복 클릭 차단 (probe 진행 중엔 버튼 비활성). probe 성공 뒤에는 화면을 떠날 때까지 시작 경로가 잠긴다.
+    /// - 컨트롤러가 파괴된 뒤 도착한 probe 결과는 아무것도 하지 않는다(저장·장면 요청 없음).
     ///
     /// **로그인 창**: Start에서 MainMenuLoginView가 위 칸·버튼·오류 글과 장면 타이틀을 밝은 로그인 창으로 배치한다.
     /// ID·PW의 Enter는 START와 같은 OnStartClicked를 부르고, Tab은 ID에서 PW로 옮긴다. 서버 주소 칸은 숨긴다.
@@ -50,7 +51,10 @@ namespace Dawnholder.Client.UI
         [SerializeField] string _defaultHost = "127.0.0.1";
 
         const string ServerHostPrefsKey = "ServerHost";
+        // 점검이 진행 중이다. 성공·실패 결과가 오면 거짓으로 돌아간다.
         bool _probing;
+        // 점검이 성공해 CharacterSelect로 떠나는 중이다. 이 화면에서는 다시 거짓이 되지 않는다.
+        bool _leaving;
         string _pendingAccountName;
         // 장면과 같은 수명이다. ID/PW 배치와 Enter·Tab만 맡고 PW를 받지 않는 시작 판단은 OnStartClicked에 남는다.
         MainMenuLoginView _loginView;
@@ -89,7 +93,7 @@ namespace Dawnholder.Client.UI
         public void OnStartClicked()
         {
             AudioManager.Instance?.PlaySfx(SoundKeys.ButtonClick);
-            if (_probing) return;  // 중복 클릭 차단
+            if (_probing || _leaving) return;  // 중복 클릭 차단, 성공 뒤 페이드 중 재시작 차단
 
             string host = ResolveHost();
             if (string.IsNullOrWhiteSpace(host))
@@ -116,11 +120,14 @@ namespace Dawnholder.Client.UI
 
         void OnProbeResult(bool success, string errorMessage)
         {
+            // 결과는 dispatcher로 늦게 온다. 그 사이 화면이 내려가 이 컨트롤러가 파괴됐으면 저장도 장면 요청도 하지 않는다.
+            if (this == null) return;
             _probing = false;
-            if (_startButton != null) _startButton.interactable = true;
 
             if (success)
             {
+                // 버튼을 다시 켜지 않는다. 장면이 바뀌어 이 화면이 없어질 때까지 시작 경로는 잠긴 채다.
+                _leaving = true;
                 // 성공한 host를 PlayerPrefs에 박음 → NetworkService.Connect()가 Town 씬 진입 시 읽어 사용.
                 string host = ResolveHost();
                 PlayerPrefs.SetString(ServerHostPrefsKey, host);
@@ -132,6 +139,7 @@ namespace Dawnholder.Client.UI
             }
             else
             {
+                if (_startButton != null) _startButton.interactable = true;
                 ShowError(errorMessage);
                 Debug.LogWarning($"[MainMenu] Server probe 실패: {errorMessage}");
             }

@@ -10,7 +10,8 @@ namespace Dawnholder.Client.UI
     /// Joins the display-only <see cref="CharacterMenuView"/> to one connection's <see cref="CharacterMenuClient"/>.
     /// Only this type holds the listed character IDs; the view gets names and classes. Reply bytes become a view
     /// phase in <see cref="Apply"/> and player text in <see cref="CharacterMenuResultText"/>. It subscribes to one
-    /// client at a time, and <see cref="Observe"/> drops that subscription when the connection changes or ends.
+    /// client at a time, and <see cref="Observe"/> drops that subscription when the connection changes or ends; a
+    /// closed connection ends it only once its session can no longer deliver a reply received before the close.
     /// Each applied result, IDs included, also goes to the Editor log as one line (<see cref="LogResult"/>).
     /// </summary>
     internal sealed class CharacterMenuPresenter : IDisposable
@@ -47,21 +48,28 @@ namespace Dawnholder.Client.UI
 
         /// <summary>
         /// Main thread, every frame, with the current connection's client. The first client seen while connected
-        /// is adopted. Afterwards a different client, none, or a closed connection ends the menu: the view keeps
-        /// Disconnected as final, and a new connection gets a new scene-owned menu.
+        /// is adopted. Afterwards a different client or none ends the menu: the view keeps Disconnected as final, and
+        /// a new connection gets a new scene-owned menu. A closed connection ends it too, unless the client is
+        /// <see cref="CharacterMenuClient.IsClosedAwaitingSessionCleanup"/>: a reply queued before the close then
+        /// still shows, whichever the menu sees first, and the session's cleanup ends the wait.
+        /// <paramref name="connecting"/> says whether a connection attempt is still under way. Not connected and not
+        /// connecting before any connection was seen means the first attempt failed (or never started), which also
+        /// ends the menu. Callers that pass no attempt state keep the default: still connecting.
         /// </summary>
-        internal void Observe(CharacterMenuClient? current, bool connected)
+        internal void Observe(CharacterMenuClient? current, bool connected, bool connecting = true)
         {
             if (_ended) return;
             if (_client != null)
             {
-                if (!connected || !ReferenceEquals(current, _client)) EndConnection();
+                bool replacedOrGone = !ReferenceEquals(current, _client);
+                bool closedForGood = !connected && !_client.IsClosedAwaitingSessionCleanup;
+                if (replacedOrGone || closedForGood) EndConnection();
                 return;
             }
             if (connected) _sawConnection = true;
             if (current != null && connected) Attach(current);
-            // Closed before a menu client existed, e.g. a refused login or a lost transport.
-            else if (_sawConnection && !connected) EndConnection();
+            // Closed before a menu client existed (a refused login or a lost transport), or the first attempt failed.
+            else if (!connected && (_sawConnection || !connecting)) EndConnection();
         }
 
         internal void Select(byte slot)

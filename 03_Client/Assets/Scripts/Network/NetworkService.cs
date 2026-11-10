@@ -40,6 +40,8 @@ namespace Dawnholder.Client.Network
 
         // TCP/session 활성 상태이며, 씬 준비 완료를 의미하지 않는다.
         public bool IsConnected => _lifetime != null && _lifetime.IsConnected;
+        // TCP 연결 시도가 아직 끝나지 않았다. 연결 안 됨 + 시도 중 아님이면 이번 시도는 실패했거나 시작되지 않았다.
+        public bool IsConnecting => _lifetime != null && _lifetime.State == ClientConnectionState.Connecting;
         public CharacterMenuClient CharacterMenu =>
             (_lifetime?.CurrentSession as UnityClientSession)?.CharacterMenu;
 
@@ -97,7 +99,8 @@ namespace Dawnholder.Client.Network
             accountName = null;
             string host = hostOverride ?? PlayerPrefs.GetString(ServerHostPrefsKey, _serverHost);
             if (string.IsNullOrWhiteSpace(host)) host = _serverHost;
-            if (!IPAddress.TryParse(host, out IPAddress ip) || _serverPort < 1 || _serverPort > 65535)
+            // 주소 규칙은 MainMenu의 사전 점검과 같은 ServerAddressRule이다(IP만).
+            if (!ServerAddressRule.TryParse(host, out IPAddress ip) || _serverPort < 1 || _serverPort > 65535)
             {
                 Debug.LogWarning($"[NetworkService] 잘못된 서버 주소 '{host}:{_serverPort}' — MainMenu 복귀.");
                 ReturnToMainMenu();
@@ -188,6 +191,10 @@ namespace Dawnholder.Client.Network
             Reset(() => inventoryRequests?.ResetSessionValues());
             Reset(() => RemoteEntityRegistry.Instance?.Clear());
             Reset(() => EnemyRegistry.Instance?.Clear());
+            // 퀘스트 연출의 「한 연결에 한 번」 표시 값. 맵 왕복은 이 정리를 지나지 않아 값이 남는다.
+            Reset(QuestCompleteWatcher.ResetSessionPresentation);
+            Reset(QuestIntroSequencer.ResetSessionPresentation);
+            Reset(QuestProgressHud.ResetSessionPresentation);
             // Every mirror value is cleared before any Party/Quest/Inventory subscriber is notified.
             Reset(() => party?.NotifySessionReset());
             Reset(() => quest?.NotifySessionReset());
