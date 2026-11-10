@@ -37,8 +37,10 @@ if (persistence is not null)
 ServerHost host = new(world, endPoint);
 host.Start();
 
+// Stop이 끝날 때까지 등록을 유지해 정지 중 추가 신호도 기본 종료를 막는다.
+using var shutdownRequest = new ServerShutdownRequest();
 Console.WriteLine($"Listening on {endPoint}. Press Enter to stop.");
-Console.ReadLine();
+await shutdownRequest.WaitAsync();
 
 try
 {
