@@ -9,7 +9,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 셸 분석 멈춤 수정의 구현 계약을 발행한다. branch는 `fix/rules-audit-shell-blank-20261110`, 근거는 `pr-shell/`이다. 선행 시험 계약과 원시는 `tdd/`에 있다.
+**다음 첫 일:** 관문 판정(1·2번)의 구현 계약을 발행한다. branch는 이 goal branch, 근거는 `pr-gate/`다. 셸 분석 멈춤은 PR311로 올렸고 CI 결과를 받아 메인에 준비 보고한다. 선행 시험 계약과 원시는 `tdd/`, PR311 근거는 `pr-shell/`에 있다.
 
 막힌 지점: 없음. 맥락 메모는 근거 폴더의 `rules-lead-context.md`, 승인 범위 문서는 `fix-scope-rules.md`(SHA256 `ee30d35dd614b1c405f01749c0ebf78c121c18afbac29969f766684682c8fa59`, 메인 원본과 일치)다.
 
@@ -188,9 +188,20 @@ Rules에 해당하는 부분은 「4) 계획 검토 - Rules … → A 승인 (�
 - 시험은 hook 입력 대역과 임시 저장소만 썼다. 실제 병합 명령, main으로 가는 push, API 호출은 실행하지 않았다.
 - 정산: `worker-release`는 retained·external_terminal·none이었고, 빈 prompt를 확인한 뒤 pane을 닫았다(`tdd/worker-release.json`, `tdd/terminal-close.json`).
 
+### 셸 분석 멈춤 결과(PR311)
+
+- branch `fix/rules-audit-shell-blank-20261110`, PR311, head `d531680e2fe726e7fec0b8bc00661f1b21c7b65c`. 커밋은 선행 시험 `ee8998ce`, 구현 `24e66aab`, 독립 검증 시험 `d531680e`이다.
+- 구현(`[Rules 구현 Opus]`, Opus 5.5 high, backend unknown): `shell-command.mjs` 한 파일 +8 −2. 낱말 경계를 `sequence()`가 소비하는 문자와 같은 판정으로 맞추고, 위치가 전진하지 않으면 명시적 오류를 낸다. 수정 전 28건 중 18건 실패가 같은 명령에서 28건 통과로 바뀌었다(`pr-shell/report.md`).
+- 독립 검증(`[Rules 검증자]`, Opus 5.5 xhigh, backend unknown): **PASS**, 결함 0건(`pr-shell/verify/verdict.md`). 독립 시험 59건, SessionGuard 254건, MergeGate 126건이 통과했다. 실제 진입은 hook 프로세스에 stdin JSON을 넣는 9건이다. 살아 있는 세션 입력과 도달 경로가 없는 전진 가드는 미실행이다.
+- 비차단 관찰 넷 가운데 리드 처리는 둘이다. 관찰 1(CR이 Bash와 달리 공백이라는 이유 주석)은 head를 바꾸면 재검증이 필요해 이번 PR에 넣지 않는다. 관찰 3(분석 예외의 결정 없음 종료)은 기존 설계이며 아래 다음 계획 후보로 둔다.
+- 리드 대조: 판정 원문을 읽었고 `verify/raw/`의 요약 줄(28/28, 59/59, 254/254, 126/126)이 판정 수치와 같다.
+- 규칙 검사 `check-code-rules.mjs`는 로컬에서 돌리지 않았다. 대상 언어가 PowerShell·TypeScript·Python이라 이 변경에는 해당 파일이 없다. CI `code-rules`가 두 시험 묶음을 함께 돈다.
+- 정산: 구현자와 검증자 모두 `worker-release` retained·external_terminal·none 뒤 빈 prompt를 확인하고 pane을 닫았다.
+- 리드의 실제 작업 branch push는 고친 SessionGuard와 기존 MergeGate를 지나 통과했다.
+
 ## 다음 계획 후보
 
-아직 없다.
+- SessionGuard 분석 예외의 결정 없음 종료. 따옴표가 닫히지 않은 명령이나 매우 깊은 `$(` 중첩에서 분석이 예외로 끝나면 hook이 결정 없이 통과시킨다. 기존 설계이며 이번 범위 밖이다. 원천은 PR311 독립 검증 관찰 3(`pr-shell/verify/verdict.md`). 종료 기록 때 BACKLOG에 올릴지 판단한다.
 
 ## 진척 단계
 
@@ -198,9 +209,9 @@ PR 번호는 PR을 만들 때 채운다.
 
 - [x] goal 초안 승인
 - [x] 선행 시험 작성
-- [>] 셸 분석 멈춤 구현
-- [ ] 셸 분석 독립 검증
-- [ ] 관문 판정 구현
+- [x] 셸 분석 멈춤 구현
+- [x] 셸 분석 독립 검증
+- [>] 관문 판정 구현
 - [ ] 관문 판정 독립 검증
 - [ ] 셸 분석 PR 병합
 - [ ] 관문 판정 PR 병합
