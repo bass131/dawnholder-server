@@ -8,9 +8,9 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR3 종료 경로의 독립 검증 판정(`pr3/verify/verdict.md`)을 받는다. PASS면 push하고 PR을 만든다. 그다음은 입력 예산 잔여 경로의 선행 시험 계약이다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
+**다음 첫 일:** 입력 예산 잔여 경로(미등록 패킷 번호·중복 로그인)의 선행 시험 계약을 발행한다. branch `fix/core-audit-input-gaps-20261110`은 종료 경로 branch head 위에 만든다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
-막힌 지점: 없음. 입력 예산 PR306은 서식 수정 head의 CI 결과를 메인에 보고한 뒤 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
+막힌 지점: 없음. 입력 예산 PR306과 종료 경로 PR은 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
 ## 적용 중인 사용자 결정
 
@@ -268,6 +268,17 @@ branch `fix/core-audit-input-budget-20261110`. 구현 `gpt-6-astra` high, 독립
 |---|---|---|---|---|---|
 | `GuildIndependentLifetimeTests.BurstOfGuildInput_IsAnsweredOnce_AndTheSlotIsFreeAfterwards` | 추가 입력 200개 뒤 같은 초의 조회도 응답 | 추가 입력 20개, 단정 전부 불변 | (a) 예산 이전의 무제한 입력 가정. 제품 회귀 아님 | 항목 2 요구: 그 밖 입력은 연결별 공유 초당 30. 20개는 대기 슬롯 1보다 많아 시험 목적을 유지하고, 폭주 자체는 독립 시험이 맡는다 | `pr2/verify/raw/full-before.log`, `full-after-1.log`, `worktree-before-aftertest-tracked.diff` |
 
+### 종료 경로 결과
+
+branch `fix/core-audit-graceful-stop-20261110`. 구현 `gpt-6-astra` high, 독립 검증 `gpt-6-astra` xhigh. 판정 원문 `pr3/verify/verdict.md`는 PASS이고 제품 결함은 없다. 대상 head는 `a049f37cdcb55d5b88d8b580bbbb938fe888c89a`이고, 그 뒤 commit은 검증자가 쓴 시험 1파일과 이 goal 기록뿐이다.
+
+- 종료 네 경로: 수정 전 TERM 143·INT 130(정지 줄 없음), Enter·EOF 0 → 수정 후 네 경로 모두 exit 0·`Server stopped.`(`pr3/raw/item-5-attempt-3.log`, `4.log`, `pr3/verify/raw/item-5-attempt-5.log`).
+- 독립 프로세스 시험: 신호 경합·입력 도착 6/6, 정지 실패 2/2(실제 `GameServer.dll`에 시험용 틱 지연만 주입, exit 1·표준 오류 문구·정지 줄 없음).
+- 전체 시험: 시험 변경 전 실패 0·통과 2,665·건너뜀 28·전체 2,693, 변경 뒤 실패 0·통과 2,670·건너뜀 28·전체 2,698(새 독립 5사례 포함). 기존 시험은 바꾸지 않았다.
+- 봇: 2 통과·2 실패로 수정 전과 같다. 시나리오별 `Server stopped.`는 0줄에서 1줄이 됐다. **대시 피해와 보스전 경로는 봇으로 확인되지 않았다.**
+- 정식 서식 검사: exit 0, 공백 오류 0줄(새 시험 포함).
+- 미실행: Unity 시험·DB 저장(최종 head에서 1회), 신호 등록 전 실제 신호.
+
 ### 남은 위험
 
 아래는 메인 지시 `msg_2fd9d770d23b`로 기록한다.
@@ -292,8 +303,8 @@ PR 번호는 PR을 만들 때 채운다.
 - [x] 선행 시험 작성
 - [x] 연결 계층 구현
 - [x] 입력 예산 구현
-- [>] 종료 경로 구현
-- [ ] 입력 예산 잔여 경로 구현
+- [x] 종료 경로 구현
+- [>] 입력 예산 잔여 경로 구현
 - [ ] 게임 규칙 구현
 - [ ] 통합 실행 검증
 - [x] PR305 병합
