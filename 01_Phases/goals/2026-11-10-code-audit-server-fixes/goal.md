@@ -8,7 +8,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 게임 규칙 PR(7·8번)의 선행 시험 복원과 축소 결과를 받아 구현 계약을 발행한다. branch는 `fix/core-audit-party-jump-20261110`이고 근거는 `pr4/`다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
+**다음 첫 일:** 게임 규칙 PR(7·8번)의 구현 결과를 받아 독립 검증자를 띄운다. branch는 `fix/core-audit-party-jump-20261110`이고 근거는 `pr4/`다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
 막힌 지점: 없음. 종료 경로 PR307과 입력 예산 잔여 경로 PR308은 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
@@ -294,6 +294,13 @@ branch `fix/core-audit-input-gaps-20261110`. 선행 시험 `Network/InputBudgetU
 - 미실행: Unity 시험·DB 저장(최종 head에서 1회).
 
 기존 시험 분류(`msg_71e41e231d55` 정본, 판정 표 `gaps/verify/verdict.md` 65~70행): 전체 실패 4건을 전수 분류했다. `RegisteredHandler_DeclaresRequiredBudget(C_Login, …)`과 `LoginHasNoBudget_…`(이름을 `LoginSharesMenuBudget_…`로 변경)은 (a) 옛 단정이고, `ExactLimit_…(menu)`와 `AllFourMenuHandlers_…`는 (b) fixture 로그인이 같은 창의 메뉴 1건을 쓰는 전제 문제다. 한도를 낮추지 않고 그 사례만 시계를 1초 진행했다. 제품 회귀는 없다.
+
+### 게임 규칙 결과
+
+branch `fix/core-audit-party-jump-20261110`. 선행 시험은 보관본을 SHA256 대조로 복원했다(작성 `gpt-6-astra` high).
+
+- 8번 시험을 승인 범위로 줄였다(메인 `msg_7d8ae31d35b6`·`msg_1bf9011869bf`). 변경은 `InlineData("death")` 한 줄, switch 가지 하나, 윗부분 주석 한 줄뿐이다. 원래 SHA256 `96dcc8884b77369af94b98633ffc62d2ebedd1c7fb704ca417aef33c6d149d85`, 줄인 뒤 `3a817ffc67946680ecd5a332a4d78e9cef02d94f967fdd540a985917bbcd8b43`. 7번 시험은 복원 그대로다(`f8620ded7b2bf44d84d6ddc9691849c4cd09992d4b99f46193b9b897d88a178c`). 메인이 찾던 「선행 시험 수정 절차」는 정본에 없던 표현이었다.
+- 수정 전: 7번 실패 1·보존 1, 8번 실패 2·보존 1. 전체 시험 실패 3·통과 2,688·건너뜀 28·전체 2,719이고 실패는 새 사례뿐이다.
 
 ### 남은 위험
 
