@@ -23,9 +23,9 @@ const blockReasons = {
   'bad-form': '허용된 단독 병합 형태가 아니다. 판정된 낱말 사이 옵션·대문자·경로·.exe 명령 낱말은 받지 않는다. gh pr merge <번호> <방식 하나> --match-head-commit <40자 hex>만 사용하라.',
   'compound-command': '병합 시도가 복합 명령이나 감싼 명령 안에 있다. 다른 명령·리다이렉트·치환 없이 gh pr merge만 실행하라.',
   'non-bash-merge': 'Bash 밖 셸 도구의 병합 시도다. 병합은 Bash 도구의 단독 명령으로만 한다.',
-  'api-merge': 'gh api를 통한 PR 병합·자동 병합은 금지된다. 메인 세션에서 승인받은 gh pr merge 단독 명령을 사용하라.',
+  'api-merge': 'gh api를 통한 PR 병합·자동 병합, 브랜치 병합, main 참조 쓰기, 브랜치를 바꾸는 GraphQL mutation은 금지된다. 작업 브랜치를 PR로 올리고 메인 세션에서 승인받은 gh pr merge 단독 명령을 사용하라.',
   'push-main': 'main 목적지 또는 --all·--mirror push는 금지된다. 작업 브랜치를 push하고 PR로 통합하라.',
-  'branch-lookup-failed': 'push의 현재 branch를 확인할 수 없다. hook 입력 cwd의 저장소와 git 상태를 확인하라.',
+  'branch-lookup-failed': 'push가 가리키는 저장소의 현재 branch를 확인할 수 없다. 변수·치환이 든 경로, cd -·popd, 파이프·배경 실행 앞의 cd, GIT_DIR 같은 대입은 경로를 직접 적거나 목적지 branch를 명시해 다시 실행하고, 그 밖에는 hook 입력 cwd와 대상 저장소의 git 상태를 확인하라.',
   'protected-path': '명령·파일 도구가 보호된 병합 관문 상태 폴더를 가리킨다. 에이전트가 표식·기록을 읽거나 수정하지 마라.',
   'approval-injection': '다른 터미널이나 예약·전달 prompt에 병합 승인 문장을 넣는 입력이다. 승인 문장은 사용자가 메인 창에 직접 입력한다.',
   'suspect-words': '단독 병합 형태가 아닌 명령에 병합·main push 의심 낱말이 함께 있다. 병합은 단독 명령으로, 다른 명령은 나눠 실행하거나 문구를 파일로 넘겨라.',
@@ -88,7 +88,7 @@ function isCommandWord(word, name) {
 }
 
 // 읽기를 더해도 막는 형태가 줄지 않게 경계 읽기와 치환 묶음 읽기의 합으로 본다.
-function simpleCommands(command) {
+function shellReads(command) {
   const boundaryRead = command.replace(/\\\r?\n/g, ' ');
   let substitutionRead = boundaryRead;
   while (true) {
@@ -96,9 +96,21 @@ function simpleCommands(command) {
     if (next === substitutionRead) break;
     substitutionRead = next;
   }
-  return [boundaryRead, substitutionRead].flatMap(text => text.split(/[;&|`<>(){}\r\n]/))
-    .map(part => part.trim().split(/\s+/).filter(Boolean).map(raw => ({ raw, value: unquote(raw) })))
-    .filter(words => words.length > 0);
+  return [boundaryRead, substitutionRead];
+}
+
+// One read cut at ; & | ` < > ( ) { } and newline, in order: word lists and the separator tokens
+// between them, so the push target reading can follow cd and parentheses.
+function commandSteps(text) {
+  return text.split(/([;&|`<>(){}\r\n][;&|`<>(){}\s]*)/).flatMap((part, index) => {
+    if (index % 2 === 1) return [{ separators: part.match(/&&|\|\||[;&|`<>(){}\r\n]/g) }];
+    const words = part.trim().split(/\s+/).filter(Boolean).map(raw => ({ raw, value: unquote(raw) }));
+    return words.length > 0 ? [{ words }] : [];
+  });
+}
+
+function simpleCommands(command) {
+  return shellReads(command).flatMap(commandSteps).filter(step => step.words).map(step => step.words);
 }
 
 // 닫히지 않는 따옴표는 처음 낱말만 건너뛰어 예상 밖 입력에서도 막는 쪽으로 기운다.
@@ -116,7 +128,7 @@ function quotedWordEnd(words, start) {
 
 // §4 command words: skip options and their separate values before comparing the first subcommand words.
 function findSubcommands(words, executable, subcommands, valueOptions) {
-  const ends = [];
+  const found = [];
   for (let start = 0; start < words.length; start += 1) {
     if (!isCommandWord(words[start].value, executable)) continue;
     let part = 0;
@@ -130,12 +142,12 @@ function findSubcommands(words, executable, subcommands, valueOptions) {
       if (word !== subcommands[part]) break;
       part += 1;
       if (part === subcommands.length) {
-        ends.push(index);
+        found.push({ start, end: index });
         break;
       }
     }
   }
-  return ends;
+  return found;
 }
 
 function validToolInput(input) {
@@ -169,31 +181,137 @@ function inspectMergeCommand(command) {
   return { kind: 'merge', pr: Number(words[3]), head: head.toLowerCase(), command };
 }
 
-function inspectPushes(commands) {
-  let branchNeeded = false;
-  for (const tokens of commands) {
-    for (const pushIndex of findSubcommands(tokens, 'git', ['push'], gitValueOptions)) {
-      const words = tokens.slice(pushIndex + 1);
-      const positional = [];
-      let remoteByOption = false;
-      for (let index = 0; index < words.length; index += 1) {
-        const word = words[index].value;
-        if (word === '--all' || word === '--mirror') return 'main';
-        if (word === '--repo' || word.startsWith('--repo=')) remoteByOption = true;
-        if (word.startsWith('-')) {
-          const optionEnd = quotedWordEnd(words, index);
-          index = pushValueOptions.has(word) ? quotedWordEnd(words, optionEnd + 1) : optionEnd;
-        } else positional.push(word);
+// 'main' for a main destination, 'lookup' when the push takes the current branch, otherwise 'none'.
+function pushDestination(words) {
+  const positional = [];
+  let remoteByOption = false;
+  for (let index = 0; index < words.length; index += 1) {
+    const word = words[index].value;
+    if (word === '--all' || word === '--mirror') return 'main';
+    if (word === '--repo' || word.startsWith('--repo=')) remoteByOption = true;
+    if (word.startsWith('-')) {
+      const optionEnd = quotedWordEnd(words, index);
+      index = pushValueOptions.has(word) ? quotedWordEnd(words, optionEnd + 1) : optionEnd;
+    } else positional.push(word);
+  }
+  const refspecs = remoteByOption ? positional : positional.slice(1);
+  for (const refspec of refspecs) {
+    const destination = refspec.replace(/^\+/, '').split(':').at(-1);
+    if (destination === 'main' || destination === 'refs/heads/main') return 'main';
+  }
+  return refspecs.length === 0 || refspecs.some(refspec => /^\+?(?:HEAD|@)$/.test(refspec)) ? 'lookup' : 'none';
+}
+
+function quotesClosed(text) {
+  let quote = null;
+  for (const character of text) {
+    if (character === quote) quote = null;
+    else if (quote === null && (character === '"' || character === "'")) quote = character;
+  }
+  return quote === null;
+}
+
+// The shell word at `index` (one or more blank-split words when quoted). `path` is the value git can
+// be handed as is, or null when the shell would still expand it; `open` marks a quote that never
+// closes in this simple command.
+function shellWord(words, index) {
+  const end = quotedWordEnd(words, index);
+  const raw = words.slice(index, end + 1).map(word => word.raw).join(' ');
+  const path = raw.replace(/["']/g, '');
+  const literal = path.length > 0 && !/[$`*?[\]]/.test(path) && !path.startsWith('~');
+  return { path: literal ? path : null, end, open: !quotesClosed(raw) };
+}
+
+const repositoryOptions = new Set(['-C', '--git-dir', '--work-tree']);
+
+// The git global options between `git` and `push` that pick the repository, in the order written.
+// A value whose quote never closes is skipped like findSubcommands skips it: Bash would read the
+// rest of the command into that value, so this push does not run as written.
+function repositoryOptionsBefore(words) {
+  const selection = [];
+  for (let index = 0; index < words.length; index += 1) {
+    const word = words[index].value;
+    const [name, ...attached] = word.split('=');
+    if (repositoryOptions.has(word)) {
+      if (index + 1 >= words.length) return null;
+      const value = shellWord(words, index + 1);
+      if (value.open) {
+        index += 1;
+        continue;
       }
-      const refspecs = remoteByOption ? positional : positional.slice(1);
-      for (const refspec of refspecs) {
-        const destination = refspec.replace(/^\+/, '').split(':').at(-1);
-        if (destination === 'main' || destination === 'refs/heads/main') return 'main';
-      }
-      if (refspecs.length === 0 || refspecs.some(refspec => /^\+?(?:HEAD|@)$/.test(refspec))) branchNeeded = true;
+      if (!value.path) return null;
+      selection.push({ option: word, path: value.path });
+      index = value.end;
+    } else if (name !== '-C' && repositoryOptions.has(name) && attached.length > 0) {
+      const value = shellWord(words, index);
+      if (value.open) continue;
+      if (!value.path) return null;
+      selection.push({ option: name, path: value.path.slice(name.length + 1) });
+      index = value.end;
+    } else {
+      const optionEnd = quotedWordEnd(words, index);
+      index = gitValueOptions.has(word) ? quotedWordEnd(words, optionEnd + 1) : optionEnd;
     }
   }
-  return branchNeeded ? 'branch' : 'none';
+  return selection;
+}
+
+const directoryCommands = new Set(['cd', 'pushd', 'popd']);
+const followedAfter = new Set(['&&', ';', '\n', '\r', ')']);
+const unfollowedBefore = new Set(['|', '||', '<', '>']);
+
+// cd and pushd with one literal path are followed when they lead a command joined by &&, ; or a
+// newline. Any other change of directory (cd -, a bare cd, popd, a pipe or background, a cd word
+// inside a wrapped command) leaves the location unknown.
+function locationAfter(location, words, before, after) {
+  const changeAt = words.findIndex(word => directoryCommands.has(word.value));
+  if (changeAt < 0 || location === null) return location;
+  if (changeAt > 0 || words[0].value === 'popd' || unfollowedBefore.has(before) ||
+      !(after === undefined || followedAfter.has(after))) return null;
+  if (words.length < 2) return null;
+  const target = shellWord(words, 1);
+  if (target.open || !target.path || target.end !== words.length - 1 || /^[-+]/.test(target.path)) return null;
+  return [...location, target.path];
+}
+
+// Which repository each push reaches. A push with a main destination is { main: true }. A push that
+// takes the current branch adds a lookup: the cd/pushd paths before it in the same command as -C,
+// then its own -C, --git-dir and --work-tree, in the order written. The hook hands this list to git,
+// which joins relative paths itself. A lookup is null when the text does not tell the repository:
+// the location is unknown, an option value would still be expanded, or GIT_DIR, GIT_WORK_TREE or
+// GIT_COMMON_DIR is assigned.
+function inspectPushes(command) {
+  const environmentSwitch = /(?:^|[^\w])GIT_(?:DIR|WORK_TREE|COMMON_DIR)=/.test(command);
+  // Keyed by the selection: both reads usually find the same push, and each lookup starts a git process.
+  const lookups = new Map();
+  for (const text of shellReads(command)) {
+    const steps = commandSteps(text);
+    let location = [];
+    const scopes = [];
+    let inBackquote = false;
+    for (let index = 0; index < steps.length; index += 1) {
+      const { words, separators } = steps[index];
+      if (separators) {
+        // A subshell or substitution ends with its own location; braces keep the shell's.
+        for (const token of separators) {
+          if (token === '(' || (token === '`' && !inBackquote)) scopes.push(location);
+          else if (token === ')' || token === '`') location = scopes.length > 0 ? scopes.pop() : null;
+          if (token === '`') inBackquote = !inBackquote;
+        }
+        continue;
+      }
+      for (const { start, end } of findSubcommands(words, 'git', ['push'], gitValueOptions)) {
+        const destination = pushDestination(words.slice(end + 1));
+        if (destination === 'main') return { main: true, lookups: [] };
+        if (destination === 'none') continue;
+        const options = environmentSwitch || location === null ? null : repositoryOptionsBefore(words.slice(start + 1, end));
+        const repository = options && [...location.map(path => ({ option: '-C', path })), ...options];
+        lookups.set(JSON.stringify(repository), repository);
+      }
+      location = locationAfter(location, words, steps[index - 1]?.separators.at(-1), steps[index + 1]?.separators[0]);
+    }
+  }
+  return { main: false, lookups: [...lookups.values()] };
 }
 
 function otherCommandDecision(command) {
@@ -208,13 +326,31 @@ function containsApprovalText(value) {
   return value !== null && typeof value === 'object' && Object.values(value).some(containsApprovalText);
 }
 
+// gh api calls that move a branch without gh pr merge: the branch merge endpoint and writes to the
+// main ref, plus the GraphQL mutations that merge into or rewrite a branch. A write is an explicit
+// method other than GET, or fields or --input without a method, which gh sends as POST. The precise
+// reading and the last net both call this on the whole command text, because the boundary read cuts
+// GraphQL bodies and {owner}/{repo} placeholders apart. -f/-F of another command in the same text
+// also count as fields and block.
+function apiMovesBranch(command) {
+  if (/\b(?:mergeBranch|updateRef|createCommitOnBranch)\b/.test(command)) return true;
+  if (!/\/merges(?![\w.-])|\bgit\/refs\/heads\/main(?![\w./-])/.test(command)) return false;
+  const methods = [...command.matchAll(/(?:^|[\s(])(?:-X(?:=|\s+)?|--method(?:=|\s+))["']?([A-Za-z]+)/g)]
+    .map(match => match[1].toUpperCase());
+  if (methods.some(method => method !== 'GET')) return true;
+  // An explicit GET sends fields as query parameters, but only for its own call: in a compound
+  // command the GET may belong to another call, so fields still count as a write.
+  if (methods.length > 0 && !/[;&|`\r\n]|\$\(/.test(command)) return false;
+  return /(?:^|[\s(])(?:-[fF]|--(?:raw-)?field(?![\w-])|--input(?![\w-]))/.test(command);
+}
+
 // 정밀 판정이 놓친 형태를 원문 낱말로 막는 안전망이며 오탐을 받아들인다.
 function suspectWords(command) {
   const words = (command.match(/[A-Za-z0-9_./:@+\-]+/g) ?? []).map(word => word.toLowerCase());
   const hasGh = words.some(word => ['gh', 'gh.exe'].includes(word.split('/').at(-1)));
   if (hasGh && words.includes('merge')) return true;
-  if (hasGh && words.includes('api') && words.some(word => word.endsWith('/merge') ||
-      word.includes('mergepullrequest') || word.includes('enablepullrequestautomerge'))) return true;
+  if (hasGh && words.includes('api') && (apiMovesBranch(command) || words.some(word => word.endsWith('/merge') ||
+      word.includes('mergepullrequest') || word.includes('enablepullrequestautomerge')))) return true;
   return words.includes('push') && words.some(word => word === 'main' || word.endsWith(':main') ||
     word.endsWith('heads/main') || word === '--all' || word === '--mirror');
 }
@@ -238,20 +374,24 @@ export function preparePreToolUse(input) {
     return input.tool_name === 'Monitor' ? blocked('non-bash-merge') : inspectMergeCommand(command);
   }
   if (commands.some(words => findSubcommands(words, 'gh', ['api'], ghValueOptions).length > 0) &&
-      (/\bpulls\/[0-9]+\/merge\b/.test(command) || /\b(?:mergePullRequest|enablePullRequestAutoMerge)\b/.test(command))) {
+      (/\bpulls\/[0-9]+\/merge\b/.test(command) || /\b(?:mergePullRequest|enablePullRequestAutoMerge)\b/.test(command) ||
+       apiMovesBranch(command))) {
     return blocked('api-merge');
   }
-  const push = inspectPushes(commands);
-  if (push === 'main') return blocked('push-main');
+  const push = inspectPushes(command);
+  if (push.main) return blocked('push-main');
   const fallback = otherCommandDecision(command);
   if (fallback.kind === 'decision') return fallback;
   if (suspectWords(command)) return blocked('suspect-words');
-  return push === 'branch' ? { kind: 'branch', fallback } : fallback;
+  // The hook runs one lookup per entry of `lookups` (see inspectPushes) and passes the branches back.
+  return push.lookups.length > 0 ? { kind: 'branch', lookups: push.lookups, fallback } : fallback;
 }
 
-export function evaluatePushBranch(branch, fallback) {
-  if (typeof branch !== 'string' || branch.length === 0) return blocked('branch-lookup-failed');
-  return branch === 'main' ? blocked('push-main') : fallback;
+// One branch per lookup, null for a lookup that failed or could not be made.
+export function evaluatePushBranches(branches, fallback) {
+  if (branches.includes('main')) return blocked('push-main');
+  if (branches.some(branch => typeof branch !== 'string' || branch.length === 0)) return blocked('branch-lookup-failed');
+  return fallback;
 }
 
 export function parseApprovalPrompt(prompt) {

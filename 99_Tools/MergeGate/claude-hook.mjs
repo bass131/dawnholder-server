@@ -2,14 +2,23 @@ import { execFileSync } from 'node:child_process';
 
 import { approvalStore } from './approval-store.mjs';
 import {
-  canRequestMergePermission, denyOutput, evaluateMergeAttempt, evaluatePermissionRequest, evaluatePushBranch,
+  canRequestMergePermission, denyOutput, evaluateMergeAttempt, evaluatePermissionRequest, evaluatePushBranches,
   hasAgent, isSessionId, parseApprovalPrompt, preparePreToolUse, recordApproval,
 } from './merge-policy.mjs';
 
-function currentBranch(cwd) {
-  if (typeof cwd !== 'string' || cwd.trim().length === 0) return null;
+// Git Bash writes C:/x as /c/x, which the Windows git started here cannot open.
+function gitPath(path) {
+  return process.platform === 'win32' ? path.replace(/^\/([A-Za-z])(?:\/|$)/, (_, drive) => `${drive.toUpperCase()}:/`) : path;
+}
+
+// `repository` is one lookup from merge-policy: the options that pick the push's repository, in order.
+// git runs from the input cwd so that it joins relative paths the way the push would.
+function currentBranch(cwd, repository) {
+  if (typeof cwd !== 'string' || cwd.trim().length === 0 || repository === null) return null;
+  const selection = repository.flatMap(({ option, path }) =>
+    option === '-C' ? ['-C', gitPath(path)] : [`${option}=${gitPath(path)}`]);
   try {
-    return execFileSync('git', ['symbolic-ref', '--quiet', '--short', 'HEAD'], {
+    return execFileSync('git', [...selection, 'symbolic-ref', '--quiet', '--short', 'HEAD'], {
       cwd, encoding: 'utf8', timeout: 5000, stdio: ['ignore', 'pipe', 'pipe'],
     }).trim() || null;
   } catch {
@@ -32,7 +41,8 @@ async function handleHook(input) {
     if (attempt.kind === 'decision') return attempt.output;
     if (attempt.kind === 'none') return null;
     if (attempt.kind === 'branch') {
-      return evaluatePushBranch(currentBranch(input.cwd), attempt.fallback).output ?? null;
+      const branches = attempt.lookups.map(repository => currentBranch(input.cwd, repository));
+      return evaluatePushBranches(branches, attempt.fallback).output ?? null;
     }
     const store = approvalStore(process.env.CLAUDE_PROJECT_DIR, input.session_id);
     const marker = await store.hasMarker();
