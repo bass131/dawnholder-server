@@ -8,9 +8,9 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR2 입력 예산의 독립 검증 판정(`pr2/verify/verdict.md`)을 받는다. PASS면 branch `fix/core-audit-input-budget-20261110`을 push하고 base를 PR1 branch로 한 PR을 만든다. 그다음은 PR3 종료 경로의 구현 계약이다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
+**다음 첫 일:** PR3 종료 경로의 구현 계약을 발행한다. branch `fix/core-audit-graceful-stop-20261110`은 입력 예산 branch head 위에 만들고, 재현 harness `tdd/harness/shutdown-signals.sh`를 새 attempt 번호로 재사용한다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
-막힌 지점: 없음. 구현자 보고에서 기존 시험 `GuildIndependentLifetimeTests.BurstOfGuildInput_IsAnsweredOnce_AndTheSlotIsFreeAfterwards` 1건이 실패로 남았고, 분류는 독립 검증자가 정한다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
+막힌 지점: 없음. 입력 예산 PR은 독립 판정 PASS로 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
 ## 적용 중인 사용자 결정
 
@@ -233,6 +233,25 @@ R-7은 메인 승인이 없어 비해당이다. 실제 변경 줄 수의 원시�
 | `SessionDisconnectCleanupTests.Disconnect_EndpointUnavailable_ClearsBuffersEvenWhenDiagnosticWriterFails(logThrows: False)` | `ObjectDisposedException`, 알림 0회 | 예외 없음, 알림 1회, 버퍼 정리 | (a) 옛 구현 세부 단정, 의도된 동작 변화. 제품 회귀 아님 | 항목 3 요구: 소켓이 먼저 닫혀도 `OnDisconnected`를 한 번 부른다(`pr1/contract.md` 항목 3). 안 부르면 플레이어 정리가 일어나지 않는다 | `pr1/verify/raw/full-before.log`, `full-after-1.log`, `cleanup-tests.diff` |
 | 같은 시험 `(logThrows: True)` | 위와 같음 | 위와 같음, 진단 writer 시도 유지 | 위와 같음 | 위와 같음 | 위와 같음 |
 
+PR305 병합: 사용자 승인 원문 「병합 승인: PR305 head bdfc81b6ff200c70240f368abe793d81e1df107c」(11-10 10:08 KST 메인 pane에서 제출, 메인 전달 `msg_001c18f08bf2`). 병합 커밋 `8cfebebd7e3002f43852287d8f00c95c05100f41`, mergedAt 2026-11-10T01:08:48Z, 방식 `--merge`, CI 4개 통과.
+
+### 입력 예산 결과
+
+branch `fix/core-audit-input-budget-20261110`. 구현 `gpt-6-astra` high, 독립 검증 `gpt-6-astra` xhigh. 판정 원문 `pr2/verify/verdict.md`는 PASS이고 제품 결함은 없다. 대상 head는 `e19c8b84445f47b4e0685a0bd2970817dd1967d7`이고, 그 뒤 commit은 검증자가 쓴 시험과 이 goal 기록뿐이다.
+
+- 선행 시험: 수정 전 실패 11·통과 11 → 수정 후 실패 0·통과 22. 같은 명령 10회 연속 전부 22통과라 실제 시간에 기대는 사례의 흔들림은 관측되지 않았다.
+- 독립 시험 39사례(`Network/InputBudgetBoundaryTests.cs`) 통과. 종류별 경계·창 회복·연결 간과 종류 간 격리·예산 없음 경로·관문 순서를 다룬다.
+- 전체 시험: 시험 변경 전 실패 1·통과 2,625·건너뜀 28·전체 2,654, 변경 뒤 실패 0·통과 2,665·건너뜀 28·전체 2,693(새 독립 39사례 포함).
+- 봇: 2 통과·2 실패로 수정 전과 같다. 네 시나리오 서버 로그의 `[InputBudget]` 경고는 각 0건이다. **대시 피해와 보스전 경로는 봇으로 확인되지 않았다.**
+- 핸들러 선언은 21개 전수 일치한다. 구현 계약 설명 문장의 22개는 리드 표기 오류이고 요구 표와 등록 소스는 21개다.
+- 미실행: 정식 서식 검사(Windows SDK 없음, PR CI로 판정), Unity 시험·DB 저장(최종 head에서 1회).
+
+기존 시험 분류(`msg_71e41e231d55` 정본, 판정 표 `pr2/verify/verdict.md` 127~129행):
+
+| 시험 | 수정 전 기대·입력 | 수정 뒤 | 분류 | 근거 | 원시 |
+|---|---|---|---|---|---|
+| `GuildIndependentLifetimeTests.BurstOfGuildInput_IsAnsweredOnce_AndTheSlotIsFreeAfterwards` | 추가 입력 200개 뒤 같은 초의 조회도 응답 | 추가 입력 20개, 단정 전부 불변 | (a) 예산 이전의 무제한 입력 가정. 제품 회귀 아님 | 항목 2 요구: 그 밖 입력은 연결별 공유 초당 30. 20개는 대기 슬롯 1보다 많아 시험 목적을 유지하고, 폭주 자체는 독립 시험이 맡는다 | `pr2/verify/raw/full-before.log`, `full-after-1.log`, `worktree-before-aftertest-tracked.diff` |
+
 ### 남은 위험
 
 아래는 메인 지시 `msg_2fd9d770d23b`로 기록한다.
@@ -247,6 +266,7 @@ R-7은 메인 승인이 없어 비해당이다. 실제 변경 줄 수의 원시�
 - 패킷마다 65,535바이트 배열을 만드는 생성기를 패킷 크기에 맞게 바꾸기(`GenPackets.cs`의 `Write()`, 메인 지시 `msg_2fd9d770d23b`).
 - 사망 상태의 이동 미잠금: `DeathState`가 `LocksMovement`를 재정의하지 않아 기본값 false다. `PlayerPhysicsSystem.cs:40`의 주석은 Death도 잠근다고 적었다. 선행 시험에서 사망 중 버퍼 점프 발사를 관측했다(`tdd/report.md`, 리드가 `LocksMovement` 검색으로 재정의 위치 두 곳을 확인). 승인 범위가 공격·피격이라 이번에 고치지 않는다.
 - `bot-dash-boss-baseline-failure` 봇 기준선 실패: 수정 전 main `acd5a7db`에서 `DashSmoke`·`BossFightSmoke`가 실패한다(`pr1/raw/bot-before.log`, 메인 확인 `msg_076badf9a3ef`). BACKLOG와 감사 산출물에 없던 새 관측이다. 원인 미조사. 메인이 시험 신뢰도 묶음의 범위로 사용자에게 올린다. BACKLOG 등록은 다른 후보와 함께 종료 기록 PR에서 한다.
+- `Session.Clear`가 연결이 끊길 때마다 send-pending peak 한 줄을 콘솔에 찍어 운영 로그가 접속 종료 수만큼 늘어난다(메인 관찰 `msg_001c18f08bf2`, 이 goal에서 고치지 않는다).
 
 ## 진척 단계
 
@@ -255,11 +275,11 @@ PR 번호는 PR을 만들 때 채운다.
 - [x] goal 초안 승인
 - [x] 선행 시험 작성
 - [x] 연결 계층 구현
-- [>] 입력 예산 구현
-- [ ] 종료 경로 구현
+- [x] 입력 예산 구현
+- [>] 종료 경로 구현
 - [ ] 게임 규칙 구현
 - [ ] 통합 실행 검증
-- [ ] PR305 병합
+- [x] PR305 병합
 - [ ] 입력 PR 병합
 - [ ] 종료 PR 병합
 - [ ] 규칙 PR 병합
