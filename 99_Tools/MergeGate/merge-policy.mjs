@@ -25,7 +25,7 @@ const blockReasons = {
   'non-bash-merge': 'Bash 밖 셸 도구의 병합 시도다. 병합은 Bash 도구의 단독 명령으로만 한다.',
   'api-merge': 'gh api를 통한 PR 병합·자동 병합, 브랜치 병합, main 참조 쓰기, 브랜치를 바꾸는 GraphQL mutation은 금지된다. 작업 브랜치를 PR로 올리고 메인 세션에서 승인받은 gh pr merge 단독 명령을 사용하라.',
   'push-main': 'main 목적지 또는 --all·--mirror push는 금지된다. 작업 브랜치를 push하고 PR로 통합하라.',
-  'branch-lookup-failed': 'push가 가리키는 저장소의 현재 branch를 확인할 수 없다. 변수·치환이 든 경로, cd -·popd, 파이프·배경 실행 앞의 cd, GIT_DIR 같은 대입은 경로를 직접 적거나 목적지 branch를 명시해 다시 실행하고, 그 밖에는 hook 입력 cwd와 대상 저장소의 git 상태를 확인하라.',
+  'branch-lookup-failed': 'push가 가리키는 저장소의 현재 branch를 확인할 수 없다. 변수·치환이 든 경로, cd -·popd, 파이프·배경 실행 앞의 cd, GIT_DIR 같은 대입은 경로를 직접 적거나 목적지 branch를 명시해 다시 실행하라. 따옴표·heredoc 문구가 든 commit과 push는 나눠 실행하고, push는 git -C <경로> push …나 cd <절대 경로 또는 ./경로> && git push …처럼 단순한 꼴로 친다. 그 밖에는 hook 입력 cwd와 대상 저장소의 git 상태를 확인하라.',
   'protected-path': '명령·파일 도구가 보호된 병합 관문 상태 폴더를 가리킨다. 에이전트가 표식·기록을 읽거나 수정하지 마라.',
   'approval-injection': '다른 터미널이나 예약·전달 prompt에 병합 승인 문장을 넣는 입력이다. 승인 문장은 사용자가 메인 창에 직접 입력한다.',
   'suspect-words': '단독 병합 형태가 아닌 명령에 병합·main push 의심 낱말이 함께 있다. 병합은 단독 명령으로, 다른 명령은 나눠 실행하거나 문구를 파일로 넘겨라.',
@@ -99,19 +99,16 @@ function shellReads(command) {
   return [boundaryRead, substitutionRead];
 }
 
-// One read cut at ; & | ` < > ( ) { } and newline, in order: word lists and the separator tokens
-// between them, so the push target reading can follow cd and parentheses. `text` keeps the part as
-// written for the quote-aware pass of pushLocations.
-function commandSteps(text) {
-  return text.split(/([;&|`<>(){}\r\n][;&|`<>(){}\s]*)/).flatMap((part, index) => {
-    if (index % 2 === 1) return [{ separators: part.match(/&&|\|\||[;&|`<>(){}\r\n]/g), hereDocument: /(?:^|[^<])<<(?!<)/.test(part) }];
-    const words = part.trim().split(/\s+/).filter(Boolean).map(raw => ({ raw, value: unquote(raw) }));
-    return words.length > 0 ? [{ words, text: part }] : [];
-  });
+// The word reading of one read: cut at ; & | ` < > ( ) { } and newlines wherever they are, quotes and
+// here-document bodies included, so it finds a merge or push word even where Bash reads text.
+function wordLists(text) {
+  return text.split(/[;&|`<>(){}\r\n]/)
+    .map(part => part.trim().split(/\s+/).filter(Boolean).map(raw => ({ raw, value: unquote(raw) })))
+    .filter(words => words.length > 0);
 }
 
 function simpleCommands(command) {
-  return shellReads(command).flatMap(commandSteps).filter(step => step.words).map(step => step.words);
+  return shellReads(command).flatMap(wordLists);
 }
 
 // 닫히지 않는 따옴표는 처음 낱말만 건너뛰어 예상 밖 입력에서도 막는 쪽으로 기운다.
@@ -212,15 +209,21 @@ function quotesClosed(text) {
   return quote === null;
 }
 
-// The shell word at `index` (one or more blank-split words when quoted). `path` is the value git can
-// be handed as is, or null when the shell would still expand it; `open` marks a quote that never
-// closes in this simple command.
+// The path a shell word hands to git, only when Bash passes it on unchanged: plain characters, '…', and
+// "…" without $, ` or \. A word Bash would still expand, split or unescape (a variable, substitution,
+// glob, ~, brace, backslash or separator outside quotes) or an empty one gives no certain path (null).
+function certainPath(raw) {
+  if (!/^(?:[^\s'"\\$`*?[\]{}~;&|<>()#!]|'[^']*'|"[^"\\$`]*")+$/.test(raw)) return null;
+  const path = raw.replace(/'([^']*)'|"([^"]*)"/g, (_, single, double) => single ?? double);
+  return path.length > 0 ? path : null;
+}
+
+// The shell word at `index` (one or more blank-split words when quoted). `path` is its certainPath;
+// `open` marks a quote that never closes in this simple command.
 function shellWord(words, index) {
   const end = quotedWordEnd(words, index);
   const raw = words.slice(index, end + 1).map(word => word.raw).join(' ');
-  const path = raw.replace(/["']/g, '');
-  const literal = path.length > 0 && !/[$`*?[\]]/.test(path) && !path.startsWith('~');
-  return { path: literal ? path : null, end, open: !quotesClosed(raw) };
+  return { path: certainPath(raw), end, open: !quotesClosed(raw) };
 }
 
 const repositoryOptions = new Set(['-C', '--git-dir', '--work-tree']);
@@ -257,213 +260,254 @@ function repositoryOptionsBefore(words) {
   return selection;
 }
 
-const directoryCommands = new Set(['cd', 'pushd', 'popd']);
-const followedAfter = new Set(['&&', ';', '\n', '\r', ')']);
-const unfollowedBefore = new Set(['|', '||', '<', '>']);
-const listEnds = new Set([';', '\n', '\r']);
-// A newline right after these continues the same list.
-const joinsNextLine = new Set(['&&', '||', '|']);
-// Bodies that may not run: a cd inside them never moves what comes after.
-const compoundOpeners = new Set(['if', 'while', 'until', 'for', 'select', 'case']);
-const compoundClosers = new Set(['fi', 'done', 'esac']);
-// Separators after which an unquoted # starts a comment.
-const commentAfter = new Set([';', '\n', '\r', '&', '|', '&&', '||', '(', ')']);
-
-// The path one cd or pushd moves to, judged from its own words and the separators next to it:
-// undefined without a directory word, null when the text cannot settle it (cd -, a bare cd, popd, an
-// option or a second argument, a variable, substitution, glob or leading ~, a pipe, redirect or
-// background next to it, a directory word that is not the first word).
-function directoryChange(words, before, after) {
-  const changeAt = words.findIndex(word => directoryCommands.has(word.value));
-  if (changeAt < 0) return undefined;
-  if (changeAt > 0 || words[0].value === 'popd' || unfollowedBefore.has(before) ||
-      !(after === undefined || followedAfter.has(after))) return null;
-  if (words.length < 2) return null;
-  const target = shellWord(words, 1);
-  if (target.open || !target.path || target.end !== words.length - 1 || /^[-+]/.test(target.path)) return null;
-  return target.path;
-}
-
-// Bash quoting over one word part, from the quote it starts in: single quotes take every character,
-// a backslash escapes the next character outside quotes and inside double quotes, and an unquoted #
-// at a word start comments out the rest of the line. `escapes` marks a final backslash that escapes
-// the separator right after the part.
-function quoteAfter(text, quote, wordStart) {
-  let escaped = false;
-  for (const character of text) {
-    const atWordStart = wordStart;
-    wordStart = false;
-    if (escaped) escaped = false;
-    else if (quote === "'") quote = character === "'" ? null : quote;
-    else if (character === '\\') escaped = true;
-    else if (quote === '"') quote = character === '"' ? null : quote;
-    else if (character === '"' || character === "'") quote = character;
-    else if (character === '#' && atWordStart) return { quote, escapes: false, comment: true };
-    else wordStart = /\s/.test(character);
-  }
-  return { quote, escapes: escaped, comment: false };
-}
-
-// Where each lookup push of one read runs. This is the one place that decides when cd and pushd give
-// their location. Bash runs a list of commands joined by && and || from left to right, so:
+// Where a lookup push runs. Without a cd, pushd or popd word the command cannot move, so every push
+// runs at the input cwd, as before this gate read cd (mentionsDirectoryChange). With one, only the
+// certain reading below gives locations. It accepts a narrow grammar it reads exactly like Bash:
+//   words, '…' and "…" without $ ` \, the operators && || ; and newline, and ( … ) subshells.
+// Text regions Bash does not run, other than those quotes, and code it does not follow make every
+// location of the command unknown: here-documents and other redirections, # comments, $ ` \ outside
+// quotes, { } braces and globs, single & or |, ((, reserved words and compound commands, functions,
+// assignments, eval·builtin·export and similar commands (uncertainCommandWords), unbalanced parentheses.
+// Inside the grammar, Bash runs a list joined by && and || from left to right, so:
 // - a cd gives its path to the rest of its && chain, the commands that run only after it ran;
-// - it gives the path past the end of its list (; or a newline) only when it always runs: the first
-//   command of the list, or a literal cd after literal cds joined by &&, outside brace groups and
-//   if/while/until/for/select/case bodies (a function body is a brace group). A cd that fails there
-//   leaves the push where it was, but then the lookup of its path fails too;
-// - otherwise, and after a || that follows a cd, where the push runs is unknown (null);
-// - a list sent to the background with & is unknown after it when it changed directory;
-// - after a here-document operator (<<), whose body lines read like commands here, every directory
-//   change is unknown;
-// - a subshell, $(…) or backquote scope returns to the location it started from.
-// The quote-aware pass (`quotes`) reads Bash quoting too: separators inside quotes or escaped by a
-// backslash are characters, a part that starts inside quotes continues the command before it and a
-// directory word there makes the location unknown, and an unquoted # comments out the line. If that
-// pass saw a directory word and its quotes do not close or a scope closes that never opened, it
-// misread a quote (a here-document body, for one) and all its locations are unknown.
-function pushLocations(steps, quotes) {
-  const pushes = [];
-  const scopes = [];
-  let inBackquote = false;
-  let underflow = false;
-  let directoryWords = false;
-  let quote = null;
-  let escapes = false;
-  let comment = false;
-  let continued = false;
-  let hereDocument = false;
-  // chain: where the next command runs when it runs. after: where commands run once this list ends.
-  // start: where the list began. leading: only literal cds joined by && so far. moved: a directory
-  // change in this list. braces, compound: brace groups and compound bodies around the list.
-  const listFrom = location => ({ chain: location, after: location, start: location, leading: true, moved: false });
-  let state = { ...listFrom([]), braces: 0, compound: 0 };
-  const unknown = () => Object.assign(state, { chain: null, after: null });
-  const endList = background => Object.assign(state, listFrom(background && state.moved ? null : state.after));
+// - it gives the path past the end of its list (; or a newline) only when it always runs: when the
+//   list so far is cds joined by &&. A cd that fails there leaves the push where it was, but then the
+//   lookup of its path fails too;
+// - after a || that follows a cd, and after a cd whose path is not certain, the location is unknown;
+// - a relative path that CDPATH may redirect (CDPATH can be set in the shell, outside this text)
+//   keeps its lookup, so a main there is still push-main, and adds an unknown location;
+// - a subshell returns to the location it started from.
+const directoryCommands = new Set(['cd', 'pushd', 'popd']);
 
-  function separator(token, previous, next) {
-    if (token === '(' || (token === '`' && !inBackquote)) {
-      if (token === '`') inBackquote = true;
-      scopes.push({ subshell: true, state });
-      state = { ...listFrom(state.chain), braces: 0, compound: 0 };
-    } else if (token === ')' || token === '`') {
-      if (token === '`') inBackquote = false;
-      // Brace groups still open inside the scope close with it.
-      let entry = scopes.pop();
-      while (entry && !entry.subshell) entry = scopes.pop();
-      if (entry) state = { ...entry.state, leading: false };
-      else {
-        underflow = true;
-        Object.assign(state, { chain: null, after: null, start: null });
-      }
-    } else if (token === '{') {
-      scopes.push({ subshell: false, state });
-      state = { ...listFrom(state.chain), braces: state.braces + 1, compound: state.compound };
-    } else if (token === '}') {
-      if (scopes.at(-1)?.subshell !== false) return;
-      const inner = state;
-      state = { ...scopes.pop().state, leading: false };
-      // The group runs in this shell, so its end location carries out, but only as far as a cd that
-      // may not have run: the rest of the && chain.
-      if (JSON.stringify(inner.chain) !== JSON.stringify(state.chain)) Object.assign(state, { chain: inner.chain, after: null, moved: true });
-    } else if (token === '||') {
-      Object.assign(state, { chain: state.moved ? null : state.start, leading: false });
-    } else if (token === '&') {
-      // >&, <&, &> and |& are redirections or a pipe, not a background list.
-      if (!['<', '>', '|'].includes(previous) && next !== '>') endList(true);
-    } else if (listEnds.has(token)) endList(false);
+// A cd, pushd or popd word also when quotes or backslashes split it ("c'd'", \cd).
+function mentionsDirectoryChange(command) {
+  return /(?<![\p{L}\p{N}_])(?:cd|pushd|popd)(?![\p{L}\p{N}_])/u.test(command.replace(/['"\\]/g, ''));
+}
+
+// Characters outside quotes that end the certain reading: expansions, escapes, comments, braces,
+// globs, history, redirections and here-documents, and whitespace or controls other than space, tab
+// and newline (Bash keeps them inside a word, the word reading splits at them).
+const uncertainCharacter = /[\\$`#{}*?[!<>]|[^\S \t\n]|[\u0000-\u0008\u000e-\u001f\u007f]/u;
+
+// Words ({ raw, value } with quotes removed) and operators, or null outside the grammar.
+function certainTokens(command) {
+  const tokens = [];
+  let raw = '';
+  let value = '';
+  const endWord = () => {
+    if (raw) tokens.push({ word: { raw, value } });
+    raw = '';
+    value = '';
+  };
+  for (let index = 0; index < command.length; index += 1) {
+    const character = command[index];
+    const next = command[index + 1];
+    if (character === "'" || character === '"') {
+      const close = command.indexOf(character, index + 1);
+      if (close < 0) return null;
+      const inside = command.slice(index + 1, close);
+      if (character === '"' && /[\\$`]/.test(inside)) return null;
+      raw += command.slice(index, close + 1);
+      value += inside;
+      index = close;
+    } else if (character === ' ' || character === '\t') endWord();
+    else if (character === '\n' || character === ';' || character === '(' || character === ')') {
+      // ;; ;& end case items and (( starts arithmetic.
+      if ((character === ';' && (next === ';' || next === '&')) || (character === '(' && next === '(')) return null;
+      endWord();
+      tokens.push({ operator: character });
+    } else if (character === '&' || character === '|') {
+      if (next !== character) return null;
+      endWord();
+      tokens.push({ operator: character + next });
+      index += 1;
+    } else if (uncertainCharacter.test(character)) return null;
+    else {
+      raw += character;
+      value += character;
+    }
+  }
+  endWord();
+  return tokens;
+}
+
+// Command words that start a compound command or function, run text as code in this shell (so a cd
+// inside quoted text could move it), wrap another builtin, or change how cd resolves a path.
+const uncertainCommandWords = new Set([
+  'if', 'then', 'else', 'elif', 'fi', 'while', 'until', 'for', 'select', 'do', 'done', 'case', 'esac', 'in',
+  'function', 'coproc', 'eval', 'source', '.', 'trap', 'mapfile', 'readarray', 'fc', 'bind', 'time', 'builtin',
+  'command', 'enable', 'alias', 'shopt', 'set', 'export', 'declare', 'typeset', 'local', 'readonly', 'unset',
+]);
+// Variables cd reads: a command that names one may set it (printf -v, read) before a relative cd.
+const directoryVariables = /(?<![\w])(?:CDPATH|PWD|OLDPWD)(?![\w])/;
+
+// program := list ((; | newline) list)*; list := command ((&& | ||) newline* command)*;
+// command := words | ( program ). Null for anything else, Bash syntax errors included.
+function certainProgram(tokens) {
+  let at = 0;
+  const isOperator = (token, ...names) => token?.operator !== undefined && names.includes(token.operator);
+  const endsCommand = token => token === undefined || isOperator(token, ';', '\n', '&&', '||', ')');
+  const skipNewlines = () => {
+    while (isOperator(tokens[at], '\n')) at += 1;
+  };
+
+  function certainCommand(depth) {
+    if (isOperator(tokens[at], '(')) {
+      at += 1;
+      const inner = program(depth + 1);
+      if (!inner || !isOperator(tokens[at], ')')) return null;
+      at += 1;
+      return endsCommand(tokens[at]) ? { subshell: inner } : null;
+    }
+    const words = [];
+    while (tokens[at]?.word) words.push(tokens[at++].word);
+    if (words.length === 0 || uncertainCommandWords.has(words[0].value) ||
+        /^[A-Za-z_][A-Za-z0-9_]*\+?=/.test(words[0].raw)) return null;
+    return endsCommand(tokens[at]) ? { words } : null;
   }
 
-  function command(words, before, after) {
-    const first = words[0].value;
-    if (compoundOpeners.has(first)) state.compound += 1;
-    else if (compoundClosers.has(first) && state.compound > 0) state.compound -= 1;
-    let change = directoryChange(words, before, after);
-    // Here-document body lines are text, but this reading cannot tell them from commands.
-    if (change !== undefined && hereDocument) change = null;
-    if (change === undefined) {
-      state.leading = false;
-      return;
+  function list(depth) {
+    const commands = [certainCommand(depth)];
+    const operators = [];
+    while (commands.at(-1) && isOperator(tokens[at], '&&', '||')) {
+      operators.push(tokens[at].operator);
+      at += 1;
+      skipNewlines();
+      commands.push(certainCommand(depth));
     }
-    state.moved = true;
-    if (change === null || state.chain === null) {
-      unknown();
-      state.leading = false;
-      return;
-    }
-    state.chain = [...state.chain, change];
-    state.after = state.leading && state.braces === 0 && state.compound === 0 ? state.chain : null;
+    return commands.at(-1) ? { commands, operators } : null;
   }
 
-  for (let index = 0; index < steps.length; index += 1) {
-    const { words, text, separators } = steps[index];
-    if (separators) {
-      if (quote !== null) continue;
-      hereDocument ||= steps[index].hereDocument;
-      let tokens = separators;
-      if (escapes) {
-        tokens = tokens.slice(1);
-        continued = tokens.length === 0;
-        escapes = false;
-      }
-      if (comment) {
-        // A comment ends at the newline only; a ; inside it is part of the comment.
-        const lineEnd = tokens.findIndex(token => token === '\n' || token === '\r');
-        if (lineEnd < 0) continue;
-        tokens = tokens.slice(lineEnd);
-        comment = false;
-      }
-      let joining = false;
-      for (let at = 0; at < tokens.length; at += 1) {
-        if (listEnds.has(tokens[at]) && joining) continue;
-        joining = joinsNextLine.has(tokens[at]);
-        separator(tokens[at], tokens[at - 1], tokens[at + 1]);
-      }
-      continue;
+  function program(depth) {
+    if (depth > 32) return null;
+    const lists = [];
+    skipNewlines();
+    while (tokens[at] && !isOperator(tokens[at], ')')) {
+      const parsed = list(depth);
+      if (!parsed) return null;
+      lists.push(parsed);
+      if (isOperator(tokens[at], ';', '\n')) {
+        at += 1;
+        skipNewlines();
+      } else if (tokens[at] && !isOperator(tokens[at], ')')) return null;
     }
-    if (comment) continue;
-    const before = steps[index - 1]?.separators.at(-1);
-    const continues = quote !== null || continued;
-    continued = false;
-    if (quotes) ({ quote, escapes, comment } = quoteAfter(text, quote, !continues && (index === 0 || commentAfter.has(before))));
-    for (const { start, end } of findSubcommands(words, 'git', ['push'], gitValueOptions)) {
+    return lists.length > 0 ? lists : null;
+  }
+
+  const lists = program(0);
+  return lists && at === tokens.length ? lists : null;
+}
+
+// The single path of a cd or pushd; null for popd, a bare cd, an option (-, -P, +1), two arguments or
+// a path certainPath does not settle.
+function directoryTarget(words) {
+  if (words[0].value === 'popd' || words.length !== 2) return null;
+  const path = certainPath(words[1].raw);
+  return path === null || /^[-+]/.test(path) ? null : path;
+}
+
+// Bash's cd searches CDPATH unless the path is absolute or starts with . or .. (absolute_pathname in
+// bash); a drive path such as C:/x is absolute in Git Bash. Only the paths after the last absolute one
+// matter, since that one fixes the location again.
+const absolutePath = path => /^(?:\/|[A-Za-z]:)/.test(path);
+const searchedInCdpath = path => !absolutePath(path) && !/^\.\.?(?:\/|$)/.test(path);
+function cdpathMayMove(location) {
+  return location.slice(location.findLastIndex(absolutePath) + 1).some(searchedInCdpath);
+}
+
+// The lists of a program run one after another, each from where the one before leaves the shell.
+function walkProgram(lists, start, found) {
+  lists.reduce((location, list) => walkList(list, location, found), start);
+}
+
+function walkList({ commands, operators }, start, found) {
+  // chain: where the next command runs when it runs. after: where the next list starts. leading: only
+  // cds joined by && so far. moved: this list has a cd.
+  let chain = start;
+  let after = start;
+  let leading = true;
+  let moved = false;
+  commands.forEach((item, index) => {
+    if (operators[index - 1] === '||') {
+      chain = moved ? null : start;
+      leading = false;
+    }
+    if (item.subshell) {
+      walkProgram(item.subshell, chain, found);
+      leading = false;
+      return;
+    }
+    const { words } = item;
+    if (directoryCommands.has(words[0].value)) {
+      moved = true;
+      const target = directoryTarget(words);
+      chain = chain === null || target === null ? null : [...chain, target];
+      after = leading ? chain : null;
+      return;
+    }
+    leading = false;
+    for (const { start: gitAt, end } of findSubcommands(words, 'git', ['push'], gitValueOptions)) {
+      found.pushes += 1;
       const destination = pushDestination(words.slice(end + 1));
-      if (destination === 'main') return { main: true, pushes: [] };
-      if (destination === 'lookup') pushes.push({ location: state.chain, options: words.slice(start + 1, end) });
+      if (destination === 'main') found.main = true;
+      if (destination !== 'lookup') continue;
+      found.lookups.push({ location: chain, options: words.slice(gitAt + 1, end) });
+      if (chain !== null && cdpathMayMove(chain)) found.lookups.push({ location: null });
     }
-    const hasDirectoryWord = words.some(word => directoryCommands.has(word.value));
-    directoryWords ||= hasDirectoryWord;
-    if (!continues) command(words, before, steps[index + 1]?.separators[0]);
-    else if (hasDirectoryWord) {
-      state.moved = true;
-      unknown();
-    }
-  }
-  if (quotes && directoryWords && (quote !== null || underflow)) for (const push of pushes) push.location = null;
-  return { main: false, pushes };
+  });
+  return after;
+}
+
+// The certain reading: null outside the grammar. Otherwise its lookup pushes with their locations,
+// whether a push has a main destination, and how many pushes it read.
+function certainLocations(command) {
+  if (directoryVariables.test(command)) return null;
+  const tokens = certainTokens(command);
+  const lists = tokens && certainProgram(tokens);
+  if (!lists) return null;
+  const found = { main: false, lookups: [], pushes: 0 };
+  walkProgram(lists, [], found);
+  return found;
+}
+
+// Push subcommands the word reading sees in one read, quoted text included.
+function wordPushCount(text) {
+  return wordLists(text).reduce((count, words) => count + findSubcommands(words, 'git', ['push'], gitValueOptions).length, 0);
 }
 
 // Which repository each push reaches. A push with a main destination is { main: true }. A push that
-// takes the current branch adds a lookup: the cd/pushd paths it runs under (pushLocations) as -C, then
-// its own -C, --git-dir and --work-tree, in the order written. The hook hands this list to git,
-// which joins relative paths itself. A lookup is null when the text does not tell the repository:
-// the location is unknown, an option value would still be expanded, or GIT_DIR, GIT_WORK_TREE or
-// GIT_COMMON_DIR is assigned. Each read is passed over twice, without and with quoting, and the
-// lookups of all passes are kept: a quote the quote-aware pass misreads can only add lookups.
+// takes the current branch adds a lookup: its location's cd/pushd paths as -C, then its own -C,
+// --git-dir and --work-tree, in the order written. The hook hands this list to git, which joins
+// relative paths itself. A lookup is null when the text does not tell the repository: the location
+// is unknown, an option value is not a certain path, or GIT_DIR, GIT_WORK_TREE or GIT_COMMON_DIR is
+// assigned. When the certain reading saw fewer or more pushes than the word reading (a push inside
+// quoted text such as `bash -c "…"`, which runs where the shell is), it may have missed one and a
+// null is added.
 function inspectPushes(command) {
   const environmentSwitch = /(?:^|[^\w])GIT_(?:DIR|WORK_TREE|COMMON_DIR)=/.test(command);
-  // Keyed by the selection: the passes usually find the same push, and each lookup starts a git process.
-  const lookups = new Map();
-  for (const text of shellReads(command)) {
-    const steps = commandSteps(text);
-    for (const quotes of [false, true]) {
-      const read = pushLocations(steps, quotes);
-      if (read.main) return { main: true, lookups: [] };
-      for (const { location, options } of read.pushes) {
-        const selection = environmentSwitch || location === null ? null : repositoryOptionsBefore(options);
-        const repository = selection && [...location.map(path => ({ option: '-C', path })), ...selection];
-        lookups.set(JSON.stringify(repository), repository);
-      }
+  // The word reading finds the pushes; only where they run depends on the reading below.
+  let pushes = [];
+  for (const words of simpleCommands(command)) {
+    for (const { start, end } of findSubcommands(words, 'git', ['push'], gitValueOptions)) {
+      const destination = pushDestination(words.slice(end + 1));
+      if (destination === 'main') return { main: true, lookups: [] };
+      if (destination === 'lookup') pushes.push({ location: [], options: words.slice(start + 1, end) });
     }
+  }
+  if (mentionsDirectoryChange(command)) {
+    const certain = certainLocations(command);
+    if (certain?.main) return { main: true, lookups: [] };
+    const agrees = certain !== null && shellReads(command).every(text => wordPushCount(text) === certain.pushes);
+    const needed = pushes.length > 0 || certain?.lookups.length > 0;
+    pushes = certain === null ? [] : certain.lookups;
+    if (!agrees && needed) pushes = [...pushes, { location: null }];
+  }
+  // Keyed by the selection: one push is often found twice, and each lookup starts a git process.
+  const lookups = new Map();
+  for (const { location, options } of pushes) {
+    const selection = environmentSwitch || location === null ? null : repositoryOptionsBefore(options);
+    const repository = selection && [...location.map(path => ({ option: '-C', path })), ...selection];
+    lookups.set(JSON.stringify(repository), repository);
   }
   return { main: false, lookups: [...lookups.values()] };
 }
