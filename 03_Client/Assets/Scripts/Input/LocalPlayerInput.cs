@@ -30,6 +30,9 @@ namespace Dawnholder.Client.Input
         PlayerInput _playerInput = null!;
         readonly GameplayPointerInput _pointerInput = new GameplayPointerInput();
 
+        // 직전 프레임의 CanAcceptGameplayInput 결과 — 거짓→참 전이(입장 Ready, 일시정지 재개)를 잡는다.
+        bool _acceptedGameplayInput;
+
         void Awake()
         {
             _movement = GetComponent<LocalPlayerMovement>();
@@ -104,7 +107,13 @@ namespace Dawnholder.Client.Input
         // 클래스별 SkillKeyMap에서 SkillId 조회 → SkillCatalog.CanCast 게이트 → C_SkillUse 송신.
         void Update()
         {
-            if (!CanAcceptGameplayInput()) return;
+            // 전이 기록은 아래 조기 반환보다 먼저 매 프레임 갱신해야 전이 프레임을 놓치지 않는다.
+            bool canAccept = CanAcceptGameplayInput();
+            bool resumed = canAccept && !_acceptedGameplayInput;
+            _acceptedGameplayInput = canAccept;
+            if (!canAccept) return;
+            if (resumed) ResyncMoveFromAction();
+
             if (Keyboard.current == null) return;
 
             bool qDown = Keyboard.current.qKey.wasPressedThisFrame;
@@ -173,10 +182,21 @@ namespace Dawnholder.Client.Input
             entry?.PredictCommit(_movement, transform.position);
         }
 
+        // 모든 게임플레이 입력의 관문 — 세션이 이 플레이어의 조작을 허용하고 일시정지 중이 아닐 때만 참.
         bool CanAcceptGameplayInput()
         {
+            if (GameplayPause.IsPaused) return false;
             var session = UnityClientSession.Instance;
             return session != null && session.CanControlPlayer(_movement);
+        }
+
+        // 관문이 닫힌 동안 OnMove는 값을 읽지 않고 반환하므로, 그사이 누르거나 뗀 이동키가 남는다.
+        // 관문이 다시 열리는 순간 Move 액션의 현재 값으로 맞춘다. 점프·공격·스킬 같은 일회성 입력은 재생하지 않는다.
+        void ResyncMoveFromAction()
+        {
+            InputAction? move = _playerInput != null ? _playerInput.currentActionMap?.FindAction("Move") : null;
+            if (move == null) return;
+            _movement.SetMoveX(EncodeInputX(move.ReadValue<Vector2>().x));
         }
 
         // Vector2(아날로그 가능) → sbyte(-1/0/1) 변환.

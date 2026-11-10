@@ -1,4 +1,5 @@
 #nullable enable
+using Dawnholder.Client.Input;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.State;
 using Shared.Protocol;
@@ -38,6 +39,9 @@ namespace Dawnholder.Client.Gameplay
             // down-edge 만 반응 (wasPressedThisFrame = 이번 프레임에 처음 눌림).
             if (!Keyboard.current[InviteKey].wasPressedThisFrame) return;
 
+            // 일시정지 중 새 초대 입력은 보내지 않는다(쿨다운도 시작하지 않음).
+            if (GameplayPause.IsPaused) return;
+
             // 쿨다운 가드.
             float now = Time.unscaledTime;
             if (now - _lastSentTime < _cooldownSeconds) return;
@@ -68,8 +72,8 @@ namespace Dawnholder.Client.Gameplay
             Debug.Log($"[PartyInviteSender] C_PartyInvite 송신 → targetEntityId={targetId}. 서버 응답 대기 중.");
         }
 
-        // RemoteEntityRegistry를 순회해 로컬 플레이어 위치 기준 최단 거리 entity를 반환.
-        // 없으면 -1.
+        // 원격 플레이어 registry만 순회해 로컬 플레이어 위치 기준 최단 거리 플레이어를 반환. 없으면 -1.
+        // 적도 RemoteEntity 컴포넌트를 갖지만 registry에는 등록되지 않으므로 초대 대상에서 빠진다.
         int FindNearestRemoteEntityId()
         {
             RemoteEntityRegistry? registry = RemoteEntityRegistry.Instance;
@@ -79,14 +83,7 @@ namespace Dawnholder.Client.Gameplay
             int bestId = -1;
             float bestSqDist = float.MaxValue;
 
-            // TryGetTransform 공개 API를 사용해 내부 dict 직접 접근 없이 순회.
-            // RemoteEntityRegistry.Instance가 노출하는 공개 메서드만 사용 — 캡슐화 보존.
-            //
-            // ★ 설계 메모: registry가 "모든 entityId" 열거 API를 미제공하므로
-            //   UnityEngine.Object.FindObjectsOfType<RemoteEntity>()로 씬 조회.
-            //   registry._entities dict 직접 접근보다 Unity native 경로가 안전 (캡슐화 보존).
-            RemoteEntity[] remotes = FindObjectsByType<RemoteEntity>(FindObjectsSortMode.None);
-            foreach (RemoteEntity remote in remotes)
+            foreach (RemoteEntity remote in registry.Entities)
             {
                 if (remote == null) continue;
                 float sqDist = (remote.transform.position - origin).sqrMagnitude;

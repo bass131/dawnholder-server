@@ -75,6 +75,14 @@ HUD 칸 배치는 `UI.unity`의 직렬화 값이 정본이다. 1920×1080 기준
 
 사용은 현재 연결·게임플레이 Ready·snapshot 확인·소유량·ItemCatalog의 사용 가능 조건을 다시 읽고 현재 revision으로 요청한다. Material은 사용할 수 없고 소유 CoinPouch만 사용한다. 중복 우클릭은 결과 대기 중 막으며 사용 요청을 자동 반복하지 않는다. 송신 반환은 사용 성공이 아니고, [ItemUseResultHandler](../../03_Client/Assets/Scripts/Network/Handlers/Inventory/ItemUseResultHandler.cs)의 검증된 서버 결과만 성공/거부 신호다. 성공·Stale 뒤의 snapshot이 누락되거나 결과가 오지 않으면 제한된 재조회로 회복한다. 로컬에서 수량·재화를 바꾸지 않으며 낮은 revision의 결과는 현재 표시를 덮지 않는다.
 
+## 일시정지와 게임플레이 입력
+
+[PauseMenuController](../../03_Client/Assets/Scripts/UI/PauseMenuController.cs)가 `Time.timeScale`의 유일한 쓰기 주체이고, 일시정지 신호는 이 값이 0인지로 읽는다(별도 공유 상태 없음). 아래 세 게임플레이 입력 경로는 [GameplayPause](../../03_Client/Assets/Scripts/Input/GameplayPause.cs)로 읽고, 인벤토리·길드 창은 같은 판정을 각자 쓴다. 시간 제어가 새로 생기면 이 다섯 곳을 함께 바꾼다. 컨트롤러가 비활성화되거나 파괴될 때 자기가 건 일시정지만 풀어 값을 1로 돌린다. 자기가 걸지 않은 값은 건드리지 않고, 메인 메뉴 버튼은 지금처럼 1로 돌린다.
+
+일시정지 중에는 [LocalPlayerInput](../../03_Client/Assets/Scripts/Input/LocalPlayerInput.cs)의 이동·점프·공격·스킬, [PartyInviteSender](../../03_Client/Assets/Scripts/Gameplay/PartyInviteSender.cs)의 P, [PortalTrigger](../../03_Client/Assets/Scripts/Gameplay/PortalTrigger.cs)의 ↑가 새 패킷과 예측을 만들지 않는다. 막힌 입력은 쿨다운을 시작하지 않고, 정지 중 누른 ↑는 재개 뒤 에지로 살아나지 않는다. 서버 패킷 수신과 서버 시간 진행, ESC, 치트 키는 그대로다. `LocalPlayerInput`의 관문(`CanAcceptGameplayInput`)이 거짓에서 참으로 바뀌는 순간 Move 액션의 현재 값을 다시 읽어 이동 값으로 넘긴다. 그래서 입장 Ready 전부터 누른 이동키는 Ready 뒤에 반영되고, 정지 중 뗀 키는 재개 뒤 0이다. 점프·공격·스킬은 재생하지 않는다.
+
+P의 초대 대상은 원격 플레이어 registry(`RemoteEntityRegistry.Entities`)에서 가장 가까운 플레이어다. 적은 `RemoteEntity`를 갖지만 registry에 없어 대상이 되지 않고, 원격 플레이어가 없으면 보내지 않는다. 사거리 상한은 없다. 적의 비보스 공격 피격 효과([EnemyAttackHandler](../../03_Client/Assets/Scripts/Network/Handlers/Combat/EnemyAttackHandler.cs))는 로컬·원격 구분 없이 피해자 위치에 생기고, 피해자를 찾지 못하면 공격자 위치를 쓴다. 보스 공격은 공격자 앵커이고, hit bridge·피격음·피격 플래시는 로컬 피해자에게만 적용한다.
+
 ## 던전 보상 창과 입구 글자
 
 39번 [DungeonClearResultHandler](../../03_Client/Assets/Scripts/Network/Handlers/Dungeon/DungeonClearResultHandler.cs)는 [v18 패킷 계약](protocol.md#v18-던전-클리어-패킷)을 검증한 뒤 `EnqueueApply`로 [DungeonClearRewardState](../../03_Client/Assets/Scripts/State/DungeonClearRewardState.cs)에 적용한다. 이 root는 결과를 받은 연결을 소유자로 기록하고 최신 결과 하나를 보관한다. 씬 전환 중 창이 없어도 결과를 보존하며 새 결과는 이전 표시를 대체한다. `NetworkService.ResetGlobalSessionMirrors`는 다른 미러와 함께 값을 비운 뒤 통지한다. 옛 연결의 늦은 callback은 세션 적용 gate가 거부하고, 창도 현재 연결의 identity와 종료 여부를 확인한다.

@@ -1,4 +1,5 @@
 #nullable enable
+using Dawnholder.Client.Input;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
 using Shared.Protocol;
@@ -96,6 +97,9 @@ namespace Dawnholder.Client.Gameplay
             // down-edge 산출: 이번 프레임 눌림 + 직전 프레임 안 눌림.
             bool upEdge = upNow && !_upPrev;
             _upPrev = upNow;
+
+            // 일시정지 중 ↑는 보내지 않는다. 에지 갱신(위) 뒤에 막아야 정지 중 누른 ↑가 재개 프레임에 에지로 살아나지 않는다.
+            if (GameplayPause.IsPaused) return;
 
             if (!_isOverlapping || !upEdge) return;
 

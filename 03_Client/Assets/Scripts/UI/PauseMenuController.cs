@@ -55,6 +55,14 @@ namespace Dawnholder.Client.UI
                 _togglePauseAction.action.performed -= OnTogglePerformed;
                 _togglePauseAction.action.Disable();
             }
+
+            // 일시정지 중 UI 장면이 내려가거나 컨트롤러가 꺼지면 아무도 timeScale 0을 풀지 못한다.
+            // 자기가 건 정지만 푼다 — 다른 주체가 쓴 timeScale은 건드리지 않는다. 파괴는 이 OnDisable을 먼저 거친다.
+            if (_isPaused)
+            {
+                _isPaused = false;
+                Time.timeScale = 1f;
+            }
         }
 
         void OnTogglePerformed(InputAction.CallbackContext _) => Toggle();
