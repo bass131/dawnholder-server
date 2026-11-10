@@ -38,26 +38,30 @@ public sealed class BackendRestartTests
         Assert.Equal("graceful", JsonFields.Text(stopped, "lastExit.kind"));
     }
 
+    /// <summary>
+    /// A second backend can no longer share the data directory (goal 2026-11-10-code-audit-management-fixes 「만들 것」 1,
+    /// DataDirectoryOwnershipTests), so the test writes another writer's connection.json itself instead of starting one.
+    /// </summary>
     [LinuxFact]
     public async Task BackendShutdownKeepsAConnectionFileItDidNotWrite()
     {
         await using BackendScenario scenario = BackendScenario.Create("restart-connection");
-        BackendProcess first = await scenario.StartBackendAsync();
-        BackendProcess second = await scenario.StartBackendAsync();
+        BackendProcess backend = await scenario.StartBackendAsync();
+        string foreign = new JsonObject
+        {
+            ["port"] = backend.Port,
+            ["token"] = "token-written-by-another-writer",
+            ["pid"] = backend.Pid + 1,
+            ["startedAt"] = "2026-11-10T00:00:00Z",
+        }.ToJsonString();
+        File.WriteAllText(backend.ConnectionFile, foreign);
 
-        int firstExit = await first.TerminateAsync(TimeSpan.FromSeconds(30));
-        JsonNode? afterFirst = File.Exists(second.ConnectionFile) ? JsonFields.ReadFile(second.ConnectionFile) : null;
-        ApiResult secondStillReachable = await second.GetAsync("/api/status");
-        int secondExit = await second.TerminateAsync(TimeSpan.FromSeconds(30));
-        bool removedBySecond = !File.Exists(second.ConnectionFile);
+        int exit = await backend.TerminateAsync(TimeSpan.FromSeconds(30));
+        string? afterShutdown = File.Exists(backend.ConnectionFile) ? File.ReadAllText(backend.ConnectionFile) : null;
 
-        Assert.Equal(0, firstExit);
-        Assert.True(afterFirst != null, "the first backend deleted connection.json written by the second backend");
-        Assert.Equal(second.Pid, JsonFields.Number(afterFirst, "pid"));
-        Assert.Equal(second.Token, JsonFields.Text(afterFirst, "token"));
-        Assert.True(secondStillReachable.Code == 200, $"the second backend must still answer: {secondStillReachable.Describe()}");
-        Assert.Equal(0, secondExit);
-        Assert.True(removedBySecond, "the second backend must remove its own connection.json on SIGTERM");
+        Assert.Equal(0, exit);
+        Assert.True(afterShutdown != null, "the backend deleted a connection.json it did not write");
+        Assert.Equal(foreign, afterShutdown);
     }
 
     [LinuxFact]
