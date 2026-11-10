@@ -548,7 +548,7 @@ PR177 Gardener2의 [정리 후보2](../../.backups/verification/2026-10-04-teamm
 | ID | 제목 | 이유 | 출처(누가·언제·메시지 ID) | 선행 조건 | 담당 후보 | 상태 |
 |---|---|---|---|---|---|---|
 | `generated-packet-buffer-size` | 생성 패킷의 65,535바이트 배열을 패킷 크기에 맞추기 | `GenPackets.cs`의 `Write()`가 패킷마다 65,535바이트 배열을 만든다. 입력 예산으로 줄지 않는 할당 비용이다. | 메인 `msg_2fd9d770d23b`, 2026-11-10 | 패킷 생성기 변경의 서버·Unity 양쪽 검증 | Core | 대기 |
-| `death-state-movement-lock` | 사망 상태의 이동 미잠금 | `DeathState`가 `LocksMovement`를 재정의하지 않아 기본값 false다. 선행 시험에서 사망 중 버퍼 점프 발사를 관측했다. | 리드 관측, [goal의 다음 계획 후보](../../01_Phases/goals/2026-11-10-code-audit-server-fixes/goal.md#다음-계획-후보) | 승인 범위 판단 | Core | 대기 |
+| `death-state-movement-lock` | 사망 상태의 이동 미잠금 | `DeathState`가 `LocksMovement`를 재정의하지 않아 기본값 false다. 선행 시험에서 사망 중 버퍼 점프 발사를 관측했다. | 리드 관측(2026-11-10, 전달 메시지 없음), [goal의 다음 계획 후보](../../01_Phases/goals/2026-11-10-code-audit-server-fixes/goal.md#다음-계획-후보) | 승인 범위 판단 | Core | 대기 |
 | `bot-dash-boss-baseline-failure` | 봇 시나리오 두 개의 기준선 실패 | `DashSmoke`·`BossFightSmoke`가 수정 전 main에서도 실패해 대시 피해와 보스전 경로를 봇으로 확인하지 못한다. 원인 미조사. | 메인 `msg_076badf9a3ef`, 2026-11-10 | 원인 조사 | Core | 대기 |
 | `session-clear-send-pending-log` | 연결 종료마다 찍는 송신 대기량 로그 | `Session.Clear`가 연결이 끊길 때마다 콘솔에 한 줄을 찍어 운영 로그가 접속 종료 수만큼 늘어난다. | 메인 `msg_001c18f08bf2`, 2026-11-10 | 없음 | Core | 대기 |
 | `party-invite-popup-empty-update` | 빈 파티 통지에 닫히는 초대 팝업 | `PartyInvitePopup.OnPartyUpdated`가 빈 통지에도 팝업을 닫는다. 파티에 들어갔을 때만 닫으면 서버의 도착 통지 예외를 지울 수 있다. | 메인 `msg_b0d2e5503748`, 2026-11-10 | 서버 예외 제거를 함께 검토 | Content | 대기 |
