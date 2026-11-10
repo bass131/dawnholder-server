@@ -12,7 +12,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 첫 branch `fix/management-audit-fixes-20261110`에서 결함 #1 구현자(`impl-defect1/`)의 진행을 확인한다. 선행 시험은 끝났다. 커밋 `986af0cd`의 `backlog-store-link-reuse.test.ts`는 수정 전 9개 중 확인 수 단정 5개가 실패한다(`tests-defect1/report.md`). 다음은 소요 ms 전후를 비교하는 새 검증자다(아래 「3번 검증 결과와 결함 #1」). 이 goal의 살아 있는 판은 이 커밋부터 첫 branch로 옮긴다. 둘째 branch의 goal 기록 커밋은 첫 branch에 cherry-pick해 두 판을 맞춘다.
+**다음 첫 일:** 첫 branch `fix/management-audit-fixes-20261110`에서 첫 PR 재검증자(`verify-defect1/`)의 진행을 확인한다. 결함 #1의 선행 시험은 커밋 `986af0cd`, 구현은 커밋 `2cab5a40`이다. 구현자 보고(`impl-defect1/report.md`)에서 실제 BACKLOG 시험은 표준 `npm test` 안에서 5,017 ms 시간 초과였다가 321 ms 통과로 바뀌었고, 새 실패는 0이다. 재검증은 계약에 미리 적은 소요 기준 넷으로 판정한다(아래 「3번 검증 결과와 결함 #1」). 이 goal의 살아 있는 판은 이 커밋부터 첫 branch로 옮긴다. 둘째 branch의 goal 기록 커밋은 첫 branch에 cherry-pick해 두 판을 맞춘다.
 
 둘째 PR(1·2번) 독립 검증은 통과했다(아래 「둘째 PR 검증 결과」). 둘째 PR은 첫 PR 병합 뒤 둘째 branch를 main에 rebase하고 연다. 병합 순서는 그대로 첫 PR이 먼저다. 둘째 branch에는 첫 PR의 제품 코드를 싣지 않고 goal 기록 커밋만 옮겼다.
 
@@ -25,7 +25,7 @@ PR 번호는 PR을 여는 때 채운다.
 - [x] 초안 승인
 - [x] 선행 시험 작성
 - [x] BACKLOG 읽기 구현
-- [>] BACKLOG 읽기 검증(차단 결함 #1, 수정 단계)
+- [>] BACKLOG 읽기 검증(차단 결함 #1 수정 끝, 재검증 단계)
 - [ ] BACKLOG PR 병합
 - [x] 백엔드 수명 구현
 - [x] 백엔드 수명 검증(통과, 결함 0)
