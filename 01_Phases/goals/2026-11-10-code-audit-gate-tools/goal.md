@@ -282,7 +282,10 @@ Rules에 해당하는 부분은 「4) 계획 검토 - Rules … → A 승인 (�
 
 - 구현(`[Rules 구현 Opus]`, Opus 5.5 xhigh, backend unknown, 계약 `pr-gate-fix2/contract.md` v3 SHA256 `e0cc9d57…`): 커밋 `9580a514`. `merge-policy.mjs` +250 −206, README +4 −2다. `claude-hook.mjs`·`approval-store.mjs`·ORCA는 바뀌지 않았다(`pr-gate-fix2/report.md`).
 - 방식: 메인이 권장한 좁은 문법을 따랐다. 원문에 `cd`·`pushd`·`popd` 낱말이 없으면 위치는 이 PR 전과 같은 입력 cwd다. 낱말이 있으면 확신하는 문법만 위치를 주고, heredoc·리다이렉트·주석·치환·역따옴표 같은 문법 밖의 꼴은 모두 정할 수 없음으로 막는다. 확신 읽기의 push 수가 두 읽기 중 하나와 다르면 정할 수 없음을 더해 감싼 `bash -c`를 잡는다.
-- 계약 밖 보강(분리 가능): 물려받은 `CDPATH`가 상대 경로 `cd sub`를 옮기면 이 PR 전보다 약해지는 사례를 구현자가 실행 대조에서 찾았다. 그래서 `./`·`../`·절대 경로가 아닌 상대 경로 cd도 정할 수 없음으로 둔다. 대가는 평소의 `cd sub && git push …`가 잘못 막히는 것이다. 빼는 법은 보고서 「CDPATH 보강」에 있다.
+- CDPATH 보강:
+  - 구현자가 실행 대조에서 찾았다. 물려받은 `CDPATH`가 상대 경로 `cd sub`를 main 저장소로 옮기면 이 PR 전 hook은 막는데 보강 전 판정은 지나게 한다.
+  - 그래서 `./`·`../`·절대 경로가 아닌 상대 경로 cd도 정할 수 없음으로 둔다. 대가는 평소의 `cd sub && git push …`가 잘못 막히는 것이다.
+  - 구현자는 분리 가능하다고 적었다. **리드 판단은 유지다.** 빼면 계약 v3 성질 1(이 PR 전보다 약해지지 않음)이 깨지므로 선택 사항이 아니다. 재검증자가 이 판단과 비용을 판정한다.
 - 실행(최종 SHA256 `b2f8b44f…`): 검증자 시험 54/54, MergeGate 262/262, SessionGuard 254/254가 통과했다.
   - 실행 대조 `raw/after-oracle-attempt-4`: 698사례(손 96·생성 600·한계 2)에서 실패 0이고 main이 풀린 사례도 0이다.
   - 같은 정의로 세면 한계 2건(`$'\x63d'`, `${X}d`)이 bash main인데 지난다. 이 PR 전 hook도 똑같이 지나므로 약해진 것은 아니다. README 한계에 적었다.
@@ -294,6 +297,12 @@ Rules에 해당하는 부분은 「4) 계획 검토 - Rules … → A 승인 (�
   - 시험 세 요약 줄과 `.exit` 0이 보고와 같다.
   - 실행 대조와 진입의 `counts` 줄이 보고 수치와 같다.
   - 계약 필수 사례 n1~n6·l9·l10·l12·h1~h3·a1~a9·p1~p4·b1~b10·r7a가 모두 있고, bash main인 사례는 전부 막혔다.
+  - 실패가 날 수 있는 구역의 크기를 셌다. 698사례 중 push 표지가 실제로 돈 것은 624건이다. 최종 hook이 지나게 한 것은 164건이고, 그중 bash가 입력 cwd와 다른 branch로 간 것(hook이 위치 변경을 믿은 것)은 29건이다. 이 29건에는 한계 2건이 포함된다. bash가 main을 출력한 340건 가운데 입력 cwd가 작업 저장소인 것(cd로 main에 간 것)은 67건이고, 65건이 막혔다. 나머지 2건이 한계다.
+- 리드 탐침(`lead-probe/char-path-probe.mjs`, `char-path-attempt-1.log`): 구현자 어휘에 없던 꼴 14건을 같은 방식으로 대조했다. 실패는 0건이다.
+  - cd 경로 앞뒤의 NBSP·FF·VT: bash는 cd가 실패해 main에 남았고 hook은 모두 막았다.
+  - cd 경로 뒤의 CR: Git bash가 작업 branch로 갔고 hook은 막았다. 잘못 막음 2건이다.
+  - `/c/…` 꼴 경로와 `../` 경로: main 쪽은 막고 작업 쪽은 지나게 했다. 차단 사유 문구의 다시 치는 법은 Git bash 경로 꼴에서도 통한다.
+  - 접속점(junction)을 거치는 경로는 탐침하지 않았다.
 - 정산: worker_done(`msg_d4dbb86b1253`)이 거부 없이 도착했다. `worker-release` retained·external_terminal·none 뒤 빈 prompt를 확인하고 pane을 닫았다.
 - 남은 위험: 잘못 막음이 늘어난 평소 꼴이 있다. cd와 함께 쓴 heredoc commit, 상대 경로 cd, 문구나 경로 속 낱말 cd가 그렇다. 다시 치는 법은 차단 사유 문구와 README에 있다. 이 PR이 병합되면 모든 세션의 Bash가 이 판정을 지난다.
 
