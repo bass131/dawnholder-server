@@ -1,7 +1,7 @@
 # 전체 코드 감사 병합 관문 도구 묶음 수정과 실행 검증
 
 - 파트: Rules · 리드 `[Rules 리드 Opus]`(claude-opus-5-5 xhigh)
-- 상태: **진행**, 사용자 계획 승인(결정 4 A). 선행 시험 단계.
+- 상태: **진행**, 사용자 계획 승인(결정 4 A). 관문 판정 독립 검증 단계.
 - 기준: main `c9dc44e44c4f37e598e2dd70ea0aa18d579529be` · branch `fix/rules-audit-gate-tools-20261110`
 - 근거 폴더: `.backups/verification/2026-11-10-code-audit-gate-tools/`
 - 초안 작성 시각: 2026-11-10T11:31Z(`date -u` 관측, 11-10 20:31 KST)
@@ -9,7 +9,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 관문 판정(1·2번)의 구현 계약을 발행한다. branch는 이 goal branch, 근거는 `pr-gate/`다. 셸 분석 멈춤은 PR311로 올렸고 CI 결과를 받아 메인에 준비 보고한다. 선행 시험 계약과 원시는 `tdd/`, PR311 근거는 `pr-shell/`에 있다.
+**다음 첫 일:** 관문 판정(1·2번) 독립 검증 계약을 `pr-gate/verify/`에 발행하고 새 검증자를 연다. 구현은 커밋 `4e9b2672`로 끝났다. 셸 분석 멈춤 PR311은 CI의 남은 `dotnet-tests` 결과를 받아 메인에 준비 보고한다. 선행 시험 근거는 `tdd/`, PR311 근거는 `pr-shell/`, 관문 판정 구현 근거는 `pr-gate/`에 있다.
 
 막힌 지점: 없음. 맥락 메모는 근거 폴더의 `rules-lead-context.md`, 승인 범위 문서는 `fix-scope-rules.md`(SHA256 `ee30d35dd614b1c405f01749c0ebf78c121c18afbac29969f766684682c8fa59`, 메인 원본과 일치)다.
 
@@ -199,6 +199,16 @@ Rules에 해당하는 부분은 「4) 계획 검토 - Rules … → A 승인 (�
 - 정산: 구현자와 검증자 모두 `worker-release` retained·external_terminal·none 뒤 빈 prompt를 확인하고 pane을 닫았다.
 - 리드의 실제 작업 branch push는 고친 SessionGuard와 기존 MergeGate를 지나 통과했다.
 
+### 관문 판정 구현 결과
+
+- 구현(`[Rules 구현 Opus]`, Opus 5.5 high, backend unknown): 커밋 `4e9b2672`, 네 파일 +203 −47. `merge-policy.mjs` +179 −39, `claude-hook.mjs` +15 −5, README +8 −2, ORCA +1 −1이다(`pr-gate/report.md`).
+- 수정 전 실패 60건(1번 31, 2번 29)이 같은 명령에서 통과로 바뀌었다. MergeGate 208건과 SessionGuard 167건이 전부 통과했다. hook 프로세스에 stdin JSON을 넣는 실제 진입 19건은 불일치 0이다.
+- 구현자가 `ask` 없이 정한 것 하나: 따옴표가 닫히지 않은 `-C` 값은 옛 규칙대로 그 낱말만 건너뛴다. 기존 시험 `word-grouping.test.mjs`의 기대를 지키려는 선택이다. 독립 검증이 판정한다.
+- 구현자가 스스로 보고한 계약 이탈은 둘이다. `node --check`를 편집마다가 아니라 편집 묶음마다 돌렸다(Edit 16회, 점검 9회, 묶음 사이 Bash 없음). 5분 간격 신호를 지키지 못했다.
+- 구현자가 적은 범위 밖 한계 가운데 판정이 필요한 것은 셋이다. 따옴표 안에 분리 문자가 든 경로의 push를 못 본다. 괄호 추적이 따옴표를 무시한 자르기 위에 있어 짝 없는 `)` 문구에서 잘못 막거나 지나간다. 명령 첫 낱말이 아닌 `cd` 낱말 뒤의 조회형 push를 막는다. 독립 검증이 차단 여부를 판정한다.
+- 리드 대조: `pr-gate/raw/`의 요약 줄(44/44, 38/38, 208/208, 167/167, 진입 19건 일치)이 보고 수치와 같다. 시험 폴더는 HEAD와 같다. 보고는 `hook-fixture.mjs` 해시가 계약 값과 같다고 적었지만 계약에는 그 해시가 없었다. 파일 변경은 없다.
+- 정산: `worker-release` retained·external_terminal·none 뒤 빈 prompt를 확인하고 pane을 닫았다.
+
 ## 다음 계획 후보
 
 - SessionGuard 분석 예외의 결정 없음 종료. 따옴표가 닫히지 않은 명령이나 매우 깊은 `$(` 중첩에서 분석이 예외로 끝나면 hook이 결정 없이 통과시킨다. 기존 설계이며 이번 범위 밖이다. 원천은 PR311 독립 검증 관찰 3(`pr-shell/verify/verdict.md`). 종료 기록 때 BACKLOG에 올릴지 판단한다.
@@ -211,8 +221,8 @@ PR 번호는 PR을 만들 때 채운다.
 - [x] 선행 시험 작성
 - [x] 셸 분석 멈춤 구현
 - [x] 셸 분석 독립 검증
-- [>] 관문 판정 구현
-- [ ] 관문 판정 독립 검증
+- [x] 관문 판정 구현
+- [>] 관문 판정 독립 검증
 - [ ] 셸 분석 PR 병합
 - [ ] 관문 판정 PR 병합
 - [ ] 종료 기록 정리
