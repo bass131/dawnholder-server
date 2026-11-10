@@ -86,13 +86,16 @@ public sealed class SessionDisconnectCleanupTests
             if (logThrows) Console.SetOut(original);
         }
 
-        Assert.IsType<ObjectDisposedException>(observed);
-        Assert.Equal(0, session.Notifications);
+        // An unavailable peer address must not suppress the termination notification.
+        Assert.Null(observed);
+        Assert.Equal(1, session.Notifications);
+        Assert.False(session.SocketOpenAtNotification);
+        Assert.NotNull(session.NotificationEndpoint);
         Assert.Equal(0, session.QueuedBytes);
         Assert.Equal(0, session.PendingBytes);
         if (logThrows) Assert.True(writer.Attempts > 0);
         session.Disconnect();
-        Assert.Equal(0, session.Notifications);
+        Assert.Equal(1, session.Notifications);
     }
 
     private static async Task AssertPeerEof(Socket peer)
