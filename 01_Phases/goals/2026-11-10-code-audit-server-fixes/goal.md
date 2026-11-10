@@ -1,18 +1,24 @@
 # 전체 코드 감사 서버 묶음 수정과 실행 검증
 
 - 파트: Core · 리드 `[Core 리드 Opus]`(claude-opus-5-5 xhigh)
-- 상태: **진행**, 사용자 계획 승인(176 A). 입력 예산 독립 검증 단계.
+- 상태: **진행**, 사용자 계획 승인(176 A). 제품 PR305~PR309 병합과 통합 실행 검증은 끝났고 종료 기록 PR310 단계다.
 - 기준: main `acd5a7db065b37baa7f491c4502002eb8ce184a3` · branch `fix/core-audit-connection-20261110`
 - 근거 폴더: `.backups/verification/2026-11-10-code-audit-server-fixes/`
 - 초안 작성 시각: 2026-11-09T22:35Z(`date -u` 관측, 11-10 07:35 KST)
 
 ## 재개 지점
 
-**다음 첫 일:** PR309(게임 규칙) CI가 끝나면 메인에 보고하고 Unity 창 배정과 DB 영속 서버 시작·정지를 요청한다. 이 PR의 head에서 Unity EditMode·PlayMode(기존 실패 끌기 1·길드 창 11과 대조)와 DB 저장 실행(Stored, TERM 종료 뒤 재시작 복원)을 1회 돌린다. 그 뒤 PR309 병합 승인, 종료 Gardener, 종료 기록 PR 순서다. branch `fix/core-audit-party-jump-20261110`, 독립 재검증은 PASS(`pr4/verify-3/verdict.md`)다.
+**다음 첫 일:** 종료 기록 PR310의 신규 검증자 문서 실사와 병합 승인을 받는다. 병합 뒤 종료 점검과 R-8로 이어가고, 메인이 사용자와 결과·남은 위험·BACKLOG·다음 계획을 확인한다. 다음 goal은 자동으로 시작하지 않는다. 제품 PR305~PR309는 모두 병합됐고 통합 실행 검증도 끝났다(「통합 실행 검증 결과」).
 
-막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
+막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/` 보관본을 SHA256 대조로 복원했고 PR309로 병합됐다.
 
 ## 적용 중인 사용자 결정
+
+### 2026-11-10 결정 183 — Codex 없이 Claude Opus(메인 전달 `msg_03ee2dce17ef`)
+
+- 사용자 원문(11-10 18:4x KST 메인 pane 제출, 메인 전달): 「대시보드 결정 응답: 2) 183 - Codex가 GPT Astra 모델을 거부함: 계정을 살릴지, Codex 없이 갈지 → C 코멘트 「구독이 끝났나보네, claude Opus로 해야할 거 같은데」」
+- 메인의 적용 해석(사용자 문장이 아니다): Codex 세션을 새로 열지 않는다. 독립 검증자는 `claude --model claude-opus-5-5 --effort xhigh --autocompact 250000`(`[Core 검증자]`), Gardener는 `claude --model claude-opus-5-5 --effort high`(`[Core Gardener Opus]`), 구현자·선행 시험 작성자는 `claude --model claude-opus-5-5 --effort high`(`[Core 구현 Opus]`·`[Core 시험 Opus]`)이고 같은 계약의 두 번째 독립 불합격 뒤 구현 시도만 xhigh다. 구현자와 검증자의 분리, 작업 하나 뒤 정산·종료, 리드의 Git 담당, 병합 관문은 그대로다.
+- 거부 문구는 `The 'gpt-6-astra' model is not supported when using Codex with a ChatGPT account.`다. 원인은 확인하지 못했고 구독 종료는 사용자의 짐작이다. 메인 확인: 08:55:23Z의 한도 기록은 plan_type pro, 주간 93%, 크레딧 있음, rate limit null이다.
 
 ### 2026-11-10 사용자 지시 — Codex 작업자 모델 변경(메인 전달 `msg_ccc1e4849cb4`)
 
@@ -313,6 +319,7 @@ branch `fix/core-audit-party-jump-20261110`. 선행 시험은 보관본을 SHA25
 - 리드 관측: 재검증 Task `task_8d48f185af0e`(Dispatch `ctx_c5ce489a283d`)의 종료 코드는 1073807364이고 판정 파일은 없다. 11-10 KST의 정산 receipt는 `state: retained`·`reason: external_terminal`·`processAction: none`이다(`pr4/verify-2/lead/worker-release.json`).
 - 잔여물 확인(11-10 06:35:58Z, `lead/raw/residual-check-1.log`): 일회용 서식 복제본 폴더는 비어 있고 잠금 파일 27개는 전부 풀려 있다. 7777 listener와 dotnet·서식 검사 프로세스는 없고 Unity Editor는 0개다. 정리할 것은 없었다. WSL 작업 복제본 내부는 보지 않았다.
 - 중단된 세션이 작업 트리에 남긴 시험 두 파일은 `pr4/verify-3/held/`로 옮겼다. `JumpBufferGateTests.cs`(`fa136444bc7ea0f00e4e446d84be77ac6f451f6a6144bd6b0433518218951b27`)는 첫 판정 세션의 보관본과 같은 바이트다. `PartyArrivalStateTests.cs`(`0e6c74243eb051a68f1492c86738e9eeed2ab7692725912b35274960eab52688`)는 보관본과 다르고 종료 시점에 편집 중이었을 수 있다. 새 검증자에게 신뢰하지 않는 입력으로 넘겼다.
+- 전원 차단으로 끊긴 이 재검증 세션은 재부팅 뒤 pane으로 되살아나 있었다(`term_92692c88…`, 화면 `Conversation interrupted`, 메인 관측 `msg_06e6801feae6`). 재사용을 막으려고 빈 입력줄과 idle을 확인한 뒤 11-10 09:03:11Z에 닫았다.
 
 독립 재검증은 PASS다(`pr4/verify-3/verdict.md`, SHA256 `5d4932349a0884517ff0ce0df962ca2c3a697730728b0f5393f0fd888b0a8287`, Task `task_f1e1f15ac67f`, 화면 `GPT-6-Astra` xhigh, backend unknown). PR4-01 수정을 확인했고 새 제품 결함은 없다. 리드가 시험 집계와 exit를 원시에서 표본 대조했다.
 
@@ -323,24 +330,73 @@ branch `fix/core-audit-party-jump-20261110`. 선행 시험은 보관본을 SHA25
 - 중단된 세션의 시험은 새 검증자가 내용을 감사해 채택했고 `PartyArrivalStateTests.cs`에 사례 하나와 단정 하나를 보탰다(`pr4/verify-3/raw/held-party-adoption.diff`).
 - 비차단 관찰 둘: `MapMigration`의 `GameWorld.Instance`는 다중 world 도입 때 세션 소유 world로 바꿔야 한다. 승인 예외(B안) 때문에 해산을 놓친 뒤 새 초대가 먼저 오면 옛 파티 표시가 남을 수 있다.
 
-PR309를 base `main`으로 열었다.
+PR309 병합: 사용자 승인 원문 「병합 승인: PR309 head c6fca35765400a9462c7fc057db2dadc59f9023e」(11-10 18:5x KST 메인 pane에서 제출, 메인 전달 `msg_ee2cff84e72f`). 병합 커밋 `7a724f18012ecfc27253ed9fcd9e8886ab8a0fc9`, mergedAt 2026-11-10T09:55:21Z, 방식 `--merge`, CI 4개 통과. 메인 운영 결정으로 DB 저장 실행 완료를 기다리지 않고 승인을 요청했다(`msg_06e6801feae6`).
+
+### 통합 실행 검증 결과
+
+대상은 PR309 head `c6fca35765400a9462c7fc057db2dadc59f9023e`다. 병합 커밋과 tree가 같다(`06aac70dbfcc18c1cb616a932149697ca49ce084`, 메인 확인).
+
+**Unity EditMode·PlayMode 1회.** 결론은 「차이 있음」이다(`pr4/unity/report.md`, SHA256 `6b20d7ea962715e9bf7e8a90267b6370b1505dc07a3afc601c3f4d69f904a1bf`, Task `task_f658f66acaf8`, 화면 `GPT-6-Astra` xhigh, backend unknown).
+
+| 모드 | 전체 | 통과 | 실패 | 건너뜀 |
+|---|---|---|---|---|
+| EditMode | 1,861 | 1,861 | 0 | 0 |
+| PlayMode | 305 | 252 | 5 | 48 |
+
+- 실패 5건은 모두 `HudPanelSizingRenderTests`다: `G1_Knight_PartyInkStaysInsideBothRowsWithFourPixelVerticalMargins`, `G1_Mage_PartyInkStaysInsideBothRowsWithFourPixelVerticalMargins`, `G4_InventoryOpensTwelvePixelsBelowThePartyPanel`, `Portrait_Knight_PortraitCellContainsNoPanelParchment`, `Portrait_Mage_PortraitCellContainsNoPanelParchment`. 환경 변수 `DAWNHOLDER_GUILD_SIZE_CAPTURE_DIR`가 없어 `Capture:298`의 단정에서 끝난다. 분류는 (b) 환경·fixture 전제 누락이고 통과로 세지 않는다.
+- 이 시험은 이 묶음 전인 11-07부터 main에 있고 이 묶음의 `03_Client`·`98_Shared` 변경은 0이다. 전제가 없을 때 건너뜀이 아니라 실패로 끝나서 DEVELOPMENT의 전제 표에 없는 lane이다.
+- 기준선(11-06 Content U3)과 이름 대조: 공통 이름의 상태 변화 0, 건너뜀 48의 이름·이유·label 변화 0, 새 이름 EditMode 18·PlayMode 7, 사라진 통과 이름 EditMode 8. 계획에 적었던 길드 창 11건은 지금 같은 건너뜀이다. 옛 끌기 실패의 이름은 특정하지 못했다.
+- 실제 플레이와 실서버 lane은 돌지 않았다. Unity가 자동으로 바꾼 두 파일(`MinimapRT.renderTexture`, `ProjectSettings.asset`)은 `pr4/unity/raw/drift.patch`로 남기고 리드가 이름으로 되돌렸다.
+
+**DB 저장 실행.** 단계 카드는 `pr4/db/card-v1.1.md`(SHA256 `334b9ab280e4eb61aa18653988f8d9726d097025fedc91116f87c36654b14eca`), 메인 결정은 `msg_35400729c4f6`이다. 서버 시작·TERM·정지는 메인이 했고(137 A) 자격 입력은 사용자가 했다.
+
+- 1차 실행(참고 기록, `pr4/db/lead/first-run-note.md`): S1~S4 관측, S5 미실행, 서버는 Enter로 정상 정지했다(메인 `msg_e52d85e0e1eb`). Astra 검증자 Task `task_9a6b6e1e5e30`이 S2 뒤 위 거부 문구로 끊겼고 같은 세션 재시도 네 번(08:56·08:59·09:04·09:14Z)도 즉시 같은 문구였다. 비정상 종료 처분이고 불합격 집계에 넣지 않는다(메인 `msg_03ee2dce17ef`).
+- 2차 실행은 「기대와 일치」다(`pr4/db-2/report.md`, SHA256 `eb78bd9fb5ea30eeb53740a78c48ef90db7b1545950ea77b7c4d120d19e98cf8`, Task `task_910333ca1356`과 S6 보충 `task_d01c4d0bffe8`, 화면 Opus 5.5 xhigh, backend unknown). 메인 원천 대조 통과(`msg_d5eca4f14a7d`, `msg_c67b37e3ac5f`).
+
+| 단계 | 결과 | 원천 |
+|---|---|---|
+| 빌드 | exit 0, 경고 80·오류 0 | `pr4/db-2/raw/build-1.*` |
+| S1 시작 | 10:01:36Z, 허용 목록 세 줄, 실패 문구 0 | 메인 `msg_e39a377441ed` |
+| S2 봇 before | exit 0, 저장 직업 Mage, 맵 입장, 종료 10:02:32Z | `pr4/db-2/raw/s2-*` |
+| S3 TERM | pid 498에 10:03:52Z 1회, 정상 정지 세 줄, 프롬프트 복귀, 실패 문구 0, listener 0 | 메인 `msg_4d183068c7a4` |
+| S4 재시작 | 10:04:06Z, 세 줄, 실패 문구 0, 사용자 손 없음 | 메인 `msg_4d183068c7a4` |
+| S5 봇 after | exit 0, 저장 직업 Mage, 맵 입장, `AlreadyOnline` 0줄, 종료 10:05:06Z | `pr4/db-2/raw/s5-*` |
+| S6 Enter 정지 | 10:11:38Z, 세 줄, 프롬프트 복귀, 실패 문구 0, listener 0 | 메인 `msg_b71c58c24348` |
+
+- 이 실행이 보여 주는 것(메인 판단): Stored 모드에서 launcher를 거친 TERM이 정상 정지 세 줄로 끝나고, 그 직후 재시작이 되고(영속 소유 반환), 재시작 뒤 같은 계정이 다시 들어와 저장된 직업을 읽고 맵에 입장한다. launcher의 종료 코드 숫자는 읽지 않았다. 근거는 실패 문구가 없고 정상 정지 세 줄 뒤 프롬프트로 돌아온 것이며, launcher는 자식 종료 코드가 0이 아니거나 출력이 불완전하면 예외를 던진다(`Start-PersistenceServer.ps1:586-591`).
+- 보여 주지 않는 것(메인 판단): S5가 읽는 직업과 입장은 S2 이전부터 DB에 있던 값이다. S2가 쓴 값이 TERM을 넘어 남았다는 증거가 아니다. 접속 중인 세션의 마지막 저장도 아니다.
+- 메인 정정: launcher의 `Owned WSL process PID`는 `wsl.exe`의 Windows PID다(`Start-PersistenceServer.ps1:532`, `:555`). TERM 대상은 7777 listener의 Linux PID다.
+
+**완료조건 대조.** 1~3번은 앞 절의 PR별 결과와 같다. 4번은 관측한 범위만 충족이다. 실제 프로세스의 SIGTERM·SIGINT는 종료 경로 PR에서 `Server stopped.`와 exit 0으로 관측했고, Stored 모드는 위 표까지 관측했다. 「저장값이 이어진다」는 S2가 쓴 값으로는 확인하지 못했다. 5번은 위와 같이 실행했고 PlayMode 실패 5건은 통과로 세지 않는다. 6번은 PR305~PR309 각각 새 독립 검증자의 PASS 원문과 사용자 승인 한 줄이 있다.
+
+### 종료 Gardener 결과
+
+`gardener.md`(Task `task_15e44ff057f8`, 화면 Opus 5.5 high, backend unknown). 새 정리 후보는 없다. 경고 억제·설정 완화 추가도 그의 검색식 범위에서 0건이다. 제안은 기존 행에 관측을 잇는 2건이고 채택 전이다: 세션별 실행 harness 재작성은 `verification-harness-powershell-helper`, PR306 CI 서식 실패는 `prepush-ci-format-checks`와 겹친다. 그가 찾은 기록 불일치 3건 중 goal·BACKLOG의 2건은 이 기록에서 바로잡았고, 되살아난 세션은 「재검증 중단 기록」에 적었다. 그 세션은 후보로 등록하지 않았다. `gardener.md`의 줄 번호는 정정 전 기준이다. 쓰기는 정본의 한 파일이 아니라 두 파일이었다. `session-guard:memo-first`가 근거 폴더의 context 메모를 먼저 요구해서 `closeout/gardener/context.md`를 계약 보충(`msg_00e75ece86ec`)으로 허용했다. 리드 계약이 hook의 메모 위치와 어긋난 결함이고 첫 발생이다.
+
+**종료 기록 문서 실사.** PR310의 1차 실사는 FAIL이었다(`closeout/verify/verdict.md`). 차단 결함 2건은 이 goal의 머리 상태 줄과 재개 지점에 남은 낡은 진척 문장이고, 비차단 2건은 「남은 위험」 도입문의 출처와 BACKLOG 한 행의 시기다. 네 건 모두 고쳐 새 검증자로 재실사한다. 계약의 허용 실행 목록이 읽기 전용 문자열 검사 도구(`node -e`·`grep` 등)를 빠뜨렸다. 리드 계약 결함이고 첫 발생이다. 검증자는 그 사용과 hook에 막힌 허용 밖 쓰기 시도 2건을 자기 보고했다.
 
 ### 남은 위험
 
-아래는 메인 지시 `msg_2fd9d770d23b`로 기록한다.
+앞의 네 항목은 메인 지시 `msg_2fd9d770d23b`의 위험 목록이다. 스택 PR 항목의 확인 문장과 뒤의 두 항목은 실행 뒤 관측이다.
 
 - 전체 메모리 한도는 연결 수 × 연결별 상한이다. 동시 연결 수 제한은 범위 밖이다.
 - 패킷마다 65,535바이트 배열을 만드는 생성 코드는 범위 밖이다.
 - 맵에 도착할 때마다 파티 상태 통지가 한 번 더 간다(7번이 재현되어 고칠 때).
-- 스택 PR의 GitHub base 자동 이동은 첫 병합 때 확인한다.
+- 스택 PR의 GitHub base 자동 이동은 PR306 병합 뒤 PR307의 base가 `main`으로 옮겨진 것으로 확인했다(「입력 예산 결과」). PR305 병합 직후의 이동은 적어 두지 않았다.
+- 접속 중인 세션이 있을 때의 종료 신호와 마지막 안전 지점 저장은 실행으로 확인하지 못했다.
+- 파티 해산과 잠금 점프 경로는 봇이 닿지 않아 서버 시험으로만 확인했다.
 
 ## 다음 계획 후보
 
-- 패킷마다 65,535바이트 배열을 만드는 생성기를 패킷 크기에 맞게 바꾸기(`GenPackets.cs`의 `Write()`, 메인 지시 `msg_2fd9d770d23b`).
-- 사망 상태의 이동 미잠금: `DeathState`가 `LocksMovement`를 재정의하지 않아 기본값 false다. `PlayerPhysicsSystem.cs:40`의 주석은 Death도 잠근다고 적었다. 선행 시험에서 사망 중 버퍼 점프 발사를 관측했다(`tdd/report.md`, 리드가 `LocksMovement` 검색으로 재정의 위치 두 곳을 확인). 승인 범위가 공격·피격이라 이번에 고치지 않는다.
-- `bot-dash-boss-baseline-failure` 봇 기준선 실패: 수정 전 main `acd5a7db`에서 `DashSmoke`·`BossFightSmoke`가 실패한다(`pr1/raw/bot-before.log`, 메인 확인 `msg_076badf9a3ef`). BACKLOG와 감사 산출물에 없던 새 관측이다. 원인 미조사. 메인이 시험 신뢰도 묶음의 범위로 사용자에게 올린다. BACKLOG 등록은 다른 후보와 함께 종료 기록 PR에서 한다.
-- `Session.Clear`가 연결이 끊길 때마다 send-pending peak 한 줄을 콘솔에 찍어 운영 로그가 접속 종료 수만큼 늘어난다(메인 관찰 `msg_001c18f08bf2`, 이 goal에서 고치지 않는다).
-- 클라이언트 `PartyInvitePopup.OnPartyUpdated`가 빈 통지에도 팝업을 닫는다. 파티에 들어갔을 때만 닫도록 바꾸면 서버의 도착 통지 예외를 지울 수 있다(메인 `msg_b0d2e5503748`, 서버 묶음 범위 밖).
+- 패킷마다 65,535바이트 배열을 만드는 생성기를 패킷 크기에 맞게 바꾸기(`GenPackets.cs`의 `Write()`, 메인 지시 `msg_2fd9d770d23b`). BACKLOG `generated-packet-buffer-size`.
+- 사망 상태의 이동 미잠금: `DeathState`가 `LocksMovement`를 재정의하지 않아 기본값 false다. 수정 전 `PlayerPhysicsSystem`의 주석은 Death도 잠근다고 적었고, 이 goal의 수정 커밋 `1619297f`에서 `Attack/Hit`로 바로잡았다. 선행 시험에서 사망 중 버퍼 점프 발사를 관측했다(`tdd/report.md`, 리드가 `LocksMovement` 검색으로 재정의 위치 두 곳을 확인). 승인 범위가 공격·피격이라 이번에 고치지 않는다. BACKLOG `death-state-movement-lock`.
+- `bot-dash-boss-baseline-failure` 봇 기준선 실패: 수정 전 main `acd5a7db`에서 `DashSmoke`·`BossFightSmoke`가 실패한다(`pr1/raw/bot-before.log`, 메인 확인 `msg_076badf9a3ef`). BACKLOG와 감사 산출물에 없던 새 관측이다. 원인 미조사. 메인이 시험 신뢰도 묶음의 범위로 사용자에게 올린다. BACKLOG `bot-dash-boss-baseline-failure`.
+- `Session.Clear`가 연결이 끊길 때마다 send-pending peak 한 줄을 콘솔에 찍어 운영 로그가 접속 종료 수만큼 늘어난다(메인 관찰 `msg_001c18f08bf2`, 이 goal에서 고치지 않는다). BACKLOG `session-clear-send-pending-log`.
+- 클라이언트 `PartyInvitePopup.OnPartyUpdated`가 빈 통지에도 팝업을 닫는다. 파티에 들어갔을 때만 닫도록 바꾸면 서버의 도착 통지 예외를 지울 수 있다(메인 `msg_b0d2e5503748`, 서버 묶음 범위 밖). BACKLOG `party-invite-popup-empty-update`.
+- 접속 세션이 있을 때 종료 신호 → 마지막 안전 지점 저장을 실행으로 확인하기(메인 `msg_35400729c4f6`). BACKLOG `term-active-session-last-save`.
+- 앞선 접속이 쓴 값이 종료 신호를 넘어 남는지 확인하기(메인 `msg_d5eca4f14a7d`). BACKLOG `term-stored-write-survival`.
+- `HudPanelSizingRenderTests` 5건의 캡처 전제를 건너뜀으로 처리하거나 전제 표에 넣기(메인 `msg_d5eca4f14a7d`). BACKLOG `hud-render-capture-precondition`.
+- DEVELOPMENT에 launcher의 PID가 Windows PID임을 적기(메인 `msg_35400729c4f6`의 정정). BACKLOG `persistence-launcher-pid-note`.
 
 ## 진척 단계
 
@@ -353,10 +409,10 @@ PR 번호는 PR을 만들 때 채운다.
 - [x] 종료 경로 구현
 - [x] 입력 예산 잔여 경로 구현
 - [x] 게임 규칙 구현
-- [>] 통합 실행 검증
+- [x] 통합 실행 검증
 - [x] PR305 병합
 - [x] PR306 병합
 - [x] PR307 병합
 - [x] PR308 병합
-- [ ] 규칙 PR 병합
-- [ ] 종료 기록 정리
+- [x] PR309 병합
+- [>] 종료 기록 정리
