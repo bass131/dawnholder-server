@@ -1,6 +1,8 @@
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
+using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Quest;
 using Dawnholder.Server.GameServer.Sessions;
 using Dawnholder.Server.GameServer.Entities;
@@ -210,6 +212,11 @@ internal static class MapMigration
             // 맵 B 기존 플레이어에게 신규 진입자 S_PlayerJoin broadcast
             // characterClass: 서버 newEntity.Stats.Class byte cast (헌법 #3).
             destMap.BroadcastPlayerJoin(newEntity, session);
+
+            // 맵 소속이 없는 이동 공백에는 해산 통지를 놓칠 수 있어 입장 완료 뒤 현재 상태를 다시 받는다.
+            // 파티 조회·송신은 파티 actor로 넘기며, 위 S_MapTransition보다 먼저 보내지 않는다.
+            GameWorld? world = GameWorld.Instance;
+            if (world != null) PartyFlow.SendCurrentState(world, session, transfer.EntityId);
 
             Console.WriteLine(
                 $"[Map] Player {transfer.EntityId} arrived at map={destMap.MapId} spawn=({destSpawn.X},{destSpawn.Y}) — hp={transfer.CurrentHp}, roster:{existingInDest.Count}");

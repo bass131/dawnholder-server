@@ -168,6 +168,8 @@ public class PlayerEntity
         return false;
     }
 
+    public void ClearJumpBuffer() => _jumpBufferRemaining = 0;
+
     // 입력 enqueue. 상한 초과 시 oldest drop-oldest (DoS 방어).
     public void EnqueueInput(sbyte inputX, bool jumpPressed, uint clientTick)
     {

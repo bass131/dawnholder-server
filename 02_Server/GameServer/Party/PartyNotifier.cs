@@ -39,12 +39,37 @@ internal static class PartyNotifier
     // 파티 결성/갱신을 양 멤버 전원에게 통보. member0/1 슬롯은 Members 순서대로.
     public static void SendPartyUpdate(GameWorld world, PartyState party)
     {
+        S_PartyUpdate pkt = CreatePartyUpdate(world, party);
+        foreach (int memberId in party.Members)
+            world.SendToEntity(memberId, pkt.Write());
+    }
+
+    // 현재 상태를 요청한 한 명에게만 보낸다. 파티 없음도 기존 해산 패킷과 같은 형식이다.
+    public static void SendPartyStateTo(GameWorld world, int targetEntityId, PartyState? party)
+    {
+        S_PartyUpdate pkt = CreatePartyUpdate(world, party);
+        world.SendToEntity(targetEntityId, pkt.Write());
+    }
+
+    // 해산 통보: partyId=0 빈 상태로 약속(클라는 partyId==0 = 파티 없음으로 해석).
+    //   해산 전 캡처한 멤버 목록에 각각 1:1 송신. 멤버 entity가 떠났으면 SendToEntity가 silent 무시.
+    public static void SendDisband(GameWorld world, IReadOnlyList<int> formerMembers)
+    {
+        S_PartyUpdate pkt = CreatePartyUpdate(world, null);
+        foreach (int memberId in formerMembers)
+            world.SendToEntity(memberId, pkt.Write());
+    }
+
+    private static S_PartyUpdate CreatePartyUpdate(GameWorld world, PartyState? party)
+    {
+        if (party == null) return new S_PartyUpdate { partyId = 0 };
+
         int member0 = party.Members.Count > 0 ? party.Members[0] : 0;
         int member1 = party.Members.Count > 1 ? party.Members[1] : 0;
         world.TryGetEntityClass(member0, out byte member0Class);
         world.TryGetEntityClass(member1, out byte member1Class);
 
-        S_PartyUpdate pkt = new S_PartyUpdate
+        return new S_PartyUpdate
         {
             partyId = party.PartyId,
             leaderEntityId = party.LeaderEntityId,
@@ -53,27 +78,5 @@ internal static class PartyNotifier
             member0Class = member0Class,
             member1Class = member1Class,
         };
-
-        foreach (int memberId in party.Members)
-            world.SendToEntity(memberId, pkt.Write());
-    }
-
-    // 해산 통보: partyId=0 빈 상태로 약속(클라는 partyId==0 = 파티 없음으로 해석).
-    //   해산 전 캡처한 멤버 목록에 각각 1:1 송신. 멤버 entity가 떠났으면 SendToEntity가 silent 무시.
-    public static void SendDisband(GameWorld world, IReadOnlyList<int> formerMembers)
-    {
-        foreach (int memberId in formerMembers)
-        {
-            S_PartyUpdate pkt = new S_PartyUpdate
-            {
-                partyId = 0,
-                leaderEntityId = 0,
-                member0EntityId = 0,
-                member1EntityId = 0,
-                member0Class = 0,
-                member1Class = 0,
-            };
-            world.SendToEntity(memberId, pkt.Write());
-        }
     }
 }

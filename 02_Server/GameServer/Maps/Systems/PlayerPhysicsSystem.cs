@@ -37,15 +37,17 @@ internal sealed class PlayerPhysicsSystem
             sbyte inputX = hasInput ? cmd.InputX : (sbyte)0;
             bool rawJump = hasInput && cmd.JumpPressed;
 
-            // movement-gate: LocksMovement=true인 State(Attack/Hit/Death)면 이동 입력 무효.
+            // movement-gate: LocksMovement=true인 State(Attack/Hit)면 이동 입력 무효.
             bool locked = p.ActionFsm.CurrentState.LocksMovement;
             if (locked)
             {
                 inputX = 0;
                 rawJump = false;
+                // 잠금 해제 뒤 옛 공중 입력이 발사되면 버퍼 없는 클라이언트 예측과 어긋난다.
+                p.ClearJumpBuffer();
             }
 
-            bool jumpPressed = p.ResolveJump(rawJump); // jump buffer: 공중 입력 → 착지 틱 발사
+            bool jumpPressed = !locked && p.ResolveJump(rawJump); // jump buffer: 공중 입력 → 착지 틱 발사
 
             // ExternalImpulseVx: 대쉬/lunge(AttackState) + 넉백(HitState) 통합 단일 필드.
             //   두 State는 상호배타라 항상 하나만 활성. 0이면 기존 이동과 동일.
