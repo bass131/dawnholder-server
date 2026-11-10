@@ -1,7 +1,7 @@
 # 전체 코드 감사 운영툴 묶음 수정과 실행 검증
 
 - 파트: Management · 리드 `[Management 리드 Opus]`(claude-opus-5-5 xhigh)
-- 상태: **승인됨**(사용자 계획 검토 A, 11-11 02:0x KST). 선행 시험 끝, 첫 PR(3번) 구현 단계.
+- 상태: **승인됨**(사용자 계획 검토 A, 11-11 02:0x KST). 첫 PR(3번) 구현 끝(커밋 `51a096e3`), 독립 검증 단계.
 - 승인한 판: 이 파일 SHA256 `240e297b80be8fdbccf3694530077e28cb9e30caa8e8e9dfbf6687bd48f93f1b`(메인이 승인 뒤 대조). 그 뒤의 고침은 착수 회신 `msg_2296395f7b76`이 적으라고 한 기록과 상태 갱신이며 범위 네 항목은 바꾸지 않았다.
 - 기준: main `c9dc44e44c4f37e598e2dd70ea0aa18d579529be`(PR310, 문서 4개 파일. 초안 기준 `7a724f18`에서 앞으로 맞춤, `05_Management` 변경 없음) · branch `fix/management-audit-fixes-20261110`
 - 작업 폴더: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-audit-fixes`. 정본 표의 `management-active`는 쓰지 않는다. 이유는 「적용 중인 메인 결정」에 있다.
@@ -12,7 +12,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 3번 구현자의 진행을 확인한다. 작업자가 없으면 근거 폴더 `impl-item3/`의 계약과 결과를 먼저 본다. 둘째 PR의 시험은 branch `fix/management-audit-backend-lifetime-20261111`에 있다(아래 「선행 시험 결과」).
+**다음 첫 일:** 3번 독립 검증자(`[Management 검증자]`, Task `task_f0ff1218d82e`)의 판정을 받는다. 작업자가 없으면 근거 폴더 `verify-item3/`의 계약과 판정을 먼저 본다. 검증자는 차단 결함 #1을 예고했다. 실제 BACKLOG 시험(`backlog-store-actual.test.ts`)이 전체 실행 부하에서 기본 5초 한도를 넘는다. 원인 측정 뒤 리드가 제품 쪽(링크 판정 비용)과 시험 쪽(한도) 중 수정 방향을 정하고 새 구현자로 고친다. 둘째 PR의 시험은 branch `fix/management-audit-backend-lifetime-20261111`에 있다(아래 「선행 시험 결과」). 그 branch는 goal 최신 기록이 없는 `d894105c` 위라, 첫 PR을 올린 뒤 첫 PR head 위에 시험 커밋을 다시 얹어 쓴다.
 
 막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context-audit-fixes-folder.md`(앞 리드의 `lead-context.md`는 당시 기록이다), 범위 문서 사본은 같은 폴더의 `fix-scope-management.md`다.
 
@@ -22,8 +22,8 @@ PR 번호는 PR을 여는 때 채운다.
 
 - [x] 초안 승인
 - [x] 선행 시험 작성
-- [>] BACKLOG 읽기 구현
-- [ ] BACKLOG 읽기 검증
+- [x] BACKLOG 읽기 구현
+- [>] BACKLOG 읽기 검증
 - [ ] BACKLOG PR 병합
 - [ ] 백엔드 수명 구현
 - [ ] 백엔드 수명 검증
