@@ -2,6 +2,11 @@ import { expandVariables, isNonFile } from './path-policy.mjs';
 
 const operatorPattern = /^(?:&>>|&>|\d*(?:<<<|<<-|<<|<&|<|>>|>\||>&|>)|&&|\|\||\|&|[;&|()\n])/;
 const isPipe = operator => operator === '|' || operator === '|&';
+// word() may stop only at what sequence() then consumes, as a blank or as an operator; any other
+// stop would never advance. Bash does not split on the rest of JavaScript's \s, such as U+00A0 or
+// form feed, so those characters stay inside their word.
+const isBlank = char => /[\t \r]/.test(char);
+const endsWord = char => isBlank(char) || /[\n;&|()<>]/.test(char);
 
 function tokenize(source) {
   let offset = 0;
@@ -15,7 +20,7 @@ function tokenize(source) {
         offset++;
         return tokens;
       }
-      if (/[\t \r]/.test(source[offset])) {
+      if (isBlank(source[offset])) {
         offset++;
         continue;
       }
@@ -48,6 +53,7 @@ function tokenize(source) {
         continue;
       }
       const token = word();
+      if (offset === token.position) throw new Error('셸 명령을 읽는 위치가 전진하지 않았다.');
       tokens.push(token);
       if (pendingHeredoc !== null) {
         heredocs.push({ delimiter: token.parts.map(part => part.text).join(''), stripTabs: pendingHeredoc });
@@ -69,7 +75,7 @@ function tokenize(source) {
     }
     while (offset < source.length) {
       const char = source[offset];
-      if (!quote && (/\s/.test(char) || /[;&|()<>]/.test(char))) break;
+      if (!quote && endsWord(char)) break;
       if (quote !== "'" && source.startsWith('$(', offset)) {
         offset += 2;
         parts.push({ text: '$()', nested: sequence(true) });
