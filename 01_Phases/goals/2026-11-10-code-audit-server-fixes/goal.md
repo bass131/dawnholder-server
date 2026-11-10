@@ -1,16 +1,16 @@
 # 전체 코드 감사 서버 묶음 수정과 실행 검증
 
 - 파트: Core · 리드 `[Core 리드 Opus]`(claude-opus-5-5 xhigh)
-- 상태: **진행**, 사용자 계획 승인(176 A). 선행 시험 단계.
+- 상태: **진행**, 사용자 계획 승인(176 A). 입력 예산 독립 검증 단계.
 - 기준: main `acd5a7db065b37baa7f491c4502002eb8ce184a3` · branch `fix/core-audit-connection-20261110`
 - 근거 폴더: `.backups/verification/2026-11-10-code-audit-server-fixes/`
 - 초안 작성 시각: 2026-11-09T22:35Z(`date -u` 관측, 11-10 07:35 KST)
 
 ## 재개 지점
 
-**다음 첫 일:** PR2 입력 예산의 구현 계약을 발행한다. 새 branch는 PR1 head 위에 만들고, 선행 시험 `tdd/held/GameSessionInputBudgetTests.cs`를 hash 대조 뒤 되돌린다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
+**다음 첫 일:** PR2 입력 예산의 독립 검증 판정(`pr2/verify/verdict.md`)을 받는다. PASS면 branch `fix/core-audit-input-budget-20261110`을 push하고 base를 PR1 branch로 한 PR을 만든다. 그다음은 PR3 종료 경로의 구현 계약이다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
-막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1 계약과 원시는 `pr1/`이다. PR2·PR4의 선행 시험은 `tdd/held/`에 두었고 해당 PR을 시작할 때 hash를 대조해 되돌린다.
+막힌 지점: 없음. 구현자 보고에서 기존 시험 `GuildIndependentLifetimeTests.BurstOfGuildInput_IsAnsweredOnce_AndTheSlotIsFreeAfterwards` 1건이 실패로 남았고, 분류는 독립 검증자가 정한다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
 ## 적용 중인 사용자 결정
 
