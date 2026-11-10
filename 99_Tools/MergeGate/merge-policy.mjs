@@ -100,12 +100,13 @@ function shellReads(command) {
 }
 
 // One read cut at ; & | ` < > ( ) { } and newline, in order: word lists and the separator tokens
-// between them, so the push target reading can follow cd and parentheses.
+// between them, so the push target reading can follow cd and parentheses. `text` keeps the part as
+// written for the quote-aware pass of pushLocations.
 function commandSteps(text) {
   return text.split(/([;&|`<>(){}\r\n][;&|`<>(){}\s]*)/).flatMap((part, index) => {
-    if (index % 2 === 1) return [{ separators: part.match(/&&|\|\||[;&|`<>(){}\r\n]/g) }];
+    if (index % 2 === 1) return [{ separators: part.match(/&&|\|\||[;&|`<>(){}\r\n]/g), hereDocument: /(?:^|[^<])<<(?!<)/.test(part) }];
     const words = part.trim().split(/\s+/).filter(Boolean).map(raw => ({ raw, value: unquote(raw) }));
-    return words.length > 0 ? [{ words }] : [];
+    return words.length > 0 ? [{ words, text: part }] : [];
   });
 }
 
@@ -259,56 +260,209 @@ function repositoryOptionsBefore(words) {
 const directoryCommands = new Set(['cd', 'pushd', 'popd']);
 const followedAfter = new Set(['&&', ';', '\n', '\r', ')']);
 const unfollowedBefore = new Set(['|', '||', '<', '>']);
+const listEnds = new Set([';', '\n', '\r']);
+// A newline right after these continues the same list.
+const joinsNextLine = new Set(['&&', '||', '|']);
+// Bodies that may not run: a cd inside them never moves what comes after.
+const compoundOpeners = new Set(['if', 'while', 'until', 'for', 'select', 'case']);
+const compoundClosers = new Set(['fi', 'done', 'esac']);
+// Separators after which an unquoted # starts a comment.
+const commentAfter = new Set([';', '\n', '\r', '&', '|', '&&', '||', '(', ')']);
 
-// cd and pushd with one literal path are followed when they lead a command joined by &&, ; or a
-// newline. Any other change of directory (cd -, a bare cd, popd, a pipe or background, a cd word
-// inside a wrapped command) leaves the location unknown.
-function locationAfter(location, words, before, after) {
+// The path one cd or pushd moves to, judged from its own words and the separators next to it:
+// undefined without a directory word, null when the text cannot settle it (cd -, a bare cd, popd, an
+// option or a second argument, a variable, substitution, glob or leading ~, a pipe, redirect or
+// background next to it, a directory word that is not the first word).
+function directoryChange(words, before, after) {
   const changeAt = words.findIndex(word => directoryCommands.has(word.value));
-  if (changeAt < 0 || location === null) return location;
+  if (changeAt < 0) return undefined;
   if (changeAt > 0 || words[0].value === 'popd' || unfollowedBefore.has(before) ||
       !(after === undefined || followedAfter.has(after))) return null;
   if (words.length < 2) return null;
   const target = shellWord(words, 1);
   if (target.open || !target.path || target.end !== words.length - 1 || /^[-+]/.test(target.path)) return null;
-  return [...location, target.path];
+  return target.path;
+}
+
+// Bash quoting over one word part, from the quote it starts in: single quotes take every character,
+// a backslash escapes the next character outside quotes and inside double quotes, and an unquoted #
+// at a word start comments out the rest of the line. `escapes` marks a final backslash that escapes
+// the separator right after the part.
+function quoteAfter(text, quote, wordStart) {
+  let escaped = false;
+  for (const character of text) {
+    const atWordStart = wordStart;
+    wordStart = false;
+    if (escaped) escaped = false;
+    else if (quote === "'") quote = character === "'" ? null : quote;
+    else if (character === '\\') escaped = true;
+    else if (quote === '"') quote = character === '"' ? null : quote;
+    else if (character === '"' || character === "'") quote = character;
+    else if (character === '#' && atWordStart) return { quote, escapes: false, comment: true };
+    else wordStart = /\s/.test(character);
+  }
+  return { quote, escapes: escaped, comment: false };
+}
+
+// Where each lookup push of one read runs. This is the one place that decides when cd and pushd give
+// their location. Bash runs a list of commands joined by && and || from left to right, so:
+// - a cd gives its path to the rest of its && chain, the commands that run only after it ran;
+// - it gives the path past the end of its list (; or a newline) only when it always runs: the first
+//   command of the list, or a literal cd after literal cds joined by &&, outside brace groups and
+//   if/while/until/for/select/case bodies (a function body is a brace group). A cd that fails there
+//   leaves the push where it was, but then the lookup of its path fails too;
+// - otherwise, and after a || that follows a cd, where the push runs is unknown (null);
+// - a list sent to the background with & is unknown after it when it changed directory;
+// - after a here-document operator (<<), whose body lines read like commands here, every directory
+//   change is unknown;
+// - a subshell, $(…) or backquote scope returns to the location it started from.
+// The quote-aware pass (`quotes`) reads Bash quoting too: separators inside quotes or escaped by a
+// backslash are characters, a part that starts inside quotes continues the command before it and a
+// directory word there makes the location unknown, and an unquoted # comments out the line. If that
+// pass saw a directory word and its quotes do not close or a scope closes that never opened, it
+// misread a quote (a here-document body, for one) and all its locations are unknown.
+function pushLocations(steps, quotes) {
+  const pushes = [];
+  const scopes = [];
+  let inBackquote = false;
+  let underflow = false;
+  let directoryWords = false;
+  let quote = null;
+  let escapes = false;
+  let comment = false;
+  let continued = false;
+  let hereDocument = false;
+  // chain: where the next command runs when it runs. after: where commands run once this list ends.
+  // start: where the list began. leading: only literal cds joined by && so far. moved: a directory
+  // change in this list. braces, compound: brace groups and compound bodies around the list.
+  const listFrom = location => ({ chain: location, after: location, start: location, leading: true, moved: false });
+  let state = { ...listFrom([]), braces: 0, compound: 0 };
+  const unknown = () => Object.assign(state, { chain: null, after: null });
+  const endList = background => Object.assign(state, listFrom(background && state.moved ? null : state.after));
+
+  function separator(token, previous, next) {
+    if (token === '(' || (token === '`' && !inBackquote)) {
+      if (token === '`') inBackquote = true;
+      scopes.push({ subshell: true, state });
+      state = { ...listFrom(state.chain), braces: 0, compound: 0 };
+    } else if (token === ')' || token === '`') {
+      if (token === '`') inBackquote = false;
+      // Brace groups still open inside the scope close with it.
+      let entry = scopes.pop();
+      while (entry && !entry.subshell) entry = scopes.pop();
+      if (entry) state = { ...entry.state, leading: false };
+      else {
+        underflow = true;
+        Object.assign(state, { chain: null, after: null, start: null });
+      }
+    } else if (token === '{') {
+      scopes.push({ subshell: false, state });
+      state = { ...listFrom(state.chain), braces: state.braces + 1, compound: state.compound };
+    } else if (token === '}') {
+      if (scopes.at(-1)?.subshell !== false) return;
+      const inner = state;
+      state = { ...scopes.pop().state, leading: false };
+      // The group runs in this shell, so its end location carries out, but only as far as a cd that
+      // may not have run: the rest of the && chain.
+      if (JSON.stringify(inner.chain) !== JSON.stringify(state.chain)) Object.assign(state, { chain: inner.chain, after: null, moved: true });
+    } else if (token === '||') {
+      Object.assign(state, { chain: state.moved ? null : state.start, leading: false });
+    } else if (token === '&') {
+      // >&, <&, &> and |& are redirections or a pipe, not a background list.
+      if (!['<', '>', '|'].includes(previous) && next !== '>') endList(true);
+    } else if (listEnds.has(token)) endList(false);
+  }
+
+  function command(words, before, after) {
+    const first = words[0].value;
+    if (compoundOpeners.has(first)) state.compound += 1;
+    else if (compoundClosers.has(first) && state.compound > 0) state.compound -= 1;
+    let change = directoryChange(words, before, after);
+    // Here-document body lines are text, but this reading cannot tell them from commands.
+    if (change !== undefined && hereDocument) change = null;
+    if (change === undefined) {
+      state.leading = false;
+      return;
+    }
+    state.moved = true;
+    if (change === null || state.chain === null) {
+      unknown();
+      state.leading = false;
+      return;
+    }
+    state.chain = [...state.chain, change];
+    state.after = state.leading && state.braces === 0 && state.compound === 0 ? state.chain : null;
+  }
+
+  for (let index = 0; index < steps.length; index += 1) {
+    const { words, text, separators } = steps[index];
+    if (separators) {
+      if (quote !== null) continue;
+      hereDocument ||= steps[index].hereDocument;
+      let tokens = separators;
+      if (escapes) {
+        tokens = tokens.slice(1);
+        continued = tokens.length === 0;
+        escapes = false;
+      }
+      if (comment) {
+        // A comment ends at the newline only; a ; inside it is part of the comment.
+        const lineEnd = tokens.findIndex(token => token === '\n' || token === '\r');
+        if (lineEnd < 0) continue;
+        tokens = tokens.slice(lineEnd);
+        comment = false;
+      }
+      let joining = false;
+      for (let at = 0; at < tokens.length; at += 1) {
+        if (listEnds.has(tokens[at]) && joining) continue;
+        joining = joinsNextLine.has(tokens[at]);
+        separator(tokens[at], tokens[at - 1], tokens[at + 1]);
+      }
+      continue;
+    }
+    if (comment) continue;
+    const before = steps[index - 1]?.separators.at(-1);
+    const continues = quote !== null || continued;
+    continued = false;
+    if (quotes) ({ quote, escapes, comment } = quoteAfter(text, quote, !continues && (index === 0 || commentAfter.has(before))));
+    for (const { start, end } of findSubcommands(words, 'git', ['push'], gitValueOptions)) {
+      const destination = pushDestination(words.slice(end + 1));
+      if (destination === 'main') return { main: true, pushes: [] };
+      if (destination === 'lookup') pushes.push({ location: state.chain, options: words.slice(start + 1, end) });
+    }
+    const hasDirectoryWord = words.some(word => directoryCommands.has(word.value));
+    directoryWords ||= hasDirectoryWord;
+    if (!continues) command(words, before, steps[index + 1]?.separators[0]);
+    else if (hasDirectoryWord) {
+      state.moved = true;
+      unknown();
+    }
+  }
+  if (quotes && directoryWords && (quote !== null || underflow)) for (const push of pushes) push.location = null;
+  return { main: false, pushes };
 }
 
 // Which repository each push reaches. A push with a main destination is { main: true }. A push that
-// takes the current branch adds a lookup: the cd/pushd paths before it in the same command as -C,
-// then its own -C, --git-dir and --work-tree, in the order written. The hook hands this list to git,
+// takes the current branch adds a lookup: the cd/pushd paths it runs under (pushLocations) as -C, then
+// its own -C, --git-dir and --work-tree, in the order written. The hook hands this list to git,
 // which joins relative paths itself. A lookup is null when the text does not tell the repository:
 // the location is unknown, an option value would still be expanded, or GIT_DIR, GIT_WORK_TREE or
-// GIT_COMMON_DIR is assigned.
+// GIT_COMMON_DIR is assigned. Each read is passed over twice, without and with quoting, and the
+// lookups of all passes are kept: a quote the quote-aware pass misreads can only add lookups.
 function inspectPushes(command) {
   const environmentSwitch = /(?:^|[^\w])GIT_(?:DIR|WORK_TREE|COMMON_DIR)=/.test(command);
-  // Keyed by the selection: both reads usually find the same push, and each lookup starts a git process.
+  // Keyed by the selection: the passes usually find the same push, and each lookup starts a git process.
   const lookups = new Map();
   for (const text of shellReads(command)) {
     const steps = commandSteps(text);
-    let location = [];
-    const scopes = [];
-    let inBackquote = false;
-    for (let index = 0; index < steps.length; index += 1) {
-      const { words, separators } = steps[index];
-      if (separators) {
-        // A subshell or substitution ends with its own location; braces keep the shell's.
-        for (const token of separators) {
-          if (token === '(' || (token === '`' && !inBackquote)) scopes.push(location);
-          else if (token === ')' || token === '`') location = scopes.length > 0 ? scopes.pop() : null;
-          if (token === '`') inBackquote = !inBackquote;
-        }
-        continue;
-      }
-      for (const { start, end } of findSubcommands(words, 'git', ['push'], gitValueOptions)) {
-        const destination = pushDestination(words.slice(end + 1));
-        if (destination === 'main') return { main: true, lookups: [] };
-        if (destination === 'none') continue;
-        const options = environmentSwitch || location === null ? null : repositoryOptionsBefore(words.slice(start + 1, end));
-        const repository = options && [...location.map(path => ({ option: '-C', path })), ...options];
+    for (const quotes of [false, true]) {
+      const read = pushLocations(steps, quotes);
+      if (read.main) return { main: true, lookups: [] };
+      for (const { location, options } of read.pushes) {
+        const selection = environmentSwitch || location === null ? null : repositoryOptionsBefore(options);
+        const repository = selection && [...location.map(path => ({ option: '-C', path })), ...selection];
         lookups.set(JSON.stringify(repository), repository);
       }
-      location = locationAfter(location, words, steps[index - 1]?.separators.at(-1), steps[index + 1]?.separators[0]);
     }
   }
   return { main: false, lookups: [...lookups.values()] };
@@ -331,7 +485,7 @@ function containsApprovalText(value) {
 // method other than GET, or fields or --input without a method, which gh sends as POST. The precise
 // reading and the last net both call this on the whole command text, because the boundary read cuts
 // GraphQL bodies and {owner}/{repo} placeholders apart. -f/-F of another command in the same text
-// also count as fields and block.
+// also count as fields and block. PR merge and auto-merge calls are matched apart, in preparePreToolUse.
 function apiMovesBranch(command) {
   if (/\b(?:mergeBranch|updateRef|createCommitOnBranch)\b/.test(command)) return true;
   if (!/\/merges(?![\w.-])|\bgit\/refs\/heads\/main(?![\w./-])/.test(command)) return false;
