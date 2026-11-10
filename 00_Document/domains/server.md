@@ -6,7 +6,7 @@
 
 일반 맵 입력은 [GameSession](../../02_Server/GameServer/Sessions/GameSession.cs) → [Handlers](../../02_Server/GameServer/Handlers/) → 세션 제출 메서드 → [GameMap](../../02_Server/GameServer/Maps/GameMap.cs)의 큐 → [Systems](../../02_Server/GameServer/Maps/Systems/) 순으로 처리한다. 경제 입력은 아래의 World 경제 큐로 전달한다. 상태 변경은 소유한 틱 흐름 안에서 수행한다.
 
-핸드셰이크 뒤 수신 경계는 연결별·종류별 고정 창 예산을 소비하며, 초과 입력은 개별 로그·핸들러 실행·틱 큐에 닿기 전에 버리고 창당 첫 초과만 경고한다. 종류는 각 핸들러의 `BudgetKind`, 수치는 [GameSession 생성자의 `_inputBudgets`](../../02_Server/GameServer/Sessions/GameSession.cs)가 정하며, 이동 입력은 기존 `SubmitMoveIntent`의 별도 예산을 유지한다.
+핸드셰이크 뒤 수신 경계는 연결별·종류별 고정 창 예산을 소비하며, 초과 입력은 개별 로그·핸들러 실행·틱 큐에 닿기 전에 버리고 창당 첫 초과만 경고한다. 종류는 각 핸들러의 `BudgetKind`, 수치는 [GameSession 생성자의 `_inputBudgets`](../../02_Server/GameServer/Sessions/GameSession.cs)가 정하며, 이동 입력은 기존 `SubmitMoveIntent`의 별도 예산을 유지한다. 등록되지 않은 패킷 번호도 그 밖(`Other`) 공유 예산을 소비한다.
 
 - 핸들러는 파싱·입력 검증·세션 메서드 호출을 맡는다. 세션의 핸드셰이크·entity ID·종료 상태를 직접 우회 변경하지 않는다.
 - 새 입력에는 정상 경로와 잘못된 길이·범위·상태·권한의 거부 경로를 확인한다.

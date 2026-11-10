@@ -8,9 +8,9 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 입력 예산 잔여 경로(미등록 패킷 번호·중복 로그인)의 선행 시험 계약을 발행한다. branch `fix/core-audit-input-gaps-20261110`은 종료 경로 branch head 위에 만든다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
+**다음 첫 일:** 게임 규칙 PR(7·8번)의 선행 시험 복원과 축소 결과를 받아 구현 계약을 발행한다. branch는 `fix/core-audit-party-jump-20261110`이고 근거는 `pr4/`다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
-막힌 지점: 없음. 입력 예산 PR306과 종료 경로 PR307은 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
+막힌 지점: 없음. 종료 경로 PR307과 입력 예산 잔여 경로 PR308은 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
 ## 적용 중인 사용자 결정
 
@@ -268,6 +268,8 @@ branch `fix/core-audit-input-budget-20261110`. 구현 `gpt-6-astra` high, 독립
 |---|---|---|---|---|---|
 | `GuildIndependentLifetimeTests.BurstOfGuildInput_IsAnsweredOnce_AndTheSlotIsFreeAfterwards` | 추가 입력 200개 뒤 같은 초의 조회도 응답 | 추가 입력 20개, 단정 전부 불변 | (a) 예산 이전의 무제한 입력 가정. 제품 회귀 아님 | 항목 2 요구: 그 밖 입력은 연결별 공유 초당 30. 20개는 대기 슬롯 1보다 많아 시험 목적을 유지하고, 폭주 자체는 독립 시험이 맡는다 | `pr2/verify/raw/full-before.log`, `full-after-1.log`, `worktree-before-aftertest-tracked.diff` |
 
+PR306 병합: 사용자 승인 원문 「병합 승인: PR306 head 5f5a23ab02cf98b5284ce6e9b001788a72e6557a」(11-10 12:41 KST 메인 pane에서 제출, 메인 전달 `msg_b58fc16450b6`). 병합 커밋 `f1f2b2e970ff7d74e8b38b20bfb1d5869ee3f796`, mergedAt 2026-11-10T03:41:38Z, 방식 `--merge`, CI 4개 통과. 앞 PR 병합 뒤 PR307의 base는 `main`로 관측했다.
+
 ### 종료 경로 결과
 
 branch `fix/core-audit-graceful-stop-20261110`. 구현 `gpt-6-astra` high, 독립 검증 `gpt-6-astra` xhigh. 판정 원문 `pr3/verify/verdict.md`는 PASS이고 제품 결함은 없다. 대상 head는 `a049f37cdcb55d5b88d8b580bbbb938fe888c89a`이고, 그 뒤 commit은 검증자가 쓴 시험 1파일과 이 goal 기록뿐이다.
@@ -278,6 +280,20 @@ branch `fix/core-audit-graceful-stop-20261110`. 구현 `gpt-6-astra` high, 독�
 - 봇: 2 통과·2 실패로 수정 전과 같다. 시나리오별 `Server stopped.`는 0줄에서 1줄이 됐다. **대시 피해와 보스전 경로는 봇으로 확인되지 않았다.**
 - 정식 서식 검사: exit 0, 공백 오류 0줄(새 시험 포함).
 - 미실행: Unity 시험·DB 저장(최종 head에서 1회), 신호 등록 전 실제 신호.
+
+### 입력 예산 잔여 경로 결과
+
+branch `fix/core-audit-input-gaps-20261110`. 선행 시험 `Network/InputBudgetUnregisteredAndLoginTests.cs` 8사례(작성 `gpt-6-astra` high): 수정 전 실패 5·보존 3으로 두 경로 모두 재현됐다. 전체 시험은 실패 5·통과 2,673·건너뜀 28·전체 2,706이고 실패는 새 클래스뿐이다. 구현 뒤 바뀔 기존 시험 네 사례는 `gaps/tdd/report.md` 46행 이후에 있다.
+
+구현 `gpt-6-astra` high, 독립 검증 `gpt-6-astra` xhigh. 판정 원문 `gaps/verify/verdict.md`는 PASS이고 제품 결함은 없다. 대상 head는 `5ce5c775c87a67b872f80d8914967e5c3bf880cf`이고, 그 뒤 commit은 검증자가 쓴 시험 2파일과 이 goal 기록뿐이다.
+
+- 선행 시험: 수정 전 실패 5·통과 3 → 수정 후 실패 0·통과 8. 독립 시험 8통과.
+- 전체 시험: 시험 변경 전 실패 4·통과 2,674·건너뜀 28·전체 2,706, 변경 뒤 실패 0·통과 2,686·건너뜀 28·전체 2,714.
+- 봇: 2 통과·2 실패로 수정 전과 같고 네 시나리오 예산 경고는 각 0건이다. **대시 피해와 보스전 경로는 봇으로 확인되지 않았다.**
+- 정식 서식 검사 exit 0, 공백 오류 0줄.
+- 미실행: Unity 시험·DB 저장(최종 head에서 1회).
+
+기존 시험 분류(`msg_71e41e231d55` 정본, 판정 표 `gaps/verify/verdict.md` 65~70행): 전체 실패 4건을 전수 분류했다. `RegisteredHandler_DeclaresRequiredBudget(C_Login, …)`과 `LoginHasNoBudget_…`(이름을 `LoginSharesMenuBudget_…`로 변경)은 (a) 옛 단정이고, `ExactLimit_…(menu)`와 `AllFourMenuHandlers_…`는 (b) fixture 로그인이 같은 창의 메뉴 1건을 쓰는 전제 문제다. 한도를 낮추지 않고 그 사례만 시계를 1초 진행했다. 제품 회귀는 없다.
 
 ### 남은 위험
 
@@ -304,12 +320,12 @@ PR 번호는 PR을 만들 때 채운다.
 - [x] 연결 계층 구현
 - [x] 입력 예산 구현
 - [x] 종료 경로 구현
-- [>] 입력 예산 잔여 경로 구현
-- [ ] 게임 규칙 구현
+- [x] 입력 예산 잔여 경로 구현
+- [>] 게임 규칙 구현
 - [ ] 통합 실행 검증
 - [x] PR305 병합
-- [ ] PR306 병합
+- [x] PR306 병합
 - [ ] PR307 병합
-- [ ] 입력 잔여 PR 병합
+- [ ] PR308 병합
 - [ ] 규칙 PR 병합
 - [ ] 종료 기록 정리

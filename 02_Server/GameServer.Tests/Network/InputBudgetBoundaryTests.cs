@@ -25,6 +25,8 @@ public sealed class InputBudgetBoundaryTests
     public void ExactLimit_DropsNextBeforeLogging_AndRecoversAtOneSecond(string kind, int limit)
     {
         using var fixture = new BudgetFixture(enter: kind != "menu");
+        // Login consumes Menu too; test a fresh window without weakening the ten-input boundary.
+        if (kind == "menu") fixture.Clock.AdvanceMilliseconds(1000);
         fixture.Send(kind, limit);
         Assert.Equal(limit, fixture.Accepted(kind));
         Assert.Equal(0, fixture.WarningCount(kind));
@@ -114,6 +116,8 @@ public sealed class InputBudgetBoundaryTests
     public void AllFourMenuHandlers_ShareTenAdmissions_AndKeepRequestIds()
     {
         using var fixture = new BudgetFixture(enter: false);
+        // Keep all ten request admissions after the fixture's login window.
+        fixture.Clock.AdvanceMilliseconds(1000);
         foreach (uint sequence in new uint[] { 1, 2 })
             fixture.Session.OnRecvPacket(new C_CharacterListRequest { requestId = sequence }.Write());
         foreach (uint sequence in new uint[] { 3, 4 })
@@ -191,7 +195,7 @@ public sealed class InputBudgetBoundaryTests
     }
 
     [Fact]
-    public void LoginHasNoBudget_AndDuplicateHandshakeStillClosesExhaustedConnection()
+    public void LoginSharesMenuBudget_AndDuplicateHandshakeStillClosesExhaustedConnection()
     {
         using var fixture = new BudgetFixture(enter: false);
         var session = new BudgetSession(fixture.World, fixture.Map, fixture.Clock);
@@ -205,14 +209,21 @@ public sealed class InputBudgetBoundaryTests
         Assert.False(session.IsLoggedIn);
         session.OnRecvPacket(new C_Login { accountName = "late_login" }.Write());
         fixture.World!.Accounts.Tick();
+        Assert.False(session.IsLoggedIn);
+        Assert.Empty(session.Packets(PacketID.S_LoginResult));
+
+        fixture.Clock.AdvanceMilliseconds(1000);
+        session.OnRecvPacket(new C_Login { accountName = "late_login" }.Write());
+        fixture.World.Accounts.Tick();
         Assert.True(session.IsLoggedIn);
 
         fixture.Log.GetStringBuilder().Clear();
         for (int index = 0; index < 100; index++)
             session.OnRecvPacket(new C_Login { accountName = "late_login" }.Write());
-        Assert.Equal(100, fixture.InputLogCount);
-        Assert.Equal(100, fixture.Lines.Count(line => line.Contains("Duplicate C_Login", StringComparison.Ordinal)));
-        Assert.DoesNotContain("[InputBudget]", fixture.Log.ToString());
+        // The successful login consumed one admission in this new window.
+        Assert.Equal(9, fixture.InputLogCount);
+        Assert.Equal(9, fixture.Lines.Count(line => line.Contains("Duplicate C_Login", StringComparison.Ordinal)));
+        Assert.Equal(1, fixture.WarningCount("menu"));
         Assert.Equal(0, session.DisconnectCalls);
 
         session.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
@@ -257,7 +268,7 @@ public sealed class InputBudgetBoundaryTests
     [InlineData(PacketID.C_DungeonClearConfirm, "Other")]
     [InlineData(PacketID.C_MoveIntent, "None")]
     [InlineData(PacketID.C_Handshake, "None")]
-    [InlineData(PacketID.C_Login, "None")]
+    [InlineData(PacketID.C_Login, "Menu")]
 #if DEBUG
     [InlineData(PacketID.C_CheatCommand, "None")]
 #endif

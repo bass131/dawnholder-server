@@ -208,19 +208,7 @@ public class GameSession : PacketSession
         {
             // 핸드셰이크 경계 뒤, 입력별 진단과 Handle/틱 큐 앞에서 비용을 제한한다.
             // 선택 전제조건에 거부되는 입력도 예산을 소비해 진단 로그 폭주를 막는다.
-            if (handler.BudgetKind != InputBudgetKind.None)
-            {
-                IntentRateLimiter budget = _inputBudgets[handler.BudgetKind];
-                if (!budget.TryConsume(out bool firstWarn))
-                {
-                    if (firstWarn)
-                    {
-                        Console.WriteLine(
-                            $"[InputBudget] {handler.BudgetKind} exceeded {budget.Limit}/s — dropping input (first warning this window)");
-                    }
-                    return;
-                }
-            }
+            if (!TryConsumeInputBudget(handler.BudgetKind)) return;
 
             // Ping은 핸들러에서 기록하고 MoveIntent는 기존처럼 개별 로그를 생략한다.
             if (id != PacketID.C_MoveIntent && id != PacketID.C_Ping)
@@ -240,6 +228,7 @@ public class GameSession : PacketSession
         }
         else
         {
+            if (!TryConsumeInputBudget(InputBudgetKind.Other)) return;
             Console.WriteLine($"[GameSession] Unknown PacketId {packetId} — dropped");
         }
     }
@@ -875,6 +864,21 @@ public class GameSession : PacketSession
 
     // 종료 대상을 소켓 스레드의 순간적인 맵 조회로 결정하지 않는다.
     protected virtual void RequestWorldClose() => _world?.RequestSessionClose(this);
+
+    bool TryConsumeInputBudget(InputBudgetKind kind)
+    {
+        if (kind == InputBudgetKind.None) return true;
+
+        IntentRateLimiter budget = _inputBudgets[kind];
+        if (budget.TryConsume(out bool firstWarn)) return true;
+
+        if (firstWarn)
+        {
+            Console.WriteLine(
+                $"[InputBudget] {kind} exceeded {budget.Limit}/s — dropping input (first warning this window)");
+        }
+        return false;
+    }
 
     void SubmitGuildRequest(Action<GuildRegistry, int> enqueue)
     {
