@@ -1,7 +1,7 @@
 # 전체 코드 감사 운영툴 묶음 수정과 실행 검증
 
 - 파트: Management · 리드 `[Management 리드 Opus]`(claude-opus-5-5 xhigh)
-- 상태: **승인됨**(사용자 계획 검토 A, 11-11 02:0x KST). 선행 시험 단계.
+- 상태: **승인됨**(사용자 계획 검토 A, 11-11 02:0x KST). 선행 시험 끝, 첫 PR(3번) 구현 단계.
 - 승인한 판: 이 파일 SHA256 `240e297b80be8fdbccf3694530077e28cb9e30caa8e8e9dfbf6687bd48f93f1b`(메인이 승인 뒤 대조). 그 뒤의 고침은 착수 회신 `msg_2296395f7b76`이 적으라고 한 기록과 상태 갱신이며 범위 네 항목은 바꾸지 않았다.
 - 기준: main `c9dc44e44c4f37e598e2dd70ea0aa18d579529be`(PR310, 문서 4개 파일. 초안 기준 `7a724f18`에서 앞으로 맞춤, `05_Management` 변경 없음) · branch `fix/management-audit-fixes-20261110`
 - 작업 폴더: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-audit-fixes`. 정본 표의 `management-active`는 쓰지 않는다. 이유는 「적용 중인 메인 결정」에 있다.
@@ -12,7 +12,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 선행 시험 작성자의 진행을 확인한다. 작업자가 없으면 근거 폴더 `tests-first/`의 계약과 결과를 먼저 본다.
+**다음 첫 일:** 3번 구현자의 진행을 확인한다. 작업자가 없으면 근거 폴더 `impl-item3/`의 계약과 결과를 먼저 본다. 둘째 PR의 시험은 branch `fix/management-audit-backend-lifetime-20261111`에 있다(아래 「선행 시험 결과」).
 
 막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context-audit-fixes-folder.md`(앞 리드의 `lead-context.md`는 당시 기록이다), 범위 문서 사본은 같은 폴더의 `fix-scope-management.md`다.
 
@@ -21,8 +21,8 @@
 PR 번호는 PR을 여는 때 채운다.
 
 - [x] 초안 승인
-- [>] 선행 시험 작성
-- [ ] BACKLOG 읽기 구현
+- [x] 선행 시험 작성
+- [>] BACKLOG 읽기 구현
 - [ ] BACKLOG 읽기 검증
 - [ ] BACKLOG PR 병합
 - [ ] 백엔드 수명 구현
@@ -128,6 +128,8 @@ PR 번호는 PR을 여는 때 채운다.
 | 첫 PR | 3번 BACKLOG 읽기 | 강 | 프런트엔드 파일 읽기만 바뀐다. `records:check`의 backlog 그룹 실패를 실행으로 확인했고 「이후 작업」 탭은 같은 읽기 경로라 막힐 것으로 본다(앱 화면은 미실행). 다른 변경과 독립으로 작게 유지해 병합을 따로 고를 수 있게 한다. 병합돼도 시연 앱에는 들어가지 않는다. 시연 앱은 `management-active`의 `acd5a7db`에서 빌드되며, 시연에 넣을지는 사용자가 따로 정한다. |
 | 둘째 PR | 1번·2번 백엔드 수명 | 강 | 둘 다 백엔드 프로세스의 시작·종료 소유 문제라 한 검증자가 함께 본다. 시작·종료 동작을 바꾸므로 발표 전 병합은 권하지 않는다. |
 
+첫 PR은 branch `fix/management-audit-fixes-20261110`, 둘째 PR은 branch `fix/management-audit-backend-lifetime-20261111`이다. 둘째 branch는 goal 커밋 `d894105c` 위에 1·2번 시험 커밋 `c7ebc0e6`을 두었고, 첫 PR 병합 뒤 main 위로 다시 올린다. 첫 PR의 작업 트리에 1·2번 시험이 섞이지 않게 하려는 것이다.
+
 한 PR마다 구현자 하나, 검증자 하나다. 선행 시험은 한 세션이 세 건을 PR 순서로 쓴다. 전체 세션은 선행 시험 1, 구현 2, 검증 2, Gardener 1이다. 등급 근거의 줄 수 원시는 구현 뒤 계약에 적는다.
 
 ## 항목별 선행 시험 계획
@@ -142,7 +144,7 @@ PR 번호는 PR을 여는 때 채운다.
 
 | 단계 | 명령 | 자원·부작용 | 상태 |
 |---|---|---|---|
-| 프런트엔드 시험·타입 | `05_Management/frontend`에서 `npm test`, `npm run typecheck`, `npm run desktop:typecheck`, `npm run mcp:typecheck` | 이 checkout의 `node_modules`. 이 PC의 Node v24.14.1은 `engines`의 `^24.15.0` 밖이라 `npm ci`가 경고를 낸다(exit 0). 기준선과 수정 뒤를 같은 Node로 돌리고 버전을 적는다. | 계획, 요청 없이 실행 |
+| 프런트엔드 시험·타입 | `05_Management/frontend`에서 `npm run mcp:build` 뒤 `npm test`, `npm run typecheck`, `npm run desktop:typecheck`, `npm run mcp:typecheck` | 이 checkout의 `node_modules`. `mcp:build`는 Git 제외 `mcp-dist/`만 쓴다. 이것 없이 돌린 선행 시험 기준선에서는 MCP 시험 37건과 파일 2개가 빌드 출력 없음으로 실패했다. 그 MCP 시험이 공동 조회의 구간 상한을 지키므로 구현 전후 기준선에 넣는다. 이 PC의 Node v24.14.1은 `engines`의 `^24.15.0` 밖이라 `npm ci`가 경고를 낸다(exit 0). 기준선과 수정 뒤를 같은 Node로 돌리고 버전을 적는다. | 계획, 요청 없이 실행 |
 | 기록 검사 | `npm run records:check` | 읽기만(전이 import 정적 검사 `records-check/import-write-audit.out`) | 리드의 범위 확인 1회 끝. 기준선은 선행 시험 작성자가 다시 돈다 |
 | 백엔드 시험 | 근거 폴더의 `backend-test-preflight/backend-test-run.sh <새 출력 폴더>`를 `MSYS_NO_PATHCONV=1 wsl.exe -d Ubuntu --exec bash`로 실행한다. 이 harness가 `env HOME=/tmp/management-audit-home DAWNHOLDER_DOTNET=/home/user/.dotnet/dotnet bash <이 checkout의 WSL 경로>/05_Management/backend/backend-wsl.sh test`를 감싸고 앞뒤 불변 근거를 남긴다. | 임시 HOME에 빌드 사본과 NuGet 캐시. 사용자의 `~/.cache`·설정·데이터 폴더를 쓰지 않는다. `HOME` 전달과 SDK 위치는 `printenv`·`--list-sdks`로 확인했고 시험 전체는 미실행이다. 「실행 조건」의 코드 확인과 전후 불변 근거를 함께 남긴다. | 실행 창 필요 |
 | 2번 실제 진입 | 검증자 실행 도구가 임시 연결 파일에 대역 프로세스의 번호를 적고 실제 `wsl.exe`로 확인·신호 경로를 지난다 | 대역 프로세스만 신호를 받는다. WSL을 쓴다. | 실행 창 필요 |
@@ -183,6 +185,16 @@ PR 번호는 PR을 여는 때 채운다.
 - `too-large` 뒤의 경로는 관측하지 못했다. `record-index-check.ts`는 읽기에 성공해도 `uncheckedLinks`가 있으면 backlog를 실패로 처리하므로, 고친 뒤 `backlog=ran`이 되는지는 구현 뒤 실행으로 확인한다.
 - 범위 밖 기존 오류: 같은 실행의 `SOURCE_TOO_LARGE` 한 건은 색인 `persistence-integration-goal`의 「재개 지점」 구간이 256 KiB 상한을 넘은 것이다(`catalog-section-probe.out`). 공유 구간 상한을 올리지 않는다는 이 goal의 경계에 따라 고치지 않고 다음 계획 후보로 둔다.
 - 기준 판이 `c9dc44e4`로 올라가 BACKLOG는 340,216바이트가 됐다(`wc -c`, 11-11 02:11 KST). 3번 시험은 특정 바이트 수에 기대지 않고, PR을 올리기 전에 실제 크기를 다시 잰다.
+
+## 선행 시험 결과
+
+`[Management 시험 Opus]` 한 세션이 계약 v1과 보충 v1.1로 썼다(근거 폴더 `tests-first/report.md`). 리드가 원시 표본을 대조했다.
+
+- 수정 전에 요구 사유로 실패하는 시험: 3번 4건, 2번 24건, 1번 4건. 컴파일·환경 실패는 0건이다.
+- 고친 기존 시험은 사용자에게 보인 넷이고, 그중 2번 두 파일은 대역만 보정해 단정이 그대로다. 수정 뒤 깨질 기존 시험의 전수 결과 추가 대상은 0건이다(코드 읽기, 미실행).
+- 백엔드 기준선: 99 통과, 실제 경로 불변, 잔여 프로세스 0(`tests-first/backend-runs/baseline/`). 1번 실패 확인은 같은 명령으로 105건 중 4건 실패다(`backend-runs/item1-red/`).
+- 프런트엔드 기준선: `npm test`가 수정 전부터 45건 실패했다. 분류는 `tests-first/frontend-baseline/failures-classified.md`다. 3번 실제 회귀 2, 범위 밖 실제 회귀 1(위 `persistence-integration-goal` 구간), 옛 세부 단정 1(`desktop-main.test.ts`의 1280×720), MCP 빌드 출력 없음 37, 원인 미확정 4다. 이 goal 밖의 실패는 고치지 않고 PR 보고에 공개한다.
+- 설계 보충(v1.1, 리드 결정): 붙을 때 `/proc/<pid>/stat`을 못 읽어도 붙기는 성공하고 종료 신호만 보내지 않고 기록한다. 기록은 대상 pid가 든 로그 줄로 판정한다. 둘째 백엔드의 거절 출력에는 데이터 폴더 경로가 든다.
 
 ## 백엔드 시험 안전 전제
 
