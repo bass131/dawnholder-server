@@ -97,7 +97,9 @@ public sealed class GuildIndependentLifetimeTests : IDisposable
 
         sender.Receive(IndependentWire.GuildRequest());
         sender.Receive(IndependentWire.InventoryRequest());
-        for (int i = 0; i < 200; i++)
+        // Stay below the shared ingress budget of 30/s so this burst tests the pending guild slot.
+        // More than one payable request must still be rejected, and a later request must succeed.
+        for (int i = 0; i < 20; i++)
         {
             sender.Receive(i % 2 == 0
                 ? IndependentWire.StrongholdUpgrade(before.GuildRevision)
