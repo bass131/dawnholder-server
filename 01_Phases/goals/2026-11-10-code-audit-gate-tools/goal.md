@@ -9,7 +9,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 선행 시험 계약을 발행하고 작업자 하나를 띄운다. 계약과 원시는 근거 폴더의 `tdd/`에 둔다.
+**다음 첫 일:** 셸 분석 멈춤 수정의 구현 계약을 발행한다. branch는 `fix/rules-audit-shell-blank-20261110`, 근거는 `pr-shell/`이다. 선행 시험 계약과 원시는 `tdd/`에 있다.
 
 막힌 지점: 없음. 맥락 메모는 근거 폴더의 `rules-lead-context.md`, 승인 범위 문서는 `fix-scope-rules.md`(SHA256 `ee30d35dd614b1c405f01749c0ebf78c121c18afbac29969f766684682c8fa59`, 메인 원본과 일치)다.
 
@@ -173,7 +173,20 @@ Rules에 해당하는 부분은 「4) 계획 검토 - Rules … → A 승인 (�
 
 ## 결과와 남은 위험
 
-아직 없다.
+### 선행 시험 결과
+
+세션 하나(`[Rules 시험 Opus]`, 첫 화면 Opus 5.5 high, backend unknown)가 세 건을 썼다. 계약·보고·원시는 근거 폴더 `tdd/`에 있다. 세 건 모두 재현됐고 범위에서 뺀 항목은 없다.
+
+| 번호 | 시험 파일 | 수정 전 실패 | 보존 | 수정 전 실패의 모양 |
+|---|---|---|---|---|
+| 3 | `SessionGuard.Tests/shell-blank.test.mjs` | 18 | 10 | 64MB 힙 안에서 hook이 exit 134로 끝남(메모리 부족) |
+| 2 | `MergeGate.Tests/api-writes.test.mjs` | 29 | 9 | 결정 없이 통과 |
+| 1 | `MergeGate.Tests/push-target.test.mjs` | 31 | 13 | 결정 없이 통과 28건, 반대 배치의 잘못된 차단 3건 |
+
+- 두 묶음의 기준선은 MergeGate 126건·SessionGuard 167건 전부 통과다. 시험을 더한 뒤 수정 전 코드의 최종 실행은 MergeGate 208건 중 실패 60건, SessionGuard 195건 중 실패 18건이다.
+- 최종 실패 78건이 수정 전 실패 분류 78건과 일치하고 기존 시험 실패는 0건이다. 리드가 `tdd/raw/`의 요약 줄과 대조했다.
+- 시험은 hook 입력 대역과 임시 저장소만 썼다. 실제 병합 명령, main으로 가는 push, API 호출은 실행하지 않았다.
+- 정산: `worker-release`는 retained·external_terminal·none이었고, 빈 prompt를 확인한 뒤 pane을 닫았다(`tdd/worker-release.json`, `tdd/terminal-close.json`).
 
 ## 다음 계획 후보
 
@@ -184,8 +197,8 @@ Rules에 해당하는 부분은 「4) 계획 검토 - Rules … → A 승인 (�
 PR 번호는 PR을 만들 때 채운다.
 
 - [x] goal 초안 승인
-- [>] 선행 시험 작성
-- [ ] 셸 분석 멈춤 구현
+- [x] 선행 시험 작성
+- [>] 셸 분석 멈춤 구현
 - [ ] 셸 분석 독립 검증
 - [ ] 관문 판정 구현
 - [ ] 관문 판정 독립 검증
