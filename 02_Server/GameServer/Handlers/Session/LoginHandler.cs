@@ -8,6 +8,7 @@ namespace Dawnholder.Server.GameServer.Handlers.Session;
 internal sealed class LoginHandler : IPacketHandler
 {
     public bool RequiresSelectedClass => false;
+    public InputBudgetKind BudgetKind => InputBudgetKind.None;
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {

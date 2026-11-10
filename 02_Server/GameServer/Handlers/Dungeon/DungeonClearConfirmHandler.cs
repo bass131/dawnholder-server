@@ -7,6 +7,7 @@ namespace Dawnholder.Server.GameServer.Handlers.Dungeon;
 internal sealed class DungeonClearConfirmHandler : IPacketHandler
 {
     public bool RequiresSelectedClass => true;
+    public InputBudgetKind BudgetKind => InputBudgetKind.Other;
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {

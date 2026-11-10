@@ -14,5 +14,9 @@ internal interface IPacketHandler
     // default 구현 없음: 새 핸들러가 누락하면 컴파일 에러 → 게이트 누락 구조적 불가화 (헌법 #3).
     bool RequiresSelectedClass { get; }
 
+    // 기본 구현 없음: 새 핸들러도 예산 종류 또는 명시적 None을 반드시 선택한다.
+    // 한도와 연결별 창은 GameSession이 소유하고 Handle 전에 소비한다.
+    InputBudgetKind BudgetKind { get; }
+
     void Handle(GameSession session, ArraySegment<byte> buffer);
 }

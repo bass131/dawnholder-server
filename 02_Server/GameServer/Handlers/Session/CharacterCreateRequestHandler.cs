@@ -6,6 +6,7 @@ namespace Dawnholder.Server.GameServer.Handlers.Session;
 internal sealed class CharacterCreateRequestHandler : IPacketHandler
 {
     public bool RequiresSelectedClass => false;
+    public InputBudgetKind BudgetKind => InputBudgetKind.Menu;
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {

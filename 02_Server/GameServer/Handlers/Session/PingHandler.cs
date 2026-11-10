@@ -9,6 +9,7 @@ internal sealed class PingHandler : IPacketHandler
 {
     // ping은 class 선택과 무관(연결 keepalive) — 전제조건 게이트 미적용.
     public bool RequiresSelectedClass => false;
+    public InputBudgetKind BudgetKind => InputBudgetKind.Ping;
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {

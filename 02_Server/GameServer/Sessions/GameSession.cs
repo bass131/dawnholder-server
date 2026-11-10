@@ -65,9 +65,12 @@ public class GameSession : PacketSession
     PlayerStats? _stats;
 
     // rate-limit (헌법 #3 fail-closed): 임계 초과 intent는 drop.
-    //   카운트는 임계 이상이어도 *계속 증가* (oscillation attack 방지).
+    //   창이 갱신되기 전까지 초과 입력은 계속 drop한다.
     //   drop만 — disconnect는 안 함 (정상 클라가 일시적 framerate spike로 임계 초과해도 게임 잘림 X).
-    readonly IntentRateLimiter _rateLimiter = new();
+    readonly IntentRateLimiter _rateLimiter;
+
+    // 이 연결의 직렬 수신 흐름만 소비한다. 종류가 같은 핸들러는 창과 경고를 공유한다.
+    readonly Dictionary<InputBudgetKind, IntentRateLimiter> _inputBudgets;
 
     // 현재 맵 추적 필드.
     //
@@ -86,10 +89,23 @@ public class GameSession : PacketSession
     // 수신 흐름의 진입 요청 발행 gate. 실제 등록은 맵 틱이 소유한다.
     bool _worldEntryRequested;
 
-    public GameSession(GameWorld? world = null, CharacterAdmissionServices? persistence = null)
+    public GameSession(GameWorld? world = null, CharacterAdmissionServices? persistence = null,
+        TimeProvider? timeProvider = null)
     {
         _world = world ?? GameWorld.Instance;
         _persistence = persistence ?? _world?.Persistence;
+        TimeProvider clock = timeProvider ?? TimeProvider.System;
+        _rateLimiter = new IntentRateLimiter(timeProvider: clock);
+        // 수신 예산 수치의 원천. 종류 선언은 각 IPacketHandler.BudgetKind에서 찾는다.
+        // 이동은 SubmitMoveIntent의 기존 예산을 쓰므로 여기서 중복 소비하지 않는다.
+        _inputBudgets = new Dictionary<InputBudgetKind, IntentRateLimiter>
+        {
+            [InputBudgetKind.Attack] = new(20, clock),
+            [InputBudgetKind.Skill] = new(20, clock),
+            [InputBudgetKind.Menu] = new(10, clock),
+            [InputBudgetKind.Ping] = new(10, clock),
+            [InputBudgetKind.Other] = new(30, clock),
+        };
         // Both services constructors report Stored, so only the Catalog decides the path
         // (same predicate as CharacterAdmissionServices.CreateLifetime). The selector-bound
         // constructor keeps the class-select entry and has no catalog menu.
@@ -162,12 +178,6 @@ public class GameSession : PacketSession
             new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
         PacketID id = (PacketID)packetId;
 
-        // 패킷 종류 추적 로그. spam 패킷(C_MoveIntent 20Hz / C_Ping)은 제외 — 드문 패킷만 박음.
-        if (id != PacketID.C_MoveIntent && id != PacketID.C_Ping)
-        {
-            Console.WriteLine($"[GameSession] OnRecv {id} ({buffer.Count} bytes)");
-        }
-
         // 헌법 #2: first-packet 강제. handshake 통과 전엔 다른 dispatch X (게이트는 session 책임).
         if (!_handshakeCompleted)
         {
@@ -196,6 +206,28 @@ public class GameSession : PacketSession
         // Dictionary dispatch. 새 핸들러 추가 = HandlerRegistry._handlers에 한 줄 등록. 누락 시 unknown drop.
         if (HandlerRegistry.TryGet(id, out IPacketHandler handler))
         {
+            // 핸드셰이크 경계 뒤, 입력별 진단과 Handle/틱 큐 앞에서 비용을 제한한다.
+            // 선택 전제조건에 거부되는 입력도 예산을 소비해 진단 로그 폭주를 막는다.
+            if (handler.BudgetKind != InputBudgetKind.None)
+            {
+                IntentRateLimiter budget = _inputBudgets[handler.BudgetKind];
+                if (!budget.TryConsume(out bool firstWarn))
+                {
+                    if (firstWarn)
+                    {
+                        Console.WriteLine(
+                            $"[InputBudget] {handler.BudgetKind} exceeded {budget.Limit}/s — dropping input (first warning this window)");
+                    }
+                    return;
+                }
+            }
+
+            // Ping은 핸들러에서 기록하고 MoveIntent는 기존처럼 개별 로그를 생략한다.
+            if (id != PacketID.C_MoveIntent && id != PacketID.C_Ping)
+            {
+                Console.WriteLine($"[GameSession] OnRecv {id} ({buffer.Count} bytes)");
+            }
+
             // 전제조건 일괄 게이트 (헌법 #3): class 선택 전 게임플레이 입력은 신뢰 경계 위반 → silent drop.
             //   옛 8핸들러 첫 줄 복붙(`if (!HasSelectedClass)`)을 RequiresSelectedClass 선언 + 이 한 곳으로 통합.
             //   Handle *전*에 실행 = 기존 핸들러-첫줄과 동일 시점 (drop 동작 동치 보존).

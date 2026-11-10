@@ -7,6 +7,7 @@ namespace Dawnholder.Server.GameServer.Handlers.Inventory;
 internal sealed class InventoryRequestHandler : IPacketHandler
 {
     public bool RequiresSelectedClass => true;
+    public InputBudgetKind BudgetKind => InputBudgetKind.Other;
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {

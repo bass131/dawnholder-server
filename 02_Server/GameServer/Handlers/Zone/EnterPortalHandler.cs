@@ -16,6 +16,7 @@ internal sealed class EnterPortalHandler : IPacketHandler
 {
     // 포털 진입 — class 선택 전엔 stats null → AddPlayerWithId 불가. dispatch 일괄 게이트가 silent drop.
     public bool RequiresSelectedClass => true;
+    public InputBudgetKind BudgetKind => InputBudgetKind.Other;
 
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
