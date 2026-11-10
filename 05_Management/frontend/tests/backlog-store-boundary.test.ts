@@ -2,8 +2,9 @@
 // Requirement: backlog-menu-design.md 「goal 링크 판정 순서」 (steps 1-4, the reason in the
 // REJECTED cause, the fixed sentences) and the read-result table of 「두 단계」: in the behaviour step
 // BACKLOG.md and every goal link go through the app's source reading boundary, so links, junctions,
-// letter case, the 1 MiB file and 256 KiB content limits and strict UTF-8 are judged as the app's
-// source reading judges them (index-v2-design.md 「원문 구간 읽기 경계」). These fail until the
+// letter case, the 1 MiB file limit and strict UTF-8 are judged as the app's source reading judges
+// them (index-v2-design.md 「원문 구간 읽기 경계」). The 256 KiB section limit does not apply to
+// BACKLOG.md as a whole (goal 2026-11-10-code-audit-management-fixes 「만들 것」 3). These fail until the
 // behaviour step. Each case uses an owned TEMP repository, real junctions and the real
 // createBacklogStore; sentences are copied from the design tables, never computed by the product.
 import { existsSync, symlinkSync } from 'node:fs';
@@ -155,7 +156,8 @@ describe('BACKLOG.md read through the source reading boundary (behaviour step)',
     expect(await read()).toEqual(READ_FAILURES.tooLarge);
   });
 
-  it('returns too-large for content over 256 KiB in a file under 1 MiB, and reads content of exactly 256 KiB', async () => {
+  // goal 2026-11-10-code-audit-management-fixes 「만들 것」 3: BACKLOG.md as a whole takes only the 1 MiB file limit.
+  it('goal 3: reads content of exactly 256 KiB and content one byte over it, both in a file under 1 MiB', async () => {
     const head = candidatesWithPadding('').byteLength;
     // head already ends with the padding line's newline; the padding fills the rest of the limit.
     const atLimit = candidatesWithPadding('x'.repeat(CONTENT_LIMIT - head));
@@ -167,7 +169,7 @@ describe('BACKLOG.md read through the source reading boundary (behaviour step)',
     repository.write(BACKLOG_PATH, overLimit);
     const overLimitResult = await read();
     expect(atLimitResult).toMatchObject({ ok: true, issues: [], uncheckedLinks: [] });
-    expect(overLimitResult).toEqual(READ_FAILURES.tooLarge);
+    expect(overLimitResult).toMatchObject({ ok: true, issues: [], uncheckedLinks: [] });
   });
 
   it('returns invalid-encoding with the fixed sentence for bytes that are not strict UTF-8', async () => {
