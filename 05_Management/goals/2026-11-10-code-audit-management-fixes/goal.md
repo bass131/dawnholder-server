@@ -196,6 +196,12 @@ PR 번호는 PR을 여는 때 채운다.
 - 프런트엔드 기준선: `npm test`가 수정 전부터 45건 실패했다. 분류는 `tests-first/frontend-baseline/failures-classified.md`다. 3번 실제 회귀 2, 범위 밖 실제 회귀 1(위 `persistence-integration-goal` 구간), 옛 세부 단정 1(`desktop-main.test.ts`의 1280×720), MCP 빌드 출력 없음 37, 원인 미확정 4다. 이 goal 밖의 실패는 고치지 않고 PR 보고에 공개한다.
 - 설계 보충(v1.1, 리드 결정): 붙을 때 `/proc/<pid>/stat`을 못 읽어도 붙기는 성공하고 종료 신호만 보내지 않고 기록한다. 기록은 대상 pid가 든 로그 줄로 판정한다. 둘째 백엔드의 거절 출력에는 데이터 폴더 경로가 든다.
 
+## 구현 중 정한 것
+
+- 3번 구현 계약 보충 v1.1(근거 폴더 `impl-item3/contract-v1.1-supplement.md`, 구현자 질문 `msg_574805ceff57`의 리드 답).
+  - 「건드릴 곳」 3번 밖의 문서 줄 하나를 넣었다. `goals/2026-10-06-record-source-unification/index-v2-design.md` 「원문 구간 읽기 경계」의 「진입 함수는 둘」 문장(61행)과 진입 함수 목록 한 줄이다. 새 전체 읽기 진입점이 그 문장을 틀리게 만들기 때문이다. 같은 이유로 `backlog-menu-design.md`는 71행 말고 60행의 진입점 이름도 고칠 수 있게 했다. PR 본문에 적는다.
+  - BOM은 종전 동작을 유지한다. 256 KiB 이하 BACKLOG에서 전체 읽기의 텍스트는 공유 읽기(`section: null`)와 같다. 크기 상한 말고는 바뀌지 않게 하려는 것이다.
+
 ## 백엔드 시험 안전 전제
 
 시험 기본값이 포트 7777과 실제 데이터 경로를 쓰지 않는다는 것을 코드로 확인했다(정적 대조이며 실행 관측이 아니다). 표와 예외 검색 범위는 근거 폴더의 `backend-test-preflight/defaults-check.md`다.
