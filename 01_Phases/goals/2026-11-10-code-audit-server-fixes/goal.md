@@ -8,7 +8,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR1 독립 검증자의 `worker_done`을 받아 판정 원문을 대조한다. PASS면 PR1을 push·PR 생성하고 정확한 head 40자와 판정 경로를 메인에 보낸다.
+**다음 첫 일:** PR2 입력 예산의 구현 계약을 발행한다. 새 branch는 PR1 head 위에 만들고, 선행 시험 `tdd/held/GameSessionInputBudgetTests.cs`를 hash 대조 뒤 되돌린다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
 막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1 계약과 원시는 `pr1/`이다. PR2·PR4의 선행 시험은 `tdd/held/`에 두었고 해당 PR을 시작할 때 hash를 대조해 되돌린다.
 
@@ -57,6 +57,12 @@
 2. 8번 사망 사례 제외에 동의한다. 선행 시험 파일 수정은 TDD 정본의 선행 시험 수정 절차를 따르고, **PR4 검증자 계약에 그 변경을 대조 대상으로 넣는다.**
 3. 2번 시험 가운데 공유 예산·창 경과 사례는 실제 시간에 기댄다(`tdd/report.md` 49·58행). **PR2 검증자 계약에 그 클래스의 반복 실행을 넣어** 불안정 여부를 본다. 불안정하면 결함 번호로 받는다.
 4. PR1 구현·검증 세션의 Codex 크레딧 실측 보고. **`msg_ccc1e4849cb4`로 취소됐다.**
+
+### 메인 `msg_076badf9a3ef` — PR1 구현 보고 회신
+
+1. 연결별 메모리 상한은 **32 MiB로 확정**한다. 메인 추정(미실측): 실제 전송 바이트는 작아 커널 송신 버퍼가 먼저 흡수하므로 대기열은 상대가 오래 읽지 않을 때만 쌓이고 짧은 지연으로는 상한에 닿지 않는다. 측정 한계: 실측 최대 65,535바이트·1조각은 읽기를 멈춘 상대가 없는 loopback 봇의 값이다.
+2. 기존 시험 실패 2건은 PR1 보고에 분류 표로 넣는다. 메인이 승인 요청 전에 원천과 대조한다.
+3. 봇 기준선 실패 2건을 기준선 실패로 적고 다음 계획 후보로 올린다. 원인 조사는 이 goal에서 하지 않는다. 이후 PR의 봇 판정은 수정 전후 같은 결과로 보고, 대시 피해·보스전 경로는 봇으로 확인되지 않았다고 PR 보고에 적는다.
 
 ## 범위
 
@@ -212,6 +218,21 @@ R-7은 메인 승인이 없어 비해당이다. 실제 변경 줄 수의 원시�
 - 송신 대기량 실측: 8개 연결의 최대 `backingBytes=65,535`, `segments=1`(`pr1/raw/summary-1.json`). 읽기를 멈추는 상대가 없는 loopback 봇의 값이라 정지 상황의 여유를 말해 주지 않는다. 그래서 32 MiB를 올리거나 낮출 근거가 되지 못하며, 리드 제안은 유지다. 메인에 원시값과 함께 보고한다.
 - 서식 검사: Windows에 고정 SDK 10.0.301이 없어(`8.0.427`·`10.0.103`만 있음) **미실행**이다. 정식 판정은 PR의 CI(`dotnet-tests.yml`)로 받는다.
 
+### PR1 독립 검증 결과
+
+검증자 `[Core 검증자]`(화면 `GPT-6-Astra xhigh`, backend unknown), 완료 `msg_454bd9c2f2ad`, 판정 원문 `pr1/verify/verdict.md`: **PASS, 제품 결함 없음.** 리드가 원시 요약을 대조했다.
+
+- 전체 시험: 시험 변경 전 실패 2·통과 2,581·건너뜀 28·전체 2,611, 변경 뒤 실패 0·통과 2,604·건너뜀 28·전체 2,632(새 독립 시험 21사례 포함).
+- 봇: 2 통과·2 실패로 수정 전과 같다. 실제 서버 경로다. 기준선 실패는 `DashSmoke` 「Path enemy found but no S_HitResult(hitEffect=3) received」, `BossFightSmoke` 「reapproach timeout at attempt 1 — bot could not close to boss」다. **대시 피해와 보스전 경로는 봇으로 확인되지 않았다.**
+- 미실행: 정식 서식 검사(Windows SDK 없음, PR CI로 판정), Unity 시험·DB 저장(최종 head에서 1회).
+
+기존 시험 분류(`msg_71e41e231d55` 정본, 판정 표 `pr1/verify/verdict.md` 64~67행):
+
+| 시험 | 수정 전 기대 | 수정 뒤 실제 | 분류 | 근거 | 원시 |
+|---|---|---|---|---|---|
+| `SessionDisconnectCleanupTests.Disconnect_EndpointUnavailable_ClearsBuffersEvenWhenDiagnosticWriterFails(logThrows: False)` | `ObjectDisposedException`, 알림 0회 | 예외 없음, 알림 1회, 버퍼 정리 | (a) 옛 구현 세부 단정, 의도된 동작 변화. 제품 회귀 아님 | 항목 3 요구: 소켓이 먼저 닫혀도 `OnDisconnected`를 한 번 부른다(`pr1/contract.md` 항목 3). 안 부르면 플레이어 정리가 일어나지 않는다 | `pr1/verify/raw/full-before.log`, `full-after-1.log`, `cleanup-tests.diff` |
+| 같은 시험 `(logThrows: True)` | 위와 같음 | 위와 같음, 진단 writer 시도 유지 | 위와 같음 | 위와 같음 | 위와 같음 |
+
 ### 남은 위험
 
 아래는 메인 지시 `msg_2fd9d770d23b`로 기록한다.
@@ -225,6 +246,7 @@ R-7은 메인 승인이 없어 비해당이다. 실제 변경 줄 수의 원시�
 
 - 패킷마다 65,535바이트 배열을 만드는 생성기를 패킷 크기에 맞게 바꾸기(`GenPackets.cs`의 `Write()`, 메인 지시 `msg_2fd9d770d23b`).
 - 사망 상태의 이동 미잠금: `DeathState`가 `LocksMovement`를 재정의하지 않아 기본값 false다. `PlayerPhysicsSystem.cs:40`의 주석은 Death도 잠근다고 적었다. 선행 시험에서 사망 중 버퍼 점프 발사를 관측했다(`tdd/report.md`, 리드가 `LocksMovement` 검색으로 재정의 위치 두 곳을 확인). 승인 범위가 공격·피격이라 이번에 고치지 않는다.
+- `bot-dash-boss-baseline-failure` 봇 기준선 실패: 수정 전 main `acd5a7db`에서 `DashSmoke`·`BossFightSmoke`가 실패한다(`pr1/raw/bot-before.log`, 메인 확인 `msg_076badf9a3ef`). BACKLOG와 감사 산출물에 없던 새 관측이다. 원인 미조사. 메인이 시험 신뢰도 묶음의 범위로 사용자에게 올린다. BACKLOG 등록은 다른 후보와 함께 종료 기록 PR에서 한다.
 
 ## 진척 단계
 
@@ -232,8 +254,8 @@ PR 번호는 PR을 만들 때 채운다.
 
 - [x] goal 초안 승인
 - [x] 선행 시험 작성
-- [>] 연결 계층 구현
-- [ ] 입력 예산 구현
+- [x] 연결 계층 구현
+- [>] 입력 예산 구현
 - [ ] 종료 경로 구현
 - [ ] 게임 규칙 구현
 - [ ] 통합 실행 검증
