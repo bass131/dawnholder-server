@@ -1,7 +1,7 @@
 # 전체 코드 감사 운영툴 묶음 수정과 실행 검증
 
 - 파트: Management · 리드 `[Management 리드 Opus]`(claude-opus-5-5 xhigh)
-- 상태: **승인됨**(사용자 계획 검토 A, 11-11 02:0x KST). 첫 PR(3번) 구현 끝(커밋 `51a096e3`), 독립 검증 단계.
+- 상태: **승인됨**(사용자 계획 검토 A, 11-11 02:0x KST). 첫 PR(3번)은 독립 검증 차단(결함 #1)으로 수정 대기, 둘째 PR(1·2번) 구현 단계.
 - 승인한 판: 이 파일 SHA256 `240e297b80be8fdbccf3694530077e28cb9e30caa8e8e9dfbf6687bd48f93f1b`(메인이 승인 뒤 대조). 그 뒤의 고침은 착수 회신 `msg_2296395f7b76`이 적으라고 한 기록과 상태 갱신이며 범위 네 항목은 바꾸지 않았다.
 - 기준: main `c9dc44e44c4f37e598e2dd70ea0aa18d579529be`(PR310, 문서 4개 파일. 초안 기준 `7a724f18`에서 앞으로 맞춤, `05_Management` 변경 없음) · branch `fix/management-audit-fixes-20261110`
 - 작업 폴더: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-audit-fixes`. 정본 표의 `management-active`는 쓰지 않는다. 이유는 「적용 중인 메인 결정」에 있다.
@@ -12,7 +12,9 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 3번 독립 검증자(`[Management 검증자]`, Task `task_f0ff1218d82e`)의 판정을 받는다. 작업자가 없으면 근거 폴더 `verify-item3/`의 계약과 판정을 먼저 본다. 검증자는 차단 결함 #1을 예고했다. 실제 BACKLOG 시험(`backlog-store-actual.test.ts`)이 전체 실행 부하에서 기본 5초 한도를 넘는다. 원인 측정 뒤 리드가 제품 쪽(링크 판정 비용)과 시험 쪽(한도) 중 수정 방향을 정하고 새 구현자로 고친다. 둘째 PR의 시험은 branch `fix/management-audit-backend-lifetime-20261111`에 있다(아래 「선행 시험 결과」). 그 branch는 goal 최신 기록이 없는 `d894105c` 위라, 첫 PR을 올린 뒤 첫 PR head 위에 시험 커밋을 다시 얹어 쓴다.
+**다음 첫 일:** 둘째 PR(1·2번) 구현자의 진행을 확인한다. 작업자가 없으면 근거 폴더 `impl-item12/`의 계약과 결과를 먼저 본다. 작업 branch는 `fix/management-audit-backend-lifetime-20261111`이다. 이 goal의 살아 있는 판은 지금 그 branch에 있다.
+
+3번 독립 검증은 차단 판정(결함 #1)으로 끝났다(근거 폴더 `verify-item3/verdict.md`, 아래 「3번 검증 결과와 결함 #1」). 결함 #1 수정에는 실행 창이 필요 없어서, 실행 창이 닫히는 11-11 12:00 KST 전에는 둘째 PR을 먼저 진행한다. 둘째 PR 검증이 끝나면 첫 branch로 돌아가 결함 #1을 고친다. 병합 순서는 그대로 첫 PR이 먼저다. 둘째 branch에는 첫 PR의 제품 코드를 싣지 않고 goal 기록 커밋만 옮겼다.
 
 막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context-audit-fixes-folder.md`(앞 리드의 `lead-context.md`는 당시 기록이다), 범위 문서 사본은 같은 폴더의 `fix-scope-management.md`다.
 
@@ -23,9 +25,9 @@ PR 번호는 PR을 여는 때 채운다.
 - [x] 초안 승인
 - [x] 선행 시험 작성
 - [x] BACKLOG 읽기 구현
-- [>] BACKLOG 읽기 검증
+- [>] BACKLOG 읽기 검증(차단 결함 #1, 수정 대기)
 - [ ] BACKLOG PR 병합
-- [ ] 백엔드 수명 구현
+- [>] 백엔드 수명 구현
 - [ ] 백엔드 수명 검증
 - [ ] 운영툴 실제 실행
 - [ ] 백엔드 수명 PR 병합
@@ -201,6 +203,17 @@ PR 번호는 PR을 여는 때 채운다.
 - 3번 구현 계약 보충 v1.1(근거 폴더 `impl-item3/contract-v1.1-supplement.md`, 구현자 질문 `msg_574805ceff57`의 리드 답).
   - 「건드릴 곳」 3번 밖의 문서 줄 하나를 넣었다. `goals/2026-10-06-record-source-unification/index-v2-design.md` 「원문 구간 읽기 경계」의 「진입 함수는 둘」 문장(61행)과 진입 함수 목록 한 줄이다. 새 전체 읽기 진입점이 그 문장을 틀리게 만들기 때문이다. 같은 이유로 `backlog-menu-design.md`는 71행 말고 60행의 진입점 이름도 고칠 수 있게 했다. PR 본문에 적는다.
   - BOM은 종전 동작을 유지한다. 256 KiB 이하 BACKLOG에서 전체 읽기의 텍스트는 공유 읽기(`section: null`)와 같다. 크기 상한 말고는 바뀌지 않게 하려는 것이다.
+
+## 3번 검증 결과와 결함 #1
+
+새 독립 검증자 `[Management 검증자]`(Task `task_f0ff1218d82e`)의 판정은 **차단(결함 #1)**이다. 판정 파일은 근거 폴더 `verify-item3/verdict.md`(SHA256 `b8f2c91ed311f8f0ee3195cd8ea31d5ba40cc97b40c8beb5b313f6116ed1aeaa`)다. 대상은 HEAD `35eca851`(구현 커밋 `51a096e3`)이다.
+
+- 지적 없음: 구현 계약 조건 1~7, 선행 시험, 실제 진입(`records:check`가 실제 BACKLOG로 `backlog=ran`, 종료 코드는 범위 밖 오류로 1).
+- 결함 #1(중간, 차단): 표준 `npm test`에서 실제 저장소를 읽는 시험이 기본 5초 한도를 오간다. `backlog-store-actual`은 6회 중 3회 시간 초과였고, `diagram-asset-desktop`의 IPC 시험은 인자 없는 두 실행 모두 새로 실패했다. 반환 결과는 매번 정확했다.
+- 원인(측정): 저장소 읽기 한 번은 단독 233~451 ms, 전체 실행 안 1,079~1,944 ms다. 그중 goal 링크 판정 322회가 단독 89.5~93.3%, 전체 실행 안 95~98%다. 새 전체 읽기와 표 해석은 60 ms 아래다. 읽기가 성공하면서 그동안 돌지 않던 기존 링크 판정(`backlog-store.ts`의 링크마다 `inspectSourceFile`)이 돌게 된 것이다.
+- 리드 결정(수정 방향): 제품 쪽에서 `backlog-store.ts` 안에서만 고친다. 공유 경로 확인 `resolveSourceFile`은 MCP까지 쓰는 경계라 건드리지 않는다. 한 번의 읽기 안에서 같은 locator의 판정 결과를 재사용하는 것을 먼저 보고, issue는 지금처럼 등장마다 낸다. 동시 판정은 순서 위험이 있어 그것으로 부족할 때만 쓴다. 수정 전에 시험 작성자가 중복 링크 fixture에서 경로 확인 횟수를 세는 결정적 시험을 먼저 쓴다. 시험 한도를 올리는 쪽은 BACKLOG가 자라면 다시 걸리고 사용자에게 보인 고칠 시험 넷 밖이라 택하지 않았다.
+- 재검증은 통과 횟수가 아니라 소요로 판정한다. 지금 실패율이면 고치지 않아도 두 번 연속 통과할 수 있기 때문이다. 전체 실행 안의 해당 시험 ms와 측정용 시험(근거 폴더 `verify-item3/probe-files/`)의 링크 판정 ms를 전후로 비교한다.
+- 그 밖: 검증자는 `mcp-v2-bytes` 기존 실패를 (b) 환경에서 (c) 범위 밖 실제 회귀로 재분류했다. 검증자의 판정용 시험 `source-section-whole-read.test.ts`는 첫 branch에 커밋했다(`313c6d84`).
 
 ## 백엔드 시험 안전 전제
 
