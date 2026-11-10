@@ -119,12 +119,16 @@ public sealed class InputBudgetBoundaryTests
         foreach (uint sequence in new uint[] { 3, 4 })
             fixture.Session.OnRecvPacket(new C_CharacterCreateRequest
             {
-                requestId = sequence, slot = 0, classId = 0, rawName = "budget_name",
+                requestId = sequence,
+                slot = 0,
+                classId = 0,
+                rawName = "budget_name",
             }.Write());
         foreach (uint sequence in new uint[] { 5, 6 })
             fixture.Session.OnRecvPacket(new C_CharacterSelectRequest
             {
-                requestId = sequence, characterIdD = "11111111-1111-1111-1111-111111111111",
+                requestId = sequence,
+                characterIdD = "11111111-1111-1111-1111-111111111111",
             }.Write());
         // Invalid selections reach the handler but keep the fixture in the menu.
         fixture.Session.OnRecvPacket(new C_CharacterSelect { characterClass = 255 }.Write());
