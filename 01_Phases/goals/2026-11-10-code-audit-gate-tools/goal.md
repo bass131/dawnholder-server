@@ -9,7 +9,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 관문 판정 수정 계약 v2를 `pr-gate-fix1/`에 발행하고 새 구현자를 연다. 요구는 아래 「관문 판정 독립 검증 1회차」의 리드 판단과 고친 「설계 선택」 1번이다. 검증자 시험 `verify-push-api.test.mjs`는 로컬 커밋만 하고, 수정이 통과하기 전에는 원격에 올리지 않는다(PR312 CI가 실패로 바뀐다). PR312는 draft로 둔다. 근거는 선행 시험 `tdd/`, PR311 `pr-shell/`, 관문 판정 구현 `pr-gate/`, 그 검증 `pr-gate/verify/`, 리드 탐침 `lead-probe/fix-class-*`에 있다.
+**다음 첫 일:** 관문 판정 재검증 계약을 `pr-gate-fix1/verify/`에 발행하고 새 검증자를 연다. 수정 회차 1은 커밋 `41506201`로 끝났다. PR312는 draft로 두고, 재검증 통과 뒤에 준비 보고를 보낸다. 근거는 선행 시험 `tdd/`, PR311 `pr-shell/`, 관문 판정 구현 `pr-gate/`, 그 검증 `pr-gate/verify/`, 수정 회차 `pr-gate-fix1/`, 리드 탐침 `lead-probe/fix-class-*`에 있다.
 
 막힌 지점: 없음. 맥락 메모는 근거 폴더의 `rules-lead-context.md`, 승인 범위 문서는 `fix-scope-rules.md`(SHA256 `ee30d35dd614b1c405f01749c0ebf78c121c18afbac29969f766684682c8fa59`, 메인 원본과 일치)다.
 
@@ -241,6 +241,16 @@ Rules에 해당하는 부분은 「4) 계획 검토 - Rules … → A 승인 (�
 - 집계: 같은 계약의 독립 불합격 1회다. 구현에 귀속된 결함은 #2다. 다음 구현자는 표대로 `claude --model claude-opus-5-5 --effort high` 새 세션이다.
 - 정산: `worker-release` retained·external_terminal·none 뒤 빈 prompt를 확인하고 pane을 닫았다.
 
+### 관문 판정 수정 회차 1
+
+- 구현(`[Rules 구현 Opus]`, Opus 5.5 high, backend unknown, 계약 `pr-gate-fix1/contract.md` v2): 커밋 `41506201`. `merge-policy.mjs` +192 −38, README +2 −2다. `claude-hook.mjs`와 ORCA는 바뀌지 않았다(`pr-gate-fix1/report.md`).
+- 방식: 위치 추적을 and-or 목록 단위로 바꿔 조건부 `cd`, 중괄호·함수·복합 명령 본문 안의 `cd`, heredoc 뒤의 `cd`를 정할 수 없음으로 둔다. 따옴표를 보지 않는 읽기와 보는 읽기의 조회를 합치고, 하나라도 막으면 막는다.
+- 실행: 검증자 시험 25건, MergeGate 233건, SessionGuard 254건이 모두 통과했다. 실제 진입은 70건 불일치 0이다. 첫 구현보다 풀린 사례는 0건, 새로 막힌 사례는 28건이다.
+- 새로 생긴 오탐 다섯: `{ cd x; }; git push`(e11), heredoc으로 파일을 쓴 다음 줄의 cd+push(e37), cd 뒤 commit 문구 속 `&`·`||`·`;`(f1~f3). 첫 구현부터 있던 오탐 `git commit -m "1) fix" && git push -u origin HEAD`(b8)는 남았다. README에 관측값으로 적었다.
+- 구현자가 스스로 보고한 절차 이탈: 편집 중간에 선언 전 참조 상태가 점검 한 번 동안 있었다. 5분 신호 간격을 두 번 넘겼다. 마지막 원시 세 개는 `.exit` 없이 `.txt`로 남겼다.
+- 리드 대조: 원시 요약 줄(25/25, 233/233, 254/254, 진입 70건 불일치 0·풀림 0)이 보고와 같다. 제품 해시가 보고와 같고 시험 폴더는 HEAD와 같다. 리드 탐침 24건을 고친 hook에 다시 넣어 기대와 모두 맞았다(`lead-probe/fix-class-attempt-2.log`).
+- 정산: `worker-release` retained·external_terminal·none 뒤 빈 prompt를 확인하고 pane을 닫았다.
+
 ## 다음 계획 후보
 
 메인 판단(`msg_97a1adfc9c72`)에 따라 첫 항목을 앞 순서로 둔다.
@@ -258,7 +268,7 @@ PR 번호는 PR을 만들 때 채운다.
 - [x] 셸 분석 멈춤 구현
 - [x] 셸 분석 독립 검증
 - [x] 관문 판정 구현
-- [>] 관문 판정 독립 검증(1회차 NOT PASS, 수정 회차 진행)
+- [>] 관문 판정 독립 검증(1회차 NOT PASS, 수정 회차 1 끝, 재검증 진행)
 - [x] 셸 분석 PR 병합(PR311, `6a0aa453`)
 - [ ] 관문 판정 PR 병합
 - [ ] 종료 기록 정리
