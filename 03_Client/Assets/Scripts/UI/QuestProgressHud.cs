@@ -24,8 +24,12 @@ namespace Dawnholder.Client.UI
     {
         public static QuestProgressHud? Instance { get; private set; }
 
-        // 세션 내 한 번 reveal되면 유지 — 인스턴스/씬 재로드와 무관하게 sticky.
+        // 한 연결에서 한 번 reveal되면 유지 — 인스턴스/씬 재로드와 무관하게 sticky.
+        // 연결이 끝나면 NetworkService.ResetGlobalSessionMirrors가 ResetSessionPresentation으로 지운다.
         static bool _revealed;
+
+        // 값만 지운다. 이미 보이는 HUD는 그대로 두고, 다음 UI 씬 로드의 Awake부터 숨긴 채 시작한다.
+        internal static void ResetSessionPresentation() => _revealed = false;
 
         // 영호 Phase 05 조정 지점 — 문구.
         internal const string QuestName      = "마을의 위협";

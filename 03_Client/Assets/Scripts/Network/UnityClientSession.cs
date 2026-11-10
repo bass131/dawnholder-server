@@ -52,7 +52,10 @@ namespace Dawnholder.Client.Network
         bool _characterSelectSent;
         bool _loginAccepted;
         public bool IsClosed => Volatile.Read(ref _closed) != 0 || IsDisconnected;
+        // _isCurrent says only whether the owner still holds this session; the closed state is checked here.
         bool CanApply => !IsClosed && _isCurrent();
+        // A result received before the close is still this connection's until cleanup. Sending never uses this gate.
+        bool CanDeliverReceived => !_cleaned && _isCurrent();
         internal bool IsCurrentConnection => CanApply;
         public MapEntryCoordinator Entry { get; }
         public CharacterLoadAuthority CharacterLoad { get; } = new CharacterLoadAuthority();
@@ -199,11 +202,13 @@ namespace Dawnholder.Client.Network
         {
             if (!CanApply || !HandshakeOk || !_loginAccepted || _characterSelectSent || CharacterMenu != null)
                 return false;
-            CharacterMenu = new CharacterMenuClient(CanUseCharacterMenu, Send, Disconnect, AcceptMenuSelection);
+            CharacterMenu = new CharacterMenuClient(CanUseCharacterMenu, Send, Disconnect, AcceptMenuSelection,
+                CanReceiveCharacterMenu);
             return true;
         }
 
         bool CanUseCharacterMenu() => CanApply && HandshakeOk && _loginAccepted && CharacterMenu != null;
+        bool CanReceiveCharacterMenu() => CanDeliverReceived && HandshakeOk && _loginAccepted && CharacterMenu != null;
 
         void AcceptMenuSelection(string selectedCharacterIdD)
         {
@@ -224,7 +229,9 @@ namespace Dawnholder.Client.Network
                 });
                 return;
             }
-            EnqueueApply(() => CharacterMenu?.TryReceive(reply));
+            // The receive loop may queue the remote close right behind this reply (EnqueueLoginRejection's case), so
+            // delivery checks cleanup and ownership instead of an open transport. Nothing is sent again.
+            _post(() => { if (CanDeliverReceived) CharacterMenu?.TryReceive(reply); });
         }
 
         /// <summary>Check at execution time: queued work may outlive its connection.</summary>

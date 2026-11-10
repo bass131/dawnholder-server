@@ -65,7 +65,9 @@ namespace Dawnholder.Client.Scenes
             if (_menu == null) return;
             NetworkService network = NetworkService.Instance;
             // 매 프레임 현재 연결의 client를 넘긴다. 연결이 바뀌거나 끊기면 presenter가 옛 구독을 푼다.
-            _menu.Observe(network != null ? network.CharacterMenu : null, network != null && network.IsConnected);
+            // 시도 중 여부도 넘겨, Start의 첫 연결 시도가 실패하면 presenter가 Connecting을 끝낸다.
+            _menu.Observe(network != null ? network.CharacterMenu : null, network != null && network.IsConnected,
+                network != null && network.IsConnecting);
         }
 
         // 씬 파괴는 연결을 끊지 않는다. 선택 승인 뒤 Town 로드가 이 씬을 내려도 같은 연결로 입장한다.

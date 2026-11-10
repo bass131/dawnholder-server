@@ -49,8 +49,11 @@ namespace Dawnholder.Client.UI
         /// Main thread, every frame, with the current connection's client. The first client seen while connected
         /// is adopted. Afterwards a different client, none, or a closed connection ends the menu: the view keeps
         /// Disconnected as final, and a new connection gets a new scene-owned menu.
+        /// <paramref name="connecting"/> says whether a connection attempt is still under way. Not connected and not
+        /// connecting before any connection was seen means the first attempt failed (or never started), which also
+        /// ends the menu. Callers that pass no attempt state keep the default: still connecting.
         /// </summary>
-        internal void Observe(CharacterMenuClient? current, bool connected)
+        internal void Observe(CharacterMenuClient? current, bool connected, bool connecting = true)
         {
             if (_ended) return;
             if (_client != null)
@@ -60,8 +63,8 @@ namespace Dawnholder.Client.UI
             }
             if (connected) _sawConnection = true;
             if (current != null && connected) Attach(current);
-            // Closed before a menu client existed, e.g. a refused login or a lost transport.
-            else if (_sawConnection && !connected) EndConnection();
+            // Closed before a menu client existed (a refused login or a lost transport), or the first attempt failed.
+            else if (!connected && (_sawConnection || !connecting)) EndConnection();
         }
 
         internal void Select(byte slot)

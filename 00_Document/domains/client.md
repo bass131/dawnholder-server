@@ -13,13 +13,15 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 `MainMenuController`는 서버 주소와 계정 이름을 받고 공유 `AccountNameRule`로 이름을 먼저 검사한다. 서버 probe 성공 때 [AccountLoadout](../../03_Client/Assets/Scripts/Bootstrap/AccountLoadout.cs)에 정규화한 이름을 저장한다. 접속에는 프로세스의 `SessionAccountName`을 쓰고, PlayerPrefs `AccountName`은 다음 메뉴의 입력칸을 채우는 데만 사용한다. 이름이 없거나 잘못되면 `NetworkService`는 메인 메뉴로 돌아간다.
 
-[ClientConnectionLifetime](../../03_Client/Assets/Scripts/Network/ClientConnectionLifetime.cs)은 연결에 이름과 직업을 고정하고, handshake 성공 뒤 로그인 요청을 한 번, `Accepted` 뒤 직업 선택을 한 번 보낸다. `LoginResultHandler`가 받은 유효 거부(`InvalidName`·`AlreadyOnline`)는 원격 종료가 뒤따라도 세션 정리 전까지 메인 큐에서 적용하며, 소유자는 세대·동일 세션·로그인 요청 여부를 검사한다. `Accepted`·정의 밖 결과와 다른 패킷은 닫힌 전송에서 적용하지 않으며, 정의 밖 결과는 열린 현재 연결의 메인 스레드 gate를 통과했을 때 연결을 끊는다. 거부는 `LoginRejected` → [MainMenuNotice](../../03_Client/Assets/Scripts/UI/MainMenuNotice.cs) → 메인 메뉴의 오류 글자 순서로 전달한다. 메뉴 시작 때 안내를 소비한다. 이전 연결의 늦은 결과는 generation/구독 해제로 무효화한다.
+서버 주소는 **IP 주소만** 받는다. [ServerAddressRule](../../03_Client/Assets/Scripts/Network/ServerAddressRule.cs) 하나를 사전 점검 [ConnectionProbe](../../03_Client/Assets/Scripts/Network/ConnectionProbe.cs)와 실제 연결 `NetworkService`가 함께 쓰므로, 점검을 통과한 주소가 실제 연결에서 거부되지 않는다. 도메인 이름은 해석하지 않으며, 점검은 접속 시도 없이 오류 글로 거부하고 실제 연결은 메인 메뉴로 돌아간다. 점검이 성공하면 컨트롤러는 화면을 떠날 때까지 시작 경로를 잠근다. 페이드 중 START·Enter는 두 번째 점검을 만들지 않는다. 컨트롤러가 없어진 뒤 도착한 점검 결과는 주소·계정 저장과 장면 요청을 하지 않는다. 실패한 점검 뒤에는 다시 시작할 수 있다.
+
+[ClientConnectionLifetime](../../03_Client/Assets/Scripts/Network/ClientConnectionLifetime.cs)은 연결에 이름과 직업을 고정하고, handshake 성공 뒤 로그인 요청을 한 번, `Accepted` 뒤 직업 선택을 한 번 보낸다. `LoginResultHandler`가 받은 유효 거부(`InvalidName`·`AlreadyOnline`)는 원격 종료가 뒤따라도 세션 정리 전까지 메인 큐에서 적용하며, 소유자는 세대·동일 세션·로그인 요청 여부를 검사한다. `Accepted`·정의 밖 결과와 다른 패킷은 닫힌 전송에서 적용하지 않으며(캐릭터 메뉴 결과의 예외는 「캐릭터 선택 화면」 절), 정의 밖 결과는 열린 현재 연결의 메인 스레드 gate를 통과했을 때 연결을 끊는다. 거부는 `LoginRejected` → [MainMenuNotice](../../03_Client/Assets/Scripts/UI/MainMenuNotice.cs) → 메인 메뉴의 오류 글자 순서로 전달한다. 메뉴 시작 때 안내를 소비한다. 이전 연결의 늦은 결과는 generation/구독 해제로 무효화한다. 세션이 받는 현재성 술어는 소유(세대·동일 세션)만 뜻하고, 전송이 열려 있는지는 세션이 따로 검사한다. 연결이 끝날 때의 정리(`NetworkService.ResetGlobalSessionMirrors`)는 퀘스트 연출의 「한 연결에 한 번」 표시 값 셋(`QuestCompleteWatcher` 완료 연출, `QuestIntroSequencer` 도입 연출, `QuestProgressHud` 표시)도 지운다. 같은 연결의 맵 왕복은 이 정리를 지나지 않아 세 값이 유지된다.
 
 [MainMenuLoginView](../../03_Client/Assets/Scripts/UI/MainMenuLoginView.cs)는 `MainMenuController.Start`에서 만들어져 MainMenu 장면을 로그인 화면으로 배치한다. 장면 Canvas의 CanvasScaler를 실행 중 800×450 높이 맞춤으로 바꾸고, 장면의 `TITLE`을 위쪽에 둔다. 머리 띠 없는 밝은 스킨의 `LoginWindow`에는 ID 칸·PW 칸·START·QUIT를 위에서 아래로 가운데 정렬하고, 오류 글자는 PW와 START 사이에 둔다. 장면 파일과 컨트롤러의 직렬화 참조·버튼 onClick은 그대로다. view는 배치와 키 입력만 맡는다. ID·PW의 Enter는 같은 프레임의 두 번째 제출을 무시하고 START와 같은 `MainMenuController.OnStartClicked`를 부르며, ID의 Tab은 PW를 선택한다(컨트롤러 `Update` → `HandleKeys`). QUIT는 기존 `OnQuitClicked`를 부르고 시작 판단은 `OnStartClicked`에 남는다.
 
 로그인 창의 기준 크기는 420×230이다. 왼쪽 위 기준으로 이름표는 44×30·(54,-18)/(54,-60)·16pt, 입력칸은 260×30·(106,-18)/(106,-60)·18pt이며 입력 글자는 `TextAlignmentOptions.Left`를 유지한다. 오류 글자는 380×30·(20,-96)·14pt, START·QUIT는 200×36·(110,-132)/(110,-176)이다. 내용의 위·아래 여백은 각각 18이고, 이름표 왼쪽과 입력칸 오른쪽 여백은 각각 54다.
 
-PW는 ID 칸을 복제한 `PasswordInput`이며, 빈 값으로 시작하고 안내 글 없이 최대 32자를 `*`로 가린다. 사용자 결정 155 A에 따라 **화면 칸만**이며, 값은 패킷·PlayerPrefs·로그·`AccountLoadout`에 전달하지 않고 빈 PW도 시작을 막지 않는다. 서버 주소 칸은 객체와 연결을 유지한 채 숨긴다. 주소는 기존대로 PlayerPrefs `ServerHost` 저장값을 쓰고, 저장값이 없거나 공백이면 `_defaultHost`(127.0.0.1)를 쓴다. 계정 이름 검사·오류 문구·probe 중 중복 시작 차단·성공 뒤 주소 저장과 CharacterSelect 진입은 컨트롤러가 소유한다.
+PW는 ID 칸을 복제한 `PasswordInput`이며, 빈 값으로 시작하고 안내 글 없이 최대 32자를 `*`로 가린다. 사용자 결정 155 A에 따라 **화면 칸만**이며, 값은 패킷·PlayerPrefs·로그·`AccountLoadout`에 전달하지 않고 빈 PW도 시작을 막지 않는다. 서버 주소 칸은 객체와 연결을 유지한 채 숨긴다. 주소는 기존대로 PlayerPrefs `ServerHost` 저장값을 쓰고, 저장값이 없거나 공백이면 `_defaultHost`(127.0.0.1)를 쓴다. 계정 이름 검사·오류 문구·probe 중과 성공 뒤의 중복 시작 차단·성공 뒤 주소 저장과 CharacterSelect 진입은 컨트롤러가 소유한다.
 
 ## HUD 초상과 캐릭터 그리기 순서
 
@@ -38,6 +40,8 @@ PW는 ID 칸을 복제한 `PasswordInput`이며, 빈 값으로 시작하고 안�
 ## 캐릭터 선택 화면
 
 [CharacterMenuView](../../03_Client/Assets/Scripts/UI/CharacterMenuView.cs)는 `CharacterSelectController`가 메뉴 경로에서 만드는 표시 전용 view다. 연결·캐릭터 식별·입장 권한은 [CharacterMenuPresenter](../../03_Client/Assets/Scripts/UI/CharacterMenuPresenter.cs)와 `CharacterMenuClient`가 갖고, view는 받은 상태를 그리며 누른 버튼을 요청 콜백으로 넘긴다. 상태 글 아래에는 한 번에 한 화면만 보인다. 칸 줄과 「선택하고 입장」 버튼이거나, 칸 줄 자리의 생성 화면(`CreateForm`)이다. 메뉴가 닫히는 Legacy 경로의 Knight/Mage 버튼은 `CharacterSelectController`가 따로 소유한다.
+
+메뉴는 Connecting으로 시작한다. `CharacterSelectController`는 매 프레임 연결 여부와 `NetworkService.IsConnecting`(연결 시도 중)을 presenter의 `Observe`에 넘긴다. 연결을 본 적 없이 「연결 안 됨 + 시도 중 아님」이면 장면 Start의 첫 연결 시도가 실패한 것이므로 메뉴는 Disconnected 종료 상태로 간다. UI는 따로 접속하거나 timeout을 두지 않는다. 연결 종료 직전에 받은 캐릭터 메뉴 결과(목록·생성·선택)는 같은 drain에서 종료가 먼저 관측돼도 세션 cleanup 전에 한 번 전달된다. 전달은 받은 결과를 보여 줄 뿐이며 재송신·선택 승인·재차 연결 끊기는 하지 않는다(`CharacterMenuClient`의 송신 관문은 열린 전송을 그대로 요구한다). cleanup 뒤 도착한 결과와 교체된 세션의 결과는 전달하지 않는다.
 
 칸 줄은 `Slot1~3` 세 칸이 제목 띠(`Header`)의 안쪽 폭 전체를 같은 폭과 간격으로 채운다. 차 있는 칸을 누르면 그 칸이 선택된다. 「선택하고 입장」(`Submit`)은 차 있는 칸이 선택된 Ready에서만 눌리고 선택 요청을 한 번 보내며, 생성하지 않는다. 빈 칸을 한 번 누르면 칸 줄과 `Submit`이 숨고 생성 화면이 열린다. view는 생성 화면을 연 칸을 선택으로 기억하고, 생성 화면이 열린 동안에는 칸이 바뀌지 않는다.
 
