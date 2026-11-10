@@ -8,7 +8,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 입력 예산 잔여 경로(미등록 패킷 번호·중복 로그인)의 구현 결과를 받아 독립 검증자를 띄운다. branch는 `fix/core-audit-input-gaps-20261110`이고 근거는 `gaps/`다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
+**다음 첫 일:** 입력 예산 잔여 경로(미등록 패킷 번호·중복 로그인)의 독립 검증 판정(`gaps/verify/verdict.md`)을 받는다. 그다음은 게임 규칙 PR(7·8번)의 구현 계약이다. branch는 `fix/core-audit-input-gaps-20261110`이고 근거는 `gaps/`다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
 막힌 지점: 없음. 종료 경로 PR307은 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
