@@ -81,6 +81,17 @@ namespace Dawnholder.Server.Network
         protected SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
 
         RecvBuffer _recvBuffer = new RecvBuffer(65535);
+
+        const long MaxSendPendingBackingBytes = 32L * 1024 * 1024;
+        const int MaxSendPendingSegments = 4096;
+
+        // _lock이 queue와 진행 중인 pending의 합을 소유한다. 완료 전에는 차감하지 않는다.
+        long _sendPendingBackingBytes;
+        int _sendPendingSegments;
+        long _sendPendingPeakBackingBytes;
+        int _sendPendingPeakSegments;
+        bool _sendInProgress;
+        EndPoint? _remoteEndPoint;
         #endregion
 
         public abstract void OnConnected(EndPoint endPoint);
@@ -91,6 +102,7 @@ namespace Dawnholder.Server.Network
         public void Start(Socket socket)
         {
             _socket = socket;
+            _remoteEndPoint = GetRemoteEndPoint();
 
             _recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
             _sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
@@ -101,13 +113,19 @@ namespace Dawnholder.Server.Network
         // virtual: 테스트 subclass에서 실제 socket I/O 차단 가능 (testability hook).
         public virtual void Send(ArraySegment<byte> sendBuff)
         {
+            bool failed;
             lock (_lock)
             {
-                _sendQueue.Enqueue(sendBuff);
+                if (Volatile.Read(ref _disconnected) != 0)
+                    return;
 
-                if (_pendingList.Count == 0)
-                    RegisterSend();
+                failed = !TryEnqueueSend(sendBuff);
+                if (!failed && !_sendInProgress)
+                    failed = !RegisterSend();
             }
+
+            if (failed)
+                DisconnectAfterTransportFailure();
         }
 
         public void Send(List<ArraySegment<byte>> sendBuffList)
@@ -115,14 +133,27 @@ namespace Dawnholder.Server.Network
             if (sendBuffList.Count == 0)
                 return;
 
+            bool failed = false;
             lock (_lock)
             {
-                foreach (ArraySegment<byte> sendBuff in sendBuffList)
-                    _sendQueue.Enqueue(sendBuff);
+                if (Volatile.Read(ref _disconnected) != 0)
+                    return;
 
-                if (_pendingList.Count == 0)
-                    RegisterSend();
+                foreach (ArraySegment<byte> sendBuff in sendBuffList)
+                {
+                    if (!TryEnqueueSend(sendBuff))
+                    {
+                        failed = true;
+                        break;
+                    }
+                }
+
+                if (!failed && !_sendInProgress)
+                    failed = !RegisterSend();
             }
+
+            if (failed)
+                DisconnectAfterTransportFailure();
         }
 
         // virtual: 테스트 subclass에서 override 가능 (실제 socket 없이 Disconnect 호출 추적).
@@ -135,7 +166,7 @@ namespace Dawnholder.Server.Network
             bool notificationFailed = false;
             try
             {
-                OnDisconnected(_socket!.RemoteEndPoint!); // player cleanup enqueue 포함
+                OnDisconnected(GetRemoteEndPoint()); // player cleanup enqueue 포함
             }
             catch
             {
@@ -150,8 +181,33 @@ namespace Dawnholder.Server.Network
                 }
                 catch when (notificationFailed)
                 {
-                    // endpoint/callback의 원래 예외가 정리 예외에 가려지지 않게 한다.
+                    // 콜백의 원래 예외가 정리 예외에 가려지지 않게 한다.
                 }
+            }
+        }
+
+        EndPoint GetRemoteEndPoint()
+        {
+            try
+            {
+                return _socket?.RemoteEndPoint ?? _remoteEndPoint ?? new IPEndPoint(IPAddress.Any, 0);
+            }
+            catch (Exception error)
+            {
+                // 먼저 닫힌 소켓도 peer 주소 조회 실패와 무관하게 정리 콜백을 받아야 한다.
+                ReportCleanupFailure("RemoteEndPoint", error);
+                return _remoteEndPoint ?? new IPEndPoint(IPAddress.Any, 0);
+            }
+        }
+
+        void DisconnectAfterTransportFailure()
+        {
+            try { Disconnect(); }
+            catch (Exception error)
+            {
+                // 전송 경계의 실패/알림 예외는 Send를 호출한 틱까지 전파하지 않는다.
+                // 직접 Disconnect를 호출하면 기존처럼 알림 예외를 다시 던진다.
+                ReportCleanupFailure("Disconnect", error);
             }
         }
 
@@ -178,133 +234,190 @@ namespace Dawnholder.Server.Network
 
         void Clear()
         {
+            long peakBackingBytes;
+            int peakSegments;
             lock (_lock)
             {
                 _sendQueue.Clear();
                 _pendingList.Clear();
+                _sendPendingBackingBytes = 0;
+                _sendPendingSegments = 0;
+                _sendInProgress = false;
+                peakBackingBytes = _sendPendingPeakBackingBytes;
+                peakSegments = _sendPendingPeakSegments;
+
+                try { _sendArgs.BufferList = null; }
+                catch (InvalidOperationException)
+                {
+                    // 취소가 아직 완료되지 않은 I/O는 완료 콜백에서 배열 참조를 해제한다.
+                }
+            }
+
+            try
+            {
+                Console.WriteLine($"[Session] send-pending peak: backingBytes={peakBackingBytes} segments={peakSegments}");
+            }
+            catch
+            {
+                // 측정 출력 실패도 연결 정리나 원래 알림 예외를 가리지 않는다.
             }
         }
 
         #region Network Connection Recv
-        private void RegisterSend()
+        private bool TryEnqueueSend(ArraySegment<byte> buffer)
         {
-            if (_disconnected == 1)
-                return;
-
-            while (_sendQueue.Count > 0)
+            // 생성 Write()는 작은 패킷도 65,535바이트 배열을 붙드므로 Count가 아닌 배열 크기를 센다.
+            long backingBytes = buffer.Array?.LongLength ?? 0;
+            if (Volatile.Read(ref _disconnected) != 0 ||
+                _sendPendingBackingBytes + backingBytes > MaxSendPendingBackingBytes ||
+                _sendPendingSegments >= MaxSendPendingSegments)
             {
-                ArraySegment<byte> buffer = _sendQueue.Dequeue();
-                _pendingList.Add(buffer);
+                return false;
             }
 
-            _sendArgs.BufferList = _pendingList;
+            _sendQueue.Enqueue(buffer);
+            _sendPendingBackingBytes += backingBytes;
+            _sendPendingSegments++;
+            _sendPendingPeakBackingBytes = Math.Max(_sendPendingPeakBackingBytes, _sendPendingBackingBytes);
+            _sendPendingPeakSegments = Math.Max(_sendPendingPeakSegments, _sendPendingSegments);
+            return true;
+        }
 
+        private bool RegisterSend()
+        {
             try
             {
-                bool pending = _socket!.SendAsync(_sendArgs);
+                // OnSend가 재진입해 Send해도 현재 pump가 FIFO로 다음 등록을 맡는다.
+                _sendInProgress = true;
+                while (Volatile.Read(ref _disconnected) == 0 && _sendQueue.Count > 0)
+                {
+                    while (_sendQueue.Count > 0)
+                        _pendingList.Add(_sendQueue.Dequeue());
 
-                if (pending == false) // SendAsync가 즉시 완료된 경우 직접 호출
-                    OnSendCompleted(null, _sendArgs);
+                    _sendArgs.BufferList = _pendingList;
+                    if (_socket!.SendAsync(_sendArgs))
+                        return true;
+
+                    if (!ProcessSendCompletion(_sendArgs))
+                        return false;
+                }
+
+                _sendInProgress = false;
+                return true;
             }
             catch (Exception e)
             {
-                Console.WriteLine($"RegisterSend Failed {e}");
+                ReportCleanupFailure("RegisterSend", e);
+                return false;
             }
         }
 
         private void OnSendCompleted(object? sender, SocketAsyncEventArgs args)
         {
+            bool failed;
             lock (_lock)
             {
-                if (args.BytesTransferred > 0 && args.SocketError == SocketError.Success)
+                try
                 {
-                    try
+                    if (Volatile.Read(ref _disconnected) != 0)
                     {
                         _sendArgs.BufferList = null;
-                        _pendingList.Clear();
-
-                        OnSend(_sendArgs.BytesTransferred);
-
-                        if (_sendQueue.Count > 0)
-                        {
-                            RegisterSend();
-                        }
+                        return;
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"OnSendCompleted Failed : {ex}");
-                    }
+
+                    failed = !ProcessSendCompletion(args) || !RegisterSend();
                 }
-                else
+                catch (Exception error)
                 {
-                    Disconnect();
+                    ReportCleanupFailure("OnSendCompleted", error);
+                    failed = true;
                 }
             }
+
+            if (failed)
+                DisconnectAfterTransportFailure();
+        }
+
+        private bool ProcessSendCompletion(SocketAsyncEventArgs args)
+        {
+            if (args.BytesTransferred <= 0 || args.SocketError != SocketError.Success)
+                return false;
+
+            _sendArgs.BufferList = null;
+            foreach (ArraySegment<byte> buffer in _pendingList)
+                _sendPendingBackingBytes -= buffer.Array?.LongLength ?? 0;
+            _sendPendingSegments -= _pendingList.Count;
+            _pendingList.Clear();
+
+            OnSend(args.BytesTransferred);
+            return true;
         }
 
         private void RegisterRecv()
         {
-            if (_disconnected == 1)
-                return;
-
-            _recvBuffer.Clean();
-            ArraySegment<byte> segment = _recvBuffer.WriteSegment;
-            _recvArgs.SetBuffer(segment.Array, segment.Offset, segment.Count);
-
             try
             {
-                bool pending = _socket!.ReceiveAsync(_recvArgs);
-
-                if (pending == false) // ReceiveAsync가 즉시 완료된 경우 직접 호출
+                while (Volatile.Read(ref _disconnected) == 0)
                 {
-                    OnRecvCompleted(null, _recvArgs);
+                    _recvBuffer.Clean();
+                    ArraySegment<byte> segment = _recvBuffer.WriteSegment;
+                    _recvArgs.SetBuffer(segment.Array, segment.Offset, segment.Count);
+
+                    if (_socket!.ReceiveAsync(_recvArgs))
+                        return;
+
+                    // 즉시 완료도 비동기 완료와 같은 검사를 거치고, 재귀 없이 다음 수신을 등록한다.
+                    if (!ProcessRecvCompletion(_recvArgs))
+                    {
+                        DisconnectAfterTransportFailure();
+                        return;
+                    }
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine($"RegisterRecv Failed {e}");
+                ReportCleanupFailure("RegisterRecv", e);
+                DisconnectAfterTransportFailure();
             }
         }
 
         private void OnRecvCompleted(object? sender, SocketAsyncEventArgs args)
         {
-            if (args.BytesTransferred > 0 && args.SocketError == SocketError.Success)
+            try
             {
-                try
+                if (ProcessRecvCompletion(args))
                 {
-                    if (_recvBuffer.OnWrite(args.BytesTransferred) == false)
-                    {
-                        Disconnect();
-                        return;
-                    }
-
-                    int processedSize = OnRecv(_recvBuffer.ReadSegment);
-                    if (processedSize < 0 || processedSize > _recvBuffer.DataSize)
-                    {
-                        Disconnect();
-                        return;
-                    }
-
-                    if (_recvBuffer.OnRead(processedSize) == false)
-                    {
-                        Disconnect();
-                        return;
-                    }
-
                     RegisterRecv();
-                }
-                catch (Exception ex)
-                {
-                    // decode 예외 fail-closed — 로그만 찍고 두면 세션이 half-open으로 잔존(recv 멈추되 socket 생존).
-                    // 명시적 Disconnect로 자원 회수 + GameSession.OnDisconnected 트리거. RegisterRecv는 호출 안 함(Disconnect가 차단).
-                    Console.WriteLine($"[Trust] OnRecvCompleted decode failed — disconnect: {ex.Message}");
-                    Disconnect();
+                    return;
                 }
             }
-            else
+            catch (Exception error)
             {
-                Disconnect();
+                ReportCleanupFailure("OnRecvCompleted", error);
             }
+
+            DisconnectAfterTransportFailure();
+        }
+
+        private bool ProcessRecvCompletion(SocketAsyncEventArgs args)
+        {
+            if (Volatile.Read(ref _disconnected) != 0 ||
+                args.BytesTransferred <= 0 || args.SocketError != SocketError.Success)
+            {
+                return false;
+            }
+
+            if (!_recvBuffer.OnWrite(args.BytesTransferred))
+                return false;
+
+            int processedSize = OnRecv(_recvBuffer.ReadSegment);
+            if (processedSize < 0 || processedSize > _recvBuffer.DataSize ||
+                Volatile.Read(ref _disconnected) != 0)
+            {
+                return false;
+            }
+
+            return _recvBuffer.OnRead(processedSize);
         }
         #endregion
     }
