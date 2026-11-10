@@ -319,6 +319,7 @@ branch `fix/core-audit-party-jump-20261110`. 선행 시험은 보관본을 SHA25
 - 리드 관측: 재검증 Task `task_8d48f185af0e`(Dispatch `ctx_c5ce489a283d`)의 종료 코드는 1073807364이고 판정 파일은 없다. 11-10 KST의 정산 receipt는 `state: retained`·`reason: external_terminal`·`processAction: none`이다(`pr4/verify-2/lead/worker-release.json`).
 - 잔여물 확인(11-10 06:35:58Z, `lead/raw/residual-check-1.log`): 일회용 서식 복제본 폴더는 비어 있고 잠금 파일 27개는 전부 풀려 있다. 7777 listener와 dotnet·서식 검사 프로세스는 없고 Unity Editor는 0개다. 정리할 것은 없었다. WSL 작업 복제본 내부는 보지 않았다.
 - 중단된 세션이 작업 트리에 남긴 시험 두 파일은 `pr4/verify-3/held/`로 옮겼다. `JumpBufferGateTests.cs`(`fa136444bc7ea0f00e4e446d84be77ac6f451f6a6144bd6b0433518218951b27`)는 첫 판정 세션의 보관본과 같은 바이트다. `PartyArrivalStateTests.cs`(`0e6c74243eb051a68f1492c86738e9eeed2ab7692725912b35274960eab52688`)는 보관본과 다르고 종료 시점에 편집 중이었을 수 있다. 새 검증자에게 신뢰하지 않는 입력으로 넘겼다.
+- 전원 차단으로 끊긴 이 재검증 세션은 재부팅 뒤 pane으로 되살아나 있었다(`term_92692c88…`, 화면 `Conversation interrupted`, 메인 관측 `msg_06e6801feae6`). 재사용을 막으려고 빈 입력줄과 idle을 확인한 뒤 11-10 09:03:11Z에 닫았다.
 
 독립 재검증은 PASS다(`pr4/verify-3/verdict.md`, SHA256 `5d4932349a0884517ff0ce0df962ca2c3a697730728b0f5393f0fd888b0a8287`, Task `task_f1e1f15ac67f`, 화면 `GPT-6-Astra` xhigh, backend unknown). PR4-01 수정을 확인했고 새 제품 결함은 없다. 리드가 시험 집계와 exit를 원시에서 표본 대조했다.
 
@@ -366,6 +367,10 @@ PR309 병합: 사용자 승인 원문 「병합 승인: PR309 head c6fca35765400
 - 보여 주지 않는 것(메인 판단): S5가 읽는 직업과 입장은 S2 이전부터 DB에 있던 값이다. S2가 쓴 값이 TERM을 넘어 남았다는 증거가 아니다. 접속 중인 세션의 마지막 저장도 아니다.
 - 메인 정정: launcher의 `Owned WSL process PID`는 `wsl.exe`의 Windows PID다(`Start-PersistenceServer.ps1:532`, `:555`). TERM 대상은 7777 listener의 Linux PID다.
 
+### 종료 Gardener 결과
+
+`gardener.md`(Task `task_15e44ff057f8`, 화면 Opus 5.5 high, backend unknown). 새 정리 후보는 없다. 경고 억제·설정 완화 추가도 그의 검색식 범위에서 0건이다. 제안은 기존 행에 관측을 잇는 2건이고 채택 전이다: 세션별 실행 harness 재작성은 `verification-harness-powershell-helper`, PR306 CI 서식 실패는 `prepush-ci-format-checks`와 겹친다. 그가 찾은 기록 불일치 3건 중 goal·BACKLOG의 2건은 이 기록에서 바로잡았고, 되살아난 세션은 「재검증 중단 기록」에 적었다. 그 세션은 후보로 등록하지 않았다. `gardener.md`의 줄 번호는 정정 전 기준이다.
+
 **완료조건 대조.** 1~3번은 앞 절의 PR별 결과와 같다. 4번은 관측한 범위만 충족이다. 실제 프로세스의 SIGTERM·SIGINT는 종료 경로 PR에서 `Server stopped.`와 exit 0으로 관측했고, Stored 모드는 위 표까지 관측했다. 「저장값이 이어진다」는 S2가 쓴 값으로는 확인하지 못했다. 5번은 위와 같이 실행했고 PlayMode 실패 5건은 통과로 세지 않는다. 6번은 PR305~PR309 각각 새 독립 검증자의 PASS 원문과 사용자 승인 한 줄이 있다.
 
 ### 남은 위험
@@ -375,14 +380,14 @@ PR309 병합: 사용자 승인 원문 「병합 승인: PR309 head c6fca35765400
 - 전체 메모리 한도는 연결 수 × 연결별 상한이다. 동시 연결 수 제한은 범위 밖이다.
 - 패킷마다 65,535바이트 배열을 만드는 생성 코드는 범위 밖이다.
 - 맵에 도착할 때마다 파티 상태 통지가 한 번 더 간다(7번이 재현되어 고칠 때).
-- 스택 PR의 GitHub base 자동 이동은 PR305 병합 뒤 확인했다(「입력 예산 결과」).
+- 스택 PR의 GitHub base 자동 이동은 PR306 병합 뒤 PR307의 base가 `main`으로 옮겨진 것으로 확인했다(「입력 예산 결과」). PR305 병합 직후의 이동은 적어 두지 않았다.
 - 접속 중인 세션이 있을 때의 종료 신호와 마지막 안전 지점 저장은 실행으로 확인하지 못했다.
 - 파티 해산과 잠금 점프 경로는 봇이 닿지 않아 서버 시험으로만 확인했다.
 
 ## 다음 계획 후보
 
 - 패킷마다 65,535바이트 배열을 만드는 생성기를 패킷 크기에 맞게 바꾸기(`GenPackets.cs`의 `Write()`, 메인 지시 `msg_2fd9d770d23b`).
-- 사망 상태의 이동 미잠금: `DeathState`가 `LocksMovement`를 재정의하지 않아 기본값 false다. `PlayerPhysicsSystem.cs:40`의 주석은 Death도 잠근다고 적었다. 선행 시험에서 사망 중 버퍼 점프 발사를 관측했다(`tdd/report.md`, 리드가 `LocksMovement` 검색으로 재정의 위치 두 곳을 확인). 승인 범위가 공격·피격이라 이번에 고치지 않는다.
+- 사망 상태의 이동 미잠금: `DeathState`가 `LocksMovement`를 재정의하지 않아 기본값 false다. 수정 전 `PlayerPhysicsSystem`의 주석은 Death도 잠근다고 적었고, 이 goal의 수정 커밋 `1619297f`에서 `Attack/Hit`로 바로잡았다. 선행 시험에서 사망 중 버퍼 점프 발사를 관측했다(`tdd/report.md`, 리드가 `LocksMovement` 검색으로 재정의 위치 두 곳을 확인). 승인 범위가 공격·피격이라 이번에 고치지 않는다.
 - `bot-dash-boss-baseline-failure` 봇 기준선 실패: 수정 전 main `acd5a7db`에서 `DashSmoke`·`BossFightSmoke`가 실패한다(`pr1/raw/bot-before.log`, 메인 확인 `msg_076badf9a3ef`). BACKLOG와 감사 산출물에 없던 새 관측이다. 원인 미조사. 메인이 시험 신뢰도 묶음의 범위로 사용자에게 올린다. BACKLOG 등록은 다른 후보와 함께 종료 기록 PR에서 한다.
 - `Session.Clear`가 연결이 끊길 때마다 send-pending peak 한 줄을 콘솔에 찍어 운영 로그가 접속 종료 수만큼 늘어난다(메인 관찰 `msg_001c18f08bf2`, 이 goal에서 고치지 않는다).
 - 클라이언트 `PartyInvitePopup.OnPartyUpdated`가 빈 통지에도 팝업을 닫는다. 파티에 들어갔을 때만 닫도록 바꾸면 서버의 도착 통지 예외를 지울 수 있다(메인 `msg_b0d2e5503748`, 서버 묶음 범위 밖).
