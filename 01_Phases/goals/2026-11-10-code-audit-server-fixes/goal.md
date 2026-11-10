@@ -8,9 +8,9 @@
 
 ## 재개 지점
 
-**다음 첫 일:** PR3 종료 경로의 구현 계약을 발행한다. branch `fix/core-audit-graceful-stop-20261110`은 입력 예산 branch head 위에 만들고, 재현 harness `tdd/harness/shutdown-signals.sh`를 새 attempt 번호로 재사용한다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
+**다음 첫 일:** PR3 종료 경로의 독립 검증 판정(`pr3/verify/verdict.md`)을 받는다. PASS면 push하고 PR을 만든다. 그다음은 입력 예산 잔여 경로의 선행 시험 계약이다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
-막힌 지점: 없음. 입력 예산 PR306은 독립 판정 PASS로 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
+막힌 지점: 없음. 입력 예산 PR306은 서식 수정 head의 CI 결과를 메인에 보고한 뒤 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
 ## 적용 중인 사용자 결정
 
@@ -169,6 +169,7 @@ R-7은 메인 승인이 없어 비해당이다. 실제 변경 줄 수의 원시�
 | 빌드·서버 시험 (`sync-wsl.sh build`·`test`) | PR마다, 구현자와 검증자 각각 | 모든 PR이 서버 코드를 바꾼다 |
 | 자동 접속 봇 (`sync-wsl.sh bot`) | PR마다 | 송신 경로·입력 예산·이동 경로에 실제 접속으로 닿는다. 예산이 정상 흐름을 막지 않는지 본다 |
 | 세션별 최대 송신 대기량 측정 | PR1 봇 실행 | 상한 제안값의 실측 근거 |
+| 정식 서식 검사 (`99_Tools/format-check.sh`, WSL 일회용 복제본) | PR마다 push 전. 검증자가 새 시험 파일까지 포함해 마지막에 1회 | CI와 같은 진입점이다. Windows 진입점은 Windows의 SDK 10.0.301을 요구해 쓸 수 없다. 도구는 근거 폴더의 `lead/harness/format-in-clone.sh`이고, 공백 오류면 약 7분, 통과하면 뒤 도구 시험까지 약 40분 걸린다(메인 `msg_888b768de9f5`) |
 | 실제 프로세스 종료 신호 | PR3 | 5번의 실제 진입 경로 |
 | Unity 시험 EditMode·PlayMode | 네 PR을 쌓은 최종 head에서 1회. 메인 창 배정 요청 | 공유 DLL은 안 바뀐다. 다만 7·8번과 예산이 클라이언트가 보는 서버 동작을 바꾸므로 사용자 지정대로 1회 돌린다. 기존 실패(끌기 1, 길드 창 11)와 수를 대조한다 |
 | DB 저장 실행 (Stored 모드) | 최종 head에서 1회. 메인이 서버 시작·정지 대행 | 5번이 영속 마무리에 닿는다. TERM 종료 뒤 재시작 복원을 본다 |
@@ -258,7 +259,8 @@ branch `fix/core-audit-input-budget-20261110`. 구현 `gpt-6-astra` high, 독립
 - 전체 시험: 시험 변경 전 실패 1·통과 2,625·건너뜀 28·전체 2,654, 변경 뒤 실패 0·통과 2,665·건너뜀 28·전체 2,693(새 독립 39사례 포함).
 - 봇: 2 통과·2 실패로 수정 전과 같다. 네 시나리오 서버 로그의 `[InputBudget]` 경고는 각 0건이다. **대시 피해와 보스전 경로는 봇으로 확인되지 않았다.**
 - 핸들러 선언은 21개 전수 일치한다. 구현 계약 설명 문장의 22개는 리드 표기 오류이고 요구 표와 등록 소스는 21개다.
-- 미실행: 정식 서식 검사(Windows SDK 없음, PR CI로 판정), Unity 시험·DB 저장(최종 head에서 1회).
+- 미실행: Unity 시험·DB 저장(최종 head에서 1회).
+- CI 서식 실패와 수정: head `64937d67`의 CI가 검증자 시험 파일 `InputBudgetBoundaryTests.cs`의 공백 4곳으로 실패했다(메인 `msg_888b768de9f5`). 원인은 리드가 검증 계약에서 정식 서식 검사를 「Windows SDK 없음」으로 미실행 처리하고 WSL 경로를 확인하지 않은 것이다. 새 작업자가 초기화 대입을 줄 나눔만 해서 고쳤다(`5f5a23ab`). 공백·개행을 지운 바이트의 SHA256이 전후 같고(`pr2/format/lead/reinspect-hash.txt`), 독립 시험 39통과, 정식 서식 검사 exit 0이라 기존 독립 판정을 유지한다. 바뀐 줄은 `pr2/format/lead/changed-lines.diff`다.
 
 기존 시험 분류(`msg_71e41e231d55` 정본, 판정 표 `pr2/verify/verdict.md` 127~129행):
 
