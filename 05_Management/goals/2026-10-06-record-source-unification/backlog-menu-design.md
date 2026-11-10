@@ -57,7 +57,7 @@ export function backlogIssueKind(code: BacklogIssueCode): 'format' | 'mismatch';
 | 항목 | 1단계(구조, 지금 동작 보존) | 2단계(동작) |
 |---|---|---|
 | 모듈 | 백로그 블록을 contract·store로 옮기고 색인 검사가 store를 부른다. 결과 형식은 위 최종 형식이다 | 같은 모듈에서 아래 동작을 바꾼다 |
-| BACKLOG 읽기 | 지금처럼 `readFile` UTF-8. `ENOENT`는 `missing`, 그 밖은 `load` | 원문 읽기 경계 `createSourceSectionStore({ repositoryRoot }).read`에 store 안의 고정 git 출처(`00_Document/operations/BACKLOG.md`, `section: null`)를 넘긴다. 결과 대응은 아래 표 |
+| BACKLOG 읽기 | 지금처럼 `readFile` UTF-8. `ENOENT`는 `missing`, 그 밖은 `load` | 원문 읽기 경계의 전체 파일 읽기 `readWholeSourceFile({ repositoryRoot, source })`에 store 안의 고정 git 출처(`00_Document/operations/BACKLOG.md`, `section: null`)를 넘긴다. 결과 대응은 아래 표 |
 | goal 링크 판정 | 지금 그대로. BACKLOG 폴더 기준으로 풀고, 루트 밖·해독 실패·없음·파일 아님은 `BACKLOG_GOAL_LINK_MISSING` | 아래 「goal 링크 판정 순서」 |
 | 예상 밖 링크 오류 | 그 링크를 `uncheckedLinks`에 넣고 그 자리에서 판정을 멈춘다(지금 예외가 나머지 행을 건너뛰는 동작과 같다) | 그 링크만 `uncheckedLinks`에 넣고 다음 링크와 행을 계속 판정한다 |
 | ID 표 없음 | 진단 없음 | 첫 열이 `ID`인 후보 표가 하나도 없으면 `BACKLOG_TABLE_FORMAT`, `line: null` |
@@ -68,7 +68,7 @@ export function backlogIssueKind(code: BacklogIssueCode): 'format' | 'mismatch';
 
 `backlogIssueKind`는 옮기는 코드가 아니라 새 함수라 2단계에 더한다. 1단계는 성공 경로의 진단 코드·문장·순서·위치와 종료 코드, 실패 경로의 묶음 실행 상태와 이미 낸 warning까지 지금과 같아야 한다. 기존 `record-index-check.test.ts`의 백로그 시험이 그대로 통과하는 것이 최소 기준이다.
 
-2단계의 BACKLOG 읽기 결과 대응과 고정 문장은 다음과 같다. 원문 읽기 경계를 쓰므로 링크·junction·대소문자·크기 상한(파일 1 MiB, `section: null`이면 내용 전체가 구간 상한 256 KiB 안)·엄격 UTF-8·읽는 동안 바뀜 판정이 앱의 원문 읽기와 같아진다.
+2단계의 BACKLOG 읽기 결과 대응과 고정 문장은 다음과 같다. 원문 읽기 경계를 쓰므로 링크·junction·대소문자·파일 크기 상한 1 MiB·엄격 UTF-8·읽는 동안 바뀜 판정이 앱의 원문 읽기와 같아진다. BACKLOG 전체 읽기는 파일 1 MiB 상한만 받고 원문 구간의 256 KiB 상한은 받지 않는다([전체 코드 감사 운영툴 묶음 수정](../2026-11-10-code-audit-management-fixes/goal.md) 「만들 것」 3).
 
 | 원문 읽기 결과 | `code` | `message` |
 |---|---|---|

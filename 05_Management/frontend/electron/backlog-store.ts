@@ -9,7 +9,7 @@ import {
 import type { BacklogResult } from './backlog-contract.js';
 import { parseBacklogTables } from './backlog-table.js';
 import type { RecordSource } from './catalog-contract.js';
-import { createSourceSectionStore, inspectSourceFile } from './source-section-store.js';
+import { inspectSourceFile, readWholeSourceFile } from './source-section-store.js';
 
 const backlogPath = '00_Document/operations/BACKLOG.md';
 const backlogSource: RecordSource = {
@@ -22,11 +22,12 @@ const backlogSource: RecordSource = {
 };
 
 export function createBacklogStore({ repositoryRoot }: { repositoryRoot: string }) {
-  const sourceStore = createSourceSectionStore({ repositoryRoot });
   async function read(): Promise<BacklogResult> {
-    // The fixed source keeps both callers on the existing path, size, encoding
-    // and snapshot boundary. Renderer input never chooses the BACKLOG path.
-    const source = await sourceStore.read(backlogSource);
+    // The fixed source keeps both callers on the source reading boundary: path,
+    // file identity, the 1 MiB file limit, strict UTF-8 and read snapshots.
+    // The list needs every row, so the 256 KiB section limit does not apply.
+    // Renderer input never chooses the BACKLOG path.
+    const source = await readWholeSourceFile({ repositoryRoot, source: backlogSource });
     if (!source.ok) {
       switch (source.code) {
         case 'missing':
