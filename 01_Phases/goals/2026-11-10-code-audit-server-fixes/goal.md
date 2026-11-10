@@ -8,7 +8,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 게임 규칙 PR의 재검증을 새 세션으로 다시 연다(메인 `msg_131b0fd2c82c`). 11-10 15:26 KST 전원 차단으로 앞선 재검증자가 비정상 종료했고(Task `task_8d48f185af0e`, exit 1073807364) 불합격이 아니다. 근거 폴더는 새로 잡아 `pr4/verify-2`를 덮어쓰지 않고, 그 raw는 새 세션의 실행으로 세지 않는다. 남은 시험 두 파일(`JumpBufferGateTests.cs`, `PartyArrivalStateTests.cs`, 미커밋)은 신뢰하지 않는 입력으로 넘긴다. PASS면 base를 main으로 PR을 만들고 CI 뒤 메인에 보고하며, 그다음이 최종 head의 Unity·DB 실행이다. branch `fix/core-audit-party-jump-20261110`, head `67b44598`, 원격에 아직 없다.
+**다음 첫 일:** PR309(게임 규칙) CI가 끝나면 메인에 보고하고 Unity 창 배정과 DB 영속 서버 시작·정지를 요청한다. 이 PR의 head에서 Unity EditMode·PlayMode(기존 실패 끌기 1·길드 창 11과 대조)와 DB 저장 실행(Stored, TERM 종료 뒤 재시작 복원)을 1회 돌린다. 그 뒤 PR309 병합 승인, 종료 Gardener, 종료 기록 PR 순서다. branch `fix/core-audit-party-jump-20261110`, 독립 재검증은 PASS(`pr4/verify-3/verdict.md`)다.
 
 막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
@@ -312,7 +312,18 @@ branch `fix/core-audit-party-jump-20261110`. 선행 시험은 보관본을 SHA25
 
 - 리드 관측: 재검증 Task `task_8d48f185af0e`(Dispatch `ctx_c5ce489a283d`)의 종료 코드는 1073807364이고 판정 파일은 없다. 11-10 KST의 정산 receipt는 `state: retained`·`reason: external_terminal`·`processAction: none`이다(`pr4/verify-2/lead/worker-release.json`).
 - 잔여물 확인(11-10 06:35:58Z, `lead/raw/residual-check-1.log`): 일회용 서식 복제본 폴더는 비어 있고 잠금 파일 27개는 전부 풀려 있다. 7777 listener와 dotnet·서식 검사 프로세스는 없고 Unity Editor는 0개다. 정리할 것은 없었다. WSL 작업 복제본 내부는 보지 않았다.
-- 중단된 세션이 작업 트리에 남긴 시험 두 파일은 `pr4/verify-3/held/`로 옮겼다. `JumpBufferGateTests.cs`(`fa136444bc7ea0f00e4e446d84be77ac6f451f6a6144bd6b0433518218951b27`)는 첫 판정 세션의 보관본과 같은 바이트다. `PartyArrivalStateTests.cs`(`0e6c74243eb051a68f1492c86738e9eeed2ab7692725912b35274960eab52688`)는 보관본과 다르고 종료 시점에 편집 중이었을 수 있다. 새 검증자에게 신뢰하지 않는 입력으로 넘긴다.
+- 중단된 세션이 작업 트리에 남긴 시험 두 파일은 `pr4/verify-3/held/`로 옮겼다. `JumpBufferGateTests.cs`(`fa136444bc7ea0f00e4e446d84be77ac6f451f6a6144bd6b0433518218951b27`)는 첫 판정 세션의 보관본과 같은 바이트다. `PartyArrivalStateTests.cs`(`0e6c74243eb051a68f1492c86738e9eeed2ab7692725912b35274960eab52688`)는 보관본과 다르고 종료 시점에 편집 중이었을 수 있다. 새 검증자에게 신뢰하지 않는 입력으로 넘겼다.
+
+독립 재검증은 PASS다(`pr4/verify-3/verdict.md`, SHA256 `5d4932349a0884517ff0ce0df962ca2c3a697730728b0f5393f0fd888b0a8287`, Task `task_f1e1f15ac67f`, 화면 `GPT-6-Astra` xhigh, backend unknown). PR4-01 수정을 확인했고 새 제품 결함은 없다. 리드가 시험 집계와 exit를 원시에서 표본 대조했다.
+
+- 선행 시험 수정 후 7번 2통과, 8번 3통과. 7번은 원본과 바이트가 같고 8번은 허용한 세 곳만 줄었다.
+- 전체 서버 시험은 시험 추가 전 실패 0·통과 2,691·건너뜀 28·전체 2,719, 독립 시험 21사례(파티 13·점프 8) 추가 후 실패 0·통과 2,712·건너뜀 28·전체 2,740이다.
+- 봇 4개는 2 통과·2 실패로 수정 전과 같다. 봇은 파티 해산과 잠금 점프 경로에 닿지 않아서 이 두 경로는 서버 시험으로만 확인했다.
+- 정식 서식 검사는 exit 0, `error WHITESPACE` 0줄이다(07:30:25Z 완료).
+- 중단된 세션의 시험은 새 검증자가 내용을 감사해 채택했고 `PartyArrivalStateTests.cs`에 사례 하나와 단정 하나를 보탰다(`pr4/verify-3/raw/held-party-adoption.diff`).
+- 비차단 관찰 둘: `MapMigration`의 `GameWorld.Instance`는 다중 world 도입 때 세션 소유 world로 바꿔야 한다. 승인 예외(B안) 때문에 해산을 놓친 뒤 새 초대가 먼저 오면 옛 파티 표시가 남을 수 있다.
+
+PR309를 base `main`으로 열었다.
 
 ### 남은 위험
 
@@ -341,8 +352,8 @@ PR 번호는 PR을 만들 때 채운다.
 - [x] 입력 예산 구현
 - [x] 종료 경로 구현
 - [x] 입력 예산 잔여 경로 구현
-- [>] 게임 규칙 구현
-- [ ] 통합 실행 검증
+- [x] 게임 규칙 구현
+- [>] 통합 실행 검증
 - [x] PR305 병합
 - [x] PR306 병합
 - [x] PR307 병합
