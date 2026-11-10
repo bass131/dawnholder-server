@@ -1,7 +1,7 @@
 # 전체 코드 감사 병합 관문 도구 묶음 수정과 실행 검증
 
 - 파트: Rules · 리드 `[Rules 리드 Opus]`(claude-opus-5-5 xhigh)
-- 상태: **진행**, 사용자 계획 승인(결정 4 A). 셸 분석 멈춤은 PR311로 병합됐다. 관문 판정은 독립 검증 1회차 불합격 뒤 수정 회차다.
+- 상태: **진행**, 사용자 계획 승인(결정 4 A). 셸 분석 멈춤은 PR311로 병합됐다. 관문 판정은 독립 검증 2회 불합격 뒤 수정 회차 2를 마치고 3회차 검증 차례다.
 - 기준: main `c9dc44e44c4f37e598e2dd70ea0aa18d579529be` · branch `fix/rules-audit-gate-tools-20261110`
 - 근거 폴더: `.backups/verification/2026-11-10-code-audit-gate-tools/`
 - 초안 작성 시각: 2026-11-10T11:31Z(`date -u` 관측, 11-10 20:31 KST)
@@ -9,7 +9,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 관문 판정 수정 계약 v3를 `pr-gate-fix2/`에 발행하고 새 구현자(Opus xhigh)를 연다. 요구는 아래 「관문 판정 독립 검증 2회차」의 리드 판단이다. 재검증자 시험 커밋 `2fbd7f4c`는 수정이 통과하기 전에는 원격에 올리지 않는다. PR312는 draft로 두고, 재검증 통과 뒤에 준비 보고를 보낸다. 근거는 선행 시험 `tdd/`, PR311 `pr-shell/`, 관문 판정 구현 `pr-gate/`, 그 검증 `pr-gate/verify/`, 수정 회차 `pr-gate-fix1/`과 그 검증 `pr-gate-fix1/verify/`, 리드 탐침 `lead-probe/`에 있다.
+**다음 첫 일:** 수정 회차 2(커밋 `9580a514`)의 독립 재검증 계약을 `pr-gate-fix2/verify/`에 발행하고 새 검증자(Opus xhigh, `--autocompact 250000`)를 연다. 이번이 독립 검증 3회차다. 불합격하면 산출물 수정 3회 초과로 메인 체크포인트를 알리고, 범위를 줄이는 제안과 확정 실패 정본의 Advisor 시도를 함께 올린다. PR312는 draft로 두고, 재검증 통과 뒤에 준비 보고를 보낸다. 근거는 선행 시험 `tdd/`, PR311 `pr-shell/`, 관문 판정 구현 `pr-gate/`, 그 검증 `pr-gate/verify/`, 수정 회차 `pr-gate-fix1/`과 그 검증 `pr-gate-fix1/verify/`, 리드 탐침 `lead-probe/`에 있다.
 
 막힌 지점: 없음. 맥락 메모는 근거 폴더의 `rules-lead-context.md`, 승인 범위 문서는 `fix-scope-rules.md`(SHA256 `ee30d35dd614b1c405f01749c0ebf78c121c18afbac29969f766684682c8fa59`, 메인 원본과 일치)다.
 
@@ -278,6 +278,25 @@ Rules에 해당하는 부분은 「4) 계획 검토 - Rules … → A 승인 (�
   - 관찰 1·2·5·8은 README 문장으로, 관찰 3·4는 `branch-lookup-failed` 차단 사유 문구의 한 마디로 처리한다. 관찰 6(복잡도)은 구현자에게 권장 설계로 준다. 글자 영역을 먼저 표시하고 위치 추적은 코드 글자만 보는 방식이다.
 - 정산: `worker-release` retained·external_terminal·none 뒤 빈 prompt를 확인하고 pane을 닫았다. 재검증자 시험은 로컬 커밋 `2fbd7f4c`만 했다.
 
+### 관문 판정 수정 회차 2
+
+- 구현(`[Rules 구현 Opus]`, Opus 5.5 xhigh, backend unknown, 계약 `pr-gate-fix2/contract.md` v3 SHA256 `e0cc9d57…`): 커밋 `9580a514`. `merge-policy.mjs` +250 −206, README +4 −2다. `claude-hook.mjs`·`approval-store.mjs`·ORCA는 바뀌지 않았다(`pr-gate-fix2/report.md`).
+- 방식: 메인이 권장한 좁은 문법을 따랐다. 원문에 `cd`·`pushd`·`popd` 낱말이 없으면 위치는 이 PR 전과 같은 입력 cwd다. 낱말이 있으면 확신하는 문법만 위치를 주고, heredoc·리다이렉트·주석·치환·역따옴표 같은 문법 밖의 꼴은 모두 정할 수 없음으로 막는다. 확신 읽기의 push 수가 두 읽기 중 하나와 다르면 정할 수 없음을 더해 감싼 `bash -c`를 잡는다.
+- 계약 밖 보강(분리 가능): 물려받은 `CDPATH`가 상대 경로 `cd sub`를 옮기면 이 PR 전보다 약해지는 사례를 구현자가 실행 대조에서 찾았다. 그래서 `./`·`../`·절대 경로가 아닌 상대 경로 cd도 정할 수 없음으로 둔다. 대가는 평소의 `cd sub && git push …`가 잘못 막히는 것이다. 빼는 법은 보고서 「CDPATH 보강」에 있다.
+- 실행(최종 SHA256 `b2f8b44f…`): 검증자 시험 54/54, MergeGate 262/262, SessionGuard 254/254가 통과했다.
+  - 실행 대조 `raw/after-oracle-attempt-4`: 698사례(손 96·생성 600·한계 2)에서 실패 0이고 main이 풀린 사례도 0이다.
+  - 같은 정의로 세면 한계 2건(`$'\x63d'`, `${X}d`)이 bash main인데 지난다. 이 PR 전 hook도 똑같이 지나므로 약해진 것은 아니다. README 한계에 적었다.
+  - 잘못 막음은 196건(손 17)이고 새로 막음은 189건이다. 수정 전 실패 13건은 0이 됐다.
+  - 실제 진입 `raw/after-entry-attempt-2`: 122사례에서 결함 0, 기대 불일치 0이다.
+- 구현자가 스스로 보고한 절차 이탈: 큰 교체를 계약의 「한 Edit」 대신 확인한 작업 사본의 셸 복사로 했다. 바이트가 같음은 `check-attempt-1`에 남겼다. advisor 호출 한 번은 시간 초과로 응답이 없었다.
+- 리드 대조:
+  - 제품 hash·`git status`·numstat이 보고와 같다.
+  - 시험 세 요약 줄과 `.exit` 0이 보고와 같다.
+  - 실행 대조와 진입의 `counts` 줄이 보고 수치와 같다.
+  - 계약 필수 사례 n1~n6·l9·l10·l12·h1~h3·a1~a9·p1~p4·b1~b10·r7a가 모두 있고, bash main인 사례는 전부 막혔다.
+- 정산: worker_done(`msg_d4dbb86b1253`)이 거부 없이 도착했다. `worker-release` retained·external_terminal·none 뒤 빈 prompt를 확인하고 pane을 닫았다.
+- 남은 위험: 잘못 막음이 늘어난 평소 꼴이 있다. cd와 함께 쓴 heredoc commit, 상대 경로 cd, 문구나 경로 속 낱말 cd가 그렇다. 다시 치는 법은 차단 사유 문구와 README에 있다. 이 PR이 병합되면 모든 세션의 Bash가 이 판정을 지난다.
+
 ## 다음 계획 후보
 
 메인 판단(`msg_97a1adfc9c72`)에 따라 첫 항목을 앞 순서로 둔다.
@@ -295,7 +314,7 @@ PR 번호는 PR을 만들 때 채운다.
 - [x] 셸 분석 멈춤 구현
 - [x] 셸 분석 독립 검증
 - [x] 관문 판정 구현
-- [>] 관문 판정 독립 검증(1·2회차 NOT PASS, 수정 회차 2 진행)
+- [>] 관문 판정 독립 검증(1·2회차 NOT PASS, 수정 회차 2 `9580a514` 완료, 3회차 진행)
 - [x] 셸 분석 PR 병합(PR311, `6a0aa453`)
 - [ ] 관문 판정 PR 병합
 - [ ] 종료 기록 정리
