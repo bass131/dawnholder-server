@@ -8,7 +8,7 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 입력 예산 잔여 경로(미등록 패킷 번호·중복 로그인)의 선행 시험 계약을 발행한다. branch `fix/core-audit-input-gaps-20261110`은 종료 경로 branch head 위에 만든다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
+**다음 첫 일:** 입력 예산 잔여 경로(미등록 패킷 번호·중복 로그인)의 구현 결과를 받아 독립 검증자를 띄운다. branch는 `fix/core-audit-input-gaps-20261110`이고 근거는 `gaps/`다. 새 작업자는 `Astra high`, 검증자는 `Astra xhigh`다.
 
 막힌 지점: 없음. 종료 경로 PR307은 사용자 병합 승인을 기다린다. 근거 메모는 근거 폴더의 `lead-context.md`, 선행 시험 계약과 원시는 `tdd/`, PR1·PR2 계약과 원시는 `pr1/`·`pr2/`이다. PR4의 선행 시험은 `tdd/held/`에 두었고 그 PR을 시작할 때 hash를 대조해 되돌린다.
 
@@ -280,6 +280,10 @@ branch `fix/core-audit-graceful-stop-20261110`. 구현 `gpt-6-astra` high, 독�
 - 봇: 2 통과·2 실패로 수정 전과 같다. 시나리오별 `Server stopped.`는 0줄에서 1줄이 됐다. **대시 피해와 보스전 경로는 봇으로 확인되지 않았다.**
 - 정식 서식 검사: exit 0, 공백 오류 0줄(새 시험 포함).
 - 미실행: Unity 시험·DB 저장(최종 head에서 1회), 신호 등록 전 실제 신호.
+
+### 입력 예산 잔여 경로 결과
+
+branch `fix/core-audit-input-gaps-20261110`. 선행 시험 `Network/InputBudgetUnregisteredAndLoginTests.cs` 8사례(작성 `gpt-6-astra` high): 수정 전 실패 5·보존 3으로 두 경로 모두 재현됐다. 전체 시험은 실패 5·통과 2,673·건너뜀 28·전체 2,706이고 실패는 새 클래스뿐이다. 구현 뒤 바뀔 기존 시험 네 사례는 `gaps/tdd/report.md` 46행 이후에 있다.
 
 ### 남은 위험
 
