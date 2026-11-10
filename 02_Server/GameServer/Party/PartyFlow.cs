@@ -17,13 +17,16 @@ namespace Dawnholder.Server.GameServer.Party;
 //   여기선 마샬링만 — 직접 PartyRegistry 내부를 호출하지 않음(헌법 §5).
 internal static class PartyFlow
 {
-    // 도착자 한 명의 상태 복구. 큐 실행 시점의 파티가 없으면 기존 해산 형식으로 통지한다.
+    // 도착자 한 명의 상태 복구. 파티와 대기 초대가 모두 없으면 기존 해산 형식으로 통지한다.
     internal static void SendCurrentState(GameWorld world, GameSession session, int entityId)
     {
         world.Party.EnqueueJob(() =>
         {
             if (!world.IsActiveSession(session, entityId)) return;
             PartyState? party = world.Party.GetPartyByEntity(entityId);
+            // 클라이언트는 파티 통지를 받으면 초대 팝업을 닫는다.
+            // 응답할 수 있는 초대가 남아 있는 동안에는 빈 통지를 보내지 않는다.
+            if (party == null && world.Party.TryGetPendingInvite(entityId, out _)) return;
             PartyNotifier.SendPartyStateTo(world, entityId, party);
         });
     }
