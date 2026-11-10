@@ -367,11 +367,11 @@ PR309 병합: 사용자 승인 원문 「병합 승인: PR309 head c6fca35765400
 - 보여 주지 않는 것(메인 판단): S5가 읽는 직업과 입장은 S2 이전부터 DB에 있던 값이다. S2가 쓴 값이 TERM을 넘어 남았다는 증거가 아니다. 접속 중인 세션의 마지막 저장도 아니다.
 - 메인 정정: launcher의 `Owned WSL process PID`는 `wsl.exe`의 Windows PID다(`Start-PersistenceServer.ps1:532`, `:555`). TERM 대상은 7777 listener의 Linux PID다.
 
+**완료조건 대조.** 1~3번은 앞 절의 PR별 결과와 같다. 4번은 관측한 범위만 충족이다. 실제 프로세스의 SIGTERM·SIGINT는 종료 경로 PR에서 `Server stopped.`와 exit 0으로 관측했고, Stored 모드는 위 표까지 관측했다. 「저장값이 이어진다」는 S2가 쓴 값으로는 확인하지 못했다. 5번은 위와 같이 실행했고 PlayMode 실패 5건은 통과로 세지 않는다. 6번은 PR305~PR309 각각 새 독립 검증자의 PASS 원문과 사용자 승인 한 줄이 있다.
+
 ### 종료 Gardener 결과
 
-`gardener.md`(Task `task_15e44ff057f8`, 화면 Opus 5.5 high, backend unknown). 새 정리 후보는 없다. 경고 억제·설정 완화 추가도 그의 검색식 범위에서 0건이다. 제안은 기존 행에 관측을 잇는 2건이고 채택 전이다: 세션별 실행 harness 재작성은 `verification-harness-powershell-helper`, PR306 CI 서식 실패는 `prepush-ci-format-checks`와 겹친다. 그가 찾은 기록 불일치 3건 중 goal·BACKLOG의 2건은 이 기록에서 바로잡았고, 되살아난 세션은 「재검증 중단 기록」에 적었다. 그 세션은 후보로 등록하지 않았다. `gardener.md`의 줄 번호는 정정 전 기준이다.
-
-**완료조건 대조.** 1~3번은 앞 절의 PR별 결과와 같다. 4번은 관측한 범위만 충족이다. 실제 프로세스의 SIGTERM·SIGINT는 종료 경로 PR에서 `Server stopped.`와 exit 0으로 관측했고, Stored 모드는 위 표까지 관측했다. 「저장값이 이어진다」는 S2가 쓴 값으로는 확인하지 못했다. 5번은 위와 같이 실행했고 PlayMode 실패 5건은 통과로 세지 않는다. 6번은 PR305~PR309 각각 새 독립 검증자의 PASS 원문과 사용자 승인 한 줄이 있다.
+`gardener.md`(Task `task_15e44ff057f8`, 화면 Opus 5.5 high, backend unknown). 새 정리 후보는 없다. 경고 억제·설정 완화 추가도 그의 검색식 범위에서 0건이다. 제안은 기존 행에 관측을 잇는 2건이고 채택 전이다: 세션별 실행 harness 재작성은 `verification-harness-powershell-helper`, PR306 CI 서식 실패는 `prepush-ci-format-checks`와 겹친다. 그가 찾은 기록 불일치 3건 중 goal·BACKLOG의 2건은 이 기록에서 바로잡았고, 되살아난 세션은 「재검증 중단 기록」에 적었다. 그 세션은 후보로 등록하지 않았다. `gardener.md`의 줄 번호는 정정 전 기준이다. 쓰기는 정본의 한 파일이 아니라 두 파일이었다. `session-guard:memo-first`가 근거 폴더의 context 메모를 먼저 요구해서 `closeout/gardener/context.md`를 계약 보충(`msg_00e75ece86ec`)으로 허용했다. 리드 계약이 hook의 메모 위치와 어긋난 결함이고 첫 발생이다.
 
 ### 남은 위험
 
@@ -386,15 +386,15 @@ PR309 병합: 사용자 승인 원문 「병합 승인: PR309 head c6fca35765400
 
 ## 다음 계획 후보
 
-- 패킷마다 65,535바이트 배열을 만드는 생성기를 패킷 크기에 맞게 바꾸기(`GenPackets.cs`의 `Write()`, 메인 지시 `msg_2fd9d770d23b`).
-- 사망 상태의 이동 미잠금: `DeathState`가 `LocksMovement`를 재정의하지 않아 기본값 false다. 수정 전 `PlayerPhysicsSystem`의 주석은 Death도 잠근다고 적었고, 이 goal의 수정 커밋 `1619297f`에서 `Attack/Hit`로 바로잡았다. 선행 시험에서 사망 중 버퍼 점프 발사를 관측했다(`tdd/report.md`, 리드가 `LocksMovement` 검색으로 재정의 위치 두 곳을 확인). 승인 범위가 공격·피격이라 이번에 고치지 않는다.
-- `bot-dash-boss-baseline-failure` 봇 기준선 실패: 수정 전 main `acd5a7db`에서 `DashSmoke`·`BossFightSmoke`가 실패한다(`pr1/raw/bot-before.log`, 메인 확인 `msg_076badf9a3ef`). BACKLOG와 감사 산출물에 없던 새 관측이다. 원인 미조사. 메인이 시험 신뢰도 묶음의 범위로 사용자에게 올린다. BACKLOG 등록은 다른 후보와 함께 종료 기록 PR에서 한다.
-- `Session.Clear`가 연결이 끊길 때마다 send-pending peak 한 줄을 콘솔에 찍어 운영 로그가 접속 종료 수만큼 늘어난다(메인 관찰 `msg_001c18f08bf2`, 이 goal에서 고치지 않는다).
-- 클라이언트 `PartyInvitePopup.OnPartyUpdated`가 빈 통지에도 팝업을 닫는다. 파티에 들어갔을 때만 닫도록 바꾸면 서버의 도착 통지 예외를 지울 수 있다(메인 `msg_b0d2e5503748`, 서버 묶음 범위 밖).
-- 접속 세션이 있을 때 종료 신호 → 마지막 안전 지점 저장을 실행으로 확인하기(메인 `msg_35400729c4f6`).
-- 앞선 접속이 쓴 값이 종료 신호를 넘어 남는지 확인하기(메인 `msg_d5eca4f14a7d`).
-- `HudPanelSizingRenderTests` 5건의 캡처 전제를 건너뜀으로 처리하거나 전제 표에 넣기(메인 `msg_d5eca4f14a7d`).
-- DEVELOPMENT에 launcher의 PID가 Windows PID임을 적기(메인 `msg_35400729c4f6`의 정정).
+- 패킷마다 65,535바이트 배열을 만드는 생성기를 패킷 크기에 맞게 바꾸기(`GenPackets.cs`의 `Write()`, 메인 지시 `msg_2fd9d770d23b`). BACKLOG `generated-packet-buffer-size`.
+- 사망 상태의 이동 미잠금: `DeathState`가 `LocksMovement`를 재정의하지 않아 기본값 false다. 수정 전 `PlayerPhysicsSystem`의 주석은 Death도 잠근다고 적었고, 이 goal의 수정 커밋 `1619297f`에서 `Attack/Hit`로 바로잡았다. 선행 시험에서 사망 중 버퍼 점프 발사를 관측했다(`tdd/report.md`, 리드가 `LocksMovement` 검색으로 재정의 위치 두 곳을 확인). 승인 범위가 공격·피격이라 이번에 고치지 않는다. BACKLOG `death-state-movement-lock`.
+- `bot-dash-boss-baseline-failure` 봇 기준선 실패: 수정 전 main `acd5a7db`에서 `DashSmoke`·`BossFightSmoke`가 실패한다(`pr1/raw/bot-before.log`, 메인 확인 `msg_076badf9a3ef`). BACKLOG와 감사 산출물에 없던 새 관측이다. 원인 미조사. 메인이 시험 신뢰도 묶음의 범위로 사용자에게 올린다. BACKLOG `bot-dash-boss-baseline-failure`.
+- `Session.Clear`가 연결이 끊길 때마다 send-pending peak 한 줄을 콘솔에 찍어 운영 로그가 접속 종료 수만큼 늘어난다(메인 관찰 `msg_001c18f08bf2`, 이 goal에서 고치지 않는다). BACKLOG `session-clear-send-pending-log`.
+- 클라이언트 `PartyInvitePopup.OnPartyUpdated`가 빈 통지에도 팝업을 닫는다. 파티에 들어갔을 때만 닫도록 바꾸면 서버의 도착 통지 예외를 지울 수 있다(메인 `msg_b0d2e5503748`, 서버 묶음 범위 밖). BACKLOG `party-invite-popup-empty-update`.
+- 접속 세션이 있을 때 종료 신호 → 마지막 안전 지점 저장을 실행으로 확인하기(메인 `msg_35400729c4f6`). BACKLOG `term-active-session-last-save`.
+- 앞선 접속이 쓴 값이 종료 신호를 넘어 남는지 확인하기(메인 `msg_d5eca4f14a7d`). BACKLOG `term-stored-write-survival`.
+- `HudPanelSizingRenderTests` 5건의 캡처 전제를 건너뜀으로 처리하거나 전제 표에 넣기(메인 `msg_d5eca4f14a7d`). BACKLOG `hud-render-capture-precondition`.
+- DEVELOPMENT에 launcher의 PID가 Windows PID임을 적기(메인 `msg_35400729c4f6`의 정정). BACKLOG `persistence-launcher-pid-note`.
 
 ## 진척 단계
 
