@@ -9,7 +9,17 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 메인 체크포인트(`msg_384c43f2a247`)의 답을 기다린다. 아래 「메인 판단 요청과 답」의 결정 1·2다. 답을 받으면 그 답을 이 문서에 적고 수정 계약 v4를 `pr-gate-fix3/`에 발행한다. 새 구현자는 Opus xhigh이고, 메인이 집계 해석에 동의하면 읽기 전용 Fable Advisor를 함께 연다. 구현자의 출구 관문은 3회차 검증자의 실행 대조와 결함 재현 시험이다. 로컬 커밋 `c20f9055`(3회차 검증자 시험)·`898ae26c`와 그 뒤 goal 커밋은 수정이 통과하기 전에는 원격에 올리지 않는다. PR312는 draft로 둔다. 근거는 선행 시험 `tdd/`, PR311 `pr-shell/`, 관문 판정 구현 `pr-gate/`, 그 검증 `pr-gate/verify/`, 수정 회차 `pr-gate-fix1/`과 그 검증 `pr-gate-fix1/verify/`, 리드 탐침 `lead-probe/`에 있다.
+**다음 첫 일:** 수정 회차 3(네 번째 시도)이 진행 중이다.
+- 읽기 전용 Advisor `[Rules Advisor Fable]`(Fable 5.2 xhigh): Task `task_5cd92148f6f5`, 터미널 `term_abf6308a-9c12-4e48-808b-8bf4890199c6`. 계약은 `pr-gate-fix3/advisor/contract.md`, SHA256 `4ea7c841…`이다.
+- 구현자 `[Rules 구현 Opus]`(Opus xhigh): Task `task_45510fbab73d`, 터미널 `term_040a248d-72d5-466e-bff4-0bd9c765c144`. 계약 v4는 `pr-gate-fix3/contract.md`, SHA256 `de3f1c52…`이다.
+- 구현자 worker_done을 받으면 할 일:
+  1. 원시를 대조한다.
+  2. 구현자를 정산하고 commit한다.
+  3. Advisor에게 「구현 종료」를 보내고, Advisor worker_done 뒤 정산한다.
+  4. 메인에 status를 보낸다.
+  5. 4회차 검증 계약을 발행한다. 결정 2 A 문장, 처분표, 「시험 줄 목록 밖 기대값 변경 0건」을 넣는다.
+- 15:00 KST부터 메인의 발표 종료 알림까지는 실행 대조·전체 시험 같은 무거운 실행을 새로 시작하지 않는다. 4회차 검증자의 무거운 실행도 그 뒤다.
+- 로컬 커밋 `c20f9055`(3회차 검증자 시험)과 그 뒤 goal 커밋은 수정이 통과하기 전에는 원격에 올리지 않는다. PR312는 draft로 둔다. 근거는 선행 시험 `tdd/`, PR311 `pr-shell/`, 관문 판정 구현 `pr-gate/`, 그 검증 `pr-gate/verify/`, 수정 회차 `pr-gate-fix1/`과 그 검증 `pr-gate-fix1/verify/`, 리드 탐침 `lead-probe/`에 있다.
 
 막힌 지점: 없음. 맥락 메모는 근거 폴더의 `rules-lead-context.md`, 승인 범위 문서는 `fix-scope-rules.md`(SHA256 `ee30d35dd614b1c405f01749c0ebf78c121c18afbac29969f766684682c8fa59`, 메인 원본과 일치)다.
 
