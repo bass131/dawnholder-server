@@ -11,6 +11,15 @@ if (!OperatingSystem.IsLinux())
 try
 {
     BackendSettings settings = BackendSettings.Load(args);
+    // Taken before any store exists: start-up closes open run records, prunes logs and publishes connection.json,
+    // all of which belong to the owner only. Held until StopAsync has finished (disposed last).
+    using DataDirectoryLease? ownership = DataDirectoryLease.TryAcquire(settings.DataDirectory);
+    if (ownership is null)
+    {
+        Console.Error.WriteLine($"관리 백엔드 시작 거절: 다른 관리 백엔드가 데이터 폴더 {settings.DataDirectory}를 쓰고 있습니다.");
+        return 1;
+    }
+
     DateTime startedAt = DateTime.UtcNow;
     // Empty builder avoids environment URL/HostFiltering overrides before our explicit access boundary.
     WebApplicationBuilder builder = WebApplication.CreateEmptyBuilder(new WebApplicationOptions { Args = [] });

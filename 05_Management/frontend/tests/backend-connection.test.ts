@@ -24,11 +24,14 @@
 // Every I/O double is passed in, so nothing here starts wsl.exe, a process, a socket or a file. The
 // doubles form one consistent fake WSL: a backend that is not alive refuses its port, and any command
 // other than printenv, cat or kill -TERM/-KILL that names a pid is answered as a liveness check, so
-// the tests do not depend on how the implementation checks a pid. Time is Vitest's fake clock. The
+// the tests do not depend on how the implementation checks a pid. `cat /proc/<pid>/stat` answers the
+// process identity of a live backend (goal 2026-11-10-code-audit-management-fixes 「만들 것」 2; the
+// reuse cases are in backend-connection-process-identity.test.ts). Time is Vitest's fake clock. The
 // module does not exist before the implementation step, so each test imports it and fails alone.
 import { EventEmitter } from 'node:events';
 import { PassThrough } from 'node:stream';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { procStatLine } from './backend-process-fixtures';
 import { LOGS, RELEASES, STATUS_RUNNING, STATUS_STOPPED } from './server-operations-fixtures';
 
 const REPOSITORY_ROOT = 'C:\\Users\\bass1\\orca\\workspaces\\DawnHolder_Project\\management-active\\';
@@ -192,6 +195,9 @@ function createWorld() {
         const [name, first, second] = command;
         if (name === 'printenv' && first === 'HOME' && command.length === 2) return result(0, `${HOME}\n`);
         if (name === 'cat' && first !== undefined && command.length === 2) {
+          const statPid = /^\/proc\/(\d+)\/stat$/.exec(first)?.[1];
+          const statBackend = backends.find(item => item.alive && String(item.pid) === statPid);
+          if (statBackend) return result(0, `${procStatLine({ pid: statBackend.pid, name: 'dotnet', startTime: 700_000 + statBackend.pid })}\n`);
           const text = files.get(first);
           return text === undefined ? result(1, '', `cat: ${first}: No such file or directory\n`) : result(0, text);
         }
@@ -282,8 +288,11 @@ function lastRequest(world: World) {
   return { port: request?.port, authorization: header(request, 'authorization') };
 }
 
+// Reads of the connection file only: a /proc/<pid>/stat read is an identity check, not a credential read.
 function catReads(world: World) {
-  return world.runs.filter(run => run.args[WSL_PREFIX.length] === 'cat').map(run => run.args[WSL_PREFIX.length + 1]);
+  return world.runs
+    .filter(run => run.args[WSL_PREFIX.length] === 'cat' && !run.args[WSL_PREFIX.length + 1]?.startsWith('/proc/'))
+    .map(run => run.args[WSL_PREFIX.length + 1]);
 }
 
 function killRuns(world: World) {

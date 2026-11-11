@@ -11,6 +11,7 @@
 import { EventEmitter } from 'node:events';
 import { PassThrough } from 'node:stream';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { procStatLine } from './backend-process-fixtures';
 import { STATUS_STOPPED } from './server-operations-fixtures';
 
 const REPOSITORY_ROOT = 'C:\\Users\\tester\\checkout\\';
@@ -119,6 +120,13 @@ function createWorld() {
           const text = files.get(CONNECTION_FILE);
           if (text === undefined) return result(1, '', `cat: ${CONNECTION_FILE}: No such file or directory\n`);
           return result(0, text);
+        }
+        // The process identity of a live backend (goal 2026-11-10-code-audit-management-fixes 「만들 것」 2).
+        const statPid = name === 'cat' ? /^\/proc\/(\d+)\/stat$/.exec(first ?? '')?.[1] : undefined;
+        if (statPid !== undefined) {
+          const backend = living(statPid);
+          if (!backend) return result(1, '', `cat: ${first}: No such file or directory\n`);
+          return result(0, `${procStatLine({ pid: backend.pid, name: 'dotnet', startTime: 700_000 + backends.indexOf(backend) })}\n`);
         }
         if (name === 'kill' && first === '-0') return result(living(second) ? 0 : 1);
         if (name === 'kill' && (first === '-TERM' || first === '-KILL')) {

@@ -11,6 +11,9 @@ import type {
 } from './server-operations-contract.js';
 
 interface ConnectionInfo { port: number; token: string; pid: number; startedAt: string }
+// A backend whose credentials were accepted. startTime is the OS start time of its pid read right after that
+// authentication; null means it could not be read, so the process cannot be confirmed later and gets no signal.
+interface Attachment { connection: ConnectionInfo; startTime: string | null }
 interface ProcessResult { exitCode: number | null; stdout: string; stderr: string }
 interface HttpInput {
   host: string;
@@ -83,6 +86,16 @@ function parseConnection(text: string): ConnectionInfo | null {
   }
 }
 
+// Field 22 (starttime) of /proc/<pid>/stat tells a reused pid apart. The process name in field 2 may hold spaces
+// and ')', so fields are counted after the last ')': field 3 is the first there and field 22 the twentieth.
+function parseStartTime(stat: string): string | null {
+  const nameEnd = stat.lastIndexOf(')');
+  if (nameEnd < 0) return null;
+  const fields = stat.slice(nameEnd + 1).trim().split(/\s+/);
+  const startTime = fields[19];
+  return startTime !== undefined && /^\d+$/.test(startTime) ? startTime : null;
+}
+
 function isFreshConnection(candidate: ConnectionInfo | null, previous: ConnectionInfo | null): candidate is ConnectionInfo {
   // WSL may reuse the old pid after restarting; startedAt identifies the new run.
   return candidate !== null && (previous === null || candidate.startedAt !== previous.startedAt);
@@ -97,7 +110,7 @@ export function createBackendConnection(options: ConnectionOptions) {
   const log = options.log ?? ((line: string) => console.info(`[management backend] ${line}`));
   const wsl = (args: readonly string[]) => runProcess('wsl.exe', ['-d', 'Ubuntu', '--exec', ...args]);
   let state: ConnectionState = { state: 'disconnected', reason: 'notConnected' };
-  let info: ConnectionInfo | null = null;
+  let attached: Attachment | null = null;
   let connectionFile: string | null = null;
   let home: string | null = null;
   let child: BackendChild | null = null;
@@ -166,6 +179,15 @@ export function createBackendConnection(options: ConnectionOptions) {
     }
   }
 
+  async function readStartTime(pid: number): Promise<string | null> {
+    try {
+      const stat = await wsl(['cat', `/proc/${pid}/stat`]);
+      return stat.exitCode === 0 ? parseStartTime(stat.stdout) : null;
+    } catch {
+      return null;
+    }
+  }
+
   async function exchange(target: ConnectionInfo, method: string, path: string, timeoutMs: number, body?: string): Promise<HttpResult> {
     const controller = new AbortController();
     pending.add(controller);
@@ -197,6 +219,33 @@ export function createBackendConnection(options: ConnectionOptions) {
     }
   }
 
+  // Returns the attachment instead of storing it, so each caller assigns it under its own generation check.
+  async function authenticate(candidate: ConnectionInfo): Promise<Attachment | null> {
+    if (!await ready(candidate)) return null;
+    return { connection: candidate, startTime: await readStartTime(candidate.pid) };
+  }
+
+  // Confirms right before the signal that the pid still belongs to the authenticated process. The check and the
+  // signal are two wsl.exe calls, not one atomic step: a pid reused in between is not caught (goal design choice 2).
+  async function signalIfSameProcess(target: Attachment, signal: '-TERM' | '-KILL'): Promise<boolean> {
+    const { pid } = target.connection;
+    if (target.startTime === null) {
+      log(`백엔드 pid ${pid}: 인증 때 프로세스 시작 시각을 읽지 못해 같은 프로세스인지 확인할 수 없으므로 ${signal}을 보내지 않습니다.`);
+      return false;
+    }
+    const startTime = await readStartTime(pid);
+    if (startTime === null) {
+      log(`백엔드 pid ${pid}: 지금 프로세스 시작 시각을 읽지 못해(프로세스가 없거나 읽기 실패) ${signal}을 보내지 않습니다.`);
+      return false;
+    }
+    if (startTime !== target.startTime) {
+      log(`백엔드 pid ${pid}: 번호가 다른 프로세스로 넘어갔으므로 ${signal}을 보내지 않습니다.`);
+      return false;
+    }
+    await wsl(['kill', signal, String(pid)]);
+    return true;
+  }
+
   async function beginConnection(): Promise<ConnectionState> {
     const current = ++generation;
     state = { state: 'starting' };
@@ -223,9 +272,10 @@ export function createBackendConnection(options: ConnectionOptions) {
       connectionFile = `${(data ?? `${home}/.local/share/dawnholder/management`).replace(/\/+$/, '')}/connection.json`;
       const previous = await readConnectionFile();
       if (!active()) return state;
-      if (previous && await ready(previous)) {
+      const existing = previous ? await authenticate(previous) : null;
+      if (existing) {
         if (active()) {
-          info = previous;
+          attached = existing;
           state = { state: 'connected' };
         }
         return state;
@@ -234,7 +284,7 @@ export function createBackendConnection(options: ConnectionOptions) {
       const oldChild = child;
       child = null;
       oldChild?.kill();
-      info = null;
+      attached = null;
       launchPrevious = previous;
       const args = ['-d', 'Ubuntu', '--exec', 'bash', `${repository}/05_Management/backend/backend-wsl.sh`, 'run'];
       if (config) args.push('--config', config);
@@ -245,7 +295,7 @@ export function createBackendConnection(options: ConnectionOptions) {
       const ended = (exitCode: number | null) => {
         if (child !== spawned) return;
         child = null;
-        info = null;
+        attached = null;
         if (state.state === 'starting' || state.state === 'connected') {
           state = { state: 'disconnected', reason: 'backendExited', exitCode };
           for (const controller of pending) controller.abort();
@@ -258,9 +308,10 @@ export function createBackendConnection(options: ConnectionOptions) {
       const waitUntilReady = async () => {
         while (active()) {
           const candidate = await readConnectionFile();
-          if (active() && isFreshConnection(candidate, previous) && await ready(candidate)) {
+          const launched = active() && isFreshConnection(candidate, previous) ? await authenticate(candidate) : null;
+          if (launched) {
             if (active()) {
-              info = candidate;
+              attached = launched;
               state = { state: 'connected' };
             }
             break;
@@ -300,10 +351,12 @@ export function createBackendConnection(options: ConnectionOptions) {
   }
 
   async function operation<T extends object>(method: string, path: string, timeoutMs: number, parse: (body: unknown) => T | null, body?: string): Promise<OperationResult<T>> {
-    if (state.state !== 'connected' || !info) return operationFailure('notConnected');
+    if (state.state !== 'connected' || !attached) return operationFailure('notConnected');
     const current = generation;
     const deadline = clock.now() + timeoutMs;
-    let target = info;
+    let target = attached.connection;
+    // Credentials re-read after a 401; their start time is read once the retry is accepted.
+    let renewed: Attachment | null = null;
     let expired = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const timeLimit = new Promise<never>((_resolve, reject) => {
@@ -321,9 +374,16 @@ export function createBackendConnection(options: ConnectionOptions) {
           const refreshed = await readConnectionFile();
           if (expired || current !== generation || state.state !== 'connected') return operationFailure('notConnected');
           if (!refreshed) return operationFailure('unauthorized');
-          info = refreshed;
+          // Not authenticated yet: never pair the new pid with the old start time.
+          renewed = { connection: refreshed, startTime: null };
+          attached = renewed;
           target = refreshed;
           continue;
+        }
+        if (renewed && response.statusCode !== 401) {
+          const startTime = await readStartTime(renewed.connection.pid);
+          if (expired || current !== generation || state.state !== 'connected') return operationFailure('notConnected');
+          if (attached === renewed) attached = { connection: renewed.connection, startTime };
         }
         let answer: unknown;
         try {
@@ -362,31 +422,32 @@ export function createBackendConnection(options: ConnectionOptions) {
     state = { state: 'stopping' };
     for (const controller of pending) controller.abort();
     const stoppingChild = child;
-    let target = info;
+    let target = attached;
     if (!target && stoppingChild) {
       const candidate = await readConnectionFile();
       // During startup an old file may still belong to a backend we could not
       // attach to. Only a fresh, authenticated backend is ours to terminate.
-      if (isFreshConnection(candidate, launchPrevious) && await ready(candidate)) target = candidate;
+      if (isFreshConnection(candidate, launchPrevious)) target = await authenticate(candidate);
     }
     try {
-      if (target) {
-        await wsl(['kill', '-TERM', String(target.pid)]);
+      // No TERM to an unconfirmed pid means nothing to wait for; a started child is still ended below.
+      if (target && await signalIfSameProcess(target, '-TERM')) {
+        const { pid } = target.connection;
         const deadline = clock.now() + 30000;
         while (clock.now() < deadline) {
-          const alive = stoppingChild ? child === stoppingChild : await pidLives(target.pid);
+          const alive = stoppingChild ? child === stoppingChild : await pidLives(pid);
           if (!alive) return;
           await clock.sleep(Math.min(250, deadline - clock.now()));
         }
-        const alive = stoppingChild ? child === stoppingChild : await pidLives(target.pid);
-        if (alive) await wsl(['kill', '-KILL', String(target.pid)]);
+        const alive = stoppingChild ? child === stoppingChild : await pidLives(pid);
+        if (alive) await signalIfSameProcess(target, '-KILL');
       }
     } finally {
       if (child === stoppingChild) {
         child = null;
         stoppingChild?.kill();
       }
-      info = null;
+      attached = null;
     }
   }
 

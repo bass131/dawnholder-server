@@ -1,9 +1,9 @@
 # 전체 코드 감사 운영툴 묶음 수정과 실행 검증
 
 - 파트: Management · 리드 `[Management 리드 Opus]`(claude-opus-5-5 xhigh)
-- 상태: **승인됨**(사용자 계획 검토 A, 11-11 02:0x KST). 첫 PR(3번)은 독립 검증 차단(결함 #1)으로 수정 단계, 둘째 PR(1·2번)은 독립 검증 통과로 첫 PR 병합 뒤 PR을 연다.
+- 상태: **승인됨**(사용자 계획 검토 A, 11-11 02:0x KST). 첫 PR(3번)은 PR315로 병합됐다(`a57ca7b4`). 둘째 PR(1·2번)은 PR316으로 열었고, 발표 뒤 운영툴 실제 실행 1회를 기다린다.
 - 승인한 판: 이 파일 SHA256 `240e297b80be8fdbccf3694530077e28cb9e30caa8e8e9dfbf6687bd48f93f1b`(메인이 승인 뒤 대조). 그 뒤의 고침은 착수 회신 `msg_2296395f7b76`이 적으라고 한 기록과 상태 갱신이며 범위 네 항목은 바꾸지 않았다.
-- 기준: main `c9dc44e44c4f37e598e2dd70ea0aa18d579529be`(PR310, 문서 4개 파일. 초안 기준 `7a724f18`에서 앞으로 맞춤, `05_Management` 변경 없음) · branch `fix/management-audit-fixes-20261110`
+- 기준: main `c9dc44e44c4f37e598e2dd70ea0aa18d579529be`(PR310, 문서 4개 파일. 초안 기준 `7a724f18`에서 앞으로 맞춤, `05_Management` 변경 없음) · branch `fix/management-audit-fixes-20261110`(첫 PR, 병합 뒤 원격 자동 삭제), 지금은 `fix/management-audit-backend-lifetime-rebased-20261111`(둘째 PR, main `a57ca7b4` 위)
 - 작업 폴더: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-audit-fixes`. 정본 표의 `management-active`는 쓰지 않는다. 이유는 「적용 중인 메인 결정」에 있다.
 - 감사 기준 판: `acd5a7db065b37baa7f491c4502002eb8ce184a3`. 두 판 사이 `05_Management` 변경은 없다(`git diff --stat` 출력 없음).
 - 근거 폴더: `.backups/verification/2026-11-10-code-audit-management-fixes/`
@@ -12,9 +12,9 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 첫 PR의 병합 승인 응답을 확인한다. 첫 PR(3번)은 재검증 통과(아래 「3번 검증 결과와 결함 #1」의 「재검증」)로 PR315를 열고 메인에 승인 요청을 올렸다. 병합되면 둘째 branch를 main에 rebase하고 둘째 PR을 연다. 이 goal의 살아 있는 판은 첫 branch에 있다. 둘째 branch의 goal 기록 커밋은 첫 branch에 cherry-pick해 두 판을 맞췄다.
+**다음 첫 일:** 발표(11-11 16:00 KST)가 끝나면 메인과 운영툴 Electron 실제 실행 1회의 방법을 정하고, 메인이 창을 내준 뒤에 돌린다(완료조건 6, 「실행 표」). 그 결과로 PR316 병합 승인을 요청한다. 15:00 KST부터 메인이 발표 종료를 알릴 때까지는 프로세스를 많이 띄우는 실행을 새로 시작하지 않는다(메인 `msg_09bef0ee536a`).
 
-둘째 PR(1·2번) 독립 검증은 통과했다(아래 「둘째 PR 검증 결과」). 둘째 PR은 첫 PR 병합 뒤 둘째 branch를 main에 rebase하고 연다. 병합 순서는 그대로 첫 PR이 먼저다. 둘째 branch에는 첫 PR의 제품 코드를 싣지 않고 goal 기록 커밋만 옮겼다.
+PR316은 branch `fix/management-audit-backend-lifetime-rebased-20261111`이다. 둘째 PR 독립 검증 대상 `e2dcd96b`를 main `a57ca7b4` 위로 올렸고 충돌은 없었다. goal 기록 커밋 일곱은 이미 main에 있어 건너뛰었다. 남은 시험·구현 커밋 둘의 range-diff는 `=`이고, PR 11파일의 SHA256은 판정 대상과 모두 같다(근거 폴더 `rebase-item12/`). 그래서 병합 관문 정본(ORCA 「병합 관문」)대로 기존 독립 판정을 유지한다. rebase한 판의 강제 push(`--force-with-lease`)가 자동 분류기에 막혔다. 그래서 원격 이력을 덮지 않고 새 이름으로 올렸다. 옛 원격 branch `fix/management-audit-backend-lifetime-20261111`(`e7d172e0`)은 rebase 전 판으로 남아 있다.
 
 막힌 지점: 없음. 근거 메모는 근거 폴더의 `lead-context-audit-fixes-folder.md`(앞 리드의 `lead-context.md`는 당시 기록이다), 범위 문서 사본은 같은 폴더의 `fix-scope-management.md`다.
 
@@ -26,11 +26,11 @@ PR 번호는 PR을 여는 때 채운다.
 - [x] 선행 시험 작성
 - [x] BACKLOG 읽기 구현
 - [x] BACKLOG 읽기 검증(결함 #1 수정 뒤 재검증 통과)
-- [ ] BACKLOG PR 병합(PR315)
+- [x] BACKLOG PR 병합(PR315, 병합 커밋 `a57ca7b4`, 11-11 09:31 KST, 사용자 승인 원문 「병합 승인: PR315 head c38f8e7a8aa675cbabfc405b2e2fbd9d19a27e97」, 메인 `msg_09bef0ee536a`)
 - [x] 백엔드 수명 구현
 - [x] 백엔드 수명 검증(통과, 결함 0)
 - [ ] 운영툴 실제 실행
-- [ ] 백엔드 수명 PR 병합
+- [ ] 백엔드 수명 PR 병합(PR316)
 - [ ] 종료 Gardener
 - [ ] 종료 기록 병합
 
