@@ -63,7 +63,7 @@ const cases = [
   { name: '#1 a cd inside an empty for loop', cwd: 'main', command: 'for d in; do cd <feature>; done; git push origin HEAD', expect: 'blocked' },
 
   // Fix #1 kept: a cd that always runs moves the push.
-  { name: '#1 kept: cd, newline, usual push', cwd: 'main', command: 'cd <feature>\ngit push -u origin HEAD', expect: 'none' },
+  { name: '#1 blocked since round 3 #1: cd, newline, usual push (a failed cd leaves the push in main)', cwd: 'main', command: 'cd <feature>\ngit push -u origin HEAD', expect: 'blocked' },
   { name: '#1 kept: chained cds then usual push', cwd: 'main', command: 'cd <feature> && cd . && git push -u origin HEAD', expect: 'none' },
   { name: '#1 kept: pushd then usual push', cwd: 'main', command: 'pushd <feature> && git push -u origin HEAD', expect: 'none' },
   { name: '#1 kept: cd main then ; push', cwd: 'feature', command: 'cd <main>; git push origin HEAD', expect: 'push-main' },
