@@ -6,17 +6,28 @@ import {
   hasAgent, isSessionId, parseApprovalPrompt, preparePreToolUse, recordApproval,
 } from './merge-policy.mjs';
 
-// Git Bash writes C:/x as /c/x, which the Windows git started here cannot open.
+// A written path as the Windows git started here must read it to reach the folder Git Bash (cd, pushd)
+// reaches, or null when the two may read it apart. Git Bash writes C:/x as /c/x. Other drive-less
+// paths (/tmp, //server) are Git Bash mounts there and the current drive here, C:x is drive-relative,
+// a colon elsewhere is an NTFS stream or an MSYS path list, and Win32 drops a trailing dot or space of
+// a name that Git Bash keeps.
 function gitPath(path) {
-  return process.platform === 'win32' ? path.replace(/^\/([A-Za-z])(?:\/|$)/, (_, drive) => `${drive.toUpperCase()}:/`) : path;
+  if (process.platform !== 'win32') return path;
+  const converted = path.replace(/^\/([A-Za-z])(?:\/|$)/, (_, drive) => `${drive.toUpperCase()}:/`);
+  if (/^[\\/]/.test(converted) || /^[A-Za-z]:(?![\\/])/.test(converted)) return null;
+  if (converted.replace(/^[A-Za-z]:/, '').includes(':')) return null;
+  const trimmedName = converted.split(/[\\/]/).some(name => /[. ]$/.test(name) && name !== '.' && name !== '..');
+  return trimmedName ? null : converted;
 }
 
 // `repository` is one lookup from merge-policy: the options that pick the push's repository, in order.
 // git runs from the input cwd so that it joins relative paths the way the push would.
 function currentBranch(cwd, repository) {
   if (typeof cwd !== 'string' || cwd.trim().length === 0 || repository === null) return null;
-  const selection = repository.flatMap(({ option, path }) =>
-    option === '-C' ? ['-C', gitPath(path)] : [`${option}=${gitPath(path)}`]);
+  const paths = repository.map(({ path }) => gitPath(path));
+  if (paths.includes(null)) return null;
+  const selection = repository.flatMap(({ option }, index) =>
+    option === '-C' ? ['-C', paths[index]] : [`${option}=${paths[index]}`]);
   try {
     return execFileSync('git', [...selection, 'symbolic-ref', '--quiet', '--short', 'HEAD'], {
       cwd, encoding: 'utf8', timeout: 5000, stdio: ['ignore', 'pipe', 'pipe'],
