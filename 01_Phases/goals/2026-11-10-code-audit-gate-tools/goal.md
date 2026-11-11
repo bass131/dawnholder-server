@@ -1,7 +1,7 @@
 # 전체 코드 감사 병합 관문 도구 묶음 수정과 실행 검증
 
 - 파트: Rules · 리드 `[Rules 리드 Opus]`(claude-opus-5-5 xhigh)
-- 상태: **진행**, 사용자 계획 승인(결정 4 A). 셸 분석 멈춤은 PR311로 병합됐다. 관문 판정은 독립 검증 3회 불합격 뒤 메인 체크포인트 답을 기다린다.
+- 상태: **진행**, 사용자 계획 승인(결정 4 A). 셸 분석 멈춤은 PR311로 병합됐다. 관문 판정은 수정 회차 3(네 번째 시도)을 마쳤고 4회차 독립 검증을 연다.
 - 기준: main `c9dc44e44c4f37e598e2dd70ea0aa18d579529be` · branch `fix/rules-audit-gate-tools-20261110`
 - 근거 폴더: `.backups/verification/2026-11-10-code-audit-gate-tools/`
 - 초안 작성 시각: 2026-11-10T11:31Z(`date -u` 관측, 11-10 20:31 KST)
@@ -9,17 +9,21 @@
 
 ## 재개 지점
 
-**다음 첫 일:** 수정 회차 3(네 번째 시도)이 진행 중이다.
-- 읽기 전용 Advisor `[Rules Advisor Fable]`(Fable 5.2 xhigh): Task `task_5cd92148f6f5`, 터미널 `term_abf6308a-9c12-4e48-808b-8bf4890199c6`. 계약은 `pr-gate-fix3/advisor/contract.md`, SHA256 `4ea7c841…`이다.
-- 구현자 `[Rules 구현 Opus]`(Opus xhigh): Task `task_45510fbab73d`, 터미널 `term_040a248d-72d5-466e-bff4-0bd9c765c144`. 계약 v4는 `pr-gate-fix3/contract.md`, SHA256 `de3f1c52…`이다.
-- 구현자 worker_done을 받으면 할 일:
-  1. 원시를 대조한다.
-  2. 구현자를 정산하고 commit한다.
-  3. Advisor에게 「구현 종료」를 보내고, Advisor worker_done 뒤 정산한다.
-  4. 메인에 status를 보낸다.
-  5. 4회차 검증 계약을 발행한다. 결정 2 A 문장, 처분표, 「시험 줄 목록 밖 기대값 변경 0건」을 넣는다.
-- 15:00 KST부터 메인의 발표 종료 알림까지는 실행 대조·전체 시험 같은 무거운 실행을 새로 시작하지 않는다. 4회차 검증자의 무거운 실행도 그 뒤다.
-- 로컬 커밋 `c20f9055`(3회차 검증자 시험)과 그 뒤 goal 커밋은 수정이 통과하기 전에는 원격에 올리지 않는다. PR312는 draft로 둔다. 근거는 선행 시험 `tdd/`, PR311 `pr-shell/`, 관문 판정 구현 `pr-gate/`, 그 검증 `pr-gate/verify/`, 수정 회차 `pr-gate-fix1/`과 그 검증 `pr-gate-fix1/verify/`, 리드 탐침 `lead-probe/`에 있다.
+**다음 첫 일:** 4회차 독립 검증 계약을 `pr-gate-fix3/verify/`에 발행하고 검증자를 연다. 수정 회차 3의 결과는 아래 「관문 판정 수정 회차 3」 절이다. 구현자와 Advisor는 정산했고 pane을 닫았다.
+- 4회차 검증 계약에 넣을 것: 결정 2 A 문장 그대로, 처분표(`<<INCLUDE:dispositions>>`, 두 계약의 include hash 대조), 막아야 할 사례 53건, `r4-c-cont`의 시험 줄 확인, `a41-` 시험 줄, 아래 시험 줄 목록과 「이 목록 밖의 기존 시험 기대값 변경 0건」, 분류표 방식의 판정(이 PR 전 hook이 막던 입력 / 닫힌 목록 오독 / 목록 밖), 결정 1 A로 막히게 된 꼴의 구분, 드라이브 뿌리 위 `..`·접속점 `..`의 재현 시도, 발표 시간 제한.
+- 4회차 불합격이 회귀나 닫힌 목록 안의 위치 결함 때문이면 다섯 번째 수정안을 내지 않고 메인 question으로 올린다(메인 조건).
+- 읽기 전용 Advisor `[Rules Advisor Fable]`(Fable 5.2 xhigh, Task `task_5cd92148f6f5`)는 정산했다. 계약은 `pr-gate-fix3/advisor/contract.md`, SHA256 `4ea7c841…`이다.
+- 구현자 `[Rules 구현 Opus]`(Opus xhigh, Task `task_45510fbab73d`, Dispatch `ctx_c3bd59bdd6ac`)는 정산했다. 계약 v4는 `pr-gate-fix3/contract.md`, SHA256 `de3f1c52…`이다.
+- 보충 v4.1(`msg_f6c33cb8c837`, 원문 `pr-gate-fix3/supplement-v4-1.txt`): Advisor 첫 조언(`msg_de44bcd232e9`)의 4-1절이 3회차 검증자가 놓친 회귀 후보를 코드 읽기로 찾았다. main 위치의 `true || cd <작업 저장소> && git push origin HEAD`다. 구현자가 손 사례 `a41-`로 재현하고, 재현되면 막아야 할 회귀에 더한다. 시험 줄은 4회차 검증자가 쓴다.
+- 보충 v4.2(구현자 질문 `msg_87edc86dd457`, 답 `msg_ab2b30f17127`): `verify-push-narrow-grammar.test.mjs` 114·115행에서 `todo` 옵션을 넘기는 두 단어 수정을 허용했다. 기대값 변경이 없고 todo 전달만 한다. 4회차 검증 계약의 시험 줄 목록에 같은 설명으로 넣는다.
+- 구현자 status 1(`msg_84f841e7e140`): 수정 전 대조 996사례에서 막아야 할 새 손 사례 19건을 재현했다.
+  - 회귀 14건: `a41-` 7건, `env` 철자 변형 6건, 서브셸 안 실패하는 cd 1건.
+  - goal 요구 5건: 입력 cwd가 작업 저장소인 사례다. 공백이 연속된 `-C`·`--git-dir` 값 포함.
+  - 출구 관문의 막아야 할 사례는 31 + 19 = 50건이다.
+- 보충 v4.3(`msg_f03dd413d05a`): 공백이 연속된 `-C`·`--git-dir` 값은 낱말 나누기(`\s+`)를 바꾸지 않고(「하지 않을 것」), 원문 그대로 되살릴 수 없으면 정할 수 없음으로 닫는다.
+- 보충 v4.4(질문 `msg_6582628d54cb`, 답 `msg_93b6f802dd46`): `push-main` 차단 사유 끝에 다시 치는 법을 담은 고정 문장 하나를 허용했다. main checkout에서 친 `cd <작업 저장소>; git push`가 이제 `push-main`으로 막히기 때문이다. 사유 코드·JSON 형태·시험 기대값은 그대로다.
+- 15:00 KST부터 메인의 발표 종료 알림까지는 실행 대조·전체 시험 같은 무거운 실행을 새로 시작하지 않는다. 4회차 검증자의 무거운 실행도 그 시각 전에 시작하지 못하면 알림 뒤로 미룬다.
+- 시험이 TODO 2건을 빼고 모두 통과하므로 `c20f9055`부터 `06ad3442`와 그 뒤 goal 커밋을 원격에 올려 ubuntu CI를 본다. PR312는 draft로 둔다. 근거는 선행 시험 `tdd/`, PR311 `pr-shell/`, 관문 판정 구현 `pr-gate/`, 그 검증 `pr-gate/verify/`, 수정 회차 `pr-gate-fix1/`과 그 검증 `pr-gate-fix1/verify/`, 리드 탐침 `lead-probe/`에 있다.
 
 막힌 지점: 없음. 맥락 메모는 근거 폴더의 `rules-lead-context.md`, 승인 범위 문서는 `fix-scope-rules.md`(SHA256 `ee30d35dd614b1c405f01749c0ebf78c121c18afbac29969f766684682c8fa59`, 메인 원본과 일치)다.
 
@@ -379,6 +383,38 @@ Rules에 해당하는 부분은 「4) 계획 검토 - Rules … → A 승인 (�
   - 같은 계약·같은 결함의 확정 불합격: 1회차 #2와 2회차 #1의 부류는 이번에 닫혔다. 이번 결함 다섯은 번호와 꼴이 새것이다. 다만 세 회차 모두 「조회형 push가 main에서 도는데 위치를 잘못 읽어 지난다」는 성질 1 위반이다. 그래서 리드는 이번을 세 번째로 세고, 네 번째 시도에 확정 실패 정본의 Advisor를 쓰자고 메인에 올린다.
 - 정산: worker_done(`msg_180292224e3d`) 뒤 `worker-release` retained·external_terminal·none을 확인했다. 빈 prompt를 확인하고 pane을 닫았다. 재검증자 시험은 로컬 커밋만 하고, 수정이 통과하기 전에는 원격에 올리지 않는다(CI가 결함 재현 20건으로 실패하기 때문이다).
 
+### 관문 판정 수정 회차 3(네 번째 시도, Advisor 동반)
+
+- 구현(`[Rules 구현 Opus]`, Opus 5.5 xhigh, backend unknown, 계약 v4 `de3f1c52…`와 보충 v4.1~v4.4). 보고는 `pr-gate-fix3/report.md`다.
+  - 제품 commit `9ec2d287`: `merge-policy.mjs` +123 −63, `claude-hook.mjs` +15 −4, README +4 −4.
+  - 시험 줄 commit `06ad3442`: 리드 목록의 네 줄과 todo 전달 두 단어만 바꿨다. `git diff -U0`의 hunk는 66, 99~100, 109, 114~115행뿐이다.
+- 방식:
+  - cd는 `&&` 사슬에서만 위치를 준다. `;`·줄바꿈 뒤에는 cd 전 위치도 후보로 남긴다. `||` 뒤와 `||`가 나온 목록의 cd(Advisor 4-1)는 정할 수 없음이다.
+  - push는 첫 낱말이 `git`인 단순 명령만 자리를 받는다. 자리 맞춤 교차 확인(`everyPushPlaced`)을 둔다.
+  - `env`(대소문자 무관)를 위치 낱말로 센다. 줄 이음은 지운 원문과 지우지 않은 원문을 둘 다 본다. 후보 상한은 8이다.
+  - Windows `gitPath`가 드라이브 없는 경로, `C:x`, 끝이 점·공백인 마디를 조회하지 않는다. 플랫폼 지식이라 hook 쪽에 넣었다.
+  - 구조 보장(메인이 권한 질문의 답): 입력 cwd 조회를 내려놓는 자리는 `inspectPushes`의 위치 낱말 갈래 하나뿐이다. 그 밖에서는 조회를 더하기만 한다.
+- Advisor(`[Rules Advisor Fable]`, Fable 5.2 xhigh): 첫 조언 `msg_de44bcd232e9`, 구현자 질문 `msg_a7b9a4cac507`(8개)에 답 `msg_99dea803e1fd`. 조언 파일은 `pr-gate-fix3/advisor/advice-context.md`다. 구현자는 조언을 대부분 채택했다. 계약과 부딪힌 두 곳은 계약을 따랐다. 공백 되살리기는 보충 v4.3을 따랐고, 기준 hook 추가는 계약 출구 관문을 따랐다.
+- 실행(최종 정책 `504008c8…`, hook `97c4fc6a…`):
+  - 실행 대조 `raw/after-oracle-attempt-3`: 1008사례(3회차 957 + 손 사례 51)에서 건너뜀·hook 오류·시간 초과가 0이고, 반드시 넣을 사례는 35/35다.
+  - 막아야 할 50건(처분표 31 + 새로 재현한 19)이 모두 막혔다. 실패는 범위 밖 6건(#5)뿐이고, 이 PR 전 hook 대비 bash main 풀림은 0이다.
+  - 잘못 막음은 345건(이 PR 전부터 140, 이 PR이 새로 205)이다.
+  - 시험: narrow-grammar는 통과 24·TODO 2, location+api는 54/54, MergeGate 묶음은 288건 중 통과 286·TODO 2, SessionGuard는 254/254다.
+  - 실제 진입 `raw/after-entry-attempt-1`: hook 결정 어긋남이 0이다. harness NOT-OK 1건(`commit-then-push`)은 3회차와 같은 harness 기대 조건 오류다.
+- 리드 대조: 정리된 tally 대신 `after-oracle-attempt-3.log`에서 직접 셌다. outcome은 blocked-main 512, false-block 345, passed-not-main 145, FAILURE 6이다. FAILURE 6건은 처분표의 범위 밖 6건과 같다. bash main인데 최종이 지나고 b2da0d80이 막은 사례는 0이다. 3회차 처분표의 막아야 할 31건과 `a41-` 7건(bash main)이 모두 막혔다. 시험 네 묶음의 요약 줄과 `.exit` 0도 보고와 같다.
+- 리드 판단(구현자가 남긴 질문): 수정 전 대조 뒤에 더한 손 사례 가운데 막힌 셋(`r4-env-upper-cd`, `r4-env-upper`, `r4-env-S`)을 막아야 할 사례에 넣는다. 그래서 53건이 된다. 셋 다 닫힌 목록(`env`) 안이다. `r4-c-cont`(따옴표 안 줄 이음이 든 `-C` 값)는 harness 안전 거름 때문에 실행 대조 밖이다. 탐침으로만 막힘을 봤으므로 4회차 검증자가 시험 줄이나 자기 대조로 확인하게 한다.
+- 남은 위험(보고 「남은 위험」 요약):
+  - 잘못 막음이 는다. main checkout의 `cd <작업>; git push`는 이제 `push-main`이고, 차단 사유가 다시 치는 법(`&&`·`git -C`)을 알려 준다.
+  - `env` 방아쇠가 넓다. `.env` 이름도 센다.
+  - ubuntu CI는 로컬에서 돌리지 않았다.
+  - 드라이브 뿌리 위 `..`와 junction을 지나는 `..`는 README 한계에 적었다.
+- 정산: 구현자 worker_done(`msg_25944f1fc793`) 뒤 `worker-release` retained·external_terminal·none을 확인했다. 빈 prompt를 확인하고 pane을 닫았다. Advisor에는 「구현 종료」(`msg_0d7e6be6d372`)를 보냈다.
+- Advisor 정산: worker_done(`msg_abccd3b7e398`) 뒤 같은 방식으로 정산하고 pane을 닫았다. 조언 파일의 최종 SHA256은 `62925cad9d19defeb3b7822db4ac84b2dc1feba7e4e3bbf943b16d75f90fdd69`이다. Advisor는 자기 조언에서 틀린 곳 하나(자리 맞춤의 목적지 분류 차이)를 스스로 정정했다.
+- Advisor가 남긴 리드 판단 하나와 답:
+  - 질문: 드라이브 뿌리 위로 올라가는 `..`와 접속점을 지나는 `..`를 README 한계로 둔 처분이 판정 기준(닫힌 목록의 위치 변경을 잘못 읽으면 결함)과 맞는가. 근거는 Advisor의 추론뿐이고 재현된 사례는 없다.
+  - 리드 판단: `../` 경로는 닫힌 목록 안이다. 그래서 재현되면 닫힌 목록 오독 결함으로 센다. 4회차 검증자가 실행 대조로 재현을 시도한다. 재현되지 않으면 README 한계로 두고 비차단 관찰로 적는다.
+  - 판단 근거(리드 추론, 미실행): Git Bash의 `cd`와 Windows 경로 정규화는 둘 다 `..`를 글자로 지운다. 그래서 둘이 갈라지는 자리는 드라이브 뿌리(`/c/..`는 Git Bash 뿌리, `C:/..`는 `C:/`)다. 그 차이로 main push가 지나려면 Git Bash가 main에 가는 동안 hook이 실재하는 다른 저장소를 조회해야 한다. 예를 들어 `C:/c/Dev/…` 같은 경로가 있어야 하는데, 그런 경로는 없다.
+
 ## 다음 계획 후보
 
 메인 판단(`msg_97a1adfc9c72`)에 따라 첫 항목을 앞 순서로 둔다.
@@ -396,7 +432,7 @@ PR 번호는 PR을 만들 때 채운다.
 - [x] 셸 분석 멈춤 구현
 - [x] 셸 분석 독립 검증
 - [x] 관문 판정 구현
-- [>] 관문 판정 독립 검증(1·2·3회차 NOT PASS, 메인 체크포인트 대기)
+- [>] 관문 판정 독립 검증(1·2·3회차 NOT PASS, 메인 체크포인트 답 뒤 수정 회차 3 완료, 4회차 준비)
 - [x] 셸 분석 PR 병합(PR311, `6a0aa453`)
 - [ ] 관문 판정 PR 병합
 - [ ] 종료 기록 정리
