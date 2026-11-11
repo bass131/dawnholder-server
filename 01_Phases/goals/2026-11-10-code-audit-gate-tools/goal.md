@@ -306,6 +306,26 @@ Rules에 해당하는 부분은 「4) 계획 검토 - Rules … → A 승인 (�
 - 정산: worker_done(`msg_d4dbb86b1253`)이 거부 없이 도착했다. `worker-release` retained·external_terminal·none 뒤 빈 prompt를 확인하고 pane을 닫았다.
 - 남은 위험: 잘못 막음이 늘어난 평소 꼴이 있다. cd와 함께 쓴 heredoc commit, 상대 경로 cd, 문구나 경로 속 낱말 cd가 그렇다. 다시 치는 법은 차단 사유 문구와 README에 있다. 이 PR이 병합되면 모든 세션의 Bash가 이 판정을 지난다.
 
+### 관문 판정 독립 검증 3회차(NOT PASS)
+
+- 검증(`[Rules 검증자]`, Opus 5.5 xhigh, backend unknown, 계약 `pr-gate-fix2/verify/contract.md` SHA256 `8d26f2ca…`): **NOT PASS**(`pr-gate-fix2/verify/verdict.md`).
+  - 실행 대조는 957사례(손 157, seed 7203·9157 각 400)를 네 hook에 넣었다. 건너뜀·시간 초과·hook 오류는 0이다.
+  - bash가 main을 출력했는데 최종 hook이 지나게 한 실패가 37건이다. 물려받은 한계는 0건이다.
+  - 기존 시험 262건과 SessionGuard 254건은 모두 통과했다. 독립 시험 `verify-push-narrow-grammar.test.mjs` 26건 중 결함 재현 20건이 실패한다.
+- 요구와 맞은 것: 1·2회차 결함 부류(글자 영역의 범위 글자, 성질 2)는 닫혔다. push 낱말 찾기(성질 4), 반드시 넣을 사례 35건, 보존 동작도 맞다. CDPATH 보강 유지 판단은 옳다고 판정됐다.
+- 차단 결함 다섯. 모두 좁은 문법이나 낱말 읽기가 bash와 다르게 읽는 지점이다.
+  - #1(19건): bash에서 실패하는 cd 경로를 Windows git 조회는 찾는다. 끝 점·끝 공백·드라이브 없는 경로가 그렇고, cd 뒤가 `;`·줄바꿈·`|| true`일 때 push가 입력 cwd(main)에서 돈다. README 157행의 두 문장도 틀린다. 첫 구현부터 있었다.
+  - #2(5건): push 수 교차 확인이 수만 비교한다. 부분 따옴표 push와 `bash -c` push가 짝을 이루면 지난다.
+  - #3(5건): `env -C`·`--chdir`가 위치를 옮긴다.
+  - #4(2건): 줄 이음으로 쪼갠 cd. 이 PR 전부터 있던 동작이다.
+  - #5(6건): 부분 따옴표 push 낱말(`pu'sh'`). 이 PR 전부터 있던 동작이다.
+- 리드 답(`msg_2d85c00b465f`)대로 실패를 두 묶음으로 나눴다. 묶음 A 23건은 이 PR 전 hook이 막던 입력이다(#1 18, #2 2, #3 3). 묶음 B 14건은 이 PR 전 hook도 지나게 하던 입력이다.
+- 리드 대조: 판정이 지목한 표본 다섯 줄(`f-dot-semi`, `x-count-q-main`, `w-env-c-main`, `w-split-cd-feature`, `x-q-nocd-main`)의 bash 표지와 네 hook 결정이 판정 표와 같다. `f-dot-semi`의 bash stderr에 cd 실패가 찍혀 있다. 실행 대조 exit은 0, 독립 시험은 26건 중 20 실패로 exit 1, 묶음은 288건 중 20 실패다.
+- 집계:
+  - 산출물(`merge-policy.mjs`) 수정은 첫 구현, 수정 회차 1, 수정 회차 2로 세 번이다. 다음 수정은 네 번째라 범위 정본의 메인 체크포인트다.
+  - 같은 계약·같은 결함의 확정 불합격: 1회차 #2와 2회차 #1의 부류는 이번에 닫혔다. 이번 결함 다섯은 번호와 꼴이 새것이다. 다만 세 회차 모두 「조회형 push가 main에서 도는데 위치를 잘못 읽어 지난다」는 성질 1 위반이다. 그래서 리드는 이번을 세 번째로 세고, 네 번째 시도에 확정 실패 정본의 Advisor를 쓰자고 메인에 올린다.
+- 정산: worker_done(`msg_180292224e3d`) 뒤 `worker-release` retained·external_terminal·none을 확인했다. 빈 prompt를 확인하고 pane을 닫았다. 재검증자 시험은 로컬 커밋만 하고, 수정이 통과하기 전에는 원격에 올리지 않는다(CI가 결함 재현 20건으로 실패하기 때문이다).
+
 ## 다음 계획 후보
 
 메인 판단(`msg_97a1adfc9c72`)에 따라 첫 항목을 앞 순서로 둔다.
@@ -323,7 +343,7 @@ PR 번호는 PR을 만들 때 채운다.
 - [x] 셸 분석 멈춤 구현
 - [x] 셸 분석 독립 검증
 - [x] 관문 판정 구현
-- [>] 관문 판정 독립 검증(1·2회차 NOT PASS, 수정 회차 2 `9580a514` 완료, 3회차 진행)
+- [>] 관문 판정 독립 검증(1·2·3회차 NOT PASS, 메인 체크포인트 대기)
 - [x] 셸 분석 PR 병합(PR311, `6a0aa453`)
 - [ ] 관문 판정 PR 병합
 - [ ] 종료 기록 정리
